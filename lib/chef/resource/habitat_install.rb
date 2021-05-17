@@ -31,12 +31,12 @@ class Chef
       # Nameless Installation
       hab_install
 
-      # Instalaltion specifying a bldr URL
+      # Installation specifying a bldr URL
       hab_install 'install habitat' do
         bldr_url 'http://localhost'
       end
 
-      # Installtation specifying version and bldr URL
+      # Installation specifying version and bldr URL
       hab_install 'install habitat' do
         bldr_url 'http://localhost'
         hab_version '1.5.50'

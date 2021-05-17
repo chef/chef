@@ -103,7 +103,7 @@ class Chef
       description: "Allows you to choose which version of the **_Windows Service_** to install. Defaults to `latest` (Windows Only)"
 
       property :keep_latest, String,
-      description: "Automatically cleans up old packages. If this flag is enabled, service startup will initiate an uninstall of all previous versions of the associated package. This also applies when a service is restarted due to an update. If a number is passed to this argument, that number of latest versions will be kept. The same logic applies to the Supervisor packag `env:HAB_KEEP_LATEST_PACKAGES=1` (This requires Habitat version `1.5.86+`)"
+      description: "Automatically cleans up old packages. If this flag is enabled, service startup will initiate an uninstall of all previous versions of the associated package. This also applies when a service is restarted due to an update. If a number is passed to this argument, that number of latest versions will be kept. The same logic applies to the Supervisor package `env:HAB_KEEP_LATEST_PACKAGES=1` (This requires Habitat version `1.5.86+`)"
 
       property :toml_config, [true, false], default: false,
       description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, default is `false`. [reference](https://www.habitat.sh/docs/reference/#supervisor-config)"
