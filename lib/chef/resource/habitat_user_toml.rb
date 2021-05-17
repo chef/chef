@@ -1,4 +1,4 @@
-# Copyright:: 2017-2018, Chef Software Inc.
+# Copyright:: Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ class Chef
       description: "The service group to apply the configuration to, for example, `nginx.default`"
 
       description "Templates a user.toml for the specified service. This is written to `/hab/user/<service_name>/config/user.toml`. User.toml can be used to set configuration overriding the default.toml for a given package as an alternative to applying service group level configuration."
+      introduced "17.2"
       examples <<~DOC
       ```ruby
       hab_user_toml 'nginx' do
@@ -40,7 +41,7 @@ class Chef
         ```
       DOC
 
-      action :create do
+      action :create, description: "(default action) Create the user.toml from the specified config." do
         directory config_directory do
           mode "0755"
           owner root_owner
@@ -57,7 +58,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete the user.toml" do
         file "#{config_directory}/user.toml" do
           sensitive true
           action :delete
@@ -66,7 +67,7 @@ class Chef
 
       action_class do
         def config_directory
-          platform_family?("windows") ? "C:/hab/user/#{new_resource.service_name}/config" : "/hab/user/#{new_resource.service_name}/config"
+          windows? ? "C:/hab/user/#{new_resource.service_name}/config" : "/hab/user/#{new_resource.service_name}/config"
         end
 
         def wmi_property_from_query(wmi_property, wmi_query)
@@ -78,7 +79,7 @@ class Chef
         end
 
         def root_owner
-          if platform_family?("windows")
+          if windows?
             wmi_property_from_query(:name, "select * from Win32_UserAccount where sid like 'S-1-5-21-%-500' and LocalAccount=True")
           else
             "root"

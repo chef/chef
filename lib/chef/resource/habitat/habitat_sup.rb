@@ -1,5 +1,5 @@
 #
-# Copyright:: 2017-2018 Chef Software, Inc.
+# Copyright:: Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +54,7 @@ class Chef
       property :keep_latest, String
       property :toml_config, [true, false], default: false
 
-      action :run do
+      action :run, description: "The `run` action handles installing Habitat using the `hab_install` resource, ensures that the appropriate versions of the `core/hab-sup` and `core/hab-launcher` packages are installed using `hab_package`, and then drops off the appropriate init system definitions and manages the service." do
         habitat_install new_resource.name do
           license new_resource.license
           hab_version new_resource.sup_version if new_resource.sup_version
@@ -74,7 +74,7 @@ class Chef
           version new_resource.launcher_version if new_resource.launcher_version
         end
 
-        if platform_family?("windows")
+        if windows?
           directory "C:/hab/sup/default/config" do
             recursive true
             only_if { ::Dir.exist?("C:/hab") }

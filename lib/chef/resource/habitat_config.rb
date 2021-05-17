@@ -1,4 +1,4 @@
-# Copyright:: 2017-2018, Chef Software Inc.
+# Copyright:: Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,6 +43,7 @@ class Chef
       description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`"
 
       description "Applies a given configuration to a habitat service using `hab config apply`."
+      introduced "17.2"
       examples <<~DOC
       ```ruby
       hab_config 'nginx.default' do
@@ -72,7 +73,7 @@ class Chef
         config sc
       end
 
-      action :apply do
+      action :apply, description: "applies the given configuration" do
         converge_if_changed do
           # Use the current timestamp as the serial number/incarnation
           incarnation = Time.now.tv_sec

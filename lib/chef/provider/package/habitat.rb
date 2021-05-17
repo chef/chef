@@ -1,6 +1,5 @@
 #
-# Copyright:: Copyright (c) Chef Software Inc.
-# Copyright:: 2016-2020, Virender Khatri
+# Copyright:: Chef Software Inc.
 #
 # License:: Apache License, Version 2.0
 #
@@ -28,7 +27,6 @@ class Chef
     class Package
       class Habitat < Chef::Provider::Package
         use "../../resource/habitat/habitat_shared"
-        provides :package
         provides :habitat_package
 
         #
@@ -110,7 +108,7 @@ class Chef
       end
 
       def platform_target
-        if platform_family?("windows")
+        if windows?
           "target=x86_64-windows"
         elsif node["kernel"]["release"].to_i < 3
           "target=x86_64-linux-kernel2"
@@ -165,7 +163,7 @@ class Chef
       end
 
       def installed_version(ident)
-        hab("pkg", "path", ident).stdout.chomp.split(platform_family?("windows") ? "\\" : "/")[-2..-1].join("/")
+        hab("pkg", "path", ident).stdout.chomp.split(windows? ? "\\" : "/")[-2..-1].join("/")
       rescue Mixlib::ShellOut::ShellCommandFailed
         nil
       end
