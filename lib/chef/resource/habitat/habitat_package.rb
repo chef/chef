@@ -85,6 +85,7 @@ class Chef
 
       property :binlink, [true, false, :force], default: false,
       description: "If habitat should attempt to binlink the package. Acceptable values: `true`, `false`, `:force`. Will fail on binlinking if set to `true` and binary or binlink exists."
+
       property :options, String,
       description: "Pass any additional parameters to the habitat package command"
 
