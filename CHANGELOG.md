@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.41 -->
-## [v17.1.41](https://github.com/chef/chef/tree/v17.1.41) (2021-05-15)
+<!-- latest_release 17.2.0 -->
+## [v17.2.0](https://github.com/chef/chef/tree/v17.2.0) (2021-05-17)
 
 #### Merged Pull Requests
-- Update validation on the ResetLockoutCount to limit it to LockoutDuration rather than limiting it to 30 minutes [#11583](https://github.com/chef/chef/pull/11583) ([chef-davin](https://github.com/chef-davin))
+- Enables kernel2 habitat package builds/promotions [#11588](https://github.com/chef/chef/pull/11588) ([collinmcneese](https://github.com/collinmcneese))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enables kernel2 habitat package builds/promotions [#11588](https://github.com/chef/chef/pull/11588) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.2.0 -->
 - Update validation on the ResetLockoutCount to limit it to LockoutDuration rather than limiting it to 30 minutes [#11583](https://github.com/chef/chef/pull/11583) ([chef-davin](https://github.com/chef-davin)) <!-- 17.1.41 -->
 - Remove extraneous double mixin for the require. [#11581](https://github.com/chef/chef/pull/11581) ([Dylan-M](https://github.com/Dylan-M)) <!-- 17.1.40 -->
 - Add additional action descriptions for docs [#11575](https://github.com/chef/chef/pull/11575) ([tas50](https://github.com/tas50)) <!-- 17.1.39 -->
