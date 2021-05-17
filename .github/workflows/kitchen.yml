@@ -111,7 +111,6 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
-      KITCHEN_YAML: kitchen-tests/kitchen.yml
     steps:
       - name: Check out code
         uses: actions/checkout@master
