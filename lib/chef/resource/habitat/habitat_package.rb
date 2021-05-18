@@ -18,10 +18,11 @@
 #
 
 require_relative "../package"
+require_relative "habitat_package_provider"
 
 class Chef
   class Resource
-    class HabitatPackage < Chef::Resource::Package
+    class HabitatPackage < HabitatPackageProvider
       unified_mode true
 
       provides :habitat_package
@@ -78,13 +79,13 @@ class Chef
       description: "The habitat builder url where packages will be downloaded from (defaults to public habitat builder)"
 
       property :channel, String, default: "stable",
-      description: "The release channel to install from (defaults to `stable`)"
+      description: "The release channel to install from (defaults to stable)"
 
       property :auth_token, String,
       description: "Auth token for installing a package from a private organization on builder"
 
       property :binlink, [true, false, :force], default: false,
-      description: "If habitat should attempt to binlink the package. Acceptable values: `true`, `false`, `:force`. Will fail on binlinking if set to `true` and binary or binlink exists."
+      description: "If habitat should attempt to binlink the package. Acceptable values: `true`, false, :force. Will fail on binlinking if set to true and binary or binlink exists."
 
       property :options, String,
       description: "Pass any additional parameters to the habitat package command"

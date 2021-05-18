@@ -19,14 +19,14 @@ require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../package"
-require_relative "../../resource/habitat/habitat_package"
+require_relative "habitat_package"
 # Bring in needed shared methods
 
 class Chef
   class Provider
     class Package
       class Habitat < Chef::Provider::Package
-        use "../../resource/habitat/habitat_shared"
+        use "habitat_shared"
         provides :habitat_package
 
         #
