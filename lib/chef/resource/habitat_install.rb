@@ -43,8 +43,8 @@ class Chef
       description: "Sets TMPDIR environment variable for location to place temp files. (required if `/tmp` and `/var/tmp` are mounted `noexec`)"
 
       property :license, String, equal_to: ["accept"],
-      description: "Specifies acceptance of habitat license when set to `accept` (defaults to empty string).
-      "
+      description: "Specifies acceptance of habitat license when set to `accept` (defaults to empty string)."
+
       property :hab_version, String,
       description: "Specify the version of `Habitat` you would like to install (defaults to latest)"
 
