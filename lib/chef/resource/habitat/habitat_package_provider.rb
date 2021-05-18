@@ -23,9 +23,8 @@ require_relative "habitat_package"
 # Bring in needed shared methods
 
 class Chef
-  class Provider
-    class Package
-      class Habitat < Chef::Provider::Package
+    class Resource
+      class Habitat < Chef::Resource::Package
         use "habitat_shared"
         provides :habitat_package
 
