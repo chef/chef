@@ -23,9 +23,6 @@ require_relative "habitat_package_provider"
 class Chef
   class Resource
     class HabitatPackage < Chef::Resource::Package
-      action :install
-    end
-
       unified_mode true
 
       provides :habitat_package
