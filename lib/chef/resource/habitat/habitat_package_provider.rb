@@ -17,7 +17,7 @@
 #
 require_relative "../../http/simple"
 require_relative "../../json_compat"
-require_relative "../../exceptions"
+require "chef/exceptions" unless defined?(Chef::Exceptions)
 require_relative "../../provider/package"
 require_relative "habitat_package"
 # Bring in needed shared methods
