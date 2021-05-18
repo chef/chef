@@ -79,7 +79,6 @@ class Chef
         alias_method :upgrade_package, :install_package
 
         def remove_package(names, versions)
-          # raise 'It is too dangerous to :remove packages with the habitat_package resource right now. This functionality should be deferred to the hab cli.'
           names.zip(versions).map do |n, v|
             opts = %w{pkg uninstall}
             opts += ["--keep-latest", new_resource.keep_latest ] if new_resource.keep_latest

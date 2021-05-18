@@ -22,7 +22,7 @@ require_relative "habitat_package_provider"
 
 class Chef
   class Resource
-    class HabitatPackage < Habitat
+    class HabitatPackage < Chef::Resource
       unified_mode true
 
       provides :habitat_package
