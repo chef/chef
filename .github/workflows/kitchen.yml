@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install Infra Client from current channel
-      uses: actionshub/chef-install@master
+      uses: actionshub/chef-install@main
       with:
         channel: current
     - name: 'Upgrade Chef/Ohai via Appbundler'
@@ -109,7 +109,6 @@ jobs:
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-          cd kitchen-tests
-          sudo bundle install
-          sudo bundle exec chef-cli install
-          sudo bundle exec kitchen test end-to-end-${{ matrix.os }}
+          bundle install
+          bundle exec chef-cli install
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
