@@ -19,14 +19,14 @@ require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../package"
-require_relative "habitat_package"
+require_relative "../../resource/habitat/habitat_package"
 # Bring in needed shared methods
 
 class Chef
   class Provider
     class Package
       class Habitat < Chef::Provider::Package
-        use "habitat_shared"
+        use "../../resource/habitat/habitat_shared"
         provides :habitat_package
 
         #
@@ -182,6 +182,15 @@ class Chef
       end
 
       # This is used by the superclass Chef::Provider::Package
+      def version_compare(v1, v2)
+        return unless Chef::Provider::Package.methods.include?(:version_compare)
+
+        # Convert the package version (X.Y.Z/DATE) into a version that Mixlib::Versioning understands (X.Y.Z+DATE)
+        hab_v1 = Mixlib::Versioning.parse(v1.tr("/", "+"))
+        hab_v2 = Mixlib::Versioning.parse(v2.tr("/", "+"))
+
+        hab_v1 <=> hab_v2
+      end
     end
   end
 end
