@@ -17,76 +17,78 @@
 #
 require_relative "../../http/simple"
 require_relative "../../json_compat"
-require "chef/exceptions" unless defined?(Chef::Exceptions)
-require_relative "../../provider/package"
+require_relative "../../exceptions"
+require_relative "../package"
 require_relative "habitat_package"
 # Bring in needed shared methods
 
 class Chef
-  class Resource
-    class Habitat < Chef::Resource::Package
-      use "habitat_shared"
-      provides :habitat_package
+  class Provider
+    class Package
+      class Habitat < Chef::Provider::Package
+        use "habitat_shared"
+        provides :habitat_package
 
-      #
-      # TODO list for `hab pkg`:
-      #
-      # kinda sorta analogous to:
-      #   apt-cache search
-      #   dpkg -l
-      #   dpkg -r / dpkg -P (without depsolving?)
-      #   apt-get remove/purge (with depsolving?)
-      #
-      # - hab pkg search ruby
-      # - hab pkg info lamont-granquist/ruby
-      # - hab pkg info lamont-granquist/ruby/2.3.1
-      # - hab pkg info lamont-granquist/ruby/2.3.1/20160101010101
-      #   ^^^^^ these will all need client-side caches for the "universe" of the depot
-      # - hab pkg uninstall lamont-granquist/ruby
-      # - hab pkg uninstall lamont-granquist/ruby/2.3.1
-      # - hab pkg uninstall lamont-granquist/ruby/2.3.1/20160101010101
-      # - hab pkg list (localinfo?) lamont-granquist/ruby
-      # - hab pkg list (localinfo?) lamont-granquist/ruby/2.3.1
-      # - hab pkg list (localinfo?) lamont-granquist/ruby/2.3.1/20160101010101
-      #   ^^^^^ need a better name
-      #
-      # Probably also want to support installation of local packages
-      # Service resource supports running services from locally installed packages
-      # But we provide no way to handle installation
+        #
+        # TODO list for `hab pkg`:
+        #
+        # kinda sorta analogous to:
+        #   apt-cache search
+        #   dpkg -l
+        #   dpkg -r / dpkg -P (without depsolving?)
+        #   apt-get remove/purge (with depsolving?)
+        #
+        # - hab pkg search ruby
+        # - hab pkg info lamont-granquist/ruby
+        # - hab pkg info lamont-granquist/ruby/2.3.1
+        # - hab pkg info lamont-granquist/ruby/2.3.1/20160101010101
+        #   ^^^^^ these will all need client-side caches for the "universe" of the depot
+        # - hab pkg uninstall lamont-granquist/ruby
+        # - hab pkg uninstall lamont-granquist/ruby/2.3.1
+        # - hab pkg uninstall lamont-granquist/ruby/2.3.1/20160101010101
+        # - hab pkg list (localinfo?) lamont-granquist/ruby
+        # - hab pkg list (localinfo?) lamont-granquist/ruby/2.3.1
+        # - hab pkg list (localinfo?) lamont-granquist/ruby/2.3.1/20160101010101
+        #   ^^^^^ need a better name
+        #
+        # Probably also want to support installation of local packages
+        # Service resource supports running services from locally installed packages
+        # But we provide no way to handle installation
 
-      def load_current_resource
-        @current_resource = Chef::Resource::HabitatPackage.new(new_resource.name)
-        current_resource.package_name(strip_version(new_resource.package_name))
+        def load_current_resource
+          @current_resource = Chef::Resource::HabitatPackage.new(new_resource.name)
+          current_resource.package_name(strip_version(new_resource.package_name))
 
-        @candidate_version = candidate_versions
-        current_resource.version(current_versions)
+          @candidate_version = candidate_versions
+          current_resource.version(current_versions)
 
-        current_resource
-      end
-
-      def install_package(names, versions)
-        names.zip(versions).map do |n, v|
-          opts = ["pkg", "install", "--channel", new_resource.channel, "--url", new_resource.bldr_url]
-          opts += ["--auth", new_resource.auth_token] if new_resource.auth_token
-          opts += ["#{strip_version(n)}/#{v}", new_resource.options]
-          opts += ["--binlink"] if new_resource.binlink
-          opts += ["--force"] if new_resource.binlink.eql? :force
-          hab(opts)
+          current_resource
         end
-      end
 
-      alias_method :upgrade_package, :install_package
+        def install_package(names, versions)
+          names.zip(versions).map do |n, v|
+            opts = ["pkg", "install", "--channel", new_resource.channel, "--url", new_resource.bldr_url]
+            opts += ["--auth", new_resource.auth_token] if new_resource.auth_token
+            opts += ["#{strip_version(n)}/#{v}", new_resource.options]
+            opts += ["--binlink"] if new_resource.binlink
+            opts += ["--force"] if new_resource.binlink.eql? :force
+            hab(opts)
+          end
+        end
 
-      def remove_package(names, versions)
-        # raise 'It is too dangerous to :remove packages with the habitat_package resource right now. This functionality should be deferred to the hab cli.'
-        names.zip(versions).map do |n, v|
-          opts = %w{pkg uninstall}
-          opts += ["--keep-latest", new_resource.keep_latest ] if new_resource.keep_latest
-          opts += ["#{strip_version(n).chomp("/")}#{v}", new_resource.options]
-          opts += ["--exclude"] if new_resource.exclude
-          opts += ["--no-deps"] if new_resource.no_deps
-          hab(opts)
-          # action :remove
+        alias_method :upgrade_package, :install_package
+
+        def remove_package(names, versions)
+          # raise 'It is too dangerous to :remove packages with the habitat_package resource right now. This functionality should be deferred to the hab cli.'
+          names.zip(versions).map do |n, v|
+            opts = %w{pkg uninstall}
+            opts += ["--keep-latest", new_resource.keep_latest ] if new_resource.keep_latest
+            opts += ["#{strip_version(n).chomp("/")}#{v}", new_resource.options]
+            opts += ["--exclude"] if new_resource.exclude
+            opts += ["--no-deps"] if new_resource.no_deps
+            hab(opts)
+            # action :remove
+          end
         end
       end
 
@@ -180,15 +182,6 @@ class Chef
       end
 
       # This is used by the superclass Chef::Provider::Package
-      def version_compare(v1, v2)
-        return unless Chef::Provider::Package.methods.include?(:version_compare)
-
-        # Convert the package version (X.Y.Z/DATE) into a version that Mixlib::Versioning understands (X.Y.Z+DATE)
-        hab_v1 = Mixlib::Versioning.parse(v1.tr("/", "+"))
-        hab_v2 = Mixlib::Versioning.parse(v2.tr("/", "+"))
-
-        hab_v1 <=> hab_v2
-      end
     end
   end
 end
