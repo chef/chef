@@ -51,7 +51,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install Infra Client from current channel
-      uses: actionshub/chef-install@master
+      uses: actionshub/chef-install@main
       with:
         channel: current
     - name: 'Upgrade Chef/Ohai via Appbundler'
