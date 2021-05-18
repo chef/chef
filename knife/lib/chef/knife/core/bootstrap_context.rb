@@ -171,12 +171,12 @@ class Chef
             client_rb << "fips true\n"
           end
 
-          unless chef_config[:file_cache_path].nil?
-            client_rb << "file_cache_path \"#{chef_config[:file_cache_path]}\"\n"
+          unless chef_config[:unix_bootstrap_file_cache_path].nil?
+            client_rb << "file_cache_path \"#{chef_config[:unix_bootstrap_file_cache_path]}\"\n"
           end
 
-          unless chef_config[:file_backup_path].nil?
-            client_rb << "file_backup_path \"#{chef_config[:file_backup_path]}\"\n"
+          unless chef_config[:unix_bootstrap_file_backup_path].nil?
+            client_rb << "file_backup_path \"#{chef_config[:unix_bootstrap_file_backup_path]}\"\n"
           end
 
           client_rb

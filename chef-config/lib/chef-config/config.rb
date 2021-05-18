@@ -392,8 +392,20 @@ module ChefConfig
     # Where chef's cache files should be stored
     default(:file_cache_path) { PathHelper.join(cache_path, "cache") }.writes_value { |path| expand_relative_paths(path) }
 
+    # Where chef's cache files should be stored, used for bootstrap on unix filesystems
+    default(:unix_bootstrap_file_cache_path) { PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, "cache", windows: false) }
+
+    # Where chef's cache files should be stored, used for bootstrap on windows filesystems
+    default(:windows_bootstrap_file_cache_path) { PathHelper.join("C:", ChefUtils::Dist::Infra::DIR_SUFFIX, "cache", windows: true) }
+
     # Where backups of chef-managed files should go
     default(:file_backup_path) { PathHelper.join(cache_path, "backup") }
+
+    # Where chef's backup files should be stored, used for bootstrap on unix filesystems
+    default(:unix_bootstrap_file_backup_path) { PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, "backup", windows: false) }
+
+    # Where chef's backup files should be stored, used for bootstrap on windows filesystems
+    default(:windows_bootstrap_file_backup_path) { PathHelper.join("C:", ChefUtils::Dist::Infra::DIR_SUFFIX, "backup", windows: true) }
 
     # The chef-client (or solo) lockfile.
     #
