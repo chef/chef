@@ -59,18 +59,18 @@ class Chef
           # Retrieve version information
           uri = "https://packages.chef.io/files"
           package_name = "hab-x86_64-windows"
-          zipfile = "#{Chef::Config[:file_cache_path]}/#{package_name}.zip"
+          habfile = "#{Chef::Config[:file_cache_path]}/#{package_name}.zip"
 
           # TODO: Figure out how to properly validate the shasum for windows. Doesn't seem it's published
           # as a .sha265sum like for the linux .tar.gz
           download = "#{uri}/stable/habitat/latest/hab-x86_64-windows.zip"
 
-          remote_file zipfile do
+          remote_file habfile do
             source download
           end
 
           archive_file "#{package_name}.zip" do
-            path zipfile
+            path habfile
             destination "#{Chef::Config[:file_cache_path]}/habitat"
             action :extract
             not_if { ::Dir.exist?('c:\habitat') }
