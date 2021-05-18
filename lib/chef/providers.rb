@@ -75,7 +75,6 @@ require_relative "provider/package/powershell"
 require_relative "provider/package/msu"
 require_relative "provider/package/snap"
 
-
 require_relative "provider/service/arch"
 require_relative "provider/service/freebsd"
 require_relative "provider/service/gentoo"
