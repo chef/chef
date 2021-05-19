@@ -18,11 +18,14 @@
 
 require_relative "auth_credentials"
 require_relative "../exceptions"
+require_relative "../resource/windows_certificate"
 autoload :OpenSSL, "openssl"
+require "chef/mixin/powershell_exec"
 
 class Chef
   class HTTP
     class Authenticator
+      include Chef::Mixin::PowershellExec
 
       DEFAULT_SERVER_API_VERSION = "2".freeze
 
@@ -84,7 +87,12 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
-        if !!key_file
+        if key_file == nil? && raw_key == nil?
+          puts "No key detected"
+        # add in code to dump key from certstore
+        # what key am I looking for? Should it be named Chef-Client or the S/N of the node or what?
+        # key_file and raw_key nil, check the certstore if Windows, keychain if Mac?
+        elsif !!key_file
           @raw_key = IO.read(key_file).strip
         elsif !!raw_key
           @raw_key = raw_key.strip
