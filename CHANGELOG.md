@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.2 -->
-## [v17.2.2](https://github.com/chef/chef/tree/v17.2.2) (2021-05-17)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Fix failing Test Kitchen tests in GitHub actions [#11589](https://github.com/chef/chef/pull/11589) ([tas50](https://github.com/tas50))
+- Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.2.2 -->
 - Fix failing Test Kitchen tests in GitHub actions [#11589](https://github.com/chef/chef/pull/11589) ([tas50](https://github.com/tas50)) <!-- 17.2.2 -->
 - Updated the hostname resource to remove WMI support and use PowerShell… [#11584](https://github.com/chef/chef/pull/11584) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.1 -->
 - Enables kernel2 habitat package builds/promotions [#11588](https://github.com/chef/chef/pull/11588) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.2.0 -->
