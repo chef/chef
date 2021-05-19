@@ -1,7 +1,5 @@
 #
 # Copyright:: Chef Software, Inc.
-#
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,6 +44,24 @@ class Chef
       description: "Specifies acceptance of habitat license when set to `accept` (defaults to empty string)."
       property :hab_version, String,
       description: "Specify the version of `Habitat` you would like to install (defaults to latest)"
+
+      examples <<~DOC
+      ```ruby
+      # Nameless Installation
+      hab_install
+
+      # Installation specifying a bldr URL
+      hab_install 'install habitat' do
+        bldr_url 'http://localhost'
+      end
+
+      # Installation specifying version and bldr URL
+      hab_install 'install habitat' do
+        bldr_url 'http://localhost'
+        hab_version '1.5.50'
+      end
+      ```
+      DOC
 
       action :install, description: "Installs Habitat. Does nothing if the `hab` binary is found in the default location for the system (`/bin/hab` on Linux, `/usr/local/bin/hab` on macOS, `C:/habitat/hab.exe` on Windows)" do
         if ::File.exist?(hab_path)

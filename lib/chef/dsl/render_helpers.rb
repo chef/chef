@@ -17,7 +17,7 @@
 require_relative "toml"
 
 require_relative "../json_compat"
-require "yaml"
+autoload :YAML, "yaml"
 
 class Chef
   module DSL

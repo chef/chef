@@ -1,6 +1,5 @@
 #
 # Copyright:: Chef Software Inc.
-# Copyright:: 2016-2020, Virender Khatri
 #
 # License:: Apache License, Version 2.0
 #
