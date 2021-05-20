@@ -234,7 +234,7 @@ namespace :docs_site do
 
         case preface
         when "Note:"
-          description << { "note" => [element] }
+          description << { "note" => element }
         when "Warning:"
           description << { "warning" => [element] }
         when nil
