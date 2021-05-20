@@ -238,7 +238,7 @@ namespace :docs_site do
         when "Note:"
           description << { "note" => element }
         when "Warning:"
-          description << { "warning" => [element] }
+          description << { "warning" => element }
         when nil
           description << element
         else
