@@ -53,7 +53,7 @@ class Chef
         end
         ```
 
-        **Change the hostname of a Windows, Domain-joined node**:
+        **Change the hostname of a Windows, Domain-joined node (new in 17.3)**:
 
         ```ruby
         hostname 'renaming a domain-joined computer' do
@@ -90,11 +90,13 @@ class Chef
         default: true
 
       property :domain_user, String,
-        description: "A domain account specified in the form of DOMAIN\\user used when renaming a domain-joined device"
+        description: "A domain account specified in the form of DOMAIN\\user used when renaming a domain-joined device",
+        introduced: "17.3"
 
       property :domain_password, String,
         description: "The password to accompany the domain_user parameter",
-        sensitive: true
+        sensitive: true,
+        introduced: "17.3"
 
       action_class do
         def append_replacing_matching_lines(path, regex, string)
