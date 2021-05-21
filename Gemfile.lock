@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 42d1b3f55ab3beef9f0a96ee61f63cde28c268c4
+  revision: 934109b9eb3d46da996eb4780719e0ebe11ccafc
   branch: master
   specs:
     ohai (17.1.0)
@@ -190,7 +190,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.37.0)
+    inspec-core (4.37.17)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -213,8 +213,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.37.0)
-      inspec-core (= 4.37.0)
+    inspec-core-bin (4.37.17)
+      inspec-core (= 4.37.17)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -348,7 +348,7 @@ GEM
     unicode-display_width (2.0.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.2)
+    webmock (3.13.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
