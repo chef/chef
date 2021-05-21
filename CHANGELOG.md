@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.2.8 -->
+## [v17.2.8](https://github.com/chef/chef/tree/v17.2.8) (2021-05-21)
 
 #### Merged Pull Requests
+- Update InSpec to 4.37.17 and bump omnibus [#11611](https://github.com/chef/chef/pull/11611) ([tas50](https://github.com/tas50))
 - Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50))
 - Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
@@ -13,6 +14,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update InSpec to 4.37.17 and bump omnibus [#11611](https://github.com/chef/chef/pull/11611) ([tas50](https://github.com/tas50)) <!-- 17.2.8 -->
 - Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
 - Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
 - Do not set sensitive true for SSL certificate [#11578](https://github.com/chef/chef/pull/11578) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.2.7 -->
