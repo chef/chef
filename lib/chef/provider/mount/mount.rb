@@ -62,7 +62,7 @@ class Chef
             case line
             when /^[#\s]/
               next
-            when /^(#{device_fstab_regex})\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
+            when %r{^(/?#{device_fstab_regex})\s+#{Regexp.escape(@new_resource.mount_point)}\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)}
               enabled = true
               @current_resource.device($1)
               @current_resource.fstype($2)
@@ -168,6 +168,7 @@ class Chef
             # and order will remain the same.
             edit_fstab
           else
+
             ::File.open("/etc/fstab", "a") do |fstab|
               fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
               logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
@@ -254,7 +255,7 @@ class Chef
 
             found = false
             ::File.readlines("/etc/fstab").reverse_each do |line|
-              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
+              if !found && line =~ %r{^/?#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s}
                 found = true
                 if remove
                   logger.trace("#{@new_resource} is removed from fstab")
