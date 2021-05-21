@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.28 -->
-## [v16.13.28](https://github.com/chef/chef/tree/v16.13.28) (2021-05-20)
+<!-- latest_release 16.13.29 -->
+## [v16.13.29](https://github.com/chef/chef/tree/v16.13.29) (2021-05-21)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.37.17 [#11600](https://github.com/chef/chef/pull/11600) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- updating Gemfile to support environment variables [#11461](https://github.com/chef/chef/pull/11461) ([jayashrig158](https://github.com/jayashrig158))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- updating Gemfile to support environment variables [#11461](https://github.com/chef/chef/pull/11461) ([jayashrig158](https://github.com/jayashrig158)) <!-- 16.13.29 -->
 - Bump inspec-core-bin to 4.37.17 [#11600](https://github.com/chef/chef/pull/11600) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.28 -->
 - Bump inspec-core-bin to 4.37.8 [#11574](https://github.com/chef/chef/pull/11574) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.27 -->
 - Silence `bundle install` warning when installing gems for cookbooks [#11553](https://github.com/chef/chef/pull/11553) ([nvwls](https://github.com/nvwls)) <!-- 16.13.26 -->
