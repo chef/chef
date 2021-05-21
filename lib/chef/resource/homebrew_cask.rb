@@ -54,7 +54,12 @@ class Chef
         default: lazy { find_homebrew_username }
 
       action :install, description: "Install an application that is packaged as a Homebrew cask." do
-        homebrew_tap "homebrew/cask" if new_resource.install_cask
+        if new_resource.install_cask
+          homebrew_tap "homebrew/cask" do
+            homebrew_path new_resource.homebrew_path
+            owner new_resource.owner
+          end
+        end
 
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
@@ -67,7 +72,12 @@ class Chef
       end
 
       action :remove, description: "Remove an application that is packaged as a Homebrew cask." do
-        homebrew_tap "homebrew/cask" if new_resource.install_cask
+        if new_resource.install_cask
+          homebrew_tap "homebrew/cask" do
+            homebrew_path new_resource.homebrew_path
+            owner new_resource.owner
+          end
+        end
 
         if casked?
           converge_by("uninstall cask #{new_resource.cask_name}") do
