@@ -51,6 +51,7 @@ steps:
 - label: ":habicat: Promoting packages to the current channel."
   commands:
     - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX current x86_64-linux
+    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2 current x86_64-linux-kernel2
     - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS current x86_64-windows
   expeditor:
     executor:
