@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50))
 - Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
 - Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
 - Do not set sensitive true for SSL certificate [#11578](https://github.com/chef/chef/pull/11578) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.2.7 -->
 - Additional dist constants used in chef-cli and InSpec [#11594](https://github.com/chef/chef/pull/11594) ([ramereth](https://github.com/ramereth)) <!-- 17.2.6 -->
