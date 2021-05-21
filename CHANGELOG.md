@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.4 -->
-## [v17.2.4](https://github.com/chef/chef/tree/v17.2.4) (2021-05-21)
+<!-- latest_release 17.2.5 -->
+## [v17.2.5](https://github.com/chef/chef/tree/v17.2.5) (2021-05-21)
 
 #### Merged Pull Requests
-- Adds promotion of kernel2 package to current channel in expeditor config [#11605](https://github.com/chef/chef/pull/11605) ([collinmcneese](https://github.com/collinmcneese))
+- pass homebrew_path, owner props to homebrew_tap if installing cask [#11607](https://github.com/chef/chef/pull/11607) ([mattlqx](https://github.com/mattlqx))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- pass homebrew_path, owner props to homebrew_tap if installing cask [#11607](https://github.com/chef/chef/pull/11607) ([mattlqx](https://github.com/mattlqx)) <!-- 17.2.5 -->
 - Adds promotion of kernel2 package to current channel in expeditor config [#11605](https://github.com/chef/chef/pull/11605) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.2.4 -->
 - Add introduced fields to the hostname resource [#11608](https://github.com/chef/chef/pull/11608) ([tas50](https://github.com/tas50)) <!-- 17.2.3 -->
 - Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.2.2 -->
