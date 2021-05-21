@@ -18,7 +18,7 @@ function new_gem_included() {
   git diff | grep -E '^\+' | grep "${DEPNAME} (${EXPEDITOR_VERSION})"
 }
 
-branch="expeditor/${DEPNAME}_${EXPEDITOR_VERSION}"
+branch="expeditor/${EXPEDITOR_BRANCH}_${DEPNAME}_${EXPEDITOR_VERSION}"
 git checkout -b "$branch"
 
 tries=12
