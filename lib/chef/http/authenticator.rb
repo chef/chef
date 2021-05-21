@@ -18,8 +18,9 @@
 
 require_relative "auth_credentials"
 require_relative "../exceptions"
-require_relative "../resource/windows_certificate"
 autoload :OpenSSL, "openssl"
+autoload :ChefUtils, "chef-utils"
+
 require "chef/mixin/powershell_exec"
 
 class Chef
