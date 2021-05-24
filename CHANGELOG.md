@@ -1,17 +1,26 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.2.9 -->
+## [v17.2.9](https://github.com/chef/chef/tree/v17.2.9) (2021-05-22)
 
 #### Merged Pull Requests
-- Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez))
+- Bump ffi to 1.15.1 [#11612](https://github.com/chef/chef/pull/11612) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ffi to 1.15.1 [#11612](https://github.com/chef/chef/pull/11612) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.9 -->
+- Update InSpec to 4.37.17 and bump omnibus [#11611](https://github.com/chef/chef/pull/11611) ([tas50](https://github.com/tas50)) <!-- 17.2.8 -->
+- Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
+- Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
+- Do not set sensitive true for SSL certificate [#11578](https://github.com/chef/chef/pull/11578) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.2.7 -->
+- Additional dist constants used in chef-cli and InSpec [#11594](https://github.com/chef/chef/pull/11594) ([ramereth](https://github.com/ramereth)) <!-- 17.2.6 -->
+- pass homebrew_path, owner props to homebrew_tap if installing cask [#11607](https://github.com/chef/chef/pull/11607) ([mattlqx](https://github.com/mattlqx)) <!-- 17.2.5 -->
+- Adds promotion of kernel2 package to current channel in expeditor config [#11605](https://github.com/chef/chef/pull/11605) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.2.4 -->
+- Add introduced fields to the hostname resource [#11608](https://github.com/chef/chef/pull/11608) ([tas50](https://github.com/tas50)) <!-- 17.2.3 -->
 - Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.2.2 -->
 - Fix failing Test Kitchen tests in GitHub actions [#11589](https://github.com/chef/chef/pull/11589) ([tas50](https://github.com/tas50)) <!-- 17.2.2 -->
 - Updated the hostname resource to remove WMI support and use PowerShell… [#11584](https://github.com/chef/chef/pull/11584) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.1 -->
