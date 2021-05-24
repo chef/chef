@@ -16,8 +16,9 @@
 #
 
 require_relative "../resource"
-require "yaml"
+autoload :YAML, "yaml"
 require "date"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -35,7 +36,7 @@ class Chef
           file_path 'C:\\chef\\inspec_waiver_file.yml'
           control 'my_inspec_control_01'
           run_test false
-          justification "The subject of this control is not managed by Chef on the systems in policy group \#{node['policy_group']}"
+          justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
           expiration '2022-01-01'
           action :add
         end
@@ -45,7 +46,7 @@ class Chef
 
       ```ruby
         inspec_waiver_file_entry 'my_inspec_control_01' do
-          justification "The subject of this control is not managed by Chef on the systems in policy group \#{node['policy_group']}"
+          justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
           action :add
         end
       ```
@@ -110,7 +111,7 @@ class Chef
 
           file "Update Waiver File #{new_resource.file_path} to update waiver for control #{new_resource.control}" do
             path new_resource.file_path
-            content waiver_hash.to_yaml
+            content ::YAML.dump(waiver_hash)
             backup new_resource.backup
             action :create
           end
@@ -125,7 +126,7 @@ class Chef
           waiver_hash = waiver_hash.sort.to_h
           file "Update Waiver File #{new_resource.file_path} to remove waiver for control #{new_resource.control}" do
             path new_resource.file_path
-            content waiver_hash.to_yaml
+            content ::YAML.dump(waiver_hash)
             backup new_resource.backup
             action :create
           end
