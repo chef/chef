@@ -355,7 +355,7 @@ class Chef
       # @returns [Array]
       def add_hostname(users)
         users.map do |user|
-          user = "#{node["hostname"]}\\" + user unless user.include?('\\')
+          user = "#{node["hostname"]}\\" + user unless user.include?("\\")
           user.downcase
         end
       end
