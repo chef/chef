@@ -185,7 +185,7 @@ class Chef
         enabled state["enabled"]
       end
 
-      action :create, description: "Create a Windows firewall entry" do
+      action :create, description: "Create a Windows firewall entry." do
         if current_resource
           converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
             :remote_port, :direction, :protocol, :icmp_type, :firewall_action, :profile, :program, :service,
@@ -206,7 +206,7 @@ class Chef
         end
       end
 
-      action :delete, description: "Delete an existing Windows firewall entry" do
+      action :delete, description: "Delete an existing Windows firewall entry." do
         if current_resource
           converge_by("delete firewall rule #{new_resource.rule_name}") do
             powershell_exec!("Remove-NetFirewallRule -Name '#{new_resource.rule_name}'")

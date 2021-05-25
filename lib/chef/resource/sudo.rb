@@ -170,9 +170,7 @@ class Chef
         end
       end
 
-      action :create do
-        description "Create a single sudoers config in the sudoers.d directory"
-
+      action :create, description: "Create a single sudoers config in the sudoers.d directory." do
         validate_properties
 
         if docker? # don't even put this into resource collection unless we're in docker
@@ -230,9 +228,7 @@ class Chef
       end
 
       # Removes a user from the sudoers group
-      action :delete do
-        description "Remove a sudoers config from the sudoers.d directory"
-
+      action :delete, description: "Remove a sudoers config from the sudoers.d directory." do
         file "#{new_resource.config_prefix}/sudoers.d/#{new_resource.filename}" do
           action :delete
         end

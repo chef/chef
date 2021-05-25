@@ -45,7 +45,7 @@ module ChefConfig
       end
     end
 
-    BACKSLASH = '\\'.freeze
+    BACKSLASH = "\\".freeze
 
     def self.path_separator(windows: ChefUtils.windows?)
       if windows

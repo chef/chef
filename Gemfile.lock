@@ -1,14 +1,14 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 6b08692b230b9766b9e730c57aca8a94b0749782
+  revision: aabbd0cd0b6ad646e55370277ee5af4eefed148a
   branch: master
   specs:
-    chefstyle (2.0.1)
-      rubocop (= 1.13.0)
+    chefstyle (2.0.3)
+      rubocop (= 1.14.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 42d1b3f55ab3beef9f0a96ee61f63cde28c268c4
+  revision: 934109b9eb3d46da996eb4780719e0ebe11ccafc
   branch: master
   specs:
     ohai (17.1.0)
@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.1.17)
+    chef (17.2.11)
       addressable
-      chef-config (= 17.1.17)
-      chef-utils (= 17.1.17)
+      chef-config (= 17.2.11)
+      chef-utils (= 17.2.11)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +62,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.1.17-universal-mingw32)
+    chef (17.2.11-universal-mingw32)
       addressable
-      chef-config (= 17.1.17)
-      chef-utils (= 17.1.17)
+      chef-config (= 17.2.11)
+      chef-utils (= 17.2.11)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.1.17)
-      chef (= 17.1.17)
+    chef-bin (17.2.11)
+      chef (= 17.2.11)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.1.17)
+    chef-config (17.2.11)
       addressable
-      chef-utils (= 17.1.17)
+      chef-utils (= 17.2.11)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +121,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.1.17)
+    chef-utils (17.2.11)
       concurrent-ruby
 
 GEM
@@ -159,12 +159,16 @@ GEM
     diff-lcs (1.3)
     erubi (1.10.0)
     erubis (2.7.0)
-    faraday (1.4.1)
+    faraday (1.4.2)
+      faraday-em_http (~> 1.0)
+      faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
       faraday-net_http (~> 1.0)
       faraday-net_http_persistent (~> 1.1)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords (>= 0.0.4)
+    faraday-em_http (1.0.0)
+    faraday-em_synchrony (1.0.0)
     faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
     faraday-net_http_persistent (1.1.0)
@@ -172,9 +176,9 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
-    ffi (1.15.0)
-    ffi (1.15.0-x64-mingw32)
-    ffi (1.15.0-x86-mingw32)
+    ffi (1.15.1)
+    ffi (1.15.1-x64-mingw32)
+    ffi (1.15.1-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -190,7 +194,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.37.0)
+    inspec-core (4.37.17)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -213,8 +217,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.37.0)
-      inspec-core (= 4.37.0)
+    inspec-core-bin (4.37.17)
+      inspec-core (= 4.37.17)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -290,13 +294,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.13.0)
+    rubocop (1.14.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.2.0, < 2.0)
+      rubocop-ast (>= 1.5.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.5.0)
@@ -316,7 +320,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
-    train-core (3.7.0)
+    train-core (3.7.2)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -348,7 +352,7 @@ GEM
     unicode-display_width (2.0.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.2)
+    webmock (3.13.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)

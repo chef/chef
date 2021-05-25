@@ -30,7 +30,7 @@ class Chef
       examples <<~DOC
         **Install a package using package manager:**
 
-        ``` ruby
+        ```ruby
         zypper_package 'name of package' do
           action :install
         end
@@ -38,7 +38,7 @@ class Chef
 
         **Install a package using local file:**
 
-        ``` ruby
+        ```ruby
         zypper_package 'jwhois' do
           action :install
           source '/path/to/jwhois.rpm'
@@ -47,10 +47,10 @@ class Chef
 
         **Install without using recommend packages as a dependency:**
 
-        ``` ruby
+        ```ruby
         package 'apache2' do
           options '--no-recommends'
-          end
+        end
         ```
       DOC
 

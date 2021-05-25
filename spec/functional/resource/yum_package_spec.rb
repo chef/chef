@@ -71,7 +71,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
   end
 
-  let(:default_options) { "--nogpgcheck" } #  --disablerepo=* --enablerepo=chef-yum-localtesting' }
+  let(:default_options) { "--nogpgcheck --disablerepo=* --enablerepo=chef-yum-localtesting" }
 
   def pkg_arch
     OHAI_SYSTEM[:kernel][:machine]
@@ -526,7 +526,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package "chef_rpm" do
-          options default_options
+          options "--nogpgcheck"
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
@@ -535,7 +535,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          options default_options
+          options "--nogpgcheck"
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
@@ -731,7 +731,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          options default_options
+          options "--nogpgcheck"
           action :upgrade
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -741,7 +741,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          options default_options
+          options "--nogpgcheck"
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
@@ -971,7 +971,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package "chef_rpm" do
-          options default_options
+          options "--nogpgcheck"
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")

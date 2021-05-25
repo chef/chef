@@ -73,7 +73,7 @@ class Chef
       end
 
       def canonicalize(path)
-        ChefUtils.windows? ? path.tr("/", '\\') : path
+        ChefUtils.windows? ? path.tr("/", "\\") : path
       end
 
       action :create do

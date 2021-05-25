@@ -73,11 +73,11 @@ describe Chef::DataBagItem do
     end
 
     it "should accept alphanum.alphanum for the id" do
-      expect { data_bag_item.raw_data = { "id" => "foo.bar" } }.not_to raise_error
+      expect { data_bag_item.raw_data = { "id" => "foo.bar" } }.to raise_error(ArgumentError)
     end
 
     it "should accept .alphanum for the id" do
-      expect { data_bag_item.raw_data = { "id" => ".bozo" } }.not_to raise_error
+      expect { data_bag_item.raw_data = { "id" => ".bozo" } }.to raise_error(ArgumentError)
     end
 
     it "should raise an exception if the id contains anything but alphanum/-/_" do

@@ -185,7 +185,7 @@ class Chef
         [f_users, c_users, r_users]
       end
 
-      action :create, description: "Create or modify a Windows share" do
+      action :create, description: "Create or modify a Windows share." do
         new_resource_users
 
         # we do this here instead of requiring the property because :delete doesn't need path set
@@ -215,7 +215,7 @@ class Chef
         end
       end
 
-      action :delete, description: "Delete an existing Windows share" do
+      action :delete, description: "Delete an existing Windows share." do
         if current_resource.nil?
           Chef::Log.debug("#{new_resource.share_name} does not exist - nothing to do")
         else

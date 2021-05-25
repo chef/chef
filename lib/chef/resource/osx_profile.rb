@@ -51,7 +51,7 @@ class Chef
         'PayloadOrganization' => 'Chef',
         'PayloadVersion' => 1,
         'PayloadDisplayName' => 'Screensaver Settings',
-        'PayloadContent'=> [
+        'PayloadContent' => [
           {
             'PayloadType' => 'com.apple.ManagedClient.preferences',
             'PayloadVersion' => 1,

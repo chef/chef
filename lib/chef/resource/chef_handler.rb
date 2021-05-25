@@ -194,7 +194,7 @@ class Chef
 
       # This action needs to find an rb file that presumably contains the indicated class in it and the
       # load that file. It then instantiates that class by name and registers it as a handler.
-      action :enable, description: "Enables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node" do
+      action :enable, description: "Enables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node." do
         class_name = new_resource.class_name
         new_resource.type.each do |type, enable|
           next unless enable
@@ -216,7 +216,7 @@ class Chef
         end
       end
 
-      action :disable, description: "Disables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node" do
+      action :disable, description: "Disables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node." do
         new_resource.type.each_key do |type|
           unregister_handler(type, new_resource.class_name)
         end

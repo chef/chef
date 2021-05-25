@@ -1,11 +1,73 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-## 17.1 WIP
+## What's New in 17.1
 
-- CLI reporter default in Compliance Phase: https://github.com/chef/chef/pull/11481
-- Fix windows failures: https://github.com/chef/chef/pull/11472
-- Bump InSpec to 4.36: https://github.com/chef/chef/pull/11474
-- Yum improvements: https://github.com/chef/chef/pull/11486
+### Compliance Phase Improvements
+
+#### cli reporter by default
+
+The compliance phase will now default to using both the `json-file` and the new `cli` reporter by default. This gives you a visual indication of the success of the Compliance Phase and is perfect for running both on the CLI and in Test Kitchen.
+
+#### inspec_waiver_file_entry resource
+
+Chef Infra Client now ships with a `inspec_waiver_file_entry` resource for managing Chef InSpec waivers. With this resource you can add and remove waiver entries to a single waiver file located at `c:\chef\inspec_waiver_file.yml` on Windows or `/etc/chef/inspec_waivers.yml` on all other systems.
+
+See the [inspec_waiver_file_entry documentation](https://docs.chef.io/resources/inspec_waiver_file_entry) for more information and usage examples.
+
+#### Chef InSpec 4.36
+
+We've updated Chef InSpec from 4.33.1 to 4.36.4:
+
+- Added the selinux resource which includes support for modules and booleans.
+- Added the pattern input option for DSL and metadata inputs.
+- Added the `members_array` property for group & groups resources.
+- Train now reads the username and port from the `.ssh/config` file and will use these values if present.
+- Switch to GNU timeout-based implementation of SSH timeouts.
+- Fixed the group resource when a member does not exist.
+
+### Unified Mode Improvements
+
+We've extended support for Unified Mode to the `edit_resource` helper and also improved the Unified Mode related deprecation warnings to provide more useful information and not warn when resources are deprecated or set to only run on older Chef Infra Client releases.
+
+### Resource Improvements
+
+#### service on systemd Hosts
+
+The `service` resource on systemd hosts will now properly load the state of the service. Thanks for this fix [@ramereth](https://github.com/ramereth)!
+
+#### systemd_unit
+
+We updated the `systemd_unit` resource to resolve a regression in Chef Infra Client 17.0 that would re-enable and restart unit files on each Chef Infra Client run. Thanks for this fix [@gene1wood](https://github.com/gene1wood)!
+
+#### template
+
+We updated the `template` resource to allow passing the `cookbook_name` variable to template files.
+
+#### Windows Resource
+
+We fixed a failure that could occur in multiple Windows resources due to larger 64-bit values that logged the error: `RangeError: bignum too big to convert into 'long'`.
+
+#### windows_security_policy
+
+The `windows_security_policy` resource now supports setting `AuditPolicyChange` and `LockoutDuration`.
+
+#### yum_package / dnf_package
+
+We've made multiple improvements to how we interact with the systems RPM database in the `yum_package` and `dnf_package` resources. These changes improve reliability interacting with the RPM database and includes significant performance improvements, especially when no installation or upgrade action is taken by Chef Infra Client.
+
+### Platform Detection
+
+[Rocky Linux](https://rockylinux.org/), a RHEL clone, is now detected as a member of the `rhel` platform family.
+
+### Packaging
+
+#### Improved Dependencies
+
+Chef Infra Client 17.1 is once again smaller than previous releases thanks to reduced dependencies in the packages.
+
+#### RHEL 8 Packages
+
+We improved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
 
 ## What's New in 17.0
 

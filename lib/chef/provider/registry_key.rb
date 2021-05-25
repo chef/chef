@@ -78,7 +78,7 @@ class Chef
       def define_resource_requirements
         requirements.assert(:create, :create_if_missing, :delete, :delete_key) do |a|
           a.assertion { registry.hive_exists?(new_resource.key) }
-          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{new_resource.key.split('\\').shift} does not exist")
+          a.failure_message(Chef::Exceptions::Win32RegHiveMissing, "Hive #{new_resource.key.split("\\").shift} does not exist")
         end
 
         requirements.assert(:create) do |a|
