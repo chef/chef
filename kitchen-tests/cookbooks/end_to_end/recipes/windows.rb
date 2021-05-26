@@ -158,7 +158,7 @@ end
 
 cookbook_file "c:\\mordor\\steveb.pfx" do
   source "/certs/steveb.pfx"
-  action :create_if_missing
+  action :create
 end
 
 windows_certificate "c:/mordor/steveb.pfx" do
@@ -170,9 +170,22 @@ end
 
 cookbook_file "c:\\mordor\\ca.cert.pem" do
   source "/certs/ca.cert.pem"
-  action :create_if_missing
+  action :create
 end
 
 windows_certificate "c:/mordor/ca.cert.pem" do
+  store_name "ROOT"
+end
+
+cookbook_file "c:\\mordor\\test-cert.cer" do
+  source "/certs/test-cert.cer"
+  action :create
+end
+
+windows_certificate "c:/mordor/test-cert.cer" do
+  store_name "ROOT"
+end
+
+windows_certificate_binding "ChefDummyCertForTest" do
   store_name "ROOT"
 end
