@@ -140,9 +140,12 @@ class Chef
     def recipe_yml_filenames_by_name
       @recipe_ym_filenames_by_name ||= begin
         name_map = yml_filenames_by_name(files_for("recipes"))
-        root_alias = cookbook_manifest.root_files.find { |record| record[:name] == "root_files/recipe.yml" }
+        root_alias = cookbook_manifest.root_files.find { |record|
+          record[:name] == "root_files/recipe.yml" ||
+            record[:name] == "root_files/recipe.yaml"
+        }
         if root_alias
-          Chef::Log.error("Cookbook #{name} contains both recipe.yml and and recipes/default.yml, ignoring recipes/default.yml") if name_map["default"]
+          Chef::Log.error("Cookbook #{name} contains both recipe.yml and recipes/default.yml, ignoring recipes/default.yml") if name_map["default"]
           name_map["default"] = root_alias[:full_path]
         end
         name_map
@@ -583,7 +586,7 @@ class Chef
     end
 
     def yml_filenames_by_name(records)
-      records.select { |record| record[:name] =~ /\.yml$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".yml")] = record[:full_path]; memo }
+      records.select { |record| record[:name] =~ /\.(y[a]?ml)$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], File.extname(record[:name]))] = record[:full_path]; memo }
     end
 
     def file_vendor
