@@ -41,7 +41,44 @@ describe Chef::CookbookVersion do
     it "has empty metadata" do
       expect(cookbook_version.metadata).to eq(Chef::Cookbook::Metadata.new)
     end
+  end
 
+  describe "#recipe_yml_filenames_by_name" do
+    let(:cookbook_version) { Chef::CookbookVersion.new("name", "/tmp/name") }
+
+    def files_for_recipe(extension)
+      [
+        { name: "recipes/default.#{extension}", full_path: "/home/user/repo/cookbooks/test/recipes/default.#{extension}" },
+        { name: "recipes/other.#{extension}", full_path: "/home/user/repo/cookbooks/test/recipes/other.#{extension}" },
+      ]
+    end
+    %w{yml yaml}.each do |extension|
+
+      context "and YAML files are present including a recipes/default.#{extension}" do
+        before(:each) do
+          allow(cookbook_version).to receive(:files_for).with("recipes").and_return(files_for_recipe(extension))
+        end
+
+        context "and manifest does not include a root_files/recipe.#{extension}" do
+          it "returns all YAML recipes with a correct default of default.#{extension}" do
+            expect(cookbook_version.recipe_yml_filenames_by_name).to eq({ "default" => "/home/user/repo/cookbooks/test/recipes/default.#{extension}",
+                                                                        "other" => "/home/user/repo/cookbooks/test/recipes/other.#{extension}" })
+          end
+        end
+
+        context "and manifest also includes a root_files/recipe.#{extension}" do
+          let(:root_files) { [{ name: "root_files/recipe.#{extension}", full_path: "/home/user/repo/cookbooks/test/recipe.#{extension}" } ] }
+          before(:each) do
+            allow(cookbook_version.cookbook_manifest).to receive(:root_files).and_return(root_files)
+          end
+
+          it "returns all YAML recipes with a correct default of recipe.#{extension}" do
+            expect(cookbook_version.recipe_yml_filenames_by_name).to eq({ "default" => "/home/user/repo/cookbooks/test/recipe.#{extension}",
+                                                                         "other" => "/home/user/repo/cookbooks/test/recipes/other.#{extension}" })
+          end
+        end
+      end
+    end
   end
 
   describe "with a cookbook directory named tatft" do
