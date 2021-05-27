@@ -174,6 +174,9 @@ class Chef
     class CannotDetermineWindowsInstallerType < Package; end
     class NoWindowsPackageSource < Package; end
 
+    # for example, if both recipes/default.yml, recipes/default.yaml are present
+    class AmbiguousYAMLFile < RuntimeError; end
+
     # Can not create staging file during file deployment
     class FileContentStagingError < RuntimeError
       def initialize(errors)

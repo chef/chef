@@ -44,7 +44,7 @@ describe Chef::CookbookVersion do
   end
 
   describe "#recipe_yml_filenames_by_name" do
-    let(:cookbook_version) { Chef::CookbookVersion.new("name", "/tmp/name") }
+    let(:cookbook_version) { Chef::CookbookVersion.new("mycb", "/tmp/mycb") }
 
     def files_for_recipe(extension)
       [
@@ -52,6 +52,21 @@ describe Chef::CookbookVersion do
         { name: "recipes/other.#{extension}", full_path: "/home/user/repo/cookbooks/test/recipes/other.#{extension}" },
       ]
     end
+    context "and YAML files present include both a recipes/default.yml and a recipes/default.yaml" do
+      before(:each) do
+        allow(cookbook_version).to receive(:files_for).with("recipes").and_return(
+          [
+            { name: "recipes/default.yml", full_path: "/home/user/repo/cookbooks/test/recipes/default.yml" },
+            { name: "recipes/default.yaml", full_path: "/home/user/repo/cookbooks/test/recipes/default.yaml" },
+          ]
+        )
+      end
+      it "because both are valid and we can't pick, it raises an error that contains the info needed to fix the problem" do
+        expect { cookbook_version.recipe_yml_filenames_by_name }
+          .to raise_error(Chef::Exceptions::AmbiguousYAMLFile, /.*default.yml.*default.yaml.*update the cookbook to remove/)
+      end
+    end
+
     %w{yml yaml}.each do |extension|
 
       context "and YAML files are present including a recipes/default.#{extension}" do
