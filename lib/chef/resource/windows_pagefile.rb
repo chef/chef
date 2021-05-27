@@ -137,7 +137,7 @@ class Chef
 
         # The powershell cmdlets to create a new pagefile will happily report success when the drive you just created the pagefile for does not exist.
         def pagefile_drive_exist?(pagefile)
-          root_drive = pagefile.split(':')[0]
+          root_drive = pagefile.split(":")[0]
           root_drive += ":\\"
           result = Dir.exist?(root_drive)
           result.nil? || result == false ? false : true
