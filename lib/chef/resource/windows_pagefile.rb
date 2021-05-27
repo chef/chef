@@ -66,7 +66,7 @@ class Chef
       DOC
 
       property :path, String,
-        coerce: proc { |x| x.tr("/", '\\') },
+        coerce: proc { |x| x.tr("/", "\\") },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
 
@@ -75,7 +75,6 @@ class Chef
 
       property :automatic_managed, [TrueClass, FalseClass],
         description: "Enable automatic management of pagefile initial and maximum size. Setting this to true ignores `initial_size` and `maximum_size` properties."
-        # default: false
 
       property :initial_size, Integer,
         description: "Initial size of the pagefile in megabytes."
