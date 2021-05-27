@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.30 -->
-## [v16.13.30](https://github.com/chef/chef/tree/v16.13.30) (2021-05-22)
+<!-- latest_release 16.13.31 -->
+## [v16.13.31](https://github.com/chef/chef/tree/v16.13.31) (2021-05-27)
 
 #### Merged Pull Requests
-- Bump ffi to 1.15.1 [#11613](https://github.com/chef/chef/pull/11613) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.37.20 [#11631](https://github.com/chef/chef/pull/11631) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.37.20 [#11631](https://github.com/chef/chef/pull/11631) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.31 -->
 - Bump ffi to 1.15.1 [#11613](https://github.com/chef/chef/pull/11613) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.30 -->
 - updating Gemfile to support environment variables [#11461](https://github.com/chef/chef/pull/11461) ([jayashrig158](https://github.com/jayashrig158)) <!-- 16.13.29 -->
 - Bump inspec-core-bin to 4.37.17 [#11600](https://github.com/chef/chef/pull/11600) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.28 -->
