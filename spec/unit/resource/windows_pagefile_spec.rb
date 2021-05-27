@@ -41,9 +41,4 @@ describe Chef::Resource::WindowsPagefile do
     resource.path "C:/pagefile.sys"
     expect(resource.path).to eql("C:\\pagefile.sys")
   end
-
-  it "automatic_managed property defaults to false" do
-    expect(resource.automatic_managed).to eql(false)
-  end
-
 end
