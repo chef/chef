@@ -44,7 +44,7 @@ class Chef
       end
       ```
 
-      **Delete a pagefile**:
+      **Switch to system managed pagefiles**:
 
       ```ruby
       windows_pagefile 'Change the pagefile to System Managed' do
@@ -82,7 +82,7 @@ class Chef
       property :maximum_size, Integer,
         description: "Maximum size of the pagefile in megabytes."
 
-      action :set, description: "Configures the default pagefile, creating if it doesn't exist" do
+      action :set, description: "Configures the default pagefile, creating if it doesn't exist." do
         pagefile = new_resource.path
         initial_size = new_resource.initial_size
         maximum_size = new_resource.maximum_size
@@ -113,12 +113,12 @@ class Chef
             validate_name
             create(pagefile) unless exists?(pagefile)
           elsif !pagefile_drive_exist?(pagefile)
-            raise "You are trying to create a pagefile on a drive that does not exist"
+            raise "You are trying to create a pagefile on a drive that does not exist!"
           end
         end
       end
 
-      action :delete, description: "Deletes the specified pagefile" do
+      action :delete, description: "Deletes the specified pagefile." do
         validate_name
         delete(new_resource.path) if exists?(new_resource.path)
       end
