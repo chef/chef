@@ -29,6 +29,11 @@ class Chef
       end
 
       def report
+        if count == 0
+          puts "\nNo resources to profile\n\n"
+          return
+        end
+
         top = all_resources.sort_by(&:elapsed_time).last(amount).reverse
         data = top.map { |r| [ r.to_s, r.elapsed_time, r.cookbook_name, r.recipe_name, stripped_source_line(r) ] }
         puts "\nTop #{count} slowest #{count == 1 ? "resource" : "resources"}:\n\n"
