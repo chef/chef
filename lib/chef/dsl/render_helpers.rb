@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require_relative "toml"
-
 require_relative "../json_compat"
 autoload :YAML, "yaml"
 
