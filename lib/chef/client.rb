@@ -863,6 +863,12 @@ class Chef
     end
 
     def start_profiling
+      if Chef::Config[:slow_report]
+        require_relative "handler/slow_report"
+
+        Chef::Config.report_handlers << Chef::Handler::SlowReport.new(Chef::Config[:slow_report])
+      end
+
       return unless Chef::Config[:profile_ruby]
 
       profiling_prereqs!

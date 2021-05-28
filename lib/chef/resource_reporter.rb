@@ -135,7 +135,6 @@ class Chef
 
     def action_collection_registration(action_collection)
       @action_collection = action_collection
-      action_collection.register(self) if reporting_enabled?
     end
 
     def post_reporting_data
