@@ -58,7 +58,7 @@ class Chef
     # FIXME: Chef::Handler should probably inherit from EventDispatch::Base
     # and should wire up to those events rather than the "notifications" system
     # which is hanging off of Chef::Client.  Those "notifications" could then be
-    # deprecated in favor of events, and this class could become decopled from
+    # deprecated in favor of events, and this class could become decoupled from
     # the Chef::Client object.
 
     def self.handler_for(*args)
