@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: aabbd0cd0b6ad646e55370277ee5af4eefed148a
+  revision: b257fe452318540c7016066beb845e0706917cb4
   branch: master
   specs:
-    chefstyle (2.0.3)
-      rubocop (= 1.14.0)
+    chefstyle (2.0.4)
+      rubocop (= 1.15.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.2.11)
+    chef (17.2.12)
       addressable
-      chef-config (= 17.2.11)
-      chef-utils (= 17.2.11)
+      chef-config (= 17.2.12)
+      chef-utils (= 17.2.12)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +62,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.2.11-universal-mingw32)
+    chef (17.2.12-universal-mingw32)
       addressable
-      chef-config (= 17.2.11)
-      chef-utils (= 17.2.11)
+      chef-config (= 17.2.12)
+      chef-utils (= 17.2.12)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.2.11)
-      chef (= 17.2.11)
+    chef-bin (17.2.12)
+      chef (= 17.2.12)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.2.11)
+    chef-config (17.2.12)
       addressable
-      chef-utils (= 17.2.11)
+      chef-utils (= 17.2.12)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +121,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.2.11)
+    chef-utils (17.2.12)
       concurrent-ruby
 
 GEM
@@ -194,7 +194,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.37.17)
+    inspec-core (4.37.20)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -217,8 +217,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.37.17)
-      inspec-core (= 4.37.17)
+    inspec-core-bin (4.37.20)
+      inspec-core (= 4.37.20)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -294,7 +294,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.14.0)
+    rubocop (1.15.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -303,7 +303,7 @@ GEM
       rubocop-ast (>= 1.5.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.5.0)
+    rubocop-ast (1.6.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)

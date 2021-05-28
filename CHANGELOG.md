@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.11 -->
-## [v17.2.11](https://github.com/chef/chef/tree/v17.2.11) (2021-05-24)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Bump the knife ffi dep [#11618](https://github.com/chef/chef/pull/11618) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
+- Bump inspec-core-bin to 4.37.20 [#11632](https://github.com/chef/chef/pull/11632) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
 - Bump the knife ffi dep [#11618](https://github.com/chef/chef/pull/11618) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.11 -->
 - inspec_waiver_file_entry: Autoload yaml and use dist file [#11552](https://github.com/chef/chef/pull/11552) ([tas50](https://github.com/tas50)) <!-- 17.2.10 -->
 - Bump ffi to 1.15.1 [#11612](https://github.com/chef/chef/pull/11612) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.9 -->
