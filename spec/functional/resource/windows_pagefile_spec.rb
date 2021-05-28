@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_exec"
 
-describe Chef::Resource::Hostname, :windows_only do
+describe Chef::Resource::WindowsPagefile, :windows_only do
   include Chef::Mixin::PowershellExec
 
   let(:c_path) { 'c:\pagefile.sys' }
