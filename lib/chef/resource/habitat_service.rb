@@ -38,10 +38,10 @@ class Chef
       description: "Passes `--topology` with the specified service topology to the hab command"
 
       property :bldr_url, String, default: "https://bldr.habitat.sh/",
-      description: "Passes `--url` with the specified Builder URL to the hab command. Depending on the type of Builder you are connecting to, this URL will look different, here are the **3** current types:
-      - Public Builder (default) - `https://bldr.habitat.sh`
-      - On-Prem Builder installed using the [Source Install Method](https://github.com/habitat-sh/on-prem-builder) - `https://your.bldr.url`
-      - On-Prem Builder installed using the [Automate Installer](https://automate.chef.io/docs/on-prem-builder/) - `https://your.bldr.url/bldr/v1`"
+      description: "Passes `--url` with the specified Habitat Builder URL to the hab command. Depending on the type of Habitat Builder you are connecting to, this URL will look different, here are the **3** current types:
+      - Public Habitat Builder (default) - `https://bldr.habitat.sh`
+      - On-Prem Habitat Builder installed using the [Source Install Method](https://github.com/habitat-sh/on-prem-builder) - `https://your.bldr.url`
+      - On-Prem Habitat Builder installed using the [Automate Installer](https://automate.chef.io/docs/on-prem-builder/) - `https://your.bldr.url/bldr/v1`"
 
       property :channel, [Symbol, String], default: :stable, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
       description: "Passes `--channel` with the specified channel to the hab command"
@@ -74,7 +74,7 @@ class Chef
       - `latest`: Runs the latest package that can be found in the configured channel and local packages.
       - `track-channel`: Always run what is at the head of a given channel. This enables service rollback where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is packages newer than the package at the head of the channel will be automatically uninstalled during a service rollback."
 
-      description "Manages a Habitat application service using `hab sup`/`hab service`. This requires that `core/hab-sup` be running as a service. See the `hab_sup` resource documentation below for more information about how to set that up with this cookbook.
+      description "Manages a Habitat application service using `hab sup`/`hab service`. This requires that `core/hab-sup` be running as a service. See the `habitat_sup` resource documentation below for more information about how to set that up with this cookbook.
 
       Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource.
       "
@@ -82,33 +82,36 @@ class Chef
       examples <<~DOC
 
         ```ruby
-        # install and load nginx
-        hab_package 'core/nginx'
-        hab_service 'core/nginx'
+        **Install and load nginx**
 
-        hab_service 'core/nginx unload' do
+        habitat_package 'core/nginx'
+        habitat_service 'core/nginx'
+
+        habitat_service 'core/nginx unload' do
           service_name 'core/nginx'
           action :unload
         end
 
-        # pass the strategy and topology options to hab service commands (load by default)
-        hab_service 'core/redis' do
+        **Pass the `strategy` and `topology` options to hab service commands**
+
+        habitat_service 'core/redis' do
           strategy 'rolling'
           topology 'standalone'
         end
 
-        # Using update_condition
-        hab_service 'core/redis' do
+        **Using update_condition**
+
+        habitat_service 'core/redis' do
           strategy 'rolling'
           update_condition 'track-channel'
           topology 'standalone'
         end
         ```
 
-        If the service has it's own user specified that is not the `hab` user, don't create the `hab` user on install, and instead create the application user with Chef's `user` resource
+        **If the service has it's own user specified that is not the `hab` user, don't create the `hab` user on install, and instead create the application user with Chef's `user` resource**
 
         ```ruby
-        hab_install 'install habitat' do
+        habitat_install 'install habitat' do
           create_user false
         end
 
@@ -116,7 +119,7 @@ class Chef
           system true
         end
 
-        hab_service 'acme/apps'
+        habitat_service 'acme/apps'
         ```
       DOC
 
@@ -242,7 +245,7 @@ class Chef
       def get_builder_url(service_details)
         service_details["bldr_url"]
       rescue
-        Chef::Log.debug("Builder URL for #{service_name} not found on Supervisor API")
+        Chef::Log.debug("Habitat Builder URL for #{service_name} not found on Supervisor API")
         "https://bldr.habitat.sh"
       end
 

@@ -26,11 +26,11 @@ class Chef
         false
       end
 
-      description "Runs a Habitat Supervisor for one or more Habitat Services. It is used in conjunction with `hab_service` which will manage the services loaded and started within the supervisor."
+      description "Runs a Habitat Supervisor for one or more Habitat Services. It is used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
       introduced "17.2"
 
       property :bldr_url, String,
-      description: "The Builder URL for the `hab_package` resource, if needed"
+      description: "The Habitat Builder URL for the `habitat_package` resource, if needed"
 
       property :permanent_peer, [true, false], default: false,
       description: "Only valid for `:run` action, passes `--permanent-peer` to the hab command"
@@ -71,13 +71,13 @@ class Chef
       - `track-channel`: Always run what is at the head of a given channel. This enables service rollback where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is packages newer than the package at the head of the channel will be automatically uninstalled during a service rollback."
 
       property :limit_no_files, String,
-      description: "allows you to set LimitNOFILE in the systemd service when used (Linux Only)"
+      description: "allows you to set LimitNOFILE in the systemd service when used Note: Linux Only"
 
       property :license, String, equal_to: ["accept"],
-      description: "Specifies acceptance of habitat license when set to `accept` (defaults to empty string)."
+      description: "Specifies acceptance of habitat license when set to `accept`"
 
       property :health_check_interval, [String, Integer], coerce: proc { |h| h.is_a?(String) ? h : h.to_s },
-      description: "The interval (seconds) on which to run health checks (defaults to 30)"
+      description: "The interval (seconds) on which to run health checks"
 
       property :event_stream_application, String,
       description: "The name of your application that will be displayed in the Chef Automate Applications Dashboard"
@@ -89,7 +89,7 @@ class Chef
       description: "Application Dashboard label for the 'site' of the application - can be filtered in the dashboard"
 
       property :event_stream_url, String,
-      description: "`AUTOMATE_HOSTNAME:4222` - the Chef Automate URL with port 4222 specified (can be changed if needed)"
+      description: "`AUTOMATE_HOSTNAME:4222` - the Chef Automate URL with port 4222 specified Note: The port can be changed if needed"
 
       property :event_stream_token, String,
       description: "Chef Automate token for sending application event stream data"
@@ -107,38 +107,42 @@ class Chef
       description: "Allows you to choose which version of the **_Windows Service_** to install. Defaults to `latest`"
 
       property :keep_latest, String,
-      description: "Automatically cleans up old packages. If this flag is enabled, service startup will initiate an uninstall of all previous versions of the associated package. This also applies when a service is restarted due to an update. If a number is passed to this argument, that number of latest versions will be kept. The same logic applies to the Supervisor package `env:HAB_KEEP_LATEST_PACKAGES=1` (This requires Habitat version `1.5.86+`)"
+      description: "Automatically cleans up old packages. If this flag is enabled, service startup will initiate an uninstall of all previous versions of the associated package. This also applies when a service is restarted due to an update. If a number is passed to this argument, that number of latest versions will be kept. The same logic applies to the Supervisor package `env:HAB_KEEP_LATEST_PACKAGES=1` Note: This requires Habitat version `1.5.86+`"
 
       property :toml_config, [true, false], default: false,
       description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, default is `false`. [reference](https://www.habitat.sh/docs/reference/#supervisor-config)"
 
       examples <<~DOC
       ```ruby
-      # set up with just the defaults
-      hab_sup 'default'
+      **Set up with just the defaults**
 
-      # Update listen ports and use Supervisor toml config
-      hab_sup 'test-options' do
+      habitat_sup 'default'
+
+      **Update listen ports and use Supervisor toml config**
+
+      habitat_sup 'test-options' do
         listen_http '0.0.0.0:9999'
         listen_gossip '0.0.0.0:9998'
         toml_config true
       end
 
-      # Use with an on-prem Builder
-      # Access to public builder may not be available
-      hab_sup 'default' do
+      **Use with an on-prem Habitat Builder. Note: Access to public builder may not be available due to your company policies**
+
+      habitat_sup 'default' do
         bldr_url 'https://bldr.private.net'
       end
 
-      # Using update_condition
-      hab_sup 'default' do
+      **Using update_condition**
+
+      habitat_sup 'default' do
         bldr_url 'https://bldr.private.net'
-        hab_channel 'dev'
+        habitat_channel 'dev'
         update_condition 'track-channel'
       end
 
-      # Provide event_stream_* information
-      hab_sup 'default' do
+      **Provide event_stream_* information**
+
+      habitat_sup 'default' do
         license 'accept'
         event_stream_application 'myapp'
         event_stream_environment 'production'
@@ -148,16 +152,18 @@ class Chef
         event_stream_cert '/hab/cache/ssl/mycert.crt'
       end
 
-      # Provide specific versions
-      hab_sup 'default' do
+      **Provide specific versions**
+
+      habitat_sup 'default' do
         bldr_url 'https://bldr.private.net'
         sup_version '1.5.50'
         launcher_version '13458'
         service_version '0.6.0' # WINDOWS ONLY
       end
 
-      # Set latest version of packages to retain
-      hab_sup 'default' do
+      **Set latest version of packages to retain**
+
+      habitat_sup 'default' do
         bldr_url 'https://bldr.private.net'
         sup_version '1.5.86'
         launcher_version '13458'
@@ -167,7 +173,7 @@ class Chef
       ```
       DOC
 
-      action :run, description: "The `run` action handles installing Habitat using the `hab_install` resource, ensures that the appropriate versions of the `core/hab-sup` and `core/hab-launcher` packages are installed using `hab_package`, and then drops off the appropriate init system definitions and manages the service." do
+      action :run, description: "The `run` action handles installing Habitat using the `habitat_install` resource, ensures that the appropriate versions of the `core/hab-sup` and `core/hab-launcher` packages are installed using `habitat_package`, and then drops off the appropriate init system definitions and manages the service." do
         habitat_install new_resource.name do
           license new_resource.license
           hab_version new_resource.sup_version if new_resource.sup_version

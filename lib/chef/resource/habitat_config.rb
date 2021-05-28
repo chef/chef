@@ -46,7 +46,9 @@ class Chef
       introduced "17.2"
       examples <<~DOC
       ```ruby
-      hab_config 'nginx.default' do
+      **Configure your nginx defaults**
+
+      habitat_config 'nginx.default' do
         config({
           worker_count: 2,
           http: {

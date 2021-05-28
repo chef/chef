@@ -31,7 +31,9 @@ class Chef
       introduced "17.2"
       examples <<~DOC
       ```ruby
-      hab_user_toml 'nginx' do
+      **Configure user specific settings to nginx**
+
+      habitat_user_toml 'nginx' do
         config({
           worker_count: 2,
           http: {
