@@ -87,13 +87,11 @@ class Chef
     attr_reader :action_records
     attr_reader :pending_updates
     attr_reader :run_context
-    attr_reader :consumers
     attr_reader :events
 
     def initialize(events, run_context = nil, action_records = [])
       @action_records  = action_records
       @pending_updates = []
-      @consumers       = []
       @events          = events
       @run_context     = run_context
     end
@@ -118,17 +116,17 @@ class Chef
       self.class.new(events, run_context, subrecords)
     end
 
+    def resources
+      action_records.map(&:new_resource)
+    end
+
     # This hook gives us the run_context immediately after it is created so that we can wire up this object to it.
-    #
-    # This also causes the action_collection_registration event to fire, all consumers that have not yet registered with the
-    # action_collection must register via this callback.  This is the latest point before resources actually start to get
-    # evaluated.
     #
     # (see EventDispatch::Base#)
     #
     def cookbook_compilation_start(run_context)
       run_context.action_collection = self
-      # fire the action_colleciton_registration hook after cookbook_compilation_start -- last chance for consumers to register
+      # this hook is now poorly named since it is just a callback that lets other consumers snag a reference to the action_collection
       run_context.events.enqueue(:action_collection_registration, self)
       @run_context = run_context
     end
@@ -139,7 +137,7 @@ class Chef
     # @params object [Object] callers should call with `self`
     #
     def register(object)
-      consumers << object
+      Chef::Log.warn "the action collection no longer requires registration at #{caller[0]}"
     end
 
     # End of an unsuccessful converge used to fire off detect_unprocessed_resources.
@@ -147,8 +145,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def converge_failed(exception)
-      return if consumers.empty?
-
       detect_unprocessed_resources
     end
 
@@ -159,8 +155,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_action_start(new_resource, action, notification_type = nil, notifier = nil)
-      return if consumers.empty?
-
       pending_updates << ActionRecord.new(new_resource, action, pending_updates.length)
     end
 
@@ -170,8 +164,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_current_state_loaded(new_resource, action, current_resource)
-      return if consumers.empty?
-
       current_record.current_resource = current_resource
     end
 
@@ -181,8 +173,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_after_state_loaded(new_resource, action, after_resource)
-      return if consumers.empty?
-
       current_record.after_resource = after_resource
     end
 
@@ -191,8 +181,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_up_to_date(new_resource, action)
-      return if consumers.empty?
-
       current_record.status = :up_to_date
     end
 
@@ -201,8 +189,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_skipped(resource, action, conditional)
-      return if consumers.empty?
-
       current_record.status = :skipped
       current_record.conditional = conditional
     end
@@ -212,8 +198,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_updated(new_resource, action)
-      return if consumers.empty?
-
       current_record.status = :updated
     end
 
@@ -222,8 +206,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_failed(new_resource, action, exception)
-      return if consumers.empty?
-
       current_record.status = :failed
       current_record.exception = exception
       current_record.error_description = Formatters::ErrorMapper.resource_failed(new_resource, action, exception).for_json
@@ -234,8 +216,6 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_completed(new_resource)
-      return if consumers.empty?
-
       current_record.elapsed_time = new_resource.elapsed_time
 
       # Verify if the resource has sensitive data and create a new blank resource with only
