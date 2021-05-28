@@ -93,11 +93,12 @@ class Chef
           set_automatic_managed unless automatic_managed?
         elsif automatic_managed == false
           unset_automatic_managed if automatic_managed?
-          # Check that the resource is not just trying to unset automatic managed, if it is do nothing more
         else
+          validate_name
+          pagefile_drive_exist?(pagefile)
+          create(pagefile) unless exists?(pagefile)
+
           if (initial_size && maximum_size) || system_managed
-            validate_name
-            pagefile_drive_exist?(pagefile)
             if system_managed
               set_system_managed(pagefile) unless max_and_min_set?(pagefile, 0, 0)
             else
@@ -105,15 +106,6 @@ class Chef
                 set_custom_size(pagefile, initial_size, maximum_size)
               end
             end
-          end
-
-          # In the absence of explicitly setting a path, the resource selects the label you used. This can mean a garbage pagefile name.
-          # We test for that here to prevent trying to create a new pagefile when we didnt want to.
-          if pagefile_drive_exist?(pagefile)
-            validate_name
-            create(pagefile) unless exists?(pagefile)
-          elsif !pagefile_drive_exist?(pagefile)
-            raise "You are trying to create a pagefile on a drive that does not exist!"
           end
         end
       end
@@ -135,12 +127,8 @@ class Chef
           raise "#{new_resource.path} does not match the format DRIVE:\\path\\file.sys for pagefiles. Example: C:\\pagefile.sys"
         end
 
-        # The powershell cmdlets to create a new pagefile will happily report success when the drive you just created the pagefile for does not exist.
         def pagefile_drive_exist?(pagefile)
-          root_drive = pagefile.split(":")[0]
-          root_drive += ":\\"
-          result = Dir.exist?(root_drive)
-          result.nil? || result == false ? false : true
+          ::Dir.exist?(pagefile[0] + ":\\") ? true : (raise "You are trying to create a pagefile on a drive that does not exist!")
         end
 
         # See if the pagefile exists
