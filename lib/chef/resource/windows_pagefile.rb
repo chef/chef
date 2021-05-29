@@ -39,7 +39,7 @@ class Chef
 
       ```ruby
       windows_pagefile 'Delete the pagefile' do
-        path 'C:\pagefile.sys'
+        path 'C'
         action :delete
       end
       ```
@@ -48,7 +48,7 @@ class Chef
 
       ```ruby
       windows_pagefile 'Change the pagefile to System Managed' do
-        path 'E:\pagefile.sys'
+        path 'E:\'
         system_managed true
         action :set
       end
@@ -57,8 +57,8 @@ class Chef
       **Create a pagefile with an initial and maximum size**:
 
       ```ruby
-      windows_pagefile 'create the pagefile' do
-        path 'f:\pagefile.sys'
+      windows_pagefile 'create the pagefile with these sizes' do
+        path 'f:\'
         initial_size 100
         maximum_size 200
       end
@@ -66,6 +66,7 @@ class Chef
       DOC
 
       property :path, String,
+      # property :path, String, deprecated: "The path property now only requires you to specify a drive to manage a pagefile for instead of the full path eg. 'C:\'",
         coerce: proc { |x| x.tr("/", "\\") },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
@@ -83,7 +84,7 @@ class Chef
         description: "Maximum size of the pagefile in megabytes."
 
       action :set, description: "Configures the default pagefile, creating if it doesn't exist." do
-        pagefile = new_resource.path
+        pagefile = (new_resource.path[0] + ":\\pagefile.sys")
         initial_size = new_resource.initial_size
         maximum_size = new_resource.maximum_size
         system_managed = new_resource.system_managed
@@ -94,7 +95,8 @@ class Chef
         elsif automatic_managed == false
           unset_automatic_managed if automatic_managed?
         else
-          validate_name
+          # the method below is designed to raise an exception if the drive you are trying to create a pagefile for doesn't exist.
+          # PowerShell will happily let you create a pagefile called h:\pagefile.sys even though you don't have an H:\ drive.
           pagefile_drive_exist?(pagefile)
           create(pagefile) unless exists?(pagefile)
 
@@ -111,22 +113,13 @@ class Chef
       end
 
       action :delete, description: "Deletes the specified pagefile." do
-        validate_name
         delete(new_resource.path) if exists?(new_resource.path)
       end
 
       action_class do
         private
 
-        # make sure the provided name property matches the appropriate format
-        # we do this here and not in the property itself because if automatic_managed
-        # is set then this validation is not necessary / doesn't make sense at all
-        def validate_name
-          return if /^.:.*.sys/.match?(new_resource.path)
-
-          raise "#{new_resource.path} does not match the format DRIVE:\\path\\file.sys for pagefiles. Example: C:\\pagefile.sys"
-        end
-
+        # raise an exception if the target drive location is invalid
         def pagefile_drive_exist?(pagefile)
           ::Dir.exist?(pagefile[0] + ":\\") ? true : (raise "You are trying to create a pagefile on a drive that does not exist!")
         end
