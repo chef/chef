@@ -310,7 +310,7 @@ class Chef
       logger.info "Forking #{ChefUtils::Dist::Infra::PRODUCT} instance to converge..."
       pid = fork do
         # Want to allow forked processes to finish converging when
-        # TERM singal is received (exit gracefully)
+        # TERM signal is received (exit gracefully)
         trap("TERM") do
           logger.debug("SIGTERM received during converge," +
             " finishing converge to exit normally (send SIGINT to terminate immediately)")

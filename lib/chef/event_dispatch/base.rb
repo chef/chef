@@ -221,7 +221,8 @@ class Chef
       # Called before convergence starts
       def converge_start(run_context); end
 
-      # Callback hook for handlers to register their interest in the action_collection
+      # Callback hook for handlers to grab a reference to the action_collection
+      # (sent before compiling cookbooks, consumers can also find it off the run_context.action_collection)
       def action_collection_registration(action_collection); end
 
       # Called when the converge phase is finished.
