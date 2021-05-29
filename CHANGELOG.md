@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.2.13 -->
+## [v17.2.13](https://github.com/chef/chef/tree/v17.2.13) (2021-05-29)
 
 #### Merged Pull Requests
+- Add a slow resources report to chef-client [#11642](https://github.com/chef/chef/pull/11642) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add a slow resources report to chef-client [#11642](https://github.com/chef/chef/pull/11642) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.13 -->
 - Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
 - Bump inspec-core-bin to 4.37.20 [#11632](https://github.com/chef/chef/pull/11632) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
 - Bump the knife ffi dep [#11618](https://github.com/chef/chef/pull/11618) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.11 -->
