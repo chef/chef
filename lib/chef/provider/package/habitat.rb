@@ -19,41 +19,15 @@ require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../package"
-require_relative "../../resource/habitat/habitat_package"
 # Bring in needed shared methods
 
 class Chef
   class Provider
     class Package
       class Habitat < Chef::Provider::Package
+        use_multipackage_api
         use "../../resource/habitat/habitat_shared"
         provides :habitat_package
-
-        #
-        # TODO list for `hab pkg`:
-        #
-        # kinda sorta analogous to:
-        #   apt-cache search
-        #   dpkg -l
-        #   dpkg -r / dpkg -P (without depsolving?)
-        #   apt-get remove/purge (with depsolving?)
-        #
-        # - hab pkg search ruby
-        # - hab pkg info lamont-granquist/ruby
-        # - hab pkg info lamont-granquist/ruby/2.3.1
-        # - hab pkg info lamont-granquist/ruby/2.3.1/20160101010101
-        #   ^^^^^ these will all need client-side caches for the "universe" of the depot
-        # - hab pkg uninstall lamont-granquist/ruby
-        # - hab pkg uninstall lamont-granquist/ruby/2.3.1
-        # - hab pkg uninstall lamont-granquist/ruby/2.3.1/20160101010101
-        # - hab pkg list (localinfo?) lamont-granquist/ruby
-        # - hab pkg list (localinfo?) lamont-granquist/ruby/2.3.1
-        # - hab pkg list (localinfo?) lamont-granquist/ruby/2.3.1/20160101010101
-        #   ^^^^^ need a better name
-        #
-        # Probably also want to support installation of local packages
-        # Service resource supports running services from locally installed packages
-        # But we provide no way to handle installation
 
         def load_current_resource
           @current_resource = Chef::Resource::HabitatPackage.new(new_resource.name)
