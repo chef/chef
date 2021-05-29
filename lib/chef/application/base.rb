@@ -301,7 +301,7 @@ class Chef::Application::Base < Chef::Application
     long: "--[no-]slow-report [COUNT]",
     description: "List the slowest resources at the end of the run (default: 10).",
     boolean: true,
-    default: true,
+    default: false,
     proc: lambda { |argument|
       if argument.nil?
         true
