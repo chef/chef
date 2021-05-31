@@ -66,7 +66,6 @@ class Chef
       DOC
 
       property :path, String,
-      # property :path, String, deprecated: "The path property now only requires you to specify a drive to manage a pagefile for instead of the full path eg. 'C:\'",
         coerce: proc { |x| x.tr("/", "\\") },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
