@@ -24,7 +24,7 @@ class Chef
 
       provides(:windows_pagefile) { true }
 
-      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows."
+      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows. We are introducing a potentially breaking change - we no longer require or use a full path to a pagefile. We only need the drive (C:\, E:\, etc) you want to manage a pagefile for."
       introduced "14.0"
       examples <<~DOC
       **Set the system to manage pagefiles**:
