@@ -25,7 +25,7 @@ describe Chef::Resource::WindowsPagefile do
   end
 
   it "the path property is the name_property" do
-    expect(resource.path).to eql("C:\\pagefile.sys")
+    expect(resource.path).to eql("C")
   end
 
   it "sets the default action as :set" do
@@ -39,6 +39,6 @@ describe Chef::Resource::WindowsPagefile do
 
   it "coerces forward slashes in the path property to back slashes" do
     resource.path "C:/pagefile.sys"
-    expect(resource.path).to eql("C:\\pagefile.sys")
+    expect(resource.path).to eql("C")
   end
 end
