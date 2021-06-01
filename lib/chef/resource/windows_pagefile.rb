@@ -120,7 +120,10 @@ class Chef
 
         # raise an exception if the target drive location is invalid
         def pagefile_drive_exist?(pagefile)
-          ::Dir.exist?(pagefile[0] + ":\\") ? nil : (raise "You are trying to create a pagefile on a drive that does not exist!")
+          if (::Dir.exist?(pagefile[0] + ":\\") == false)
+            raise "You are trying to create a pagefile on a drive that does not exist!"
+          end
+          # ::Dir.exist?(pagefile[0] + ":\\") ? nil : (raise "You are trying to create a pagefile on a drive that does not exist!")
         end
 
         # See if the pagefile exists
