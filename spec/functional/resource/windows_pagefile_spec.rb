@@ -21,8 +21,8 @@ require "chef/mixin/powershell_exec"
 describe Chef::Resource::WindowsPagefile, :windows_only do
   include Chef::Mixin::PowershellExec
 
-  let(:c_path) { 'C' }
-  let(:e_path) { 'E' }
+  let(:c_path) { "C" }
+  let(:e_path) { "E" }
 
   let(:run_context) do
     node = Chef::Node.new
