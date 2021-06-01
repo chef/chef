@@ -138,11 +138,14 @@ class Chef
     end
 
     def recipe_yml_filenames_by_name
-      @recipe_ym_filenames_by_name ||= begin
+      @recipe_yml_filenames_by_name ||= begin
         name_map = yml_filenames_by_name(files_for("recipes"))
-        root_alias = cookbook_manifest.root_files.find { |record| record[:name] == "root_files/recipe.yml" }
+        root_alias = cookbook_manifest.root_files.find { |record|
+          record[:name] == "root_files/recipe.yml" ||
+            record[:name] == "root_files/recipe.yaml"
+        }
         if root_alias
-          Chef::Log.error("Cookbook #{name} contains both recipe.yml and and recipes/default.yml, ignoring recipes/default.yml") if name_map["default"]
+          Chef::Log.error("Cookbook #{name} contains both recipe.yml and recipes/default.yml, ignoring recipes/default.yml") if name_map["default"]
           name_map["default"] = root_alias[:full_path]
         end
         name_map
@@ -582,8 +585,27 @@ class Chef
       records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
     end
 
+    # Filters YAML files from the superset of provided files.
+    # Checks for duplicate basenames with differing extensions (eg yaml v yml)
+    # and raises error if any are detected.
+    # This prevents us from arbitrarily the ".yaml" or ".yml" version when both are present,
+    # because we don't know which is correct.
+    # This method runs in O(n^2) where N = number of yml files present. This number should be consistently
+    # low enough that there's no noticeable perf impact.
     def yml_filenames_by_name(records)
-      records.select { |record| record[:name] =~ /\.yml$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".yml")] = record[:full_path]; memo }
+      yml_files = records.select { |record| record[:name] =~ /\.(y[a]?ml)$/ }
+      result = yml_files.inject({}) do |acc, record|
+        filename = record[:name]
+        base_dup_name = File.join(File.dirname(filename), File.basename(filename, File.extname(filename)))
+        yml_files.each do |other|
+          if other[:name] =~ /#{(File.extname(filename) == ".yml") ? "#{base_dup_name}.yaml" : "#{base_dup_name}.yml"}$/
+            raise Chef::Exceptions::AmbiguousYAMLFile.new("Cookbook #{name}@#{version} contains ambiguous files: #{filename} and #{other[:name]}. Please update the cookbook to remove the incorrect file.")
+          end
+        end
+        acc[File.basename(record[:name], File.extname(record[:name]))] = record[:full_path]
+        acc
+      end
+      result
     end
 
     def file_vendor

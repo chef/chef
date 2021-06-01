@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.15 -->
-## [v17.2.15](https://github.com/chef/chef/tree/v17.2.15) (2021-06-01)
+<!-- latest_release 17.2.17 -->
+## [v17.2.17](https://github.com/chef/chef/tree/v17.2.17) (2021-06-01)
 
 #### Merged Pull Requests
-- Make sure we load ohai in knife configure correctly [#11647](https://github.com/chef/chef/pull/11647) ([tas50](https://github.com/tas50))
+- Fix Chef::Handler specs and slow report behavior [#11648](https://github.com/chef/chef/pull/11648) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix Chef::Handler specs and slow report behavior [#11648](https://github.com/chef/chef/pull/11648) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.17 -->
+- Support recipes that and in .yaml as well as .yml [#11629](https://github.com/chef/chef/pull/11629) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.16 -->
 - Make sure we load ohai in knife configure correctly [#11647](https://github.com/chef/chef/pull/11647) ([tas50](https://github.com/tas50)) <!-- 17.2.15 -->
 - Bump all deps to the latest [#11643](https://github.com/chef/chef/pull/11643) ([tas50](https://github.com/tas50)) <!-- 17.2.14 -->
 - Add a slow resources report to chef-client [#11642](https://github.com/chef/chef/pull/11642) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.13 -->
