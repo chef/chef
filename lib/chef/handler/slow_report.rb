@@ -34,10 +34,10 @@ class Chef
           return
         end
 
-        top = all_resources.sort_by(&:elapsed_time).last(amount).reverse
-        data = top.map { |r| [ r.to_s, r.elapsed_time, r.cookbook_name, r.recipe_name, stripped_source_line(r) ] }
+        top = all_records.sort_by(&:elapsed_time).last(amount).reverse
+        data = top.map { |r| [ r.new_resource.to_s, r.elapsed_time, r.action, r.new_resource.cookbook_name, r.new_resource.recipe_name, stripped_source_line(r.new_resource) ] }
         puts "\nTop #{count} slowest #{count == 1 ? "resource" : "resources"}:\n\n"
-        table = TTY::Table.new(%w{resource elapsed_time cookbook recipe source}, data)
+        table = TTY::Table.new(%w{resource elapsed_time action cookbook recipe source}, data)
         rendered = table.render do |renderer|
           renderer.border do
             mid          "-"
@@ -46,6 +46,10 @@ class Chef
         end
         puts rendered
         puts "\n"
+      end
+
+      def all_records
+        @all_records ||= action_collection&.filtered_collection(unprocessed: false) || []
       end
 
       def count
