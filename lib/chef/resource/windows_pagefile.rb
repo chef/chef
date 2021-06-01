@@ -66,7 +66,7 @@ class Chef
       DOC
 
       property :path, String,
-        coerce: proc { |x| x.tr("/", "\\") },
+        coerce: proc { |x| x[0] },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
 
@@ -112,7 +112,8 @@ class Chef
       end
 
       action :delete, description: "Deletes the specified pagefile." do
-        delete(new_resource.path) if exists?(new_resource.path)
+        pagefile = (new_resource.path[0] + ":\\pagefile.sys")
+        delete(pagefile ) if exists?(pagefile )
       end
 
       action_class do
