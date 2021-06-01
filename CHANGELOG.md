@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.14 -->
-## [v17.2.14](https://github.com/chef/chef/tree/v17.2.14) (2021-05-29)
+<!-- latest_release 17.2.15 -->
+## [v17.2.15](https://github.com/chef/chef/tree/v17.2.15) (2021-06-01)
 
 #### Merged Pull Requests
-- Bump all deps to the latest [#11643](https://github.com/chef/chef/pull/11643) ([tas50](https://github.com/tas50))
+- Make sure we load ohai in knife configure correctly [#11647](https://github.com/chef/chef/pull/11647) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make sure we load ohai in knife configure correctly [#11647](https://github.com/chef/chef/pull/11647) ([tas50](https://github.com/tas50)) <!-- 17.2.15 -->
 - Bump all deps to the latest [#11643](https://github.com/chef/chef/pull/11643) ([tas50](https://github.com/tas50)) <!-- 17.2.14 -->
 - Add a slow resources report to chef-client [#11642](https://github.com/chef/chef/pull/11642) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.13 -->
 - Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
