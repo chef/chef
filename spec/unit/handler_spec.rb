@@ -38,6 +38,8 @@ describe Chef::Handler do
       @run_context = Chef::RunContext.new(@node, {}, @events)
       @all_resources = [Chef::Resource::Cat.new("lolz"), Chef::Resource::ZenMaster.new("tzu")]
       @all_resources.first.updated_by_last_action true
+      @handler.instance_variable_set(:@all_resources, @all_resources)
+      @handler.instance_variable_set(:@updated_resources, [@all_resources.first])
       @run_context.resource_collection.all_resources.replace(@all_resources)
       @run_status.run_context = @run_context
       @start_time = Time.now
@@ -119,6 +121,8 @@ describe Chef::Handler do
       @run_context = Chef::RunContext.new(@node, {}, @events)
       @all_resources = [Chef::Resource::Cat.new("foo"), Chef::Resource::ZenMaster.new("moo")]
       @all_resources.first.updated_by_last_action true
+      @handler.instance_variable_set(:@all_resources, @all_resources)
+      @handler.instance_variable_set(:@updated_resources, [@all_resources.first])
       @run_context.resource_collection.all_resources.replace(@all_resources)
       @run_status.run_context = @run_context
       @start_time = Time.now
@@ -169,17 +173,19 @@ describe Chef::Handler do
   # and this would test the start handler
   describe "when running a start handler" do
     before do
+      @handler.instance_variable_set(:@all_resources, [])
+      @handler.instance_variable_set(:@updated_resources, [])
       @start_time = Time.now
       allow(Time).to receive(:now).and_return(@start_time)
       @run_status.start_clock
     end
 
     it "should not have all resources" do
-      expect(@handler.all_resources).to be_falsey
+      expect(@handler.all_resources).to be_empty
     end
 
     it "should not have updated resources" do
-      expect(@handler.updated_resources).to be_falsey
+      expect(@handler.updated_resources).to be_empty
     end
 
     it "has a shortcut for the start time" do
