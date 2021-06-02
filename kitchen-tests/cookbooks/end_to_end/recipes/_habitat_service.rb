@@ -31,7 +31,7 @@ ruby_block "wait-for-nginx-load" do
   block do
     raise "nginx not loaded" unless system "hab svc status core/nginx"
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/nginx]", :immediately
@@ -40,7 +40,7 @@ ruby_block "wait-for-nginx-up" do
   block do
     raise "nginx not loaded" unless `hab svc status core/nginx`.match(/standalone\s+up\s+up/)
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "ruby_block[wait-for-nginx-load]", :immediately
@@ -69,7 +69,7 @@ ruby_block "wait-for-redis-load" do
     sleep 10
     raise "redis not loaded" unless system "hab svc status core/redis"
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/redis]", :immediately
@@ -79,7 +79,7 @@ ruby_block "wait-for-redis-started" do
     sleep 10
     raise "redis not started" unless `hab svc status core/redis`.match(/standalone\s+up\s+up/)
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "ruby_block[wait-for-redis-load]", :immediately
@@ -96,7 +96,7 @@ ruby_block "wait-for-redis-stopped" do
     sleep 10
     raise "redis not stopped" unless `hab svc status core/redis`.match(/standalone\s+down\s+down/)
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/redis stop]", :immediately
@@ -122,7 +122,7 @@ ruby_block "wait-for-grafana-startup" do
   block do
     raise "grafana not loaded" unless system "hab svc status core/grafana"
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/grafana full identifier]", :immediately
@@ -142,7 +142,7 @@ ruby_block "wait-for-vault-load" do
   block do
     raise "vault not loaded" unless system "hab svc status core/vault"
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/vault]", :immediately
@@ -190,7 +190,7 @@ ruby_block "wait-for-prometheus-startup" do
   block do
     raise "prometheus not loaded" unless system "hab svc status core/prometheus"
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/prometheus]", :immediately
@@ -238,7 +238,7 @@ ruby_block "wait-for-consul-load" do
   block do
     raise "consul not loaded" unless system "hab svc status core/consul"
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/consul]", :immediately
@@ -247,7 +247,7 @@ ruby_block "wait-for-consul-startup" do
   block do
     raise "consul not started" unless `hab svc status core/consul`.match(/standalone\s+up\s+up/)
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "ruby_block[wait-for-consul-load]", :immediately
@@ -258,8 +258,8 @@ ruby_block "wait-for-consul-up-for-30s" do
     uptime = `hab svc status core/consul`.match(/standalone\s+up\s+up\s+([0-9]+)/)
     raise "consul not started for 30s" unless uptime.size == 2 && Integer(uptime[1]) > 30
   end
-  retries 30
-  retry_delay 2
+  retries 6
+  retry_delay 10
   action :nothing
   subscribes :run, "ruby_block[wait-for-consul-startup]", :immediately
 end
@@ -275,8 +275,8 @@ ruby_block "wait-for-consul-restart" do
     uptime = `hab svc status core/consul`.match(/standalone\s+up\s+up\s+([0-9]+)/)
     raise "consul not restarted" unless !uptime.nil? && uptime.size == 2 && Integer(uptime[1]) < 30
   end
-  retries 60
-  retry_delay 1
+  retries 8
+  retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/consul restart]", :immediately
 end
@@ -287,8 +287,8 @@ ruby_block "wait-for-consul-up-for-30s" do
     uptime = `hab svc status core/consul`.match(/standalone\s+up\s+up\s+([0-9]+)/)
     raise "consul not started for 30s" unless uptime.size == 2 && Integer(uptime[1]) > 30
   end
-  retries 30
-  retry_delay 1
+  retries 8
+  retry_delay 10
   action :nothing
   subscribes :run, "ruby_block[wait-for-consul-startup]", :immediately
 end
@@ -304,7 +304,7 @@ ruby_block "wait-for-consul-restart" do
     uptime = `hab svc status core/consul`.match(/standalone\s+up\s+up\s+([0-9]+)/)
     raise "consul not restarted" unless !uptime.nil? && uptime.size == 2 && Integer(uptime[1]) < 30
   end
-  retries 5
+  retries 8
   retry_delay 10
   action :nothing
   subscribes :run, "habitat_service[core/consul restart]", :immediately
