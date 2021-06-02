@@ -1007,7 +1007,7 @@ module ChefConfig
     default :blocked_normal_attributes, nil
     default :blocked_override_attributes, nil
 
-    # deprecated config options that will be removed in Chef Infra Client 17
+    # deprecated config options that will be removed in Chef Infra Client 18
     default :automatic_attribute_blacklist, nil
     default :default_attribute_blacklist, nil
     default :normal_attribute_blacklist, nil
