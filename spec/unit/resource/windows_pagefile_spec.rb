@@ -18,14 +18,14 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsPagefile do
-  let(:resource) { Chef::Resource::WindowsPagefile.new("C:\\pagefile.sys") }
+  let(:resource) { Chef::Resource::WindowsPagefile.new("c:\\pagefile.sys") }
 
   it "sets resource name as :windows_pagefile" do
     expect(resource.resource_name).to eql(:windows_pagefile)
   end
 
   it "the path property is the name_property" do
-    expect(resource.path).to eql("C")
+    expect(resource.path).to eql("c:\\pagefile.sys")
   end
 
   it "sets the default action as :set" do
@@ -38,7 +38,7 @@ describe Chef::Resource::WindowsPagefile do
   end
 
   it "coerces forward slashes in the path property to back slashes" do
-    resource.path "C:/pagefile.sys"
-    expect(resource.path).to eql("C")
+    resource.path "c:/pagefile.sys"
+    expect(resource.path).to eql("c:\\pagefile.sys")
   end
 end
