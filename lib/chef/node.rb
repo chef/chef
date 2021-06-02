@@ -687,6 +687,25 @@ class Chef
       name <=> other.name
     end
 
+    # Returns hash of node data with attributes based on whitelist/blacklist rules.
+    def data_for_save
+      data = for_json
+      %w{automatic default normal override}.each do |level|
+        allowlist = allowlist_or_whitelist_config(level)
+        unless allowlist.nil? # nil => save everything
+          logger.info("Allowing #{level} node attributes for save.")
+          data[level] = Chef::AttributeAllowlist.filter(data[level], allowlist)
+        end
+
+        blocklist = blocklist_or_blacklist_config(level)
+        unless blocklist.nil? # nil => remove nothing
+          logger.info("Blocking #{level} node attributes for save")
+          data[level] = Chef::AttributeBlocklist.filter(data[level], blocklist)
+        end
+      end
+      data
+    end
+
     private
 
     def save_without_policyfile_attrs
@@ -730,24 +749,6 @@ class Chef
       else
         Chef::Config["blocked_#{level}_attributes".to_sym]
       end
-    end
-
-    def data_for_save
-      data = for_json
-      %w{automatic default normal override}.each do |level|
-        allowlist = allowlist_or_whitelist_config(level)
-        unless allowlist.nil? # nil => save everything
-          logger.info("Allowing #{level} node attributes for save.")
-          data[level] = Chef::AttributeAllowlist.filter(data[level], allowlist)
-        end
-
-        blocklist = blocklist_or_blacklist_config(level)
-        unless blocklist.nil? # nil => remove nothing
-          logger.info("Blocking #{level} node attributes for save")
-          data[level] = Chef::AttributeBlocklist.filter(data[level], blocklist)
-        end
-      end
-      data
     end
 
     # Returns a UUID that uniquely identifies this node for reporting reasons.
