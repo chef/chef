@@ -146,7 +146,7 @@ if ::File.exist?("/etc/systemd/system")
   include_recipe "::_habitat_config"
   include_recipe "::_habitat_install_no_user"
   include_recipe "::_habitat_package"
-  include_recipe "::_habitat_service"
+  # include_recipe "::_habitat_service"
   include_recipe "::_habitat_sup_toml_config"
   include_recipe "::_habitat_sup"
   include_recipe "::_habitat_user_toml"
