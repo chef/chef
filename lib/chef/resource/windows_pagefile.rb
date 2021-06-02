@@ -66,7 +66,7 @@ class Chef
       DOC
 
       property :path, String,
-        coerce: proc { |x| x[0] },
+        coerce: proc { |x| x.tr("/", "\\") },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
 
@@ -83,7 +83,7 @@ class Chef
         description: "Maximum size of the pagefile in megabytes."
 
       action :set, description: "Configures the default pagefile, creating if it doesn't exist." do
-        pagefile = (new_resource.path[0] + ":\\pagefile.sys")
+        pagefile = clarify_pagefile_name
         initial_size = new_resource.initial_size
         maximum_size = new_resource.maximum_size
         system_managed = new_resource.system_managed
@@ -96,6 +96,7 @@ class Chef
         else
           # the method below is designed to raise an exception if the drive you are trying to create a pagefile for doesn't exist.
           # PowerShell will happily let you create a pagefile called h:\pagefile.sys even though you don't have an H:\ drive.
+
           pagefile_drive_exist?(pagefile)
           create(pagefile) unless exists?(pagefile)
 
@@ -112,12 +113,29 @@ class Chef
       end
 
       action :delete, description: "Deletes the specified pagefile." do
-        pagefile = (new_resource.path[0] + ":\\pagefile.sys")
+        pagefile = clarify_pagefile_name
         delete(pagefile ) if exists?(pagefile )
       end
 
       action_class do
         private
+
+        def clarify_pagefile_name
+          if new_resource.path.length < 4
+            (new_resource.path[0] + ":\\pagefile.sys")
+          elsif new_resource.path !~ /^.:.*/
+            "C:\\pagefile.sys"
+          else
+            validate_name
+            new_resource.path
+          end
+        end
+
+        def validate_name
+          return if /^.:.*.sys/.match?(new_resource.path)
+
+          raise "#{new_resource.path} does not match the format DRIVE:\\path\\pagefile.sys for pagefiles. Example: C:\\pagefile.sys"
+        end
 
         # raise an exception if the target drive location is invalid
         def pagefile_drive_exist?(pagefile)
@@ -164,9 +182,7 @@ class Chef
           converge_by("create pagefile #{pagefile}") do
             logger.trace("Running New-CimInstance -ClassName Win32_PageFileSetting to create new pagefile : #{pagefile}")
             powershell_exec! <<~ELM
-              $page_file = "#{pagefile}"
-              $driveLetter = $page_file.split(':')[0]
-              New-CimInstance -ClassName Win32_PageFileSetting -Property  @{Name = "$($DriveLetter)\:\\pagefile.sys"}
+              New-CimInstance -ClassName Win32_PageFileSetting -Property  @{Name = "#{pagefile}"}
             ELM
           end
         end
