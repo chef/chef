@@ -24,7 +24,7 @@ class Chef
 
       provides(:windows_pagefile) { true }
 
-      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows. The resource can accept paths in the form of 'C:\pagefile.sys', 'f:\foo\pagefile.sys', 'h', etc "
+      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows. The resource can accept paths in the form of 'C:\pagefile.sys', 'f:\foo\pagefile.sys', 'h', etc."
       introduced "14.0"
       examples <<~DOC
       **Set the system to manage pagefiles**:
