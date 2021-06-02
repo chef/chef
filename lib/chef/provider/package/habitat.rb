@@ -19,7 +19,6 @@ require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../package"
-require "mixlib/versioning" unless defined?(Mixlib::Versioning)
 # Bring in needed shared methods
 
 class Chef
