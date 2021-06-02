@@ -712,7 +712,7 @@ class Chef
     # @param [String] level the attribute level
     def allowlist_or_whitelist_config(level)
       if Chef::Config["#{level}_attribute_whitelist".to_sym]
-        Chef.deprecated(:attribute_blacklist_configuration, "Attribute whitelist configurations have been deprecated. Use the allowed_LEVEL_attribute configs instead")
+        Chef.deprecated(:attribute_whitelist_configuration, "Attribute whitelist configurations have been deprecated. Use the allowed_LEVEL_attribute configs instead")
         Chef::Config["#{level}_attribute_whitelist".to_sym]
       else
         Chef::Config["allowed_#{level}_attributes".to_sym]
