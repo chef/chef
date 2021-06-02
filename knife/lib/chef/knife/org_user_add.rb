@@ -29,7 +29,7 @@ class Chef
         description: "Add user to admin group"
 
       deps do
-        require_relative "../org"
+        require "chef/org"
       end
 
       def run
