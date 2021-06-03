@@ -21,7 +21,7 @@ require "chef/mixin/powershell_exec"
 describe Chef::Resource::WindowsPagefile, :windows_only do
   include Chef::Mixin::PowershellExec
 
-  let(:c_path) { "c:\pagefile.sys" }
+  let(:c_path) { "c:\\" }
   let(:e_path) { "e:\pagefile.sys" }
 
   let(:run_context) do
