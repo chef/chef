@@ -24,7 +24,7 @@ class Chef
 
       provides(:windows_pagefile) { true }
 
-      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows. The resource can accept paths in the form of 'C:\pagefile.sys', 'f:\foo\pagefile.sys', 'h', etc."
+      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows. We are introducing a potentially breaking change - we no longer require or use a full path to a pagefile. We only need the drive (C:\, E:\, etc) you want to manage a pagefile for."
       introduced "14.0"
       examples <<~DOC
       **Set the system to manage pagefiles**:
@@ -83,10 +83,6 @@ class Chef
         description: "Maximum size of the pagefile in megabytes."
 
       action :set, description: "Configures the default pagefile, creating if it doesn't exist." do
-        pagefile = clarify_pagefile_name
-        initial_size = new_resource.initial_size
-        maximum_size = new_resource.maximum_size
-        system_managed = new_resource.system_managed
         automatic_managed = new_resource.automatic_managed
 
         if automatic_managed
@@ -94,6 +90,11 @@ class Chef
         elsif automatic_managed == false
           unset_automatic_managed if automatic_managed?
         else
+          pagefile = clarify_pagefile_name
+          initial_size = new_resource.initial_size
+          maximum_size = new_resource.maximum_size
+          system_managed = new_resource.system_managed
+
           # the method below is designed to raise an exception if the drive you are trying to create a pagefile for doesn't exist.
           # PowerShell will happily let you create a pagefile called h:\pagefile.sys even though you don't have an H:\ drive.
 
@@ -114,27 +115,24 @@ class Chef
 
       action :delete, description: "Deletes the specified pagefile." do
         pagefile = clarify_pagefile_name
-        delete(pagefile ) if exists?(pagefile )
+        delete(pagefile) if exists?(pagefile)
       end
 
       action_class do
         private
 
+        # We are adding support for a number of possibilities for how users will express the drive and location they want the pagefile written to.
         def clarify_pagefile_name
-          if new_resource.path.length < 4
-            (new_resource.path[0] + ":\\pagefile.sys")
-          elsif new_resource.path !~ /^.:.*/
-            "C:\\pagefile.sys"
-          else
-            validate_name
+          case new_resource.path
+          # user enters C, C:, C:\, C:\\
+          when /^[a-zA-Z]/
+            new_resource.path[0] + ":\\pagefile.sys"
+          # user enters C:\pagefile.sys OR c:\foo\bar\pagefile.sys as the path
+          when /^[a-zA-Z]:.*.sys/
             new_resource.path
+          else
+            raise "#{new_resource.path} does not match the format DRIVE:\\path\\pagefile.sys for pagefiles. Example: C:\\pagefile.sys"
           end
-        end
-
-        def validate_name
-          return if /^.:.*.sys/.match?(new_resource.path)
-
-          raise "#{new_resource.path} does not match the format DRIVE:\\path\\pagefile.sys for pagefiles. Example: C:\\pagefile.sys"
         end
 
         # raise an exception if the target drive location is invalid
