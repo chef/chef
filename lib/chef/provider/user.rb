@@ -74,6 +74,8 @@ class Chef
             else
               shadow_info = Shadow::Passwd.getspnam(new_resource.username)
               current_resource.password(shadow_info.sp_pwdp)
+              current_resource.expire(shadow_info.sp_expire)
+              current_resource.inactive(shadow_info.sp_inact)
             end
           end
 
