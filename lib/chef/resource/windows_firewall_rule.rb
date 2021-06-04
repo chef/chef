@@ -43,11 +43,11 @@ class Chef
 
       ```ruby
       windows_firewall_rule 'MyRule' do
-        description          "testing out remote address arrays"
+        description          'Testing out remote address arrays'
         enabled              false
         local_port           1434
         remote_address       %w(10.17.3.101 172.7.7.53)
-        protocol             "TCP"
+        protocol             'TCP'
         action               :create
       end
       ```
@@ -111,6 +111,7 @@ class Chef
         description: "The local port the firewall rule applies to."
 
       property :remote_address, [String, Array],
+        coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map(&:to_s) },
         description: "The remote address(es) the firewall rule applies to."
 
       property :remote_port, [String, Integer, Array],
