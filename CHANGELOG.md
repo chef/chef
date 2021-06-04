@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.20 -->
-## [v17.2.20](https://github.com/chef/chef/tree/v17.2.20) (2021-06-03)
+<!-- latest_release 17.2.21 -->
+## [v17.2.21](https://github.com/chef/chef/tree/v17.2.21) (2021-06-04)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.37.23 [#11655](https://github.com/chef/chef/pull/11655) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Updated the Windows Pagefile resource to use PowerShell over WMI, added a corresponding test file [#11636](https://github.com/chef/chef/pull/11636) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updated the Windows Pagefile resource to use PowerShell over WMI, added a corresponding test file [#11636](https://github.com/chef/chef/pull/11636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.21 -->
 - Bump inspec-core-bin to 4.37.23 [#11655](https://github.com/chef/chef/pull/11655) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.20 -->
 - Add tests to verify knife command load &amp; execution [#11653](https://github.com/chef/chef/pull/11653) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.19 -->
 - Fix incorrect require_relative causing failures in `knife org user add` [#11649](https://github.com/chef/chef/pull/11649) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.18 -->
