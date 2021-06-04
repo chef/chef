@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.18 -->
-## [v17.2.18](https://github.com/chef/chef/tree/v17.2.18) (2021-06-02)
+<!-- latest_release 17.2.20 -->
+## [v17.2.20](https://github.com/chef/chef/tree/v17.2.20) (2021-06-03)
 
 #### Merged Pull Requests
-- Fix incorrect require_relative causing failures in `knife org user add` [#11649](https://github.com/chef/chef/pull/11649) ([marcparadise](https://github.com/marcparadise))
+- Bump inspec-core-bin to 4.37.23 [#11655](https://github.com/chef/chef/pull/11655) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.37.23 [#11655](https://github.com/chef/chef/pull/11655) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.20 -->
+- Add tests to verify knife command load &amp; execution [#11653](https://github.com/chef/chef/pull/11653) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.19 -->
 - Fix incorrect require_relative causing failures in `knife org user add` [#11649](https://github.com/chef/chef/pull/11649) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.18 -->
 - Fix Chef::Handler specs and slow report behavior [#11648](https://github.com/chef/chef/pull/11648) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.17 -->
 - Support recipes that and in .yaml as well as .yml [#11629](https://github.com/chef/chef/pull/11629) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.16 -->
