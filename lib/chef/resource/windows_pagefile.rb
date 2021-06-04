@@ -131,7 +131,7 @@ class Chef
           when /^[a-zA-Z]:.*.sys/
             new_resource.path
           else
-            raise "#{new_resource.path} does not match the format DRIVE:\\path\\pagefile.sys for pagefiles. Example: C:\\pagefile.sys"
+            raise "#{new_resource.path} does not match the format DRIVE:\path\pagefile.sys for pagefiles. Example: C:\pagefile.sys"
           end
         end
 
