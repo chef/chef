@@ -85,7 +85,7 @@ describe Chef::Resource::WindowsFirewallRule do
 
   it "the remote_address property accepts strings" do
     resource.remote_address("8.8.4.4")
-    expect(resource.remote_address).to eql("8.8.4.4")
+    expect(resource.remote_address).to eql(["8.8.4.4"])
   end
 
   it "the remote_address property accepts comma separated lists" do
