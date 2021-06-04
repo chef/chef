@@ -50,7 +50,7 @@ class Chef
         sensitive: true,
         desired_state: false
 
-      property :expiredate, String,
+      property :expire_date, String,
         description: "(Linux) The date on which the user account will be disabled. The date is specified in the format YYYY-MM-DD.",
         desired_state: false
 
