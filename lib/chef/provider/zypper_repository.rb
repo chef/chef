@@ -31,12 +31,12 @@ class Chef
 
       action :create do
         if new_resource.gpgautoimportkeys
-          install_gpg_key(new_resource.gpgkey)
+          install_gpg_keys(new_resource.gpgkey)
         else
           logger.debug("'gpgautoimportkeys' property is set to false. Skipping key import.")
         end
 
-        declare_resource(:template, "/etc/zypp/repos.d/#{escaped_repo_name}.repo") do
+        template "/etc/zypp/repos.d/#{escaped_repo_name}.repo" do
           if template_available?(new_resource.source)
             source new_resource.source
           else
@@ -57,7 +57,7 @@ class Chef
       end
 
       action :refresh do
-        declare_resource(:execute, "zypper --quiet --non-interactive refresh --force #{escaped_repo_name}") do
+        execute "zypper --quiet --non-interactive refresh --force #{escaped_repo_name}" do
           only_if "zypper --quiet lr #{escaped_repo_name}"
         end
       end
