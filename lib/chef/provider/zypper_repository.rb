@@ -76,7 +76,7 @@ class Chef
       #
       # @return [Boolean] template file exists or doesn't
       def template_available?(path)
-        !path.nil? && run_context.has_template_in_cookbook?(cookbook_name, path)
+        !path.nil? && run_context.has_template_in_cookbook?(new_resource.cookbook, path)
       end
 
       # determine if a cookbook file is available in the run
@@ -84,7 +84,7 @@ class Chef
       #
       # @return [Boolean] cookbook file exists or doesn't
       def has_cookbook_file?(fn)
-        run_context.has_cookbook_file_in_cookbook?(cookbook_name, fn)
+        run_context.has_cookbook_file_in_cookbook?(new_resource.cookbook, fn)
       end
 
       # Given the provided key URI determine what kind of chef resource we need
