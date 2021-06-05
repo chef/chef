@@ -39,6 +39,22 @@ class Chef
           priority '100'
         end
         ```
+
+        **Remove the repo named 'apache'**:
+
+        ```ruby
+        zypper_repository 'apache' do
+          action :delete
+        end
+        ```
+
+        **Refresh the repo named 'apache'**:
+
+        ```ruby
+        zypper_repository 'apache' do
+          action :refresh
+        end
+        ```
       DOC
 
       property :repo_name, String,
