@@ -150,27 +150,31 @@ class Chef
         short_key_id
       end
 
-      # install the provided gpg key
-      # @param [String] uri the uri of the local or remote gpg key
-      def install_gpg_key(uri)
-        unless uri
-          logger.debug("'gpgkey' property not provided or set to nil. Skipping key import.")
+      # install the provided gpg keys
+      # @param [String] uris the uri of the local or remote gpg key
+      def install_gpg_keys(uris)
+        unless uri.empty?
+          logger.debug("'gpgkey' property not provided or set. Skipping gpg key import.")
           return
         end
 
-        cached_keyfile = ::File.join(Chef::Config[:file_cache_path], uri.split("/")[-1])
+        # fetch each key to the cache dir either from the cookbook or by downloading it
+        # and then import the key
+        uris.each do |uri|
+          cached_keyfile = ::File.join(Chef::Config[:file_cache_path], uri.split("/")[-1])
 
-        declare_resource(key_type(new_resource.gpgkey), cached_keyfile) do
-          source uri
-          mode "0644"
-          sensitive new_resource.sensitive
-          action :create
-        end
+          declare_resource(key_type(uri), cached_keyfile) do
+            source uri
+            mode "0644"
+            sensitive new_resource.sensitive
+            action :create
+          end
 
-        declare_resource(:execute, "import gpg key from #{new_resource.gpgkey}") do
-          command "/bin/rpm --import #{cached_keyfile}"
-          not_if { key_installed?(cached_keyfile) }
-          action :run
+          execute "import gpg key from #{uri}" do
+            command "/bin/rpm --import #{cached_keyfile}"
+            not_if { key_installed?(cached_keyfile) }
+            action :run
+          end
         end
       end
     end
