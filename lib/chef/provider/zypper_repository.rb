@@ -153,7 +153,7 @@ class Chef
       # install the provided gpg keys
       # @param [String] uris the uri of the local or remote gpg key
       def install_gpg_keys(uris)
-        if uri.empty?
+        if uris.empty?
           logger.debug("'gpgkey' property not provided or set. Skipping gpg key import.")
           return
         end
