@@ -66,16 +66,16 @@ class Chef
           end
           current_resource.comment(user_info.gecos)
 
-          if new_resource.password && current_resource.password == "x"
-            begin
-              require "shadow"
-            rescue LoadError
-              @shadow_lib_ok = false
-            else
-              shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+          begin
+            require "shadow"
+          rescue LoadError
+            @shadow_lib_ok = false
+          else
+            shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+            current_resource.expire_date(shadow_info.sp_expire)
+            current_resource.inactive(shadow_info.sp_inact)
+            if new_resource.password && current_resource.password == "x"
               current_resource.password(shadow_info.sp_pwdp)
-              current_resource.expire(shadow_info.sp_expire)
-              current_resource.inactive(shadow_info.sp_inact)
             end
           end
 
@@ -115,7 +115,7 @@ class Chef
           @change_desc << "change homedir from #{current_resource.home} to #{new_resource.home}"
         end
 
-        %i{comment shell password uid gid}.each do |user_attrib|
+        %i{comment shell password uid gid expire_date inactive}.each do |user_attrib|
           new_val = new_resource.send(user_attrib)
           cur_val = current_resource.send(user_attrib)
           if !new_val.nil? && new_val.to_s != cur_val.to_s
