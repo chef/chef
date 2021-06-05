@@ -68,15 +68,7 @@ class Chef
       # zypper repos are allowed to have spaces in the names
       # @return [String] escaped repo string
       def escaped_repo_name
-        Shellwords.escape(new_resource.repo_name)
-      end
-
-      # return the specified cookbook name or the cookbook containing the
-      # resource.
-      #
-      # @return [String] name of the cookbook
-      def cookbook_name
-        new_resource.cookbook || new_resource.cookbook_name
+        @escaped_repo_name ||= Shellwords.escape(new_resource.repo_name)
       end
 
       # determine if a template file is available in the current run

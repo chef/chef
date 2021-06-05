@@ -99,6 +99,8 @@ class Chef
 
       property :cookbook, String,
         description: "The cookbook to source the repository template file from. Only necessary if you're not using the built in template.",
+        default: lazy { cookbook_name },
+        default_description: "The cookbook containing the resource",
         desired_state: false
 
       property :gpgautoimportkeys, [TrueClass, FalseClass],
