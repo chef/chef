@@ -82,8 +82,10 @@ class Chef
         description: "Determines whether or not to perform a GPG signature check on the repository.",
         default: true
 
-      property :gpgkey, String,
-        description: "The location of the repository key to be imported."
+      property :gpgkey, [String, Array],
+        description: "The location of the repository key(s) to be imported.",
+        coerce: proc { |v| Array(v) },
+        default: []
 
       property :baseurl, String,
         description: "The base URL for the Zypper repository, such as `http://download.opensuse.org`."
