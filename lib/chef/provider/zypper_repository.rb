@@ -51,7 +51,7 @@ class Chef
       end
 
       action :delete do
-        declare_resource(:execute, "zypper --quiet --non-interactive removerepo #{escaped_repo_name}") do
+        execute "zypper --quiet --non-interactive removerepo #{escaped_repo_name}" do
           only_if "zypper --quiet lr #{escaped_repo_name}"
         end
       end
