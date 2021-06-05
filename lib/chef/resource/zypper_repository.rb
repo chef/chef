@@ -111,10 +111,10 @@ class Chef
         default: true
 
       property :source, String,
-        description: "The name of the template for the repository file. Only necessary if you're not using the built in template."
+        description: "The name of the template for the repository file. Only necessary if you're using a custom template for the repository file."
 
       property :cookbook, String,
-        description: "The cookbook to source the repository template file from. Only necessary if you're not using the built in template.",
+        description: "The cookbook to source the repository template file from. Only necessary if you're using a custom template for the repository file.",
         default: lazy { cookbook_name },
         default_description: "The cookbook containing the resource",
         desired_state: false
