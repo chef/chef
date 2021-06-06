@@ -106,17 +106,32 @@ class Chef
 
       action :create, description: "Create or update the printer port." do
         converge_if_changed do
-          # create the printer port using PowerShell
-          powershell_exec! <<-EOH
-          Set-WmiInstance -class Win32_TCPIPPrinterPort `
-            -EnableAllPrivileges `
-            -Argument @{ HostAddress = "#{new_resource.ipv4_address}";
-                        Name        = "#{new_resource.port_name}";
-                        PortNumber  = "#{new_resource.port_number}";
-                        Protocol    = "#{new_resource.port_protocol}";
-                        SNMPEnabled = "$#{new_resource.snmp_enabled}";
-                      }
-          EOH
+          if current_resource
+            # update the printer port using PowerShell
+            powershell_exec! <<-EOH
+            Get-WmiObject Win32_TCPIPPrinterPort -EnableAllPrivileges -filter "Name='#{new_resource.port_name}'" |
+            ForEach-Object{
+                 $_.HostAddress='#{new_resource.ipv4_address}'
+                 $_.PortNumber='#{new_resource.port_number}'
+                 $_.Protocol='#{new_resource.port_protocol}'
+                 $_.SNMPEnabled='$#{new_resource.snmp_enabled}'
+                 $_.Put()
+            }
+            EOH
+          else
+            # create the printer port using PowerShell
+            powershell_exec! <<-EOH
+            Set-WmiInstance -class Win32_TCPIPPrinterPort `
+              -EnableAllPrivileges `
+              -Argument @{ HostAddress = "#{new_resource.ipv4_address}";
+                          Name        = "#{new_resource.port_name}";
+                          PortNumber  = "#{new_resource.port_number}";
+                          Protocol    = "#{new_resource.port_protocol}";
+                          SNMPEnabled = "$#{new_resource.snmp_enabled}";
+                        }
+            EOH
+          end
+
         end
       end
 
