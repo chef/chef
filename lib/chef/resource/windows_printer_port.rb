@@ -1,6 +1,7 @@
 #
 # Author:: Doug Ireton <doug@1strategy.com>
 # Copyright:: 2012-2018, Nordstrom, Inc.
+# Copyright:: Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -130,8 +131,7 @@ class Chef
           port_name = new_resource.port_name || "IP_#{new_resource.ipv4_address}"
 
           # create the printer port using PowerShell
-          declare_resource(:powershell_script, "Creating printer port #{new_resource.port_name}") do
-            code <<-EOH
+          powershell_exec! <<-EOH
 
               Set-WmiInstance -class Win32_TCPIPPrinterPort `
                 -EnableAllPrivileges `
@@ -142,19 +142,16 @@ class Chef
                             Protocol    = "#{new_resource.port_protocol}";
                             SNMPEnabled = "$#{new_resource.snmp_enabled}";
                           }
-            EOH
-          end
+          EOH
         end
 
         def delete_printer_port
           port_name = new_resource.port_name || "IP_#{new_resource.ipv4_address}"
 
-          declare_resource(:powershell_script, "Deleting printer port: #{new_resource.port_name}") do
-            code <<-EOH
+          powershell_exec! <<-EOH
               $port = Get-WMIObject -class Win32_TCPIPPrinterPort -EnableAllPrivileges -Filter "name = '#{port_name}'"
               $port.Delete()
-            EOH
-          end
+          EOH
         end
       end
     end
