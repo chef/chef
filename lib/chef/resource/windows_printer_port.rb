@@ -72,7 +72,7 @@ class Chef
         description: "The port name."
 
       property :port_number, Integer,
-        description: "The port number.",
+        description: "The TCP port number.",
         default: 9100
 
       property :port_description, String,
@@ -132,7 +132,6 @@ class Chef
 
           # create the printer port using PowerShell
           powershell_exec! <<-EOH
-
               Set-WmiInstance -class Win32_TCPIPPrinterPort `
                 -EnableAllPrivileges `
                 -Argument @{ HostAddress = "#{new_resource.ipv4_address}";
