@@ -22,3 +22,17 @@ end
 windows_printer_port "10.4.64.37" do
   action :delete
 end
+
+# create a printer that will also create the port
+windows_printer "HP LaserJet 6th Floor" do
+  ipv4_address "10.4.64.40"
+  driver_name "Generic / Text Only"
+end
+
+# create a printer that uses an existing port
+windows_printer "HP LaserJet 5th Floor" do
+  ipv4_address "10.4.64.41"
+  driver_name "Generic / Text Only"
+  port_name "My awesome printer port"
+  create_port false
+end
