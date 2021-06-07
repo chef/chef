@@ -137,7 +137,7 @@ class Chef
 
       action :delete, description: "Delete an existing printer port." do
         if current_resource
-          converge_by("Delete #{new_resource.port_name}") do
+          converge_by("delete port #{new_resource.port_name}") do
             powershell_exec!("Remove-PrinterPort -Name #{new_resource.port_name}")
           end
         else
