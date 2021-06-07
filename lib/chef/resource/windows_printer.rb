@@ -1,6 +1,7 @@
 #
 # Author:: Doug Ireton (<doug@1strategy.com>)
 # Copyright:: 2012-2018, Nordstrom, Inc.
+# Copyright:: Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -149,12 +150,10 @@ class Chef
         end
 
         def delete_printer
-          declare_resource(:powershell_script, "Deleting printer: #{new_resource.device_id}") do
-            code <<-EOH
+          powershell_exec! <<-EOH
               $printer = Get-WMIObject -class Win32_Printer -EnableAllPrivileges -Filter "name = '#{new_resource.device_id}'"
               $printer.Delete()
-            EOH
-          end
+          EOH
         end
       end
     end
