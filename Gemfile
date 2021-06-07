@@ -22,6 +22,7 @@ group(:omnibus_package) do
   gem "rb-readline"
   gem "inspec-core-bin", "~> 4.24" # need to provide the binaries for inspec
   gem "chef-vault"
+  gem "ed25519", "~> 1.2" # to make it possible to install knife into chef. Remove this in Chef 18
 end
 
 group(:omnibus_package, :pry) do
