@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.23 -->
-## [v17.2.23](https://github.com/chef/chef/tree/v17.2.23) (2021-06-07)
+<!-- latest_release 17.2.24 -->
+## [v17.2.24](https://github.com/chef/chef/tree/v17.2.24) (2021-06-07)
 
 #### Merged Pull Requests
-- Cleanup windows_printer_port and allow updating the port [#11662](https://github.com/chef/chef/pull/11662) ([tas50](https://github.com/tas50))
+- Cleanup the zypper_repository resource + support multiple GPG Keys [#11660](https://github.com/chef/chef/pull/11660) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Cleanup the zypper_repository resource + support multiple GPG Keys [#11660](https://github.com/chef/chef/pull/11660) ([tas50](https://github.com/tas50)) <!-- 17.2.24 -->
 - Cleanup windows_printer_port and allow updating the port [#11662](https://github.com/chef/chef/pull/11662) ([tas50](https://github.com/tas50)) <!-- 17.2.23 -->
 - windows_printer: use powershell_exec to delete the printer instead of slower/double logging powershell_script [#11663](https://github.com/chef/chef/pull/11663) ([tas50](https://github.com/tas50)) <!-- 17.2.22 -->
 - Updated the Windows Pagefile resource to use PowerShell over WMI, added a corresponding test file [#11636](https://github.com/chef/chef/pull/11636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.21 -->
