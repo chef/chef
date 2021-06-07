@@ -112,8 +112,6 @@ class Chef
       end
 
       action_class do
-        private
-
         # does the printer exist
         #
         # @param [String] name the name of the printer
@@ -133,7 +131,6 @@ class Chef
 
           declare_resource(:powershell_script, "Creating printer: #{new_resource.device_id}") do
             code <<-EOH
-
               Set-WmiInstance -class Win32_Printer `
                 -EnableAllPrivileges `
                 -Argument @{ DeviceID   = "#{new_resource.device_id}";
