@@ -103,11 +103,11 @@ class Chef
 
       action :delete, description: "Delete an existing printer. Note that this resource does not delete the associated printer port." do
         if printer_exists?
-          converge_by("Delete #{@new_resource}") do
-            delete_printer
+          converge_by("Delete #{new_resource.device_id}") do
+            powershell_exec!("Remove-Printer -Name '#{new_resource.device_id}'")
           end
         else
-          Chef::Log.info "#{@current_resource} doesn't exist - can't delete."
+          Chef::Log.info "#{new_resource.device_id} doesn't exist - can't delete."
         end
       end
 
@@ -144,13 +144,6 @@ class Chef
                           }
             EOH
           end
-        end
-
-        def delete_printer
-          powershell_exec! <<-EOH
-              $printer = Get-WMIObject -class Win32_Printer -EnableAllPrivileges -Filter "name = '#{new_resource.device_id}'"
-              $printer.Delete()
-          EOH
         end
       end
     end
