@@ -1,6 +1,7 @@
 #
 # Author:: Doug Ireton (<doug@1strategy.com>)
 # Copyright:: 2012-2018, Nordstrom, Inc.
+# Copyright:: Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -102,17 +103,15 @@ class Chef
 
       action :delete, description: "Delete an existing printer. Note that this resource does not delete the associated printer port." do
         if printer_exists?
-          converge_by("Delete #{@new_resource}") do
-            delete_printer
+          converge_by("Delete #{new_resource.device_id}") do
+            powershell_exec!("Remove-Printer -Name '#{new_resource.device_id}'")
           end
         else
-          Chef::Log.info "#{@current_resource} doesn't exist - can't delete."
+          Chef::Log.info "#{new_resource.device_id} doesn't exist - can't delete."
         end
       end
 
       action_class do
-        private
-
         # does the printer exist
         #
         # @param [String] name the name of the printer
@@ -132,7 +131,6 @@ class Chef
 
           declare_resource(:powershell_script, "Creating printer: #{new_resource.device_id}") do
             code <<-EOH
-
               Set-WmiInstance -class Win32_Printer `
                 -EnableAllPrivileges `
                 -Argument @{ DeviceID   = "#{new_resource.device_id}";
@@ -144,15 +142,6 @@ class Chef
                             Shared     = "$#{new_resource.shared}";
                             ShareName  = "#{new_resource.share_name}";
                           }
-            EOH
-          end
-        end
-
-        def delete_printer
-          declare_resource(:powershell_script, "Deleting printer: #{new_resource.device_id}") do
-            code <<-EOH
-              $printer = Get-WMIObject -class Win32_Printer -EnableAllPrivileges -Filter "name = '#{new_resource.device_id}'"
-              $printer.Delete()
             EOH
           end
         end

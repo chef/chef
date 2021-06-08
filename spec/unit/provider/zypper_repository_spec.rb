@@ -107,13 +107,6 @@ describe Chef::Provider::ZypperRepository do
     end
   end
 
-  describe "#cookbook_name" do
-    it "returns 'test' when the cookbook property is set" do
-      new_resource.cookbook("test")
-      expect(provider.cookbook_name).to eq("test")
-    end
-  end
-
   describe "#key_type" do
     it "returns :remote_file with an http URL" do
       expect(provider.key_type("https://www.chef.io/key")).to eq(:remote_file)
@@ -167,10 +160,10 @@ describe Chef::Provider::ZypperRepository do
     end
   end
 
-  describe "#install_gpg_key" do
-    it "skips installing the key if a nil value for key is passed" do
+  describe "#install_gpg_keys" do
+    it "skips installing the key if an empty array for key URL is passed" do
       expect(logger).to receive(:debug)
-      provider.install_gpg_key(nil)
+      provider.install_gpg_keys([])
     end
   end
 end

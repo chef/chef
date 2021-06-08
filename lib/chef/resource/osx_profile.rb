@@ -172,7 +172,7 @@ class Chef
         end
       end
 
-      action :install do
+      action :install, description: "Install the specified configuration profile." do
         unless profile_installed?
           converge_by("install profile #{new_profile_identifier}") do
             profile_path = write_profile_to_disk
@@ -182,7 +182,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove the specified configuration profile." do
         # Clean up profile after removing it
         if profile_installed?
           converge_by("remove profile #{new_profile_identifier}") do

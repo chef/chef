@@ -43,16 +43,16 @@ class Chef
 
       property :excluded_members, [String, Array], default: [],
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
-               description: "Remove users from a group. May only be used when append is set to true."
+               description: "Remove users from a group. May only be used when `append` is set to `true`."
 
       property :append, [ TrueClass, FalseClass ], default: false,
-               description: "How members should be appended and/or removed from a group. When true, members are appended and excluded_members are removed. When false, group members are reset to the value of the members property."
+               description: "How members should be appended and/or removed from a group. When true, `members` are appended and `excluded_members` are removed. When `false`, group members are reset to the value of the `members` property."
 
       property :system, [ TrueClass, FalseClass ], default: false,
-               description: "Set if a group belongs to a system group. Set to true if the group belongs to a system group."
+               description: "Set to `true` if the group belongs to a system group."
 
       property :non_unique, [ TrueClass, FalseClass ], default: false,
-               description: "Allow gid duplication. May only be used with the Groupadd provider."
+               description: "Allow gid duplication. May only be used with the `Groupadd` user resource provider."
 
       property :comment, String,
         introduced: "14.9",

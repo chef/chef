@@ -81,7 +81,7 @@ class Chef
         group file_group_cmd.stdout.chomp
       end
 
-      action :set do
+      action :set, description: "Set a value in a plist file." do
         converge_if_changed :path do
           converge_by "create new plist: '#{new_resource.path}'" do
             file new_resource.path do
