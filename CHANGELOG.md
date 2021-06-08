@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.27 -->
-## [v17.2.27](https://github.com/chef/chef/tree/v17.2.27) (2021-06-08)
+<!-- latest_release 17.2.28 -->
+## [v17.2.28](https://github.com/chef/chef/tree/v17.2.28) (2021-06-08)
 
 #### Merged Pull Requests
-- Improve the automatically generated docs [#11670](https://github.com/chef/chef/pull/11670) ([tas50](https://github.com/tas50))
+- Update omnibus-software to the latest [#11673](https://github.com/chef/chef/pull/11673) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update omnibus-software to the latest [#11673](https://github.com/chef/chef/pull/11673) ([tas50](https://github.com/tas50)) <!-- 17.2.28 -->
 - Improve the automatically generated docs [#11670](https://github.com/chef/chef/pull/11670) ([tas50](https://github.com/tas50)) <!-- 17.2.27 -->
 - windows_firewall_rule: allow for multiple remote addresses [#11657](https://github.com/chef/chef/pull/11657) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.26 -->
 - Add ed25519 gem back to the omnibus install [#11664](https://github.com/chef/chef/pull/11664) ([tas50](https://github.com/tas50)) <!-- 17.2.25 -->
