@@ -22,12 +22,12 @@ We've updated Chef InSpec from 4.36.4 to 4.37.8:
 - Fixed the `windows_firewall_rule` resource when it failed to validate more than one rule.
 - The `http` resource response body is now coerced into UTF-8.
 - Modified the `windows_feature` resource to indicate if a feature is enabled rather than just available.
-- `file` resource `more_permissive_than` matcher returns nil instead of throwing exception when file does not exist.
+- `file` resource `more_permissive_than` matcher returns nil instead of throwing an exception when the file does not exist.
 - `inspec detect --no-color` now returns color-free output.
 
 ### Slow Resource Report
 
-Chef Infra Client now includes a `--slow-report` flag that shows the 10 slowest running resources in a Chef Infra Client run to help you troubleshoot and optimize your cookbooks. This new flag also takes an argument for the number of resources to list if you'd like to see additional output. Our next release of Chef Workstation will include the ability to set this flag in Test Kitchen to allow testing for slow resources in the development process.
+Chef Infra Client now includes a `--slow-report` flag that shows the 10 slowest running resources in a Chef Infra Client run to help you troubleshoot and optimize your cookbooks. This new flag also takes an argument for the number of resources to list if you'd like to see additional resources included in the output. Our next release of Chef Workstation will include the ability to set this flag in Test Kitchen to allow testing for slow resources in the development process.
 
 #### Example Output
 
@@ -64,13 +64,13 @@ Chef Infra Client now supports YAML recipes that end in `.yaml` in addition to t
 
 #### Improved Reporting to Automate
 
-Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb` configuration. This allows users to limit the data sent to their Automate servers to prevent indexing sensitive data, or to reduce the necessary storage space on the Automate server.
+Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb` configuration. This change allows users to limit the data sent to their Automate servers to prevent indexing sensitive data, or to reduce the necessary storage space on the Automate server.
 
 ### Updated Resources
 
 #### homebrew_path
 
-The `homebrew_path` now passed the `homebrew_path` when creating or deleting taps. This prevents failures when running homebrew in a non-standard location or on a M1 system. Thanks [@mattlqx](https://github.com/mattlqx)!
+The `homebrew_path` now passed the `homebrew_path` when creating or deleting taps. This change prevents failures when running homebrew in a non-standard location or on a M1 system. Thanks [@mattlqx](https://github.com/mattlqx)!
 
 #### hostname
 
@@ -78,11 +78,11 @@ The `hostname` resource now sets the hostname on Windows systems using native Po
 
 #### openssl_x509_certificate
 
-The `openssl_x509_certificate` no longer marks the creation of the X509 certificate file as sensitive since this makes troubleshooting difficult and this content is not actually sensitive. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett)!
+The `openssl_x509_certificate` no longer marks the creation of the X509 certificate file as sensitive since this makes troubleshooting difficult and this content is not sensitive. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett)!
 
 #### windows_firewall_rule
 
-The `windows_firewall_rule` resource now allows specifying multiple allow for multiple IP addresses in the `remote_address` property.
+The `windows_firewall_rule` resource now allows specifying multiple IP addresses in the `remote_address` property.
 
 #### windows_pagefile
 
