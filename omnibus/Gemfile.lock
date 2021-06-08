@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 606edf8624241ad8b79200edabda4d788cb61882
+  revision: d85ed8bae2eef5d2bd9af93e88330d39773bf0e1
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,7 +33,7 @@ GEM
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
     aws-partitions (1.465.0)
-    aws-sdk-core (3.114.0)
+    aws-sdk-core (3.114.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -41,7 +41,7 @@ GEM
     aws-sdk-kms (1.43.0)
       aws-sdk-core (~> 3, >= 3.112.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.95.1)
+    aws-sdk-s3 (1.96.0)
       aws-sdk-core (~> 3, >= 3.112.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -172,7 +172,7 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.3)
-    concurrent-ruby (1.1.8)
+    concurrent-ruby (1.1.9)
     diff-lcs (1.3)
     ed25519 (1.2.4)
     erubi (1.10.0)
@@ -210,7 +210,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.37.20)
+    inspec-core (4.37.23)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
