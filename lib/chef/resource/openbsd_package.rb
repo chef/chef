@@ -31,6 +31,23 @@ class Chef
 
       description "Use the **openbsd_package** resource to manage packages for the OpenBSD platform."
       introduced "12.1"
+      examples <<~DOC
+        **Install a package**
+
+        ```ruby
+        openbsd_package 'name of package' do
+          action :install
+        end
+        ```
+
+        **Remove a package**
+
+        ```ruby
+        openbsd_package 'name of package' do
+          action :remove
+        end
+        ```
+      DOC
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",

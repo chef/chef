@@ -33,6 +33,41 @@ class Chef
                   " immediate notifications. Delayed notifications produce unintuitive and"\
                   " probably undesired results."
       introduced "12.0"
+      examples <<~DOC
+        **Reboot a node immediately**
+
+        ```ruby
+        reboot 'now' do
+          action :nothing
+          reason 'Cannot continue Chef run without a reboot.'
+          delay_mins 2
+        end
+
+        execute 'foo' do
+          command '...'
+          notifies :reboot_now, 'reboot[now]', :immediately
+        end
+        ```
+
+        **Reboot a node at the end of a Chef Infra Client run**
+
+        ```ruby
+        reboot 'app_requires_reboot' do
+          action :request_reboot
+          reason 'Need to reboot when the run completes successfully.'
+          delay_mins 5
+        end
+        ```
+
+        **Cancel a reboot**
+
+        ```ruby
+        reboot 'cancel_reboot_request' do
+          action :cancel
+          reason 'Cancel a previous end-of-run reboot request.'
+        end
+        ```
+    DOC
 
       property :reason, String,
         description: "A string that describes the reboot action.",
