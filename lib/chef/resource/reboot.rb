@@ -67,7 +67,7 @@ class Chef
           reason 'Cancel a previous end-of-run reboot request.'
         end
         ```
-    DOC
+      DOC
 
       property :reason, String,
         description: "A string that describes the reboot action.",
