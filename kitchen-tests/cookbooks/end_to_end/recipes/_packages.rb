@@ -15,7 +15,9 @@ pkgs.each do |pkg|
   multipackage pkgs
 end
 
-gems = %w{chef-ruby-lvm community_cookbook_releaser}
+# make sure customers can install knife back into the client for now
+# and also make sure chef_gem works in general
+gems = %w{knife community_cookbook_releaser}
 
 gems.each do |gem|
   chef_gem gem do
