@@ -74,7 +74,7 @@ The `homebrew_path` now passed the `homebrew_path` when creating or deleting tap
 
 #### hostname
 
-The `hostname` resource now sets the hostname on Windows systems using native PowerShell calls for increased reliability and allows changing the hostname on domain-attached systems. To change the hostname on a domain-attached system pass a domain administrator account using the new `domain_user` and `domain_password` properties.
+The `hostname` resource now sets the hostname on Windows systems using native PowerShell calls for increased reliability and allows changing the hostname on domain-attached systems. To change the hostname on a domain-attached system, pass a domain administrator account using the new `domain_user` and `domain_password` properties.
 
 #### openssl_x509_certificate
 
