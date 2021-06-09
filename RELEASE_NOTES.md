@@ -102,7 +102,7 @@ The `windows_printer_port` resource has been refactored with several improvement
 
 - Improved performance when adding and removing ports
 - The ability to update existing ports with new values
-- Improved logging of changes made to ports
+- Clearer logging of changes made to ports.
 - Deprecated the `description` property, which was not actually setting a description on the ports.
 
 #### windows_security_policy
