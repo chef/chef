@@ -107,7 +107,7 @@ The `windows_printer_port` resource has been refactored with several improvement
 
 #### windows_security_policy
 
-The `windows_security_policy` resource now limits the value of `ResetLockoutCount` to any value less than that of `LockoutDuration` rather than limiting it to 30 minutes.
+The `windows_security_policy` resource now limits the value of `ResetLockoutCount` to any value less than `LockoutDuration` rather than limiting it to 30 minutes.
 
 #### zypper_repository
 
