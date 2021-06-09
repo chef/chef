@@ -17,10 +17,9 @@ end
 
 # make sure customers can install knife back into the client for now
 # and also make sure chef_gem works in general
-gems = %w{knife community_cookbook_releaser}
+gem_name = rhel6? ? "community_cookbook_releaser" : "knife"
 
-gems.each do |gem|
-  chef_gem gem do
-    compile_time false
-  end
+chef_gem gem_name do
+  action :install
+  compile_time false
 end
