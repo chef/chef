@@ -72,11 +72,11 @@ class Chef
             @shadow_lib_ok = false
           else
             shadow_info = Shadow::Passwd.getspnam(new_resource.username)
-            current_resource.inactive(shadow_info.sp_inact&.to_i) if new_resource.inactive
-            if new_resource.expire_date
-              expire_date = DateTime.strptime(shadow_info.sp_expire&.to_s, "%d")
-              current_resource.expire_date(expire_date.strftime("%Y-%m-%d"))
-            end
+            current_resource.inactive(shadow_info.sp_inact&.to_i)
+
+            expire_date = DateTime.strptime(shadow_info.sp_expire, "%d")
+            current_resource.expire_date(expire_date.strftime("%Y-%m-%d"))
+
             if new_resource.password && current_resource.password == "x"
               current_resource.password(shadow_info.sp_pwdp)
             end
