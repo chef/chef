@@ -88,7 +88,7 @@ The `windows_firewall_rule` resource now allows specifying multiple IP addresses
 
 The `windows_pagefile` resource features improved performance and support for the latest releases of Windows 10. These improvements also make managing pagefiles more predictable:
 
-The `path` property now accepts a drive letter where the pagefile should be stored in addition to the full path the pagefile on disk. For example `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
+The `path` property now accepts a drive letter in addition to the full path of the pagefile on disk. For example, `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
 
 Creating a new pagefile will no longer disable the system managed pagefile by default. If you wish to create a pagefile while also disabled the system managed pagefile set `system_managed false`.
 
