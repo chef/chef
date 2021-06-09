@@ -51,7 +51,7 @@ class Chef
             "id" => run_status&.run_id,
             "message_version" => "1.1.0",
             "message_type" => "run_converge",
-            "node" => node || {},
+            "node" => node&.data_for_save || {},
             "node_name" => node&.name || data_collector.node_name,
             "organization_name" => organization,
             "resources" => all_action_records(action_collection),
