@@ -90,7 +90,7 @@ The `windows_pagefile` resource features improved performance and support for th
 
 The `path` property now accepts a drive letter in addition to the full path of the pagefile on disk. For example, `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
 
-Creating a new pagefile will no longer disable the system managed pagefile by default. If you wish to create a pagefile while also disabled the system managed pagefile set `system_managed false`.
+Creating a new pagefile no longer disables the system-managed pagefile by default. If you wish to create a pagefile while also disabling the system-managed pagefile, set `system_managed false`.
 
 #### windows_printer
 
