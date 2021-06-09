@@ -142,11 +142,17 @@ describe Chef::DataCollector do
   def expect_converge_message(keys)
     keys["message_type"] = "run_converge"
     keys["message_version"] = "1.1.0"
+    # if (keys.key?("node") && !keys["node"].empty?)
+    #   expect(rest_client).to receive(:post) do |_a, hash, _b|
+    #     require 'pry'; binding.pry
+    #   end
+    # else
     expect(rest_client).to receive(:post).with(
       nil,
       hash_including(keys),
       { "Content-Type" => "application/json" }
     )
+    # end
   end
 
   def resource_has_diff(new_resource, status)
@@ -202,7 +208,7 @@ describe Chef::DataCollector do
     end
 
     it "has a node" do
-      expect_converge_message("node" => expected_node)
+      expect_converge_message("node" => expected_node.is_a?(Chef::Node) ? expected_node.data_for_save : expected_node)
       send_run_failed_or_completed_event
     end
 
@@ -806,6 +812,46 @@ describe Chef::DataCollector do
         end
 
         it_behaves_like "sends a converge message"
+      end
+
+      context "when node attributes are block-listed" do
+        let(:status) { "success" }
+        before do
+          Chef::Config[:blocked_default_attributes] = [
+            %w{secret key_to_the_kingdom},
+          ]
+          node.default = {
+            "secret" => { "key_to_the_kingdom" => "under the flower pot to the left of the drawbridge" },
+            "publicinfo" => { "num_flower_pots" => 18 },
+          }
+        end
+
+        it "payload should exclude blocked attributes" do
+          expect(rest_client).to receive(:post) do |_addr, hash, _headers|
+            expect(hash["node"]["default"]).to eq({ "secret" => {}, "publicinfo" => { "num_flower_pots" => 18 } })
+          end
+          send_run_failed_or_completed_event
+        end
+      end
+
+      context "when node attributes are allow-listed" do
+        let(:status) { "success" }
+        before do
+          Chef::Config[:allowed_default_attributes] = [
+            %w{public entrance},
+          ]
+          node.default = {
+            "public" => { "entrance" => "is the drawbridge" },
+            "secret" => { "entrance" => "is the tunnel" },
+          }
+        end
+
+        it "payload should include only allowed attributes" do
+          expect(rest_client).to receive(:post) do |_addr, hash, _headers|
+            expect(hash["node"]["default"]).to eq({ "public" => { "entrance" => "is the drawbridge" } })
+          end
+          send_run_failed_or_completed_event
+        end
       end
 
     end
