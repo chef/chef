@@ -2,11 +2,13 @@ This file holds "in progress" release notes for the current release under develo
 
 ## What's New in 17.2
 
-### Chef InSpec 4.37
+### Compliance Phase Improvements
+
+#### Chef InSpec 4.37
 
 We've updated Chef InSpec from 4.36.4 to 4.37.8:
 
-#### New Features
+##### New Features
 
 - The new `inspec automate` command replaces the `inspec compliance` command, which is now deprecated.
 - Added support for `zfs_pool` and `zfs_dataset` resources on Linux.
@@ -16,7 +18,7 @@ We've updated Chef InSpec from 4.36.4 to 4.37.8:
   - Template files are now ERB files.
   - The `activator` flag replaces the `hook` flag, which is now an alias.
 
-#### Bug Fixes
+##### Bug Fixes
 
 - Fixed an error when using profile dependencies and require_controls.
 - Fixed the `windows_firewall_rule` resource when it failed to validate more than one rule.
