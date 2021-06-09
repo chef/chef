@@ -1,5 +1,120 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## What's New in 17.2
+
+### Compliance Phase Improvements
+
+#### Chef InSpec 4.37
+
+We've updated Chef InSpec from 4.36.4 to 4.37.8:
+
+##### New Features
+
+- The new `inspec automate` command replaces the `inspec compliance` command, which is now deprecated.
+- Added support for `zfs_pool` and `zfs_dataset` resources on Linux.
+- Improved `port` resource performance: adding more specific search while using `ss` command.
+- Updated the `inspec init plugin` command with the following changes:
+  - The values of flags passed to the `inspec init plugin` command are now wrapped in double quotes instead of single quotes.
+  - Template files are now ERB files.
+  - The `activator` flag replaces the `hook` flag, which is now an alias.
+
+##### Bug Fixes
+
+- Fixed an error when using profile dependencies and require_controls.
+- Fixed the `windows_firewall_rule` resource when it failed to validate more than one rule.
+- The `http` resource response body is now coerced into UTF-8.
+- Modified the `windows_feature` resource to indicate if a feature is enabled rather than just available.
+- `file` resource `more_permissive_than` matcher returns nil instead of throwing an exception when the file does not exist.
+- `inspec detect --no-color` now returns color-free output.
+
+### Slow Resource Report
+
+Chef Infra Client now includes a `--slow-report` flag that shows the 10 slowest running resources in a Chef Infra Client run to help you troubleshoot and optimize your cookbooks. This new flag also takes an argument for the number of resources to list if you'd like to see additional resources included in the output. Our next release of Chef Workstation will include the ability to set this flag in Test Kitchen to allow testing for slow resources in the development process.
+
+#### Example Output
+
+```text
+Starting Chef Infra Client, version 17.2.12
+Patents: https://www.chef.io/patents
+resolving cookbooks for run list: ["test"]
+Synchronizing Cookbooks:
+  - test (0.0.1)
+Installing Cookbook Gems:
+Compiling Cookbooks...
+Converging 1 resources
+Recipe: test::default
+  * file[/tmp/foo.xzy] action create (up to date)
+
+Running handlers:
+
+Top 1 slowest resource:
+
+resource           elapsed_time cookbook recipe  source
+------------------ ------------ -------- ------- ----------------------------------------
+file[/tmp/foo.xzy] 0.015114     test     default test/recipes/default.rb:2:in `from_file'
+
+  - Chef::Handler::SlowReport
+Running handlers complete
+Chef Infra Client finished, 0/1 resources updated in 03 seconds
+```
+
+Add a slow resources report to chef-client - https://github.com/chef/chef/pull/11642
+
+### Improved YAML Recipe Support
+
+Chef Infra Client now supports both `.yaml` and `.yml` file extensions for recipes. If a `.yml` and `.yaml` recipe of the same name is present, Chef Infra Client will now fail as there is no way to determine which recipe should be loaded in this case.
+
+#### Improved Reporting to Automate
+
+Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb`. This change allows users to limit the data sent to their Automate servers to prevent indexing sensitive data or to reduce the necessary storage space on the Automate server.
+
+### Updated Resources
+
+#### homebrew_path
+
+The `homebrew_path` now passes the `homebrew_path` when creating or deleting taps. This change prevents failures when running homebrew in a non-standard location or on a M1 system. Thanks [@mattlqx](https://github.com/mattlqx)!
+
+#### hostname
+
+The `hostname` resource now sets the hostname on Windows systems using native PowerShell calls for increased reliability and allows changing the hostname on domain-attached systems. To change the hostname on a domain-attached system, pass a domain administrator account using the new `domain_user` and `domain_password` properties.
+
+#### openssl_x509_certificate
+
+The `openssl_x509_certificate` no longer marks the creation of the X509 certificate file as sensitive since this makes troubleshooting difficult and this content is not sensitive. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett)!
+
+#### windows_firewall_rule
+
+The `windows_firewall_rule` resource now allows specifying multiple IP addresses in the `remote_address` property.
+
+#### windows_pagefile
+
+The `windows_pagefile` resource features improved performance and support for the latest releases of Windows 10. These improvements also make managing pagefiles more predictable:
+
+The `path` property now accepts a drive letter in addition to the full path of the pagefile on disk. For example, `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
+
+Creating a new pagefile no longer disables the system-managed pagefile by default. If you wish to create a pagefile while also disabling the system-managed pagefile, set `system_managed false`.
+
+#### windows_printer
+
+The `windows_printer` resource includes improved logging when adding or removing printers.
+
+#### windows_printer_port
+
+The `windows_printer_port` resource has been refactored with several improvements:
+
+- Better performance when adding and removing ports.
+- Supports updating existing ports with new values.
+- Clearer logging of changes made to ports.
+- Deprecated the `description` property, which does not set a description on the ports.
+
+#### windows_security_policy
+
+The `windows_security_policy` resource now limits the value of `ResetLockoutCount` to any value less than `LockoutDuration` rather than limiting it to 30 minutes.
+
+#### zypper_repository
+
+The `zypper_repository` resource now accepts an array of GPG key locations in the `gpgkey` property. Thanks for reporting this [@bkabrda](https://github.com/bkabrda).
+
 ## What's New in 17.1
 
 ### Compliance Phase Improvements
