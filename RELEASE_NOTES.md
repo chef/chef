@@ -70,7 +70,7 @@ Chef Infra Client run reporting to Automate now respects attribute `allowlist` a
 
 #### homebrew_path
 
-The `homebrew_path` now passed the `homebrew_path` when creating or deleting taps. This change prevents failures when running homebrew in a non-standard location or on a M1 system. Thanks [@mattlqx](https://github.com/mattlqx)!
+The `homebrew_path` now passes the `homebrew_path` when creating or deleting taps. This change prevents failures when running homebrew in a non-standard location or on a M1 system. Thanks [@mattlqx](https://github.com/mattlqx)!
 
 #### hostname
 
