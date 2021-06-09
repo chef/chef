@@ -60,7 +60,7 @@ Add a slow resources report to chef-client - https://github.com/chef/chef/pull/1
 
 ### Improved YAML Recipe Support
 
-Chef Infra Client now supports YAML recipes that end in `.yaml` in addition to those ending in `.yml`. If a `.yml` and `.yaml` recipe of the same name is present Chef Infra Client will now fail as there is no way to determine which recipe should be loaded in this case.
+Chef Infra Client now supports both `.yaml` and `.yml` file extensions for recipes. If a `.yml` and `.yaml` recipe of the same name is present, Chef Infra Client will now fail as there is no way to determine which recipe should be loaded in this case.
 
 #### Improved Reporting to Automate
 
