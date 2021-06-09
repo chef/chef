@@ -86,7 +86,7 @@ The `windows_firewall_rule` resource now allows specifying multiple IP addresses
 
 #### windows_pagefile
 
-The `windows_pagefile` resource features improved performance and support for the latest releases of Windows 10. The behavior of the resource has also been improved to make managing pagefiles more predictable:
+The `windows_pagefile` resource features improved performance and support for the latest releases of Windows 10. These improvements also make managing pagefiles more predictable:
 
 The `path` property now accepts a drive letter where the pagefile should be stored in addition to the full path the pagefile on disk. For example `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
 
