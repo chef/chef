@@ -100,7 +100,7 @@ The `windows_printer` resource includes improved logging when adding or removing
 
 The `windows_printer_port` resource has been refactored with several improvements:
 
-- Improved performance when adding and removing ports
+- Better performance when adding and removing ports.
 - Supports updating existing ports with new values.
 - Clearer logging of changes made to ports.
 - Deprecated the `description` property, which does not set a description on the ports.
