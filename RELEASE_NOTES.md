@@ -64,7 +64,7 @@ Chef Infra Client now supports both `.yaml` and `.yml` file extensions for recip
 
 #### Improved Reporting to Automate
 
-Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb` configuration. This change allows users to limit the data sent to their Automate servers to prevent indexing sensitive data, or to reduce the necessary storage space on the Automate server.
+Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb`. This change allows users to limit the data sent to their Automate servers to prevent indexing sensitive data or to reduce the necessary storage space on the Automate server.
 
 ### Updated Resources
 
