@@ -83,13 +83,13 @@ class Chef
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("install", "-y", "--version", version, cmd_args, name)
+            self.class.choco_command("install", "-y", "--version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            choco_command("install", "-y", cmd_args, *cmd_names)
+            self.class.choco_command("install", "-y", cmd_args, *cmd_names)
           end
         end
 
@@ -105,13 +105,13 @@ class Chef
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
-            choco_command("upgrade", "-y", "--version", version, cmd_args, name)
+            self.class.choco_command("upgrade", "-y", "--version", version, cmd_args, name)
           end
 
           # but we can do all the ones without version pins at once
           unless name_nil_versions.empty?
             cmd_names = name_nil_versions.keys
-            choco_command("upgrade", "-y", cmd_args, *cmd_names)
+            self.class.choco_command("upgrade", "-y", cmd_args, *cmd_names)
           end
         end
 
@@ -120,7 +120,7 @@ class Chef
         # @param names [Array<String>] array of package names to install
         # @param versions [Array<String>] array of versions to install
         def remove_package(names, versions)
-          choco_command("uninstall", "-y", cmd_args(include_source: false), *names)
+          self.class.choco_command("uninstall", "-y", cmd_args(include_source: false), *names)
         end
 
         # Choco does not have dpkg's distinction between purge and remove
@@ -129,6 +129,15 @@ class Chef
         # Override the superclass check.  The semantics for our new_resource.source is not files to
         # install from, but like the rubygem provider's sources which are more like repos.
         def check_resource_semantics!; end
+
+        # Installed packages in chocolatey as a Hash of names mapped to versions
+        # (names are downcased for case-insensitive matching)
+        #
+        # @return [Hash] name-to-version mapping of installed packages
+        def self.installed_packages
+          installed_packages = Hash[*parse_list_output("list", "-l", "-r").flatten]
+          installed_packages
+        end
 
         private
 
@@ -147,7 +156,7 @@ class Chef
         # return the full path of choco.exe
         #
         # @return [String] full path of choco.exe
-        def choco_exe
+        def self.choco_exe
           @choco_exe ||= begin
               # if this check is in #define_resource_requirements, it won't get
               # run before choco.exe gets called from #load_current_resource.
@@ -159,7 +168,7 @@ class Chef
         end
 
         # lets us mock out an incorrect value for testing.
-        def choco_install_path
+        def self.choco_install_path
           result = powershell_exec!(PATHFINDING_POWERSHELL_COMMAND).result
           result = "" if result.empty?
           result
@@ -170,8 +179,8 @@ class Chef
         #
         # @param args [String] variable number of string arguments
         # @return [Mixlib::ShellOut] object returned from shell_out!
-        def choco_command(*args)
-          shell_out!(choco_exe, *args, returns: new_resource.returns)
+        def self.choco_command(*args)
+          shell_out!(choco_exe, *args)
         end
 
         # Use the available_packages Hash helper to create an array suitable for
@@ -190,7 +199,7 @@ class Chef
         # @return [Array] list of candidate_version, same index as new_resource.package_name/version
         def build_current_versions
           new_resource.package_name.map do |package_name|
-            installed_packages[package_name.downcase]
+            self.class.installed_packages[package_name.downcase]
           end
         end
 
@@ -229,7 +238,7 @@ class Chef
                 cmd += common_options
                 cmd.push( new_resource.list_options ) if new_resource.list_options
 
-                raw = parse_list_output(*cmd)
+                raw = self.class.parse_list_output(*cmd)
                 raw.keys.each_with_object({}) do |name, available|
                   available[name] = desired_name_versions[name] || raw[name]
                 end
@@ -239,21 +248,12 @@ class Chef
           @available_packages
         end
 
-        # Installed packages in chocolatey as a Hash of names mapped to versions
-        # (names are downcased for case-insensitive matching)
-        #
-        # @return [Hash] name-to-version mapping of installed packages
-        def installed_packages
-          @installed_packages ||= Hash[*parse_list_output("list", "-l", "-r").flatten]
-          @installed_packages
-        end
-
         # Helper to convert choco.exe list output to a Hash
         # (names are downcased for case-insensitive matching)
         #
         # @param cmd [String] command to run
         # @return [Hash] list output converted to ruby Hash
-        def parse_list_output(*args)
+        def self.parse_list_output(*args)
           hash = {}
           choco_command(*args).stdout.each_line do |line|
             next if line.start_with?("Chocolatey v")
