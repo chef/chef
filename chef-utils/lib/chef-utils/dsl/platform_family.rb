@@ -87,7 +87,7 @@ module ChefUtils
       alias_method :mac_os_x?, :macos?
 
       # Determine if the Ruby VM is currently running on a Mac node (This is useful primarily for internal use
-      # by chef client before the node object exists).
+      # by Chef Infra Client before the node object exists).
       #
       # @since 17.3
       #
