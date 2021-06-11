@@ -27,6 +27,7 @@ The Platform Family helpers provide an alternative to comparing values from `nod
 * `freebsd?`
 * `gentoo?`
 * `macos?`
+* `macos_ruby?` - this is always true if the ruby VM is running on a mac host and is not stubbed by ChefSpec
 * `netbsd?`
 * `openbsd?`
 * `rhel?` - includes redhat, centos, scientific, oracle, and clearos platforms
