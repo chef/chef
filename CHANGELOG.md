@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.32 -->
-## [v17.2.32](https://github.com/chef/chef/tree/v17.2.32) (2021-06-10)
+<!-- latest_release 17.2.33 -->
+## [v17.2.33](https://github.com/chef/chef/tree/v17.2.33) (2021-06-11)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.37.25 [#11686](https://github.com/chef/chef/pull/11686) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add macos_ruby? helper and wire to the macos? helper [#11693](https://github.com/chef/chef/pull/11693) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add macos_ruby? helper and wire to the macos? helper [#11693](https://github.com/chef/chef/pull/11693) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.33 -->
 - Bump inspec-core-bin to 4.37.25 [#11686](https://github.com/chef/chef/pull/11686) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.32 -->
 - Add 17.2 release notes [#11669](https://github.com/chef/chef/pull/11669) ([tas50](https://github.com/tas50)) <!-- 17.2.30 -->
 - Add testing of installing knife into the client [#11682](https://github.com/chef/chef/pull/11682) ([tas50](https://github.com/tas50)) <!-- 17.2.31 -->
