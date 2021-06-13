@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) Chef Software Inc.
 #
 
-windows_defender 'Configure Windows Defender' do
+windows_defender "Configure Windows Defender" do
   realtime_protection true
   intrusion_protection_system true
   lock_ui true
@@ -18,8 +18,8 @@ windows_defender 'Configure Windows Defender' do
   action :enable
 end
 
-windows_defender_exclusion 'Exclude PNG files' do
-  extensions 'png'
+windows_defender_exclusion "Exclude PNG files" do
+  extensions "png"
   process_paths 'c:\\windows\\system32'
   action :add
 end
