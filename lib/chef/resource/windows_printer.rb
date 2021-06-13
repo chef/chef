@@ -22,6 +22,10 @@ require_relative "../resource"
 
 class Chef
   class Resource
+    # @todo
+    # 1. Allow updating the printer properties
+    # 2. Fail with a warning if the port can't be found and create_port is false
+    # 3. Fail with helpful messaging if the printer driver can't be installed
     class WindowsPrinter < Chef::Resource
       unified_mode true
 
@@ -29,7 +33,7 @@ class Chef
 
       provides(:windows_printer) { true }
 
-      description "Use the **windows_printer** resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system."
+      description "Use the **windows_printer** resource to setup Windows printers. This resource will automatically install the driver specified in the `driver_name` property and will automatically create a printer port using either the `ipv4_address` property or the `port_name property."
       introduced "14.0"
       examples <<~DOC
       **Create a printer**:
@@ -67,7 +71,6 @@ class Chef
         create_port false
       end
       ```
-
       DOC
 
       property :device_id, String,
@@ -122,13 +125,15 @@ class Chef
           device_id new_resource.device_id
           comment printer_data["Comment"]
           default printer_data["Default"]
-          driver_name printer_data["DriverName"]
           location printer_data["Location"]
           shared printer_data["Shared"]
           share_name printer_data["ShareName"]
           port_name printer_data["PortName"]
 
-          # @todo handle the port current_resource
+          driver_data = powershell_exec(%Q{Get-PrinterDriver -Name="#{new_resource.driver_name}"}).result
+          unless driver_data.empty?
+            driver_name new_resource.driver_name
+          end
         end
       end
 
@@ -142,6 +147,10 @@ class Chef
               ipv4_address new_resource.ipv4_address
               port_name new_resource.port_name
             end
+          end
+
+          converge_by("install driver #{new_resource.driver_name}") do
+            powershell_exec!("Add-PrinterDriver -Name '#{new_resource.driver_name}'")
           end
 
           converge_by("create #{@new_resource.device_id}") do
