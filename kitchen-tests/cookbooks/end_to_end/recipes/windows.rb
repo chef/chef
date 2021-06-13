@@ -178,3 +178,4 @@ windows_certificate "c:/mordor/ca.cert.pem" do
 end
 
 include_recipe "::_windows_printer"
+include_recipe "::_windows_defender"
