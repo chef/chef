@@ -33,6 +33,6 @@ end
 windows_printer "HP LaserJet 5th Floor" do
   ipv4_address "10.4.64.41"
   driver_name "Generic / Text Only"
-  port_name "My awesome printer port"
+  port_name "My awesome port"
   create_port false
 end
