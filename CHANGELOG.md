@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.36 -->
-## [v17.2.36](https://github.com/chef/chef/tree/v17.2.36) (2021-06-13)
+<!-- latest_release 17.2.37 -->
+## [v17.2.37](https://github.com/chef/chef/tree/v17.2.37) (2021-06-14)
 
 #### Merged Pull Requests
-- Handle source_line being nil gracefully [#11691](https://github.com/chef/chef/pull/11691) ([fuegas](https://github.com/fuegas))
+- windows_printer: Install drivers, allow skipping port creation, and load state properly [#11665](https://github.com/chef/chef/pull/11665) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- windows_printer: Install drivers, allow skipping port creation, and load state properly [#11665](https://github.com/chef/chef/pull/11665) ([tas50](https://github.com/tas50)) <!-- 17.2.37 -->
 - Handle source_line being nil gracefully [#11691](https://github.com/chef/chef/pull/11691) ([fuegas](https://github.com/fuegas)) <!-- 17.2.36 -->
 - Enable slow resource reporting in our kitchen tests [#11698](https://github.com/chef/chef/pull/11698) ([tas50](https://github.com/tas50)) <!-- 17.2.35 -->
 - Minor improvements for our self documented resources [#11697](https://github.com/chef/chef/pull/11697) ([tas50](https://github.com/tas50)) <!-- 17.2.34 -->
