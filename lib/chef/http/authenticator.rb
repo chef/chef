@@ -88,11 +88,29 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
+        puts "This is the key file name I am trying to load : #{@signing_key_filename}"
         if key_file == nil? && raw_key == nil?
           puts "No key detected"
+        # first time chef-client runs, generate node-name and burn that to the client.rb
+        # use that node name to create a p12/pfx on the fly
+        # store that
         # add in code to dump key from certstore
-        # what key am I looking for? Should it be named Chef-Client or the S/N of the node or what?
+        # what key am I looking for? Should it be named Chef-Client or the S/N of the node or what? - it is the node name as derived from what is listed in the client.rb
+        # - Open the client.rb, ::File.read(client.rb)
+        # - Hit that with a regex to get the node name out
+        #
+        #
+        #   contents = ::File.read(::File.join(ChefConfig::Config.etc_chef_dir, "client.rb"))
+        #   node_name = contents.match(/^node_name.*$/).to_s.split(" ")[1].split(/\W+/)
+        #
+        # - Extract the pfx that matches that from Progress Key hive in HKLM I created earlier, node_name : some_random_value
+        # - extract the key, delete anything on disk
+        # - connect to Chef Server
         # key_file and raw_key nil, check the certstore if Windows, keychain if Mac?
+        #
+        # Chef::Logger("Could not find the key in cert store, falling back to client.pem on disk")
+        # Check for the presence of a validation.pem file and delete it after my new client key is registered with the chef server.
+        #
         elsif !!key_file
           @raw_key = IO.read(key_file).strip
         elsif !!raw_key
