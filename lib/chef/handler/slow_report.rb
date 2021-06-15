@@ -59,7 +59,7 @@ class Chef
 
       def stripped_source_line(resource)
         # strip the leading path off of the source line
-        resource.source_line.gsub(%r{.*/cookbooks/}, "").gsub(%r{.*/chef-[0-9\.]+/}, "")
+        resource.source_line&.gsub(%r{.*/cookbooks/}, "")&.gsub(%r{.*/chef-[0-9\.]+/}, "")
       end
     end
   end

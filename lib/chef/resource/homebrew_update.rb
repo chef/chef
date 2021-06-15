@@ -88,7 +88,7 @@ class Chef
         end
       end
 
-      action :periodic do
+      action :periodic, description: "Run a periodic update based on the frequency property." do
         return unless macos?
 
         unless brew_up_to_date?
@@ -98,7 +98,7 @@ class Chef
         end
       end
 
-      action :update do
+      action :update, description: "Run an immediate update." do
         return unless macos?
 
         converge_by "force update new lists of packages" do
