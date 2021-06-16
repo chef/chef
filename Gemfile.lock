@@ -176,9 +176,9 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
-    ffi (1.15.1)
-    ffi (1.15.1-x64-mingw32)
-    ffi (1.15.1-x86-mingw32)
+    ffi (1.15.3)
+    ffi (1.15.3-x64-mingw32)
+    ffi (1.15.3-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
