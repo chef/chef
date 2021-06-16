@@ -42,12 +42,14 @@ github:
   # allow bumping the major release via label
   major_bump_labels:
     - "Expeditor: Bump Version Major"
-  # Which Github branches to build Omnibus releases from, and what versions
-  # (as determined by the value in the VERSION file) those branches are responsible
-  # for building.
 
+# Which Github branches to build Omnibus releases from, and what versions
+# (as determined by the value in the VERSION file) those branches are responsible
+# for building.
 release_branches:
   - master:
+      version_constraint: 17*
+  - chef-16:
       version_constraint: 16*
   - chef-15:
       version_constraint: 15*
@@ -73,7 +75,7 @@ subscriptions:
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
-      
+
   # These actions are taken, in order they are specified, anytime a Pull Request is merged.
   - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
     actions:
