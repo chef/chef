@@ -166,7 +166,7 @@ describe Chef::Cookbook::SyntaxCheck do
         end
 
         it "it indicates that a ruby file has a syntax error" do
-          expect(Chef::Log).to receive(:fatal).with("Cookbook file default.rb has a ruby syntax error.")
+          expect(Chef::Log).to receive(:fatal).with("Cookbook file borken/recipes/default.rb has a ruby syntax error.")
           allow(Chef::Log).to receive(:fatal)
           expect(syntax_check.validate_ruby_files).to be_falsey
         end
