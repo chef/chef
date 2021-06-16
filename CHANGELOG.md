@@ -1,61 +1,75 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.2.30 -->
-## [v17.2.30](https://github.com/chef/chef/tree/v17.2.30) (2021-06-09)
+<!-- latest_release 17.3.0 -->
+## [v17.3.0](https://github.com/chef/chef/tree/v17.3.0) (2021-06-15)
 
 #### Merged Pull Requests
-- Add 17.2 release notes [#11669](https://github.com/chef/chef/pull/11669) ([tas50](https://github.com/tas50))
+- Add windows_defender and windows_defender_exclusion resources [#11702](https://github.com/chef/chef/pull/11702) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=17.1.35 -->
+<!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add windows_defender and windows_defender_exclusion resources [#11702](https://github.com/chef/chef/pull/11702) ([tas50](https://github.com/tas50)) <!-- 17.3.0 -->
+- Add the x25519 gem to knife [#11706](https://github.com/chef/chef/pull/11706) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.38 -->
+- windows_printer: Install drivers, allow skipping port creation, and load state properly [#11665](https://github.com/chef/chef/pull/11665) ([tas50](https://github.com/tas50)) <!-- 17.2.37 -->
+- Handle source_line being nil gracefully [#11691](https://github.com/chef/chef/pull/11691) ([fuegas](https://github.com/fuegas)) <!-- 17.2.36 -->
+- Enable slow resource reporting in our kitchen tests [#11698](https://github.com/chef/chef/pull/11698) ([tas50](https://github.com/tas50)) <!-- 17.2.35 -->
+- Minor improvements for our self documented resources [#11697](https://github.com/chef/chef/pull/11697) ([tas50](https://github.com/tas50)) <!-- 17.2.34 -->
+- Add macos_ruby? helper and wire to the macos? helper [#11693](https://github.com/chef/chef/pull/11693) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.33 -->
+- Bump inspec-core-bin to 4.37.25 [#11686](https://github.com/chef/chef/pull/11686) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.32 -->
 - Add 17.2 release notes [#11669](https://github.com/chef/chef/pull/11669) ([tas50](https://github.com/tas50)) <!-- 17.2.30 -->
-- Support attribute block/allow list in data collector [#11674](https://github.com/chef/chef/pull/11674) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.29 -->
-- Update omnibus-software to the latest [#11673](https://github.com/chef/chef/pull/11673) ([tas50](https://github.com/tas50)) <!-- 17.2.28 -->
-- Improve the automatically generated docs [#11670](https://github.com/chef/chef/pull/11670) ([tas50](https://github.com/tas50)) <!-- 17.2.27 -->
-- windows_firewall_rule: allow for multiple remote addresses [#11657](https://github.com/chef/chef/pull/11657) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.26 -->
-- Add ed25519 gem back to the omnibus install [#11664](https://github.com/chef/chef/pull/11664) ([tas50](https://github.com/tas50)) <!-- 17.2.25 -->
-- Cleanup the zypper_repository resource + support multiple GPG Keys [#11660](https://github.com/chef/chef/pull/11660) ([tas50](https://github.com/tas50)) <!-- 17.2.24 -->
-- Cleanup windows_printer_port and allow updating the port [#11662](https://github.com/chef/chef/pull/11662) ([tas50](https://github.com/tas50)) <!-- 17.2.23 -->
-- windows_printer: use powershell_exec to delete the printer instead of slower/double logging powershell_script [#11663](https://github.com/chef/chef/pull/11663) ([tas50](https://github.com/tas50)) <!-- 17.2.22 -->
-- Updated the Windows Pagefile resource to use PowerShell over WMI, added a corresponding test file [#11636](https://github.com/chef/chef/pull/11636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.21 -->
-- Bump inspec-core-bin to 4.37.23 [#11655](https://github.com/chef/chef/pull/11655) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.20 -->
-- Add tests to verify knife command load &amp; execution [#11653](https://github.com/chef/chef/pull/11653) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.19 -->
-- Fix incorrect require_relative causing failures in `knife org user add` [#11649](https://github.com/chef/chef/pull/11649) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.18 -->
-- Fix Chef::Handler specs and slow report behavior [#11648](https://github.com/chef/chef/pull/11648) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.17 -->
-- Support recipes that and in .yaml as well as .yml [#11629](https://github.com/chef/chef/pull/11629) ([marcparadise](https://github.com/marcparadise)) <!-- 17.2.16 -->
-- Make sure we load ohai in knife configure correctly [#11647](https://github.com/chef/chef/pull/11647) ([tas50](https://github.com/tas50)) <!-- 17.2.15 -->
-- Bump all deps to the latest [#11643](https://github.com/chef/chef/pull/11643) ([tas50](https://github.com/tas50)) <!-- 17.2.14 -->
-- Add a slow resources report to chef-client [#11642](https://github.com/chef/chef/pull/11642) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.13 -->
-- Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
-- Bump inspec-core-bin to 4.37.20 [#11632](https://github.com/chef/chef/pull/11632) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.12 -->
-- Bump the knife ffi dep [#11618](https://github.com/chef/chef/pull/11618) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.11 -->
-- inspec_waiver_file_entry: Autoload yaml and use dist file [#11552](https://github.com/chef/chef/pull/11552) ([tas50](https://github.com/tas50)) <!-- 17.2.10 -->
-- Bump ffi to 1.15.1 [#11612](https://github.com/chef/chef/pull/11612) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.9 -->
-- Update InSpec to 4.37.17 and bump omnibus [#11611](https://github.com/chef/chef/pull/11611) ([tas50](https://github.com/tas50)) <!-- 17.2.8 -->
-- Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
-- Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50)) <!-- 17.2.7 -->
-- Do not set sensitive true for SSL certificate [#11578](https://github.com/chef/chef/pull/11578) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.2.7 -->
-- Additional dist constants used in chef-cli and InSpec [#11594](https://github.com/chef/chef/pull/11594) ([ramereth](https://github.com/ramereth)) <!-- 17.2.6 -->
-- pass homebrew_path, owner props to homebrew_tap if installing cask [#11607](https://github.com/chef/chef/pull/11607) ([mattlqx](https://github.com/mattlqx)) <!-- 17.2.5 -->
-- Adds promotion of kernel2 package to current channel in expeditor config [#11605](https://github.com/chef/chef/pull/11605) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.2.4 -->
-- Add introduced fields to the hostname resource [#11608](https://github.com/chef/chef/pull/11608) ([tas50](https://github.com/tas50)) <!-- 17.2.3 -->
-- Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.2.2 -->
-- Fix failing Test Kitchen tests in GitHub actions [#11589](https://github.com/chef/chef/pull/11589) ([tas50](https://github.com/tas50)) <!-- 17.2.2 -->
-- Updated the hostname resource to remove WMI support and use PowerShell… [#11584](https://github.com/chef/chef/pull/11584) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.2.1 -->
-- Enables kernel2 habitat package builds/promotions [#11588](https://github.com/chef/chef/pull/11588) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.2.0 -->
-- Update validation on the ResetLockoutCount to limit it to LockoutDuration rather than limiting it to 30 minutes [#11583](https://github.com/chef/chef/pull/11583) ([chef-davin](https://github.com/chef-davin)) <!-- 17.1.41 -->
-- Remove extraneous double mixin for the require. [#11581](https://github.com/chef/chef/pull/11581) ([Dylan-M](https://github.com/Dylan-M)) <!-- 17.1.40 -->
-- Add additional action descriptions for docs [#11575](https://github.com/chef/chef/pull/11575) ([tas50](https://github.com/tas50)) <!-- 17.1.39 -->
-- Make sure we have description fields in actions and fix periods [#11573](https://github.com/chef/chef/pull/11573) ([tas50](https://github.com/tas50)) <!-- 17.1.38 -->
-- More minor docs fixes [#11568](https://github.com/chef/chef/pull/11568) ([tas50](https://github.com/tas50)) <!-- 17.1.37 -->
-- Fix markdown code blocks [#11567](https://github.com/chef/chef/pull/11567) ([tas50](https://github.com/tas50)) <!-- 17.1.36 -->
+- Add testing of installing knife into the client [#11682](https://github.com/chef/chef/pull/11682) ([tas50](https://github.com/tas50)) <!-- 17.2.31 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.2.29](https://github.com/chef/chef/tree/v17.2.29) (2021-06-09)
+
+#### Merged Pull Requests
+- Fix markdown code blocks [#11567](https://github.com/chef/chef/pull/11567) ([tas50](https://github.com/tas50))
+- More minor docs fixes [#11568](https://github.com/chef/chef/pull/11568) ([tas50](https://github.com/tas50))
+- Make sure we have description fields in actions and fix periods [#11573](https://github.com/chef/chef/pull/11573) ([tas50](https://github.com/tas50))
+- Add additional action descriptions for docs [#11575](https://github.com/chef/chef/pull/11575) ([tas50](https://github.com/tas50))
+- Remove extraneous double mixin for the require. [#11581](https://github.com/chef/chef/pull/11581) ([Dylan-M](https://github.com/Dylan-M))
+- Update validation on the ResetLockoutCount to limit it to LockoutDuration rather than limiting it to 30 minutes [#11583](https://github.com/chef/chef/pull/11583) ([chef-davin](https://github.com/chef-davin))
+- Enables kernel2 habitat package builds/promotions [#11588](https://github.com/chef/chef/pull/11588) ([collinmcneese](https://github.com/collinmcneese))
+- Updated the hostname resource to remove WMI support and use PowerShell… [#11584](https://github.com/chef/chef/pull/11584) ([johnmccrae](https://github.com/johnmccrae))
+- Fix failing Test Kitchen tests in GitHub actions [#11589](https://github.com/chef/chef/pull/11589) ([tas50](https://github.com/tas50))
+- Remove comment no longer relevant [#11595](https://github.com/chef/chef/pull/11595) ([deivid-rodriguez](https://github.com/deivid-rodriguez))
+- Add introduced fields to the hostname resource [#11608](https://github.com/chef/chef/pull/11608) ([tas50](https://github.com/tas50))
+- Adds promotion of kernel2 package to current channel in expeditor config [#11605](https://github.com/chef/chef/pull/11605) ([collinmcneese](https://github.com/collinmcneese))
+- pass homebrew_path, owner props to homebrew_tap if installing cask [#11607](https://github.com/chef/chef/pull/11607) ([mattlqx](https://github.com/mattlqx))
+- Additional dist constants used in chef-cli and InSpec [#11594](https://github.com/chef/chef/pull/11594) ([ramereth](https://github.com/ramereth))
+- Do not set sensitive true for SSL certificate [#11578](https://github.com/chef/chef/pull/11578) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Properly generate the docs markdown notes sections [#11601](https://github.com/chef/chef/pull/11601) ([tas50](https://github.com/tas50))
+- Make sure we can run dep update on 2+ branches [#11610](https://github.com/chef/chef/pull/11610) ([tas50](https://github.com/tas50))
+- Update InSpec to 4.37.17 and bump omnibus [#11611](https://github.com/chef/chef/pull/11611) ([tas50](https://github.com/tas50))
+- Bump ffi to 1.15.1 [#11612](https://github.com/chef/chef/pull/11612) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- inspec_waiver_file_entry: Autoload yaml and use dist file [#11552](https://github.com/chef/chef/pull/11552) ([tas50](https://github.com/tas50))
+- Bump the knife ffi dep [#11618](https://github.com/chef/chef/pull/11618) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec-core-bin to 4.37.20 [#11632](https://github.com/chef/chef/pull/11632) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chef/chefstyle to 082bbaf73d76000724f8d8ae3ba7f89c9123ad3f [#11635](https://github.com/chef/chef/pull/11635) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add a slow resources report to chef-client [#11642](https://github.com/chef/chef/pull/11642) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump all deps to the latest [#11643](https://github.com/chef/chef/pull/11643) ([tas50](https://github.com/tas50))
+- Make sure we load ohai in knife configure correctly [#11647](https://github.com/chef/chef/pull/11647) ([tas50](https://github.com/tas50))
+- Support recipes that and in .yaml as well as .yml [#11629](https://github.com/chef/chef/pull/11629) ([marcparadise](https://github.com/marcparadise))
+- Fix Chef::Handler specs and slow report behavior [#11648](https://github.com/chef/chef/pull/11648) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix incorrect require_relative causing failures in `knife org user add` [#11649](https://github.com/chef/chef/pull/11649) ([marcparadise](https://github.com/marcparadise))
+- Add tests to verify knife command load &amp; execution [#11653](https://github.com/chef/chef/pull/11653) ([marcparadise](https://github.com/marcparadise))
+- Bump inspec-core-bin to 4.37.23 [#11655](https://github.com/chef/chef/pull/11655) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Updated the Windows Pagefile resource to use PowerShell over WMI, added a corresponding test file [#11636](https://github.com/chef/chef/pull/11636) ([johnmccrae](https://github.com/johnmccrae))
+- windows_printer: use powershell_exec to delete the printer instead of slower/double logging powershell_script [#11663](https://github.com/chef/chef/pull/11663) ([tas50](https://github.com/tas50))
+- Cleanup windows_printer_port and allow updating the port [#11662](https://github.com/chef/chef/pull/11662) ([tas50](https://github.com/tas50))
+- Cleanup the zypper_repository resource + support multiple GPG Keys [#11660](https://github.com/chef/chef/pull/11660) ([tas50](https://github.com/tas50))
+- Add ed25519 gem back to the omnibus install [#11664](https://github.com/chef/chef/pull/11664) ([tas50](https://github.com/tas50))
+- windows_firewall_rule: allow for multiple remote addresses [#11657](https://github.com/chef/chef/pull/11657) ([johnmccrae](https://github.com/johnmccrae))
+- Improve the automatically generated docs [#11670](https://github.com/chef/chef/pull/11670) ([tas50](https://github.com/tas50))
+- Update omnibus-software to the latest [#11673](https://github.com/chef/chef/pull/11673) ([tas50](https://github.com/tas50))
+- Support attribute block/allow list in data collector [#11674](https://github.com/chef/chef/pull/11674) ([marcparadise](https://github.com/marcparadise))
+<!-- latest_stable_release -->
+
 ## [v17.1.35](https://github.com/chef/chef/tree/v17.1.35) (2021-05-11)
 
 #### Merged Pull Requests
@@ -108,7 +122,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Strip the __env_path variable in the which helper [#11561](https://github.com/chef/chef/pull/11561) ([tas50](https://github.com/tas50))
 - Revert windows hostname changes for now [#11564](https://github.com/chef/chef/pull/11564) ([tas50](https://github.com/tas50))
 - Fix logrotate in tests [#11565](https://github.com/chef/chef/pull/11565) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v17.0.242](https://github.com/chef/chef/tree/v17.0.242) (2021-04-28)
 

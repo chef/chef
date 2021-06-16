@@ -58,13 +58,11 @@ Running handlers complete
 Chef Infra Client finished, 0/1 resources updated in 03 seconds
 ```
 
-Add a slow resources report to chef-client - https://github.com/chef/chef/pull/11642
-
 ### Improved YAML Recipe Support
 
 Chef Infra Client now supports both `.yaml` and `.yml` file extensions for recipes. If a `.yml` and `.yaml` recipe of the same name is present, Chef Infra Client will now fail as there is no way to determine which recipe should be loaded in this case.
 
-#### Improved Reporting to Automate
+### Improved Reporting to Automate
 
 Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb`. This change allows users to limit the data sent to their Automate servers to prevent indexing sensitive data or to reduce the necessary storage space on the Automate server.
 
@@ -90,9 +88,8 @@ The `windows_firewall_rule` resource now allows specifying multiple IP addresses
 
 The `windows_pagefile` resource features improved performance and support for the latest releases of Windows 10. These improvements also make managing pagefiles more predictable:
 
-The `path` property now accepts a drive letter in addition to the full path of the pagefile on disk. For example, `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
-
-Creating a new pagefile no longer disables the system-managed pagefile by default. If you wish to create a pagefile while also disabling the system-managed pagefile, set `system_managed false`.
+- The `path` property now accepts a drive letter in addition to the full path of the pagefile on disk. For example, `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
+- Creating a new pagefile no longer disables the system-managed pagefile by default. If you wish to create a pagefile while also disabling the system-managed pagefile, set `system_managed false`.
 
 #### windows_printer
 

@@ -12,6 +12,7 @@ provisioner:
   deprecations_as_errors: true
   chef_license: accept-no-persist
   product_name: chef
+  slow_resource_report: true
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
