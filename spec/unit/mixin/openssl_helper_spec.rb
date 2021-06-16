@@ -21,13 +21,6 @@ describe Chef::Mixin::OpenSSLHelper do
     Class.new { include Chef::Mixin::OpenSSLHelper }.new
   end
 
-  describe ".included" do
-    it "requires openssl" do
-      instance
-      expect(defined?(OpenSSL)).to_not be(false)
-    end
-  end
-
   # Path helpers
   describe "#get_key_filename" do
     context "When the input is not a string" do

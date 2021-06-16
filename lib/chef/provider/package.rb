@@ -28,13 +28,40 @@ class Chef
     class Package < Chef::Provider
       extend Chef::Mixin::SubclassDirective
 
-      # subclasses declare this if they want all their arguments as arrays of packages and names
+      # subclasses declare this if they want all their arguments as arrays of packages and names.
+      # any new packages using this should also use allow_nils below.
+      #
       subclass_directive :use_multipackage_api
-      # subclasses declare this if they want sources (filenames) pulled from their package names
+
+      # subclasses declare this if they want sources (filenames) pulled from their package names.
+      # this is for package providers that take a path into the filesystem (rpm, dpkg).
+      #
       subclass_directive :use_package_name_for_source
+
       # keeps package_names_for_targets and versions_for_targets indexed the same as package_name at
-      # the cost of having the subclass needing to deal with nils
+      # the cost of having the subclass needing to deal with nils.  all providers are encouraged to
+      # migrate to using this as it simplifies dealing with package aliases in subclasses.
+      #
       subclass_directive :allow_nils
+
+      # subclasses that implement complex pattern matching using constraints, particularly the yum and
+      # dnf classes, should filter the installed version against the desired version constraint and
+      # return nil if it does not match.  this means that 'nil' does not mean that no version of the
+      # package is installed, but that the installed version does not satisfy the desired constraints.
+      # (the package plus the constraints are not installed)
+      #
+      # [ this may arguably be useful for all package providers and it greatly simplifies the logic
+      #   in the superclass that gets executed, so maybe this should always be used now? ]
+      #
+      # note that when using this feature that the current_resource.version must be loaded with the
+      # correct currently installed version, without doing the filtering -- for reporting and for
+      # correctly displaying version upgrades.  that means there are 3 different arrays which must be
+      # loaded by the subclass:  candidate_version, magic_version and current_resource.version.
+      #
+      # NOTE: magic_version is a terrible name, but I couldn't think of anything better, at least this
+      #       way it stands out clearly.
+      #
+      subclass_directive :use_magic_version
 
       #
       # Hook that subclasses use to populate the candidate_version(s)
@@ -82,7 +109,7 @@ class Chef
 
       action :install do
         unless target_version_array.any?
-          logger.trace("#{new_resource} is already installed - nothing to do")
+          logger.debug("#{new_resource} is already installed - nothing to do")
           return
         end
 
@@ -111,7 +138,7 @@ class Chef
 
       action :upgrade do
         unless target_version_array.any?
-          logger.trace("#{new_resource} no versions to upgrade - nothing to do")
+          logger.debug("#{new_resource} no versions to upgrade - nothing to do")
           return
         end
 
@@ -150,7 +177,7 @@ class Chef
             logger.info("#{new_resource} removed")
           end
         else
-          logger.trace("#{new_resource} package does not exist - nothing to do")
+          logger.debug("#{new_resource} package does not exist - nothing to do")
         end
       end
 
@@ -202,7 +229,7 @@ class Chef
             end
           end
         else
-          logger.trace("#{new_resource} is already locked")
+          logger.debug("#{new_resource} is already locked")
         end
       end
 
@@ -221,7 +248,7 @@ class Chef
             end
           end
         else
-          logger.trace("#{new_resource} is already unlocked")
+          logger.debug("#{new_resource} is already unlocked")
         end
       end
 
@@ -414,19 +441,21 @@ class Chef
             each_package do |package_name, new_version, current_version, candidate_version|
               case action
               when :upgrade
-                if version_equals?(current_version, new_version)
-                  # this is an odd use case
-                  logger.trace("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
-                  target_version_array.push(nil)
-                elsif version_equals?(current_version, candidate_version)
-                  logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
+                if current_version.nil?
+                  # with use_magic_version there may be a package installed, but it fails the user's
+                  # requested new_resource.version constraints
+                  logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
+                  target_version_array.push(candidate_version)
+                elsif !use_magic_version? && version_equals?(current_version, new_version)
+                  # this is a short-circuit (mostly for the rubygems provider) to avoid needing to expensively query the candidate_version which must come later
+                  logger.trace("#{new_resource} #{package_name} #{new_version} is already installed")
                   target_version_array.push(nil)
                 elsif candidate_version.nil?
                   logger.trace("#{new_resource} #{package_name} has no candidate_version to upgrade to")
                   target_version_array.push(nil)
-                elsif current_version.nil?
-                  logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
-                  target_version_array.push(candidate_version)
+                elsif version_equals?(current_version, candidate_version)
+                  logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
+                  target_version_array.push(nil)
                 elsif !allow_downgrade && version_compare(current_version, candidate_version) == 1
                   logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
                   target_version_array.push(nil)
@@ -436,21 +465,20 @@ class Chef
                 end
 
               when :install
-                if new_version
+                if new_version && !use_magic_version?
                   if version_requirement_satisfied?(current_version, new_version)
                     logger.trace("#{new_resource} #{package_name} #{current_version} satisfies #{new_version} requirement")
                     target_version_array.push(nil)
                   elsif current_version && !allow_downgrade && version_compare(current_version, new_version) == 1
                     logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
                     target_version_array.push(nil)
-                  elsif version_equals?(current_version, candidate_version)
-                    logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
-                    target_version_array.push(nil)
                   else
                     logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
                     target_version_array.push(new_version)
                   end
                 elsif current_version.nil?
+                  # with use_magic_version there may be a package installed, but it fails the user's
+                  # requested new_resource.version constraints
                   logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
                   target_version_array.push(candidate_version)
                 else
@@ -511,8 +539,14 @@ class Chef
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
 
-              if !version_requirement_satisfied?(current_version, new_version) && candidate_version.nil?
-                missing.push(package_name)
+              if use_magic_version?
+                if !magic_version && candidate_version.nil?
+                  missing.push(package_name)
+                end
+              else
+                if !version_requirement_satisfied?(current_version, new_version) && candidate_version.nil?
+                  missing.push(package_name)
+                end
               end
             end
             missing
@@ -525,7 +559,7 @@ class Chef
       def each_package
         package_name_array.each_with_index do |package_name, i|
           candidate_version = candidate_version_array[i]
-          current_version = current_version_array[i]
+          current_version = use_magic_version? ? magic_version[i] : current_version_array[i]
           new_version = new_version_array[i]
           yield package_name, new_version, current_version, candidate_version
         end
@@ -564,12 +598,10 @@ class Chef
       # @return [Array] new_resource.source as an array
       def source_array
         @source_array ||=
-          begin
-            if new_resource.source.nil?
-              package_name_array.map { nil }
-            else
-              [ new_resource.source ].flatten
-            end
+          if new_resource.source.nil?
+            package_name_array.map { nil }
+          else
+            [ new_resource.source ].flatten
           end
       end
 
@@ -578,16 +610,14 @@ class Chef
       # @return [Array] Array of sources with package_names converted to sources
       def resolved_source_array
         @resolved_source_array ||=
-          begin
-            source_array.each_with_index.map do |source, i|
-              package_name = package_name_array[i]
-              # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
-              if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
-                logger.trace("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
-                package_name
-              else
-                source
-              end
+          source_array.each_with_index.map do |source, i|
+            package_name = package_name_array[i]
+            # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
+            if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
+              logger.trace("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
+              package_name
+            else
+              source
             end
           end
       end

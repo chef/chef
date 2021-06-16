@@ -51,7 +51,6 @@ class Chef
           end
 
           def start
-            ENV["PYTHONUNBUFFERED"] = "1"
             @inpipe, inpipe_write = IO.pipe
             outpipe_read, @outpipe = IO.pipe
             @stdin, @stdout, @stderr, @wait_thr = Open3.popen3("#{yum_command} #{outpipe_read.fileno} #{inpipe_write.fileno}", outpipe_read.fileno => outpipe_read, inpipe_write.fileno => inpipe_write, close_others: false)
@@ -74,11 +73,16 @@ class Chef
               stderr.close unless stderr.nil?
               inpipe.close unless inpipe.nil?
               outpipe.close unless outpipe.nil?
+              @stdin = @stdout = @stderr = @inpipe = @outpipe = @wait_thr = nil
             end
           end
 
           def check
             start if stdin.nil?
+          end
+
+          def close_rpmdb
+            query("close_rpmdb", {})
           end
 
           def compare_versions(version1, version2)
@@ -117,12 +121,12 @@ class Chef
             parameters = { "provides" => provides, "version" => version, "arch" => arch }
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
-            # XXX: for now we restart before and after every query with an enablerepo/disablerepo to clean the helpers internal state
-            restart unless repo_opts.empty?
+            # XXX: for now we close the rpmdb before and after every query with an enablerepo/disablerepo to clean the helpers internal state
+            close_rpmdb unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
             Chef::Log.trace "parsed #{version} from python helper"
-            restart unless repo_opts.empty?
+            close_rpmdb unless repo_opts.empty?
             version
           end
 
@@ -156,10 +160,11 @@ class Chef
             with_helper do
               json = build_query(action, parameters)
               Chef::Log.trace "sending '#{json}' to python helper"
-              outpipe.syswrite json + "\n"
-              output = inpipe.sysread(4096).chomp
+              outpipe.puts json
+              outpipe.flush
+              output = inpipe.readline.chomp
               Chef::Log.trace "got '#{output}' from python helper"
-              return output
+              output
             end
           end
 
@@ -207,13 +212,13 @@ class Chef
               Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
             end
             ret
-          rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
+          rescue => e
             output = drain_fds
-            if ( max_retries -= 1 ) > 0
+            restart
+            if ( max_retries -= 1 ) > 0 && !ENV["YUM_HELPER_NO_RETRIES"]
               unless output.empty?
                 Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end
-              restart
               retry
             else
               raise e if output.empty?

@@ -1,7 +1,6 @@
 
 autoload :Set, "set"
 require_relative "exceptions"
-require_relative "knife/cookbook_metadata"
 require_relative "digester"
 require_relative "cookbook_manifest"
 require_relative "cookbook_version"

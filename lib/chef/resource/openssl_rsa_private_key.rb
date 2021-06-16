@@ -43,7 +43,7 @@ class Chef
         Generate new 1024bit key with the aes-128-cbc cipher
 
         ```ruby
-        openssl_rsa_key '/etc/ssl_files/rsakey_aes128cbc.pem' do
+        openssl_rsa_private_key '/etc/ssl_files/rsakey_aes128cbc.pem' do
           key_length 1024
           key_cipher 'aes-128-cbc'
           action :create
@@ -87,9 +87,7 @@ class Chef
         description: "Force creation of the key even if the same key already exists on the node.",
         default: false, desired_state: false
 
-      action :create do
-        description "Create the RSA private key."
-
+      action :create, description: "Create the RSA private key file." do
         return if new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
 
         converge_by("create #{new_resource.key_length} bit RSA key #{new_resource.path}") do

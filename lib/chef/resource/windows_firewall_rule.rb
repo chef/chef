@@ -39,6 +39,19 @@ class Chef
       end
       ```
 
+      **Configuring multiple remote-address ports on a rule**:
+
+      ```ruby
+      windows_firewall_rule 'MyRule' do
+        description          'Testing out remote address arrays'
+        enabled              false
+        local_port           1434
+        remote_address       %w(10.17.3.101 172.7.7.53)
+        protocol             'TCP'
+        action               :create
+      end
+      ```
+
       **Allow protocol ICMPv6 with ICMP Type**:
 
       ```ruby
@@ -97,8 +110,9 @@ class Chef
         coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map(&:to_s) },
         description: "The local port the firewall rule applies to."
 
-      property :remote_address, String,
-        description: "The remote address the firewall rule applies to."
+      property :remote_address, [String, Array],
+        coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map(&:to_s) },
+        description: "The remote address(es) the firewall rule applies to."
 
       property :remote_port, [String, Integer, Array],
         # split various formats of comma separated lists and provide a sorted array of strings to match PS output
@@ -172,7 +186,7 @@ class Chef
         group state["group"]
         local_address state["local_address"]
         local_port Array(state["local_port"]).sort
-        remote_address state["remote_address"]
+        remote_address Array(state["remote_address"]).sort
         remote_port Array(state["remote_port"]).sort
         direction state["direction"]
         protocol state["protocol"]
@@ -185,8 +199,7 @@ class Chef
         enabled state["enabled"]
       end
 
-      action :create do
-        description "Create a Windows firewall entry."
+      action :create, description: "Create a Windows firewall entry." do
         if current_resource
           converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
             :remote_port, :direction, :protocol, :icmp_type, :firewall_action, :profile, :program, :service,
@@ -207,9 +220,7 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Delete an existing Windows firewall entry."
-
+      action :delete, description: "Delete an existing Windows firewall entry." do
         if current_resource
           converge_by("delete firewall rule #{new_resource.rule_name}") do
             powershell_exec!("Remove-NetFirewallRule -Name '#{new_resource.rule_name}'")
@@ -230,7 +241,7 @@ class Chef
           cmd << " -Description '#{new_resource.description}'" if new_resource.description
           cmd << " -LocalAddress '#{new_resource.local_address}'" if new_resource.local_address
           cmd << " -LocalPort '#{new_resource.local_port.join("', '")}'" if new_resource.local_port
-          cmd << " -RemoteAddress '#{new_resource.remote_address}'" if new_resource.remote_address
+          cmd << " -RemoteAddress '#{new_resource.remote_address.join("', '")}'" if new_resource.remote_address
           cmd << " -RemotePort '#{new_resource.remote_port.join("', '")}'" if new_resource.remote_port
           cmd << " -Direction '#{new_resource.direction}'" if new_resource.direction
           cmd << " -Protocol '#{new_resource.protocol}'" if new_resource.protocol

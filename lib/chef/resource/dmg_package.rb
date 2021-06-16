@@ -121,9 +121,7 @@ class Chef
         end
       end
 
-      action :install do
-        description "Installs the application."
-
+      action :install, description: "Installs the application." do
         if current_resource.nil?
           if new_resource.source
             remote_file dmg_file do
@@ -171,13 +169,11 @@ class Chef
       action_class do
         # @return [String] the path to the dmg file
         def dmg_file
-          @dmg_file ||= begin
-            if new_resource.file.nil?
-              "#{Chef::Config[:file_cache_path]}/#{new_resource.dmg_name}.dmg"
-            else
-              new_resource.file
-            end
-          end
+          @dmg_file ||= if new_resource.file.nil?
+                          "#{Chef::Config[:file_cache_path]}/#{new_resource.dmg_name}.dmg"
+                        else
+                          new_resource.file
+                        end
         end
 
         # @return [String] the hdiutil flag for handling DMGs with a password

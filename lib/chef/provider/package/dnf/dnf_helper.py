@@ -64,7 +64,7 @@ def version_tuple(versionstr):
         tmp = versionstr[colon_index + 1:dash_index]
         if tmp != '':
             v = tmp
-        arch_index = versionstr.find('.', dash_index)
+        arch_index = versionstr.rfind('.', dash_index)
         if arch_index > 0:
             r = versionstr[dash_index + 1:arch_index]
         else:
@@ -78,12 +78,12 @@ def version_tuple(versionstr):
 def versioncompare(versions):
     sack = get_sack()
     if (versions[0] is None) or (versions[1] is None):
-      outpipe.write('0\n')
-      outpipe.flush()
+        outpipe.write('0\n')
+        outpipe.flush()
     else:
-      evr_comparison = dnf.rpm.rpm.labelCompare(version_tuple(versions[0]), version_tuple(versions[1]))
-      outpipe.write('{}\n'.format(evr_comparison))
-      outpipe.flush()
+        evr_comparison = dnf.rpm.rpm.labelCompare(version_tuple(versions[0]), version_tuple(versions[1]))
+        outpipe.write('{}\n'.format(evr_comparison))
+        outpipe.flush()
 
 def query(command):
     sack = get_sack()
@@ -98,14 +98,27 @@ def query(command):
         q = q.available()
 
     if 'epoch' in command:
-        q = q.filterm(epoch=int(command['epoch']))
+        # We assume that any glob is "*" so just omit the filter since the dnf libraries have no
+        # epoch__glob filter.  That means "?" wildcards in epochs will fail.  The workaround is to
+        # not use the version filter here but to put the version with all the globs in the package name.
+        if not dnf.util.is_glob_pattern(command['epoch']):
+            q = q.filterm(epoch=int(command['epoch']))
     if 'version' in command:
-        q = q.filterm(version__glob=command['version'])
+        if dnf.util.is_glob_pattern(command['version']):
+            q = q.filterm(version__glob=command['version'])
+        else:
+            q = q.filterm(version=command['version'])
     if 'release' in command:
-        q = q.filterm(release__glob=command['release'])
+        if dnf.util.is_glob_pattern(command['release']):
+            q = q.filterm(release__glob=command['release'])
+        else:
+            q = q.filterm(release=command['release'])
 
     if 'arch' in command:
-        q = q.filterm(arch__glob=command['arch'])
+        if dnf.util.is_glob_pattern(command['arch']):
+            q = q.filterm(arch__glob=command['arch'])
+        else:
+            q = q.filterm(arch=command['arch'])
 
     # only apply the default arch query filter if it returns something
     archq = q.filter(arch=[ 'noarch', hawkey.detect_arch() ])
@@ -139,21 +152,26 @@ def setup_exit_handler():
     signal.signal(signal.SIGQUIT, exit_handler)
 
 if len(sys.argv) < 3:
-  inpipe = sys.stdin
-  outpipe = sys.stdout
+    inpipe = sys.stdin
+    outpipe = sys.stdout
 else:
-  inpipe = os.fdopen(int(sys.argv[1]), "r")
-  outpipe = os.fdopen(int(sys.argv[2]), "w")
+    os.set_blocking(int(sys.argv[1]), True)
+    inpipe = os.fdopen(int(sys.argv[1]), "r")
+    outpipe = os.fdopen(int(sys.argv[2]), "w")
 
 try:
+    setup_exit_handler()
     while 1:
-        # kill self if we get orphaned (tragic)
+        # stop the process if the parent proc goes away
         ppid = os.getppid()
         if ppid == 1:
             raise RuntimeError("orphaned")
 
-        setup_exit_handler()
         line = inpipe.readline()
+
+        # only way to detect EOF in python
+        if line == "":
+            break
 
         try:
             command = json.loads(line)
@@ -170,4 +188,4 @@ try:
             raise RuntimeError("bad command")
 finally:
     if base is not None:
-        base.closeRpmDB()
+        base.close()

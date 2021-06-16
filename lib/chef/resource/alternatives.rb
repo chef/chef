@@ -26,7 +26,7 @@ class Chef
 
       provides(:alternatives) { true }
 
-      description "The alternatives resource allows for configuration of command alternatives in Linux using the alternatives or update-alternatives packages."
+      description "Use the **alternatives** resource to configure command alternatives in Linux using the alternatives or update-alternatives packages."
       introduced "16.0"
       examples <<~DOC
       **Install an alternative**:
@@ -122,7 +122,7 @@ class Chef
         end
       end
 
-      action :install do
+      action :install, description: "Install an alternative on the system including symlinks." do
         if path_priority != new_resource.priority
           converge_by("adding alternative #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}") do
             output = shell_out(alternatives_cmd, "--install", new_resource.link, new_resource.link_name, new_resource.path, new_resource.priority)
@@ -133,7 +133,7 @@ class Chef
         end
       end
 
-      action :set do
+      action :set, description: "Set the symlink for an alternative." do
         if current_path != new_resource.path
           converge_by("setting alternative #{new_resource.link_name} #{new_resource.path}") do
             output = shell_out(alternatives_cmd, "--set", new_resource.link_name, new_resource.path)
@@ -144,7 +144,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove an alternative and all associated links." do
         if path_exists?
           converge_by("removing alternative #{new_resource.link_name} #{new_resource.path}") do
             shell_out(alternatives_cmd, "--remove", new_resource.link_name, new_resource.path)
@@ -152,13 +152,13 @@ class Chef
         end
       end
 
-      action :auto do
+      action :auto, description: "Set an alternative up in automatic mode with the highest priority automatically selected." do
         converge_by("setting auto alternative #{new_resource.link_name}") do
           shell_out(alternatives_cmd, "--auto", new_resource.link_name)
         end
       end
 
-      action :refresh do
+      action :refresh, description: "Refresh alternatives." do
         converge_by("refreshing alternative #{new_resource.link_name}") do
           shell_out(alternatives_cmd, "--refresh", new_resource.link_name)
         end

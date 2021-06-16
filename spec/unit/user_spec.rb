@@ -201,7 +201,7 @@ describe Chef::User do
   end
 
   describe "API Interactions" do
-    before (:each) do
+    before(:each) do
       @user = Chef::User.new
       @user.name "foobar"
       @http_client = double("Chef::ServerAPI mock")

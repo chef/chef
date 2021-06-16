@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-require "chef/knife"
 require "chef/json_compat"
 
 class Chef

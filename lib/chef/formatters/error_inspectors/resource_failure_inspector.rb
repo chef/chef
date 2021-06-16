@@ -64,36 +64,34 @@ class Chef
         def recipe_snippet
           return nil if dynamic_resource?
 
-          @snippet ||= begin
-            if (file = parse_source) && (line = parse_line(file))
-              return nil unless ::File.exists?(file)
+          @snippet ||= if (file = parse_source) && (line = parse_line(file))
+                         return nil unless ::File.exist?(file)
 
-              lines = IO.readlines(file)
+                         lines = IO.readlines(file)
 
-              relevant_lines = ["# In #{file}\n\n"]
+                         relevant_lines = ["# In #{file}\n\n"]
 
-              current_line = line - 1
-              current_line = 0 if current_line < 0
-              nesting = 0
+                         current_line = line - 1
+                         current_line = 0 if current_line < 0
+                         nesting = 0
 
-              loop do
+                         loop do
 
-                # low rent parser. try to gracefully handle nested blocks in resources
-                nesting += 1 if /\s+do\s*/.match?(lines[current_line])
-                nesting -= 1 if /end\s*$/.match?(lines[current_line])
+                           # low rent parser. try to gracefully handle nested blocks in resources
+                           nesting += 1 if /\s+do\s*/.match?(lines[current_line])
+                           nesting -= 1 if /end\s*$/.match?(lines[current_line])
 
-                relevant_lines << format_line(current_line, lines[current_line])
+                           relevant_lines << format_line(current_line, lines[current_line])
 
-                break if lines[current_line + 1].nil?
-                break if current_line >= (line + 50)
-                break if nesting <= 0
+                           break if lines[current_line + 1].nil?
+                           break if current_line >= (line + 50)
+                           break if nesting <= 0
 
-                current_line += 1
-              end
-              relevant_lines << format_line(current_line + 1, lines[current_line + 1]) if lines[current_line + 1]
-              relevant_lines.join("")
-            end
-          end
+                           current_line += 1
+                         end
+                         relevant_lines << format_line(current_line + 1, lines[current_line + 1]) if lines[current_line + 1]
+                         relevant_lines.join("")
+                       end
         end
 
         def dynamic_resource?

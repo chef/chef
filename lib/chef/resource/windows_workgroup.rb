@@ -30,13 +30,13 @@ class Chef
       examples <<~DOC
       **Join a workgroup**:
 
-      ``` ruby
+      ```ruby
       windows_workgroup 'myworkgroup'
       ```
 
       **Join a workgroup using a specific user**:
 
-      ``` ruby
+      ```ruby
       windows_workgroup 'myworkgroup' do
         user 'Administrator'
         password 'passw0rd'
@@ -87,8 +87,7 @@ class Chef
       property :sensitive, [TrueClass, FalseClass],
         default: true, desired_state: false
 
-      action :join do
-        description "Update the workgroup."
+      action :join, description: "Update the workgroup." do
 
         unless workgroup_member?
           converge_by("join workstation workgroup #{new_resource.workgroup_name}") do

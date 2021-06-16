@@ -92,7 +92,7 @@ class Chef
         super(caller.first, *args)
       end
 
-      action :break do
+      action :break, description: "Add a breakpoint for use with #{ChefUtils::Dist::Infra::SHELL}" do
         if defined?(Shell) && Shell.running?
           with_run_context :parent do
             run_context.resource_collection.iterator.pause

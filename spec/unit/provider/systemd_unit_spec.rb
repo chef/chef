@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::SystemdUnit do
+describe Chef::Provider::SystemdUnit, :linux_only do
 
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
@@ -117,6 +117,7 @@ describe Chef::Provider::SystemdUnit do
       allow(provider).to receive(:enabled?).and_return(false)
       allow(provider).to receive(:masked?).and_return(false)
       allow(provider).to receive(:static?).and_return(false)
+      allow(provider).to receive(:indirect?).and_return(false)
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -811,6 +812,49 @@ describe Chef::Provider::SystemdUnit do
         end
       end
 
+      def with_systemctl_show(systemctl_path, instance, opts, stdout)
+        systemctl_show = [systemctl_path, instance, "show", "-p", "UnitFileState", "-p", "ActiveState", unit_name]
+        expect(provider).to receive(:shell_out).with(*systemctl_show, **opts).and_return(double(stdout: stdout, exitstatus: 0, error?: false))
+      end
+
+      describe "systemd_unit_status" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.unit_name(unit_name)
+        end
+
+        it "should return status if '#{systemctl_path} --system show -p UnitFileState -p ActiveState unit_name' returns 0 and has nil" do
+          # No unit known for this service, and inactive
+          nil_and_inactive = <<-STDOUT
+            ActiveState=inactive
+            UnitFileState=
+          STDOUT
+          nil_and_inactive_h = {
+            "ActiveState" => "inactive",
+            "UnitFileState" => nil,
+          }
+          with_systemctl_show(systemctl_path, "--system", {},  nil_and_inactive)
+          expect(provider.systemd_unit_status).to eql(nil_and_inactive_h)
+        end
+
+        it "should not error if '#{systemctl_path} --system show' is run against a template unit" do
+          current_resource.unit_name("foo@.service")
+          template_error = "Failed to get properties: Unit name foo@.service is neither a valid invocation ID nor unit name."
+          systemctl_show = [systemctl_path, "--system", "show", "-p", "UnitFileState", "-p", "ActiveState", "foo@.service"]
+          expect(provider).to receive(:shell_out).with(*systemctl_show).and_return(double(stdout: "", stderr: template_error, exitstatus: 1, error?: true))
+          expect(provider.systemd_unit_status).to eql({})
+        end
+      end
+
+      enabled_and_active = <<-STDOUT
+        ActiveState=active
+        UnitFileState=enabled
+      STDOUT
+      disabled_and_inactive = <<-STDOUT
+        ActiveState=disabled
+        UnitFileState=inactive
+      STDOUT
+
       describe "#active?" do
         before(:each) do
           provider.current_resource = current_resource
@@ -820,33 +864,25 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "returns true when unit is active" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-active", unit_name, user_cmd_opts)
-              .and_return(shell_out_success)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, enabled_and_active)
             expect(provider.active?).to be true
           end
 
           it "returns false when unit is inactive" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-active", unit_name, user_cmd_opts)
-              .and_return(shell_out_failure)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, disabled_and_inactive)
             expect(provider.active?).to be false
           end
         end
 
         context "when no user is specified" do
           it "returns true when unit is active" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-active", unit_name)
-              .and_return(shell_out_success)
+            with_systemctl_show(systemctl_path, "--system", {}, enabled_and_active)
             expect(provider.active?).to be true
           end
 
           it "returns false when unit is not active" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-active", unit_name)
-              .and_return(shell_out_failure)
+            with_systemctl_show(systemctl_path, "--system", {}, disabled_and_inactive)
             expect(provider.active?).to be false
           end
         end
@@ -861,33 +897,25 @@ describe Chef::Provider::SystemdUnit do
         context "when a user is specified" do
           it "returns true when unit is enabled" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-              .and_return(shell_out_success)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, enabled_and_active)
             expect(provider.enabled?).to be true
           end
 
           it "returns false when unit is not enabled" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-              .and_return(shell_out_disabled)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, disabled_and_inactive)
             expect(provider.enabled?).to be false
           end
         end
 
         context "when no user is specified" do
           it "returns true when unit is enabled" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-enabled", unit_name)
-              .and_return(shell_out_success)
+            with_systemctl_show(systemctl_path, "--system", {}, enabled_and_active)
             expect(provider.enabled?).to be true
           end
 
           it "returns false when unit is not enabled" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-enabled", unit_name)
-              .and_return(shell_out_disabled)
+            with_systemctl_show(systemctl_path, "--system", {}, disabled_and_inactive)
             expect(provider.enabled?).to be false
           end
         end
@@ -899,36 +927,33 @@ describe Chef::Provider::SystemdUnit do
           allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
+        masked_and_inactive = <<-STDOUT
+          ActiveState=inactive
+          UnitFileState=masked
+        STDOUT
+
         context "when a user is specified" do
           it "returns true when the unit is masked" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "status", unit_name, user_cmd_opts)
-              .and_return(shell_out_masked)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, masked_and_inactive)
             expect(provider.masked?).to be true
           end
 
           it "returns false when the unit is not masked" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "status", unit_name, user_cmd_opts)
-              .and_return(shell_out_static)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, enabled_and_active)
             expect(provider.masked?).to be false
           end
         end
 
         context "when no user is specified" do
           it "returns true when the unit is masked" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "status", unit_name)
-              .and_return(shell_out_masked)
+            with_systemctl_show(systemctl_path, "--system", {}, masked_and_inactive)
             expect(provider.masked?).to be true
           end
 
           it "returns false when the unit is not masked" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "status", unit_name)
-              .and_return(shell_out_static)
+            with_systemctl_show(systemctl_path, "--system", {}, enabled_and_active)
             expect(provider.masked?).to be false
           end
         end
@@ -940,36 +965,33 @@ describe Chef::Provider::SystemdUnit do
           allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
+        static_and_active = <<-STDOUT
+          ActiveState=active
+          UnitFileState=static
+        STDOUT
+
         context "when a user is specified" do
           it "returns true when the unit is static" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-              .and_return(shell_out_static)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, static_and_active)
             expect(provider.static?).to be true
           end
 
           it "returns false when the unit is not static" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-              .and_return(shell_out_masked)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, enabled_and_active)
             expect(provider.static?).to be false
           end
         end
 
         context "when no user is specified" do
           it "returns true when the unit is static" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-enabled", unit_name)
-              .and_return(shell_out_static)
+            with_systemctl_show(systemctl_path, "--system", {}, static_and_active)
             expect(provider.static?).to be true
           end
 
           it "returns false when the unit is not static" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-enabled", unit_name)
-              .and_return(shell_out_masked)
+            with_systemctl_show(systemctl_path, "--system", {}, enabled_and_active)
             expect(provider.static?).to be false
           end
         end
@@ -981,36 +1003,33 @@ describe Chef::Provider::SystemdUnit do
           allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
         end
 
+        indirect_and_inactive = <<-STDOUT
+          ActiveState=inactive
+          UnitFileState=indirect
+        STDOUT
+
         context "when a user is specified" do
           it "returns true when the unit is indirect" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-              .and_return(shell_out_indirect)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, indirect_and_inactive)
             expect(provider.indirect?).to be true
           end
 
           it "returns false when the unit is not indirect" do
             current_resource.user(user_name)
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-              .and_return(shell_out_static)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, enabled_and_active)
             expect(provider.indirect?).to be false
           end
         end
 
         context "when no user is specified" do
           it "returns true when the unit is indirect" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-enabled", unit_name)
-              .and_return(shell_out_indirect)
+            with_systemctl_show(systemctl_path, "--system", {}, indirect_and_inactive)
             expect(provider.indirect?).to be true
           end
 
           it "returns false when the unit is not indirect" do
-            expect(provider).to receive(:shell_out_compacted)
-              .with(systemctl_path, "--system", "is-enabled", unit_name)
-              .and_return(shell_out_static)
+            with_systemctl_show(systemctl_path, "--system", {}, enabled_and_active)
             expect(provider.indirect?).to be false
           end
         end

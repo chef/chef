@@ -8,42 +8,95 @@ describe Chef::Compliance::Runner do
     described_class.new.tap do |r|
       r.node = node
       r.run_id = "my_run_id"
-      r.recipes = []
     end
   end
 
   describe "#enabled?" do
-    it "is true if the node attributes have audit profiles and the audit cookbook is not present" do
+    context "when the node is not available" do
+      let(:runner) { described_class.new }
+      it "is false because it needs the node to answer that question" do
+        expect(runner).not_to be_enabled
+      end
+    end
+
+    it "is true if the node attributes have audit profiles and the audit cookbook is not present, and the compliance mode attribute is nil" do
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
-      runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = nil
 
       expect(runner).to be_enabled
     end
 
-    it "is false if the node attributes have audit profiles and the audit cookbook is present" do
+    it "is true if the node attributes have audit profiles and the audit cookbook is not present, and the compliance mode attribute is true" do
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
-      runner.recipes = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = true
+
+      expect(runner).to be_enabled
+    end
+
+    it "is false if the node attributes have audit profiles and the audit cookbook is not present, and the compliance mode attribute is false" do
+      node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      node.normal["audit"]["compliance_phase"] = false
 
       expect(runner).not_to be_enabled
     end
 
-    it "is false if the node attributes do not have audit profiles and the audit cookbook is not present" do
+    it "is false if the node attributes have audit profiles and the audit cookbook is present, and the complince mode attribute is nil" do
+      stub_const("::Reporter::ChefAutomate", true)
+      node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      node.normal["audit"]["compliance_phase"] = nil
+
+      expect(runner).not_to be_enabled
+    end
+
+    it "is true if the node attributes have audit profiles and the audit cookbook is present, and the complince mode attribute is true" do
+      stub_const("::Reporter::ChefAutomate", true)
+      node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      node.normal["audit"]["compliance_phase"] = true
+
+      expect(runner).to be_enabled
+    end
+
+    it "is false if the node attributes do not have audit profiles and the audit cookbook is not present, and the complince mode attribute is nil" do
       node.normal["audit"]["profiles"] = {}
-      runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = nil
 
       expect(runner).not_to be_enabled
     end
 
-    it "is false if the node attributes do not have audit profiles and the audit cookbook is present" do
+    it "is false if the node attributes do not have audit profiles and the audit cookbook is present, and the complince mode attribute is nil" do
+      stub_const("::Reporter::ChefAutomate", true)
+      node.automatic["recipes"] = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = nil
+
+      expect(runner).not_to be_enabled
+    end
+
+    it "is false if the node attributes do not have audit attributes and the audit cookbook is not present, and the complince mode attribute is nil" do
+      node.automatic["recipes"] = %w{ fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = nil
+
+      expect(runner).not_to be_enabled
+    end
+
+    it "is true if the node attributes do not have audit profiles and the audit cookbook is not present, and the complince mode attribute is true" do
       node.normal["audit"]["profiles"] = {}
-      runner.recipes = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = true
 
-      expect(runner).not_to be_enabled
+      expect(runner).to be_enabled
     end
 
-    it "is false if the node attributes do not have audit attributes and the audit cookbook is not present" do
-      runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
-      expect(runner).not_to be_enabled
+    it "is true if the node attributes do not have audit profiles and the audit cookbook is present, and the complince mode attribute is true" do
+      stub_const("::Reporter::ChefAutomate", true)
+      node.automatic["recipes"] = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = true
+
+      expect(runner).to be_enabled
+    end
+
+    it "is true if the node attributes do not have audit attributes and the audit cookbook is not present, and the complince mode attribute is true" do
+      node.automatic["recipes"] = %w{ fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = true
+      expect(runner).to be_enabled
     end
   end
 
@@ -77,7 +130,7 @@ describe Chef::Compliance::Runner do
       expect(runner.inspec_profiles).to eq(expected)
     end
 
-    it "raises an error when the profiles are in the old audit-cookbook format" do
+    it "raises a CMPL010 message when the profiles are in the old audit-cookbook format" do
       node.normal["audit"]["profiles"] = [
         {
           name: "Windows 2019 Baseline",
@@ -85,7 +138,7 @@ describe Chef::Compliance::Runner do
         },
       ]
 
-      expect { runner.inspec_profiles }.to raise_error(/profiles specified in an unrecognized format, expected a hash of hashes./)
+      expect { runner.inspec_profiles }.to raise_error(/CMPL010:/)
     end
   end
 
@@ -108,6 +161,81 @@ describe Chef::Compliance::Runner do
       expect(logger).not_to receive(:warn)
 
       runner.warn_for_deprecated_config_values!
+    end
+  end
+
+  describe "#reporter" do
+    context "chef-server-automate reporter" do
+      it "uses the correct URL when 'server' attribute is set" do
+        Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+        node.normal["audit"]["server"] = "https://server_attribute_url.example.com/application/sub_application"
+
+        reporter = runner.reporter("chef-server-automate")
+
+        expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
+        expect(reporter.url).to eq(URI("https://server_attribute_url.example.com/application/sub_application/organizations/my_org/data-collector"))
+      end
+
+      it "falls back to chef_server_url for URL when 'server' attribute is not set" do
+        Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+
+        reporter = runner.reporter("chef-server-automate")
+
+        expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
+        expect(reporter.url).to eq(URI("https://chef_config_url.example.com/organizations/my_org/data-collector"))
+      end
+    end
+
+  end
+
+  describe "#load_and_validate! when compliance is enabled" do
+    before do
+      allow(runner).to receive(:enabled?).and_return(true)
+    end
+
+    it "raises CMPL003 when the reporter is not a supported reporter type" do
+      node.normal["audit"]["reporter"] = [ "invalid" ]
+      expect { runner.load_and_validate! }.to raise_error(/^CMPL003:/)
+    end
+    it "raises CMPL002 if the configured fetcher is not supported" do
+      node.normal["audit"]["fetcher"] = "invalid"
+      expect { runner.load_and_validate! }.to raise_error(/^CMPL002:/)
+    end
+
+    it "validates configured reporters" do
+      node.normal["audit"]["reporter"] = [ "chef-automate" ]
+      reporter_double = double("reporter", validate_config!: nil)
+      expect(runner).to receive(:reporter).with("chef-automate").and_return(reporter_double)
+      runner.load_and_validate!
+    end
+
+  end
+
+  describe "#inspec_opts" do
+    it "does not include chef_node in inputs by default" do
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "lunch",
+        "nachos" => "dinner",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+      expect(inputs.key?("chef_node")).to eq(false)
+    end
+
+    it "includes chef_node in inputs with chef_node_attribute_enabled set" do
+      node.normal["audit"]["chef_node_attribute_enabled"] = true
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "lunch",
+        "nachos" => "dinner",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+      expect(inputs["chef_node"]["audit"]["reporter"]).to eq(%w{json-file cli})
+      expect(inputs["chef_node"]["chef_environment"]).to eq("_default")
     end
   end
 end

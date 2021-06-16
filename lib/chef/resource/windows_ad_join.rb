@@ -97,9 +97,7 @@ class Chef
       property :sensitive, [TrueClass, FalseClass],
         default: true, desired_state: false
 
-      action :join do
-        description "Join the Active Directory domain."
-
+      action :join, description: "Join the Active Directory domain." do
         unless on_desired_domain?
           cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
@@ -129,9 +127,7 @@ class Chef
         end
       end
 
-      action :leave do
-        description "Leave the Active Directory domain."
-
+      action :leave, description: "Leave an Active Directory domain and re-join a workgroup." do
         if joined_to_domain?
           cmd = ""
           cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"

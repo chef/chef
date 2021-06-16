@@ -29,9 +29,10 @@ class Chef
     attr_reader :recipe_name
     attr_reader :enclosing_provider
     attr_reader :resource
+    attr_reader :new_resource
 
     # FIXME (ruby-2.1 syntax): most of these are mandatory
-    def initialize(type: nil, name: nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil)
+    def initialize(type: nil, name: nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil, new_resource: nil)
       @type               = type
       @name               = name
       @created_at         = created_at
@@ -40,6 +41,7 @@ class Chef
       @cookbook_name      = cookbook_name
       @recipe_name        = recipe_name
       @enclosing_provider = enclosing_provider
+      @new_resource       = new_resource
     end
 
     def build(&block)
@@ -64,7 +66,11 @@ class Chef
       if block_given?
         resource.resource_initializing = true
         begin
-          resource.instance_eval(&block)
+          if new_resource.nil?
+            resource.instance_exec(&block)
+          else
+            resource.instance_exec(new_resource, &block)
+          end
         ensure
           resource.resource_initializing = false
         end

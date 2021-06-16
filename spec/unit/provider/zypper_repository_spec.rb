@@ -96,7 +96,7 @@ describe Chef::Provider::ZypperRepository do
     it "skips key import if gpgautoimportkeys is false" do
       new_resource.gpgautoimportkeys(false)
       expect(provider).to receive(:declare_resource)
-      expect(logger).to receive(:trace)
+      expect(logger).to receive(:debug)
       provider.run_action(:create)
     end
   end
@@ -104,13 +104,6 @@ describe Chef::Provider::ZypperRepository do
   describe "#escaped_repo_name" do
     it "returns an escaped repo name" do
       expect(provider.escaped_repo_name).to eq('Nginx\\ Repository')
-    end
-  end
-
-  describe "#cookbook_name" do
-    it "returns 'test' when the cookbook property is set" do
-      new_resource.cookbook("test")
-      expect(provider.cookbook_name).to eq("test")
     end
   end
 
@@ -167,10 +160,10 @@ describe Chef::Provider::ZypperRepository do
     end
   end
 
-  describe "#install_gpg_key" do
-    it "skips installing the key if a nil value for key is passed" do
-      expect(logger).to receive(:trace)
-      provider.install_gpg_key(nil)
+  describe "#install_gpg_keys" do
+    it "skips installing the key if an empty array for key URL is passed" do
+      expect(logger).to receive(:debug)
+      provider.install_gpg_keys([])
     end
   end
 end

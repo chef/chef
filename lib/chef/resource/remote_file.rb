@@ -95,7 +95,7 @@ class Chef
       property :ftp_active_mode, [ TrueClass, FalseClass ], default: false,
         description: "Whether #{ChefUtils::Dist::Infra::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
 
-      property :headers, Hash, default: lazy { {} },
+      property :headers, Hash, default: {},
         description: "A Hash of custom HTTP headers."
 
       property :show_progress, [ TrueClass, FalseClass ], default: false
@@ -142,13 +142,13 @@ class Chef
         end
 
         # if domain is provided in both username and domain
-        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+        if specified_user && ((specified_user.include? "\\") || (specified_user.include? "@")) && specified_domain
           raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
         end
 
         if ! specified_user.nil? && specified_domain.nil?
           # Splitting username of format: Domain\Username
-          domain_and_user = user.split('\\')
+          domain_and_user = user.split("\\")
 
           if domain_and_user.length == 2
             domain = domain_and_user[0]

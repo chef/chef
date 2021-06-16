@@ -51,11 +51,10 @@ class Chef
 
       property :owner, String,
         description: "The owner of the Homebrew installation.",
-        default: lazy { find_homebrew_username }
+        default: lazy { find_homebrew_username },
+        default_description: "Calculated default username"
 
-      action :tap do
-        description "Add a Homebrew tap."
-
+      action :tap, description: "Add a Homebrew tap." do
         unless tapped?(new_resource.tap_name)
           converge_by("tap #{new_resource.tap_name}") do
             shell_out!("#{new_resource.homebrew_path} tap #{new_resource.full ? "--full" : ""} #{new_resource.tap_name} #{new_resource.url || ""}",
@@ -66,9 +65,7 @@ class Chef
         end
       end
 
-      action :untap do
-        description "Remove a Homebrew tap."
-
+      action :untap, description: "Remove a Homebrew tap." do
         if tapped?(new_resource.tap_name)
           converge_by("untap #{new_resource.tap_name}") do
             shell_out!("#{new_resource.homebrew_path} untap #{new_resource.tap_name}",

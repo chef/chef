@@ -205,7 +205,7 @@ class Chef
             logger.info("#{new_resource} deleted")
           end
         else
-          logger.trace("#{new_resource} does not exist - nothing to do")
+          logger.debug("#{new_resource} does not exist - nothing to do")
         end
         delete_config
       end
@@ -220,7 +220,7 @@ class Chef
             logger.info("#{new_resource} disabled")
           end
         else
-          logger.trace("#{new_resource} does not exist - nothing to do")
+          logger.debug("#{new_resource} does not exist - nothing to do")
         end
       end
 

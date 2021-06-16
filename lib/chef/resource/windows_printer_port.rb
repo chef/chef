@@ -1,6 +1,7 @@
 #
 # Author:: Doug Ireton <doug@1strategy.com>
 # Copyright:: 2012-2018, Nordstrom, Inc.
+# Copyright:: Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,14 +69,17 @@ class Chef
         }
 
       property :port_name, String,
-        description: "The port name."
+        description: "The port name.",
+        default: lazy { |x| "IP_#{x.ipv4_address}" },
+        default_description: "The resource block name or the ipv4_address prepended with IP_."
 
       property :port_number, Integer,
-        description: "The port number.",
+        description: "The TCP port number.",
         default: 9100
 
       property :port_description, String,
-        description: "The description of the port."
+        desired_state: false,
+        deprecated: true
 
       property :snmp_enabled, [TrueClass, FalseClass],
         description: "Determines if SNMP is enabled on the port.",
@@ -86,79 +90,58 @@ class Chef
         validation_message: "port_protocol must be either 1 for RAW or 2 for LPR!",
         default: 1, equal_to: [1, 2]
 
-      PORTS_REG_KEY = 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\\'.freeze unless defined?(PORTS_REG_KEY)
+      load_current_value do |new_resource|
+        port_data = powershell_exec(%Q{Get-WmiObject -Class Win32_TCPIPPrinterPort -Filter "Name='#{new_resource.port_name}'"}).result
 
-      # @todo Set @current_resource port properties from registry
-      load_current_value do |desired|
-        name desired.name
-        ipv4_address desired.ipv4_address
-        port_name desired.port_name || "IP_#{desired.ipv4_address}"
-      end
-
-      action :create do
-        description "Create the new printer port if it does not already exist."
-
-        if port_exists?
-          Chef::Log.info "#{@new_resource} already exists - nothing to do."
+        if port_data.empty?
+          current_value_does_not_exist!
         else
-          converge_by("Create #{@new_resource}") do
-            create_printer_port
-          end
+          ipv4_address port_data["HostAddress"]
+          port_name port_data["Name"]
+          snmp_enabled port_data["SNMPEnabled"]
+          port_protocol port_data["Protocol"]
+          port_number port_data["PortNumber"]
         end
       end
 
-      action :delete do
-        description "Delete an existing printer port."
-
-        if port_exists?
-          converge_by("Delete #{@new_resource}") do
-            delete_printer_port
-          end
-        else
-          Chef::Log.info "#{@current_resource} doesn't exist - can't delete."
-        end
-      end
-
-      action_class do
-        private
-
-        def port_exists?
-          name = new_resource.port_name || "IP_#{new_resource.ipv4_address}"
-          port_reg_key = PORTS_REG_KEY + name
-
-          logger.trace "Checking to see if this reg key exists: '#{port_reg_key}'"
-          registry_key_exists?(port_reg_key)
-        end
-
-        def create_printer_port
-          port_name = new_resource.port_name || "IP_#{new_resource.ipv4_address}"
-
-          # create the printer port using PowerShell
-          declare_resource(:powershell_script, "Creating printer port #{new_resource.port_name}") do
-            code <<-EOH
-
-              Set-WmiInstance -class Win32_TCPIPPrinterPort `
-                -EnableAllPrivileges `
-                -Argument @{ HostAddress = "#{new_resource.ipv4_address}";
-                            Name        = "#{port_name}";
-                            Description = "#{new_resource.port_description}";
-                            PortNumber  = "#{new_resource.port_number}";
-                            Protocol    = "#{new_resource.port_protocol}";
-                            SNMPEnabled = "$#{new_resource.snmp_enabled}";
-                          }
+      action :create, description: "Create or update the printer port." do
+        converge_if_changed do
+          if current_resource
+            # update the printer port using PowerShell
+            powershell_exec! <<-EOH
+            Get-WmiObject Win32_TCPIPPrinterPort -EnableAllPrivileges -filter "Name='#{new_resource.port_name}'" |
+            ForEach-Object{
+                 $_.HostAddress='#{new_resource.ipv4_address}'
+                 $_.PortNumber='#{new_resource.port_number}'
+                 $_.Protocol='#{new_resource.port_protocol}'
+                 $_.SNMPEnabled='$#{new_resource.snmp_enabled}'
+                 $_.Put()
+            }
+            EOH
+          else
+            # create the printer port using PowerShell
+            powershell_exec! <<-EOH
+            Set-WmiInstance -class Win32_TCPIPPrinterPort `
+              -EnableAllPrivileges `
+              -Argument @{ HostAddress = "#{new_resource.ipv4_address}";
+                          Name        = "#{new_resource.port_name}";
+                          PortNumber  = "#{new_resource.port_number}";
+                          Protocol    = "#{new_resource.port_protocol}";
+                          SNMPEnabled = "$#{new_resource.snmp_enabled}";
+                        }
             EOH
           end
+
         end
+      end
 
-        def delete_printer_port
-          port_name = new_resource.port_name || "IP_#{new_resource.ipv4_address}"
-
-          declare_resource(:powershell_script, "Deleting printer port: #{new_resource.port_name}") do
-            code <<-EOH
-              $port = Get-WMIObject -class Win32_TCPIPPrinterPort -EnableAllPrivileges -Filter "name = '#{port_name}'"
-              $port.Delete()
-            EOH
+      action :delete, description: "Delete an existing printer port." do
+        if current_resource
+          converge_by("delete port #{new_resource.port_name}") do
+            powershell_exec!("Remove-PrinterPort -Name #{new_resource.port_name}")
           end
+        else
+          Chef::Log.info "#{new_resource.port_name} doesn't exist - can't delete."
         end
       end
     end

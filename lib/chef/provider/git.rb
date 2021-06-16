@@ -68,9 +68,9 @@ class Chef
           a.assertion { !(new_resource.revision =~ %r{^origin/}) }
           a.failure_message Chef::Exceptions::InvalidRemoteGitReference,
             "Deploying remote branches is not supported. " +
-            "Specify the remote branch as a local branch for " +
-            "the git repository you're deploying from " +
-            "(ie: '#{new_resource.revision.gsub("origin/", "")}' rather than '#{new_resource.revision}')."
+              "Specify the remote branch as a local branch for " +
+              "the git repository you're deploying from " +
+              "(ie: '#{new_resource.revision.gsub("origin/", "")}' rather than '#{new_resource.revision}')."
         end
 
         requirements.assert(:all_actions) do |a|
@@ -80,8 +80,8 @@ class Chef
           a.assertion { !target_revision.nil? }
           a.failure_message Chef::Exceptions::UnresolvableGitReference,
             "Unable to parse SHA reference for '#{new_resource.revision}' in repository '#{new_resource.repository}'. " +
-            "Verify your (case-sensitive) repository URL and revision.\n" +
-            "`git ls-remote '#{new_resource.repository}' '#{rev_search_pattern}'` output: #{@resolved_reference}"
+              "Verify your (case-sensitive) repository URL and revision.\n" +
+              "`git ls-remote '#{new_resource.repository}' '#{rev_search_pattern}'` output: #{@resolved_reference}"
         end
       end
 
@@ -94,7 +94,7 @@ class Chef
           enable_submodules
           add_remotes
         else
-          logger.trace "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
+          logger.debug "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
         end
       end
 
@@ -281,12 +281,10 @@ class Chef
 
       def target_revision
         @target_revision ||=
-          begin
-            if sha_hash?(new_resource.revision)
-              @target_revision = new_resource.revision
-            else
-              @target_revision = remote_resolve_reference
-            end
+          if sha_hash?(new_resource.revision)
+            @target_revision = new_resource.revision
+          else
+            @target_revision = remote_resolve_reference
           end
       end
 

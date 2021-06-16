@@ -81,8 +81,8 @@ class Chef
       property :allow_unicast_response, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow unicast responses to multicast and broadcast messages"
       property :display_notification, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Display a notification when firewall blocks certain activity"
 
-      load_current_value do |desired|
-        ps_get_net_fw_profile = load_firewall_state(desired.profile)
+      load_current_value do |new_resource|
+        ps_get_net_fw_profile = load_firewall_state(new_resource.profile)
         output = powershell_exec(ps_get_net_fw_profile)
         if output.result.empty?
           current_value_does_not_exist!
@@ -121,7 +121,7 @@ class Chef
         end
       end
 
-      action :enable do
+      action :enable, description: "Enable and optionally configure a Windows Firewall profile." do
         converge_if_changed :default_inbound_action, :default_outbound_action, :allow_inbound_rules, :allow_local_firewall_rules,
           :allow_local_ipsec_rules, :allow_user_apps, :allow_user_ports, :allow_unicast_response, :display_notification do
             fw_cmd = firewall_command(new_resource.profile)
@@ -135,7 +135,7 @@ class Chef
         end
       end
 
-      action :disable do
+      action :disable, description: "Disable a Windows Firewall profile." do
         if firewall_enabled?(new_resource.profile)
           converge_by "Disable the #{new_resource.profile} Firewall Profile" do
             cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} -Enabled \"False\""

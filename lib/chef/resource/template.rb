@@ -61,7 +61,7 @@ class Chef
 
       property :variables, Hash,
         description: "The variables property of the template resource can be used to reference a partial template file by using a Hash.",
-        default: lazy { {} }
+        default: {}
 
       property :cookbook, String,
         description: "The cookbook in which a file is located (if it is not located in the current cookbook). The default value is the current cookbook.",
@@ -169,8 +169,8 @@ class Chef
         elsif module_name.nil?
           raise Exceptions::ValidationFailed,
             "#helpers requires either a module name or inline module code as a block.\n" +
-            "e.g.: helpers do; helper_code; end;\n" +
-            "OR: helpers(MyHelpersModule)"
+              "e.g.: helpers do; helper_code; end;\n" +
+              "OR: helpers(MyHelpersModule)"
         else
           raise Exceptions::ValidationFailed,
             "Argument to #helpers must be a module. You gave #{module_name.inspect} (#{module_name.class})"

@@ -131,11 +131,11 @@ class Chef
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary."
 
       property :daemon_options, Array,
-        default: lazy { [] },
+        default: [],
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command."
 
       property :environment, Hash,
-        default: lazy { {} },
+        default: {},
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
       property :nice, [Integer, String],
@@ -144,7 +144,7 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
 
-      action :add do
+      action :add, description: "Add a cron job to run #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless ::Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
@@ -168,7 +168,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a cron job for #{ChefUtils::Dist::Infra::PRODUCT}." do
         declare_resource(cron_resource_type, new_resource.job_name) do
           action :delete
         end
@@ -213,7 +213,7 @@ class Chef
         #
         def log_command
           if new_resource.append_log_file
-            "-L #{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+            ">> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           else
             "> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           end

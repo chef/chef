@@ -31,15 +31,61 @@ class Chef
                   " reboot. If the config file is required, it must be done by specifying a template with the correct array layout,"\
                   " and then by using the mount provider to create a file systems table (fstab) entry."
 
+      examples <<~DOC
+      **Create and assemble a RAID 0 array**
+
+      The mdadm command can be used to create RAID arrays. For example, a RAID 0 array named /dev/md0 with 10 devices would have a command similar to the following:
+
+      ```
+      mdadm --create /dev/md0 --level=0 --raid-devices=10 /dev/s01.../dev/s10
+      ```
+
+      where /dev/s01 .. /dev/s10 represents 10 devices (01, 02, 03, and so on). This same command, when expressed as a recipe using the mdadm resource, would be similar to:
+
+      ```ruby
+      mdadm '/dev/md0' do
+        devices [ '/dev/s01', ... '/dev/s10' ]
+        level 0
+        action :create
+      end
+      ```
+
+      (again, where /dev/s01 .. /dev/s10 represents devices /dev/s01, /dev/s02, /dev/s03, and so on).
+
+      **Create and assemble a RAID 1 array**
+
+      ```ruby
+      mdadm '/dev/md0' do
+        devices [ '/dev/sda', '/dev/sdb' ]
+        level 1
+        action [ :create, :assemble ]
+      end
+      ```
+
+      **Create and assemble a RAID 5 array**
+
+      The mdadm command can be used to create RAID arrays. For example, a RAID 5 array named /dev/sd0 with 4, and a superblock type of 0.90 would be similar to:
+
+      ```ruby
+      mdadm '/dev/sd0' do
+        devices [ '/dev/s1', '/dev/s2', '/dev/s3', '/dev/s4' ]
+        level 5
+        metadata '0.90'
+        chunk 32
+        action :create
+      end
+      ```
+      DOC
+
       default_action :create
       allowed_actions :create, :assemble, :stop
 
       property :chunk, Integer,
         default: 16,
-        description: "The chunk size. This property should not be used for a RAID 1 mirrored pair (i.e. when the level property is set to 1)."
+        description: "The chunk size. This property should not be used for a RAID 1 mirrored pair (i.e. when the `level` property is set to `1`)."
 
       property :devices, Array,
-        default: lazy { [] },
+        default: [],
         description: "The devices to be part of a RAID array."
 
       # @todo this should get refactored away
@@ -63,7 +109,7 @@ class Chef
         description: "An optional property to specify the name of the RAID device if it differs from the resource block's name."
 
       property :layout, String,
-        description: "The RAID5 parity algorithm. Possible values: left-asymmetric (or la), left-symmetric (or ls), right-asymmetric (or ra), or right-symmetric (or rs)."
+        description: "The RAID5 parity algorithm. Possible values: `left-asymmetric` (or `la`), `left-symmetric` (or ls), `right-asymmetric` (or `ra`), or `right-symmetric` (or `rs`)."
 
       action_class do
         def load_current_resource
@@ -78,7 +124,7 @@ class Chef
         end
       end
 
-      action :create do
+      action :create, description: "Create an array with per-device superblocks. If an array already exists (but does not match), update that array to match." do
         unless current_resource.exists
           converge_by("create RAID device #{new_resource.raid_device}") do
             command = "yes | mdadm --create #{new_resource.raid_device} --level #{new_resource.level}"
@@ -92,11 +138,11 @@ class Chef
             logger.info("#{new_resource} created raid device (#{new_resource.raid_device})")
           end
         else
-          logger.trace("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
+          logger.debug("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
         end
       end
 
-      action :assemble do
+      action :assemble, description: "Assemble a previously created array into an active array." do
         unless current_resource.exists
           converge_by("assemble RAID device #{new_resource.raid_device}") do
             command = "yes | mdadm --assemble #{new_resource.raid_device} #{new_resource.devices.join(" ")}"
@@ -105,11 +151,11 @@ class Chef
             logger.info("#{new_resource} assembled raid device (#{new_resource.raid_device})")
           end
         else
-          logger.trace("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
+          logger.debug("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
         end
       end
 
-      action :stop do
+      action :stop, description: "Stop an active array." do
         if current_resource.exists
           converge_by("stop RAID device #{new_resource.raid_device}") do
             command = "yes | mdadm --stop #{new_resource.raid_device}"
@@ -118,7 +164,7 @@ class Chef
             logger.info("#{new_resource} stopped raid device (#{new_resource.raid_device})")
           end
         else
-          logger.trace("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
+          logger.debug("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
         end
       end
 

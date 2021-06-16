@@ -70,8 +70,7 @@ class Chef
         end
 
         def package_provider
-          @package_provider ||= begin
-            case installer_type
+          @package_provider ||= case installer_type
             when :msi
               logger.trace("#{new_resource} is MSI")
               require_relative "windows/msi"
@@ -80,8 +79,7 @@ class Chef
               logger.trace("#{new_resource} is EXE with type '#{installer_type}'")
               require_relative "windows/exe"
               Chef::Provider::Package::Windows::Exe.new(resource_for_provider, installer_type, uninstall_registry_entries)
-            end
-          end
+                                end
         end
 
         def installer_type

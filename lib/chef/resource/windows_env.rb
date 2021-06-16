@@ -19,6 +19,7 @@
 
 require_relative "../resource"
 require_relative "../mixin/windows_env_helper"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -28,7 +29,7 @@ class Chef
       provides :windows_env
       provides :env # backwards compat with the pre-Chef 14 resource name
 
-      description "Use the **windows_env** resource to manage environment keys in Microsoft Windows. After an environment key is set, Microsoft Windows must be restarted before the environment key will be available to the Task Scheduler."
+      description "Use the **windows_env** resource to manage environment keys in Microsoft Windows. After an environment key is set, Microsoft Windows must be restarted before the environment key will be available to the Task Scheduler.\n\nThis resource was previously called the **env** resource; its name was updated in #{ChefUtils::Dist::Infra::PRODUCT} 14.0 to reflect the fact that only Windows is supported. Existing cookbooks using `env` will continue to function, but should be updated to use the new name. Note: On UNIX-based systems, the best way to manipulate environment keys is with the `ENV` variable in Ruby; however, this approach does not have the same permanent effect as using the windows_env resource."
       examples <<~DOC
       **Set an environment variable**:
 
@@ -185,14 +186,14 @@ class Chef
           if environment_variables && environment_variables.length > 0
             environment_variables.each do |env|
               @env_obj = env.wmi_ole_object
-              return @env_obj if @env_obj.username.split('\\').last.casecmp(new_resource.user) == 0
+              return @env_obj if @env_obj.username.split("\\").last.casecmp(new_resource.user) == 0
             end
           end
           @env_obj = nil
         end
       end
 
-      action :create do
+      action :create, description: "Create an environment variable. If an environment variable already exists (but does not match), update that environment variable to match." do
         if key_exists?
           if requires_modify_or_create?
             modify_env
@@ -206,7 +207,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an environment variable." do
         if ( ENV[new_resource.key_name] || key_exists? ) && !delete_element
           delete_env
           logger.info("#{new_resource} deleted")
@@ -214,7 +215,7 @@ class Chef
         end
       end
 
-      action :modify do
+      action :modify, description: "Modify an existing environment variable. This prepends the new value to the existing value, using the delimiter specified by the `delim` property." do
         if key_exists?
           if requires_modify_or_create?
             modify_env

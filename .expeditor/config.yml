@@ -1,8 +1,5 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
 ---
-# the name we use for this project when interacting with expeditor chatbot
-project:
-  alias: chef-16
 
 # The name of the product keys for this product (from mixlib-install)
 product_key:
@@ -147,6 +144,21 @@ subscriptions:
   - workload: ruby_gem_published:win32-taskscheduler-*
     actions:
       - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-certstore-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-event-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-mutex-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-eventlog-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-api-*
+    actions:
+      - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:ffi-yajl-*
     actions:
       - bash:.expeditor/update_dep.sh
@@ -162,3 +174,62 @@ subscriptions:
   - workload: ruby_gem_published:ffi-libarchive-*
     actions:
       - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:plist-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:net-ssh-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-prompt-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-screen-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-table-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:pastel-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:erubis-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:bcrypt_pbkdf-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ed25519-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:addressable-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:proxifier-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:syslog-logger-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:uuidtools-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:iniparse-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:net-sftp-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:fauxhai-ng-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
+  - workload: chef/ohai:master_completed:pull_request_merged:chef/ohai:master:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh
+  # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
+  - workload: chef/chefstyle:master_completed:pull_request_merged:chef/chefstyle:master:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh

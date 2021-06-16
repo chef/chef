@@ -304,9 +304,9 @@ class Chef
         gives a recipe full control over the command issued in a much cleaner, more
         direct manner.
 
-        **Use the search recipe DSL method to find users**:
+        **Use the search Infra Language helper to find users**:
 
-        The following example shows how to use the `search` method in the Recipe DSL to
+        The following example shows how to use the `search` method in the Chef Infra Language to
         search for users:
 
         ```ruby
@@ -515,7 +515,7 @@ class Chef
 
       property :command, [ String, Array ],
         name_property: true,
-        description: "An optional property to set the command to be executed if it differs from the resource block's name."
+        description: "An optional property to set the command to be executed if it differs from the resource block's name. Note: Use the **execute** resource to run a single command. Use multiple **execute** resource blocks to run multiple commands."
 
       property :umask, [ String, Integer ],
         description: "The file mode creation mask, or umask."
@@ -571,6 +571,10 @@ class Chef
       property :input, [String],
         introduced: "16.2",
         description: "An optional property to set the input sent to the command as STDIN."
+
+      property :login, [ TrueClass, FalseClass ], default: false,
+        introduced: "17.0",
+        description: "Use a login shell to run the commands instead of inheriting the existing execution environment."
 
       alias :env :environment
 
@@ -629,13 +633,13 @@ class Chef
         end
 
         # if domain is provided in both username and domain
-        if specified_user.is_a?(String) && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+        if specified_user.is_a?(String) && ((specified_user.include? "\\") || (specified_user.include? "@")) && specified_domain
           raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
         end
 
         if specified_user.is_a?(String) && specified_domain.nil?
           # Splitting username of format: Domain\Username
-          domain_and_user = user.split('\\')
+          domain_and_user = user.split("\\")
 
           if domain_and_user.length == 2
             domain = domain_and_user[0]
@@ -666,7 +670,8 @@ class Chef
         :group,
         :password,
         :user,
-        :umask
+        :umask,
+        :login
       )
 
     end

@@ -43,7 +43,7 @@ build do
 
   block "Removing additional non-code files from installed gems" do
     # find the embedded ruby gems dir and clean it up for globbing
-    target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
+    target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr("\\", "/")
     files = %w{
       .rspec-tm
       .sitearchdir.time
@@ -72,6 +72,8 @@ build do
     Dir.glob("#{target_dir}/*/{#{files.join(",")}}").each do |f|
       # chef stores the powershell dlls in the ext dir
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
+      # ruby-prof has issues/bugs with needing the so in the ext dir
+      next if File.basename(File.expand_path("..", f)).start_with?("ruby-prof-")
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)
@@ -80,9 +82,8 @@ build do
 
   block "Removing Gemspec / Rakefile / Gemfile unless there's a bin dir / not a chef gem" do
     # find the embedded ruby gems dir and clean it up for globbing
-    target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
+    target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr("\\", "/")
     files = %w{
-      *.gemspec
       Gemfile
       Rakefile
       tasks
@@ -101,7 +102,7 @@ build do
   end
 
   block "Removing spec dirs from non-Chef gems" do
-    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/spec".tr('\\', "/")).each do |f|
+    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/spec".tr("\\", "/")).each do |f|
       # if we're in a chef- gem then don't remove the specs
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
 

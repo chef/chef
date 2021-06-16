@@ -19,7 +19,7 @@
              Compressed="yes" InstallScope="perMachine" />
 
     <!--
-      Create property references for the well known SIDs of the 
+      Create property references for the well known SIDs of the
       accounts we want to restrict for the project location folder
     -->
     <PropertyRef Id="WIX_ACCOUNT_LOCALSYSTEM" />
@@ -29,8 +29,8 @@
     <Media Id="1" Cabinet="ChefClient.cab" EmbedCab="yes" CompressionLevel="high" />
 
     <!--
-    Take advantage of Windows Installer 5.0 feature (if available) to disable 
-    checkpointing and other costings that take significant amounts of time 
+    Take advantage of Windows Installer 5.0 feature (if available) to disable
+    checkpointing and other costings that take significant amounts of time
     ref: https://msdn.microsoft.com/en-us/library/windows/desktop/dd408005(v=vs.85).aspx
     -->
     <Property Id="MSIFASTINSTALL" Value="7" />
@@ -90,12 +90,6 @@
                   Impersonate="no"
                   Return="ignore" />
 
-    <CustomAction Id="RemoveChefClientService"
-                  Directory="TARGETDIR"
-                  ExeCommand="&quot;[SystemFolder]SC.EXE&quot; DELETE &quot;chef-client&quot;"
-                  Execute="deferred"
-                  Impersonate="no"
-                  Return="ignore" />
 
     <InstallExecuteSequence>
       <Custom Action="FastUnzip" After="InstallFiles">NOT Installed OR REINSTALL</Custom>
@@ -106,12 +100,9 @@
       </Custom>
 
       <Custom Action="RemoveChefClientScheduledTask" Before="RemoveFiles">
-        <![CDATA[(Installed AND (&NoneFeature=3 OR &ChefServiceFeature=3)) OR (REMOVE="ALL")]]>
+        <![CDATA[(Installed AND &NoneFeature=3) OR (REMOVE="ALL")]]>
       </Custom>
 
-      <Custom Action="RemoveChefClientService" Before="RemoveFiles">
-        <![CDATA[Installed AND (&NoneFeature=3 OR &ChefSchTaskFeature=3) OR (REMOVE="ALL")]]>
-      </Custom>
     </InstallExecuteSequence>
 
     <UI>
@@ -121,7 +112,6 @@
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="WindowsVolume">
-        <!-- Service needs chef directory to be present. -->
         <Directory Id="CONFIGLOCATION" Name="chef">
           <Component Id="CONFIGLOCATIONDIR" Guid="{F66F6394-51A4-4C5D-908B-E55584473436}" >
             <CreateFolder Directory="CONFIGLOCATION" />
@@ -154,19 +144,6 @@
             </Directory>
             <Directory Id="EMBEDDED" Name="embedded" >
               <Directory Id="EMBEDDEDBIN" Name="bin" >
-                <Component Id="ChefClientService" Guid="{69B2D8BE-4A47-4BE3-AEE8-83FAEB6E2FAF}" >
-                  <File Id="RubyExecutable" Source="$(var.ProjectSourceDir)\embedded\bin\ruby.exe" KeyPath="yes" />
-                  <ServiceInstall Name="chef-client" Type="ownProcess"
-                                  Start="auto" Vital="yes" ErrorControl="ignore"
-                                  Arguments="[PROJECTLOCATION]bin\chef-windows-service"
-                                  DisplayName="!(loc.ServiceDisplayName)"
-                                  Description="!(loc.ServiceDescription)">
-                      <ServiceDependency Id="Winmgmt" />
-                      <ServiceConfig DelayedAutoStart="yes" OnInstall="yes" />
-                  </ServiceInstall>
-                  <ServiceControl Id="ControlChefClientService" Name="chef-client"
-                                  Remove="both" Stop="both" Wait="yes" />
-                </Component>
                 <Component Id="ChefClientLog" Guid="{8e492d59-3a0c-43fd-b889-e35dfa33da91}">
                     <util:EventSource xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
                         Name="Chef" Log="Application"
@@ -211,9 +188,6 @@
         <ComponentRef Id="ChefSchTask" />
       </Feature>
 
-      <Feature Id="ChefServiceFeature" Title="!(loc.FeatureServiceName)" Level="1000" AllowAdvertise="no" Display="hidden">
-        <ComponentRef Id="ChefClientService" />
-      </Feature>
 
       <Feature Id="NoneFeature" Title="None" Level="1000" AllowAdvertise="no" Display="hidden">
         <!-- Do Nothing -->
@@ -273,9 +247,9 @@
       <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">Installed</Publish>
       <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg" Order="2">NOT Installed</Publish>
 
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[((NOT &ChefUnattendedExecutionOptions=3) AND NOT ((?ChefSchTask=3) OR (?ChefClientService=3) OR (?None=3)))]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[((NOT &ChefUnattendedExecutionOptions=3) AND NOT ((?ChefSchTask=3) OR (?None=3)))]]></Publish>
 
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ChefUnattendedExecutionOptionsSelectionDlg"><![CDATA[((&ChefUnattendedExecutionOptions=3) OR (?ChefSchTask=3 OR ?ChefClientService=3 OR ?None=3))]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ChefUnattendedExecutionOptionsSelectionDlg"><![CDATA[((&ChefUnattendedExecutionOptions=3) OR (?ChefSchTask=3 OR ?None=3))]]></Publish>
 
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg" Order="1"><![CDATA[NOT &ChefUnattendedExecutionOptions=3]]> AND (NOT Installed OR WixUI_InstallMode = "Change")</Publish>
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ChefUnattendedExecutionOptionsSelectionDlg" Order="1"><![CDATA[&ChefUnattendedExecutionOptions=3]]> AND (NOT Installed OR WixUI_InstallMode = "Change")</Publish>
@@ -302,7 +276,6 @@
         <Control Id="OptionsRadioGroup" Type="RadioButtonGroup" Property="CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP" Height="80" Width="140" X="35" Y="110">
           <RadioButtonGroup Property="CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP">
             <RadioButton Value="SchTask" Text="!(loc.CustomizeDlgFirstRadioButtonText)" Height="17" Width="140" X="0" Y="10" />
-            <RadioButton Value="Service" Text="!(loc.CustomizeDlgSecondRadioButtonText)" Height="17" Width="140" X="0" Y="35" />
             <RadioButton Value="None" Text="!(loc.CustomizeDlgThirdRadioButtonText)" Height="17" Width="140" X="0" Y="60" />
           </RadioButtonGroup>
         </Control>
@@ -315,7 +288,6 @@
         </Control>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next">
           <Publish Event="AddLocal" Value="ChefSchTaskFeature">CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP = "SchTask"</Publish>
-          <Publish Event="AddLocal" Value="ChefServiceFeature">CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP = "Service"</Publish>
           <Publish Event="AddLocal" Value="NoneFeature">CHEF_SERVICE_OPTIONS_RADIO_BUTTON_GROUP = "None"</Publish>
           <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
         </Control>

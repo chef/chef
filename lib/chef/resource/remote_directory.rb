@@ -29,7 +29,7 @@ class Chef
 
       provides :remote_directory
 
-      description "Use the **remote_directory** resource to incrementally transfer a directory from a cookbook to a node. The director that is copied from the cookbook should be located under COOKBOOK_NAME/files/default/REMOTE_DIRECTORY. The remote_directory resource will obey file specificity."
+      description "Use the **remote_directory** resource to incrementally transfer a directory from a cookbook to a node. The directory that is copied from the cookbook should be located under `COOKBOOK_NAME/files/default/REMOTE_DIRECTORY`. The `remote_directory` resource will obey file specificity."
 
       default_action :create
       allowed_actions :create, :create_if_missing, :delete
@@ -71,7 +71,7 @@ class Chef
         desired_state: false
 
       property :files_group, [String, Integer],
-        description: "Configure group permissions for files. A string or ID that identifies the group owner by group name, including fully qualified group names such as domain\\group or group@domain. If this value is not specified, existing groups remain unchanged and new group assignments use the default POSIX group (if available).",
+        description: "Configure group permissions for files. A string or ID that identifies the group owner by group name, including fully qualified group names such as `domain\\group` or `group@domain`. If this value is not specified, existing groups remain unchanged and new group assignments use the default POSIX group (if available).",
         regex: Chef::Config[:group_valid_regex]
 
       property :files_mode, [String, Integer, nil],
@@ -80,7 +80,7 @@ class Chef
         regex: /^\d{3,4}$/, default: lazy { 0644 unless Chef::Platform.windows? }
 
       property :files_owner, [String, Integer],
-        description: "Configure owner permissions for files. A string or ID that identifies the group owner by user name, including fully qualified user names such as domain\\user or user@domain. If this value is not specified, existing owners remain unchanged and new owner assignments use the current user (when necessary).",
+        description: "Configure owner permissions for files. A string or ID that identifies the group owner by user name, including fully qualified user names such as `domain\\user` or `user@domain`. If this value is not specified, existing owners remain unchanged and new owner assignments use the current user (when necessary).",
         regex: Chef::Config[:user_valid_regex]
     end
   end

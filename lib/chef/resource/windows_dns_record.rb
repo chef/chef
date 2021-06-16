@@ -49,9 +49,7 @@ class Chef
         default: "localhost",
         introduced: "16.3"
 
-      action :create do
-        description "Creates and updates the DNS entry."
-
+      action :create, description: "Creates and updates the DNS entry." do
         windows_feature "RSAT-DNS-Server" do
           not_if new_resource.dns_server.casecmp?("localhost")
         end
@@ -61,9 +59,7 @@ class Chef
         run_dsc_resource "Present"
       end
 
-      action :delete do
-        description "Deletes a DNS entry."
-
+      action :delete, description: "Deletes a DNS entry." do
         windows_feature "RSAT-DNS-Server" do
           not_if new_resource.dns_server.casecmp?("localhost")
         end

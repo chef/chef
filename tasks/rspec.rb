@@ -25,10 +25,12 @@ begin
 
   desc "Run specs for Chef's Gem Components"
   task :component_specs do
-    %w{chef-utils chef-config}.each do |gem|
+    %w{chef-utils chef-config knife}.each do |gem|
       Dir.chdir(gem) do
+        puts "--- Running #{gem} specs"
         Bundler.with_unbundled_env do
-          sh("bundle install --jobs=3 --retry=3")
+          puts "Executing tests in #{Dir.pwd}:"
+          sh("bundle install --jobs=3 --retry=3 --path=../vendor/bundle")
           sh("bundle exec rake spec")
         end
       end
@@ -39,7 +41,7 @@ begin
 
   task spec: :component_specs
 
-  desc "Run all specs in spec directory"
+  desc "Run all chef specs in spec directory"
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.verbose = false
     t.rspec_opts = %w{--profile}
@@ -47,7 +49,7 @@ begin
   end
 
   namespace :spec do
-    desc "Run all specs in spec directory"
+    desc "Run all chef specs in spec directory"
     RSpec::Core::RakeTask.new(:all) do |t|
       t.verbose = false
       t.rspec_opts = %w{--profile}
@@ -61,7 +63,7 @@ begin
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
-    desc "Run the specs under spec/unit with activesupport loaded"
+    desc "Run chef's node and role unit specs with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
       t.verbose = false
       t.rspec_opts = %w{--require active_support/core_ext --profile}
@@ -70,8 +72,9 @@ begin
     end
 
     %i{unit functional integration stress}.each do |sub|
-      desc "Run the specs under spec/#{sub}"
+      desc "Run the chef specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
+        puts "--- Running chef #{sub} specs"
         t.verbose = false
         t.rspec_opts = %w{--profile}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]

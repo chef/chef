@@ -23,18 +23,37 @@ timezone "America/Los_Angeles"
 
 include_recipe "ntp"
 
-include_recipe "resolver"
+resolver_config "/etc/resolv.conf" do
+  nameservers [ "8.8.8.8", "8.8.4.4" ]
+  search [ "chef.io" ]
+end
+
+users_from_databag = search("users", "*:*")
 
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:remove]
 end
 
 users_manage "create sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:create]
+end
+
+%w{001 002 003}.each do |control|
+  inspec_waiver_file_entry "fake_inspec_control_#{control}" do
+    expiration "2025-07-01"
+    justification "Waiving this control for the purposes of testing"
+    action :add
+  end
+end
+
+inspec_waiver_file_entry "fake_inspec_control_002" do
+  action :remove
 end
 
 ssh_known_hosts_entry "github.com"
@@ -77,11 +96,13 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "vim"
+homebrew_package "nethack"
 
-homebrew_package "vim" do
+homebrew_package "nethack" do
   action :purge
 end
+
+homebrew_cask "do-not-disturb"
 
 include_recipe "::_dmg_package"
 include_recipe "::_macos_userdefaults"

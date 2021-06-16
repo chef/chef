@@ -39,16 +39,26 @@ class Chef
 
       ```ruby
       windows_pagefile 'Delete the pagefile' do
-        path 'C:\pagefile.sys'
+        path 'C'
         action :delete
+      end
+      ```
+
+      **Switch to system managed pagefiles**:
+
+      ```ruby
+      windows_pagefile 'Change the pagefile to System Managed' do
+        path 'E:\'
+        system_managed true
+        action :set
       end
       ```
 
       **Create a pagefile with an initial and maximum size**:
 
       ```ruby
-      windows_pagefile 'create the pagefile' do
-        path 'C:\pagefile.sys'
+      windows_pagefile 'create the pagefile with these sizes' do
+        path 'f:\'
         initial_size 100
         maximum_size 200
       end
@@ -56,7 +66,7 @@ class Chef
       DOC
 
       property :path, String,
-        coerce: proc { |x| x.tr("/", '\\') },
+        coerce: proc { |x| x.tr("/", "\\") },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
 
@@ -64,8 +74,7 @@ class Chef
         description: "Configures whether the system manages the pagefile size."
 
       property :automatic_managed, [TrueClass, FalseClass],
-        description: "Enable automatic management of pagefile initial and maximum size. Setting this to true ignores `initial_size` and `maximum_size` properties.",
-        default: false
+        description: "Enable automatic management of pagefile initial and maximum size. Setting this to true ignores `initial_size` and `maximum_size` properties."
 
       property :initial_size, Integer,
         description: "Initial size of the pagefile in megabytes."
@@ -73,25 +82,26 @@ class Chef
       property :maximum_size, Integer,
         description: "Maximum size of the pagefile in megabytes."
 
-      action :set do
-        description "Configures the default pagefile, creating if it doesn't exist."
-
-        pagefile = new_resource.path
-        initial_size = new_resource.initial_size
-        maximum_size = new_resource.maximum_size
-        system_managed = new_resource.system_managed
+      action :set, description: "Configures the default pagefile, creating if it doesn't exist." do
         automatic_managed = new_resource.automatic_managed
 
         if automatic_managed
           set_automatic_managed unless automatic_managed?
-        else
+        elsif automatic_managed == false
           unset_automatic_managed if automatic_managed?
+        else
+          pagefile = clarify_pagefile_name
+          initial_size = new_resource.initial_size
+          maximum_size = new_resource.maximum_size
+          system_managed = new_resource.system_managed
 
-          # Check that the resource is not just trying to unset automatic managed, if it is do nothing more
+          # the method below is designed to raise an exception if the drive you are trying to create a pagefile for doesn't exist.
+          # PowerShell will happily let you create a pagefile called h:\pagefile.sys even though you don't have an H:\ drive.
+
+          pagefile_drive_exist?(pagefile)
+          create(pagefile) unless exists?(pagefile)
+
           if (initial_size && maximum_size) || system_managed
-            validate_name
-            create(pagefile) unless exists?(pagefile)
-
             if system_managed
               set_system_managed(pagefile) unless max_and_min_set?(pagefile, 0, 0)
             else
@@ -103,23 +113,33 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Deletes the specified pagefile."
-
-        validate_name
-        delete(new_resource.path) if exists?(new_resource.path)
+      action :delete, description: "Deletes the specified pagefile." do
+        pagefile = clarify_pagefile_name
+        delete(pagefile) if exists?(pagefile)
       end
 
       action_class do
         private
 
-        # make sure the provided name property matches the appropriate format
-        # we do this here and not in the property itself because if automatic_managed
-        # is set then this validation is not necessary / doesn't make sense at all
-        def validate_name
-          return if /^.:.*.sys/.match?(new_resource.path)
+        # We are adding support for a number of possibilities for how users will express the drive and location they want the pagefile written to.
+        def clarify_pagefile_name
+          case new_resource.path
+          # user enters C, C:, C:\, C:\\
+          when /^[a-zA-Z]/
+            new_resource.path[0] + ":\\pagefile.sys"
+          # user enters C:\pagefile.sys OR c:\foo\bar\pagefile.sys as the path
+          when /^[a-zA-Z]:.*.sys/
+            new_resource.path
+          else
+            raise "#{new_resource.path} does not match the format DRIVE:\\path\\pagefile.sys for pagefiles. Example: C:\\pagefile.sys"
+          end
+        end
 
-          raise "#{new_resource.path} does not match the format DRIVE:\\path\\file.sys for pagefiles. Example: C:\\pagefile.sys"
+        # raise an exception if the target drive location is invalid
+        def pagefile_drive_exist?(pagefile)
+          if ::Dir.exist?(pagefile[0] + ":\\") == false
+            raise "You are trying to create a pagefile on a drive that does not exist!"
+          end
         end
 
         # See if the pagefile exists
@@ -128,9 +148,11 @@ class Chef
         # @return [Boolean]
         def exists?(pagefile)
           @exists ||= begin
-            logger.trace("Checking if #{pagefile} exists by running: wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list")
-            cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list", returns: [0])
-            cmd.stderr.empty? && (cmd.stdout =~ /SettingID=#{get_setting_id(pagefile)}/i)
+            logger.trace("Checking if #{pagefile} exists by running: Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($pagefile)} ")
+            cmd =  "$page_file_name = '#{pagefile}';"
+            cmd << "$pagefile = Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($page_file_name)};"
+            cmd << "if ([string]::IsNullOrEmpty($pagefile)) { return $false } else { return $true }"
+            powershell_exec!(cmd).result
           end
         end
 
@@ -141,11 +163,14 @@ class Chef
         # @param [String] max the minimum size of the pagefile
         # @return [Boolean]
         def max_and_min_set?(pagefile, min, max)
-          @max_and_min_set ||= begin
-            logger.trace("Checking if #{pagefile} min: #{min} and max #{max} are set")
-            cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list", returns: [0])
-            cmd.stderr.empty? && (cmd.stdout =~ /InitialSize=#{min}/i) && (cmd.stdout =~ /MaximumSize=#{max}/i)
-          end
+          logger.trace("Checking if #{pagefile} has max and initial disk size values set")
+          cmd =  "$page_file = '#{pagefile}';"
+          cmd << "$driveLetter = $page_file.split(':')[0];"
+          cmd << "$page_file_settings = Get-CimInstance -ClassName Win32_PageFileSetting -Filter \"SettingID='pagefile.sys @ $($driveLetter):'\" -Property * -ErrorAction Stop;"
+          cmd << "if ($page_file_settings.InitialSize -eq #{min} -and $page_file_settings.MaximumSize -eq #{max})"
+          cmd << "{ return $true }"
+          cmd << "else { return $false }"
+          powershell_exec!(cmd).result
         end
 
         # create a pagefile
@@ -153,9 +178,10 @@ class Chef
         # @param [String] pagefile path to the pagefile
         def create(pagefile)
           converge_by("create pagefile #{pagefile}") do
-            logger.trace("Running wmic.exe pagefileset create name=\"#{pagefile}\"")
-            cmd = shell_out("wmic.exe pagefileset create name=\"#{pagefile}\"")
-            check_for_errors(cmd.stderr)
+            logger.trace("Running New-CimInstance -ClassName Win32_PageFileSetting to create new pagefile : #{pagefile}")
+            powershell_exec! <<~ELM
+              New-CimInstance -ClassName Win32_PageFileSetting -Property  @{Name = "#{pagefile}"}
+            ELM
           end
         end
 
@@ -164,9 +190,13 @@ class Chef
         # @param [String] pagefile path to the pagefile
         def delete(pagefile)
           converge_by("remove pagefile #{pagefile}") do
-            logger.trace("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" delete")
-            cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" delete")
-            check_for_errors(cmd.stderr)
+            logger.trace("Running Remove-CimInstance for pagefile : #{pagefile}")
+            powershell_exec! <<~EOL
+              $page_file = "#{pagefile}"
+              $driveLetter = $page_file.split(':')[0]
+              $PageFile = (Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop)
+              $null = ($PageFile | Remove-CimInstance -ErrorAction SilentlyContinue)
+            EOL
           end
         end
 
@@ -176,26 +206,31 @@ class Chef
         def automatic_managed?
           @automatic_managed ||= begin
             logger.trace("Checking if pagefiles are automatically managed")
-            cmd = shell_out("wmic.exe computersystem where name=\"%computername%\" get AutomaticManagedPagefile /format:list")
-            cmd.stderr.empty? && (cmd.stdout =~ /AutomaticManagedPagefile=TRUE/i)
+            cmd = "$sys = Get-CimInstance Win32_ComputerSystem -Property *;"
+            cmd << "return $sys.AutomaticManagedPagefile"
+            powershell_exec!(cmd).result
           end
         end
 
         # turn on automatic management of all pagefiles by Windows
         def set_automatic_managed
-          converge_by("set pagefile to Automatic Managed") do
-            logger.trace("Running wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=True")
-            cmd = shell_out("wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=True")
-            check_for_errors(cmd.stderr)
+          converge_by("Set pagefile to Automatic Managed") do
+            logger.trace("Running Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$true} -PassThru")
+            powershell_exec! <<~EOH
+              $sys = Get-CimInstance Win32_ComputerSystem -Property *
+              Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$true} -PassThru
+            EOH
           end
         end
 
         # turn off automatic management of all pagefiles by Windows
         def unset_automatic_managed
-          converge_by("set pagefile to User Managed") do
-            logger.trace("Running wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=False")
-            cmd = shell_out("wmic.exe computersystem where name=\"%computername%\" set AutomaticManagedPagefile=False")
-            check_for_errors(cmd.stderr)
+          converge_by("Turn off Automatically Managed on pagefiles") do
+            logger.trace("Running Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru")
+            powershell_exec! <<~EOH
+              $sys = Get-CimInstance Win32_ComputerSystem -Property *
+              Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru
+            EOH
           end
         end
 
@@ -206,9 +241,14 @@ class Chef
         # @param [String] max the minimum size of the pagefile
         def set_custom_size(pagefile, min, max)
           converge_by("set #{pagefile} to InitialSize=#{min} & MaximumSize=#{max}") do
-            logger.trace("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=#{min},MaximumSize=#{max}")
-            cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=#{min},MaximumSize=#{max}", returns: [0])
-            check_for_errors(cmd.stderr)
+            logger.trace("Set-CimInstance -Property @{InitialSize = #{min} MaximumSize = #{max}")
+            powershell_exec! <<~EOD
+              $page_file = "#{pagefile}"
+              $driveLetter = $page_file.split(':')[0]
+              Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop | Set-CimInstance -Property @{
+              InitialSize = #{min}
+              MaximumSize = #{max}}
+            EOD
           end
         end
 
@@ -217,20 +257,15 @@ class Chef
         # @param [String] pagefile path to the pagefile
         def set_system_managed(pagefile)
           converge_by("set #{pagefile} to System Managed") do
-            logger.trace("Running wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=0,MaximumSize=0")
-            cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" set InitialSize=0,MaximumSize=0", returns: [0])
-            check_for_errors(cmd.stderr)
+            logger.trace("Running ")
+            powershell_exec! <<~EOM
+              $page_file = "#{pagefile}"
+              $driveLetter = $page_file.split(':')[0]
+              Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop | Set-CimInstance -Property @{
+              InitialSize = 0
+              MaximumSize = 0}
+            EOM
           end
-        end
-
-        def get_setting_id(pagefile)
-          split_path = pagefile.split('\\')
-          "#{split_path[1]} @ #{split_path[0]}"
-        end
-
-        # raise if there's an error on stderr on a shellout
-        def check_for_errors(stderr)
-          raise stderr.chomp unless stderr.empty?
         end
       end
     end

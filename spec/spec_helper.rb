@@ -24,6 +24,9 @@ module Shell
   IRB = nil unless defined? IRB
 end
 
+# show the deprecation warnings
+Warning[:deprecated] = true
+
 $LOAD_PATH.unshift File.expand_path("..", __dir__)
 
 $LOAD_PATH.unshift File.expand_path("../chef-config/lib", __dir__)
@@ -35,12 +38,6 @@ require "rexml/document"
 require "webmock/rspec"
 
 require "chef"
-require "chef/knife"
-
-Dir["lib/chef/knife/**/*.rb"]
-  .map { |f| f.gsub("lib/", "") }
-  .map { |f| f.gsub(/\.rb$/, "") }
-  .each { |f| require f }
 
 require "chef/resource_resolver"
 require "chef/provider_resolver"
@@ -82,12 +79,13 @@ require "spec/support/recipe_dsl_helper"
 Dir["spec/support/**/*.rb"]
   .reject { |f| f =~ %r{^spec/support/platforms} }
   .reject { |f| f =~ %r{^spec/support/pedant} }
+  .reject { |f| f =~ %r{^spec/support/shared/integration/knife_support} }
   .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
   .each { |f| require f }
 
 OHAI_SYSTEM = Ohai::System.new
-OHAI_SYSTEM.all_plugins(["platform", "hostname", "languages/powershell"])
+OHAI_SYSTEM.all_plugins(["platform", "hostname", "languages/powershell", "uptime"])
 
 test_node = Chef::Node.new
 test_node.automatic["os"] = (OHAI_SYSTEM["os"] || "unknown_os").dup.freeze
@@ -143,8 +141,7 @@ RSpec.configure do |config|
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_macos: true if macos?
   config.filter_run_excluding macos_only: true unless macos?
-  config.filter_run_excluding macos_1013: true unless macos_1013?
-  config.filter_run_excluding macos_gte_1014: true unless macos_gte_1014?
+  config.filter_run_excluding not_macos_gte_11: true if macos_gte_11?
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
@@ -159,12 +156,8 @@ RSpec.configure do |config|
   config.filter_run_excluding windows_powershell_no_dsc_only: true if windows_powershell_dsc?
   config.filter_run_excluding windows_domain_joined_only: true unless windows_domain_joined?
   config.filter_run_excluding windows_not_domain_joined_only: true if windows_domain_joined?
-  # We think this line was causing rspec tests to not run on the Jenkins windows
-  # testers. If we ever fix it we should restore it.
-  # config.filter_run_excluding :windows_service_requires_assign_token => true if !STDOUT.isatty && !windows_user_right?("SeAssignPrimaryTokenPrivilege")
-  config.filter_run_excluding windows_service_requires_assign_token: true
+  config.filter_run_excluding windows_service_requires_assign_token: true if !STDOUT.isatty && !windows_user_right?("SeAssignPrimaryTokenPrivilege")
   config.filter_run_excluding solaris_only: true unless solaris?
-  config.filter_run_excluding system_windows_service_gem_only: true unless system_windows_service_gem?
   config.filter_run_excluding unix_only: true unless unix?
   config.filter_run_excluding linux_only: true unless linux?
   config.filter_run_excluding aix_only: true unless aix?
@@ -237,6 +230,14 @@ RSpec.configure do |config|
     WebMock.allow_net_connect!
 
     Chef.reset!
+
+    # Hack warning:
+    #
+    # Something across gem_installer_spec and mixlib_cli specs are polluting gem state so that the 'unmockening' test in rubygems_spec fails.
+    # This works around that until we can understand root cause.
+    #
+    # To explore the minimal test case around that and see more detailed notes, see branch `mp/broken-gems`
+    Gem.clear_paths
 
     Chef::ChefFS::FileSystemCache.instance.reset!
 

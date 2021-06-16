@@ -1,0 +1,126 @@
+---
+name: kitchen
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, windows-2016]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Install Chef/Ohai from Omnitruck'
+      id: install_chef
+      run: |
+        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        chef-client -v
+        ohai -v
+        rake --version
+        bundle -v
+    - name: 'Upgrade Chef/Ohai via Appbundler'
+      id: upgrade
+      run: |
+        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
+        gem install appbundler appbundle-updater --no-doc
+        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github chef/chef
+        Write-Output "Installed Chef / Ohai release:"
+        chef-client -v
+        ohai -v
+    - name: 'Run end_to_end::default recipe'
+      id: run
+      run: |
+        cd kitchen-tests
+        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        bundle config set without 'omnibus_package'
+        bundle install --jobs=3 --retry=3 --path=vendor/bundle
+        gem install berkshelf --no-doc
+        # berks emits a ruby warning when it loads net/http due to a previously
+        # defined constant. Even though it is just a warning, powershell immediately
+        # exits 1. I'm not sure why but this just suppresses the warnings.
+        $env:RUBYOPT="-W0"
+        berks vendor cookbooks
+        # restore the default warning level
+        $env:RUBYOPT="-W1"
+        chef-client -z -o end_to_end --chef-license accept-no-persist
+
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-10.15] # macos-11.0 is not public for now
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Install Chef/Ohai from Omnitruck'
+      id: install_chef
+      run: |
+        brew install coreutils
+        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
+        /opt/chef/bin/chef-client -v
+        /opt/chef/bin/ohai -v
+        /opt/chef/embedded/bin/rake --version
+        /opt/chef/embedded/bin/bundle -v
+    - name: 'Upgrade Chef/Ohai via Appbundler'
+      id: upgrade
+      run: |
+        OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+        sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+        sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github chef/chef
+        echo "Installed Chef / Ohai release:"
+        /opt/chef/bin/chef-client -v
+        /opt/chef/bin/ohai -v
+    - name: 'Run end_to_end::default recipe'
+      id: run
+      run: |
+        cd kitchen-tests
+        sudo /opt/chef/embedded/bin/bundle config set without 'omnibus_package'
+        sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3 --path=vendor/bundle
+        sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
+        sudo /opt/chef/embedded/bin/berks vendor cookbooks
+        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+
+  linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'amazonlinux-2'
+          - 'centos-6'
+          - 'centos-7'
+          - 'centos-8'
+          - 'debian-9'
+          - 'debian-10'
+          - 'debian-11'
+          - 'fedora-latest'
+          - 'opensuse-leap-15'
+          - 'oraclelinux-7'
+          - 'oraclelinux-8'
+          - 'ubuntu-1804'
+          - 'ubuntu-2004'
+          - 'ubuntu-2104'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_FFI_YAJL: ext
+      CHEF_LICENSE: accept-no-persist
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+          working-directory: kitchen-tests
+      - name: Run Test Kitchen
+        working-directory: kitchen-tests
+        run:  |
+          bundle exec kitchen test end-to-end-${{ matrix.os }}

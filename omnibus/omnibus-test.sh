@@ -1,33 +1,6 @@
 #!/bin/bash
 set -ueo pipefail
 
-channel="${CHANNEL:-unstable}"
-product="${PRODUCT:-chef}"
-version="${VERSION:-latest}"
-
-export INSTALL_DIR="/opt/$product"
-
-echo "--- Installing $channel $product $version"
-package_file="$("/opt/$TOOLCHAIN/bin/install-omnibus-product" -c "$channel" -P "$product" -v "$version" | tail -1)"
-
-echo "--- Verifying omnibus package is signed"
-"/opt/$TOOLCHAIN/bin/check-omnibus-package-signed" "$package_file"
-
-sudo rm -f "$package_file"
-
-echo "--- Verifying ownership of package files"
-
-NONROOT_FILES="$(find "$INSTALL_DIR" ! -user 0 -print)"
-if [[ "$NONROOT_FILES" == "" ]]; then
-  echo "Packages files are owned by root.  Continuing verification."
-else
-  echo "Exiting with an error because the following files are not owned by root:"
-  echo "$NONROOT_FILES"
-  exit 1
-fi
-
-echo "--- Running verification for $channel $product $version"
-
 # Our tests hammer YUM pretty hard and the EL6 testers get corrupted
 # after some period of time. Rebuilding the RPM database clears
 # up the underlying corruption. We'll do this each test run just to
@@ -50,13 +23,12 @@ mkdir -p "$TMPDIR"
 # Verify that we kill any orphaned test processes. Kill any orphaned rspec processes.
 sudo kill -9 $(ps ax | grep 'rspec' | grep -v grep | awk '{ print $1 }') || true
 
-export PATH="/opt/$product/bin:$PATH"
-
-export BIN_DIR="/opt/$product/bin"
+export PATH="/opt/chef/bin:$PATH"
+export BIN_DIR="/opt/chef/bin"
 
 # We don't want to add the embedded bin dir to the main PATH as this
 # could mask issues in our binstub shebangs.
-export EMBEDDED_BIN_DIR="/opt/$product/embedded/bin"
+export EMBEDDED_BIN_DIR="/opt/chef/embedded/bin"
 
 # If we are on Mac our symlinks are located under /usr/local/bin
 # otherwise they are under /usr/bin
@@ -128,10 +100,10 @@ export FORCE_FFI_YAJL=ext
 # most platforms provide "infocmp" by default via an "ncurses" package but SLES 12 provide it via "ncurses-devel" which
 # isn't typically installed. omnibus-toolchain has "infocmp" built-in so we add omnibus-toolchain to the PATH to ensure
 # tests will function properly.
-export PATH="/opt/$TOOLCHAIN/bin:/usr/local/bin:/opt/$TOOLCHAIN/embedded/bin:$PATH"
+export PATH="/opt/${TOOLCHAIN:-omnibus-toolchain}/bin:/usr/local/bin:/opt/${TOOLCHAIN:-omnibus-toolchain}/embedded/bin:$PATH"
 
 # add chef's bin paths to PATH to ensure tests function properly
-export PATH="/opt/$product/bin:/opt/$product/embedded/bin:$PATH"
+export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
 
 gem_list="$(gem which chef)"
 lib_dir="$(dirname "$gem_list")"

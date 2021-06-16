@@ -31,7 +31,7 @@ class Chef
       description "Use the **openssl_ec_private_key** resource to generate an elliptic curve (EC) private key file. If a valid EC key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, then it will be overwritten."
       introduced "14.4"
       examples <<~DOC
-        Generate a new ec privatekey with prime256v1 key curve and default des3 cipher
+        **Generate a new ec privatekey with prime256v1 key curve and default des3 cipher**
 
         ```ruby
         openssl_ec_private_key '/etc/ssl_files/eckey_prime256v1_des3.pem' do
@@ -41,7 +41,7 @@ class Chef
         end
         ```
 
-        Generate a new ec private key with prime256v1 key curve and aes-128-cbc cipher
+        **Generate a new ec private key with prime256v1 key curve and aes-128-cbc cipher**
 
         ```ruby
         openssl_ec_private_key '/etc/ssl_files/eckey_prime256v1_des3.pem' do
@@ -88,9 +88,7 @@ class Chef
         description: "Force creation of the key even if the same key already exists on the node.",
         default: false, desired_state: false
 
-      action :create do
-        description "Generate the ec private key"
-
+      action :create, description: "Generate the EC private key file." do
         unless new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
           converge_by("Create an EC private key #{new_resource.path}") do
             log "Generating an #{new_resource.key_curve} "\

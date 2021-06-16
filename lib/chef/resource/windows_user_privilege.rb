@@ -147,7 +147,7 @@ class Chef
         end
       end
 
-      action :add do
+      action :add, description: "Add a user privilege." do
         ([*new_resource.privilege] - [*current_resource.privilege]).each do |user_right|
           converge_by("adding user '#{new_resource.principal}' privilege #{user_right}") do
             Chef::ReservedNames::Win32::Security.add_account_right(new_resource.principal, user_right)
@@ -155,7 +155,7 @@ class Chef
         end
       end
 
-      action :set do
+      action :set, description: "Set the privileges that are listed in the `privilege` property for only the users listed in the `users` property." do
         if new_resource.users.nil? || new_resource.users.empty?
           raise Chef::Exceptions::ValidationFailed, "Users are required property with set action."
         end
@@ -190,7 +190,7 @@ class Chef
         end
       end
 
-      action :clear do
+      action :clear, description: "Clear all user privileges" do
         new_resource.privilege.each do |privilege|
           accounts = Chef::ReservedNames::Win32::Security.get_account_with_user_rights(privilege)
 
@@ -204,7 +204,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a user privilege" do
         curr_res_privilege = current_resource.privilege
         missing_res_privileges = (new_resource.privilege - curr_res_privilege)
 

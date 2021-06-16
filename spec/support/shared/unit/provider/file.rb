@@ -36,7 +36,7 @@ end
 
 # forwards-vs-reverse slashes on windows sucks
 def windows_path
-  windows? ? normalized_path.tr('\\', "/") : normalized_path
+  windows? ? normalized_path.tr("\\", "/") : normalized_path
 end
 
 # this is all getting a bit stupid, CHEF-4802 cut to remove all this
@@ -479,12 +479,14 @@ shared_examples_for Chef::Provider::File do
         it "calls #verify on each verification with tempfile path" do
           provider.new_resource.verify windows? ? "REM" : "true"
           provider.new_resource.verify windows? ? "REM" : "true"
+          allow(provider).to receive(:contents_changed?).and_return(true)
           provider.send(:do_validate_content)
         end
 
         it "raises an exception if any verification fails" do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
           allow(provider).to receive(:tempfile).and_return(tempfile)
+          allow(provider).to receive(:contents_changed?).and_return(true)
           provider.new_resource.verify windows? ? "cmd.exe c exit 1" : "false"
           provider.new_resource.verify.each do |v|
             allow(v).to receive(:verify).and_return(false)
@@ -492,9 +494,21 @@ shared_examples_for Chef::Provider::File do
           expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed)
         end
 
+        it "does not run verifications when the contents did not change" do
+          allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
+          allow(provider).to receive(:tempfile).and_return(tempfile)
+          allow(provider).to receive(:contents_changed?).and_return(false)
+          provider.new_resource.verify windows? ? "cmd.exe c exit 1" : "false"
+          provider.new_resource.verify.each do |v|
+            expect(v).not_to receive(:verify)
+          end
+          provider.send(:do_validate_content)
+        end
+
         it "does not show verification for sensitive resources" do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
           allow(provider).to receive(:tempfile).and_return(tempfile)
+          allow(provider).to receive(:contents_changed?).and_return(true)
           provider.new_resource.sensitive true
           provider.new_resource.verify windows? ? "cmd.exe c exit 1" : "false"
           provider.new_resource.verify.each do |v|

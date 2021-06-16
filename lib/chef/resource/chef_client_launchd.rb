@@ -23,7 +23,7 @@ class Chef
 
       provides :chef_client_launchd
 
-      description "Use the **chef_client_launchd** resource to configure the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule."
+      description "Use the **chef_client_launchd** resource to configure the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule on macOS systems."
       introduced "16.5"
       examples <<~DOC
         **Set the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule**:
@@ -86,11 +86,11 @@ class Chef
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
-        default: lazy { [] }
+        default: []
 
       property :environment, Hash,
         description: "A Hash containing additional arbitrary environment variables under which the launchd daemon will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
-        default: lazy { {} }
+        default: {}
 
       property :nice, [Integer, String],
         description: "The process priority to run the #{ChefUtils::Dist::Infra::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
@@ -101,7 +101,7 @@ class Chef
         description: "Run the #{ChefUtils::Dist::Infra::CLIENT} process with low priority disk IO",
         default: true
 
-      action :enable do
+      action :enable, description: "Enable running #{ChefUtils::Dist::Infra::PRODUCT} on a schedule using launchd." do
         unless ::Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
             owner new_resource.user
@@ -134,7 +134,7 @@ class Chef
           standard_error_path ::File.join(new_resource.log_directory, new_resource.log_file_name)
           program_arguments ["/bin/bash",
                              "-c",
-                             "echo; echo #{ChefUtils::Dist::Infra::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist"]
+                             "echo; echo #{ChefUtils::Dist::Infra::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; /bin/launchctl unload /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist; sleep 2; echo Now loading the daemon; /bin/launchctl load /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist"]
           action :enable # enable creates the plist & triggers service restarts on change
         end
 
@@ -148,7 +148,7 @@ class Chef
         end
       end
 
-      action :disable do
+      action :disable, description: "Disable running #{ChefUtils::Dist::Infra::PRODUCT} on a schedule using launchd" do
         service ChefUtils::Dist::Infra::PRODUCT do
           service_name "com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}"
           action :disable

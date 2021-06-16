@@ -44,7 +44,7 @@ class Chef
             # new or existing group. Because pw groupadd does not support the -m
             # and -d options used by manage_group, we treat group creation as a
             # special case and use -M.
-            logger.trace("#{new_resource} setting group members: #{new_resource.members.join(",")}")
+            logger.debug("#{new_resource} setting group members: #{new_resource.members.join(",")}")
             command += [ "-M", new_resource.members.join(",") ]
           end
 
@@ -119,12 +119,12 @@ class Chef
           end
 
           unless members_to_be_added.empty?
-            logger.trace("#{new_resource} adding group members: #{members_to_be_added.join(",")}")
+            logger.debug("#{new_resource} adding group members: #{members_to_be_added.join(",")}")
             opts << [ "-m", members_to_be_added.join(",") ]
           end
 
           unless members_to_be_removed.empty?
-            logger.trace("#{new_resource} removing group members: #{members_to_be_removed.join(",")}")
+            logger.debug("#{new_resource} removing group members: #{members_to_be_removed.join(",")}")
             opts << [ "-d", members_to_be_removed.join(",") ]
           end
 

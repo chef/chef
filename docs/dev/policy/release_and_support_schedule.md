@@ -50,6 +50,7 @@ This stage indicates that a release version is no longer in active development a
 ### End of Life (EOL)
 
 This stage indicates a previously deprecated release version, which is no longer supported
+
   - No additional releases will be made
   - Documentation will be archived
   - Cookbooks and other community tooling may no longer function using this version of Chef Infra

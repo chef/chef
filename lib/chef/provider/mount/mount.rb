@@ -120,7 +120,7 @@ class Chef
             shell_out!(*command)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
-            logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
+            logger.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
 
@@ -129,7 +129,7 @@ class Chef
             shell_out!("umount", @new_resource.mount_point)
             logger.trace("#{@new_resource} is no longer mounted at #{@new_resource.mount_point}")
           else
-            logger.trace("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
+            logger.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point}")
           end
         end
 
@@ -147,7 +147,7 @@ class Chef
             sleep 1
             mount_fs
           else
-            logger.trace("#{@new_resource} is not mounted at #{@new_resource.mount_point} - nothing to do")
+            logger.debug("#{@new_resource} is not mounted at #{@new_resource.mount_point} - nothing to do")
           end
         end
 
@@ -158,7 +158,7 @@ class Chef
 
         def enable_fs
           if @current_resource.enabled && mount_options_unchanged? && device_unchanged?
-            logger.trace("#{@new_resource} is already enabled - nothing to do")
+            logger.debug("#{@new_resource} is already enabled - nothing to do")
             return nil
           end
 
@@ -203,7 +203,7 @@ class Chef
             end
           end
           # Removed "/" from the end of str, because it was causing idempotency issue.
-          @real_device == "/" ? @real_device : @real_device.chomp("/")
+          (@real_device == "/" || @real_device.match?(":/$")) ? @real_device : @real_device.chomp("/")
         end
 
         def device_logstring
@@ -272,7 +272,7 @@ class Chef
               contents.reverse_each { |line| fstab.puts line }
             end
           else
-            logger.trace("#{@new_resource} is not enabled - nothing to do")
+            logger.debug("#{@new_resource} is not enabled - nothing to do")
           end
         end
 

@@ -110,7 +110,7 @@ class Chef
       property :config_directory, String,
         description: "The directory to store the client.rb in.",
         default: ChefConfig::Config.etc_chef_dir,
-        default_description: "`/etc/chef/` on *nix-like systems and `C:\chef\` on Windows"
+        default_description: "`/etc/chef/` on *nix-like systems and `C:\\chef\\` on Windows"
 
       property :user, String,
         description: "The user that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."
@@ -139,7 +139,7 @@ class Chef
         DESC
 
       property :formatters, Array,
-        description: "",
+        description: "Client logging formatters to load.",
         default: []
 
       property :event_loggers, Array,
@@ -227,7 +227,7 @@ class Chef
       property :additional_config, String,
         description: "Additional text to add at the bottom of the client.rb config. This can be used to run custom Ruby or to add less common config options"
 
-      action :create do
+      action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
         unless ::Dir.exist?(new_resource.config_directory)
           directory new_resource.config_directory do
             user new_resource.user unless new_resource.user.nil?
@@ -284,7 +284,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
         file ::File.join(new_resource.config_directory, "client.rb") do
           action :delete
         end

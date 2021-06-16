@@ -27,7 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env, :timeout, :input
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env, :timeout, :input, :login
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -92,6 +92,7 @@ class Chef
         opts[:cwd]         = cwd if cwd
         opts[:umask]       = umask if umask
         opts[:input]       = input if input
+        opts[:login]       = login if login
         opts[:default_env] = default_env
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s

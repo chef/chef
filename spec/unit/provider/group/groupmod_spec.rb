@@ -64,7 +64,7 @@ describe Chef::Provider::Group::Groupmod do
         end
 
         it "logs a message and sets group's members to 'none', then removes existing group members" do
-          expect(logger).to receive(:trace).with("group[wheel] setting group members to: none")
+          expect(logger).to receive(:debug).with("group[wheel] setting group members to: none")
           expect(@provider).to receive(:shell_out_compacted!).with("group", "mod", "-n", "wheel_bak", "wheel")
           expect(@provider).to receive(:shell_out_compacted!).with("group", "add", "-g", "123", "-o", "wheel")
           expect(@provider).to receive(:shell_out_compacted!).with("group", "del", "wheel_bak")
@@ -79,7 +79,7 @@ describe Chef::Provider::Group::Groupmod do
         end
 
         it "logs a message and does not modify group membership" do
-          expect(logger).to receive(:trace).with("group[wheel] not changing group members, the group has no members to add")
+          expect(logger).to receive(:debug).with("group[wheel] not changing group members, the group has no members to add")
           expect(@provider).not_to receive(:shell_out_compacted!)
           @provider.manage_group
         end

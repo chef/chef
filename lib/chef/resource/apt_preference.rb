@@ -91,7 +91,7 @@ class Chef
         end
       end
 
-      action :add do
+      action :add, description: "Creates a preferences file under `/etc/apt/preferences.d`." do
         return unless debian?
 
         preference = build_pref(
@@ -130,7 +130,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Removes the preferences file, thus unpinning the package." do
         return unless debian?
 
         sanitized_prefname = safe_name(new_resource.package_name)

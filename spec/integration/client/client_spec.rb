@@ -34,7 +34,7 @@ describe "chef-client" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -97,7 +97,8 @@ describe "chef-client" do
       before { file ".chef/knife.rb", "xxx.xxx" }
 
       it "should load .chef/knife.rb when -z is specified" do
-        result = shell_out("#{chef_client} -z -o 'x::default'", cwd: path_to(""))
+        # On Solaris shell_out will invoke /bin/sh which doesn't understand how to correctly update ENV['PWD']
+        result = shell_out("#{chef_client} -z -o 'x::default'", cwd: path_to(""), env: { "PWD" => nil })
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
         expect(result.stdout).to include("xxx")
       end
@@ -348,26 +349,6 @@ describe "chef-client" do
       expect(result.stdout).to include("Run List is [recipe[x::default]]")
       result.error!
     end
-
-    it "should complete with success when using --profile-ruby and output a profile file", :not_supported_on_aix do
-      file "config/client.rb", <<~EOM
-        local_mode true
-        cookbook_path "#{path_to("cookbooks")}"
-      EOM
-      result = shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' -z --profile-ruby", cwd: chef_dir)
-      result.error!
-      expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be true
-    end
-
-    it "doesn't produce a profile when --profile-ruby is not present" do
-      file "config/client.rb", <<~EOM
-        local_mode true
-        cookbook_path "#{path_to("cookbooks")}"
-      EOM
-      result = shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' -z", cwd: chef_dir)
-      result.error!
-      expect(File.exist?(path_to("config/local-mode-cache/cache/graph_profile.out"))).to be false
-    end
   end
 
   when_the_repository "has a cookbook that outputs some node attributes" do
@@ -431,7 +412,10 @@ describe "chef-client" do
       EOM
     end
 
-    it "the cheffish DSL is loaded lazily" do
+    xit "the cheffish DSL is loaded lazily" do
+      # pending "cheffish gem integration must address that cheffish requires chef/knife"
+      # # Note that this does work in CI - we should also track down how CI is managing to load
+      # chef/knife since it's not in the chef-client that's being bundle-exec'd.
       command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       expect(command.exitstatus).to eql(0)
     end

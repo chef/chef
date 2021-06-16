@@ -78,7 +78,7 @@ class Chef
                coerce: proc { |m| m.end_with?(".conf") ? m : m + ".conf" },
                default: lazy { |r| r.username == "*" ? "00_all_limits.conf" : "#{r.username}_limits.conf" }
 
-      action :create do
+      action :create, description: "Create a ulimit configuration file." do
         template "/etc/security/limits.d/#{new_resource.filename}" do
           source ::File.expand_path("support/ulimit.erb", __dir__)
           local true
@@ -106,7 +106,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an existing ulimit configuration file." do
         file "/etc/security/limits.d/#{new_resource.filename}" do
           action :delete
         end

@@ -119,9 +119,7 @@ class Chef
         end
       end
 
-      action :set do
-        description "Set the timezone."
-
+      action :set, description: "Set the system timezone." do
         # we have to check windows first since the value isn't case sensitive here
         if windows?
           unless current_windows_tz.casecmp?(new_resource.timezone)

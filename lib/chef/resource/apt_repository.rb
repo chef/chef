@@ -36,7 +36,7 @@ class Chef
       examples <<~DOC
         **Add repository with basic settings**:
 
-         ```ruby
+        ```ruby
         apt_repository 'nginx' do
           uri        'http://nginx.org/packages/ubuntu/'
           components ['nginx']
@@ -128,7 +128,7 @@ class Chef
 
       property :components, Array,
         description: "Package groupings, such as 'main' and 'stable'.",
-        default: lazy { [] }, default_description: "`main` if using a PPA repository."
+        default: [], default_description: "`main` if using a PPA repository."
 
       property :arch, [String, nil, FalseClass],
         description: "Constrain packages to a particular CPU architecture such as `i386` or `amd64`."
@@ -147,7 +147,7 @@ class Chef
 
       property :key, [String, Array, nil, FalseClass],
         description: "If a keyserver is provided, this is assumed to be the fingerprint; otherwise it can be either the URI of GPG key for the repo, or a cookbook_file.",
-        default: lazy { [] }, coerce: proc { |x| x ? Array(x) : x }
+        default: [], coerce: proc { |x| x ? Array(x) : x }
 
       property :key_proxy, [String, nil, FalseClass],
         description: "If set, a specified proxy is passed to GPG via `http-proxy=`."
@@ -409,7 +409,7 @@ class Chef
         end
       end
 
-      action :add do
+      action :add, description: "Creates a repository file at `/etc/apt/sources.list.d/` and builds the repository listing." do
         return unless debian?
 
         execute "apt-cache gencaches" do
@@ -459,7 +459,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Removes the repository listing." do
         return unless debian?
 
         cleanup_legacy_file!
@@ -477,7 +477,7 @@ class Chef
             end
           end
         else
-          logger.trace("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
+          logger.debug("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
         end
       end
 

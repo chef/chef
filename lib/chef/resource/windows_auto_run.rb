@@ -57,8 +57,7 @@ class Chef
 
       alias_method :program, :path
 
-      action :create do
-        description "Create an item to be run at login."
+      action :create, description: "Create an item to be run at login." do
 
         data = "\"#{new_resource.path}\""
         data << " #{new_resource.args}" if new_resource.args
@@ -73,9 +72,7 @@ class Chef
         end
       end
 
-      action :remove do
-        description "Remove an item that was previously setup to run at login"
-
+      action :remove, description: "Remove an item that was previously configured to run at login." do
         registry_key registry_path do
           values [{
             name: new_resource.program_name,

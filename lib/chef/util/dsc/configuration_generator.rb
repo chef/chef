@@ -88,6 +88,7 @@ class Chef::Util::DSC
         when FalseClass
           switch_present = false
         when TrueClass
+          # nothing
         when String
           switch_argument = escape_string_parameter_value(switch_value)
         else
@@ -105,7 +106,7 @@ class Chef::Util::DSC
     #   The name may not be null or empty, and should start with a letter.
     def validate_configuration_name!(configuration_name)
       if !!(configuration_name =~ /\A[A-Za-z]+[_a-zA-Z0-9]*\Z/) == false
-        raise ArgumentError, 'Configuration `#{configuration_name}` is not a valid PowerShell cmdlet name'
+        raise ArgumentError, "Configuration `#{configuration_name}` is not a valid PowerShell cmdlet name"
       end
     end
 

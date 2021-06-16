@@ -1,4 +1,4 @@
-RESOURCES_TO_SKIP = ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].freeze
+RESOURCES_TO_SKIP = ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "solaris_user", "windows_user", "mac_user", ""].freeze
 
 namespace :docs_site do
 
@@ -35,6 +35,8 @@ namespace :docs_site do
       text = ""
       text << "#{resource_name} 'name' do\n"
       properties.each do |p|
+        next if p["name"] == "sensitive" # we don't need to document sensitive twice
+
         pretty_default = pretty_default(p["default"])
 
         text << "  #{p["name"].ljust(padding_size)}"
@@ -95,8 +97,7 @@ namespace :docs_site do
     # and removing any nil values since those are less types in properties
     # and more side effects of legacy design
     # @return String
-    # TODO:
-    # - still does not include nil (?)
+    # @todo still does not include nil (?)
     def friendly_types_list(arr)
       fixed_arr = Array(arr).map do |x|
         case x
@@ -126,23 +127,21 @@ namespace :docs_site do
 
     #
     # Build the actions section of the resource yaml
+    # as a hash of actions to markdown descriptions.
     #
     # @return [Hash]
     #
-    def action_list(actions)
-      list = {}
-      actions.sort.each do |action|
-        # nothing is a special case that sources the content from the docs site
-        list[action.to_sym] = (action == "nothing" ? { "shortcode" => "resources_common_actions_nothing.md" } : { "markdown" => nil })
-      end
-
-      list
+    def action_list(actions, default_action)
+      actions = actions.map { |k, v| [k.to_sym, { "markdown" => k == default_action.first ? "#{v} (default)" : v } ] }.to_h
+      actions[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
+      actions
     end
 
-    # TODO:
-    # - what to do about "lazy default" for default?
+    # @todo what to do about "lazy default" for default?
     def properties_list(properties)
-      properties.map do |property|
+      properties.filter_map do |property|
+        next if property["name"] == "sensitive" # we don't need to document sensitive twice
+
         default_val = friendly_default_value(property)
 
         values = {}
@@ -152,7 +151,7 @@ namespace :docs_site do
         values["default_value"] = default_val unless default_val.nil?
         values["new_in"] = property["introduced"] unless property["introduced"].nil?
         values["allowed_values"] = property["equal_to"].join(", ") unless property["equal_to"].empty?
-        values["description_list"] = [{ "markdown" => property["description"] }]
+        values["description_list"] = split_description_values(property["description"])
         values
       end
     end
@@ -220,7 +219,7 @@ namespace :docs_site do
     # using the markers "Note:" for "note" sections and "Warning:" for "warning" sections.
     # TODO: has the limitation that the plain description section is assumed to come first,
     # and is followed by one or more "note"s or "warning"s sections.
-    def build_description(name, text)
+    def split_description_values(text)
       return [{ "markdown" => nil }] if text.nil?
 
       description_pattern = /(Note:|Warning:)?((?:(?!Note:|Warning:).)*)/m
@@ -245,8 +244,15 @@ namespace :docs_site do
         end
       end
 
+      description
+    end
+
+    # takes the resource description text, splits out warning/note fields and then adds multipackage based notes when appropriate
+    def build_resource_description(name, text)
+      description = split_description_values(text)
+
       # if we're on a package resource, depending on the OS we want to inject a warning / note that you can just use 'package' instead
-      description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package windows_package yum_package zypper_package}.include?(name)
+      description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package windows_package yum_package zypper_package pacman_package freebsd_package}.include?(name)
 
       description
     end
@@ -264,12 +270,12 @@ namespace :docs_site do
       r.merge!(special_properties(name))
 
       r["resource"] = name
-      r["resource_description_list"] = build_description(name, data["description"])
+      r["resource_description_list"] = build_resource_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
-      r["actions_list"] = action_list(data["actions"])
+      r["actions_list"] = action_list(data["actions"], data["default_action"] )
       r["properties_list"] = properties_list(properties)
       r["examples"] = data["examples"]
 

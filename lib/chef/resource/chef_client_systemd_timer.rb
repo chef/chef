@@ -92,11 +92,11 @@ class Chef
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
-        default: lazy { [] }
+        default: []
 
       property :environment, Hash,
         description: "A Hash containing additional arbitrary environment variables under which the systemd timer will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
-        default: lazy { {} }
+        default: {}
 
       property :cpu_quota, [Integer, String],
         description: "The systemd CPUQuota to run the #{ChefUtils::Dist::Infra::CLIENT} process with. This is a percentage value of the total CPU time available on the system. If the system has more than 1 core this may be a value greater than 100.",
@@ -104,7 +104,7 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }
 
-      action :add do
+      action :add, description: "Add a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         systemd_unit "#{new_resource.job_name}.service" do
           content service_content
           action :create
@@ -116,7 +116,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         systemd_unit "#{new_resource.job_name}.service" do
           action :delete
         end

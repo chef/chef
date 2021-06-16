@@ -33,7 +33,7 @@ class Chef
       module ClassMethods
         # We want to mix these in as class methods
         def writable?(path)
-          ::File.exists?(path) && Chef::ReservedNames::Win32::File.file_access_check(
+          ::File.exist?(path) && Chef::ReservedNames::Win32::File.file_access_check(
             path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
           )
         end
@@ -136,7 +136,7 @@ class Chef
       end
 
       def should_update_dacl?
-        return true unless ::File.exists?(file) || ::File.symlink?(file)
+        return true unless ::File.exist?(file) || ::File.symlink?(file)
 
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
@@ -170,7 +170,7 @@ class Chef
       end
 
       def should_update_group?
-        return true unless ::File.exists?(file) || ::File.symlink?(file)
+        return true unless ::File.exist?(file) || ::File.symlink?(file)
 
         (group = target_group) && (group != existing_descriptor.group)
       end
@@ -190,7 +190,7 @@ class Chef
       end
 
       def should_update_owner?
-        return true unless ::File.exists?(file) || ::File.symlink?(file)
+        return true unless ::File.exist?(file) || ::File.symlink?(file)
 
         (owner = target_owner) && (owner != existing_descriptor.owner)
       end

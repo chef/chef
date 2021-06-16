@@ -1,10 +1,5 @@
 source "https://rubygems.org"
 
-# Note we do not use the gemspec DSL which restricts to the
-# gemspec for the current platform and filters out other platforms
-# during a bundle lock operation. We actually want dependencies from
-# both of our gemspecs. Also note this this mimics gemspec behavior
-# of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
@@ -20,32 +15,26 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", ">= 14"
-
-gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
+gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 4.23" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 4.24" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
 group(:omnibus_package, :pry) do
   gem "pry"
-  gem "pry-byebug"
+  # byebug does not install on freebsd on ruby 3.0
+  # gem "pry-byebug"
   gem "pry-stack_explorer"
-end
-
-# Everything except AIX
-group(:ruby_prof) do
-  # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers
-  gem "ruby-prof", "< 1.3.0"
 end
 
 # Everything except AIX and Windows
 group(:ruby_shadow) do
-  gem "ruby-shadow", platforms: :ruby
+  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
+  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
 end
 
 group(:development, :test) do
@@ -57,9 +46,7 @@ end
 
 group(:chefstyle) do
   # for testing new chefstyle rules
-  # disabled until we resolve the conflict in regexp_parser deps between rubocop and inspec
-  # gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
-  gem "chefstyle", "= 1.5.2"
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]

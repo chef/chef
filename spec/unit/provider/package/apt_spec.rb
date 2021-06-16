@@ -48,6 +48,21 @@ describe Chef::Provider::Package::Apt do
     @timeout = 900
   end
 
+  def ubuntu1804downgrade_stubs
+    so = instance_double(Mixlib::ShellOut, stdout: "apt 1.6~beta1 (amd64)\notherstuff\n")
+    so2 = instance_double(Mixlib::ShellOut, error?: false)
+    allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
+    allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.6~beta1", "gt", "1.1.0").and_return(so2)
+  end
+
+  def ubuntu1404downgrade_stubs
+    so = instance_double(Mixlib::ShellOut, stdout: "apt 1.0.1ubuntu2 for amd64 compiled on Dec  8 2016 16:23:38\notherstuff\n")
+    so2 = instance_double(Mixlib::ShellOut, error?: true)
+    allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
+    allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.0.1ubuntu2", "gt", "1.1.0").and_return(so2)
+    allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.0.1ubuntu2", "eq", "1.1.0").and_return(so2)
+  end
+
   describe "when loading current resource" do
 
     it "should create a current resource with the name of the new_resource" do
@@ -237,6 +252,72 @@ describe Chef::Provider::Package::Apt do
       ).and_return(@shell_out)
       expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
+
+    it "downgrades when requested" do
+      ubuntu1804downgrade_stubs
+      so = instance_double(Mixlib::ShellOut, stdout: "apt 1.6~beta1 (amd64)\notherstuff\n")
+      so2 = instance_double(Mixlib::ShellOut, error?: false)
+      allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
+      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.6~beta1", "gt", "1.1.0").and_return(so2)
+
+      @new_resource.package_name("libmysqlclient-dev")
+      @new_resource.version("5.1.41-3ubuntu12.7")
+      real_package_out = <<~RPKG_STDOUT
+        libmysqlclient-dev:
+          Installed: 5.1.41-3ubuntu12.10
+          Candidate: 5.1.41-3ubuntu12.10
+          Version table:
+         *** 5.1.41-3ubuntu12.10 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main packages
+                100 /var/lib/dpkg/status
+             5.1.41-3ubuntu12.7 0
+                500 http://security.ubuntu.com/ubuntu/ lucid-security/main packages
+             5.1.41-3ubuntu12 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid/main packages
+      RPKG_STDOUT
+      real_package = double(stdout: real_package_out, exitstatus: 0)
+      expect(@provider).to receive(:shell_out_compacted!).with(
+        "apt-cache", "policy", "libmysqlclient-dev",
+        env: { "DEBIAN_FRONTEND" => "noninteractive" },
+        timeout: @timeout
+      ).and_return(real_package)
+      expect(@provider).to receive(:shell_out_compacted!).with(
+        "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient-dev=5.1.41-3ubuntu12.7",
+        env: { "DEBIAN_FRONTEND" => "noninteractive" },
+        timeout: @timeout
+      )
+      @provider.run_action(:install)
+    end
+
+    it "raises an exception if bad version specified" do
+      @new_resource.package_name("libmysqlclient-dev")
+      @new_resource.version("non_existent")
+      real_package_out = <<~RPKG_STDOUT
+        libmysqlclient-dev:
+          Installed: 5.1.41-3ubuntu12.10
+          Candidate: 5.1.41-3ubuntu12.10
+          Version table:
+         *** 5.1.41-3ubuntu12.10 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid-updates/main packages
+                100 /var/lib/dpkg/status
+             5.1.41-3ubuntu12.7 0
+                500 http://security.ubuntu.com/ubuntu/ lucid-security/main packages
+             5.1.41-3ubuntu12 0
+                500 http://us.archive.ubuntu.com/ubuntu/ lucid/main packages
+      RPKG_STDOUT
+      real_package = double(stdout: real_package_out, exitstatus: 0)
+      expect(@provider).to receive(:shell_out_compacted!).with(
+        "apt-cache", "policy", @new_resource.package_name,
+        env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
+        timeout: @timeout
+      ).and_return(real_package)
+      expect(@provider).to receive(:shell_out_compacted!).with(
+        "apt-cache", "showpkg", @new_resource.package_name,
+        env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
+        timeout: @timeout
+      ).and_return(real_package)
+      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
   end
 
   context "after loading the current resource" do
@@ -255,21 +336,6 @@ describe Chef::Provider::Package::Apt do
           installed_version: nil,
         },
       })
-    end
-
-    def ubuntu1804downgrade_stubs
-      so = instance_double(Mixlib::ShellOut, stdout: "apt 1.6~beta1 (amd64)\notherstuff\n")
-      so2 = instance_double(Mixlib::ShellOut, error?: false)
-      allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
-      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.6~beta1", "gt", "1.1.0").and_return(so2)
-    end
-
-    def ubuntu1404downgrade_stubs
-      so = instance_double(Mixlib::ShellOut, stdout: "apt 1.0.1ubuntu2 for amd64 compiled on Dec  8 2016 16:23:38\notherstuff\n")
-      so2 = instance_double(Mixlib::ShellOut, error?: true)
-      allow(@provider).to receive(:shell_out).with("apt-get --version").and_return(so)
-      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.0.1ubuntu2", "gt", "1.1.0").and_return(so2)
-      allow(@provider).to receive(:shell_out).with("dpkg", "--compare-versions", "1.0.1ubuntu2", "eq", "1.1.0").and_return(so2)
     end
 
     describe "install_package" do
@@ -513,7 +579,7 @@ describe Chef::Provider::Package::Apt do
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: "irssi"
         ))
-        expect(logger).to receive(:trace).with("#{@provider.new_resource} is already locked")
+        expect(logger).to receive(:debug).with("#{@provider.new_resource} is already locked")
 
         @provider.action_lock
       end
@@ -534,7 +600,7 @@ describe Chef::Provider::Package::Apt do
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: ""
         ))
-        expect(logger).to receive(:trace).with("#{@provider.new_resource} is already unlocked")
+        expect(logger).to receive(:debug).with("#{@provider.new_resource} is already unlocked")
 
         @provider.action_unlock
       end
@@ -590,7 +656,7 @@ describe Chef::Provider::Package::Apt do
       end
     end
 
-    describe "#action_install" do
+    describe "#action_upgrade" do
       it "should run dpkg to compare versions if an existing version is installed" do
         allow(@provider).to receive(:get_current_versions).and_return("1.4.0")
         allow(@new_resource).to receive(:allow_downgrade).and_return(false)

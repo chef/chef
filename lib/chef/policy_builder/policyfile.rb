@@ -475,7 +475,7 @@ class Chef
       end
 
       # @api private
-      # Fetches the CookbookVersion object for the given name and identifer
+      # Fetches the CookbookVersion object for the given name and identifier
       # specified in the lock_data.
       # TODO: This only implements Chef 11 compatibility mode, which means that
       # cookbooks are fetched by the "dotted_decimal_identifier": a

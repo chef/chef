@@ -40,17 +40,13 @@ class Chef
         description: "The type of DNS server, Domain or Standalone.",
         default: "Domain", equal_to: %w{Domain Standalone}
 
-      action :create do
-        description "Creates and updates a DNS Zone."
-
+      action :create, description: "Creates and updates a DNS Zone." do
         powershell_package "xDnsServer"
 
         run_dsc_resource "Present"
       end
 
-      action :delete do
-        description "Deletes a DNS Zone."
-
+      action :delete, description: "Deletes a DNS Zone." do
         powershell_package "xDnsServer"
 
         run_dsc_resource "Absent"

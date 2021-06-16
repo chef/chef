@@ -18,7 +18,9 @@
 
 require_relative "path_utils"
 require_relative "file_system/exceptions"
-require_relative "parallelizer"
+require "chef-utils/parallel_map" unless defined?(ChefUtils::ParallelMap)
+
+using ChefUtils::ParallelMap
 
 class Chef
   module ChefFS
@@ -70,8 +72,8 @@ class Chef
 
               # Otherwise, go through all children and find any matches
             elsif entry.dir?
-              results = Parallelizer.parallelize(entry.children) { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
-              results.flatten(1).each(&block)
+              results = entry.children.parallel_map { |child| Chef::ChefFS::FileSystem.list(child, pattern) }
+              results.flat_each(&block)
             end
           end
         end
@@ -138,7 +140,7 @@ class Chef
       def self.copy_to(pattern, src_root, dest_root, recurse_depth, options, ui = nil, format_path = nil)
         found_result = false
         error = false
-        parallel_do(list_pairs(pattern, src_root, dest_root)) do |src, dest|
+        list_pairs(pattern, src_root, dest_root).parallel_each do |src, dest|
           found_result = true
           new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
           child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
@@ -292,7 +294,7 @@ class Chef
                     end
                   end
                 else
-                  ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                  ui.output("Not deleting extra entry #{dest_path} (purge is off)") if ui
                 end
               end
 
@@ -319,7 +321,7 @@ class Chef
                   end
                   # Directory creation is recursive.
                   if recurse_depth != 0
-                    parallel_do(src_entry.children) do |src_child|
+                    src_entry.children.parallel_each do |src_child|
                       new_dest_child = new_dest_dir.child(src_child.name)
                       child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                       error ||= child_error
@@ -356,7 +358,7 @@ class Chef
                 if dest_entry.dir?
                   # If both are directories, recurse into their children
                   if recurse_depth != 0
-                    parallel_do(child_pairs(src_entry, dest_entry)) do |src_child, dest_child|
+                    child_pairs(src_entry, dest_entry).parallel_each do |src_child, dest_child|
                       child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                       error ||= child_error
                     end
@@ -423,9 +425,6 @@ class Chef
           parent
         end
 
-        def parallel_do(enum, options = {}, &block)
-          Chef::ChefFS::Parallelizer.parallel_do(enum, options, &block)
-        end
       end
     end
   end

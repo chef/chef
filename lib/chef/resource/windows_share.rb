@@ -70,17 +70,17 @@ class Chef
       # Specifies which accounts are granted full permission to access the share. Use a comma-separated list to specify multiple accounts. An account may not be specified more than once in the FullAccess, ChangeAccess, or ReadAccess parameter lists, but may be specified once in the FullAccess, ChangeAccess, or ReadAccess parameter list and once in the NoAccess parameter list.
       property :full_users, Array,
         description: "The users that should have 'Full control' permissions on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| u.sort }
+        default: [], coerce: proc { |u| u.sort }
 
       # Specifies which users are granted modify permission to access the share
       property :change_users, Array,
         description: "The users that should have 'modify' permission on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| u.sort }
+        default: [], coerce: proc { |u| u.sort }
 
       # Specifies which users are granted read permission to access the share. Multiple users can be specified by supplying a comma-separated list.
       property :read_users, Array,
         description: "The users that should have 'read' permission on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| u.sort }
+        default: [], coerce: proc { |u| u.sort }
 
       # Specifies the lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer. By default, new SMB shares are persistent, and non-temporary.
       property :temporary, [TrueClass, FalseClass],
@@ -118,11 +118,11 @@ class Chef
       # Specifies which files and folders in the SMB share are visible to users. AccessBased: SMB does not the display the files and folders for a share to a user unless that user has rights to access the files and folders. By default, access-based enumeration is disabled for new SMB shares. Unrestricted: SMB displays files and folders to a user even when the user does not have permission to access the items.
       # property :folder_enumeration_mode, String, equal_to: %(AccessBased Unrestricted)
 
-      load_current_value do |desired|
+      load_current_value do |new_resource|
         # this command selects individual objects because EncryptData & CachingMode have underlying
         # types that get converted to their Integer values by ConvertTo-Json & we need to make sure
         # those get written out as strings
-        share_state_cmd = "Get-SmbShare -Name '#{desired.share_name}' | Select-Object Name,Path, Description, Temporary, CATimeout, ContinuouslyAvailable, ConcurrentUserLimit, EncryptData"
+        share_state_cmd = "Get-SmbShare -Name '#{new_resource.share_name}' | Select-Object Name,Path, Description, Temporary, CATimeout, ContinuouslyAvailable, ConcurrentUserLimit, EncryptData"
 
         Chef::Log.debug("Running '#{share_state_cmd}' to determine share state'")
         ps_results = powershell_exec(share_state_cmd)
@@ -146,14 +146,14 @@ class Chef
         encrypt_data results["EncryptData"]
         # folder_enumeration_mode results['FolderEnumerationMode']
 
-        perm_state_cmd = %{Get-SmbShareAccess -Name "#{desired.share_name}" | Select-Object AccountName,AccessControlType,AccessRight}
+        perm_state_cmd = %{Get-SmbShareAccess -Name "#{new_resource.share_name}" | Select-Object AccountName,AccessControlType,AccessRight}
 
         Chef::Log.debug("Running '#{perm_state_cmd}' to determine share permissions state'")
         ps_perm_results = powershell_exec(perm_state_cmd)
 
         # we raise here instead of warning like above because we'd only get here if the above Get-SmbShare
         # command was successful and that continuing would leave us with 1/2 known state
-        raise "Could not determine #{desired.share_name} share permissions by running '#{perm_state_cmd}'" if ps_perm_results.error?
+        raise "Could not determine #{new_resource.share_name} share permissions by running '#{perm_state_cmd}'" if ps_perm_results.error?
 
         Chef::Log.debug("The Get-SmbShareAccess results were #{ps_perm_results.result}")
 
@@ -192,9 +192,7 @@ class Chef
         name
       end
 
-      action :create do
-        description "Create and modify Windows shares."
-
+      action :create, description: "Create or modify a Windows share." do
         # we do this here instead of requiring the property because :delete doesn't need path set
         raise "No path property set" unless new_resource.path
 
@@ -218,9 +216,7 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Delete an existing Windows share."
-
+      action :delete, description: "Delete an existing Windows share." do
         if current_resource.nil?
           Chef::Log.debug("#{new_resource.share_name} does not exist - nothing to do")
         else
@@ -275,14 +271,11 @@ class Chef
         # users/groups will have their permissions updated with the same command that
         # sets it, but removes must be performed with Revoke-SmbShareAccess
         def users_to_revoke
-          @users_to_revoke ||= begin
-            # if the resource doesn't exist then nothing needs to be revoked
-            if current_resource.nil?
-              []
-            else # if it exists then calculate the current to new resource diffs
-              (current_resource.full_users + current_resource.change_users + current_resource.read_users) - (new_resource.full_users + new_resource.change_users + new_resource.read_users)
-            end
-          end
+          @users_to_revoke ||= if current_resource.nil?
+                                 []
+                               else # if it exists then calculate the current to new resource diffs
+                                 (current_resource.full_users + current_resource.change_users + current_resource.read_users) - (new_resource.full_users + new_resource.change_users + new_resource.read_users)
+                               end
         end
 
         # update existing permissions on a share

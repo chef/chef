@@ -108,11 +108,11 @@ class Chef
 
       property :extensions, Hash,
         description: "Hash of X509 Extensions entries, in format `{ 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }`.",
-        default: lazy { {} }
+        default: {}
 
       property :subject_alt_name, Array,
         description: "Array of Subject Alternative Name entries, in format `DNS:example.com` or `IP:1.2.3.4`.",
-        default: lazy { [] }
+        default: []
 
       property :key_file, String,
         description: "The path to a certificate key file on the filesystem. If the key_file property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
@@ -151,15 +151,12 @@ class Chef
         description: "The number of days before the expiry. The certificate will be automatically renewed when the value is reached.",
         introduced: "15.7"
 
-      action :create do
-        description "Generate a certificate"
-
+      action :create, description: "Generate a certificate file." do
         file new_resource.path do
           action :create_if_missing
           owner new_resource.owner unless new_resource.owner.nil?
           group new_resource.group unless new_resource.group.nil?
           mode new_resource.mode unless new_resource.mode.nil?
-          sensitive true
           content cert.to_pem
         end
 

@@ -182,7 +182,7 @@ class Chef
 
       property :arguments, [Array, Hash],
         description: "Arguments to pass the handler's class initializer.",
-        default: lazy { [] }
+        default: []
 
       property :type, Hash,
         description: "The type of handler to register as, i.e. :report, :exception or both.",
@@ -194,9 +194,7 @@ class Chef
 
       # This action needs to find an rb file that presumably contains the indicated class in it and the
       # load that file. It then instantiates that class by name and registers it as a handler.
-      action :enable do
-        description "Enables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node"
-
+      action :enable, description: "Enables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node." do
         class_name = new_resource.class_name
         new_resource.type.each do |type, enable|
           next unless enable
@@ -218,9 +216,7 @@ class Chef
         end
       end
 
-      action :disable do
-        description "Disables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node"
-
+      action :disable, description: "Disables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node." do
         new_resource.type.each_key do |type|
           unregister_handler(type, new_resource.class_name)
         end

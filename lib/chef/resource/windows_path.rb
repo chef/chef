@@ -64,7 +64,7 @@ class Chef
         end
       end
 
-      action :add do
+      action :add, description: "Add an item to the system path." do
         # The windows Env provider does not correctly expand variables in
         # the PATH environment variable. Ruby expects these to be expanded.
         #
@@ -72,11 +72,11 @@ class Chef
         env "path" do
           action :modify
           delim ::File::PATH_SEPARATOR
-          value path.tr("/", '\\')
+          value path.tr("/", "\\")
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove an item from the system path." do
         # The windows Env provider does not correctly expand variables in
         # the PATH environment variable. Ruby expects these to be expanded.
         #
@@ -84,7 +84,7 @@ class Chef
         env "path" do
           action :delete
           delim ::File::PATH_SEPARATOR
-          value path.tr("/", '\\')
+          value path.tr("/", "\\")
         end
       end
     end

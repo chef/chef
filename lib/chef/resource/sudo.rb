@@ -71,12 +71,12 @@ class Chef
 
       property :users, [String, Array],
         description: "User(s) to provide sudo privileges to. This property accepts either an array or a comma separated list.",
-        default: lazy { [] },
+        default: [],
         coerce: proc { |x| x.is_a?(Array) ? x : x.split(/\s*,\s*/) }
 
       property :groups, [String, Array],
         description: "Group(s) to provide sudo privileges to. This property accepts either an array or a comma separated list. Leading % on group names is optional.",
-        default: lazy { [] },
+        default: [],
         coerce: proc { |x| coerce_groups(x) }
 
       property :commands, Array,
@@ -108,11 +108,11 @@ class Chef
 
       property :defaults, Array,
         description: "An array of defaults for the user/group.",
-        default: lazy { [] }
+        default: []
 
       property :command_aliases, Array,
         description: "Command aliases that can be used as allowed commands later in the configuration.",
-        default: lazy { [] }
+        default: []
 
       property :setenv, [TrueClass, FalseClass],
         description: "Determines whether or not to permit preservation of the environment with `sudo -E`.",
@@ -120,11 +120,11 @@ class Chef
 
       property :env_keep_add, Array,
         description: "An array of strings to add to `env_keep`.",
-        default: lazy { [] }
+        default: []
 
       property :env_keep_subtract, Array,
         description: "An array of strings to remove from `env_keep`.",
-        default: lazy { [] }
+        default: []
 
       property :visudo_path, String,
         deprecated: true
@@ -170,9 +170,7 @@ class Chef
         end
       end
 
-      action :create do
-        description "Create a single sudoers config in the sudoers.d directory"
-
+      action :create, description: "Create a single sudoers configuration file in the `sudoers.d` directory." do
         validate_properties
 
         if docker? # don't even put this into resource collection unless we're in docker
@@ -230,9 +228,7 @@ class Chef
       end
 
       # Removes a user from the sudoers group
-      action :delete do
-        description "Remove a sudoers config from the sudoers.d directory"
-
+      action :delete, description: "Remove a sudoers configuration file from the `sudoers.d` directory." do
         file "#{new_resource.config_prefix}/sudoers.d/#{new_resource.filename}" do
           action :delete
         end

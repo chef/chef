@@ -30,33 +30,33 @@ class Chef
       **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-        chef_client_scheduled_task 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task'
+      chef_client_scheduled_task 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task'
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} on system start**:
 
       ```ruby
-        chef_client_scheduled_task '#{ChefUtils::Dist::Infra::PRODUCT} on start' do
-          frequency 'onstart'
-        end
+      chef_client_scheduled_task '#{ChefUtils::Dist::Infra::PRODUCT} on start' do
+        frequency 'onstart'
+      end
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
-        chef_client_scheduled_task 'Run an override recipe' do
-          daemon_options ['--override-runlist mycorp_base::default']
-        end
+      chef_client_scheduled_task 'Run an override recipe' do
+        daemon_options ['--override-runlist mycorp_base::default']
+      end
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} daily at 01:00 am, specifying a named run-list**:
 
       ```ruby
-        chef_client_scheduled_task 'Run chef-client named run-list daily' do
-          frequency 'daily'
-          start_time '01:00'
-          daemon_options ['-n audit_only']
-        end
+      chef_client_scheduled_task 'Run chef-client named run-list daily' do
+        frequency 'daily'
+        start_time '01:00'
+        daemon_options ['-n audit_only']
+      end
       ```
       DOC
 
@@ -127,9 +127,9 @@ class Chef
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
-        default: lazy { [] }
+        default: []
 
-      action :add do
+      action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
@@ -157,7 +157,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         windows_task new_resource.task_name do
           action :delete
         end

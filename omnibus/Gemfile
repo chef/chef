@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
-gem "omnibus", git: "https://github.com/chef/omnibus", branch: "master"
-gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "master"
+gem "omnibus", github: ENV.fetch("OMNIBUS_GITHUB_REPO", "chef/omnibus"), branch: ENV.fetch("OMNIBUS_GITHUB_BRANCH", "master")
+gem "omnibus-software", github: ENV.fetch("OMNIBUS_SOFTWARE_GITHUB_REPO", "chef/omnibus-software"), branch: ENV.fetch("OMNIBUS_SOFTWARE_GITHUB_BRANCH", "master")
 gem "artifactory"
 
 gem "pedump"
@@ -22,9 +22,3 @@ group :development do
   gem "kitchen-vagrant", ">= 1.3.1"
   gem "winrm-fs", "~> 1.0"
 end
-
-instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
-
-# If you want to load debugging tools into the bundle exec sandbox,
-# add these additional dependencies into Gemfile.local
-eval_gemfile(__FILE__ + ".local") if File.exist?(__FILE__ + ".local")

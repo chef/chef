@@ -25,7 +25,7 @@ def pf_reports_true_for(*args)
       expect(described_class.send(method, node)).to be true
     end
   end
-  (PLATFORM_FAMILY_HELPERS - [ :windows_ruby? ] - args).each do |method|
+  (PLATFORM_FAMILY_HELPERS - %i{windows_ruby? macos_ruby?} - args).each do |method|
     it "reports false for #{method}" do
       expect(described_class.send(method, node)).to be false
     end
@@ -41,7 +41,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
     end
   end
 
-  ( PLATFORM_FAMILY_HELPERS - [ :windows_ruby? ]).each do |helper|
+  ( PLATFORM_FAMILY_HELPERS - %i{windows_ruby? macos_ruby?}).each do |helper|
     it "has the #{helper} in the ChefUtils module" do
       expect(ChefUtils).to respond_to(helper)
     end
@@ -90,13 +90,13 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on centos6" do
-    let(:options) { { platform: "centos", version: "6.10" } }
+    let(:options) { { platform: "centos", version: "6" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
   context "on centos7" do
-    let(:options) { { platform: "centos", version: "7.7.1908" } }
+    let(:options) { { platform: "centos", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
@@ -108,7 +108,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on clearos7" do
-    let(:options) { { platform: "clearos", version: "7.4" } }
+    let(:options) { { platform: "clearos", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
@@ -156,25 +156,25 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on oracle6" do
-    let(:options) { { platform: "oracle", version: "6.10" } }
+    let(:options) { { platform: "oracle", version: "6" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
   context "on oracle7" do
-    let(:options) { { platform: "oracle", version: "7.6" } }
+    let(:options) { { platform: "oracle", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
 
   context "on redhat6" do
-    let(:options) { { platform: "redhat", version: "6.10" } }
+    let(:options) { { platform: "redhat", version: "6" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
   context "on redhat7" do
-    let(:options) { { platform: "redhat", version: "7.6" } }
+    let(:options) { { platform: "redhat", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
@@ -217,6 +217,18 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
     else
       it "reports false for :windows_ruby?" do
         expect(described_class.windows_ruby?).to be false
+      end
+    end
+  end
+
+  context "node-independent mac APIs" do
+    if RUBY_PLATFORM.match?(/darwin/)
+      it "reports true for :macos_ruby?" do
+        expect(described_class.macos_ruby?).to be true
+      end
+    else
+      it "reports false for :macos_ruby?" do
+        expect(described_class.macos_ruby?).to be false
       end
     end
   end

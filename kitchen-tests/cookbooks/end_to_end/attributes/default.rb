@@ -67,13 +67,6 @@ default["chef_client"]["config"]["verbose_logging"] = false
 default["chef_client"]["chef_license"] = "accept-no-persist"
 
 #
-# resolver cookbook overrides
-#
-
-default["resolver"]["nameservers"] = [ "8.8.8.8", "8.8.4.4" ]
-default["resolver"]["search"] = "chef.io"
-
-#
 # nscd cookbook overrides
 #
 

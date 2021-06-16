@@ -1951,4 +1951,82 @@ describe Chef::Node do
       expect(node["foo"]["bar"]["test"]).to eql("right")
     end
   end
+
+  describe "lazy values" do
+    it "supports lazy values in attributes" do
+      node.instance_eval do
+        default["foo"]["bar"] = lazy { node["fizz"]["buzz"] }
+        default["fizz"]["buzz"] = "works"
+      end
+      expect(node["foo"]["bar"]).to eql("works")
+    end
+
+    it "lazy values maintain laziness" do
+      node.instance_eval do
+        default["foo"]["bar"] = lazy { node["fizz"]["buzz"] }
+        default["fizz"]["buzz"] = "works"
+      end
+      expect(node["foo"]["bar"]).to eql("works")
+      node.default["fizz"]["buzz"] = "still works"
+      expect(node["foo"]["bar"]).to eql("still works")
+    end
+
+    it "supports recursive lazy values in attributes" do
+      node.instance_eval do
+        default["cool"]["beans"] = lazy { node["foo"]["bar"] }
+        default["foo"]["bar"] = lazy { node["fizz"]["buzz"] }
+        default["fizz"]["buzz"] = "works"
+      end
+      expect(node["cool"]["beans"]).to eql("works")
+      node.default["fizz"]["buzz"] = "still works"
+      expect(node["cool"]["beans"]).to eql("still works")
+    end
+
+    it "supports top level lazy values in attributes" do
+      # due to the top level deep merge cache these are special cases
+      node.instance_eval do
+        default["cool"] = lazy { node["foo"] }
+        default["foo"] = lazy { node["fizz"] }
+        default["fizz"] = "works"
+      end
+      expect(node["cool"]).to eql("works")
+      node.default["fizz"] = "still works"
+      expect(node["cool"]).to eql("still works")
+    end
+
+    it "supports deep merged values in attributes" do
+      node.instance_eval do
+        override["bar"]["cool"] = lazy { node["bar"]["foo"] }
+        override["bar"]["foo"] = lazy { node["bar"]["fizz"] }
+        override["bar"]["fizz"] = "works"
+      end
+      expect(node["bar"]["cool"]).to eql("works")
+      node.override["bar"]["fizz"] = "still works"
+      expect(node["bar"]["cool"]).to eql("still works")
+    end
+
+    it "supports overridden deep merged values in attributes (deep_merge)" do
+      node.instance_eval do
+        role_override["bar"] = { "cool" => "bad", "foo" => "bad", "fizz" => "bad" }
+        force_override["bar"]["cool"] = lazy { node["bar"]["foo"] }
+        force_override["bar"]["foo"] = lazy { node["bar"]["fizz"] }
+        force_override["bar"]["fizz"] = "works"
+      end
+      expect(node["bar"]["cool"]).to eql("works")
+      node.force_override["bar"]["fizz"] = "still works"
+      expect(node["bar"]["cool"]).to eql("still works")
+    end
+
+    it "supports overridden deep merged values in attributes (hash_only_merge)" do
+      node.instance_eval do
+        default["bar"] = { "cool" => "bad", "foo" => "bad", "fizz" => "bad" }
+        override["bar"]["cool"] = lazy { node["bar"]["foo"] }
+        override["bar"]["foo"] = lazy { node["bar"]["fizz"] }
+        override["bar"]["fizz"] = "works"
+      end
+      expect(node["bar"]["cool"]).to eql("works")
+      node.override["bar"]["fizz"] = "still works"
+      expect(node["bar"]["cool"]).to eql("still works")
+    end
+  end
 end

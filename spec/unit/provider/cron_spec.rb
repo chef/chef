@@ -719,7 +719,7 @@ describe Chef::Provider::Cron do
 
         it "should log nothing changed" do
           expect(logger).to receive(:trace).with("Found cron '#{@new_resource.name}'")
-          expect(logger).to receive(:trace).with("Skipping existing cron entry '#{@new_resource.name}'")
+          expect(logger).to receive(:debug).with("#{@new_resource}: Skipping existing cron entry")
           @provider.run_action(:create)
         end
       end

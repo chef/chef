@@ -57,10 +57,7 @@ class Chef
         introduced: "15.5",
         default: false, desired_state: false # FIXME: make this default to true
 
-      action :install do
-
-        description "Install build essential packages"
-
+      action :install, description: "Install build essential packages." do
         case
         when debian?
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
@@ -122,8 +119,7 @@ class Chef
         end
       end
 
-      action :upgrade do
-        description "Upgrade build essential (Xcode Command Line) tools on macOS"
+      action :upgrade, description: "Upgrade the Xcode CLI Tools on macOS hosts. **New in Chef Infra Client 16**" do
 
         if macos?
           pkg_label = xcode_cli_package_label

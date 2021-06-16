@@ -29,7 +29,7 @@ class Chef
       provides :cron_d
 
       introduced "14.4"
-      description "Use the **cron_d** resource to manage cron job files in the /etc/cron.d directory. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
+      description "Use the **cron_d** resource to manage cron job files in the `/etc/cron.d` directory. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
       examples <<~DOC
         **Run a program on the fifth hour of the day**
 
@@ -116,19 +116,17 @@ class Chef
       end
 
       action :create do
-        description "Add a cron definition file to /etc/cron.d."
+        description "Add a cron definition file to `/etc/cron.d`."
 
         create_template(:create)
       end
 
-      action :create_if_missing do
-        description "Add a cron definition file to /etc/cron.d, but do not update an existing file."
+      action :create_if_missing, description: "Add a cron definition file to `/etc/cron.d`, but do not update an existing file." do
 
         create_template(:create_if_missing)
       end
 
-      action :delete do
-        description "Remove a cron definition file from /etc/cron.d if it exists."
+      action :delete, description: "Remove a cron definition file from `/etc/cron.d` if it exists." do
 
         # cleanup the legacy named job if it exists
         file "legacy named cron.d file" do
@@ -160,6 +158,7 @@ class Chef
             source ::File.expand_path("../support/cron.d.erb", __dir__)
             local true
             mode new_resource.mode
+            sensitive new_resource.sensitive
             variables(
               name: sanitized_name,
               predefined_value: new_resource.predefined_value,

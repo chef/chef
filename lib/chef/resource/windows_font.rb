@@ -43,13 +43,11 @@ class Chef
 
       property :source, String,
         description: "A local filesystem path or URI that is used to source the font file.",
-        coerce: proc { |x| /^.:.*/.match?(x) ? x.tr('\\', "/").gsub("//", "/") : x }
+        coerce: proc { |x| /^.:.*/.match?(x) ? x.tr("\\", "/").gsub("//", "/") : x }
 
-      action :install do
-        description "Install a font to the system fonts directory."
-
+      action :install, description: "Install a font to the system fonts directory." do
         if font_exists?
-          logger.trace("Not installing font: #{new_resource.font_name} as font already installed.")
+          logger.debug("Not installing font: #{new_resource.font_name} as font already installed.")
         else
           retrieve_cookbook_font
           install_font

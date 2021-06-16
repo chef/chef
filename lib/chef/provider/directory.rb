@@ -32,7 +32,7 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(new_resource.name)
         current_resource.path(new_resource.path)
-        if ::File.exists?(current_resource.path) && @action != :create_if_missing
+        if ::File.exist?(current_resource.path) && @action != :create_if_missing
           load_resource_attributes_from_file(current_resource)
         end
         current_resource
@@ -73,7 +73,7 @@ class Chef
               # make sure we have write permissions to that directory
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
-                if ::File.exists?(base_dir)
+                if ::File.exist?(base_dir)
                   if Chef::FileAccessControl.writable?(base_dir)
                     true
                   elsif Chef::Util::PathHelper.is_sip_path?(base_dir, node)
@@ -89,7 +89,7 @@ class Chef
             else
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
-              if !whyrun_mode? || ::File.exists?(parent_directory)
+              if !whyrun_mode? || ::File.exist?(parent_directory)
                 if Chef::FileAccessControl.writable?(parent_directory)
                   true
                 elsif Chef::Util::PathHelper.is_sip_path?(parent_directory, node)
@@ -108,7 +108,7 @@ class Chef
 
         requirements.assert(:delete) do |a|
           a.assertion do
-            if ::File.exists?(new_resource.path)
+            if ::File.exist?(new_resource.path)
               ::File.directory?(new_resource.path) && Chef::FileAccessControl.writable?(new_resource.path)
             else
               true
@@ -122,7 +122,7 @@ class Chef
       end
 
       action :create do
-        unless ::File.exists?(new_resource.path)
+        unless ::File.exist?(new_resource.path)
           converge_by("create new directory #{new_resource.path}") do
             if new_resource.recursive == true
               ::FileUtils.mkdir_p(new_resource.path)
@@ -138,7 +138,7 @@ class Chef
       end
 
       action :delete do
-        if ::File.exists?(new_resource.path)
+        if ::File.exist?(new_resource.path)
           converge_by("delete existing directory #{new_resource.path}") do
             if new_resource.recursive == true
               # we don't use rm_rf here because it masks all errors, including

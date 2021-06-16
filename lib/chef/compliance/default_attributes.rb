@@ -1,5 +1,5 @@
 # Author:: Stephan Renatus <srenatus@chef.io>
-# Copyright:: (c) 2016-2019, Chef Software Inc. <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc. <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ class Chef
 
       # Controls what is done with the resulting report after the Chef InSpec run.
       # Accepts a single string value or an array of multiple values.
-      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer'
-      "reporter" => "json-file",
+      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer', 'cli'
+      "reporter" => %w{json-file cli},
 
       # Controls if Chef InSpec profiles should be fetched from Chef Automate or Chef Infra Server
       # in addition to the default fetch locations provided by Chef Inspec.
@@ -38,11 +38,12 @@ class Chef
       # Allow for connections to HTTPS endpoints using self-signed ssl certificates.
       "insecure" => nil,
 
-      # Controls verbosity of Chef InSpec runner.
+      # Controls verbosity of Chef InSpec runner. See less output when true.
       "quiet" => true,
 
       # Chef Inspec Compliance profiles to be used for scan of node.
-      # See README.md for details
+      # See Compliance Phase documentation for further details:
+      # https://docs.chef.io/chef_compliance_phase/#compliance-phase-configuration
       "profiles" => {},
 
       # Extra inputs passed to Chef InSpec to allow finer-grained control over behavior.
@@ -83,7 +84,15 @@ class Chef
 
       # The array of results per control will be truncated at this limit to avoid large reports that cannot be
       # processed by Chef Automate. A summary of removed results will be sent with each impacted control.
-      "control_results_limit" => 50
+      "control_results_limit" => 50,
+
+      # If enabled, a hash representation of the Chef Infra node object will be sent to Chef InSpec in an input
+      # named `chef_node`.
+      "chef_node_attribute_enabled" => false,
+
+      # Should the built-in compliance phase run. True and false force the behavior. Nil does magic based on if you have
+      # profiles defined but do not have the audit cookbook enabled.
+      "compliance_phase" => false
     )
   end
 end

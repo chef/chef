@@ -74,6 +74,17 @@ task :install do
   end
 end
 
+namespace :install do
+  task local: "pre_install:all"
+
+  task :local do
+    chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
+    Dir.chdir(chef_bin_path) do
+      sh("rake install:local")
+    end
+  end
+end
+
 task :pedant, :chef_zero_spec
 
 task :build_eventlog do
@@ -97,8 +108,8 @@ task :update_chef_exec_dll do
 
   sh("hab pkg install chef/chef-powershell-shim")
   sh("hab pkg install chef/chef-powershell-shim-x86")
-  x64 = `hab pkg path chef/chef-powershell-shim`.chomp.gsub(/\\/, "/")
-  x86 = `hab pkg path chef/chef-powershell-shim-x86`.chomp.gsub(/\\/, "/")
+  x64 = `hab pkg path chef/chef-powershell-shim`.chomp.tr("\\", "/")
+  x86 = `hab pkg path chef/chef-powershell-shim-x86`.chomp.tr("\\", "/")
   FileUtils.rm_rf(Dir["distro/ruby_bin_folder/AMD64/*"])
   FileUtils.rm_rf(Dir["distro/ruby_bin_folder/x86/*"])
   puts "Copying #{x64}/bin/* to distro/ruby_bin_folder/AMD64"

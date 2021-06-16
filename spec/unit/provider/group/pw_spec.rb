@@ -96,7 +96,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should log an appropriate message" do
-        expect(logger).to receive(:trace).with("group[wheel] removing group members: all,your,base")
+        expect(logger).to receive(:debug).with("group[wheel] removing group members: all,your,base")
         @provider.set_members_options
       end
 
@@ -112,7 +112,7 @@ describe Chef::Provider::Group::Pw do
       end
 
       it "should log an appropriate debug message" do
-        expect(logger).to receive(:trace).with("group[wheel] adding group members: all,your,base")
+        expect(logger).to receive(:debug).with("group[wheel] adding group members: all,your,base")
         @provider.set_members_options
       end
 

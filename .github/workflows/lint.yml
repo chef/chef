@@ -1,0 +1,36 @@
+---
+name: lint
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  chefstyle:
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_WITHOUT: ruby_shadow:omnibus_package
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+        bundler-cache: true
+    - uses: r7kamura/rubocop-problem-matchers-action@v1 # this shows the failures in the PR
+    - run: bundle exec chefstyle -c .rubocop.yml
+
+  spellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: carlosperate/download-file-action@v1.0.3
+        id: download-custom-dictionary
+        with:
+          file-url: 'https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt'
+          file-name: 'chef_dictionary.txt'
+      - uses: zwaldowski/cspell-action@v1
+        with:
+          config: cspell.json
+          paths: "**/*"

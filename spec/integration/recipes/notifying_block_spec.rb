@@ -23,7 +23,7 @@ describe "notifying_block" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "notifying_block test one" do
@@ -68,6 +68,7 @@ describe "notifying_block" do
     before do
       directory "cookbooks/x" do
         file "resources/nb_test.rb", <<-EOM
+          unified_mode true
           default_action :run
           provides :nb_test
           resource_name :nb_test

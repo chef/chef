@@ -63,9 +63,7 @@ class Chef
       property :swappiness, Integer,
         description: "The swappiness value to set on the system."
 
-      action :create do
-        description "Create a swapfile."
-
+      action :create, description: "Create a swapfile." do
         if swap_enabled?
           Chef::Log.debug("#{new_resource} already created - nothing to do")
         else
@@ -85,9 +83,7 @@ class Chef
         end
       end
 
-      action :remove do
-        description "Remove a swapfile and disable swap."
-
+      action :remove, description: "Remove a swapfile and disable swap." do
         swapoff if swap_enabled?
         remove_swapfile if ::File.exist?(new_resource.path)
       end

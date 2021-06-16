@@ -2,44 +2,25 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 #
-# NOTE: this actually needs to run under python2.4 and centos 5.x through python3 and centos 7.x
-# please manually test changes on centos5 boxes or you will almost certainly break things.
+# NOTE: this actually needs to run under python2.7 and centos 6.x through python3 and centos 7.x
+# please manually test changes on centos6 boxes or you will almost certainly break things.
 #
 
 import sys
 import yum
 import signal
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'simplejson'))
-try: import json
-except ImportError: import simplejson as json
+import fcntl
+import json
 import re
 from rpmUtils.miscutils import stringToVersion,compareEVR
 from rpmUtils.arch import getBaseArch, getArchList
-
-
-try: from yum.misc import string_to_prco_tuple
-except ImportError:
-    # RHEL5 compat
-    def string_to_prco_tuple(prcoString):
-        prco_split = prcoString.split()
-        n, f, v = prco_split
-        (prco_e, prco_v, prco_r) = stringToVersion(v)
-        return (n, f, (prco_e, prco_v, prco_r))
+from yum.misc import string_to_prco_tuple
 
 # hack to work around https://github.com/chef/chef/issues/7126
 # see https://bugzilla.redhat.com/show_bug.cgi?id=1396248
 if not hasattr(yum.packages.FakeRepository, 'compare_providers_priority'):
     yum.packages.FakeRepository.compare_providers_priority = 99
-
-base = None
-
-def get_base():
-    global base
-    if base is None:
-        base = yum.YumBase()
-    setup_exit_handler()
-    return base
 
 def versioncompare(versions):
     arch_list = getArchList()
@@ -51,9 +32,9 @@ def versioncompare(versions):
     # then we'll chop the arch component (assuming it *is* a valid one) from the first version string
     # so we're only comparing the evr portions.
     if (candidate_arch2 not in arch_list) and (candidate_arch1 in arch_list):
-       final_version1 = versions[0].replace("." + candidate_arch1,"")
+        final_version1 = versions[0].replace("." + candidate_arch1,"")
     else:
-       final_version1 = versions[0]
+        final_version1 = versions[0]
 
     final_version2 = versions[1]
 
@@ -64,37 +45,24 @@ def versioncompare(versions):
     outpipe.write("%(e)s\n" % { 'e': evr_comparison })
     outpipe.flush()
 
-def install_only_packages(name):
-    base = get_base()
+def install_only_packages(base, name):
     if name in base.conf.installonlypkgs:
-      outpipe.write('True')
+        outpipe.write('True\n')
     else:
-      outpipe.write('False')
+        outpipe.write('False\n')
     outpipe.flush()
 
-# python2.4 / centos5 compat
-try:
-    any
-except NameError:
-    def any(s):
-        for v in s:
-            if v:
-                return True
-        return False
-
-def query(command):
-    base = get_base()
-
+def query(base, command):
     enabled_repos = base.repos.listEnabled()
 
     # Handle any repocontrols passed in with our options
 
     if 'repos' in command:
-      for repo in command['repos']:
-        if 'enable' in repo:
-          base.repos.enableRepo(repo['enable'])
+        for repo in command['repos']:
+            if 'enable' in repo:
+                base.repos.enableRepo(repo['enable'])
         if 'disable' in repo:
-          base.repos.disableRepo(repo['disable'])
+            base.repos.disableRepo(repo['disable'])
 
     args = { 'name': command['provides'] }
     do_nevra = False
@@ -136,7 +104,7 @@ def query(command):
         #    returnPackages and searchProvides and then apply the Nevra filters to those results.
         pkgs = obj.searchNevra(**args)
         if (command['action'] == "whatinstalled") and (not pkgs):
-          pkgs = obj.searchNevra(name=args['name'], arch=desired_arch)
+            pkgs = obj.searchNevra(name=args['name'], arch=desired_arch)
     else:
         pats = [command['provides']]
         pkgs = obj.returnPackages(patterns=pats)
@@ -157,13 +125,13 @@ def query(command):
 
     # Reset any repos we were passed in enablerepo/disablerepo to the original state in enabled_repos
     if 'repos' in command:
-      for repo in command['repos']:
-        if 'enable' in repo:
-          if base.repos.getRepo(repo['enable']) not in enabled_repos:
-            base.repos.disableRepo(repo['enable'])
+        for repo in command['repos']:
+            if 'enable' in repo:
+                if base.repos.getRepo(repo['enable']) not in enabled_repos:
+                    base.repos.disableRepo(repo['enable'])
         if 'disable' in repo:
-          if base.repos.getRepo(repo['disable']) in enabled_repos:
-            base.repos.enableRepo(repo['disable'])
+            if base.repos.getRepo(repo['disable']) in enabled_repos:
+                base.repos.enableRepo(repo['disable'])
 
 # the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
@@ -179,36 +147,56 @@ def setup_exit_handler():
     signal.signal(signal.SIGPIPE, exit_handler)
     signal.signal(signal.SIGQUIT, exit_handler)
 
+def set_blocking(fd):
+    old_flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+    fcntl.fcntl(fd, fcntl.F_SETFL, old_flags & ~os.O_NONBLOCK)
+
+base = None
+
 if len(sys.argv) < 3:
-  inpipe = sys.stdin
-  outpipe = sys.stdout
+    inpipe = sys.stdin
+    outpipe = sys.stdout
 else:
-  inpipe = os.fdopen(int(sys.argv[1]), "r")
-  outpipe = os.fdopen(int(sys.argv[2]), "w")
+    set_blocking(int(sys.argv[1]))
+    set_blocking(int(sys.argv[2]))
+    inpipe = os.fdopen(int(sys.argv[1]), "r")
+    outpipe = os.fdopen(int(sys.argv[2]), "w")
 
 try:
+    setup_exit_handler()
     while 1:
-        # kill self if we get orphaned (tragic)
+        # stop the process if the parent proc goes away
         ppid = os.getppid()
         if ppid == 1:
             raise RuntimeError("orphaned")
 
-        setup_exit_handler()
         line = inpipe.readline()
+
+        # only way to detect EOF in python
+        if line == "":
+            break
 
         try:
             command = json.loads(line)
         except ValueError, e:
             raise RuntimeError("bad json parse")
 
+        if base is None:
+            base = yum.YumBase()
+
         if command['action'] == "whatinstalled":
-            query(command)
+            query(base, command)
         elif command['action'] == "whatavailable":
-            query(command)
+            query(base, command)
         elif command['action'] == "versioncompare":
             versioncompare(command['versions'])
         elif command['action'] == "installonlypkgs":
-             install_only_packages(command['package'])
+            install_only_packages(base, command['package'])
+        elif command['action'] == "close_rpmdb":
+            base.closeRpmDB()
+            base = None
+            outpipe.write('nil nil nil\n')
+            outpipe.flush()
         else:
             raise RuntimeError("bad command")
 finally:

@@ -26,14 +26,27 @@ class Chef
 
       description "Use the **rhsm_repo** resource to enable or disable Red Hat Subscription Manager repositories that are made available via attached subscriptions."
       introduced "14.0"
+      examples <<~DOC
+        **Enable an RHSM repository**
+
+        ```ruby
+        rhsm_repo 'rhel-7-server-extras-rpms'
+        ```
+
+        **Disable an RHSM repository**
+
+        ```ruby
+        rhsm_repo 'rhel-7-server-extras-rpms' do
+          action :disable
+        end
+        ```
+      DOC
 
       property :repo_name, String,
         description: "An optional property for specifying the repository name if it differs from the resource block's name.",
         name_property: true
 
-      action :enable do
-        description "Enable a RHSM repository."
-
+      action :enable, description: "Enable a RHSM repository." do
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --enable=#{new_resource.repo_name}"
           default_env true
@@ -42,9 +55,7 @@ class Chef
         end
       end
 
-      action :disable do
-        description "Disable a RHSM repository."
-
+      action :disable, description: "Disable a RHSM repository." do
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --disable=#{new_resource.repo_name}"
           default_env true

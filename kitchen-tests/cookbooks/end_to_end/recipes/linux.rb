@@ -37,12 +37,18 @@ end
 
 include_recipe "::_packages"
 
-include_recipe "ntp"
+include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
 
-include_recipe "resolver"
+resolver_config "/etc/resolv.conf" do
+  nameservers [ "8.8.8.8", "8.8.4.4" ]
+  search [ "chef.io" ]
+end
+
+users_from_databag = search("users", "*:*")
 
 users_manage "sysadmin" do
   group_id 2300
+  users users_from_databag
   action [:create]
 end
 
@@ -52,7 +58,7 @@ include_recipe "openssh"
 
 include_recipe "nscd"
 
-include_recipe "logrotate"
+logrotate_package "logrotate"
 
 include_recipe "git"
 
@@ -66,6 +72,18 @@ include_recipe "git"
     path File.join(Chef::Config[:file_cache_path], archive)
     extract_to File.join(Chef::Config[:file_cache_path], archive.tr(".", "_"))
   end
+end
+
+%w{001 002 003}.each do |control|
+  inspec_waiver_file_entry "fake_inspec_control_#{control}" do
+    expiration "2025-07-01"
+    justification "Waiving this control for the purposes of testing"
+    action :add
+  end
+end
+
+inspec_waiver_file_entry "fake_inspec_control_002" do
+  action :remove
 end
 
 user_ulimit "tomcat" do

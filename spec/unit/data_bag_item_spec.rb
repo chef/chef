@@ -73,11 +73,11 @@ describe Chef::DataBagItem do
     end
 
     it "should accept alphanum.alphanum for the id" do
-      expect { data_bag_item.raw_data = { "id" => "foo.bar" } }.not_to raise_error
+      expect { data_bag_item.raw_data = { "id" => "foo.bar" } }.to raise_error(ArgumentError)
     end
 
     it "should accept .alphanum for the id" do
-      expect { data_bag_item.raw_data = { "id" => ".bozo" } }.not_to raise_error
+      expect { data_bag_item.raw_data = { "id" => ".bozo" } }.to raise_error(ArgumentError)
     end
 
     it "should raise an exception if the id contains anything but alphanum/-/_" do
@@ -148,12 +148,7 @@ describe Chef::DataBagItem do
     end
 
     it "implements all the methods of Hash" do
-      methods = %i{rehash to_hash [] fetch []= store default
-      default= default_proc index size length
-      empty? each_value each_key each_pair each keys values
-      values_at delete delete_if reject! clear
-      invert update replace merge! merge has_key? has_value?
-      key? value?}
+      methods = Hash.public_instance_methods
       methods.each do |m|
         expect(data_bag_item).to respond_to(m)
       end

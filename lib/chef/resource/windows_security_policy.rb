@@ -17,6 +17,7 @@
 # limitations under the License.
 
 require_relative "../resource"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Resource
@@ -27,6 +28,7 @@ class Chef
 
       # The valid policy_names options found here
       # https://github.com/ChrisAWalker/cSecurityOptions under 'AccountSettings'
+      # This needs to be revisited - the list at the link above is non-exhaustive and is missing a couple of items
       policy_names = %w{LockoutDuration
                         MaximumPasswordAge
                         MinimumPasswordAge
@@ -35,6 +37,8 @@ class Chef
                         PasswordHistorySize
                         LockoutBadCount
                         ResetLockoutCount
+                        AuditPolicyChange
+                        LockoutDuration
                         RequireLogonToChangePassword
                         ForceLogoffWhenHourExpire
                         NewAdministratorName
@@ -43,7 +47,7 @@ class Chef
                         LSAAnonymousNameLookup
                         EnableAdminAccount
                         EnableGuestAccount
-                       }
+                      }
       description "Use the **windows_security_policy** resource to set a security policy on the Microsoft Windows platform."
       introduced "16.0"
 
@@ -82,7 +86,56 @@ class Chef
       property :secvalue, String, required: true,
       description: "Policy value to be set for policy name."
 
-      load_current_value do |desired|
+      load_current_value do |new_resource|
+        current_state = load_security_options
+
+        if new_resource.secoption == "ResetLockoutCount"
+          if new_resource.secvalue.to_i > current_state["LockoutDuration"].to_i
+            raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than the value currently set for \"LockoutDuration\""
+          end
+        end
+        if (new_resource.secoption == "ResetLockoutCount" || new_resource.secoption == "LockoutDuration") && current_state["LockoutBadCount"] == "0"
+          raise Chef::Exceptions::ValidationFailed, "#{new_resource.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+        end
+
+        secvalue current_state[new_resource.secoption.to_s]
+      end
+
+      action :set, description: "Set the Windows security policy" do
+        converge_if_changed :secvalue do
+          security_option = new_resource.secoption
+          security_value = new_resource.secvalue
+
+          file = Tempfile.new(["#{security_option}", ".inf"])
+          case security_option
+          when "LockoutBadCount"
+            cmd = "net accounts /LockoutThreshold:#{security_value}"
+          when "ResetLockoutCount"
+            cmd = "net accounts /LockoutWindow:#{security_value}"
+          when "LockoutDuration"
+            cmd = "net accounts /LockoutDuration:#{security_value}"
+          when "NewAdministratorName", "NewGuestName"
+            policy_line = "#{security_option} = \"#{security_value}\""
+            file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
+            file.close
+            file_path = file.path.tr("/", "\\")
+            cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
+          else
+            policy_line = "#{security_option} = #{security_value}"
+            file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
+            file.close
+            file_path = file.path.tr("/", "\\")
+            cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
+          end
+          shell_out!(cmd)
+          file.unlink
+        end
+      end
+
+      private
+
+      # Loads powershell to get current state on security options
+      def load_security_options
         powershell_code = <<-CODE
           C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
           # cspell:disable-next-line
@@ -108,44 +161,7 @@ class Chef
             LockoutBadCount = $security_options_hash.LockoutBadCount
           })
         CODE
-        output = powershell_exec(powershell_code)
-        current_value_does_not_exist! if output.result.empty?
-        state = output.result
-
-        if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
-          if state["LockoutBadCount"] == "0"
-            raise Chef::Exceptions::ValidationFailed.new "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
-          else
-            secvalue state[desired.secoption.to_s]
-          end
-        else
-          secvalue state[desired.secoption.to_s]
-        end
-      end
-
-      action :set do
-        converge_if_changed :secvalue do
-          security_option = new_resource.secoption
-          security_value = new_resource.secvalue
-
-          cmd = <<-EOH
-            $security_option = "#{security_option}"
-            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\#{security_option}_Export.inf
-            if ( ($security_option -match "NewGuestName") -Or ($security_option -match "NewAdministratorName") )
-              {
-                $#{security_option}_Remediation = (Get-Content $env:TEMP\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace '#{security_option}\\s*=\\s*\\"\\w*\\"', '#{security_option} = "#{security_value}"' } | Set-Content $env:TEMP\\#{security_option}_Export.inf
-                C:\\Windows\\System32\\secedit /configure /db $env:windir\\security\\new.sdb /cfg $env:TEMP\\#{security_option}_Export.inf /areas SECURITYPOLICY
-              }
-            else
-              {
-                $#{security_option}_Remediation = (Get-Content $env:TEMP\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace "#{security_option}\\s*=\\s*\\d*", "#{security_option} = #{security_value}" } | Set-Content $env:TEMP\\#{security_option}_Export.inf
-                C:\\Windows\\System32\\secedit /configure /db $env:windir\\security\\new.sdb /cfg $env:TEMP\\#{security_option}_Export.inf /areas SECURITYPOLICY
-              }
-            Remove-Item $env:TEMP\\#{security_option}_Export.inf -force
-          EOH
-
-          powershell_exec!(cmd)
-        end
+        powershell_exec(powershell_code).result
       end
     end
   end

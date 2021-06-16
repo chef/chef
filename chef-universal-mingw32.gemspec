@@ -14,7 +14,7 @@ gemspec.add_dependency "win32-service", ">= 2.1.5", "< 3.0"
 gemspec.add_dependency "wmi-lite", "~> 1.0"
 gemspec.add_dependency "win32-taskscheduler", "~> 2.0"
 gemspec.add_dependency "iso8601", ">= 0.12.1", "< 0.14" # validate 0.14 when it comes out
-gemspec.add_dependency "win32-certstore", "~> 0.3"
+gemspec.add_dependency "win32-certstore", "~> 0.6.2" # 0.5+ required for specifying user vs. system store
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += Dir.glob("{distro,ext}/**/*")
 

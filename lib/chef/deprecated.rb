@@ -249,6 +249,14 @@ class Chef
       target 32
     end
 
+    class UnifiedMode < Base
+      target 33
+    end
+
+    class AttributeWhitelistConfiguration < Base
+      target 34
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client/"

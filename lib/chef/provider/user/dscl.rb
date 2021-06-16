@@ -438,7 +438,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def locked?
           if authentication_authority
-            !!(authentication_authority =~ /DisabledUser/ )
+            !!(authentication_authority.include?("DisabledUser"))
           else
             false
           end

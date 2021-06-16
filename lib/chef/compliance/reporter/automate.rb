@@ -28,19 +28,28 @@ class Chef
           @token = Chef::Config[:data_collector][:token]
         end
 
-        # Method used in order to send the inspec report to the data_collector server
-        def send_report(report)
-          unless @entity_uuid && @run_id
-            Chef::Log.error "entity_uuid(#{@entity_uuid}) or run_id(#{@run_id}) can't be nil, not sending report to #{ChefUtils::Dist::Automate::PRODUCT}"
-            return false
+        def validate_config!
+          unless @entity_uuid
+            # TODO - this is a weird leakage of naming from the parent class
+            # but entity_uuid is never an attribute that the user can see;
+            # it is sourced from chef_guid, which we don't technically know about in this class -
+            # but telling the operator about a missing chef_guid is more helpful than telling
+            # them about a missing field they've never heard of. Better would be a dock link
+            # that described how to fix this situation.
+            raise "CMPL004: automate_reporter: chef_guid is not available and must be provided. Aborting because we cannot report the scan."
+          end
+
+          unless @run_id
+            raise "CMPL005: automate_reporter: run_id is not available, aborting because we cannot report the scan."
           end
 
           unless @url && @token
-            Chef::Log.warn "data_collector.token and data_collector.server_url must be defined in client.rb!"
-            Chef::Log.warn "Further information: https://github.com/chef-cookbooks/audit#direct-reporting-to-chef-automate"
-            return false
+            raise "CMPL006: data_collector.token and data_collector.server_url must be configured in client.rb! Further information: https://docs.chef.io/automate/data_collection/#configure-your-chef-infra-client-to-send-data-to-chef-automate-without-chef-infra-server"
           end
+        end
 
+        # Method used in order to send the inspec report to the data_collector server
+        def send_report(report)
           headers = {
             "Content-Type" => "application/json",
             "x-data-collector-auth" => "version=1.0",

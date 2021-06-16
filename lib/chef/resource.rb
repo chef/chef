@@ -42,6 +42,7 @@ require_relative "mixin/deprecation"
 require_relative "mixin/properties"
 require_relative "mixin/provides"
 require_relative "dsl/universal"
+require_relative "constants"
 
 class Chef
   class Resource
@@ -1062,6 +1063,7 @@ class Chef
     # action for the resource.
     #
     # @param name [Symbol] The action name to define.
+    # @param description [String] optional description for the action
     # @param recipe_block The recipe to run when the action is taken. This block
     #   takes no parameters, and will be evaluated in a new context containing:
     #
@@ -1071,12 +1073,35 @@ class Chef
     #
     # @return The Action class implementing the action
     #
-    def self.action(action, &recipe_block)
+    def self.action(action, description: nil, &recipe_block)
       action = action.to_sym
       declare_action_class
       action_class.action(action, &recipe_block)
       self.allowed_actions += [ action ]
+      # Accept any non-nil description, which will correctly override
+      # any specific inherited description.
+      action_descriptions[action] = description unless description.nil?
       default_action action if Array(default_action) == [:nothing]
+    end
+
+    # Retrieve the description for a resource's action, if
+    # any description has been included in the definition.
+    #
+    # @param action [Symbol,String] the action name
+    # @return the description of the action provided, or nil if no description
+    # was defined
+    def self.action_description(action)
+      action_descriptions[action.to_sym]
+    end
+
+    # @api private
+    #
+    # @return existing action description hash, or newly-initialized
+    # hash containing action descriptions inherited from parent Resource,
+    # if any.
+    def self.action_descriptions
+      @action_descriptions ||=
+        superclass.respond_to?(:action_descriptions) ? superclass.action_descriptions.dup : { nothing: nil }
     end
 
     # Define a method to load up this resource's properties with the current
@@ -1196,9 +1221,9 @@ class Chef
     #
 
     # FORBIDDEN_IVARS do not show up when the resource is converted to JSON (ie. hidden from data_collector and sending to the chef server via #to_json/to_h/as_json/inspect)
-    FORBIDDEN_IVARS = %i{@run_context @logger @not_if @only_if @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner}.freeze
+    FORBIDDEN_IVARS = %i{@run_context @logger @not_if @only_if @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner @action_descriptions}.freeze
     # HIDDEN_IVARS do not show up when the resource is displayed to the user as text (ie. in the error inspector output via #to_text)
-    HIDDEN_IVARS = %i{@allowed_actions @resource_name @source_line @run_context @logger @name @not_if @only_if @elapsed_time @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner}.freeze
+    HIDDEN_IVARS = %i{@allowed_actions @resource_name @source_line @run_context @logger @name @not_if @only_if @elapsed_time @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner @action_descriptions}.freeze
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1338,8 +1363,9 @@ class Chef
     #
     # @param arg [String] version constraint to match against (e.g. "> 14")
     #
-    def self.chef_version_for_provides(constraint)
-      @chef_version_for_provides = constraint
+    def self.chef_version_for_provides(constraint = NOT_PASSED)
+      @chef_version_for_provides = constraint unless constraint == NOT_PASSED
+      @chef_version_for_provides ||= nil
     end
 
     # Mark this resource as providing particular DSL.
@@ -1352,14 +1378,11 @@ class Chef
     def self.provides(name, **options, &block)
       name = name.to_sym
 
-      # quell warnings
-      @chef_version_for_provides = nil unless defined?(@chef_version_for_provides)
-
       # deliberately do not go through the accessor here
       @resource_name = name if resource_name.nil?
 
-      if @chef_version_for_provides && !options.include?(:chef_version)
-        options[:chef_version] = @chef_version_for_provides
+      if chef_version_for_provides && !options.include?(:chef_version)
+        options[:chef_version] = chef_version_for_provides
       end
 
       result = Chef.resource_handler_map.set(name, self, **options, &block)

@@ -85,28 +85,41 @@ class Chef
           http_client.cert_store.set_default_paths
         end
         if config.trusted_certs_dir
-          certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
+          certs = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
           certs.each do |cert_file|
-            cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
+            cert = begin
+              OpenSSL::X509::Certificate.new(::File.binread(cert_file))
+                   rescue OpenSSL::X509::CertificateError => e
+                     raise Chef::Exceptions::ConfigurationError, "Error reading cert file '#{cert_file}', original error '#{e.class}: #{e.message}'"
+            end
             add_trusted_cert(cert)
           end
         end
       end
 
       def set_client_credentials
-        if config[:ssl_client_cert] || config[:ssl_client_key]
-          unless config[:ssl_client_cert] && config[:ssl_client_key]
-            raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
-          end
-          unless ::File.exists?(config[:ssl_client_cert])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
-          end
-          unless ::File.exists?(config[:ssl_client_key])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
-          end
+        return unless config[:ssl_client_cert] || config[:ssl_client_key]
 
-          http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
-          http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
+        unless config[:ssl_client_cert] && config[:ssl_client_key]
+          raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
+        end
+        unless ::File.exists?(config[:ssl_client_cert])
+          raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
+        end
+        unless ::File.exists?(config[:ssl_client_key])
+          raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
+        end
+
+        begin
+          http_client.cert = OpenSSL::X509::Certificate.new(::File.binread(config[:ssl_client_cert]))
+        rescue OpenSSL::X509::CertificateError => e
+          raise Chef::Exceptions::ConfigurationError, "Error reading cert file '#{config[:ssl_client_cert]}', original error '#{e.class}: #{e.message}'"
+        end
+
+        begin
+          http_client.key = OpenSSL::PKey::RSA.new(::File.binread(config[:ssl_client_key]))
+        rescue OpenSSL::PKey::RSAError => e
+          raise Chef::Exceptions::ConfigurationError, "Error reading key file '#{config[:ssl_client_key]}', original error '#{e.class}: #{e.message}'"
         end
       end
 

@@ -64,24 +64,24 @@ class Chef
                              "utf-8" => "xml1",
                              "binary" => "binary1" }.freeze
 
-      load_current_value do |desired|
-        current_value_does_not_exist! unless ::File.exist? desired.path
-        entry desired.entry if entry_in_plist? desired.entry, desired.path
+      load_current_value do |new_resource|
+        current_value_does_not_exist! unless ::File.exist? new_resource.path
+        entry new_resource.entry if entry_in_plist? new_resource.entry, new_resource.path
 
-        setting = setting_from_plist desired.entry, desired.path
+        setting = setting_from_plist new_resource.entry, new_resource.path
         value convert_to_data_type_from_string(setting[:key_type], setting[:key_value])
 
-        file_type_cmd = shell_out "/usr/bin/file", "--brief", "--mime-encoding", "--preserve-date", desired.path
+        file_type_cmd = shell_out "/usr/bin/file", "--brief", "--mime-encoding", "--preserve-date", new_resource.path
         encoding file_type_cmd.stdout.chomp
 
-        file_owner_cmd = shell_out("/usr/bin/stat", "-f", "%Su", desired.path)
+        file_owner_cmd = shell_out("/usr/bin/stat", "-f", "%Su", new_resource.path)
         owner file_owner_cmd.stdout.chomp
 
-        file_group_cmd = shell_out("/usr/bin/stat", "-f", "%Sg", desired.path)
+        file_group_cmd = shell_out("/usr/bin/stat", "-f", "%Sg", new_resource.path)
         group file_group_cmd.stdout.chomp
       end
 
-      action :set do
+      action :set, description: "Set a value in a plist file." do
         converge_if_changed :path do
           converge_by "create new plist: '#{new_resource.path}'" do
             file new_resource.path do

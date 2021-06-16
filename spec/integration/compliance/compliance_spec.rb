@@ -4,12 +4,12 @@ require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 require "chef-utils/dist"
 
-describe "chef-client with audit mode" do
+describe "chef-client with compliance phase" do
 
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -46,6 +46,7 @@ describe "chef-client with audit mode" do
       file "attributes.json", <<~FILE
         {
           "audit": {
+            "compliance_phase": true,
             "json_file": {
               "location": "#{report_file}"
             },

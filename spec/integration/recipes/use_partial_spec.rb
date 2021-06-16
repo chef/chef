@@ -22,7 +22,7 @@ describe "notifying_block" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "has a cookbook with partial resources" do
@@ -37,6 +37,7 @@ describe "notifying_block" do
           end
         EOM
         file "resources/thing.rb", <<-EOM
+          unified_mode true
           provides :thing
           use "shared_properties"
           action_class do
@@ -80,6 +81,8 @@ describe "notifying_block" do
         EOM
         # this tests relative pathing, including the underscore and including the trailing .rb all work
         file "resources/thing.rb", <<-EOM
+          unified_mode true
+
           provides :thing
           use "../partials/_shared_properties.rb"
           action_class do

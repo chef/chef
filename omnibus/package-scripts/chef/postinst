@@ -3,11 +3,10 @@
 #
 # - must run on /bin/sh on solaris 9
 # - must run on /bin/sh on AIX 6.x
-# - if you think you are a bash wizard, you probably do not understand
-#   this programming language.  do not touch.
+# - this file is sh not bash so do not introduce bash-isms
 # - if you are under 40, get peer review from your elders.
 #
-# Install a full Opscode Client
+# Install Chef Infra Client
 #
 
 PROGNAME=`basename $0`
@@ -64,7 +63,7 @@ EOP
   if [ "" != "$organization" ]; then
     echo "validation_client_name '${organization}-validator'" >> ${CONFIG_DIR}/client.rb
   fi
-  chmod 644 ${CONFIG_DIR}/client.rb
+  chmod 640 ${CONFIG_DIR}/client.rb
 fi
 
 if [ "" != "$validation_key" ]; then
@@ -94,10 +93,25 @@ ln -sf $INSTALLER_DIR/bin/ohai $PREFIX/bin || error_exit "Cannot link ohai to $P
 # must appear as the last real action in the script
 ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link chef-client to $PREFIX/bin"
 
-# Ensure all files/directories in $INSTALLER_DIR are owned by root. This
-# has been fixed on new installs but upgrades from old installs need to
-# be manually fixed.
-chown -Rh 0:0 $INSTALLER_DIR
+# make the base structure for chef to run
+# the sample client.rb is only written out of no chef config dir exists yet
+if ! [ -d $CONFIG_DIR ]; then
+   mkdir -p $CONFIG_DIR
+   cat >"$CONFIG_DIR/client.rb" <<EOF
+# The client.rb file specifies how Chef Infra Client is configured on a node
+# See https://docs.chef.io/config_rb_client/ for detailed configuration options
+#
+# Minimal example configuration:
+# node_name  "THIS_NODE_NAME"
+# chef_server_url  "https://CHEF.MYCOMPANY.COM/organizations/MY_CHEF_ORG"
+# chef_license  "accept"
+EOF
+fi
+
+mkdir -p "$CONFIG_DIR/client.d"
+mkdir -p "$CONFIG_DIR/accepted_licenses"
+mkdir -p "$CONFIG_DIR/trusted_certs"
+mkdir -p "$CONFIG_DIR/ohai/plugins"
 
 echo "Thank you for installing Chef Infra Client! For help getting started visit https://learn.chef.io"
 

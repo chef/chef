@@ -62,7 +62,7 @@ class Chef
         coerce: proc { |s| Integer(s) },
         name_property: true
 
-      action :sleep do
+      action :sleep, description: "Pause the #{ChefUtils::Dist::Infra::PRODUCT} run for a specified number of seconds." do
         converge_by("sleep #{new_resource.seconds} seconds") do
           sleep(new_resource.seconds)
         end

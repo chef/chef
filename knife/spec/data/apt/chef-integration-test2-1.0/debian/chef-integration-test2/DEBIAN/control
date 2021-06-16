@@ -1,0 +1,10 @@
+Package: chef-integration-test2
+Version: 1.0-1
+Architecture: amd64
+Maintainer: Joshua Timberman <Joshua Timberman <joshua@opscode.com>>
+Installed-Size: 36
+Section: ruby
+Priority: extra
+Homepage: http://tickets.opscode.com
+Description: Chef integration tests for APT in Cucumber
+ This package is used for cucumber integration testing in Chef.

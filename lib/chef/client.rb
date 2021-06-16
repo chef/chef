@@ -858,11 +858,17 @@ class Chef
 
     def profiling_prereqs!
       require "ruby-prof"
-    rescue LoadError
-      raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
+    rescue LoadError => e
+      raise "You must have the ruby-prof gem installed in order to use --profile-ruby: #{e.message}"
     end
 
     def start_profiling
+      if Chef::Config[:slow_report]
+        require_relative "handler/slow_report"
+
+        Chef::Config.report_handlers << Chef::Handler::SlowReport.new(Chef::Config[:slow_report])
+      end
+
       return unless Chef::Config[:profile_ruby]
 
       profiling_prereqs!

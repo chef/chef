@@ -87,7 +87,7 @@ class Chef
         x.map(&:downcase)
       end
 
-      action :install do
+      action :install, description: "Install a Windows role or feature using PowerShell." do
         reload_cached_powershell_data unless node["powershell_features_cache"]
         fail_if_unavailable # fail if the features don't exist
         fail_if_removed # fail if the features are in removed state
@@ -108,7 +108,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a Windows role or feature using PowerShell." do
         reload_cached_powershell_data unless node["powershell_features_cache"]
 
         Chef::Log.debug("Windows features needing removal: #{features_to_remove.empty? ? "none" : features_to_remove.join(",")}")
@@ -123,7 +123,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete a Windows role or feature from the image using PowerShell." do
         reload_cached_powershell_data unless node["powershell_features_cache"]
 
         fail_if_unavailable # fail if the features don't exist

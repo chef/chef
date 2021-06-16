@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/chef/chef/tree/master/chef-utils"
   spec.license       = "Apache-2.0"
 
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.6"
 
   spec.metadata = {
     "bug_tracker_uri" => "https://github.com/chef/chef/issues",
@@ -40,6 +40,10 @@ Gem::Specification.new do |spec|
   #
   # ABSOLUTELY NO EXCEPTIONS
   #
+
+  # concurrent-ruby is: 1. lightweight, 2. has zero deps, 3. is external to chef
+  # this is used for the parallel_map enumerable extension for lightweight threading
+  spec.add_dependency "concurrent-ruby"
 
   spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }

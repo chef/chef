@@ -7,6 +7,8 @@ class Chef
       # Used to send inspec reports to Chef Automate server via Chef Server
       #
       class ChefServerAutomate < Chef::Compliance::Reporter::Automate
+        attr_reader :url
+
         def initialize(opts)
           @entity_uuid           = opts[:entity_uuid]
           @run_id                = opts[:run_id]
@@ -28,11 +30,6 @@ class Chef
         end
 
         def send_report(report)
-          unless @entity_uuid && @run_id
-            Chef::Log.error "entity_uuid(#{@entity_uuid}) or run_id(#{@run_id}) can't be nil, not sending report to #{ChefUtils::Dist::Automate::PRODUCT}"
-            return false
-          end
-
           automate_report = truncate_controls_results(enriched_report(report), @control_results_limit)
 
           report_size = Chef::JSONCompat.to_json(automate_report, validate_utf8: false).bytesize
@@ -47,6 +44,16 @@ class Chef
             return true
           end
           false
+        end
+
+        def validate_config!
+          unless @entity_uuid
+            raise "CMPL007: chef_server_automate reporter: chef_guid is not available and must be provided. Aborting because we cannot report the scan"
+          end
+
+          unless @run_id
+            raise "CMPL008: chef_server_automate reporter: run_id is not available, aborting because we cannot report the scan."
+          end
         end
 
         def http_client
@@ -74,11 +81,11 @@ class Chef
         def handle_http_error_code(code)
           case code
           when /401|403/
-            Chef::Log.error "Auth issue: see audit cookbook TROUBLESHOOTING.md"
+            Chef::Log.error "Auth issue: see the Compliance Phase troubleshooting documentation (http://docs.chef.io/chef_compliance_phase/#troubleshooting)."
           when /404/
             Chef::Log.error "Object does not exist on remote server."
           when /413/
-            Chef::Log.error "You most likely hit the erchef request size in #{ChefUtils::Dist::Server::PRODUCT} that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
+            Chef::Log.error "You most likely hit the request size limit in #{ChefUtils::Dist::Server::PRODUCT} that defaults to ~2MB. To increase this limit see the Compliance Phase troubleshooting documentation (http://docs.chef.io/chef_compliance_phase/#troubleshooting) or the Chef Infra Server configuration documentation (https://docs.chef.io/server/config_rb_server/)"
           when /429/
             Chef::Log.error "This error typically means the data sent was larger than #{ChefUtils::Dist::Automate::PRODUCT}'s limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
           end

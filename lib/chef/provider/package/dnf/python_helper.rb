@@ -42,17 +42,16 @@ class Chef
           def dnf_command
             # platform-python is used for system tools on RHEL 8 and is installed under /usr/libexec
             @dnf_command ||= begin
-              cmd = which("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
-                shell_out("#{f} -c 'import dnf'").exitstatus == 0
-              end
-              raise Chef::Exceptions::Package, "cannot find dnf libraries, you may need to use yum_package" unless cmd
+                               cmd = which("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
+                                 shell_out("#{f} -c 'import dnf'").exitstatus == 0
+                               end
+                               raise Chef::Exceptions::Package, "cannot find dnf libraries, you may need to use yum_package" unless cmd
 
-              "#{cmd} #{DNF_HELPER}"
-            end
+                               "#{cmd} #{DNF_HELPER}"
+                             end
           end
 
           def start
-            ENV["PYTHONUNBUFFERED"] = "1"
             @inpipe, inpipe_write = IO.pipe
             outpipe_read, @outpipe = IO.pipe
             @stdin, @stdout, @stderr, @wait_thr = Open3.popen3("#{dnf_command} #{outpipe_read.fileno} #{inpipe_write.fileno}", outpipe_read.fileno => outpipe_read, inpipe_write.fileno => inpipe_write, close_others: false)
@@ -75,6 +74,7 @@ class Chef
               stderr.close unless stderr.nil?
               inpipe.close unless inpipe.nil?
               outpipe.close unless outpipe.nil?
+              @stdin = @stdout = @stderr = @inpipe = @outpipe = @wait_thr = nil
             end
           end
 
@@ -114,7 +114,7 @@ class Chef
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
             Chef::Log.trace "parsed #{version} from python helper"
-            restart unless repo_opts.empty?
+            reap unless repo_opts.empty?
             version
           end
 
@@ -148,10 +148,11 @@ class Chef
             with_helper do
               json = build_query(action, parameters)
               Chef::Log.trace "sending '#{json}' to python helper"
-              outpipe.syswrite json + "\n"
-              output = inpipe.sysread(4096).chomp
+              outpipe.puts json
+              outpipe.flush
+              output = inpipe.readline.chomp
               Chef::Log.trace "got '#{output}' from python helper"
-              return output
+              output
             end
           end
 
@@ -199,13 +200,13 @@ class Chef
               Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
             end
             ret
-          rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
+          rescue => e
             output = drain_fds
-            if ( max_retries -= 1 ) > 0
+            restart
+            if ( max_retries -= 1 ) > 0 && !ENV["DNF_HELPER_NO_RETRIES"]
               unless output.empty?
                 Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end
-              restart
               retry
             else
               raise e if output.empty?

@@ -33,6 +33,41 @@ class Chef
                   " immediate notifications. Delayed notifications produce unintuitive and"\
                   " probably undesired results."
       introduced "12.0"
+      examples <<~DOC
+        **Reboot a node immediately**
+
+        ```ruby
+        reboot 'now' do
+          action :nothing
+          reason 'Cannot continue Chef run without a reboot.'
+          delay_mins 2
+        end
+
+        execute 'foo' do
+          command '...'
+          notifies :reboot_now, 'reboot[now]', :immediately
+        end
+        ```
+
+        **Reboot a node at the end of a Chef Infra Client run**
+
+        ```ruby
+        reboot 'app_requires_reboot' do
+          action :request_reboot
+          reason 'Need to reboot when the run completes successfully.'
+          delay_mins 5
+        end
+        ```
+
+        **Cancel a reboot**
+
+        ```ruby
+        reboot 'cancel_reboot_request' do
+          action :cancel
+          reason 'Cancel a previous end-of-run reboot request.'
+        end
+        ```
+      DOC
 
       property :reason, String,
         description: "A string that describes the reboot action.",
@@ -42,18 +77,14 @@ class Chef
         description: "The amount of time (in minutes) to delay a reboot request.",
         default: 0
 
-      action :request_reboot do
-        description "Reboot a node at the end of a chef-client run."
-
+      action :request_reboot, description: "Reboot a node at the end of a #{ChefUtils::Dist::Infra::PRODUCT} run." do
         converge_by("request a system reboot to occur if the run succeeds") do
           logger.warn "Reboot requested:'#{new_resource.name}'"
           request_reboot
         end
       end
 
-      action :reboot_now do
-        description "Reboot a node so that the chef-client may continue the installation process."
-
+      action :reboot_now, description: "Reboot a node so that the #{ChefUtils::Dist::Infra::PRODUCT} may continue the installation process." do
         converge_by("rebooting the system immediately") do
           logger.warn "Rebooting system immediately, requested by '#{new_resource.name}'"
           request_reboot
@@ -61,9 +92,7 @@ class Chef
         end
       end
 
-      action :cancel do
-        description "Cancel a pending reboot request."
-
+      action :cancel, description: "Cancel a pending reboot request." do
         converge_by("cancel any existing end-of-run reboot request") do
           logger.warn "Reboot canceled: '#{new_resource.name}'"
           node.run_context.cancel_reboot

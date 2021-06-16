@@ -297,6 +297,21 @@ class Chef::Application::Base < Chef::Application
     long: "--named-run-list NAMED_RUN_LIST",
     description: "Use a policyfile's named run list instead of the default run list."
 
+  option :slow_report,
+    long: "--[no-]slow-report [COUNT]",
+    description: "List the slowest resources at the end of the run (default: 10).",
+    boolean: true,
+    default: false,
+    proc: lambda { |argument|
+      if argument.nil?
+        true
+      elsif argument == false
+        false
+      else
+        Integer(argument)
+      end
+    }
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 
@@ -368,7 +383,7 @@ class Chef::Application::Base < Chef::Application
       FileUtils.cp(url, path)
     elsif URI::DEFAULT_PARSER.make_regexp.match?(url)
       File.open(path, "wb") do |f|
-        open(url) do |r|
+        URI.open(url) do |r|
           f.write(r.read)
         end
       end
