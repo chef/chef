@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.0 -->
-## [v17.3.0](https://github.com/chef/chef/tree/v17.3.0) (2021-06-15)
+<!-- latest_release 17.3.1 -->
+## [v17.3.1](https://github.com/chef/chef/tree/v17.3.1) (2021-06-16)
 
 #### Merged Pull Requests
-- Add windows_defender and windows_defender_exclusion resources [#11702](https://github.com/chef/chef/pull/11702) ([tas50](https://github.com/tas50))
+- Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11708](https://github.com/chef/chef/pull/11708) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11708](https://github.com/chef/chef/pull/11708) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.3.1 -->
 - Add windows_defender and windows_defender_exclusion resources [#11702](https://github.com/chef/chef/pull/11702) ([tas50](https://github.com/tas50)) <!-- 17.3.0 -->
 - Add the x25519 gem to knife [#11706](https://github.com/chef/chef/pull/11706) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.38 -->
 - windows_printer: Install drivers, allow skipping port creation, and load state properly [#11665](https://github.com/chef/chef/pull/11665) ([tas50](https://github.com/tas50)) <!-- 17.2.37 -->
