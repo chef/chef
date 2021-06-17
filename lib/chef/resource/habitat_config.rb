@@ -25,22 +25,22 @@ class Chef
       provides :habitat_config
 
       property :config, Mash, required: true, coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },
-      description: "The configuration to apply as a ruby hash, for example, `{ worker_count: 2, http: { keepalive_timeout: 120 } }`"
+      description: "The configuration to apply as a ruby hash, for example, `{ worker_count: 2, http: { keepalive_timeout: 120 } }`."
 
       property :service_group, String, name_property: true, desired_state: false,
-      description: "The service group to apply the configuration to, for example, `nginx.default`"
+      description: "The service group to apply the configuration to. For example, `nginx.default`"
 
       property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false,
-      description: "Address to a remote Supervisor's Control Gateway [default: 127.0.0.1:9632]"
+      description: "Address to a remote Supervisor's Control Gateway [default: 127.0.0.1:9632]."
       # Http port needed for querying/comparing current config value
       property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
-      description: "Address for remote supervisor http port. Used to pull existing"
+      description: "Address for remote supervisor http port. Used to pull existing."
 
       property :gateway_auth_token, String, desired_state: false,
       description: "Auth token for accessing the remote supervisor's http port."
 
       property :user, String, desired_state: false,
-      description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`"
+      description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`."
 
       description "Applies a given configuration to a habitat service using `hab config apply`."
       introduced "17.2"

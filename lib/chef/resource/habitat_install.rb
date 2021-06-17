@@ -22,29 +22,29 @@ class Chef
       unified_mode true
       provides :habitat_install
 
-      description "This resource will install the newest stable version of habitat"
+      description "This resource will install the newest stable version of habitat."
       introduced "17.2"
 
       property :name, String, default: "install habitat",
-      description: "name for your resource block"
+      description: "name for your resource block."
 
       property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh",
-      description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh) "
+      description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh) ."
 
       property :bldr_url, String,
-      description: "Optional URL to an alternate Habitat Builder"
+      description: "Optional URL to an alternate Habitat Builder."
 
       property :create_user, [true, false], default: true,
-      description: "Creates the `hab` system user"
+      description: "Creates the `hab` system user."
 
       property :tmp_dir, String,
-      description: "Sets TMPDIR environment variable for location to place temp files. Note: This is required if `/tmp` and `/var/tmp` are mounted `noexec`"
+      description: "Sets TMPDIR environment variable for location to place temp files. Note: This is required if `/tmp` and `/var/tmp` are mounted `noexec`."
 
       property :license, String, equal_to: ["accept"],
-      description: "Specifies acceptance of habitat license when set to `accept`"
+      description: "Specifies acceptance of habitat license when set to `accept`."
 
       property :hab_version, String,
-      description: "Specify the version of `Habitat` you would like to install"
+      description: "Specify the version of `Habitat` you would like to install."
 
       examples <<~DOC
       ```ruby

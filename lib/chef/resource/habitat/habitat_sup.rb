@@ -30,34 +30,34 @@ class Chef
       introduced "17.2"
 
       property :bldr_url, String,
-      description: "The Habitat Builder URL for the `habitat_package` resource, if needed"
+      description: "The Habitat Builder URL for the `habitat_package` resource, if needed."
 
       property :permanent_peer, [true, false], default: false,
-      description: "Only valid for `:run` action, passes `--permanent-peer` to the hab command"
+      description: "Only valid for `:run` action, passes `--permanent-peer` to the hab command."
 
       property :listen_ctl, String,
-      description: "Only valid for `:run` action, passes `--listen-ctl` with the specified address and port, e.g., `0.0.0.0:9632`, to the hab command"
+      description: "Only valid for `:run` action, passes `--listen-ctl` with the specified address and port, e.g., `0.0.0.0:9632`, to the hab command."
 
       property :listen_gossip, String,
-      description: "Only valid for `:run` action, passes `--listen-gossip` with the specified address and port, e.g., `0.0.0.0:9638`, to the hab command"
+      description: "Only valid for `:run` action, passes `--listen-gossip` with the specified address and port, e.g., `0.0.0.0:9638`, to the hab command."
 
       property :listen_http, String,
-      description: "Only valid for `:run` action, passes `--listen-http` with the specified address and port, e.g., `0.0.0.0:9631`, to the hab command"
+      description: "Only valid for `:run` action, passes `--listen-http` with the specified address and port, e.g., `0.0.0.0:9631`, to the hab command."
 
       property :org, String, default: "default",
-      description: "Only valid for `:run` action, passes `--org` with the specified org name to the hab command"
+      description: "Only valid for `:run` action, passes `--org` with the specified org name to the hab command."
 
       property :peer, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b },
-      description: "Only valid for `:run` action, passes `--peer` with the specified initial peer to the hab command"
+      description: "Only valid for `:run` action, passes `--peer` with the specified initial peer to the hab command."
 
       property :ring, String,
-      description: "Only valid for `:run` action, passes `--ring` with the specified ring key name to the hab command"
+      description: "Only valid for `:run` action, passes `--ring` with the specified ring key name to the hab command."
 
       property :hab_channel, String,
       description: "The channel to install Habitat from. Defaults to stable"
 
       property :auto_update, [true, false], default: false,
-      description: "Passes `--auto-update`. This will set the Habitat supervisor to automatically update itself any time a stable version has been released"
+      description: "Passes `--auto-update`. This will set the Habitat supervisor to automatically update itself any time a stable version has been released."
 
       property :auth_token, String,
       description: "Auth token for accessing a private organization on bldr. This value is templated into the appropriate service file."
@@ -71,46 +71,46 @@ class Chef
       - `track-channel`: Always run what is at the head of a given channel. This enables service rollback where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is packages newer than the package at the head of the channel will be automatically uninstalled during a service rollback."
 
       property :limit_no_files, String,
-      description: "allows you to set LimitNOFILE in the systemd service when used Note: Linux Only"
+      description: "allows you to set LimitNOFILE in the systemd service when used Note: Linux Only."
 
       property :license, String, equal_to: ["accept"],
-      description: "Specifies acceptance of habitat license when set to `accept`"
+      description: "Specifies acceptance of habitat license when set to `accept`."
 
       property :health_check_interval, [String, Integer], coerce: proc { |h| h.is_a?(String) ? h : h.to_s },
-      description: "The interval (seconds) on which to run health checks"
+      description: "The interval (seconds) on which to run health checks."
 
       property :event_stream_application, String,
-      description: "The name of your application that will be displayed in the Chef Automate Applications Dashboard"
+      description: "The name of your application that will be displayed in the Chef Automate Applications Dashboard."
 
       property :event_stream_environment, String,
-      description: "The application environment for the supervisor, this is for grouping in the Applications Dashboard"
+      description: "The application environment for the supervisor, this is for grouping in the Applications Dashboard."
 
       property :event_stream_site, String,
-      description: "Application Dashboard label for the 'site' of the application - can be filtered in the dashboard"
+      description: "Application Dashboard label for the 'site' of the application - can be filtered in the dashboard."
 
       property :event_stream_url, String,
-      description: "`AUTOMATE_HOSTNAME:4222` - the Chef Automate URL with port 4222 specified Note: The port can be changed if needed"
+      description: "`AUTOMATE_HOSTNAME:4222` - the Chef Automate URL with port 4222 specified Note: The port can be changed if needed."
 
       property :event_stream_token, String,
-      description: "Chef Automate token for sending application event stream data"
+      description: "Chef Automate token for sending application event stream data."
 
       property :event_stream_cert, String,
-      description: "With `Intermediary Certificates` or, Automate 2 being set to use TLS with a valid cert, you will need to provide `Habitat` with your certificate for communication with Automate to work. [Follow these steps!](https://automate.chef.io/docs/applications-setup/#share-the-tls-certificate-with-chef-habitat)"
+      description: "With `Intermediary Certificates` or, Automate 2 being set to use TLS with a valid cert, you will need to provide `Habitat` with your certificate for communication with Automate to work. [Follow these steps!](https://automate.chef.io/docs/applications-setup/#share-the-tls-certificate-with-chef-habitat)."
 
       property :sup_version, String,
-      description: "Allows you to choose which version of supervisor you would like to install. Defaults to `latest`. (If a version is provided, it will also install that version of habitat if not previously installed)"
+      description: "Allows you to choose which version of supervisor you would like to install. Note: If a version is provided, it will also install that version of habitat if not previously installed."
 
       property :launcher_version, String,
-      description: "Allows you to choose which version of launcher to install. Defaults to `latest`"
+      description: "Allows you to choose which version of launcher to install."
 
       property :service_version, String, # Windows only
-      description: "Allows you to choose which version of the **_Windows Service_** to install. Defaults to `latest`"
+      description: "Allows you to choose which version of the **_Windows Service_** to install."
 
       property :keep_latest, String,
       description: "Automatically cleans up old packages. If this flag is enabled, service startup will initiate an uninstall of all previous versions of the associated package. This also applies when a service is restarted due to an update. If a number is passed to this argument, that number of latest versions will be kept. The same logic applies to the Supervisor package `env:HAB_KEEP_LATEST_PACKAGES=1` Note: This requires Habitat version `1.5.86+`"
 
       property :toml_config, [true, false], default: false,
-      description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, default is `false`. [reference](https://www.habitat.sh/docs/reference/#supervisor-config)"
+      description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, [reference](https://www.habitat.sh/docs/reference/#supervisor-config)."
 
       examples <<~DOC
       ```ruby
