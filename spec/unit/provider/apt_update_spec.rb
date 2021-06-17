@@ -75,7 +75,9 @@ describe "Chef::Provider::AptUpdate" do
 
   describe "#action_periodic" do
     before do
-      allow(File).to receive(:exist?)
+      allow(File).to receive(:exist?).with(config_file).and_return(true)
+      allow(File).to receive(:exist?).with(config_dir).and_return(true)
+      allow(File).to receive(:exist?).with(stamp_dir).and_return(true)
       allow(File).to receive(:exist?).with(Dir.tmpdir).and_return(true)
       expect(File).to receive(:exist?).with("#{stamp_dir}/update-success-stamp").and_return(true)
     end
