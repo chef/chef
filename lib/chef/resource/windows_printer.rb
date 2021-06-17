@@ -117,7 +117,7 @@ class Chef
         default_description: "The resource block name or the ipv4_address prepended with IP_."
 
       def ps_bool_to_ruby(bool)
-        bool.to_s.downcase == "true" ? true : false
+        bool.to_s.downcase == "true"
       end
 
       load_current_value do |new_resource|
