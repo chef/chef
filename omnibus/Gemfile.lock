@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: b1e7b08cbc956679a912148aaeb6469ff8a7ed56
+  revision: 68f693d43977a30df7a3a25a705aa061205e91fd
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,16 +32,16 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.462.0)
-    aws-sdk-core (3.114.0)
+    aws-partitions (1.468.0)
+    aws-sdk-core (3.114.3)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.43.0)
+    aws-sdk-kms (1.44.0)
       aws-sdk-core (~> 3, >= 3.112.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.95.1)
+    aws-sdk-s3 (1.96.1)
       aws-sdk-core (~> 3, >= 3.112.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -142,7 +142,7 @@ GEM
     faraday-net_http_persistent (1.1.0)
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
-    ffi (1.15.1)
+    ffi (1.15.3)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-yajl (2.4.0)
@@ -191,7 +191,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.2.10)
+    license_scout (1.2.12)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
