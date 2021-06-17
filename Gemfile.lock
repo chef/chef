@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: b257fe452318540c7016066beb845e0706917cb4
+  revision: 507e9f69d57b99da1d5adc64e668cf19d31f1f2d
   branch: master
   specs:
-    chefstyle (2.0.4)
-      rubocop (= 1.15.0)
+    chefstyle (2.0.5)
+      rubocop (= 1.17.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -176,9 +176,9 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
-    ffi (1.15.1)
-    ffi (1.15.1-x64-mingw32)
-    ffi (1.15.1-x86-mingw32)
+    ffi (1.15.3)
+    ffi (1.15.3-x64-mingw32)
+    ffi (1.15.3-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -294,13 +294,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.15.0)
+    rubocop (1.17.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.5.0, < 2.0)
+      rubocop-ast (>= 1.7.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.7.0)
