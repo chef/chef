@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.35 -->
-## [v16.13.35](https://github.com/chef/chef/tree/v16.13.35) (2021-06-17)
+<!-- latest_release 16.13.36 -->
+## [v16.13.36](https://github.com/chef/chef/tree/v16.13.36) (2021-06-17)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `b1e7b08` to `68f693d` in /omnibus [#11725](https://github.com/chef/chef/pull/11725) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump berkshelf from 7.2.1 to 7.2.2 in /omnibus [#11724](https://github.com/chef/chef/pull/11724) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump berkshelf from 7.2.1 to 7.2.2 in /omnibus [#11724](https://github.com/chef/chef/pull/11724) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.36 -->
 - Bump omnibus-software from `b1e7b08` to `68f693d` in /omnibus [#11725](https://github.com/chef/chef/pull/11725) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.35 -->
 - Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11709](https://github.com/chef/chef/pull/11709) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.34 -->
 - Bump inspec-core-bin to 4.37.25 [#11685](https://github.com/chef/chef/pull/11685) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.33 -->
