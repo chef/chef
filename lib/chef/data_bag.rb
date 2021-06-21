@@ -32,8 +32,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    # Regex reference: https://rubular.com/r/oIMySIO4USPm5x
-    VALID_NAME = /^[\-[:alnum:]_]+$/.freeze
+    VALID_NAME = /^[\.\-[:alnum:]_]+$/.freeze
     RESERVED_NAMES = /^(node|role|environment|client)$/.freeze
 
     def self.validate_name!(name)
