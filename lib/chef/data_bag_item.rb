@@ -36,8 +36,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    # Regex reference: https://rubular.com/r/oIMySIO4USPm5x
-    VALID_ID = /^[\-[:alnum:]_]+$/.freeze
+    VALID_ID = /^[\.\-[:alnum:]_]+$/.freeze
 
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
