@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
   s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
   # we can't use this gem until illegal instruction issues are resolved
-  #s.add_dependency "x25519" # ed25519 KEX module
+  # s.add_dependency "x25519" # ed25519 KEX module
   s.add_dependency "highline", ">= 1.6.9", "< 3" # Used in UI to present a list, no other usage.
 
   s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
