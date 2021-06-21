@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.6 -->
-## [v17.3.6](https://github.com/chef/chef/tree/v17.3.6) (2021-06-21)
+<!-- latest_release 17.3.7 -->
+## [v17.3.7](https://github.com/chef/chef/tree/v17.3.7) (2021-06-21)
 
 #### Merged Pull Requests
-- Revert addition of x25519 gem to knife [#11733](https://github.com/chef/chef/pull/11733) ([lamont-granquist](https://github.com/lamont-granquist))
+- Run Linux Kitchen jobs on Ruby 3 [#11734](https://github.com/chef/chef/pull/11734) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Run Linux Kitchen jobs on Ruby 3 [#11734](https://github.com/chef/chef/pull/11734) ([tas50](https://github.com/tas50)) <!-- 17.3.7 -->
 - Revert addition of x25519 gem to knife [#11733](https://github.com/chef/chef/pull/11733) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.6 -->
 - Revert &quot;Fixed Validation failed while creating databag and databag item&quot; [#11732](https://github.com/chef/chef/pull/11732) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.5 -->
 - Update Ohai to 17.2, InSpec to 4.37.20 and add back windows deps [#11727](https://github.com/chef/chef/pull/11727) ([tas50](https://github.com/tas50)) <!-- 17.3.4 -->
