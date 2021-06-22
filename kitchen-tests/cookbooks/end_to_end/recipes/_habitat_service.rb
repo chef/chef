@@ -4,6 +4,7 @@ habitat_sup "default" do
   gateway_auth_token "secret"
 end
 
+# This pause is in place to make sure the supervisor is up and running before we proceed. The previous resouce does the full install and initial startup. That can take a bit longer in the pipeline.
 ruby_block "wait-for-sup-default-startup" do
   block do
     raise unless system("hab sup status")
@@ -91,6 +92,7 @@ habitat_service "core/redis stop" do
   action :stop
 end
 
+# During this client run, the redis service is started, stopped, reconfigured and started again. We have added another loop to allow it time to completely shut down due to how service loading is handled in habitat.
 ruby_block "wait-for-redis-stopped" do
   block do
     sleep 10
@@ -118,6 +120,7 @@ habitat_service "core/grafana full identifier" do
   gateway_auth_token "secret"
 end
 
+# Paused to allow grafaba load with habitat
 ruby_block "wait-for-grafana-startup" do
   block do
     raise "grafana not loaded" unless system "hab svc status core/grafana"
@@ -138,6 +141,7 @@ habitat_service "core/vault" do
   gateway_auth_token "secret"
 end
 
+# Paused to allow vault to load with habitat
 ruby_block "wait-for-vault-load" do
   block do
     raise "vault not loaded" unless system "hab svc status core/vault"
@@ -186,6 +190,7 @@ habitat_service "core/prometheus" do
   gateway_auth_token "secret"
 end
 
+# Paused to allow prometheus to start
 ruby_block "wait-for-prometheus-startup" do
   block do
     raise "prometheus not loaded" unless system "hab svc status core/prometheus"
@@ -234,6 +239,7 @@ habitat_service "core/consul" do
   gateway_auth_token "secret"
 end
 
+# Paused to allow consul time so start, load and reconfigure
 ruby_block "wait-for-consul-load" do
   block do
     raise "consul not loaded" unless system "hab svc status core/consul"
