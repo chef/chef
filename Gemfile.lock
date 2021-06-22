@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: b257fe452318540c7016066beb845e0706917cb4
+  revision: 507e9f69d57b99da1d5adc64e668cf19d31f1f2d
   branch: master
   specs:
-    chefstyle (2.0.4)
-      rubocop (= 1.15.0)
+    chefstyle (2.0.5)
+      rubocop (= 1.17.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.3.5)
+    chef (17.3.8)
       addressable
-      chef-config (= 17.3.5)
-      chef-utils (= 17.3.5)
+      chef-config (= 17.3.8)
+      chef-utils (= 17.3.8)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +62,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.3.5-universal-mingw32)
+    chef (17.3.8-universal-mingw32)
       addressable
-      chef-config (= 17.3.5)
-      chef-utils (= 17.3.5)
+      chef-config (= 17.3.8)
+      chef-utils (= 17.3.8)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.3.5)
-      chef (= 17.3.5)
+    chef-bin (17.3.8)
+      chef (= 17.3.8)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.3.5)
+    chef-config (17.3.8)
       addressable
-      chef-utils (= 17.3.5)
+      chef-utils (= 17.3.8)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +121,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.3.5)
+    chef-utils (17.3.8)
       concurrent-ruby
 
 GEM
@@ -176,9 +176,9 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
-    ffi (1.15.1)
-    ffi (1.15.1-x64-mingw32)
-    ffi (1.15.1-x86-mingw32)
+    ffi (1.15.3)
+    ffi (1.15.3-x64-mingw32)
+    ffi (1.15.3-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -294,13 +294,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.15.0)
+    rubocop (1.17.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.5.0, < 2.0)
+      rubocop-ast (>= 1.7.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.7.0)
