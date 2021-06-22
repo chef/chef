@@ -4,7 +4,7 @@ habitat_sup "default" do
   gateway_auth_token "secret"
 end
 
-# This pause is in place to make sure the supervisor is up and running before we proceed. The previous resouce does the full install and initial startup. That can take a bit longer in the pipeline.
+# This pause is in place to make sure the supervisor is up and running before we proceed. The previous resource does the full install and initial startup. That can take a bit longer in the pipeline.
 ruby_block "wait-for-sup-default-startup" do
   block do
     raise unless system("hab sup status")
@@ -120,7 +120,7 @@ habitat_service "core/grafana full identifier" do
   gateway_auth_token "secret"
 end
 
-# Paused to allow grafaba load with habitat
+# Paused to allow grafana load with habitat
 ruby_block "wait-for-grafana-startup" do
   block do
     raise "grafana not loaded" unless system "hab svc status core/grafana"
