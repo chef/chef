@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.8 -->
-## [v17.3.8](https://github.com/chef/chef/tree/v17.3.8) (2021-06-21)
+<!-- latest_release 17.3.9 -->
+## [v17.3.9](https://github.com/chef/chef/tree/v17.3.9) (2021-06-22)
 
 #### Merged Pull Requests
-- Bump chef/chefstyle to latest and ffi to 1.15.3 [#11728](https://github.com/chef/chef/pull/11728) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump train-core to 3.7.4 [#11739](https://github.com/chef/chef/pull/11739) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core to 3.7.4 [#11739](https://github.com/chef/chef/pull/11739) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.9 -->
 - Bump chef/chefstyle to latest and ffi to 1.15.3 [#11728](https://github.com/chef/chef/pull/11728) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.8 -->
 - Run Linux Kitchen jobs on Ruby 3 [#11734](https://github.com/chef/chef/pull/11734) ([tas50](https://github.com/tas50)) <!-- 17.3.7 -->
 - Revert addition of x25519 gem to knife [#11733](https://github.com/chef/chef/pull/11733) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.6 -->
