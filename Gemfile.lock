@@ -140,7 +140,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
     chef-vault (4.1.0)
-    chef-zero (15.0.4)
+    chef-zero (15.0.7)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
