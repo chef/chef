@@ -38,34 +38,17 @@ github:
   # allow bumping the minor release via label
   minor_bump_labels:
     - "Expeditor: Bump Minor Version"
-  # Which Github branches to build Omnibus releases from, and what versions
-  # (as determined by the value in the VERSION file) those branches are responsible
-  # for building.
-  release_branch:
-    - master:
-        version_constraint: 15*
-    - chef-14:
-        version_constraint: 14*
-    - chef-13:
-        version_constraint: 13*
 
-# These actions are taken, in order they are specified, anytime a PR is merged.
-merge_actions:
-  - built_in:bump_version:
-      ignore_labels:
-        - "Expeditor: Skip Version Bump"
-        - "Expeditor: Skip All"
-  - bash:.expeditor/update_version.sh@chef/chef@master:
-      only_if: built_in:bump_version
-  - built_in:update_changelog:
-      ignore_labels:
-        - "Expeditor: Exclude From Changelog"
-        - "Expeditor: Skip All"
-  - built_in:trigger_omnibus_release_build:
-      ignore_labels:
-        - "Expeditor: Skip Build"
-        - "Expeditor: Skip All"
-      only_if: built_in:bump_version
+# Which Github branches to build Omnibus releases from, and what versions
+# (as determined by the value in the VERSION file) those branches are responsible
+# for building.
+release_branches:
+  - master:
+      version_constraint: 15*
+  - chef-14:
+      version_constraint: 14*
+  - chef-13:
+      version_constraint: 13*
 
 subscriptions:
   - workload: artifact_published:unstable:chef:{{version_constraint}}
@@ -81,3 +64,21 @@ subscriptions:
       - built_in:tag_docker_image
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
+  # These actions are taken, in order they are specified, anytime a PR is merged.
+  - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
+    actions:
+      - built_in:bump_version:
+          ignore_labels:
+            - "Expeditor: Skip Version Bump"
+            - "Expeditor: Skip All"
+      - bash:.expeditor/update_version.sh@chef/chef@master:
+          only_if: built_in:bump_version
+      - built_in:update_changelog:
+          ignore_labels:
+            - "Expeditor: Exclude From Changelog"
+            - "Expeditor: Skip All"
+      - built_in:trigger_omnibus_release_build:
+          ignore_labels:
+            - "Expeditor: Skip Build"
+            - "Expeditor: Skip All"
+          only_if: built_in:bump_version
