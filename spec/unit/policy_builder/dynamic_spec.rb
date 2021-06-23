@@ -55,11 +55,6 @@ describe Chef::PolicyBuilder::Dynamic do
         expect(policy_builder).to respond_to(:load_node)
       end
 
-      it "forwards #original_runlist" do
-        expect(implementation).to receive(:original_runlist)
-        policy_builder.original_runlist
-      end
-
       it "forwards #run_context" do
         expect(implementation).to receive(:run_context)
         policy_builder.run_context
