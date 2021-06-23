@@ -42,42 +42,20 @@ github:
   # allow bumping the major release via label
   major_bump_labels:
     - "Expeditor: Bump Version Major"
-  # Which Github branches to build Omnibus releases from, and what versions
-  # (as determined by the value in the VERSION file) those branches are responsible
-  # for building.
-  release_branch:
-    - master:
-        version_constraint: 17*
-    - chef-16:
-        version_constraint: 16*
-    - chef-15:
-        version_constraint: 15*
+
+# Which Github branches to build Omnibus releases from, and what versions
+# (as determined by the value in the VERSION file) those branches are responsible
+# for building.
+release_branches:
+  - master:
+      version_constraint: 17*
+  - chef-16:
+      version_constraint: 16*
+  - chef-15:
+      version_constraint: 15*
 
 changelog:
   rollup_header: Changes not yet released to stable
-
-# These actions are taken, in order they are specified, anytime a Pull Request is merged.
-merge_actions:
-  - built_in:bump_version:
-      ignore_labels:
-        - "Expeditor: Skip Version Bump"
-        - "Expeditor: Skip All"
-  - bash:.expeditor/update_version.sh:
-      only_if: built_in:bump_version
-  - built_in:update_changelog:
-      ignore_labels:
-        - "Expeditor: Skip Changelog"
-        - "Expeditor: Skip All"
-  - trigger_pipeline:habitat/build:
-      ignore_labels:
-        - "Expeditor: Skip Habitat"
-        - "Expeditor: Skip All"
-      only_if: built_in:bump_version
-  - trigger_pipeline:omnibus/release:
-      ignore_labels:
-        - "Expeditor: Skip Omnibus"
-        - "Expeditor: Skip All"
-      only_if: built_in:bump_version
 
 subscriptions:
   # the omnibus/docker/gem chain
@@ -101,3 +79,27 @@ subscriptions:
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
       - trigger_pipeline:habitat/test
+  
+  # These actions are taken, in order they are specified, anytime a Pull Request is merged.
+  - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
+    actions:
+      - built_in:bump_version:
+          ignore_labels:
+            - "Expeditor: Skip Version Bump"
+            - "Expeditor: Skip All"
+      - bash:.expeditor/update_version.sh:
+          only_if: built_in:bump_version
+      - built_in:update_changelog:
+          ignore_labels:
+            - "Expeditor: Skip Changelog"
+            - "Expeditor: Skip All"
+      - trigger_pipeline:habitat/build:
+          ignore_labels:
+            - "Expeditor: Skip Habitat"
+            - "Expeditor: Skip All"
+          only_if: built_in:bump_version
+      - trigger_pipeline:omnibus/release:
+          ignore_labels:
+            - "Expeditor: Skip Omnibus"
+            - "Expeditor: Skip All"
+          only_if: built_in:bump_version
