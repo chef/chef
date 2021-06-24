@@ -8,13 +8,14 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 87db446ee0b9872a8a588bedc660c351991e8bda
+  revision: 1ea07131ab39c874098a5eb3248f58f8a2efa226
   branch: master
   specs:
-    omnibus (8.1.10)
+    omnibus (8.1.11)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
+      contracts (>= 0.16.0, < 0.17.0)
       ffi-yajl (~> 2.2)
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -32,8 +33,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.469.0)
-    aws-sdk-core (3.114.3)
+    aws-partitions (1.470.0)
+    aws-sdk-core (3.115.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -123,6 +124,7 @@ GEM
     cleanroom (1.0.0)
     coderay (1.1.3)
     concurrent-ruby (1.1.9)
+    contracts (0.16.1)
     diff-lcs (1.3)
     ed25519 (1.2.4)
     erubi (1.10.0)
@@ -191,7 +193,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.2.12)
+    license_scout (1.2.13)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -316,7 +318,7 @@ GEM
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.7.2)
+    train-core (3.7.4)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
