@@ -169,7 +169,7 @@ GEM
     ed25519 (1.2.4)
     erubi (1.10.0)
     erubis (2.7.0)
-    faraday (1.4.2)
+    faraday (1.4.3)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
@@ -281,7 +281,7 @@ GEM
       tty-color (~> 0.5)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.13.1)
+    pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
     pry-byebug (3.9.0)
@@ -425,6 +425,7 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
+  x86_64-darwin-20
 
 DEPENDENCIES
   appbundler
@@ -440,7 +441,7 @@ DEPENDENCIES
   ffi (>= 1.15)
   inspec-core-bin (~> 4.24)
   ohai!
-  pry
+  pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
   rake
