@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.11 -->
-## [v17.3.11](https://github.com/chef/chef/tree/v17.3.11) (2021-06-24)
+<!-- latest_release 17.3.12 -->
+## [v17.3.12](https://github.com/chef/chef/tree/v17.3.12) (2021-06-29)
 
 #### Merged Pull Requests
-- Fix edge condition in deprecation silence checker [#11749](https://github.com/chef/chef/pull/11749) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pin `pry` to 0.13.0 [#11756](https://github.com/chef/chef/pull/11756) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pin `pry` to 0.13.0 [#11756](https://github.com/chef/chef/pull/11756) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.12 -->
 - Fix edge condition in deprecation silence checker [#11749](https://github.com/chef/chef/pull/11749) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.11 -->
 - Bump train-core to 3.7.4 [#11739](https://github.com/chef/chef/pull/11739) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.9 -->
 - Bump chef/chefstyle to latest and ffi to 1.15.3 [#11728](https://github.com/chef/chef/pull/11728) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.8 -->
