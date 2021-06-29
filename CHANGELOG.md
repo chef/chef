@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.39 -->
-## [v16.13.39](https://github.com/chef/chef/tree/v16.13.39) (2021-06-29)
+<!-- latest_release 16.13.40 -->
+## [v16.13.40](https://github.com/chef/chef/tree/v16.13.40) (2021-06-29)
 
 #### Merged Pull Requests
-- Bump omnibus from `87db446` to `8b50107` in /omnibus [#11755](https://github.com/chef/chef/pull/11755) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Pin pry and fix omnibus gemfile.locki [#11757](https://github.com/chef/chef/pull/11757) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pin pry and fix omnibus gemfile.locki [#11757](https://github.com/chef/chef/pull/11757) ([tas50](https://github.com/tas50)) <!-- 16.13.40 -->
 - Bump omnibus from `87db446` to `8b50107` in /omnibus [#11755](https://github.com/chef/chef/pull/11755) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.39 -->
 - Bump train-core to 3.7.4 [#11738](https://github.com/chef/chef/pull/11738) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.38 -->
 - Bump omnibus-software from `68f693d` to `c626aa2` in /omnibus [#11730](https://github.com/chef/chef/pull/11730) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.37 -->
