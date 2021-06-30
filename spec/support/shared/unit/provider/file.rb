@@ -43,7 +43,6 @@ end
 def setup_normal_file
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(true)
-    allow(File).to receive(:exists?).with(path).and_return(true)
     allow(File).to receive(:exist?).with(path).and_return(true)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(true)
@@ -57,7 +56,6 @@ def setup_missing_file
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(false)
     allow(File).to receive(:realpath?).with(path).and_return(resource_path)
-    allow(File).to receive(:exists?).with(path).and_return(false)
     allow(File).to receive(:exist?).with(path).and_return(false)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(false)
@@ -70,7 +68,6 @@ def setup_symlink
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(true)
     allow(File).to receive(:realpath?).with(path).and_return(normalized_path)
-    allow(File).to receive(:exists?).with(path).and_return(true)
     allow(File).to receive(:exist?).with(path).and_return(true)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(true)
@@ -84,7 +81,6 @@ def setup_unwritable_file
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(false)
     allow(File).to receive(:realpath?).with(path).and_raise(Errno::ENOENT)
-    allow(File).to receive(:exists?).with(path).and_return(true)
     allow(File).to receive(:exist?).with(path).and_return(true)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(false)
@@ -97,7 +93,6 @@ def setup_missing_enclosing_directory
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(false)
     allow(File).to receive(:realpath?).with(path).and_raise(Errno::ENOENT)
-    allow(File).to receive(:exists?).with(path).and_return(false)
     allow(File).to receive(:exist?).with(path).and_return(false)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(false)
@@ -138,7 +133,6 @@ shared_examples_for Chef::Provider::File do
   before(:each) do
     allow(content).to receive(:tempfile).and_return(tempfile)
     allow(File).to receive(:exist?).with(tempfile.path).and_call_original
-    allow(File).to receive(:exists?).with(tempfile.path).and_call_original
   end
 
   after do
@@ -547,7 +541,7 @@ shared_examples_for Chef::Provider::File do
           provider.load_current_resource
           tempfile = double("Tempfile", path: "/tmp/foo-bar-baz")
           allow(content).to receive(:tempfile).and_return(tempfile)
-          expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(true)
+          expect(File).to receive(:exist?).with("/tmp/foo-bar-baz").and_return(true)
           expect(tempfile).to receive(:close).once
           expect(tempfile).to receive(:unlink).once
         end
@@ -630,7 +624,7 @@ shared_examples_for Chef::Provider::File do
       it "raises an exception when the content object returns a tempfile that does not exist" do
         tempfile = double("Tempfile", path: "/tmp/foo-bar-baz")
         expect(provider.send(:content)).to receive(:tempfile).at_least(:once).and_return(tempfile)
-        expect(File).to receive(:exists?).with("/tmp/foo-bar-baz").and_return(false)
+        expect(File).to receive(:exist?).with("/tmp/foo-bar-baz").and_return(false)
         expect { provider.send(:do_contents_changes) }.to raise_error(RuntimeError)
       end
     end

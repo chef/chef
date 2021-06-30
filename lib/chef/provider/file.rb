@@ -157,7 +157,7 @@ class Chef
       end
 
       action :delete do
-        if ::File.exists?(new_resource.path)
+        if ::File.exist?(new_resource.path)
           converge_by("delete file #{new_resource.path}") do
             do_backup unless file_class.symlink?(new_resource.path)
             ::File.delete(new_resource.path)
@@ -393,7 +393,7 @@ class Chef
         # a nil tempfile is okay, means the resource has no content or no new content
         return if tempfile.nil?
         # but a tempfile that has no path or doesn't exist should not happen
-        if tempfile.path.nil? || !::File.exists?(tempfile.path)
+        if tempfile.path.nil? || !::File.exist?(tempfile.path)
           raise "#{ChefUtils::Dist::Infra::CLIENT} is confused, trying to deploy a file that has no path or does not exist..."
         end
 
