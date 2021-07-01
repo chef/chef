@@ -37,7 +37,7 @@ end
 
 include_recipe "::_packages"
 
-include_recipe "ntp"
+include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
 
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
@@ -58,7 +58,7 @@ include_recipe "openssh"
 
 include_recipe "nscd"
 
-include_recipe "logrotate"
+logrotate_package "logrotate"
 
 include_recipe "git"
 
