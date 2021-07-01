@@ -19,7 +19,7 @@ jobs:
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current -v 16
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
         ohai -v
@@ -64,7 +64,7 @@ jobs:
       id: install_chef
       run: |
         brew install coreutils
-        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
+        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -v 16
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
         /opt/chef/embedded/bin/rake --version
@@ -117,7 +117,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0"
+          ruby-version: "2.7"
           bundler-cache: true
           working-directory: kitchen-tests
       - name: Run Test Kitchen
