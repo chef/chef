@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.13 -->
-## [v17.3.13](https://github.com/chef/chef/tree/v17.3.13) (2021-06-30)
+<!-- latest_release 17.3.14 -->
+## [v17.3.14](https://github.com/chef/chef/tree/v17.3.14) (2021-07-02)
 
 #### Merged Pull Requests
-- Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.38.3 [#11771](https://github.com/chef/chef/pull/11771) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.38.3 [#11771](https://github.com/chef/chef/pull/11771) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.14 -->
 - Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50)) <!-- 17.3.13 -->
 - Pin `pry` to 0.13.0 [#11756](https://github.com/chef/chef/pull/11756) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.12 -->
 - Fix edge condition in deprecation silence checker [#11749](https://github.com/chef/chef/pull/11749) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.11 -->
