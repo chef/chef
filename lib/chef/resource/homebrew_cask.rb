@@ -51,7 +51,8 @@ class Chef
 
       property :owner, [String, Integer],
         description: "The owner of the Homebrew installation.",
-        default: lazy { find_homebrew_username }
+        default: lazy { find_homebrew_username },
+        default_description: "Calculated default username"\
 
       action :install, description: "Install an application that is packaged as a Homebrew cask." do
         if new_resource.install_cask

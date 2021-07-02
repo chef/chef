@@ -112,7 +112,7 @@ RSpec.describe ChefUtils::ParallelMap do
     end
 
     it "recursive parallel_each will not deadlock" do
-      ans = Timeout.timeout(30) do
+      Timeout.timeout(30) do
         (1..2).parallel_each { |i| (1..2).parallel_each { |i| i } }
       end
     end
@@ -125,7 +125,7 @@ RSpec.describe ChefUtils::ParallelMap do
     end
 
     it "parallel_each is lazy" do
-      ans = Timeout.timeout(30) do
+      Timeout.timeout(30) do
         (1..).lazy.parallel_each { |i| i }.first(5)
       end
     end
