@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.42 -->
-## [v16.13.42](https://github.com/chef/chef/tree/v16.13.42) (2021-07-02)
+<!-- latest_release 16.13.43 -->
+## [v16.13.43](https://github.com/chef/chef/tree/v16.13.43) (2021-07-02)
 
 #### Merged Pull Requests
-- Build RHEL 8 packages on RHEL 8 [#11769](https://github.com/chef/chef/pull/11769) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.38.3 [#11770](https://github.com/chef/chef/pull/11770) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.38.3 [#11770](https://github.com/chef/chef/pull/11770) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.43 -->
 - Build RHEL 8 packages on RHEL 8 [#11769](https://github.com/chef/chef/pull/11769) ([tas50](https://github.com/tas50)) <!-- 16.13.42 -->
 - Enable FIPS on PPC RHEL builds [#11768](https://github.com/chef/chef/pull/11768) ([tas50](https://github.com/tas50)) <!-- 16.13.41 -->
 - Move some testing to GitHub actions [#11767](https://github.com/chef/chef/pull/11767) ([tas50](https://github.com/tas50)) <!-- 16.13.40 -->
