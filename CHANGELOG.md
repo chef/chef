@@ -2,18 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.41 -->
-## [v16.13.41](https://github.com/chef/chef/tree/v16.13.41) (2021-07-01)
+<!-- latest_release 16.13.42 -->
+## [v16.13.42](https://github.com/chef/chef/tree/v16.13.42) (2021-07-02)
 
 #### Merged Pull Requests
-- Enable FIPS on PPC RHEL builds [#11768](https://github.com/chef/chef/pull/11768) ([tas50](https://github.com/tas50))
-- Move some testing to GitHub actions [#11767](https://github.com/chef/chef/pull/11767) ([tas50](https://github.com/tas50))
+- Build RHEL 8 packages on RHEL 8 [#11769](https://github.com/chef/chef/pull/11769) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Build RHEL 8 packages on RHEL 8 [#11769](https://github.com/chef/chef/pull/11769) ([tas50](https://github.com/tas50)) <!-- 16.13.42 -->
 - Enable FIPS on PPC RHEL builds [#11768](https://github.com/chef/chef/pull/11768) ([tas50](https://github.com/tas50)) <!-- 16.13.41 -->
 - Move some testing to GitHub actions [#11767](https://github.com/chef/chef/pull/11767) ([tas50](https://github.com/tas50)) <!-- 16.13.40 -->
 - Pin pry and fix omnibus gemfile.locki [#11757](https://github.com/chef/chef/pull/11757) ([tas50](https://github.com/tas50)) <!-- 16.13.40 -->
