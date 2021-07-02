@@ -974,17 +974,13 @@ class Chef
           # Reference: https://github.com/chef/chef/blob/master/lib/chef/knife/ssh.rb#L272
           opts[:keys_only] = config.key?(:connection_password) == false
         else
-          opts[:key_files] = nil
+          opts[:key_files] = []
           opts[:keys_only] = false
         end
 
         gateway_identity_file = config[:ssh_gateway] ? config[:ssh_gateway_identity] : nil
         unless gateway_identity_file.nil?
-          if opts[:key_files].nil?
-            opts[:key_files] = [gateway_identity_file]
-          else
-            opts[:key_files] << gateway_identity_file
-          end
+          opts[:key_files] << gateway_identity_file
         end
 
         opts

@@ -127,11 +127,8 @@ class Chef
                         # running with sudo right now - so this directory would be owned by root.
                         # File upload is performed over SCP as the current logged-in user,
                         # so we'll set ownership to ensure that works.
-                        if config[:sudo]
-                          # While using ssh config file user might present in ssh file
-                          user = config[:user] || ssh_config_for_host(config[:host])[:user]
-                          run_command!("chown #{user} '#{dir}'")
-                        end
+                        run_command!("chown #{config[:user]} '#{dir}'") if config[:sudo]
+
                         dir
                       end
         end
@@ -243,7 +240,7 @@ class Chef
 
           # Now that everything is populated, fill in anything missing
           # that may be found in user ssh config
-          opts.merge!(missing_opts_from_ssh_config(opts, opts_in))
+          opts.merge!(missing_opts_from_ssh_config(opts))
 
           Train.target_config(opts)
         end
@@ -300,12 +297,12 @@ class Chef
         # in the configuration passed in.
         # This is necessary because train will default these values
         # itself - causing SSH config data to be ignored
-        def missing_opts_from_ssh_config(config, opts_in)
+        def missing_opts_from_ssh_config(config)
           return {} unless config[:backend] == "ssh"
 
           host_cfg = ssh_config_for_host(config[:host])
           opts_out = {}
-          opts_in.each do |key, _value|
+          host_cfg.each do |key, _value|
             if SSH_CONFIG_OVERRIDE_KEYS.include?(key) && !config.key?(key)
               opts_out[key] = host_cfg[key]
             end

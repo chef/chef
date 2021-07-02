@@ -1,4 +1,4 @@
-#
+ #
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
 # Copyright:: Copyright 2010-2016, Ian Meyer
 # Copyright:: Copyright (c) Chef Software Inc.
@@ -1127,7 +1127,7 @@ describe Chef::Knife::Bootstrap do
           let(:expected_result) do
             {
               forward_agent: false,
-              key_files: nil,
+              key_files: [],
               logger: Chef::Log,
               keys_only: false,
               sudo: false,
@@ -1307,7 +1307,7 @@ describe Chef::Knife::Bootstrap do
       context "when no identity file is specified" do
         it "generates the expected configuration (no keys, keys_only false)" do
           expect(knife.ssh_identity_opts).to eq( {
-            key_files: nil,
+            key_files: [],
             keys_only: false,
           })
         end
