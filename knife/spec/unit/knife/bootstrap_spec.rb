@@ -1,4 +1,4 @@
- #
+#
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
 # Copyright:: Copyright 2010-2016, Ian Meyer
 # Copyright:: Copyright (c) Chef Software Inc.
