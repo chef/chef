@@ -1,5 +1,274 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## What's New in 17.3
+
+### Compliance Phase Improvements
+
+#### Chef InSpec 4.38
+
+We've updated Chef InSpec from 4.37.23 to 4.38.3:
+
+##### New Features
+
+- Added a new mongodb_conf resource.
+
+##### Bug Fixes
+
+- Changed the Windows local pipe server connection to retry once on EPIPE.
+- Exceptions are now handled correctly in the oracledb_session resource.
+- Fixed the mysql_session resource to raise an exception if there is an error in a connection or query.
+- Fixed the postgres_session resource to raise an exception if there is an error in a connection or query
+
+### Run Lists with Policyfiles
+
+You can now optionally execute Chef Infra Client with a specified run lists on nodes that are managed with Policyfiles. This differs from the traditional Policyfile workflow by allowing you to run any cookbook/recipe combination that exists within the Policyfile lock.
+
+#### Safety With Flexibility
+
+Run lists with Policyfiles give you the safety of locked sets of cookbook dependencies while also giving you the flexibility to change run lists or run different run lists on nodes for adhoc Chef Infra Client converges. Without Policyfiles, manually specifying, or overriding, a run list determines an entirely new set of dependencies. When using run lists with Policyfiles, Chef Infra Client executes within the predefined set of cookbook dependencies in your Policyfile lock. This allows you to change or override run lists without introducing new, and potentially untested, cookbook dependencies.
+
+To introduce this new functionality without impacting existing Chef Infra Client execution, Policyfile managed nodes with a run list defined will not run those run lists by default. To execute a run list defined on a node in Chef Infra Server instead of the run list defined directly in a Policyfile, set the Chef Config `policy_persist_run_list` to true. Specifying an override run list on the command line with Policyfiles will execute without any additional configuration.
+
+#### How This Differs From Named Run Lists
+
+Policyfiles with run lists offer additional flexibility over named run lists and are better suited for adhoc Chef Infra Client execution or programmatically changing run lists during bootstrap. Named run lists within Policyfiles need to be defined when the Policyfile is created, requiring you to predefine each potential run list you may want to run at a future data. Run lists with Policyfiles allows you to run any run list for cookbooks included in the Policyfile lock. Override run lists with Policyfiles offer adhoc flexibility as the override run list is not saved to node on Chef Infra Server, unlike named run lists which permanently update the node.
+
+#### Examples
+
+##### Override Run List
+
+```shell
+chef-client -o my_cookbook::some_recipe
+```
+
+##### Set Permanent Run List via CLI
+
+```shell
+chef-client -r my_cookbook::some_recipe
+```
+
+or
+
+```shell
+chef-client -j my_run_list_and_attribute_data.json
+```
+
+##### Configuring Chef Infra Client to Use Run Lists
+
+```ruby
+chef_client_config 'Configure Infra Client' do
+  policy_persist_run_list true
+end
+```
+
+### New Resources
+
+#### habitat_package
+
+Use the habitat_package to install or remove Chef Habitat packages from Habitat Builder. See the [habitat_package Resource documentation](https://docs.chef.io/resources/habitat_package/) for additional details and example usage.
+
+#### habitat_sup
+
+Use the habitat_sup resource to runs a Chef Habitat supervisor for one or more Chef Habitat services. The resource is commonly used in conjunction with habitat_service which will manage the services loaded and started within the supervisor. See the [habitat_sup Resource documentation](https://docs.chef.io/resources/habitat_sup/) for additional details and example usage.
+
+#### habitat_config
+
+Use the habitat_config resource to apply a configuration to a Chef Habitat service. See the [habitat_config Resource documentation](https://docs.chef.io/resources/habitat_config/) for additional details and example usage.
+
+#### habitat_install
+
+Use the habitat_install resource to install Chef Habitat. See the [habitat_install Resource documentation](https://docs.chef.io/resources/habitat_install/) for additional details and example usage.
+
+#### habitat_service
+
+Use the habitat_service resource to manage Chef Habitat services. This requires that core/hab-sup be running as a service. See the habitat_sup resource documentation for more information. See the [habitat_service Resource documentation](https://docs.chef.io/resources/habitat_service/) for additional details and example usage.
+
+#### habitat_user_toml
+
+Use the habitat_user_toml to template a `user.toml` for Chef Habitat services. Configurations set in the `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration. See the [habitat_user_toml Resource documentation](https://docs.chef.io/resources/habitat_user_toml/) for additional details and example usage.
+
+#### windows_defender
+
+Use the **windows_defender** resource to enable, configure or disable the Microsoft Windows Defender service. See the [windows_defender Resource documentation](https://docs.chef.io/resources/windows_defender/) for additional details and example usage.
+
+#### windows_defender_exclusion
+
+Use the **windows_defender_exclusion** resource to exclude paths, processes, or file types from Windows Defender realtime protection scanning. See the [windows_defender_exclusion Resource documentation](https://docs.chef.io/resources/windows_defender_exclusion/) for additional details and example usage.
+
+#### windows_update_setttings
+
+Use the **windows_update_settings** resource to manage the various Windows Update patching options.. See the [windows_update_settings Resource documentation](https://docs.chef.io/resources/windows_update_settings/) for additional details and example usage.
+
+### Updated Resources
+
+#### powershell_package
+
+The `powershell_package` resource has been updated to allow passing an array of install options via the `options` property. Thanks for reporting this issue [@kimbernator](https://github.com/kimbernator)
+
+#### windows_printer
+
+The `windows_printer` resource has been updated to better load the current state of the printer and to allow controlling the creation of the printer port. The resource now includes a `create_port` property that allows skipping the creation of the printer port and a `port_name` property that allows specifying the name of the port to use. With these new properties, users can create advanced printer ports using the `windows_printer_port` resource and then attach a new printer to those ports using the `windows_printer` resource.
+
+```ruby
+windows_printer_port '10.4.64.39' do
+  port_name 'My awesome printer port'
+  snmp_enabled true
+  port_protocol 2
+end
+
+windows_printer 'HP LaserJet 5th Floor' do
+  driver_name 'HP LaserJet 4100 Series PCL6'
+  port_name 'My awesome printer port'
+  ipv4_address '10.4.64.38'
+  create_port false
+end
+```
+
+#### chef_client_config
+
+The `chef_client_config` resource has been updated to properly format the `client.rb` config when the user sets the `ohai_optional_plugins` or `ohai_disabled_plugins` properties. Thanks for reporting this issue [@caneylan](https://github.com/caneylan). The resource can now also set the new `policy_persist_run_list` configuration with the `client.rb` file by setting the `policy_persist_run_list` property to `true`.
+
+### Chef Language Improvements
+
+We've added several new helpers to the Chef Infra Language to make writing out various data formats easier. These helpers allow you to convert data from Ruby Hashes or Chef Infra attributes into YAML, JSON, or TOML format data. A great use case for these helpers is writing system or application configuration files to disk without having to template out data formats using a template resource.
+
+Given this Ruby hash:
+
+```ruby
+example_hash = {
+          "golf": "hotel",
+          "kilo": %w{lima mike},
+          "india": {
+                    "juliett": "blue",
+                   },
+          "alpha": {
+                    "charlie": true,
+                    "bravo": 10,
+                   },
+          "echo": "foxtrot",
+         }
+```
+
+Output the data in JSON format:
+
+```ruby
+render_json(example_hash)
+```
+
+```json
+{
+  "golf": "hotel",
+  "kilo": [
+    "lima",
+    "mike"
+  ],
+  "india": {
+    "juliett": "blue"
+  },
+  "alpha": {
+    "charlie": true,
+    "bravo": 10
+  },
+  "echo": "foxtrot"
+}
+```
+
+Output the data in TOML format:
+
+```ruby
+render_toml(example_hash)
+```
+
+```toml
+echo = "foxtrot"
+golf = "hotel"
+kilo = ["lima", "mike"]
+[alpha]
+bravo = 10
+charlie = true
+[india]
+juliett = "blue"
+```
+
+Output the data in YAML format:
+
+```ruby
+render_yaml(example_hash)
+```
+
+```yaml
+---
+golf: hotel
+kilo:
+- lima
+- mike
+india:
+  juliett: blue
+alpha:
+  charlie: true
+  bravo: 10
+echo: foxtrot
+```
+
+Using this helper with the file resource:
+
+```ruby
+file '/etc/some_app/config.yml' do
+  content render_yml(example_hash)
+  mode '0640'
+end
+```
+
+### Experimental Secrets Management
+
+With Chef Infra Client 17.3 we're introducing experimental secrets management integration. This functionality should be considered a beta and not be used in production. We'd love to get feedback on how how this works for you and additional features you'd like or need in order to utilize secrets from secret managers within your cookbooks. E-mail us at secrets_management_beta@progress.com.
+
+This beta adds a new `secrets` helper to the Chef Infra Language with a plugable model for different secrets management systems. In this release of Chef Infra Client we've added initial support for AWS Secrets Manager and Azure Key Vault. In future releases we hope to add support for additional secrets management systems such as HashiCorp Vault and Akeyless Vault.
+
+TODO: ADD EXAMPLES HERE
+
+### System Detection Improvements
+
+#### virtuozzo Support
+
+The `virtuozzo` platform is now detected as a member of the RHEL platform_family. Thanks for this addition [@robertmasztalerz](https://github.com/robertmasztalerz)!
+
+#### Linux Livepatch Detection
+
+A new Ohai optional plugin `:Livepatch` has been added to detect Linux kernel Livepatch modules that have been loaded on a system. This plugin can be enabled on systems using the `ohai_optional_plugins` property in the [chef_client_config resource](https://docs.chef.io/resources/chef_client_config). Thanks for this new plugin [@liu-song-6](https://github.com/liu-song-6)!
+
+### Package Improvements
+
+#### M1 macOS Monterey Packages
+
+Chef Infra Client packages are now produced for Apple's macOS Monterey preview release. Packages for Intel-based Macs will ship at a later date.
+
+#### Solaris 11.3 EOL / Solaris 11.4 Packages
+
+Oracle Solaris 11.3 became end-of-life (EOL) in January 2021. Chef Infra Client packages are no longer produced for Solaris 11.3 and new Solaris 11.4 packages are available in their place.
+
+#### FIPS on PPC RHEL
+
+Failures initializing Chef Infra Client on FIPS enabled PowerPC RHEL systems have been resolved.
+
+#### RPM Package Digests
+
+The file digest in Chef Infra RPM packages have been updated from MD5 to SHA256 to prevent failures installing on some FIPS-enabled systems.
+
+### Security
+
+#### Ruby 3.0.2
+
+Ruby has been updated to 3.0.2 to resolve a large number of bugs as well as the following CVEs:
+
+- [CVE-2021-31810](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31810)
+- [CVE-2021-32066](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32066)
+- [CVE-2021-31799](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31799)
+
+#### Addressable
+
+We've updated the addressable gem from 2.7 to 2.8 to resolve [CVE-2021-32740](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32740).
+
 ## What's New in 17.2
 
 ### Compliance Phase Improvements
