@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.18 -->
-## [v17.3.18](https://github.com/chef/chef/tree/v17.3.18) (2021-07-06)
+<!-- latest_release 17.3.19 -->
+## [v17.3.19](https://github.com/chef/chef/tree/v17.3.19) (2021-07-06)
 
 #### Merged Pull Requests
-- Bump chef/chefstyle to c15585ef352577df1cbd06f2c430a6e2372653b3 [#11786](https://github.com/chef/chef/pull/11786) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix handling of ohai properties in chef_client_config [#11766](https://github.com/chef/chef/pull/11766) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix handling of ohai properties in chef_client_config [#11766](https://github.com/chef/chef/pull/11766) ([tas50](https://github.com/tas50)) <!-- 17.3.19 -->
 - Bump chef/chefstyle to c15585ef352577df1cbd06f2c430a6e2372653b3 [#11786](https://github.com/chef/chef/pull/11786) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.18 -->
 - Chefstyle fixes for RuboCop 1.18.3 [#11787](https://github.com/chef/chef/pull/11787) ([tas50](https://github.com/tas50)) <!-- 17.3.17 -->
 - Bump chef/ohai to ffea38b6c84f96197fbb05b0768d01c2345e20a9 [#11776](https://github.com/chef/chef/pull/11776) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.16 -->
