@@ -1446,6 +1446,7 @@
     "secoption",
     "secopts",
     "secp",
+    "secretkey",
     "securerandom",
     "SECURITYPOLICY",
     "secvalue",

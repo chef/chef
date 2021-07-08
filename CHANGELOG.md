@@ -1,17 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.13 -->
-## [v17.3.13](https://github.com/chef/chef/tree/v17.3.13) (2021-06-30)
+<!-- latest_release 17.3.23 -->
+## [v17.3.23](https://github.com/chef/chef/tree/v17.3.23) (2021-07-08)
 
 #### Merged Pull Requests
-- Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50))
+- Add user provided options to powershell_package commands [#11793](https://github.com/chef/chef/pull/11793) ([gscho](https://github.com/gscho))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add user provided options to powershell_package commands [#11793](https://github.com/chef/chef/pull/11793) ([gscho](https://github.com/gscho)) <!-- 17.3.23 -->
+- Add &#39;secret&#39; to the Chef DSL [beta] [#11753](https://github.com/chef/chef/pull/11753) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.22 -->
+- Update omnibus/omnibus-software to the latest [#11789](https://github.com/chef/chef/pull/11789) ([tas50](https://github.com/tas50)) <!-- 17.3.21 -->
+- Support override run_lists in policyfiles [#11741](https://github.com/chef/chef/pull/11741) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.20 -->
+- Fix handling of ohai properties in chef_client_config [#11766](https://github.com/chef/chef/pull/11766) ([tas50](https://github.com/tas50)) <!-- 17.3.19 -->
+- Bump chef/chefstyle to c15585ef352577df1cbd06f2c430a6e2372653b3 [#11786](https://github.com/chef/chef/pull/11786) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.18 -->
+- Chefstyle fixes for RuboCop 1.18.3 [#11787](https://github.com/chef/chef/pull/11787) ([tas50](https://github.com/tas50)) <!-- 17.3.17 -->
+- Bump chef/ohai to ffea38b6c84f96197fbb05b0768d01c2345e20a9 [#11776](https://github.com/chef/chef/pull/11776) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.16 -->
+- Bump addressable to 2.8.0 [#11772](https://github.com/chef/chef/pull/11772) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.15 -->
+- Bump inspec-core-bin to 4.38.3 [#11771](https://github.com/chef/chef/pull/11771) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.14 -->
 - Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50)) <!-- 17.3.13 -->
 - Pin `pry` to 0.13.0 [#11756](https://github.com/chef/chef/pull/11756) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.12 -->
 - Fix edge condition in deprecation silence checker [#11749](https://github.com/chef/chef/pull/11749) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.11 -->
