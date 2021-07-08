@@ -50,11 +50,8 @@ class Chef
       include Chef::DSL::ChefVault
       include Chef::DSL::RegistryHelper
       include Chef::DSL::Powershell
-<<<<<<< HEAD
       include Chef::DSL::RenderHelpers
-=======
       include Chef::DSL::Secret
->>>>>>> master
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
