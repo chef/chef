@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.22 -->
-## [v17.3.22](https://github.com/chef/chef/tree/v17.3.22) (2021-07-07)
+<!-- latest_release 17.3.23 -->
+## [v17.3.23](https://github.com/chef/chef/tree/v17.3.23) (2021-07-08)
 
 #### Merged Pull Requests
-- Add &#39;secret&#39; to the Chef DSL [beta] [#11753](https://github.com/chef/chef/pull/11753) ([marcparadise](https://github.com/marcparadise))
+- Add user provided options to powershell_package commands [#11793](https://github.com/chef/chef/pull/11793) ([gscho](https://github.com/gscho))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add user provided options to powershell_package commands [#11793](https://github.com/chef/chef/pull/11793) ([gscho](https://github.com/gscho)) <!-- 17.3.23 -->
 - Add &#39;secret&#39; to the Chef DSL [beta] [#11753](https://github.com/chef/chef/pull/11753) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.22 -->
 - Update omnibus/omnibus-software to the latest [#11789](https://github.com/chef/chef/pull/11789) ([tas50](https://github.com/tas50)) <!-- 17.3.21 -->
 - Support override run_lists in policyfiles [#11741](https://github.com/chef/chef/pull/11741) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.20 -->
