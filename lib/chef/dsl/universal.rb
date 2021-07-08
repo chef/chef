@@ -23,6 +23,8 @@ require_relative "chef_vault"
 require_relative "registry_helper"
 require_relative "powershell"
 require_relative "secret"
+require_relative "render_helpers"
+require_relative "toml"
 require_relative "../mixin/powershell_exec"
 require_relative "../mixin/powershell_out"
 require_relative "../mixin/shell_out"
@@ -48,6 +50,7 @@ class Chef
       include Chef::DSL::ChefVault
       include Chef::DSL::RegistryHelper
       include Chef::DSL::Powershell
+      include Chef::DSL::RenderHelpers
       include Chef::DSL::Secret
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
