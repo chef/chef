@@ -106,7 +106,7 @@ class Chef
         description: "The e-mail address to e-mail any cron task failures to."
 
       property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
+        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement>",
         default: false
 
       property :config_directory, String,
