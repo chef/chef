@@ -475,11 +475,12 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "should install a package using provided options" do
       provider.load_current_resource
       new_resource.package_name(["xCertificate"])
+      new_resource.version(nil)
       new_resource.options(%w{-AcceptLicense -Verbose})
       allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
       allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -AcceptLicense -Verbose ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -AcceptLicense -Verbose ).Version", { timeout: new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
