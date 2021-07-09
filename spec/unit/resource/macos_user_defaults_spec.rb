@@ -35,8 +35,8 @@ describe Chef::Resource::MacosUserDefaults do
     expect(resource.value).to eq({ "User" => "/Library/Managed Installs/way_fake.log" })
   end
 
-  it "the host property defaults to nil" do
-    expect(resource.host).to be_nil
+  it "the host property defaults to be all_hosts" do
+    expect(resource.host).to eq :all_hosts
   end
 
   it "the sudo property defaults to false" do
@@ -73,7 +73,7 @@ describe Chef::Resource::MacosUserDefaults do
     end
 
     it "maps `all_users` to corresponding constant" do
-      resource.user = :all_users
+      resource.user = 'all_users'
       expect(provider.mapped_user).to eq CF::Preferences::ALL_USERS
     end
   end

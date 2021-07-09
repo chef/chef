@@ -80,6 +80,7 @@ class Chef
 
       property :host, [String, Symbol],
         description: "Set either :current or a hostname to set the user default at the host level.",
+        default: :all_hosts, # TODO: check backward compatibility and defaults util convention
         desired_state: false,
         introduced: "16.3"
 
@@ -94,8 +95,9 @@ class Chef
         equal_to: %w{bool string int float array dict},
         desired_state: false
 
-      property :user, [String, Symbol],
+      property :user, [String],
         description: "The system user that the default will be applied to.",
+        default: 'current_user', # TODO: check backward compatibility and defaults util convention
         desired_state: false
 
       property :sudo, [TrueClass, FalseClass],
@@ -129,14 +131,6 @@ class Chef
       end
 
       action_class do
-        CF_MAPPING = {
-          current_user: CF::Preferences::CURRENT_USER,
-          all_users: CF::Preferences::ALL_USERS,
-          current_host: CF::Preferences::CURRENT_HOST,
-          all_hosts: CF::Preferences::ALL_HOSTS,
-          current: CF::Preferences::CURRENT_HOST # TODO: deprecation warning for this option
-        }
-
         def read_preferences(new_resource)
           CF::Preferences.get(new_resource.key, new_resource.domain, mapped_user, mapped_host)
         end
@@ -146,20 +140,34 @@ class Chef
         end
 
         def mapped_user
-          CF_MAPPING[valid_user.to_sym] || valid_user.to_s
+          case valid_user.to_sym
+          when :current_user
+            CF::Preferences::CURRENT_USER
+          when :all_users
+            CF::Preferences::ALL_USERS
+          else
+            valid_user.to_s
+          end
         end
 
         def mapped_host
-          CF_MAPPING[valid_host.to_sym] || valid_host.to_s
+          case valid_host.to_sym
+          when :current # TODO: deprecate this option??
+            CF::Preferences::CURRENT_HOST
+          when :current_host
+            CF::Preferences::CURRENT_HOST
+          when :all_hosts
+            CF::Preferences::ALL_HOSTS
+          else
+            valid_host.to_s
+          end
         end
 
         def valid_user
-          # TODO: check backward compatibility and defaults util convention
           new_resource.user || :current_user
         end
 
         def valid_host
-          # TODO: check backward compatibility and defaults util convention
           new_resource.host || :all_hosts
         end
       end
