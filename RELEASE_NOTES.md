@@ -1,42 +1,468 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-## UNRELEASED 17.0 Scratch Pad
+## What's New in 17.2
 
-This section serves to track things we should later document here for 17.0
+### Compliance Phase Improvements
 
-- Chef Infra Client now ships with Ruby 3
-- Compliance Phase in GA: https://github.com/chef/chef/pull/10547
-- remove support for RHEL 6 i386
-- Compliance cli report - https://github.com/chef/chef/pull/10939
-- Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
-- Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
-- Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158 / https://github.com/chef/chef/pull/11173
-- lpar_no and wpar_no in AIX Virtualization plugin are now Integers - https://github.com/chef/ohai/pull/1647
+#### Chef InSpec 4.37
 
-### Infra Language Improvements
+We've updated Chef InSpec from 4.36.4 to 4.37.8:
 
-- New effortless? helper - https://github.com/chef/chef/pull/11150
-- Default values in custom resources are now dup'd - https://github.com/chef/chef/pull/11095
-- Lazy attribute loading: https://github.com/chef/chef/pull/10861
-- reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
+##### New Features
+
+- The new `inspec automate` command replaces the `inspec compliance` command, which is now deprecated.
+- Added support for `zfs_pool` and `zfs_dataset` resources on Linux.
+- Improved `port` resource performance: adding more specific search while using `ss` command.
+- Updated the `inspec init plugin` command with the following changes:
+  - The values of flags passed to the `inspec init plugin` command are now wrapped in double quotes instead of single quotes.
+  - Template files are now ERB files.
+  - The `activator` flag replaces the `hook` flag, which is now an alias.
+
+##### Bug Fixes
+
+- Fixed an error when using profile dependencies and require_controls.
+- Fixed the `windows_firewall_rule` resource when it failed to validate more than one rule.
+- The `http` resource response body is now coerced into UTF-8.
+- Modified the `windows_feature` resource to indicate if a feature is enabled rather than just available.
+- `file` resource `more_permissive_than` matcher returns nil instead of throwing an exception when the file does not exist.
+- `inspec detect --no-color` now returns color-free output.
+
+### Slow Resource Report
+
+Chef Infra Client now includes a `--slow-report` flag that shows the 10 slowest running resources in a Chef Infra Client run to help you troubleshoot and optimize your cookbooks. This new flag also takes an argument for the number of resources to list if you'd like to see additional resources included in the output. Our next release of Chef Workstation will include the ability to set this flag in Test Kitchen to allow testing for slow resources in the development process.
+
+#### Example Output
+
+```text
+Starting Chef Infra Client, version 17.2.12
+Patents: https://www.chef.io/patents
+resolving cookbooks for run list: ["test"]
+Synchronizing Cookbooks:
+  - test (0.0.1)
+Installing Cookbook Gems:
+Compiling Cookbooks...
+Converging 1 resources
+Recipe: test::default
+  * file[/tmp/foo.xzy] action create (up to date)
+
+Running handlers:
+
+Top 1 slowest resource:
+
+resource           elapsed_time cookbook recipe  source
+------------------ ------------ -------- ------- ----------------------------------------
+file[/tmp/foo.xzy] 0.015114     test     default test/recipes/default.rb:2:in `from_file'
+
+  - Chef::Handler::SlowReport
+Running handlers complete
+Chef Infra Client finished, 0/1 resources updated in 03 seconds
+```
+
+### Improved YAML Recipe Support
+
+Chef Infra Client now supports both `.yaml` and `.yml` file extensions for recipes. If a `.yml` and `.yaml` recipe of the same name is present, Chef Infra Client will now fail as there is no way to determine which recipe should be loaded in this case.
+
+### Improved Reporting to Automate
+
+Chef Infra Client run reporting to Automate now respects attribute `allowlist` and `denylist` configurations set in the `client.rb`. This change allows users to limit the data sent to their Automate servers to prevent indexing sensitive data or to reduce the necessary storage space on the Automate server.
+
+### Updated Resources
+
+#### homebrew_path
+
+The `homebrew_path` now passes the `homebrew_path` when creating or deleting taps. This change prevents failures when running homebrew in a non-standard location or on a M1 system. Thanks [@mattlqx](https://github.com/mattlqx)!
+
+#### hostname
+
+The `hostname` resource now sets the hostname on Windows systems using native PowerShell calls for increased reliability and allows changing the hostname on domain-attached systems. To change the hostname on a domain-attached system, pass a domain administrator account using the new `domain_user` and `domain_password` properties.
+
+#### openssl_x509_certificate
+
+The `openssl_x509_certificate` no longer marks the creation of the X509 certificate file as sensitive since this makes troubleshooting difficult and this content is not sensitive. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett)!
+
+#### windows_firewall_rule
+
+The `windows_firewall_rule` resource now allows specifying multiple IP addresses in the `remote_address` property.
+
+#### windows_pagefile
+
+The `windows_pagefile` resource features improved performance and support for the latest releases of Windows 10. These improvements also make managing pagefiles more predictable:
+
+- The `path` property now accepts a drive letter in addition to the full path of the pagefile on disk. For example, `C`, `C:`, or `C:\` can now be used to specify a pagefile stored at `C:\pagefile.sys`.
+- Creating a new pagefile no longer disables the system-managed pagefile by default. If you wish to create a pagefile while also disabling the system-managed pagefile, set `system_managed false`.
+
+#### windows_printer
+
+The `windows_printer` resource includes improved logging when adding or removing printers.
+
+#### windows_printer_port
+
+The `windows_printer_port` resource has been refactored with several improvements:
+
+- Better performance when adding and removing ports.
+- Supports updating existing ports with new values.
+- Clearer logging of changes made to ports.
+- Deprecated the `description` property, which does not set a description on the ports.
+
+#### windows_security_policy
+
+The `windows_security_policy` resource now limits the value of `ResetLockoutCount` to any value less than `LockoutDuration` rather than limiting it to 30 minutes.
+
+#### zypper_repository
+
+The `zypper_repository` resource now accepts an array of GPG key locations in the `gpgkey` property. Thanks for reporting this [@bkabrda](https://github.com/bkabrda).
+
+## What's New in 17.1
+
+### Compliance Phase Improvements
+
+#### cli reporter by default
+
+The compliance phase will now default to using both the `json-file` and the new `cli` reporter by default. This gives you a visual indication of the success of the Compliance Phase and is perfect for running both on the CLI and in Test Kitchen.
+
+#### inspec_waiver_file_entry resource
+
+Chef Infra Client now ships with a `inspec_waiver_file_entry` resource for managing Chef InSpec waivers. With this resource you can add and remove waiver entries to a single waiver file located at `c:\chef\inspec_waiver_file.yml` on Windows or `/etc/chef/inspec_waivers.yml` on all other systems.
+
+See the [inspec_waiver_file_entry documentation](https://docs.chef.io/resources/inspec_waiver_file_entry) for more information and usage examples.
+
+#### Chef InSpec 4.36
+
+We've updated Chef InSpec from 4.33.1 to 4.36.4:
+
+- Added the selinux resource which includes support for modules and booleans.
+- Added the pattern input option for DSL and metadata inputs.
+- Added the `members_array` property for group & groups resources.
+- Train now reads the username and port from the `.ssh/config` file and will use these values if present.
+- Switch to GNU timeout-based implementation of SSH timeouts.
+- Fixed the group resource when a member does not exist.
+
+### Unified Mode Improvements
+
+We've extended support for Unified Mode to the `edit_resource` helper and also improved the Unified Mode related deprecation warnings to provide more useful information and not warn when resources are deprecated or set to only run on older Chef Infra Client releases.
 
 ### Resource Improvements
 
-- apt_package allow_downgrades now functions as expected, but also raises on invalid versions - https://github.com/chef/chef/pull/10993
-- Use shell redirection in chef_client_cron when append_log_file is true - https://github.com/chef/chef/pull/11124
-- Improve idempotency debug logging in resources - https://github.com/chef/chef/pull/11149
-- Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
-- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
-- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
-- execute: Add login property - https://github.com/chef/chef/pull/11201
+#### service on systemd Hosts
+
+The `service` resource on systemd hosts will now properly load the state of the service. Thanks for this fix [@ramereth](https://github.com/ramereth)!
+
+#### systemd_unit
+
+We updated the `systemd_unit` resource to resolve a regression in Chef Infra Client 17.0 that would re-enable and restart unit files on each Chef Infra Client run. Thanks for this fix [@gene1wood](https://github.com/gene1wood)!
+
+#### template
+
+We updated the `template` resource to allow passing the `cookbook_name` variable to template files.
+
+#### Windows Resource
+
+We fixed a failure that could occur in multiple Windows resources due to larger 64-bit values that logged the error: `RangeError: bignum too big to convert into 'long'`.
+
+#### windows_security_policy
+
+The `windows_security_policy` resource now supports setting `AuditPolicyChange` and `LockoutDuration`.
+
+#### yum_package / dnf_package
+
+We've made multiple improvements to how we interact with the systems RPM database in the `yum_package` and `dnf_package` resources. These changes improve reliability interacting with the RPM database and includes significant performance improvements, especially when no installation or upgrade action is taken by Chef Infra Client.
+
+### Platform Detection
+
+[Rocky Linux](https://rockylinux.org/), a RHEL clone, is now detected as a member of the `rhel` platform family.
+
+### Packaging
+
+#### Improved Dependencies
+
+Chef Infra Client 17.1 is once again smaller than previous releases thanks to reduced dependencies in the packages.
+
+#### RHEL 8 Packages
+
+We improved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
+
+## What's New in 17.0
+
+Chef Infra Client 17.0 is our yearly release for 2021. These yearly releases include new functionality, an update to the underlying Ruby release, as well as potentially breaking changes. These notes outline what's new and what you should be aware of as part of your upgrade process.
+
+### Compliance Phase
+
+Chef Infra Client's new Compliance Phase allows users to automatically execute compliance audits and view the results in Chef Automate as part of any Chef Infra Client Run. This new phase of the Chef Infra Client run replaces the legacy [audit cookbook](https://supermarket.chef.io/cookbooks/audit) and works using the existing audit cookbook attributes. With this new phase, you'll always have the latest compliance capabilities out of the box without the need to manage cookbook dependencies or juggle versions during Chef Infra Client updates.
+
+The Compliance Phase also features a new compliance reporter: `cli`. This reporter mimics the InSpec command line output giving you a visual indication of your system's compliance status. Thanks for this new reporter [@aknarts](https://github.com/aknarts/).
+
+Existing audit cookbook users can migrate to the new Compliance Phase by removing the audit cookbook from their run_list and setting the `node['audit']['compliance_phase']` attribute to `true`.
+
+For more information see our on-demand webinar [Configure Chef Infra & Compliance Using Built-In Functionality](https://pages.chef.io/202102-Webinar-ConfigureChefInfraComplianceUsingBuilt-InFunctionality_01Register.html)
+
+### Ruby 3
+
+Chef Infra Client 17 packages now ship with embedded Ruby 3.0. This new release of Ruby improves performance and offers many new language improvements for those writing advanced custom resources. See the [ruby-lang.org Ruby 3.0 Announcement](https://www.ruby-lang.org/en/news/2020/12/25/ruby-3-0-0-released/) for additional details on what's new and improved in Ruby 3.0.
+
+### Knife Moved to Workstation
+
+For historical packaging reasons the Chef Infra Client packages have always shipped with the `knife` command for managing your Chef Infra nodes. With Chef Workstation there's no benefit to shipping knife in the Chef Infra Client package and there are several downsides. Shipping management tooling within the client is seen as a security risk to many and increases the side of the Chef Infra Client codebase by adding a large number of management dependencies. With Chef Infra Client 17 we've split knife into its own Ruby Gem, which will continue to ship in Chef Workstation, but will no longer come bundled with Chef Infra Client. We hope you'll enjoy the new faster and smaller Chef Infra Client while continuing to use knife in Chef Workstation uninterrupted.
+
+### Breaking Changes
+
+#### AIX Virtualization Improvements
+
+The Ohai :Virtualization plugin on AIX systems will now properly return the `lpar_no` and `wpar_no` values as Integers instead of Strings. This makes the data much easier to work within cookbooks, but may be a breaking change depending on how AIX users consumed these values.
+
+#### 32bit RHEL/CentOS 6 Support
+
+We will not produce Chef Infra Client 17 packages for 32bit RHEL/CentOS 6 systems. RHEL/CentOS 6 reached EOL in November 2020. We are extending support for 64-bit RHEL/CentOS 6 until Chef Infra Client 18 (April 2022) or when an upstream platform or library changes prevent us from building on these systems that are at the end of their lifecycle.
+
+#### Chef Client As A Service on Windows
+
+Based on customer feedback and observations in the field we've removed the ability to run the Chef Infra Client as a service on Windows nodes. We've seen the service manager for the Chef Infra Client consume excessive memory, hang preventing runs, or prevent nodes from updating to new client releases properly. We've always seen significantly better reliability by running Chef Infra Client as a scheduled task on Windows and in July of 2006 we introduced warnings to the [chef-client cookbook](https://supermarket.chef.io/cookbooks/chef-client) when running as a service. The ability to set up the client as a service was later removed from the cookbook entirely in October of 2017.
+
+For customers currently running Chef Infra Client as a service, we advise migrating to scheduled task-based execution. This allows for complex scheduling scenarios not possible with simple services, such as skipping Chef Infra Client execution on systems running on battery power or running the Chef Infra Client immediately after a system boot to ensure configuration.
+
+Chef Infra Client can be configured to run as a scheduled task using the [chef-client cookbook](https://supermarket.chef.io/cookbooks/chef-client) or ideally using the [chef_client_scheduled_task resource](https://docs.chef.io/resources/chef_client_scheduled_task/) built into Chef Infra Client 16 or later. For users already running as a service setting up the scheduled task and then stopping the existing service can be performed within a Chef Infra Client run to migrate systems.
+
+#### Gem Resource Ruby 1.9+
+
+The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached end of life almost 7 years ago, we believe there is little to no impact in this change.
+
+#### Legacy node['filesystem2'] removed on AIX/Solaris/FreeBSD
+
+The legacy `node['filesystem2']` attributes leftover from our multi-year migration of filesystem data on AIX, Solaris, and FreeBSD systems has been removed. This same data is now available at `node['filesystem']`
+
+#### node['filesystem'] Uses Updated Format on Windows
+
+In Chef Infra Client 16 we introduced `node['filesystem2']` on Windows to complete our migration to a unified structure for filesystem data regardless of platform. In Chef Infra Client 17 we are updating `node['filesystem']` on Windows with this same unified format. Both node attributes now have the same data allowing users to more easily migrate `filesystem2` to `filesystem` in their cookbooks. In Chef Infra Client 18, we will remove `node['filesystem2']` completely finishing our multi-year migration of Ohai filesystem data format.
+
+#### Removed Antergos and Pidora Detection
+
+Ohai detection of the end-of-life Antergos and Pidora distributions has been removed. Antergos ended releases and downloads of the distribution in May 2019 and Pidora stopped receiving updates in 2014.
+
+### Infra Language Improvements
+
+#### Lazy Attribute Loading
+
+A common problem when using the "wrapper cookbook" pattern is when the wrapped cookbook declares what are called "derived attributes", which are attributes that refer to other attributes. Because of the order that attribute files are parsed in, this does not work as intended when the base attribute is changed in a wrapper cookbook. By extending the use of the `lazy {}` helper to the declaration of node attributes, it makes it possible for the wrapped cookbook to cleanly allow wrapper cookbooks to override base attributes as intended.
+
+Use the lazy helper:
+
+```ruby
+default['myapp']['dir'] = '/opt/myapp'
+default['myapp']['bindir'] = lazy { "#{node['myapp']['dir']}/bin" }
+```
+
+Instead of:
+
+```ruby
+default['myapp']['dir'] = '/opt/myapp'
+default['myapp']['bindir'] = "#{node['myapp']['dir']}/bin"
+```
+
+With the lazy helper the wrapper cookbook can then override the base attribute and the derived attribute will change:
+
+```ruby
+default['myapp']['dir'] = "/opt/my_better_app" # this also changes the bindir attribute correctly
+```
+
+The use of this helper is not limited to declarations in attribute files and can be used whenever attributes are being assigned. For a complete description of the capabilities of lazy attribute evaluation see https://github.com/chef/chef/pull/10861
+
+#### Custom Resource Property Defaults
+
+Chef Infra Client's handling of default property values in Custom Resources has been improved to avoid potential Ruby errors. These values are now duplicated internally allowing them to be modified by the user in their recipes without potentially receiving fatal frozen value modification errors.
+
+#### effortless? helper
+
+A new `effortless?` helper identifies if a system is running Chef Infra Client using the Effortless Pattern.
+
+#### reboot_pending? Improvements
+
+The `reboot_pending?` helper now works on all Debian based platforms instead of just Ubuntu.
+
+### Resource Improvements
+
+#### Logging Improvements
+
+A large number of resources have seen improvements to the logging available in the `debug` log level providing better information for troubleshooting Chef Infra Client execution. Thanks for this improvement [@jaymzh](https://github.com/jaymzh)!
+
+#### apt_package
+
+The `apt_package` resource now properly handles downgrading package versions. Please note that full versions must be provided in the `version` property and invalid version strings will now raise an error. Thanks for this improvement [@jaymzh](https://github.com/jaymzh)!
+
+#### chef_client_launchd / macosx_service
+
+The `chef_client_launchd` and `macosx_service` resources have been updated to use the full path to the `launchctl` command. This avoids failures running these resources with incorrect PATH environment variables. Thanks for this improvement [@krackajak](https://github.com/krackajak)!
+
+#### execute
+
+The `execute` resource includes a new `login` property allowing you to run commands with a login shell. This helps ensure you have all potential environment variables defined in the user's shell.
+
+#### hostname
+
+The `hostname` resource now includes a new `fqdn` property to allow you to set a custom fqdn in the hostname file in addition to the system's hostname. Thanks for suggesting this improvement [@evandam](https://github.com/evandam)!
+
+#### systemd_unit
+
+The `systemd_unit` resource has been improved to only shell out once to determine the state of the systemd unit. This optimization should result in significant performance improvements when using large numbers of `systemd_unit` resources. Thanks [@joshuamiller01](https://github.com/joshuamiller01)!
+
+#### windows_certificate
+
+The `windows_certificate` resource has undergone a large overhaul, with improved support for importing and exporting certificate objects, the ability to create certificate objects from a URL, and a new `output_path` property for use with exporting.
+
+#### windows_task
+
+The `windows_task` resource now has a new `backup` property that allows you to control the number of XML backups that will be kept of your Windows Scheduled Task definition. This default for this setting is `5` and can be disabled by setting the property to `false`. Thanks [@ kimbernator](https://github.com/kimbernator)!
 
 ### Ohai
 
-- New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
-- Detect guests running in Podman - https://github.com/chef/ohai/pull/1617
-- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
-- Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
-- Removed detection of discontinued antergos and Pidora distros - https://github.com/chef/ohai/pull/1633 / https://github.com/chef/ohai/pull/1634
+#### Podman Detection
+
+Ohai now includes detection for hosts running the Podman containerization engine or Chef Infra Client running in containers under Podman.
+
+For hosts the following attributes will be set:
+
+```json
+{
+  "systems": {
+    "podman": "host",
+  },
+  "system": "podman",
+  "role": "host"
+}
+```
+
+For Chef Infra Client within containers the following attributes will be set:
+
+```json
+{
+  "systems": {
+    "podman": "guest",
+  },
+  "system": "podman",
+  "role": "guest"
+}
+```
+
+Thanks for this addition [@ramereth](https://github.com/ramereth)!
+
+#### Habitat Support
+
+Ohai includes a new `:Habitat` plugin that gathers information about the Habitat installation, including installed Habitat version, installed packages, and running services.
+
+Sample Habitat attribute output:
+
+```json
+{
+  "version": "1.6.288/20210402191717",
+  "packages": ["core/busybox-static/1.31.0/20200306011713",
+    "core/bzip2/1.0.8/20200305225842",
+    "core/cacerts/2020.01.01/20200306005234",
+    "core/gcc-libs/9.1.0/20200305225533",
+    "core/glibc/2.29/20200305172459",
+    "core/hab-launcher/15358/20210402194815",
+    "core/hab-sup/1.6.288/20210402194826",
+    "core/libedit/3.1.20150325/20200319193649",
+    "core/libsodium/1.0.18/20200319192446",
+    "core/linux-headers/4.19.62/20200305172241",
+    "core/ncurses/6.1/20200305230210",
+    "core/nginx/1.18.0/20200506101012",
+    "core/openssl-fips/2.0.16/20200306005307",
+    "core/openssl/1.0.2t/20200306005450",
+    "core/pcre/8.42/20200305232429",
+    "core/zeromq/4.3.1/20200319192759",
+    "core/zlib/1.2.11/20200305174519"
+  ],
+  "services": [{
+    "identity": "core/nginx/1.18.0/20200506101012",
+    "topology": "standalone",
+    "state_desired": "up",
+    "state_actual": "up"
+  }]
+}
+ ```
+
+#### Alibaba Detection
+
+Ohai now includes detection of nodes running on the Alibaba cloud and supports gathering Alibaba instance metadata.
+
+Sample `node['alibaba']` values:
+
+```json
+{
+  "meta_data": {
+    "dns_conf_": "nameservers",
+    "eipv4": "47.89.242.123",
+    "hibernation_": "configured",
+    "hostname": "1234",
+    "image_id": "aliyun_2_1903_x64_20G_alibase_20210120.vhd",
+    "instance_id": "i-12345",
+    "instance_": {
+      "instance_type": "ecs.t6-c2m1.large",
+      "last_host_landing_time": "2021-02-07 19:10:04",
+      "max_netbw_egress": 81920,
+      "max_netbw_ingress": 81920,
+      "virtualization_solution": "ECS Virt",
+      "virtualization_solution_version": 2.0
+    },
+    "mac": "00:16:3e:00:d9:01",
+    "network_type": "vpc",
+    "network_": "interfaces/",
+    "ntp_conf_": "ntp-servers",
+    "owner_account_id": 1234,
+    "private_ipv4": "172.25.58.242",
+    "region_id": "us-west-1",
+    "serial_number": "ac344378-4d5d-4b9e-851b-1234",
+    "source_address": "http://us1.mirrors.cloud.aliyuncs.com",
+    "sub_private_ipv4_list": "172.25.58.243",
+    "vpc_cidr_block": "172.16.0.0/12",
+    "vpc_id": "vpc-1234",
+    "vswitch_cidr_block": "172.25.48.0/20",
+    "vswitch_id": "vsw-rj9eiw6yqh6zll23h0tlt",
+    "zone_id": "us-west-1b"
+  },
+  "user_data": null,
+  "dynamic": "instance-identity",
+  "global_config": null,
+  "maintenance": "active-system-events"
+}
+```
+
+Sample `node['cloud'] values:
+
+```json
+{
+  "public_ipv4_addrs": [
+    "47.89.242.123"
+  ],
+  "local_ipv4_addrs": [
+    "172.25.58.242"
+  ],
+  "provider": "alibaba",
+  "local_hostname": "123",
+  "public_ipv4": "47.89.242.123",
+  "local_ipv4": "172.25.58.242"
+}
+```
+
+The Chef Infra Language now includes an `alibaba?` helper method to check for instances running on Alibaba as well.
+
+### Improved Linux CPU Data
+
+Data collection in the `:Cpu` plugin on Linux has been greatly expanded to give enhanced information on architecture, cache, virtualization status, and overall model and configuration data. Thanks for this addition [@ramereth](https://github.com/ramereth)!
+
+### Packaging Improvements
+
+### PowerPC RHEL FIPS Support
+
+We now produce FIPS capable packages for RHEL on PowerPC
+
+### Sample client.rb on *nix Platforms
+
+On AIX, Solaris, macOS, and Linux platforms the Chef Infra Client packages will now create the various configuration directories under `/etc/chef` as well as a sample `/etc/chef/client.rb` file to make it easier to get started running the client.
+
+### New Deprecations
+
+### Unified Mode in Custom Resources
+
+In Chef Infra Client 16 we introduced Unified Mode allowing you to collapse the sometimes confusing compile and converge phases into a single unified phase. Unified mode makes it easier to write and troubleshoot failures in custom resources and for Chef Infra Client 18 we plan to make this the default execution phase for custom resources. We've backported the unified mode feature to the Chef Infra Client 14 and 15 systems and for Chef Infra Client 17 we will now begin warning if resources don't explicitly set this new mode. Enabling unified mode now lets you validate that resources will continue to function as expected in Chef Infra Client 18. To enable unified  mode in your resource add `unified_mode true` to the file.
 
 ## What's New in 16.13
 
@@ -1186,7 +1612,7 @@ depends 'windows', '>> 1.0'
 
 #### Logging Improvements May Cause Behavior Changes
 
-We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the location in the `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard over the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the location in the `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 #### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 

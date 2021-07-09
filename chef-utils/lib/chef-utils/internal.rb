@@ -70,7 +70,7 @@ module ChefUtils
     #
     def __env_path
       if __transport_connection
-        __transport_connection.run_command("echo $PATH").stdout || ""
+        __transport_connection.run_command("echo $PATH").stdout.chomp || ""
       else
         ENV["PATH"] || ""
       end

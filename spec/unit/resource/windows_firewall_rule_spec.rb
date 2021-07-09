@@ -85,7 +85,12 @@ describe Chef::Resource::WindowsFirewallRule do
 
   it "the remote_address property accepts strings" do
     resource.remote_address("8.8.4.4")
-    expect(resource.remote_address).to eql("8.8.4.4")
+    expect(resource.remote_address).to eql(["8.8.4.4"])
+  end
+
+  it "the remote_address property accepts comma separated lists" do
+    resource.remote_address(["10.17.3.101", "172.7.7.53"])
+    expect(resource.remote_address).to eql(%w{10.17.3.101 172.7.7.53})
   end
 
   it "the remote_port property accepts strings" do
@@ -223,8 +228,8 @@ describe Chef::Resource::WindowsFirewallRule do
   end
 
   it "aliases :remoteip to :remote_address" do
-    resource.remoteip("8.8.8.8")
-    expect(resource.remote_address).to eql("8.8.8.8")
+    resource.remoteip(["8.8.8.8"])
+    expect(resource.remote_address).to eql(["8.8.8.8"])
   end
 
   it "aliases :localport to :local_port" do
@@ -288,7 +293,7 @@ describe Chef::Resource::WindowsFirewallRule do
       end
 
       it "sets RemoteAddress" do
-        resource.remote_address("8.8.8.8")
+        resource.remote_address(["8.8.8.8"])
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -RemoteAddress '8.8.8.8' -Direction 'inbound' -Protocol 'TCP' -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
@@ -365,7 +370,7 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.group("new group")
         resource.local_address("192.168.40.40")
         resource.local_port("80")
-        resource.remote_address("8.8.4.4")
+        resource.remote_address(["8.8.4.4"])
         resource.remote_port("8081")
         resource.direction(:outbound)
         resource.protocol("UDP")
@@ -416,7 +421,7 @@ describe Chef::Resource::WindowsFirewallRule do
       end
 
       it "sets RemoteAddress" do
-        resource.remote_address("8.8.8.8")
+        resource.remote_address(["8.8.8.8"])
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -RemoteAddress '8.8.8.8' -Direction 'inbound' -Protocol 'TCP' -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
@@ -487,7 +492,7 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.displayname("some cool display name")
         resource.local_address("192.168.40.40")
         resource.local_port("80")
-        resource.remote_address("8.8.4.4")
+        resource.remote_address(["8.8.4.4"])
         resource.remote_port("8081")
         resource.direction(:outbound)
         resource.protocol("UDP")

@@ -1,18 +1,18 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: def330761a328caecf463b684c0648dfca582f72
+  revision: d69b5e3719cf0de63bbd1a6e03f804b7bb418fc0
   branch: master
   specs:
-    chefstyle (1.7.5)
-      rubocop (= 1.12.1)
+    chefstyle (2.0.6)
+      rubocop (= 1.18.3)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e48813786a6dbb80d83cb33de3876d48b6518f28
+  revision: faf25314310a9ce27a7ba3e73ffb8301633dec83
   branch: master
   specs:
-    ohai (17.0.38)
-      chef-config (>= 12.8, < 18)
+    ohai (17.2.3)
+      chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -35,20 +35,17 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.223)
+    chef (17.3.25)
       addressable
-      bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.223)
-      chef-utils (= 17.0.223)
+      chef-config (= 17.3.25)
+      chef-utils (= 17.3.25)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
-      ed25519 (~> 1.2)
       erubis (~> 2.7)
       ffi (>= 1.5.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
       license-acceptance (>= 1.0.5, < 3)
@@ -58,33 +55,24 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 4.0)
-      net-ssh (>= 5.1, < 7)
-      net-ssh-multi (~> 1.2, >= 1.2.1)
       ohai (~> 17.0)
-      pastel
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
-      tty-prompt (~> 0.21)
-      tty-screen (~> 0.6)
-      tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.0.223-universal-mingw32)
+    chef (17.3.25-universal-mingw32)
       addressable
-      bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.223)
-      chef-utils (= 17.0.223)
+      chef-config (= 17.3.25)
+      chef-utils (= 17.3.25)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
-      ed25519 (~> 1.2)
       erubis (~> 2.7)
       ffi (>= 1.5.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
       iso8601 (>= 0.12.1, < 0.14)
@@ -95,21 +83,15 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 4.0)
-      net-ssh (>= 5.1, < 7)
-      net-ssh-multi (~> 1.2, >= 1.2.1)
       ohai (~> 17.0)
-      pastel
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
-      tty-prompt (~> 0.21)
-      tty-screen (~> 0.6)
-      tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
       win32-api (~> 1.5.3)
-      win32-certstore (~> 0.5.0)
+      win32-certstore (~> 0.6.2)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
       win32-mmap (~> 0.4.1)
@@ -122,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.223)
-      chef (= 17.0.223)
+    chef-bin (17.3.25)
+      chef (= 17.3.25)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.223)
+    chef-config (17.3.25)
       addressable
-      chef-utils (= 17.0.223)
+      chef-utils (= 17.3.25)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -139,29 +121,27 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.223)
+    chef-utils (17.3.25)
       concurrent-ruby
 
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
-    appbundler (0.13.2)
+    appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
-    bcrypt_pbkdf (1.1.0)
-    bcrypt_pbkdf (1.1.0-x64-mingw32)
-    bcrypt_pbkdf (1.1.0-x86-mingw32)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
+    byebug (11.1.3)
     chef-telemetry (1.0.29)
       chef-config
       concurrent-ruby (~> 1.0)
     chef-vault (4.1.0)
-    chef-zero (15.0.4)
+    chef-zero (15.0.7)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -173,26 +153,33 @@ GEM
       chef-zero (>= 14.0)
       net-ssh
     coderay (1.1.3)
-    concurrent-ruby (1.1.8)
+    concurrent-ruby (1.1.9)
     crack (0.4.5)
       rexml
     debug_inspector (1.1.0)
     diff-lcs (1.3)
-    ed25519 (1.2.4)
     erubi (1.10.0)
     erubis (2.7.0)
-    faraday (1.3.1)
+    faraday (1.4.3)
+      faraday-em_http (~> 1.0)
+      faraday-em_synchrony (~> 1.0)
+      faraday-excon (~> 1.1)
       faraday-net_http (~> 1.0)
+      faraday-net_http_persistent (~> 1.1)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords (>= 0.0.4)
+    faraday-em_http (1.0.0)
+    faraday-em_synchrony (1.0.0)
+    faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
+    faraday-net_http_persistent (1.1.0)
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
-    ffi (1.15.0)
-    ffi (1.15.0-x64-mingw32)
-    ffi (1.15.0-x86-mingw32)
+    ffi (1.15.3)
+    ffi (1.15.3-x64-mingw32)
+    ffi (1.15.3-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -206,13 +193,12 @@ GEM
       builder (>= 2.1.2)
     hashdiff (1.0.1)
     hashie (4.1.0)
-    highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.33.1)
+    inspec-core (4.38.3)
       addressable (~> 2.4)
-      chef-telemetry (~> 1.0)
-      faraday (>= 0.9.0, < 1.4)
+      chef-telemetry (~> 1.0, >= 1.0.8)
+      faraday (>= 0.9.0, < 1.5)
       faraday_middleware (~> 1.0)
       hashie (>= 3.4, < 5.0)
       license-acceptance (>= 0.2.13, < 3.0)
@@ -232,8 +218,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.33.1)
-      inspec-core (= 4.33.1)
+    inspec-core-bin (4.38.3)
+      inspec-core (= 4.38.3)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -271,30 +257,28 @@ GEM
     net-sftp (3.0.0)
       net-ssh (>= 5.0.0, < 7.0.0)
     net-ssh (6.1.0)
-    net-ssh-gateway (2.0.0)
-      net-ssh (>= 4.0.0)
-    net-ssh-multi (1.2.1)
-      net-ssh (>= 2.6.5)
-      net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.20.1)
-    parser (3.0.1.0)
+    parser (3.0.2.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.14.1)
+    pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    pry-byebug (3.9.0)
+      byebug (~> 11.0)
+      pry (~> 0.13.0)
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.6)
     rack (2.2.3)
     rainbow (3.0.0)
-    rake (13.0.3)
+    rake (13.0.5)
     rb-readline (0.5.5)
     regexp_parser (2.1.1)
     rexml (3.2.5)
@@ -314,23 +298,21 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.12.1)
+    rubocop (1.18.3)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.2.0, < 2.0)
+      rubocop-ast (>= 1.7.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.4.1)
-      parser (>= 2.7.1.5)
-    ruby-prof (1.4.3)
-    ruby-prof (1.4.3-x64-mingw32)
+    rubocop-ast (1.7.0)
+      parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)
     rubyntlm (0.6.3)
-    rubyzip (2.3.0)
+    rubyzip (2.3.2)
     semverse (3.0.0)
     sslshake (1.3.1)
     strings (0.2.1)
@@ -342,7 +324,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
-    train-core (3.6.2)
+    train-core (3.7.4)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -374,13 +356,13 @@ GEM
     unicode-display_width (2.0.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.2)
+    webmock (3.13.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.5.3)
+    win32-certstore (0.6.2)
       ffi
       mixlib-shellout
     win32-event (0.6.3)
@@ -426,13 +408,13 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
+  x86_64-linux
 
 DEPENDENCIES
   appbundler
   chef!
   chef-bin!
   chef-config!
-  chef-telemetry (>= 1.0.8)
   chef-utils!
   chef-vault
   cheffish (>= 17)
@@ -440,14 +422,14 @@ DEPENDENCIES
   fauxhai-ng
   inspec-core-bin (~> 4.24)
   ohai!
-  pry
+  pry (= 0.13.0)
+  pry-byebug
   pry-stack_explorer
   rake
   rb-readline
   rspec
-  ruby-prof
   ruby-shadow!
   webmock
 
 BUNDLED WITH
-   2.2.4
+   2.2.22

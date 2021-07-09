@@ -576,7 +576,7 @@ describe "LWRP" do
       @tmpdir = File.join(@tmpparent, "lwrp")
       Dir.mkdir(@tmpdir)
       resource_path = File.join(@tmpdir, "once.rb")
-      IO.write(resource_path, "default_action :create")
+      IO.write(resource_path, "unified_mode true\ndefault_action :create")
       @test_lwrp_class = Chef::Resource::LWRPBase.build_from_file("lwrp", resource_path, nil)
     end
 

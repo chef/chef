@@ -24,19 +24,35 @@ class Chef
       unified_mode true
 
       provides(:zypper_repository) { true }
-      provides(:zypper_repo) { true }
+      provides(:zypper_repo) { true } # legacy cookbook compatibility
 
       description "Use the **zypper_repository** resource to create Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the **zypper_repository** resource in the existing **zypper** cookbook."
       introduced "13.3"
       examples <<~DOC
         **Add the Apache repo on openSUSE Leap 15**:
 
-        ``` ruby
+        ```ruby
         zypper_repository 'apache' do
           baseurl 'http://download.opensuse.org/repositories/Apache'
-          path '/openSUSE_Leap_15.0'
-            type 'rpm-md'
+          path '/openSUSE_Leap_15.2'
+          type 'rpm-md'
           priority '100'
+        end
+        ```
+
+        **Remove the repo named 'apache'**:
+
+        ```ruby
+        zypper_repository 'apache' do
+          action :delete
+        end
+        ```
+
+        **Refresh the repo named 'apache'**:
+
+        ```ruby
+        zypper_repository 'apache' do
+          action :refresh
         end
         ```
       DOC
@@ -66,8 +82,10 @@ class Chef
         description: "Determines whether or not to perform a GPG signature check on the repository.",
         default: true
 
-      property :gpgkey, String,
-        description: "The location of the repository key to be imported."
+      property :gpgkey, [String, Array],
+        description: "The location of the repository key(s) to be imported.",
+        coerce: proc { |v| Array(v) },
+        default: []
 
       property :baseurl, String,
         description: "The base URL for the Zypper repository, such as `http://download.opensuse.org`."
@@ -95,10 +113,12 @@ class Chef
         default: true
 
       property :source, String,
-        description: "The name of the template for the repository file. Only necessary if you're not using the built in template."
+        description: "The name of the template for the repository file. Only necessary if you're using a custom template for the repository file."
 
       property :cookbook, String,
-        description: "The cookbook to source the repository template file from. Only necessary if you're not using the built in template.",
+        description: "The cookbook to source the repository template file from. Only necessary if you're using a custom template for the repository file.",
+        default: lazy { cookbook_name },
+        default_description: "The cookbook containing the resource",
         desired_state: false
 
       property :gpgautoimportkeys, [TrueClass, FalseClass],

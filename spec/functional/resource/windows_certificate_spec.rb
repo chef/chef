@@ -22,26 +22,44 @@ require "chef/resource/windows_certificate"
 describe Chef::Resource::WindowsCertificate, :windows_only do
   include Chef::Mixin::PowershellExec
 
-  def create_store
+  def create_store(store_location: "LocalMachine", store_name: store)
     powershell_exec <<~EOC
-      New-Item -Path Cert:\\LocalMachine\\#{store}
+      New-Item -Path Cert:\\#{store_location}\\#{store_name}
     EOC
   end
 
-  def delete_store
+  def delete_store(store_location: "LocalMachine", store_name: store)
     powershell_exec <<~EOC
-      Remove-Item -Path Cert:\\LocalMachine\\#{store} -Recurse
+      Remove-Item -Path Cert:\\#{store_location}\\#{store_name} -Recurse
     EOC
   end
 
-  def certificate_count
+  def certificate_count(store_location: "LocalMachine", store_name: store)
     powershell_exec(<<~EOC).result.to_i
-      (Get-ChildItem -Force -Path Cert:\\LocalMachine\\#{store} | measure).Count
+      (Get-ChildItem -Force -Path Cert:\\#{store_location}\\#{store_name} | measure).Count
+    EOC
+  end
+
+  def list_certificates(store_location: "LocalMachine", store_name: store)
+    powershell_exec(<<~EOC)
+      Get-ChildItem -Force -Path Cert:\\#{store_location}\\#{store_name} -Recurse
+    EOC
+  end
+
+  def refresh_certstore(store_location: "LocalMachine")
+    powershell_exec(<<~EOC)
+      Get-ChildItem -Force -Path Cert:\\#{store_location} -Recurse
     EOC
   end
 
   let(:password) { "P@ssw0rd!" }
   let(:store) { "Chef-Functional-Test" }
+  let(:store_name) { "MY" }
+  let(:store_location) { "LocalMachine" }
+  let(:download_cert_url) { "https://testingchef.blob.core.windows.net/files/test.cer" }
+  let(:cert_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.cer") }
+  let(:pfx_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.pfx") }
+  let(:key_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.key") }
   let(:cer_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.cer") }
   let(:base64_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "base64_test.cer") }
   let(:pem_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.pem") }
@@ -68,12 +86,16 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       .and_return(true)
 
     create_store
+
   end
 
   after { delete_store }
 
   describe "action: create" do
     it "starts with no certificates" do
+      delete_store
+      create_store
+      foo = list_certificates
       expect(certificate_count).to eq(0)
     end
 
@@ -100,6 +122,14 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       resource.run_action(:create)
 
       expect(certificate_count).to eq(2)
+      expect(resource).to be_updated_by_last_action
+    end
+
+    it "can add a certificate from a valid url" do
+      resource.source = download_cert_url
+      resource.run_action(:create)
+
+      expect(certificate_count).to eq(1)
       expect(resource).to be_updated_by_last_action
     end
 
@@ -157,9 +187,13 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
 
       expect { resource.run_action(:create) }.to raise_error(OpenSSL::PKCS12::PKCS12Error)
     end
+    after { delete_store }
   end
 
   describe "action: verify" do
+    before do
+      create_store
+    end
     it "fails with no certificates in the store" do
       expect(Chef::Log).to receive(:info).with("Certificate not found")
 
@@ -230,13 +264,13 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
   end
 
   describe "action: fetch" do
-    it "does nothing with no certificates in the store" do
-      expect(Chef::Log).not_to receive(:info)
-
-      resource.source = tests_thumbprint
-      resource.run_action(:fetch)
-
-      expect(resource).not_to be_updated_by_last_action
+    context "with no certificate in the store" do
+      it "throws an error with no certificates in the store" do
+        expect(Chef::Log).not_to receive(:info)
+        resource.source = others_thumbprint
+        resource.output_path = cert_output_path
+        expect { resource.run_action :fetch }.to raise_error(ArgumentError)
+      end
     end
 
     context "with a certificate in the store" do
@@ -247,18 +281,10 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
 
       it "succeeds with a valid thumbprint" do
         resource.source = tests_thumbprint
-
-        Dir.mktmpdir do |dir|
-          path = File.join(dir, "test.pem")
-          expect(Chef::Log).to receive(:info).with("Certificate export in #{path}")
-
-          resource.cert_path = path
-          resource.run_action(:fetch)
-
-          expect(File.exist?(path)).to be_truthy
-        end
-
-        expect(resource).not_to be_updated_by_last_action
+        local_output_path = ::File.join(Chef::Config[:file_cache_path], "test.pem")
+        resource.output_path = local_output_path
+        resource.run_action(:fetch)
+        expect(File.exist?(local_output_path)).to be_truthy
       end
 
       it "fails with an invalid thumbprint" do
@@ -269,23 +295,54 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         Dir.mktmpdir do |dir|
           path = File.join(dir, "test.pem")
 
-          resource.cert_path = path
-          resource.run_action(:fetch)
-
-          expect(File.exist?(path)).to be_falsy
+          resource.output_path = path
+          expect { resource.run_action :fetch }.to raise_error(ArgumentError)
         end
 
-        expect(resource).not_to be_updated_by_last_action
       end
+    end
+
+    context "with a pfx/pkcs12 object in the store" do
+      before do
+        create_store
+        refresh_certstore
+        resource.source = pfx_path
+        resource.pfx_password = password
+        resource.exportable = true
+        resource.run_action(:create)
+      end
+
+      it "exports a PFX file with a valid thumbprint" do
+        resource.source = tests_thumbprint
+        resource.pfx_password = password
+        resource.output_path = pfx_output_path
+        resource.run_action(:fetch)
+        expect(File.exist?(pfx_output_path)).to be_truthy
+      end
+
+      it "exports a key file with a valid thumbprint" do
+        resource.source = tests_thumbprint
+        resource.pfx_password = password
+        resource.output_path = key_output_path
+        resource.run_action(:fetch)
+        expect(File.exist?(key_output_path)).to be_truthy
+      end
+
+      it "throws an exception when output_path is not specified" do
+        resource.source = tests_thumbprint
+        resource.pfx_password = password
+        expect { resource.run_action :fetch }.to raise_error(::Chef::Exceptions::ResourceNotFound)
+      end
+
+      after { delete_store }
+
     end
   end
 
   describe "action: delete" do
-    it "does nothing when attempting to delete a certificate that doesn't exist" do
-      expect(Chef::Log).to receive(:debug).with("Certificate not found")
-
+    it "throws an argument error when attempting to delete a certificate that doesn't exist" do
       resource.source = tests_thumbprint
-      resource.run_action(:delete)
+      expect { resource.run_action :delete }.to raise_error(ArgumentError)
     end
 
     it "deletes an existing certificate while leaving other certificates alone" do
@@ -303,7 +360,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       expect(certificate_count).to eq(1)
       expect(resource).to be_updated_by_last_action
 
-      resource.run_action(:delete)
+      expect { resource.run_action :delete }.to raise_error(ArgumentError)
       expect(certificate_count).to eq(1)
       expect(resource).not_to be_updated_by_last_action
 

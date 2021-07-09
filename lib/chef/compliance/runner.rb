@@ -57,15 +57,18 @@ class Chef
       def run_completed(_node, _run_status)
         return unless enabled?
 
-        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
+        logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
 
       def run_failed(_exception, _run_status)
-        return unless enabled?
+        # If the run has failed because our own validation of compliance
+        # phase configuration has failed, we don't want to submit a report
+        # because we're still not configured correctly.
+        return unless enabled? && @validation_passed
 
-        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
+        logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
@@ -91,7 +94,9 @@ class Chef
         end
       end
 
-      def report(report = generate_report)
+      def report(report = nil)
+        logger.info "Starting Chef Infra Compliance Phase"
+        report ||= generate_report
         # This is invoked at report-time instead of with the normal validations at node loaded,
         # because we want to ensure that it is visible in the output - and not lost in back-scroll.
         warn_for_deprecated_config_values!
@@ -105,6 +110,7 @@ class Chef
           logger.info "Reporting to #{reporter_type}"
           @reporters[reporter_type].send_report(report)
         end
+        logger.info "Chef Infra Compliance Phase Complete"
       end
 
       def inspec_opts
@@ -219,7 +225,7 @@ class Chef
       end
 
       def reporter(reporter_type)
-        case reporter_type.downcase
+        case reporter_type
         when "chef-automate"
           require_relative "reporter/automate"
           opts = {
@@ -245,8 +251,7 @@ class Chef
           Chef::Compliance::Reporter::ChefServerAutomate.new(opts)
         when "json-file"
           require_relative "reporter/json_file"
-          path = node["audit"]["json_file"]["location"]
-          logger.info "Writing compliance report to #{path}"
+          path = node.dig("audit", "json_file", "location")
           Chef::Compliance::Reporter::JsonFile.new(file: path)
         when "audit-enforcer"
           require_relative "reporter/compliance_enforcer"
@@ -279,10 +284,11 @@ class Chef
         return unless enabled?
 
         @reporters = {}
-        Array(node["audit"]["reporter"]).each do |reporter_type|
-          type = reporter_type.downcase
+        # Note that the docs don't say you can use an array, but our implementation
+        # supports it.
+        Array(node["audit"]["reporter"]).each do |type|
           unless SUPPORTED_REPORTERS.include? type
-            raise "CMPL003: '#{reporter_type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(",")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase/chef_compliance_runners/#reporters"
+            raise "CMPL003: '#{type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(", ")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#reporters"
           end
 
           @reporters[type] = reporter(type)
@@ -290,10 +296,11 @@ class Chef
         end
 
         unless (fetcher = node["audit"]["fetcher"]).nil?
-          unless SUPPORTED_FETCHERS.include? fetcher.downcase
-            raise "CMPL002: Unrecognized Compliance Phase fetcher (node['audit']['fetcher'] is #{fetcher}. Supported fetchers are: or #{SUPPORTED_FETCHERS.join(",")}, or nil. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase/chef_compliance_runners/#fetchers"
+          unless SUPPORTED_FETCHERS.include? fetcher
+            raise "CMPL002: Unrecognized Compliance Phase fetcher (node['audit']['fetcher'] = #{fetcher}). Supported fetchers are: #{SUPPORTED_FETCHERS.join(", ")}, or nil. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#fetch-profiles"
           end
         end
+        @validation_passed = true
       end
     end
   end

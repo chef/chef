@@ -21,8 +21,9 @@ builder-to-testers-map:
     - el-6-x86_64
   el-7-aarch64:
     - el-7-aarch64
-    - el-8-aarch64
     - amazon-2-aarch64
+  el-8-aarch64:
+    - el-8-aarch64
   el-7-ppc64:
     - el-7-ppc64
   el-7-ppc64le:
@@ -32,18 +33,20 @@ builder-to-testers-map:
     - el-8-s390x
   el-7-x86_64:
     - el-7-x86_64
-    - el-8-x86_64
     - amazon-2-x86_64
+  el-8-x86_64:
+    - el-8-x86_64
   freebsd-11-amd64:
     - freebsd-11-amd64
     - freebsd-12-amd64
-    - freebsd-13-amd64
+#    - freebsd-13-amd64
   mac_os_x-10.14-x86_64:
     - mac_os_x-10.14-x86_64
     - mac_os_x-10.15-x86_64
     - mac_os_x-11-x86_64
   mac_os_x-11-arm64:
     - mac_os_x-11-arm64
+    - mac_os_x-12-arm64
   sles-12-s390x:
     - sles-12-s390x
     - sles-15-s390x

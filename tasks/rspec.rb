@@ -29,7 +29,8 @@ begin
       Dir.chdir(gem) do
         puts "--- Running #{gem} specs"
         Bundler.with_unbundled_env do
-          sh("bundle install --jobs=3 --retry=3")
+          puts "Executing tests in #{Dir.pwd}:"
+          sh("bundle install --jobs=3 --retry=3 --path=../vendor/bundle")
           sh("bundle exec rake spec")
         end
       end
@@ -44,9 +45,7 @@ begin
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.verbose = false
     t.rspec_opts = %w{--profile}
-    t.pattern = FileList["spec/**/*_spec.rb"].reject do |path|
-      path =~ /knife.*/
-    end
+    t.pattern = FileList["spec/**/*_spec.rb"]
   end
 
   namespace :spec do
@@ -55,9 +54,6 @@ begin
       t.verbose = false
       t.rspec_opts = %w{--profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
-      t.pattern = FileList["spec/**/*_spec.rb"].reject do |path|
-        path =~ /knife.*/
-      end
     end
 
     desc "Print Specdoc for all specs"
@@ -78,11 +74,10 @@ begin
     %i{unit functional integration stress}.each do |sub|
       desc "Run the chef specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
+        puts "--- Running chef #{sub} specs"
         t.verbose = false
         t.rspec_opts = %w{--profile}
-        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"].reject do |path|
-          path =~ /knife.*/
-        end
+        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
   end

@@ -13,6 +13,8 @@ The Lifetime Community Chef Award is a recognition of years of investment by a m
   - [Mandi Walls](https://github.com/lnxchk)
 - [2019](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/)
   - [Nathen Harvey](https://github.com/NathenHarvey)
+- [2018](https://blog.chef.io/2018-awesome-community-chefs/)
+  - [Joshua Timberman](https://github.com/jtimberman)
 
 ## Awesome Community Chefs
 

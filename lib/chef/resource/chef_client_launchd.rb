@@ -65,7 +65,7 @@ class Chef
         description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time."
 
       property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
+        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement>",
         default: false
 
       property :config_directory, String,
@@ -101,7 +101,7 @@ class Chef
         description: "Run the #{ChefUtils::Dist::Infra::CLIENT} process with low priority disk IO",
         default: true
 
-      action :enable do
+      action :enable, description: "Enable running #{ChefUtils::Dist::Infra::PRODUCT} on a schedule using launchd." do
         unless ::Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
             owner new_resource.user
@@ -148,7 +148,7 @@ class Chef
         end
       end
 
-      action :disable do
+      action :disable, description: "Disable running #{ChefUtils::Dist::Infra::PRODUCT} on a schedule using launchd" do
         service ChefUtils::Dist::Infra::PRODUCT do
           service_name "com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}"
           action :disable

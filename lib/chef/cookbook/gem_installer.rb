@@ -70,7 +70,11 @@ class Chef
                 unless Chef::Config[:skip_gem_metadata_installation]
                   # Add additional options to bundle install
                   cmd = [ "bundle", "install", Chef::Config[:gem_installer_bundler_options] ]
-                  so = shell_out!(cmd, cwd: dir, env: { "PATH" => path_with_prepended_ruby_bin })
+                  env = {
+                    "PATH" => path_with_prepended_ruby_bin,
+                    "BUNDLE_SILENCE_ROOT_WARNING" => "1",
+                  }
+                  so = shell_out!(cmd, cwd: dir, env: env)
                   Chef::Log.info(so.stdout)
                 end
               end

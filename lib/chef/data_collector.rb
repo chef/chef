@@ -104,7 +104,6 @@ class Chef
       #
       def action_collection_registration(action_collection)
         @action_collection = action_collection
-        action_collection.register(self)
       end
 
       # - Creates and writes our NodeUUID back to the node object

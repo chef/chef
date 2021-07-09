@@ -29,7 +29,6 @@ class Chef
         require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
         require_relative "client_create"
         require_relative "user_create"
-        require "ohai" unless defined?(Ohai)
         Chef::Knife::ClientCreate.load_deps
         Chef::Knife::UserCreate.load_deps
       end
@@ -131,6 +130,7 @@ class Chef
 
       # @return [String] our best guess at what the servername should be using Ohai data and falling back to localhost
       def guess_servername
+        require "ohai" unless defined?(Ohai::System)
         o = Ohai::System.new
         o.all_plugins(%w{ os hostname fqdn })
         o[:fqdn] || o[:machinename] || o[:hostname] || "localhost"

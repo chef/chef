@@ -70,8 +70,7 @@ class Chef
         script_publish_location status["script_publish_location"]
       end
 
-      action :register do
-        description "Registers and updates the powershell package source."
+      action :register, description: "Registers and updates the PowerShell package source." do
         # TODO: Ensure package provider is installed?
         if psrepository_cmdlet_appropriate?
           if package_source_exists?
@@ -104,8 +103,7 @@ class Chef
         end
       end
 
-      action :unregister do
-        description "Unregisters the powershell package source."
+      action :unregister, description: "Unregisters the PowerShell package source." do
         if package_source_exists?
           unregister_cmd = "Get-PackageSource -Name '#{new_resource.source_name}' | Unregister-PackageSource"
           converge_by("unregister source: #{new_resource.source_name}") do

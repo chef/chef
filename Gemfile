@@ -1,10 +1,5 @@
 source "https://rubygems.org"
 
-# Note we do not use the gemspec DSL which restricts to the
-# gemspec for the current platform and filters out other platforms
-# during a bundle lock operation. We actually want dependencies from
-# both of our gemspecs. Also note this this mimics gemspec behavior
-# of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
@@ -22,8 +17,6 @@ end
 
 gem "cheffish", ">= 17"
 
-gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
-
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
@@ -32,15 +25,12 @@ group(:omnibus_package) do
 end
 
 group(:omnibus_package, :pry) do
-  gem "pry"
+  # Locked because pry-byebug is broken with 13+.
+  # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
+  gem "pry", "= 0.13.0"
   # byebug does not install on freebsd on ruby 3.0
-  # gem "pry-byebug"
+  gem "pry-byebug" unless RUBY_PLATFORM =~ /freebsd/i
   gem "pry-stack_explorer"
-end
-
-# Everything except AIX
-group(:ruby_prof) do
-  gem "ruby-prof"
 end
 
 # Everything except AIX and Windows

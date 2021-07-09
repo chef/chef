@@ -85,7 +85,7 @@ describe Chef::Resource::ZypperRepository do
 
   it "accepts the legacy 'key' property" do
     resource.key "foo"
-    expect(resource.gpgkey).to eql("foo")
+    expect(resource.gpgkey).to eql(["foo"])
   end
 
   it "accepts the legacy 'uri' property" do

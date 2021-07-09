@@ -43,6 +43,8 @@ class Chef
 
         host.ffi_convention :stdcall
 
+        win64 = ENV["PROCESSOR_ARCHITECTURE"] == "AMD64"
+
         # Windows-specific type defs (ms-help://MS.MSDNQTR.v90.en/winprog/winprog/windows_data_types.htm):
         host.typedef :ushort,  :ATOM # Atom ~= Symbol: Atom table stores strings and corresponding identifiers. Application
         # places a string in an atom table and receives a 16-bit integer, called an atom, that
@@ -120,10 +122,15 @@ class Chef
         host.typedef :int32,   :LONG32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :LONG64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
         host.typedef :int64,   :LONGLONG # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
-        host.typedef :long,    :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
         # perform pointer arithmetic. BaseTsd.h:
         # if defined(_WIN64) host.typedef __int64 LONG_PTR; #else host.typedef long LONG_PTR;
-        host.typedef :long,    :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
+        if win64
+          host.typedef :int64,    :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
+          host.typedef :int64,    :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
+        else
+          host.typedef :long,    :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
+          host.typedef :long,    :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
+        end
         host.typedef :pointer, :LPBOOL # Pointer to a BOOL. WinDef.h as follows: #host.typedef BOOL far *LPBOOL;
         host.typedef :pointer, :LPBYTE # Pointer to a BYTE. WinDef.h as follows: #host.typedef BYTE far *LPBYTE;
         host.typedef :pointer, :LPCOLORREF # Pointer to a COLORREF value. WinDef.h as follows: #host.typedef DWORD *LPCOLORREF;

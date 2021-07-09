@@ -11,7 +11,7 @@ jobs:
   chefstyle:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_WITHOUT: ruby_shadow:ruby_prof:omnibus_package
+      BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
@@ -19,7 +19,7 @@ jobs:
         ruby-version: 2.7
         bundler-cache: true
     - uses: r7kamura/rubocop-problem-matchers-action@v1 # this shows the failures in the PR
-    - run: bundle exec rake style
+    - run: bundle exec chefstyle -c .rubocop.yml
 
   spellcheck:
     runs-on: ubuntu-latest

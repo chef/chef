@@ -121,7 +121,7 @@ class Chef
         end
       end
 
-      action :install, description: "Installs the application" do
+      action :install, description: "Installs the application." do
         if current_resource.nil?
           if new_resource.source
             remote_file dmg_file do

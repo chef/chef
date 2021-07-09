@@ -64,7 +64,7 @@ class Chef
           "default" => "/etc",
       }.freeze
 
-      action :allow, description: "Add the user to the cron.allow file" do
+      action :allow, description: "Add the user to the cron.allow file." do
         allow_path = ::File.join(value_for_platform_family(CRON_PATHS), "cron.allow")
 
         with_run_context :root do

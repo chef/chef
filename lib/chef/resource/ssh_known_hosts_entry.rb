@@ -75,7 +75,8 @@ class Chef
 
       property :group, [String, Integer],
         description: "The file group for the ssh_known_hosts file.",
-        default: lazy { node["root_group"] }
+        default: lazy { node["root_group"] },
+        default_description: "The root user's group depending on platform."
 
       property :hash_entries, [TrueClass, FalseClass],
         description: "Hash the hostname and addresses in the ssh_known_hosts file for privacy.",
@@ -85,9 +86,7 @@ class Chef
         description: "The location of the ssh known hosts file. Change this to set a known host file for a particular user.",
         default: "/etc/ssh/ssh_known_hosts"
 
-      action :create do
-        description "Create an entry in the ssh_known_hosts file."
-
+      action :create, description: "Create an entry in the ssh_known_hosts file." do
         key =
           if new_resource.key
             hoststr = (new_resource.port != 22) ? "[#{new_resource.host}]:#{new_resource.port}" : new_resource.host
@@ -129,9 +128,7 @@ class Chef
       end
 
       # all this does is send an immediate run_action(:create) to the template resource
-      action :flush do
-        description "Immediately flush the entries to the config file. Without this the actual writing of the file is delayed in the #{ChefUtils::Dist::Infra::PRODUCT} run so all entries can be accumulated before writing the file out."
-
+      action :flush, description: "Immediately flush the entries to the config file. Without this the actual writing of the file is delayed in the #{ChefUtils::Dist::Infra::PRODUCT} run so all entries can be accumulated before writing the file out." do
         with_run_context :root do
           # if you haven't ever called ssh_known_hosts_entry before you're definitely doing it wrong so we blow up hard.
           find_resource!(:template, "update ssh known hosts file #{new_resource.file_location}").run_action(:create)

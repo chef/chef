@@ -71,8 +71,8 @@ module ChefConfig
         # Some installations will be on different drives so use the drive that
         # the expanded path to __FILE__ is found.
         drive = windows_installation_drive
-        if drive && path[0] == '\\' && path.split('\\')[2] == "chef"
-          path = PathHelper.join(drive, path.split('\\', 3)[2])
+        if drive && path[0] == "\\" && path.split("\\")[2] == "chef"
+          path = PathHelper.join(drive, path.split("\\", 3)[2])
         end
       end
       path
@@ -1007,7 +1007,7 @@ module ChefConfig
     default :blocked_normal_attributes, nil
     default :blocked_override_attributes, nil
 
-    # deprecated config options that will be removed in Chef Infra Client 17
+    # deprecated config options that will be removed in Chef Infra Client 18
     default :automatic_attribute_blacklist, nil
     default :default_attribute_blacklist, nil
     default :normal_attribute_blacklist, nil

@@ -14,6 +14,7 @@ provisioner:
     diff_disabled: true
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
+  slow_resource_report: true
 
 lifecycle:
   pre_converge:

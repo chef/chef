@@ -37,7 +37,7 @@ end
 
 include_recipe "::_packages"
 
-include_recipe "ntp"
+include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
 
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
@@ -58,7 +58,7 @@ include_recipe "openssh"
 
 include_recipe "nscd"
 
-include_recipe "logrotate"
+logrotate_package "logrotate"
 
 include_recipe "git"
 
@@ -72,6 +72,18 @@ include_recipe "git"
     path File.join(Chef::Config[:file_cache_path], archive)
     extract_to File.join(Chef::Config[:file_cache_path], archive.tr(".", "_"))
   end
+end
+
+%w{001 002 003}.each do |control|
+  inspec_waiver_file_entry "fake_inspec_control_#{control}" do
+    expiration "2025-07-01"
+    justification "Waiving this control for the purposes of testing"
+    action :add
+  end
+end
+
+inspec_waiver_file_entry "fake_inspec_control_002" do
+  action :remove
 end
 
 user_ulimit "tomcat" do
@@ -130,6 +142,15 @@ include_recipe "::_openssl"
 include_recipe "::_tests"
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
+if ::File.exist?("/etc/systemd/system")
+  include_recipe "::_habitat_config"
+  include_recipe "::_habitat_install_no_user"
+  include_recipe "::_habitat_package"
+  # include_recipe "::_habitat_service"
+  include_recipe "::_habitat_sup_toml_config"
+  include_recipe "::_habitat_sup"
+  include_recipe "::_habitat_user_toml"
+end
 
 # at the moment these do not run properly in docker
 # we need to investigate if this is a snap on docker issue or a chef issue

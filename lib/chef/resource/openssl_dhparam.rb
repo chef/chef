@@ -88,8 +88,7 @@ class Chef
         description: "The permission mode applied to all files created by the resource.",
         default: "0640"
 
-      action :create do
-        description "Create the dhparam file."
+      action :create, description: "Create the `dhparam.pem` file." do
         dhparam_content = nil
         unless dhparam_pem_valid?(new_resource.path)
           dhparam_content = gen_dhparam(new_resource.key_length, new_resource.generator).to_pem

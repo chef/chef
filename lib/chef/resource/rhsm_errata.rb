@@ -25,14 +25,27 @@ class Chef
 
       description "Use the **rhsm_errata** resource to install packages associated with a given Red Hat Subscription Manager Errata ID. This is helpful if packages to mitigate a single vulnerability must be installed on your hosts."
       introduced "14.0"
+      examples <<~DOC
+        **Install a package from an Errata ID**
+
+        ```ruby
+        rhsm_errata 'RHSA:2018-1234'
+        ```
+
+        **Specify an Errata ID that differs from the resource name**
+
+        ```ruby
+        rhsm_errata 'errata-install'
+          errata_id 'RHSA:2018-1234'
+        end
+        ```
+      DOC
 
       property :errata_id, String,
         description: "An optional property for specifying the errata ID if it differs from the resource block's name.",
         name_property: true
 
-      action :install do
-        description "Installs a package for a specific errata ID."
-
+      action :install, description: "Install a package for a specific errata ID." do
         execute "Install errata packages for #{new_resource.errata_id}" do
           command "#{package_manager_command} update --advisory #{new_resource.errata_id} -y"
           default_env true

@@ -106,7 +106,7 @@ class Chef
         description: "The e-mail address to e-mail any cron task failures to."
 
       property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
+        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement>",
         default: false
 
       property :config_directory, String,
@@ -144,7 +144,7 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
 
-      action :add, description: "Add a cron job to run #{ChefUtils::Dist::Infra::PRODUCT}" do
+      action :add, description: "Add a cron job to run #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless ::Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
@@ -168,7 +168,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove a cron job for #{ChefUtils::Dist::Infra::PRODUCT}" do
+      action :remove, description: "Remove a cron job for #{ChefUtils::Dist::Infra::PRODUCT}." do
         declare_resource(cron_resource_type, new_resource.job_name) do
           action :delete
         end

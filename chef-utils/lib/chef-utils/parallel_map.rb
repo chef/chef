@@ -45,7 +45,7 @@ module ChefUtils
         pool ||= ChefUtils::DefaultThreadPool.instance.pool
 
         futures = map do |item|
-          future = Concurrent::Future.execute(executor: pool) do
+          Concurrent::Future.execute(executor: pool) do
             yield item
           end
         end

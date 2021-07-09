@@ -2,6 +2,7 @@ AllCops:
   TargetRubyVersion: 2.6
   Exclude:
     - "spec/data/**/*"
+    - "knife/spec/data/**/*"
     - "vendor/**/*"
     - "pkg/**/*"
     - "chef-config/pkg/**/*"

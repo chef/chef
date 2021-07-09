@@ -33,7 +33,7 @@ describe Chef::Mixin::FromFile do
   end
 
   class ClassTestData
-    class <<self
+    class << self
       include Chef::Mixin::FromFile
 
       def a(a = nil)

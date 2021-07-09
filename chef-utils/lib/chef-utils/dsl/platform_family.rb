@@ -77,7 +77,7 @@ module ChefUtils
       # @return [Boolean]
       #
       def macos?(node = __getnode)
-        node["platform_family"] == "mac_os_x"
+        node ? node["platform_family"] == "mac_os_x" : macos_ruby?
       end
       # chef-sugar backcompat method
       alias_method :osx?, :macos?
@@ -85,6 +85,17 @@ module ChefUtils
       alias_method :mac?, :macos?
       # chef-sugar backcompat method
       alias_method :mac_os_x?, :macos?
+
+      # Determine if the Ruby VM is currently running on a Mac node (This is useful primarily for internal use
+      # by Chef Infra Client before the node object exists).
+      #
+      # @since 17.3
+      #
+      # @return [Boolean]
+      #
+      def macos_ruby?
+        !!(RUBY_PLATFORM =~ /darwin/)
+      end
 
       # Determine if the current node is a member of the 'rhel' platform family (Red Hat, CentOS, Oracle or Scientific Linux, but NOT Amazon Linux or Fedora).
       #

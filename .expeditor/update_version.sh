@@ -22,9 +22,5 @@ sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"${VERSION}\")/" li
 # Update the version inside Gemfile.lock
 bundle update chef chef-config chef-utils --jobs=7 --conservative
 
-# Same for knife.
-cd knife
-bundle update chef chef-config chef-utils --jobs=7 --conservative
-
 # Once Expeditor finishes executing this script, it will commit the changes and push
 # the commit as a new tag corresponding to the value in the VERSION file.

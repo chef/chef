@@ -55,6 +55,12 @@ class Chef
   #
   class Handler
 
+    # FIXME: Chef::Handler should probably inherit from EventDispatch::Base
+    # and should wire up to those events rather than the "notifications" system
+    # which is hanging off of Chef::Client.  Those "notifications" could then be
+    # deprecated in favor of events, and this class could become decoupled from
+    # the Chef::Client object.
+
     def self.handler_for(*args)
       if args.include?(:start)
         Chef::Config[:start_handlers] ||= []
@@ -207,17 +213,45 @@ class Chef
     # The Chef::Node for this client run
     def_delegator :@run_status, :node
 
-    ##
-    # :method: all_resources
+    # @return Array<Chef::Resource> all resources other than unprocessed
     #
-    # An Array containing all resources in the chef run's resource_collection
-    def_delegator :@run_status, :all_resources
+    def all_resources
+      @all_resources ||= action_collection&.filtered_collection(unprocessed: false)&.resources || []
+    end
 
-    ##
-    # :method: updated_resources
+    # @return Array<Chef::Resource> all updated resources
     #
-    # An Array containing all resources that were updated during the chef run
-    def_delegator :@run_status, :updated_resources
+    def updated_resources
+      @updated_resources ||= action_collection&.filtered_collection(up_to_date: false, skipped: false, failed: false, unprocessed: false)&.resources || []
+    end
+
+    # @return Array<Chef::Resource> all up_to_date resources
+    #
+    def up_to_date_resources
+      @up_to_date_resources ||= action_collection&.filtered_collection(updated: false, skipped: false, failed: false, unprocessed: false)&.resources || []
+    end
+
+    # @return Array<Chef::Resource> all failed resources
+    #
+    def failed_resources
+      @failed_resources ||= action_collection&.filtered_collection(updated: false, up_to_date: false, skipped: false, unprocessed: false)&.resources || []
+    end
+
+    # @return Array<Chef::Resource> all skipped resources
+    #
+    def skipped_resources
+      @skipped_resources ||= action_collection&.filtered_collection(updated: false, up_to_date: false, failed: false, unprocessed: false)&.resources || []
+    end
+
+    # Unprocessed resources are those which are left over in the outer recipe context when a run fails.
+    # Sub-resources of unprocessed resourced are impossible to capture because they would require processing
+    # the outer resource.
+    #
+    # @return Array<Chef::Resource> all unprocessed resources
+    #
+    def unprocessed_resources
+      @unprocessed_resources ||= action_collection&.filtered_collection(updated: false, up_to_date: false, failed: false, skipped: false)&.resources || []
+    end
 
     ##
     # :method: success?
@@ -231,6 +265,10 @@ class Chef
     #
     # Did the chef run fail? True if the chef run raised an uncaught exception
     def_delegator :@run_status, :failed?
+
+    def action_collection
+      @run_status.run_context.action_collection
+    end
 
     # The main entry point for report handling. Subclasses should override this
     # method with their own report handling logic.
