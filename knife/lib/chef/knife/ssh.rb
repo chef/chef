@@ -134,11 +134,17 @@ class Chef
         boolean: true,
         default: false
 
-      option :require_pty,
-        long: "--[no-]require-pty",
+      option :pty,
+        long: "--[no-]pty",
         description: "Request a PTY, enabled by default.",
         boolean: true,
         default: true
+
+      option :require_pty,
+        long: "--[no-]require-pty",
+        description: "Raise exception if a PTY cannot be acquired, disabled by default.",
+        boolean: true,
+        default: false
 
       def session
         ssh_error_handler = Proc.new do |server|
@@ -359,21 +365,24 @@ class Chef
         ui.msg(str)
       end
 
-      def ssh_command(command, subsession = nil)
+      # @param command [String] the command to run
+      # @param session_list [???] list of sessions, one per node
+      #
+      def ssh_command(command, session_list = session)
         stderr = ""
         exit_status = 0
-        subsession ||= session
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
-        subsession.open_channel do |chan|
+        session_list.open_channel do |chan|
           if config[:on_error] && exit_status != 0
             chan.close
           else
-            chan.request_pty do |ch, success|
-              unless success
-                ui.warn("Failed to obtain a PTY from #{ch.connection.host}")
-                raise ArgumentError, "Request for PTY failed" if config[:require_pty]
-
+            if config[:pty]
+              chan.request_pty do |ch, success|
+                unless success
+                  ui.warn("Failed to obtain a PTY from #{ch.connection.host}")
+                  raise ArgumentError, "Request for PTY failed" if config[:require_pty]
+                end
               end
             end
             chan.exec command do |ch, success|
@@ -400,7 +409,7 @@ class Chef
         session.loop
         exit_status
       ensure
-        subsession.close
+        session_list.close
       end
 
       def get_password
