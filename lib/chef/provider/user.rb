@@ -75,7 +75,7 @@ class Chef
             unless shadow_info.nil?
               current_resource.inactive(shadow_info.sp_inact&.to_i)
 
-              expire_date = DateTime.strptime(shadow_info.sp_expire.to_s, "%d")
+              expire_date = DateTime.strptime(shadow_info.sp_expire, "%d").to_s
               current_resource.expire_date(expire_date.strftime("%Y-%m-%d"))
             end
             if new_resource.password && current_resource.password == "x"
