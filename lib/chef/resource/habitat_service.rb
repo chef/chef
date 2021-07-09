@@ -78,7 +78,7 @@ class Chef
 
       Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource.
       "
-      introduced "17.2"
+      introduced "17.3"
       examples <<~DOC
 
         ```ruby
