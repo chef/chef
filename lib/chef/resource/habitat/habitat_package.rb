@@ -26,7 +26,7 @@ class Chef
       provides :habitat_package
       use "habitat_shared"
       description "Install the specified Habitat package from Habitat Builder."
-      introduced "17.2"
+      introduced "17.3"
 
       examples <<~DOC
       ```ruby
