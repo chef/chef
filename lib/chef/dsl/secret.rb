@@ -25,6 +25,9 @@ class Chef
       # and returns the retrieved secret value.
       # This DSL providers a wrapper around [Chef::SecretFetcher]
       #
+      # Use of the secret helper in the context of a resource block will automatically mark
+      # that resource as 'sensitive', preventing resource data from being logged.  See [Chef::Resource#sensitive].
+      #
       # @option name [Object] The identifier or name for this secret
       # @option service [Symbol] The service identifier for the service that will
       #                         perform the secret lookup
@@ -50,10 +53,9 @@ class Chef
       #   value = secret(name: "test1", service: "my_aws_east")
       #   value = secret(name: "test1", service: "my_aws_west", config: { region: "override-region" })
       def secret(name: nil, service: nil, config: nil)
+        sensitive(true) if is_a?(Chef::Resource)
         Chef::SecretFetcher.for_service(service, config).fetch(name)
       end
     end
   end
 end
-
-
