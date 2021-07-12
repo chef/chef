@@ -75,8 +75,10 @@ class Chef
             unless shadow_info.nil?
               current_resource.inactive(shadow_info.sp_inact&.to_i)
 
-              expire_date = DateTime.strptime(shadow_info.sp_expire, "%d")
-              current_resource.expire_date(expire_date.strftime("%Y-%m-%d"))
+              # sp_expire gives time since epoch in days till expiration. Need to convert that
+              # to time in seconds since epoch and output date format for comparison
+              expire_date = Time.at(shadow_info.sp_expire * 60 * 60 * 24).strftime("%Y-%m-%d")
+              current_resource.expire_date(expire_date)
             end
             if new_resource.password && current_resource.password == "x"
               current_resource.password(shadow_info.sp_pwdp)
