@@ -77,7 +77,11 @@ class Chef
 
               # sp_expire gives time since epoch in days till expiration. Need to convert that
               # to time in seconds since epoch and output date format for comparison
-              expire_date = Time.at(shadow_info.sp_expire * 60 * 60 * 24).strftime("%Y-%m-%d")
+              expire_date = if shadow_info.sp_expire.nil?
+                              shadow_info.sp_expire
+                            else
+                              Time.at(shadow_info.sp_expire * 60 * 60 * 24).strftime("%Y-%m-%d")
+                            end
               current_resource.expire_date(expire_date)
             end
             if new_resource.password && current_resource.password == "x"
