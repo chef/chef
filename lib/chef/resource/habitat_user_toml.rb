@@ -28,7 +28,7 @@ class Chef
       description: "The service group to apply the configuration to, for example, `nginx.default`."
 
       description "Templates a user.toml for the specified service. This is written to `/hab/user/<service_name>/config/user.toml`. User.toml can be used to set configuration overriding the default.toml for a given package as an alternative to applying service group level configuration."
-      introduced "17.2"
+      introduced "17.3"
       examples <<~DOC
       ```ruby
       **Configure user specific settings to nginx**

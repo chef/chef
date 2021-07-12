@@ -43,8 +43,23 @@ describe Chef::DSL::Secret do
   end
 
   it "resolves a secret when using the example fetcher" do
-    secret_value = dsl.secret(name: "test1", service: :example,
-                              config: { "test1" => "secret value" })
+    secret_value = dsl.secret(name: "test1", service: :example, config: { "test1" => "secret value" })
     expect(secret_value).to eq "secret value"
+  end
+
+  context "when used within a resource" do
+    let(:run_context) {
+      Chef::RunContext.new(Chef::Node.new,
+                           Chef::CookbookCollection.new(Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))),
+                           Chef::EventDispatch::Dispatcher.new)
+    }
+
+    it "marks that resource as 'sensitive'" do
+      recipe = Chef::Recipe.new("secrets", "test", run_context)
+      recipe.zen_master "secret_test" do
+        peace secret(name: "test1", service: :example, config: { "test1" => true })
+      end
+      expect(run_context.resource_collection.lookup("zen_master[secret_test]").sensitive).to eql(true)
+    end
   end
 end

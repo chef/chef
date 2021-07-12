@@ -43,7 +43,7 @@ class Chef
       description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`."
 
       description "Applies a given configuration to a habitat service using `hab config apply`."
-      introduced "17.2"
+      introduced "17.3"
       examples <<~DOC
       ```ruby
       **Configure your nginx defaults**

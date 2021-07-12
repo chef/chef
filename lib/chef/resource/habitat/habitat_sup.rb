@@ -27,7 +27,7 @@ class Chef
       end
 
       description "Runs a Habitat Supervisor for one or more Habitat Services. It is used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
-      introduced "17.2"
+      introduced "17.3"
 
       property :bldr_url, String,
       description: "The Habitat Builder URL for the `habitat_package` resource, if needed."

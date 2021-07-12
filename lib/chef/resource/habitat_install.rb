@@ -23,7 +23,7 @@ class Chef
       provides :habitat_install
 
       description "This resource will install the newest stable version of habitat."
-      introduced "17.2"
+      introduced "17.3"
 
       property :name, String, default: "install habitat",
       description: "name for your resource block."
