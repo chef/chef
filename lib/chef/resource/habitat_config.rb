@@ -24,30 +24,12 @@ class Chef
 
       provides :habitat_config
 
-      property :config, Mash, required: true, coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },
-      description: "The configuration to apply as a ruby hash, for example, `{ worker_count: 2, http: { keepalive_timeout: 120 } }`."
-
-      property :service_group, String, name_property: true, desired_state: false,
-      description: "The service group to apply the configuration to. For example, `nginx.default`"
-
-      property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false,
-      description: "Address to a remote Supervisor's Control Gateway [default: 127.0.0.1:9632]."
-      # Http port needed for querying/comparing current config value
-      property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
-      description: "Address for remote supervisor http port. Used to pull existing."
-
-      property :gateway_auth_token, String, desired_state: false,
-      description: "Auth token for accessing the remote supervisor's http port."
-
-      property :user, String, desired_state: false,
-      description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`."
-
-      description "Applies a given configuration to a habitat service using `hab config apply`."
+      description "Use the **habitat_config** resource to apply a configuration to a Chef Habitat service."
       introduced "17.3"
       examples <<~DOC
-      ```ruby
       **Configure your nginx defaults**
 
+      ```ruby
       habitat_config 'nginx.default' do
         config({
           worker_count: 2,
@@ -58,6 +40,25 @@ class Chef
         end
         ```
       DOC
+
+      property :config, Mash, required: true, coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },
+        description: "The configuration to apply as a ruby hash, for example, `{ worker_count: 2, http: { keepalive_timeout: 120 } }`."
+
+      property :service_group, String, name_property: true, desired_state: false,
+        description: "The service group to apply the configuration to. For example, `nginx.default`"
+
+      property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false,
+        description: "Address to a remote Supervisor's Control Gateway."
+
+      # Http port needed for querying/comparing current config value
+      property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
+        description: "Address for remote supervisor http port. Used to pull existing."
+
+      property :gateway_auth_token, String, desired_state: false,
+        description: "Auth token for accessing the remote supervisor's http port."
+
+      property :user, String, desired_state: false,
+        description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`."
 
       load_current_value do
         http_uri = "http://#{remote_sup_http}"

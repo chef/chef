@@ -26,8 +26,79 @@ class Chef
         false
       end
 
-      description "Runs a Habitat Supervisor for one or more Habitat Services. It is used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
+      description "Use the **habitat_sup** resource to runs a Chef Habitat supervisor for one or more Chef Habitat services. The resourceis commonly used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
       introduced "17.3"
+      examples <<~DOC
+      **Set up with just the defaults**
+
+      ```ruby
+      habitat_sup 'default'
+      ```
+
+      **Update listen ports and use Supervisor toml config**
+
+      ```ruby
+      habitat_sup 'test-options' do
+        listen_http '0.0.0.0:9999'
+        listen_gossip '0.0.0.0:9998'
+        toml_config true
+      end
+      ```
+
+      **Use with an on-prem Habitat Builder. Note: Access to public builder may not be available due to your company policies**
+
+      ```ruby
+      habitat_sup 'default' do
+        bldr_url 'https://bldr.private.net'
+      end
+      ```
+
+      **Using update_condition**
+
+      ```ruby
+      habitat_sup 'default' do
+        bldr_url 'https://bldr.private.net'
+        habitat_channel 'dev'
+        update_condition 'track-channel'
+      end
+      ```
+
+      **Provide event_stream_* information**
+
+      ```ruby
+      habitat_sup 'default' do
+        license 'accept'
+        event_stream_application 'myapp'
+        event_stream_environment 'production'
+        event_stream_site 'MySite'
+        event_stream_url 'automate.private.net:4222'
+        event_stream_token 'myawesomea2clitoken='
+        event_stream_cert '/hab/cache/ssl/mycert.crt'
+      end
+      ```
+
+      **Provide specific versions**
+
+      ```ruby
+      habitat_sup 'default' do
+        bldr_url 'https://bldr.private.net'
+        sup_version '1.5.50'
+        launcher_version '13458'
+        service_version '0.6.0' # WINDOWS ONLY
+      end
+      ```
+
+      **Set latest version of packages to retain**
+
+      habitat_sup 'default' do
+        bldr_url 'https://bldr.private.net'
+        sup_version '1.5.86'
+        launcher_version '13458'
+        service_version '0.6.0' # WINDOWS ONLY
+        keep_latest '2'
+      end
+      ```
+      DOC
 
       property :bldr_url, String,
       description: "The Habitat Builder URL for the `habitat_package` resource, if needed."
@@ -111,67 +182,6 @@ class Chef
 
       property :toml_config, [true, false], default: false,
       description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, [reference](https://www.habitat.sh/docs/reference/#supervisor-config)."
-
-      examples <<~DOC
-      ```ruby
-      **Set up with just the defaults**
-
-      habitat_sup 'default'
-
-      **Update listen ports and use Supervisor toml config**
-
-      habitat_sup 'test-options' do
-        listen_http '0.0.0.0:9999'
-        listen_gossip '0.0.0.0:9998'
-        toml_config true
-      end
-
-      **Use with an on-prem Habitat Builder. Note: Access to public builder may not be available due to your company policies**
-
-      habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-      end
-
-      **Using update_condition**
-
-      habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-        habitat_channel 'dev'
-        update_condition 'track-channel'
-      end
-
-      **Provide event_stream_* information**
-
-      habitat_sup 'default' do
-        license 'accept'
-        event_stream_application 'myapp'
-        event_stream_environment 'production'
-        event_stream_site 'MySite'
-        event_stream_url 'automate.private.net:4222'
-        event_stream_token 'myawesomea2clitoken='
-        event_stream_cert '/hab/cache/ssl/mycert.crt'
-      end
-
-      **Provide specific versions**
-
-      habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-        sup_version '1.5.50'
-        launcher_version '13458'
-        service_version '0.6.0' # WINDOWS ONLY
-      end
-
-      **Set latest version of packages to retain**
-
-      habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-        sup_version '1.5.86'
-        launcher_version '13458'
-        service_version '0.6.0' # WINDOWS ONLY
-        keep_latest '2'
-      end
-      ```
-      DOC
 
       action :run, description: "The `run` action handles installing Habitat using the `habitat_install` resource, ensures that the appropriate versions of the `core/hab-sup` and `core/hab-launcher` packages are installed using `habitat_package`, and then drops off the appropriate init system definitions and manages the service." do
         habitat_install new_resource.name do
