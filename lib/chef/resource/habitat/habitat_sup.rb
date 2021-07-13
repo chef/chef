@@ -26,7 +26,7 @@ class Chef
         false
       end
 
-      description "Use the **habitat_sup** resource to runs a Chef Habitat supervisor for one or more Chef Habitat services. The resourceis commonly used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
+      description "Use the **habitat_sup** resource to runs a Chef Habitat supervisor for one or more Chef Habitat services. The resource is commonly used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
       introduced "17.3"
       examples <<~DOC
       **Set up with just the defaults**
