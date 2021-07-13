@@ -19,7 +19,7 @@ class Chef
       unified_mode true
       provides :habitat_user_toml
 
-      description "Use the **habitat_user_toml** to templates a `user.toml` for Chef Habitat services. User.toml can be used to set configuration overriding the default.toml for a given package as an alternative to applying service group level configuration."
+      description "Use the **habitat_user_toml** to template a `user.toml` for Chef Habitat services. Configurations set in the  `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration."
       introduced "17.3"
       examples <<~DOC
       **Configure user specific settings to nginx**
