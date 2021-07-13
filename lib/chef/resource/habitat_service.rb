@@ -22,7 +22,7 @@ class Chef
       unified_mode true
       provides :habitat_service
 
-      description "Use the **habitat_service** resource to manage Chef Habitat services. This requires that `core/hab-sup` be running as a service. See the `habitat_sup` resource documentation below for more information about how to set that up with this cookbook. Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource."
+      description "Use the **habitat_service** resource to manage Chef Habitat services. This requires that `core/hab-sup` be running as a service. See the `habitat_sup` resource documentation for more information. Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource."
       introduced "17.3"
       examples <<~DOC
         **Install and load nginx**
