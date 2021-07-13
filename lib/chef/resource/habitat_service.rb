@@ -124,7 +124,7 @@ class Chef
       property :update_condition, [Symbol, String], equal_to: [:latest, "latest", :'track-channel', "track-channel"], default: :latest, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
         description: "Passes `--update-condition` dictating when this service should updated. Defaults to `latest`. Options are `latest` or `track-channel` **_Note: This requires a minimum habitat version of 1.5.71_**
         - `latest`: Runs the latest package that can be found in the configured channel and local packages.
-        - `track-channel`: Always run what is at the head of a given channel. This enables service rollback where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is packages newer than the package at the head of the channel will be automatically uninstalled during a service rollback."
+        - `track-channel`: Always run the package at the head of a given channel. This enables service rollback, where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is that packages that are newer than the package at the head of the channel are also uninstalled during a service rollback."
 
       load_current_value do
         service_details = get_service_details(service_name)
