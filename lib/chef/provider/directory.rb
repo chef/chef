@@ -66,14 +66,14 @@ class Chef
         end
 
         requirements.assert(:create) do |a|
-          parent_directory = ::File.dirname(new_resource.path) 
+          parent_directory = ::File.dirname(new_resource.path)
           a.assertion do
             if new_resource.recursive
               # find the lowest-level directory in new_resource.path that already exists
-              # make sure we have write permissions to that directory    
+              # make sure we have write permissions to that directory
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
-                if ::File.exist?(base_dir)                 
+                if ::File.exist?(base_dir)
                   if Chef::FileAccessControl.writable?(base_dir)
                     true
                   elsif Chef::Util::PathHelper.is_sip_path?(base_dir, node)
