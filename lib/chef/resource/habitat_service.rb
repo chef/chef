@@ -116,7 +116,7 @@ class Chef
 
       # Http port needed for querying/comparing current config value
       property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
-        description: "Address for remote supervisor http port. Used to pull existing configuration data. If this is invalid, config will be applied on every Chef run."
+        description: "IP Address and port to communicate with the remote supervisor. If this value is invalid, the resource will attempt to update configuration each time Chef Infra Client runs."
 
       property :gateway_auth_token, String, desired_state: false,
         description: "Auth token for accessing the remote supervisor's http port."
