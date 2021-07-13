@@ -107,6 +107,8 @@ namespace :docs_site do
           "false"
         when "NilClass"
           nil
+        when "ChefUtils::Mash"
+          "Mash (Hash-like)"
         else
           x
         end
