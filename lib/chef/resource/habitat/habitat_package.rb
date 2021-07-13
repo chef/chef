@@ -25,59 +25,74 @@ class Chef
 
       provides :habitat_package
       use "habitat_shared"
-      description "Install the specified Habitat package from Habitat Builder."
+      description "Use the **habitat_package** to install or remove Chef Habitat packages from Habitat Builder."
       introduced "17.3"
-
       examples <<~DOC
-      ```ruby
-
       **Install core/redis**
 
+      ```ruby
       habitat_package 'core/redis'
+      ```
 
       **Install specific version of a package from the unstable channel**
 
+      ```ruby
       habitat_package 'core/redis' do
         version '3.2.3'
         channel 'unstable'
       end
+      ```
 
       **Install a package with specific version and revision**
 
+      ```ruby
       habitat_package 'core/redis' do
         version '3.2.3/20160920131015'
       end
+      ```
 
       **Install a package and force linking it's binary files to the system path**
 
+      ```ruby
       habitat_package 'core/nginx' do
         binlink :force
       end
+      ```
 
       **Install a package and link it's binary files to the system path**
+
+      ```ruby
       habitat_package 'core/nginx' do
         options '--binlink'
       end
+      ```
 
       **Remove package and all of it's versions**
 
+      ```ruby
       habitat_package 'core/nginx'
         action :remove
       end
+      ```
 
       **Remove specified version of a package**
 
+      ```ruby
       habitat_package 'core/nginx/3.2.3'
         action :remove
       end
+      ```
 
       **Remove package but retain some versions Note: Only available as of Habitat 1.5.86**
 
+      ```ruby
       habitat_package 'core/nginx'
         keep_latest '2'
         action :remove
       end
+      ```
 
+      ```ruby
       **Remove package but keep dependencies**
       habitat_package 'core/nginx'
         no_deps false
