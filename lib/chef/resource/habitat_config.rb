@@ -48,7 +48,7 @@ class Chef
         description: "The service group to apply the configuration to. For example, `nginx.default`"
 
       property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false,
-        description: "Address to a remote Supervisor's Control Gateway."
+        description: "Address to a remote supervisor's control gateway."
 
       # Http port needed for querying/comparing current config value
       property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
