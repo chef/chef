@@ -15,6 +15,7 @@
 #
 
 require_relative "../resource"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -116,7 +117,7 @@ class Chef
 
       # Http port needed for querying/comparing current config value
       property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
-        description: "IP Address and port to communicate with the remote supervisor. If this value is invalid, the resource will attempt to update configuration each time Chef Infra Client runs."
+        description: "IP address and port used to communicate with the remote supervisor. If this value is invalid, the resource will update the supervisor configuration each time #{ChefUtils::Dist::Server::PRODUCT} runs."
 
       property :gateway_auth_token, String, desired_state: false,
         description: "Auth token for accessing the remote supervisor's http port."
