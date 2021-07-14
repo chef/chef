@@ -66,7 +66,6 @@ build do
       script
       site
       vendor
-      VERSION
     }
 
     Dir.glob("#{target_dir}/*/{#{files.join(",")}}").each do |f|
@@ -74,6 +73,17 @@ build do
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
       # ruby-prof has issues/bugs with needing the so in the ext dir
       next if File.basename(File.expand_path("..", f)).start_with?("ruby-prof-")
+
+      puts "Deleting #{f}"
+      FileUtils.rm_rf(f)
+    end
+  end
+
+  block "Removing VERSION files from installed gems" do
+    # find the embedded ruby gems dir and clean it up for globbing
+    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/VERSION".tr("\\", "/")).each do |f|
+      # we need to not delete the aws SDK VERSION file
+      next if File.basename(File.expand_path("..", f)).start_with?("aws")
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)
@@ -128,16 +138,6 @@ build do
         FileUtils.rm_f(file_path)
       else
         puts "Binary #{file_path} not found. Skipping."
-      end
-    end
-  end
-
-  block "Remove deprecated fauxhai dumps we don't need for running chef-utils specs" do
-    require "json"
-    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/fauxhai*/lib/fauxhai/platforms/**/*.json") do |file_path|
-      if JSON.parse(File.read(file_path))["deprecated"]
-        puts "Deleted deprecated Fauxhai definition at #{file_path}"
-        FileUtils.rm_f(file_path)
       end
     end
   end
