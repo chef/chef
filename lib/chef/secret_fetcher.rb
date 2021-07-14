@@ -21,7 +21,7 @@ require_relative "exceptions"
 class Chef
   class SecretFetcher
 
-    SECRET_FETCHERS = [ :example, :aws_secrets_manager ].freeze
+    SECRET_FETCHERS = %i{example aws_secrets_manager}.freeze
 
     # Returns a configured and validated instance
     # of a [Chef::SecretFetcher::Base]  for the given
