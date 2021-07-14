@@ -202,7 +202,7 @@ describe Chef::PolicyBuilder::Policyfile do
     end
 
     before do
-      Chef::Config[:policy_document_native_api] = false
+      Chef::Config[:policy_document_native_api] = true
       Chef::Config[:deployment_group] = "example-policy-stage"
       allow(policy_builder).to receive(:api_service).and_return(api_service)
     end
@@ -210,6 +210,8 @@ describe Chef::PolicyBuilder::Policyfile do
     describe "when using compatibility mode (policy_document_native_api == false)" do
 
       before do
+        Chef::Config[:policy_document_native_api] = false
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         Chef::Config[:deployment_group] = "example-policy-stage"
       end
 
@@ -335,6 +337,10 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       describe "validating the Policyfile.lock" do
+        before do
+          Chef::Config[:policy_group] = "policy-stage"
+          Chef::Config[:policy_name] = "example"
+        end
 
         it "errors if the policyfile json contains any non-recipe items" do
           parsed_policyfile_json["run_list"] = ["role[foo]"]
@@ -815,6 +821,10 @@ describe Chef::PolicyBuilder::Policyfile do
         context "when using compatibility mode (policy_document_native_api == false)" do
           let(:cookbook1_url) { "cookbooks/example1/#{example1_xyz_version}" }
           let(:cookbook2_url) { "cookbooks/example2/#{example2_xyz_version}" }
+          before do
+            Chef::Config[:policy_document_native_api] = false
+            Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          end
 
           context "when the cookbooks don't exist on the server" do
             include_examples "fetching cookbooks when they don't exist"
