@@ -132,7 +132,7 @@ class Chef
         expand_run_list
         apply_policyfile_attributes
 
-        if node.run_list && Chef::Config[:policy_persist_run_list]
+        if persistent_run_list_set?
           Chef::Log.warn("The node.run_list setting is overriding the Policyfile run_list")
         end
         Chef::Log.info("Run List is [#{run_list}]")
@@ -301,7 +301,7 @@ class Chef
 
         if json_attribs["run_list"]
           json_attribs["run_list"]
-        elsif Chef::Config[:policy_persist_run_list] && node.run_list && !node.run_list.empty?
+        elsif persistent_run_list_set?
           node.run_list
         elsif named_run_list_requested?
           named_run_list || raise(ConfigurationError,
@@ -539,6 +539,10 @@ class Chef
 
       def available_named_run_lists
         (policy["named_run_lists"] || {}).keys
+      end
+
+      def persistent_run_list_set?
+        Chef::Config[:policy_persist_run_list] && node.run_list && !node.run_list.empty?
       end
 
       def named_run_list_requested?
