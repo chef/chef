@@ -125,7 +125,7 @@ class Chef
         # determine which versions of cookbooks to use.
 
         unless Chef::Config[:policy_document_native_api]
-          Chef::Log.deprecated(:policyfile_compat_mode, "The chef-server 11 policyfile compat mode is deprecated, please set policy_document_native_api to true in your config")
+          Chef.deprecated(:policyfile_compat_mode, "The chef-server 11 policyfile compat mode is deprecated, please set policy_document_native_api to true in your config")
         end
 
         node.reset_defaults_and_overrides
