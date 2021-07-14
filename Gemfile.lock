@@ -35,10 +35,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.3.28)
+    chef (17.3.31)
       addressable
-      chef-config (= 17.3.28)
-      chef-utils (= 17.3.28)
+      aws-sdk-secretsmanager (~> 1.46)
+      chef-config (= 17.3.31)
+      chef-utils (= 17.3.31)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +63,11 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.3.28-universal-mingw32)
+    chef (17.3.31-universal-mingw32)
       addressable
-      chef-config (= 17.3.28)
-      chef-utils (= 17.3.28)
+      aws-sdk-secretsmanager (~> 1.46)
+      chef-config (= 17.3.31)
+      chef-utils (= 17.3.31)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +106,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.3.28)
-      chef (= 17.3.28)
+    chef-bin (17.3.31)
+      chef (= 17.3.31)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.3.28)
+    chef-config (17.3.31)
       addressable
-      chef-utils (= 17.3.28)
+      chef-utils (= 17.3.31)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +123,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.3.28)
+    chef-utils (17.3.31)
       concurrent-ruby
 
 GEM
@@ -133,6 +135,18 @@ GEM
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
+    aws-eventstream (1.1.1)
+    aws-partitions (1.478.0)
+    aws-sdk-core (3.117.0)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.239.0)
+      aws-sigv4 (~> 1.1)
+      jmespath (~> 1.0)
+    aws-sdk-secretsmanager (1.46.0)
+      aws-sdk-core (~> 3, >= 3.112.0)
+      aws-sigv4 (~> 1.1)
+    aws-sigv4 (1.2.4)
+      aws-eventstream (~> 1, >= 1.0.2)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
@@ -222,6 +236,7 @@ GEM
       inspec-core (= 4.38.3)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
+    jmespath (1.4.0)
     json (2.5.1)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
