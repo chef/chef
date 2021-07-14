@@ -104,7 +104,7 @@ class Chef
           end
           if !::File.exist?(parent_directory)
             a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist,
-              "Parent directory #{parent_directory} does not exists.")
+              "Parent directory #{parent_directory} does not exist.")
           elsif !Chef::FileAccessControl.writable?(parent_directory)
             a.failure_message(Chef::Exceptions::InsufficientPermissions,
               "Cannot create #{new_resource} at #{new_resource.path} due to insufficient permissions")
