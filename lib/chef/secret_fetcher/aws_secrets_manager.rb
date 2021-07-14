@@ -50,7 +50,9 @@ class Chef
       # @param identifier [String] the secret_id
       # @return Aws::SecretsManager::Types::GetSecretValueResponse
       def do_fetch(identifier)
-        client.get_secret_value(secret_id: identifier)
+        result = client.get_secret_value(secret_id: identifier)
+        # These fields are mutually exclusive
+        result.secret_string || result.secret_binary
       end
 
       def client
