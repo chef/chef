@@ -36,7 +36,7 @@ class Chef
   # fetcher.fetch("secretkey1")
   class SecretFetcher
     class AWSSecretsManager < Base
-      DEFAULT_AWS_OPTS = { }
+      DEFAULT_AWS_OPTS = {}
       def validate!
         # Note that we are not doing any validation of required configuration here, we will
         # rely on the API client to do that for us, since it will work with the merge of
