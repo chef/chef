@@ -133,6 +133,11 @@ class Chef
         # consume_external_attrs may add items to the run_list. Save the
         # expanded run_list, which we will pass to the server later to
         # determine which versions of cookbooks to use.
+
+        unless Chef::Config[:policy_document_native_api]
+          Chef.deprecated(:policyfile_compat_mode, "The chef-server 11 policyfile compat mode is deprecated, please set policy_document_native_api to true in your config")
+        end
+
         node.reset_defaults_and_overrides
 
         node.consume_external_attrs(ohai_data, json_attribs)
