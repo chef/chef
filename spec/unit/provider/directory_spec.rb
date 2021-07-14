@@ -158,11 +158,6 @@ describe Chef::Provider::Directory do
           directory.run_action(:create)
         end
       end
-
-      it 'does not create the directory if parent directory is not writable' do
-        allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
-        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
-      end
     end
 
     describe "when the directory does not exist" do
@@ -189,7 +184,6 @@ describe Chef::Provider::Directory do
 
       it "raises an exception when recursive is false" do
         new_resource.recursive false
-        byebug
         expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
       end
 
@@ -204,11 +198,6 @@ describe Chef::Provider::Directory do
         FileUtils.touch tmp_dir
         new_resource.recursive true
         expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::EnclosingDirectoryDoesNotExist)
-      end
-
-      it "test" do
-        allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
-        new_resource.recursive false
       end
     end
 
