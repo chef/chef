@@ -133,7 +133,7 @@ class Chef
         apply_policyfile_attributes
 
         if node.run_list && Chef::Config[:policy_persist_run_list]
-          Chef::Log.warn("The node.run_list setting is overriding the policy run_list")
+          Chef::Log.warn("The node.run_list setting is overriding the Policyfile run_list")
         end
         Chef::Log.info("Run List is [#{run_list}]")
         Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display(run_list).join(", ")}]")
