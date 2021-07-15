@@ -44,6 +44,7 @@ class Chef
       # @raise [Chef::Exceptions::Secret::FetchFailed] when the underlying attempt to fetch the secret fails.
       def fetch(name, version = nil)
         raise Chef::Exceptions::Secret::MissingSecretName.new if name.to_s == ""
+
         do_fetch(name, version)
       end
 

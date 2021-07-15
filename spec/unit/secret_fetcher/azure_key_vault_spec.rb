@@ -27,9 +27,9 @@ describe Chef::SecretFetcher::AzureKeyVault do
 
   context "when validating configuration and configuration is missing :vault" do
     context "and configuration does not have a 'vault'" do
-      let(:config) { { } }
+      let(:config) { {} }
       it "raises a MissingVaultError error on validate!" do
-        expect{fetcher.validate!}.to raise_error(Chef::Exceptions::Secret::MissingVaultName)
+        expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::MissingVaultName)
       end
     end
   end
@@ -54,7 +54,7 @@ describe Chef::SecretFetcher::AzureKeyVault do
     context "and an error response is received in the body" do
       let(:body) { '{ "error" : { "code" : 404, "message" : "secret not found" } }' }
       it "raises FetchFailed" do
-        expect{fetcher.fetch("value")}.to raise_error(Chef::Exceptions::Secret::FetchFailed)
+        expect { fetcher.fetch("value") }.to raise_error(Chef::Exceptions::Secret::FetchFailed)
       end
     end
 

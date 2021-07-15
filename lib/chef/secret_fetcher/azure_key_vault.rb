@@ -28,8 +28,8 @@ class Chef
         http = Net::HTTP.new(secret_uri.host, secret_uri.port)
         http.use_ssl = true
 
-        response = http.get(secret_uri, { 'Authorization' => "Bearer #{token}",
-                                          'Content-Type' => 'application/json' })
+        response = http.get(secret_uri, { "Authorization" => "Bearer #{token}",
+                                          "Content-Type" => "application/json" })
 
         # If an exception is not raised, we can be reasonably confident of the
         # shape of the result.
@@ -44,7 +44,7 @@ class Chef
       def fetch_token
         token_uri = URI.parse("http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net")
         http = Net::HTTP.new(token_uri.host, token_uri.port)
-        response = http.get(token_uri, { "Metadata" => "true"})
+        response = http.get(token_uri, { "Metadata" => "true" })
         body = JSON.parse(response.body)
         body["access_token"]
       end

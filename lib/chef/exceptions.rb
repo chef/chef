@@ -296,6 +296,7 @@ class Chef
       class FetchFailed < RuntimeError; end
       class MissingSecretName < RuntimeError; end
       class InvalidSecretName < RuntimeError; end
+
       class InvalidFetcherService < RuntimeError
         def initialize(given, fetcher_service_names)
           super("#{given} is not a supported secrets service.  Supported services are: :#{fetcher_service_names.join(" :")}")
