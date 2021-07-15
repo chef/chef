@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.34 -->
-## [v17.3.34](https://github.com/chef/chef/tree/v17.3.34) (2021-07-15)
+<!-- latest_release 17.3.35 -->
+## [v17.3.35](https://github.com/chef/chef/tree/v17.3.35) (2021-07-15)
 
 #### Merged Pull Requests
-- Add dependabot config [#11807](https://github.com/chef/chef/pull/11807) ([tas50](https://github.com/tas50))
+- Bump omnibus from `5c1b453` to `5803fdc` in /omnibus [#11814](https://github.com/chef/chef/pull/11814) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `5c1b453` to `5803fdc` in /omnibus [#11814](https://github.com/chef/chef/pull/11814) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.3.35 -->
 - Add dependabot config [#11807](https://github.com/chef/chef/pull/11807) ([tas50](https://github.com/tas50)) <!-- 17.3.34 -->
 - Don&#39;t cleanup the VERSION file in the aws gem install [#11806](https://github.com/chef/chef/pull/11806) ([tas50](https://github.com/tas50)) <!-- 17.3.33 -->
 - Experimental support for an AWS Secrets Fetcher [#11791](https://github.com/chef/chef/pull/11791) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.31 -->
