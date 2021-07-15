@@ -1,7 +1,7 @@
 version: 2
 updates:
 - package-ecosystem: bundler
-  target_branch: "master"
+  target-branch: "master"
   directory: "/omnibus"
   schedule:
     interval: daily
@@ -11,7 +11,7 @@ updates:
   labels:
   - "Type: Chore"
 - package-ecosystem: bundler
-  target_branch: "chef-16"
+  target-branch: "chef-16"
   directory: "/omnibus"
   schedule:
     interval: daily
