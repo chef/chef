@@ -24,6 +24,9 @@ class Chef
   # A fetcher that fetches a secret from AWS Secrets Manager
   # In this initial iteration it defaults to authentication via instance profile.
   # It is possible to pass options that configure it to use alternative credentials.
+  # This implementation supports fetching with version.
+  #
+  # NOTE: This does not yet support automatic retries, which the AWS client does by default.
   #
   # For configuration options see https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SecretsManager/Client.html#initialize-instance_method
   #
@@ -33,30 +36,17 @@ class Chef
   # Usage Example:
   #
   # fetcher = SecretFetcher.for_service(:aws_secrets_manager, { region: "us-east-1" })
-  # fetcher.fetch("secretkey1")
+  # fetcher.fetch("secretkey1", "v1")
   class SecretFetcher
     class AWSSecretsManager < Base
-      DEFAULT_AWS_OPTS = {} # rubocop: disable Style/MutableConstant
-      def validate!
-        # Note that we are not doing any validation of required configuration here, we will
-        # rely on the API client to do that for us, since it will work with the merge of
-        # the config we provide, env-based config, and/or an appropriate profile in ~/.aws
-
-        # Instantiating the client is an opportunity for an API provider to do validation,
-        # so we'll do that first here.
-        client
-      end
-
       # @param identifier [String] the secret_id
+      # @param version [String] the secret version. Not usd at this time
       # @return Aws::SecretsManager::Types::GetSecretValueResponse
-      def do_fetch(identifier)
-        result = client.get_secret_value(secret_id: identifier)
+      def do_fetch(identifier, version)
+        client = Aws::SecretsManager::Client.new()
+        result = client.get_secret_value(secret_id: identifier, version_stage: version)
         # These fields are mutually exclusive
         result.secret_string || result.secret_binary
-      end
-
-      def client
-        @client ||= Aws::SecretsManager::Client.new(DEFAULT_AWS_OPTS.merge(config))
       end
     end
   end

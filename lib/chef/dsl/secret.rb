@@ -29,12 +29,15 @@ class Chef
       # that resource as 'sensitive', preventing resource data from being logged.  See [Chef::Resource#sensitive].
       #
       # @option name [Object] The identifier or name for this secret
+      # @option version [Object] The secret version. If a service supports versions
+      #                          and no version is provided, the latest version will be fetched.
       # @option service [Symbol] The service identifier for the service that will
-      #                         perform the secret lookup
+      #                         perform the secret lookup. See
+      #                         [Chef::SecretFetcher::SECRET_FETCHERS]
       # @option config [Hash] The configuration that the named service expects
       #
-      # @return result [Object] The response object type is determined by the fetcher. See fetcher documentation
-      # to know what to expect for a given service.
+      # @return result [Object] The response object type is determined by the fetcher but will usually be a string or a hash.
+      # See individual fetcher documentation to know what to expect for a given service.
       #
       # @example
       #
@@ -44,20 +47,11 @@ class Chef
       #   value = secret(name: "test1", service: :example, config: { "test1" => "value1" })
       #   log "My secret is #{value}"
       #
-      #   value = secret(name: "test1", service: :aws_secrets_manager, config: { region: "us-west-1" })
-      #   log "My secret is #{value.secret_string}"
-      #
-      # @note
-      #
-      # This is pretty straightforward, but should also extend nicely to support
-      # named config (as 'service') with override config. Some future potential
-      # usage examples:
-      #   value = secret(name: "test1") # If a default is configured
-      #   value = secret(name: "test1", service: "my_aws_east")
-      #   value = secret(name: "test1", service: "my_aws_west", config: { region: "override-region" })
-      def secret(name: nil, service: nil, config: nil)
+      #   value = secret(name: "test1", service: :aws_secrets_manager, version: "v1", config: { region: "us-west-1" })
+      #   log "My secret is #{value}"
+      def secret(name: nil, version: nil, service: nil, config: nil)
         sensitive(true) if is_a?(Chef::Resource)
-        Chef::SecretFetcher.for_service(service, config).fetch(name)
+        Chef::SecretFetcher.for_service(service, config).fetch(name, version)
       end
     end
   end
