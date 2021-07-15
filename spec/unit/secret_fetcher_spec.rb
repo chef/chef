@@ -39,6 +39,10 @@ describe Chef::SecretFetcher do
       Chef::SecretFetcher.for_service(:example, {})
     end
 
+    it "resolves the Azure Key Vault fetcher without error" do
+      Chef::SecretFetcher.for_service(:azure_key_vault, vault: "invalid")
+    end
+
     it "resolves the AWS fetcher without error" do
       Chef::SecretFetcher.for_service(:aws_secrets_manager, region: "invalid")
     end

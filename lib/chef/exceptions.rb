@@ -295,7 +295,7 @@ class Chef
       class ConfigurationInvalid < RuntimeError; end
       class FetchFailed < RuntimeError; end
       class MissingSecretName < RuntimeError; end
-
+      class InvalidSecretName < RuntimeError; end
       class InvalidFetcherService < RuntimeError
         def initialize(given, fetcher_service_names)
           super("#{given} is not a supported secrets service.  Supported services are: :#{fetcher_service_names.join(" :")}")
@@ -308,6 +308,7 @@ class Chef
         end
       end
 
+      class MissingVaultName < RuntimeError; end
     end
 
     # Exception class for collecting multiple failures. Used when running
