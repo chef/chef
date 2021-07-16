@@ -154,15 +154,6 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-
-      # def retrieve_certificate_key(client_name)
-      #   if ChefUtils.windows?
-      #     check_and_retrieve_private_key(client_name)
-      #   else # generic return for Linux systemss
-      #     false
-      #   end
-      # end
-
       def retrieve_certificate_key(client_name)
         # This code block assumes a certificate with a subject name like "Chef-<node-name>" is in the \LocalMachine\My store and
         # that there is a password stored in the registry to be used to export the pfx with.
