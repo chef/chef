@@ -281,63 +281,8 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
-  # EXTERNAL GEM TESTING
+  # HABITAT TESTING
 #########################################################################
-
-- label: "chef-zero gem :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-        environment:
-          - PEDANT_OPTS=--skip-oc_id
-          - CHEF_FS=true
-
-- label: "cheffish gem :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-
-- label: "chefspec gem :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-
-- label: "knife-windows gem :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test chef/knife-windows master rake spec
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-
-- label: "berkshelf gem :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - apt-get update -y
-    - apt-get install -y graphviz
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
 
 - label: ":habicat: Linux plan"
   commands:
