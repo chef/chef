@@ -4,6 +4,7 @@ require "chef/mixin/shell_out"
 require "tiny_server"
 require "tmpdir"
 require "chef-utils/dist"
+require "chef/mixin/powershell_exec"
 
 describe "chef-client" do
 
@@ -31,8 +32,36 @@ describe "chef-client" do
     @server = @api = nil
   end
 
+  def install_certificate_in_store
+    if ChefUtils.windows?
+      powershell_exec!("New-SelfSignedCertificate -certstorelocation cert:\\localmachine\\my -Subject #{client_name} -FriendlyName #{client_name}")
+    end
+  end
+
+  def create_registry_key
+    powershell_exec! <<~EOH
+      $pfx_password = New-Object -TypeName PSObject
+      $pfx_password | Add-Member -MemberType ScriptProperty -Name "Password" -Value { ("~!@#$%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".tochararray() | Sort-Object { Get-Random })[0..14] -join '' }
+      if (-not (Test-Path HKLM:\\SOFTWARE\\Progress)){
+        New-Item -Path "HKLM:\\SOFTWARE\\Progress\\Authenticator" -Force
+        New-ItemProperty  -path "HKLM:\\SOFTWARE\\Progress\\Authenticator" -name "PfxPass" -value $pfxpassword -PropertyType String
+      }
+    EOH
+  end
+
+  def remove_certificate_from_store
+    powershell_exec! <<~EOH
+      Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "#{client_name}" } -ErrorAction Stop | Remove-Item
+    EOH
+  end
+
+  def remove_registry_key
+    powershell_exec!("Remove-Item -Path HKLM:\\SOFTWARE\\Progress -Recurse")
+  end
+
   include IntegrationSupport
   include Chef::Mixin::ShellOut
+  include Chef::Mixin::PowershellExec
 
   let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
@@ -47,6 +76,7 @@ describe "chef-client" do
   # cf. CHEF-4914
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai" }
   let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
+  let(:client_name) { "chef-973334" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file "cookbooks/x/recipes/default.rb", "" }
@@ -113,6 +143,32 @@ describe "chef-client" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       result.error!
+    end
+
+    if ChefUtils.windows?
+      context "and the private key is in the Windows CertStore" do
+        before(:each) do
+          # install the p12/pfx and make sure the key and password are stored in the registry
+          install_certificate_in_store
+          create_registry_key
+        end
+
+        after(:each) do
+          # remove the p12/pfx and remove the registry key
+          remove_certificate_from_store
+          remove_registry_key
+        end
+
+        it "should verify that the cert is loaded in the LocalMachine\\My" do
+          expect(Chef::HTTP::Authenticator).to receive(:check_certstore_for_key).and_call_original
+          expect(Chef::HTTP::Authenticator.check_certstore_for_key(client_name)).to eq(true)
+        end
+
+        it "should verify that a private key is returned to me" do
+          expect(Chef::HTTP::Authenticator).to receive(:retrieve_certificate_key).and_call_original
+          expect(Chef::HTTP::Authenticator.retrieve_certificate_key(client_name)).to match(/Private/)
+        end
+      end
     end
 
     context "and a private key" do

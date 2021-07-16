@@ -22,8 +22,9 @@ require "chef/resource/hostname"
 describe Chef::Resource::Hostname, :windows_only do
   include Chef::Mixin::PowershellExec
 
+  # Returns either the name of the domain or the word "workgroup" if not domain-bound
   def get_domain_status
-    powershell_exec!("(Get-WmiObject -Class Win32_ComputerSystem).PartofDomain").result
+    powershell_exec!("(Get-CimInstance Win32_ComputerSystem).Domain").result
   end
 
   let(:new_hostname) { "New-Hostname" }
