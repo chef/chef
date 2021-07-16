@@ -1,0 +1,23 @@
+---
+env:
+  IMAGE_REGISTRY: chef
+  BUILDKITE_PLUGIN_DOBI_S3_BUCKET_NAME: docker-buildkite-cache-chef-prod
+steps:
+- id: chef
+  label: ":docker: build chef"
+  agents:
+    queue: docker-linux
+  plugins:
+  - chef/dobi#v0.1.1:
+      tasks:
+      - chef:build
+      - chef:tag
+- id: chef-arm64
+  label: ":docker: build chef arm64"
+  agents:
+    queue: docker-linux-arm64
+  plugins:
+  - chef/dobi#v0.1.1:
+      tasks:
+      - chef:build
+      - chef:tag
