@@ -36,7 +36,7 @@ class Chef
         end
       end
 
-      def do_fetch(identifier)
+      def do_fetch(identifier, version)
         raise Chef::Exceptions::Secret::FetchFailed.new("Secret #{identifier}) not found.") unless config.key?(identifier)
 
         config[identifier]
