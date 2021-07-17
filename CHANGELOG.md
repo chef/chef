@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.37 -->
-## [v17.3.37](https://github.com/chef/chef/tree/v17.3.37) (2021-07-15)
+<!-- latest_release 17.3.39 -->
+## [v17.3.39](https://github.com/chef/chef/tree/v17.3.39) (2021-07-16)
 
 #### Merged Pull Requests
-- Bump omnibus from `5803fdc` to `6d109b6` in /omnibus [#11822](https://github.com/chef/chef/pull/11822) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Support command line setting of run_list with policyfiles [#11803](https://github.com/chef/chef/pull/11803) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support command line setting of run_list with policyfiles [#11803](https://github.com/chef/chef/pull/11803) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.39 -->
+- Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11827](https://github.com/chef/chef/pull/11827) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.3.38 -->
 - Bump omnibus from `5803fdc` to `6d109b6` in /omnibus [#11822](https://github.com/chef/chef/pull/11822) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.3.37 -->
 - Bump omnibus-software from `e9feb35` to `cdef22f` in /omnibus [#11815](https://github.com/chef/chef/pull/11815) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.3.36 -->
 - Bump omnibus from `5c1b453` to `5803fdc` in /omnibus [#11814](https://github.com/chef/chef/pull/11814) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.3.35 -->
