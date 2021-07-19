@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.41 -->
-## [v17.3.41](https://github.com/chef/chef/tree/v17.3.41) (2021-07-19)
+<!-- latest_release 17.3.42 -->
+## [v17.3.42](https://github.com/chef/chef/tree/v17.3.42) (2021-07-19)
 
 #### Merged Pull Requests
-- Secrets: Azure Key Vault fetcher; versioned secret support [#11802](https://github.com/chef/chef/pull/11802) ([marcparadise](https://github.com/marcparadise))
+- chef_client_config: Add the ability to set policy_persist_run_list [#11833](https://github.com/chef/chef/pull/11833) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.2.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- chef_client_config: Add the ability to set policy_persist_run_list [#11833](https://github.com/chef/chef/pull/11833) ([tas50](https://github.com/tas50)) <!-- 17.3.42 -->
 - Secrets: Azure Key Vault fetcher; versioned secret support [#11802](https://github.com/chef/chef/pull/11802) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.41 -->
 - Update unshare error message [#11830](https://github.com/chef/chef/pull/11830) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 17.3.40 -->
 - Support command line setting of run_list with policyfiles [#11803](https://github.com/chef/chef/pull/11803) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.39 -->
