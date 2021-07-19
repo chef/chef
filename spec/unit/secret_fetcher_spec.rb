@@ -20,7 +20,7 @@ require "chef/secret_fetcher"
 require "chef/secret_fetcher/example"
 
 class SecretFetcherImpl < Chef::SecretFetcher::Base
-  def do_fetch(name)
+  def do_fetch(name, version)
     name
   end
 
@@ -37,6 +37,10 @@ describe Chef::SecretFetcher do
   context ".for_service" do
     it "resolves the example fetcher without error" do
       Chef::SecretFetcher.for_service(:example, {})
+    end
+
+    it "resolves the Azure Key Vault fetcher without error" do
+      Chef::SecretFetcher.for_service(:azure_key_vault, vault: "invalid")
     end
 
     it "resolves the AWS fetcher without error" do
@@ -67,8 +71,8 @@ describe Chef::SecretFetcher do
     }
 
     it "fetches from the underlying service when secret name is provided " do
-      expect(fetcher_impl).to receive(:fetch).with("key1")
-      fetcher.fetch("key1")
+      expect(fetcher_impl).to receive(:fetch).with("key1", "v1")
+      fetcher.fetch("key1", "v1")
     end
 
     it "raises an error when the secret name is not provided" do

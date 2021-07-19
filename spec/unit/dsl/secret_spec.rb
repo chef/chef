@@ -24,7 +24,7 @@ class SecretDSLTester
 end
 
 class SecretFetcherImpl < Chef::SecretFetcher::Base
-  def do_fetch(name)
+  def do_fetch(name, version)
     name
   end
 end
@@ -38,7 +38,7 @@ describe Chef::DSL::Secret do
   it "uses SecretFetcher.for_service to find the fetcher" do
     substitute_fetcher = SecretFetcherImpl.new({})
     expect(Chef::SecretFetcher).to receive(:for_service).with(:example, {}).and_return(substitute_fetcher)
-    expect(substitute_fetcher).to receive(:fetch).with "key1"
+    expect(substitute_fetcher).to receive(:fetch).with("key1", nil)
     dsl.secret(name: "key1", service: :example, config: {})
   end
 
