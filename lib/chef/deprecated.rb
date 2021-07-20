@@ -259,6 +259,18 @@ class Chef
       target 34
     end
 
+    class DataBag < Base
+      def to_s
+        "Deprecated: #{message}\n"
+      end
+    end
+
+    class DataBagItem < Base
+      def to_s
+        "Deprecated: #{message}\n"
+      end
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client/"

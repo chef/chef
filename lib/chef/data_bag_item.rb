@@ -44,7 +44,7 @@ class Chef
       end
 
       if id_str.include? "."
-        ChefConfig.logger.deprecation(" Data bag item ID with period is now deprecated, consider using ID without '.', you gave: #{id_str.inspect}")
+        Chef.deprecated(:data_bag_item, "Data bag item ID's should not conatain period, consider using an ID without '.', you gave: #{id_str.inspect}")
       end
     end
 

@@ -74,8 +74,8 @@ describe Chef::DataBagItem do
 
     [ "alphanum.alphanum", ".alphanum"].each do |char|
       it "should raise deprecated warning by using id #{char}" do
-        expect(ChefConfig.logger).to receive(:deprecation).with(" Data bag item ID with period is now deprecated, consider using ID without '.', you gave: \"#{char}\"").at_least(:once)
-        Chef::DataBagItem.validate_id!(char)
+        expect(Chef).to receive(:deprecated).with(:data_bag_item, "Data bag item ID's should not conatain period, consider using an ID without '.', you gave: \"#{char}\"").at_least(:once)
+        Chef::DataBagItem.validate_id!"#{char}"
       end
     end
 

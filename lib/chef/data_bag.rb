@@ -44,7 +44,7 @@ class Chef
       end
 
       if name.include? "."
-        ChefConfig.logger.deprecation(" Databags name with period is now deprecated, consider using name without '.', you gave: #{name.inspect}")
+        Chef.deprecated(:data_bag, "Data bag names should not contain period, consider using a name without '.', you gave: #{name.inspect}")
       end
     end
 
