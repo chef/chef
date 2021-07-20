@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: faf25314310a9ce27a7ba3e73ffb8301633dec83
+  revision: c77e94845d18c03db5930517d1d55fac25d29a2b
   branch: master
   specs:
-    ohai (17.2.3)
+    ohai (17.3.1)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -186,7 +186,7 @@ GEM
     faraday-em_synchrony (1.0.0)
     faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
-    faraday-net_http_persistent (1.1.0)
+    faraday-net_http_persistent (1.2.0)
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
@@ -293,7 +293,7 @@ GEM
     public_suffix (4.0.6)
     rack (2.2.3)
     rainbow (3.0.0)
-    rake (13.0.5)
+    rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.1.1)
     rexml (3.2.5)
@@ -322,10 +322,10 @@ GEM
       rubocop-ast (>= 1.7.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.7.0)
+    rubocop-ast (1.8.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
-    ruby2_keywords (0.0.4)
+    ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
     semverse (3.0.0)
