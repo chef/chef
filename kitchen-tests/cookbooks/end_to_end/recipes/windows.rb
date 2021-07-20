@@ -177,5 +177,11 @@ windows_certificate "c:/mordor/ca.cert.pem" do
   store_name "ROOT"
 end
 
+include_recipe "::_habitat_win_config"
+include_recipe "::_habitat_win_package"
+include_recipe "::_habitat_win_service"
+include_recipe "::_habitat_win_sup_toml_config"
+include_recipe "::_habitat_win_sup"
+include_recipe "::_habitat_win_user_toml"
 include_recipe "::_windows_printer"
 include_recipe "::_windows_defender"

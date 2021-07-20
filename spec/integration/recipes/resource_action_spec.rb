@@ -9,7 +9,7 @@ class NoActionJackson < Chef::Resource
     @foo
   end
 
-  class <<self
+  class << self
     attr_accessor :action_was
   end
 end
@@ -17,7 +17,7 @@ end
 class WeirdActionJackson < Chef::Resource
   provides :weird_action_jackson
 
-  class <<self
+  class << self
     attr_accessor :action_was
   end
 
@@ -176,7 +176,7 @@ module ResourceActionSpec
           @blarghle
         end
 
-        class <<self
+        class << self
           attr_accessor :ran_action
           attr_accessor :succeeded
           attr_accessor :ruby_block_converged
@@ -284,7 +284,7 @@ module ResourceActionSpec
             @bar = "#{value}alope" if value
             @bar
           end
-          class <<self
+          class << self
             attr_accessor :load_current_resource_ran
             attr_accessor :jackalope_ran
           end
