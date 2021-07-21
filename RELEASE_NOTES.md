@@ -69,7 +69,7 @@ Use the habitat_package to install or remove Chef Habitat packages from Habitat 
 
 #### habitat_sup
 
-Use the habitat_sup resource to runs a Chef Habitat supervisor for one or more Chef Habitat services. The resource is commonly used in conjunction with habitat_service which will manage the services loaded and started within the supervisor. See the [habitat_sup Resource documentation](https://docs.chef.io/resources/habitat_sup/) for additional details and example usage.
+Use the habitat_sup resource to run a Chef Habitat supervisor for one or more Chef Habitat services. The resource is commonly used in conjunction with the habitat_service resource, which will manage the services loaded and started within the supervisor. See the [habitat_sup Resource documentation](https://docs.chef.io/resources/habitat_sup/) for additional details and example usage.
 
 #### habitat_config
 
