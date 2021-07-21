@@ -130,7 +130,7 @@ Updated the chef_client_config resource to properly format the `client.rb` confi
 
 ### Chef Language Improvements
 
-We've added several new helpers to the Chef Infra Language to make writing out various data formats easier. These helpers allow you to convert data from Ruby Hashes or Chef Infra attributes into YAML, JSON, or TOML format data. A great use case for these helpers is writing system or application configuration files to disk without having to template out data formats using a template resource.
+We've added several new helpers to the Chef Infra Language to make writing out various data formats easier. These helpers allow you to convert data from Ruby Hashes or Chef Infra attributes into YAML, JSON, or TOML formatted data. A great use case for these helpers is writing system or application configuration files to disk without having to template out data formats using a template resource.
 
 Given this Ruby hash:
 
