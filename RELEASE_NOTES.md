@@ -85,7 +85,7 @@ Use the habitat_service resource to manage Chef Habitat services. This requires 
 
 #### habitat_user_toml
 
-Use the habitat_user_toml to template a `user.toml` for Chef Habitat services. Configurations set in the `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration. See the [habitat_user_toml Resource documentation](https://docs.chef.io/resources/habitat_user_toml/) for additional details and example usage.
+Use the habitat_user_toml resource to template a `user.toml` for Chef Habitat services. Configurations set in the `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration. See the [habitat_user_toml Resource documentation](https://docs.chef.io/resources/habitat_user_toml/) for additional details and example usage.
 
 #### windows_defender
 
