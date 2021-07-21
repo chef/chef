@@ -259,7 +259,7 @@ secret(name: 'test1', version: 'v1', service: :azure_key_vault, config: { vault:
 
 The secrets helper returns a text string, so it can be used anywhere in Chef Infra that you'd hard code a value or access a value a data bag.
 
-#### Writing a Secret To a File
+##### Writing a Secret To a File
 
 ```ruby
 file '/home/ubuntu/aws-secret' do
@@ -267,7 +267,7 @@ file '/home/ubuntu/aws-secret' do
 end
 ```
 
-#### Passing a Secret to a Template
+##### Passing a Secret to a Template
 
 ```ruby
 template '/etc/my_fancy_service/my_fancy_service.conf' do
