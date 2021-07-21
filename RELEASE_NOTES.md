@@ -103,7 +103,7 @@ Use the windows_update_settings resource to manage the various Windows Update pa
 
 #### powershell_package
 
-The `powershell_package` resource has been updated to allow passing an array of install options via the `options` property. Thanks for reporting this issue [@kimbernator](https://github.com/kimbernator)
+Updated the powershell_package resource to allow passing an array of install options via the `options` property. Thanks for reporting this issue [@kimbernator](https://github.com/kimbernator)
 
 #### windows_printer
 
