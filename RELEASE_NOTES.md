@@ -31,7 +31,7 @@ To introduce this new functionality without impacting existing Chef Infra Client
 
 #### How This Differs From Named Run Lists
 
-Policyfiles with run lists offer additional flexibility over named run lists and are better suited for adhoc Chef Infra Client execution or programmatically changing run lists during bootstrap. Named run lists within Policyfiles need to be defined when the Policyfile is created, requiring you to predefine each potential run list you may want to run at a future data. Run lists with Policyfiles allows you to run any run list for cookbooks included in the Policyfile lock. Override run lists with Policyfiles offer adhoc flexibility as the override run list is not saved to node on Chef Infra Server, unlike named run lists which permanently update the node.
+Policyfiles with run lists offer additional flexibility over named run lists and are better suited for adhoc Chef Infra Client execution or programmatically changing run lists during bootstrap. Named run lists within Policyfiles need to be defined when the Policyfile is created, requiring you to predefine each potential run list you may want to run at a future date. Run lists with Policyfiles allows you to run any run list for cookbooks included in the Policyfile lock. Override run lists with Policyfiles offer adhoc flexibility as the override run list is not saved to the node on Chef Infra Server, unlike named run lists which permanently update the node.
 
 #### Examples
 
