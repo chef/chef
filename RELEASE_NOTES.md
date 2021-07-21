@@ -93,7 +93,7 @@ Use the **windows_defender** resource to enable, configure or disable the Micros
 
 #### windows_defender_exclusion
 
-Use the **windows_defender_exclusion** resource to exclude paths, processes, or file types from Windows Defender realtime protection scanning. See the [windows_defender_exclusion Resource documentation](https://docs.chef.io/resources/windows_defender_exclusion/) for additional details and example usage.
+Use the windows_defender_exclusion resource to exclude paths, processes, or file types from Windows Defender realtime protection scanning. See the [windows_defender_exclusion Resource documentation](https://docs.chef.io/resources/windows_defender_exclusion/) for additional details and example usage.
 
 #### windows_update_settings
 
