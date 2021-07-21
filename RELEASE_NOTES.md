@@ -221,11 +221,62 @@ end
 
 ### Experimental Secrets Management
 
-With Chef Infra Client 17.3, we're introducing experimental secrets management integration. This functionality should be considered a beta and not be used in production. We'd love to get feedback on how how this works for you and any additional features that you'd like or need in order to utilize secrets from secret managers within your cookbooks. E-mail us at secrets_management_beta@progress.com.
+With Chef Infra Client 17.3, we're introducing experimental secrets management integration with a new `secrets` helper in the Infra Language. This helper has a pluggable model for fetching secrets from different secrets management systems. In this release of Chef Infra Client we're support AWS Secrets Manager and Azure Key Vault with additional secrets managers coming in future releases. This new functionality should be considered a beta and not not necessarily ready for production usage. We'd love to get feedback on how how this works for you and additional features you'd like, or need, in order to utilize secrets from secret managers within your cookbooks. E-mail us at secrets_management_beta@progress.com.
 
-This beta adds a new `secrets` helper to the Chef Infra Language with a plugable model for different secrets management systems. In this release of Chef Infra Client we've added initial support for AWS Secrets Manager and Azure Key Vault. In future releases we hope to add support for additional secrets management systems such as HashiCorp Vault and Akeyless Vault.
+#### Authentication
 
-TODO: ADD EXAMPLES HERE
+The `secrets` helper uses cloud instance authentication to access secrets in both Azure Key Vault and AWS Secrets Manager. This avoids the need to pass authentication in the helper and allows you to control access to secrets using existing cloud vendor access control models. When using AWS Secrets Manager, this is IAM roles applied to instances. In Azure this is Manged Identities applied to the VMs.
+
+#### Fetching Secrets
+
+The secrets helper accepts the secret name, and secrets service, secret version (optional), and connection options for the secrets service.
+
+##### Fetching an AWS Secrets Manager secret
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager)
+```
+
+##### Fetching a AWS Secrets Manager secret from another region
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager, config: { region: 'us-west-2' })
+```
+
+##### Fetching an Azure Key Vault secret
+
+```ruby
+secret(name: 'test1', service: :azure_key_vault, config: { vault: 'vault1' })
+```
+
+##### Fetching a specific version of an Azure Key Vault secret
+
+```ruby
+secret(name: 'test1', version: 'v1', service: :azure_key_vault, config: { vault: 'vault1' })
+```
+
+#### Using in Cookbooks
+
+The secrets helper returns a text string, so it can be used anywhere in Chef Infra that you'd hard code a value or access a value a data bag.
+
+#### Writing a Secret To a File
+
+```ruby
+file '/home/ubuntu/aws-secret' do
+  content secret(name: 'test1', service: :aws_secrets_manager)
+end
+```
+
+#### Passing a Secret to a Template
+
+```ruby
+template '/etc/my_fancy_service/my_fancy_service.conf' do
+  source 'config.erb'
+  variables(
+    db_token: secret(name: 'db_token', service: :aws_secrets_manager)
+  )
+end
+```
 
 ### System Detection Improvements
 
