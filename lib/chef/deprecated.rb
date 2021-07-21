@@ -259,20 +259,24 @@ class Chef
       target 34
     end
 
+    class PolicyfileCompatMode < Base
+      target 35
+    end
+
     class DataBag < Base
+      target 36
+
       def to_s
         "Deprecated: #{message}\n"
       end
     end
 
     class DataBagItem < Base
+      target 37
+
       def to_s
         "Deprecated: #{message}\n"
       end
-    end
-
-    class PolicyfileCompatMode < Base
-      target 35
     end
 
     class Generic < Base
