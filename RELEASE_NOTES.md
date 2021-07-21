@@ -97,7 +97,7 @@ Use the windows_defender_exclusion resource to exclude paths, processes, or file
 
 #### windows_update_settings
 
-Use the **windows_update_settings** resource to manage the various Windows Update patching options.. See the [windows_update_settings Resource documentation](https://docs.chef.io/resources/windows_update_settings/) for additional details and example usage.
+Use the windows_update_settings resource to manage the various Windows Update patching options. See the [windows_update_settings Resource documentation](https://docs.chef.io/resources/windows_update_settings/) for additional details and example usage.
 
 ### Updated Resources
 
