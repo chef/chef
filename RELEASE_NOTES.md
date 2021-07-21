@@ -234,12 +234,6 @@ The secrets helper accepts the secret name, and secrets service, secret version 
 ##### Fetching an AWS Secrets Manager secret
 
 ```ruby
-secret(name: 'test1', service: :aws_secrets_manager)
-```
-
-##### Fetching an AWS Secrets Manager secret from another region
-
-```ruby
 secret(name: 'test1', service: :aws_secrets_manager, config: { region: 'us-west-2' })
 ```
 
