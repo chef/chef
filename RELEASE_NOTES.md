@@ -21,7 +21,7 @@ We've updated Chef InSpec from 4.37.23 to 4.38.3:
 
 ### Run Lists with Policyfiles
 
-You can now optionally execute Chef Infra Client with a specified run lists on nodes that are managed with Policyfiles. This differs from the traditional Policyfile workflow by allowing you to run any cookbook/recipe combination that exists within the Policyfile lock.
+You can now optionally execute Chef Infra Client with a specified run list on nodes that are managed with Policyfiles. This differs from the traditional Policyfile workflow by allowing you to run any cookbook/recipe combination that exists within the Policyfile lock.
 
 #### Safety With Flexibility
 
