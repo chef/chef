@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.51 -->
-## [v16.13.51](https://github.com/chef/chef/tree/v16.13.51) (2021-07-16)
+<!-- latest_release 16.13.52 -->
+## [v16.13.52](https://github.com/chef/chef/tree/v16.13.52) (2021-07-21)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11828](https://github.com/chef/chef/pull/11828) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `237c0a4` to `07291b0` in /omnibus [#11844](https://github.com/chef/chef/pull/11844) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `237c0a4` to `07291b0` in /omnibus [#11844](https://github.com/chef/chef/pull/11844) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.52 -->
 - Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11828](https://github.com/chef/chef/pull/11828) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.51 -->
 - Remove external testing on the chef-16 branch [#11829](https://github.com/chef/chef/pull/11829) ([tas50](https://github.com/tas50)) <!-- 16.13.50 -->
 - Bump omnibus from `5803fdc` to `6d109b6` in /omnibus [#11823](https://github.com/chef/chef/pull/11823) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.49 -->
