@@ -126,7 +126,7 @@ end
 
 #### chef_client_config
 
-The `chef_client_config` resource has been updated to properly format the `client.rb` config when the user sets the `ohai_optional_plugins` or `ohai_disabled_plugins` properties. Thanks for reporting this issue [@caneylan](https://github.com/caneylan). The resource can now also set the new `policy_persist_run_list` configuration with the `client.rb` file by setting the `policy_persist_run_list` property to `true`.
+Updated the chef_client_config resource to properly format the `client.rb` config when the user sets the `ohai_optional_plugins` or `ohai_disabled_plugins` properties. Thanks for reporting this issue [@caneylan](https://github.com/caneylan). The resource can now also set the new `policy_persist_run_list` configuration with the `client.rb` file by setting the `policy_persist_run_list` property to `true`.
 
 ### Chef Language Improvements
 
