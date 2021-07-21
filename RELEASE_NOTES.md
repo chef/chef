@@ -89,7 +89,7 @@ Use the habitat_user_toml resource to template a `user.toml` for Chef Habitat se
 
 #### windows_defender
 
-Use the **windows_defender** resource to enable, configure or disable the Microsoft Windows Defender service. See the [windows_defender Resource documentation](https://docs.chef.io/resources/windows_defender/) for additional details and example usage.
+Use the windows_defender resource to enable, configure, or disable the Microsoft Windows Defender service. See the [windows_defender Resource documentation](https://docs.chef.io/resources/windows_defender/) for additional details and example usage.
 
 #### windows_defender_exclusion
 
