@@ -231,7 +231,7 @@ TODO: ADD EXAMPLES HERE
 
 #### virtuozzo Support
 
-The `virtuozzo` platform is now detected as a member of the RHEL platform_family. Thanks for this addition [@robertmasztalerz](https://github.com/robertmasztalerz)!
+The `virtuozzo` platform is now detected as a member of the RHEL platform family. Thanks for this addition [@robertmasztalerz](https://github.com/robertmasztalerz)!
 
 #### Linux Livepatch Detection
 
