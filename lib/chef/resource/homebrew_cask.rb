@@ -34,7 +34,7 @@ class Chef
 
       property :cask_name, String,
         description: "An optional property to set the cask name if it differs from the resource block's name.",
-        regex: %r{^[\w/-]+$},
+        regex: %r{^[\w/\-@]+$},
         validation_message: "The provided Homebrew cask name is not valid. Cask names can contain alphanumeric characters, _, -, or / only!",
         name_property: true
 
