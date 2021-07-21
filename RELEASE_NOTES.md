@@ -304,7 +304,7 @@ Failures initializing Chef Infra Client on FIPS enabled PowerPC RHEL systems hav
 
 #### RPM Package Digests
 
-The file digest in Chef Infra RPM packages have been updated from MD5 to SHA256 to prevent failures installing on some FIPS-enabled systems.
+The file digest in Chef Infra RPM packages has been updated from MD5 to SHA256 to prevent failures installing on some FIPS-enabled systems.
 
 ### Security
 
