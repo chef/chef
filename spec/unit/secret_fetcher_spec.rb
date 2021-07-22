@@ -28,7 +28,7 @@ class SecretFetcherImpl < Chef::SecretFetcher::Base
 end
 
 describe Chef::SecretFetcher do
-  let(:fetcher_impl) { SecretFetcherImpl.new({}) }
+  let(:fetcher_impl) { SecretFetcherImpl.new({}, nil) }
 
   before do
     allow(Chef::SecretFetcher::Example).to receive(:new).and_return fetcher_impl
@@ -36,38 +36,38 @@ describe Chef::SecretFetcher do
 
   context ".for_service" do
     it "resolves the example fetcher without error" do
-      Chef::SecretFetcher.for_service(:example, {})
+      Chef::SecretFetcher.for_service(:example, {}, nil)
     end
 
     it "resolves the Azure Key Vault fetcher without error" do
-      Chef::SecretFetcher.for_service(:azure_key_vault, vault: "invalid")
+      Chef::SecretFetcher.for_service(:azure_key_vault, { vault: "invalid" }, nil)
     end
 
     it "resolves the AWS fetcher without error" do
-      Chef::SecretFetcher.for_service(:aws_secrets_manager, region: "invalid")
+      Chef::SecretFetcher.for_service(:aws_secrets_manager, { region: "invalid" }, nil)
     end
 
     it "raises Chef::Exceptions::Secret::MissingFetcher when service is blank" do
-      expect { Chef::SecretFetcher.for_service(nil, {}) }.to raise_error(Chef::Exceptions::Secret::MissingFetcher)
+      expect { Chef::SecretFetcher.for_service(nil, {}, nil) }.to raise_error(Chef::Exceptions::Secret::MissingFetcher)
     end
 
     it "raises Chef::Exceptions::Secret::MissingFetcher when service is nil" do
-      expect { Chef::SecretFetcher.for_service("", {}) }.to raise_error(Chef::Exceptions::Secret::MissingFetcher)
+      expect { Chef::SecretFetcher.for_service("", {}, nil) }.to raise_error(Chef::Exceptions::Secret::MissingFetcher)
     end
 
     it "raises Chef::Exceptions::Secret::InvalidFetcher for an unknown fetcher" do
-      expect { Chef::SecretFetcher.for_service(:bad_example, {}) }.to raise_error(Chef::Exceptions::Secret::InvalidFetcherService)
+      expect { Chef::SecretFetcher.for_service(:bad_example, {}, nil) }.to raise_error(Chef::Exceptions::Secret::InvalidFetcherService)
     end
 
     it "ensures fetcher configuration is valid by invoking validate!" do
       expect(fetcher_impl).to receive(:validate!)
-      Chef::SecretFetcher.for_service(:example, {})
+      Chef::SecretFetcher.for_service(:example, {}, nil)
     end
   end
 
   context "#fetch" do
     let(:fetcher) {
-      Chef::SecretFetcher.for_service(:example, { "key1" => "value1" })
+      Chef::SecretFetcher.for_service(:example, { "key1" => "value1" }, nil)
     }
 
     it "fetches from the underlying service when secret name is provided " do

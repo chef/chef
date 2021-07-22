@@ -23,7 +23,7 @@ require "chef/secret_fetcher/azure_key_vault"
 
 describe Chef::SecretFetcher::AzureKeyVault do
   let(:config) { { vault: "myvault" } }
-  let(:fetcher) { Chef::SecretFetcher::AzureKeyVault.new(config) }
+  let(:fetcher) { Chef::SecretFetcher::AzureKeyVault.new(config, nil) }
 
   context "when validating configuration and configuration is missing :vault" do
     context "and configuration does not have a 'vault'" do
