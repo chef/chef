@@ -221,7 +221,7 @@ end
 
 ### Experimental Secrets Management
 
-With Chef Infra Client 17.3, we're introducing experimental secrets management integration with a new `secrets` helper in the Infra Language. This helper has a pluggable model for fetching secrets from multiple secrets management systems. In this release of Chef Infra Client we're support AWS Secrets Manager and Azure Key Vault with additional secrets managers coming in future releases. This new functionality should be considered a beta and not not necessarily ready for production usage. We'd love to get feedback on how how this works for you and additional features you'd like, or need, in order to utilize secrets from secret managers within your cookbooks. E-mail us at secrets_management_beta@progress.com.
+With Chef Infra Client 17.3, we're introducing experimental secrets management integration with a new `secrets` helper in the Infra Language. This helper has a plugable model for fetching secrets from multiple secrets management systems. In this release of Chef Infra Client we're support AWS Secrets Manager and Azure Key Vault with additional secrets managers coming in future releases. This new functionality should be considered a beta and not not necessarily ready for production usage. We'd love to get feedback on how how this works for you and additional features you'd like, or need, in order to utilize secrets from secret managers within your cookbooks. E-mail us at secrets_management_beta@progress.com.
 
 #### Authentication
 
