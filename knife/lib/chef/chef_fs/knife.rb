@@ -131,6 +131,9 @@ class Chef
           ui.error("Attempt to use relative path '#{arg}' when current directory is outside the repository path.")
           ui.error("Current working directory is '#{@chef_fs_config.cwd}'.")
           exit(1)
+        elsif !Dir.exist?(arg)
+          ui.error("Cookbook does not exist in given path #{arg}")
+          exit(1)
         else
           inferred_path = Chef::ChefFS::PathUtils.join(@chef_fs_config.base_path, arg)
         end
