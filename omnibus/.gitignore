@@ -12,3 +12,4 @@ build_timestamp
 ldd.out
 Berksfile.lock
 Gemfile.local
+*.gem
