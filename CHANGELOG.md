@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.53 -->
-## [v16.13.53](https://github.com/chef/chef/tree/v16.13.53) (2021-07-23)
+<!-- latest_release 16.13.54 -->
+## [v16.13.54](https://github.com/chef/chef/tree/v16.13.54) (2021-07-23)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.38.9 [#11848](https://github.com/chef/chef/pull/11848) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update Ruby to 2.7.4 [#11857](https://github.com/chef/chef/pull/11857) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ruby to 2.7.4 [#11857](https://github.com/chef/chef/pull/11857) ([tas50](https://github.com/tas50)) <!-- 16.13.54 -->
 - Bump inspec-core-bin to 4.38.9 [#11848](https://github.com/chef/chef/pull/11848) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.53 -->
 - Bump omnibus-software from `237c0a4` to `07291b0` in /omnibus [#11844](https://github.com/chef/chef/pull/11844) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.52 -->
 - Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11828](https://github.com/chef/chef/pull/11828) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.51 -->
