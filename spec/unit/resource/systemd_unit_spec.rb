@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Resource::SystemdUnit do
   let(:resource) { Chef::Resource::SystemdUnit.new("sysstat-collect.timer") }
-  let(:unit_content_string) { "[Unit]\nDescription = Run system activity accounting tool every 10 minutes\nDocumentation = foo\nDocumentation = bar\n\n[Timer]\nOnCalendar = *:00/10\n\n[Install]\nWantedBy = sysstat.service\n" }
+  let(:unit_content_string) { "[Unit]\nDescription=Run system activity accounting tool every 10 minutes\nDocumentation=foo\nDocumentation=bar\n\n[Timer]\nOnCalendar=*:00/10\n\n[Install]\nWantedBy=sysstat.service\n" }
   let(:unit_content_hash) do
     {
       "Unit" => {
