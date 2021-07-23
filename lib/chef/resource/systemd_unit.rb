@@ -113,7 +113,7 @@ class Chef
         when Hash
           IniParse.gen do |doc|
             content.each_pair do |sect, opts|
-              doc.section(sect) do |section|
+              doc.section(sect, { :option_sep => "=" }) do |section|
                 opts.each_pair do |opt, val|
                   [val].flatten.each do |v|
                     section.option(opt, v)
