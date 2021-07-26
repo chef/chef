@@ -25,13 +25,17 @@ class Chef
   class SecretFetcher
     class Base
       attr_reader :config
+      # Note that this is only available in the context of a recipe.
+      # Since that's the only place it's intended to be used, that's probably OK.
+      attr_reader :run_context
 
       # Initialize a new SecretFetcher::Base
       #
       # @param config [Hash] Configuration hash.  Expected configuration keys and values
       # will vary based on implementation, and are validated in `validate!`.
-      def initialize(config)
+      def initialize(config, run_context)
         @config = config
+        @run_context = run_context
       end
 
       # Fetch the named secret by invoking implementation-specific [Chef::SecretFetcher::Base#do_fetch]
