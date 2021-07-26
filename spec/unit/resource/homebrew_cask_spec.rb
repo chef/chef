@@ -19,22 +19,40 @@ require "spec_helper"
 
 describe Chef::Resource::HomebrewCask do
 
-  let(:resource) { Chef::Resource::HomebrewCask.new("fakey_fakerton") }
+  context 'name with under bar' do
+    let(:resource) { Chef::Resource::HomebrewCask.new("fakey_fakerton") }
 
-  it "has a resource name of :homebrew_cask" do
-    expect(resource.resource_name).to eql(:homebrew_cask)
+    it "has a resource name of :homebrew_cask" do
+      expect(resource.resource_name).to eql(:homebrew_cask)
+    end
+
+    it "the cask_name property is the name_property" do
+      expect(resource.cask_name).to eql("fakey_fakerton")
+    end
+
+    it "sets the default action as :install" do
+      expect(resource.action).to eql([:install])
+    end
+
+    it "supports :install, :remove actions" do
+      expect { resource.action :install }.not_to raise_error
+      expect { resource.action :remove }.not_to raise_error
+    end
   end
 
-  it "the cask_name property is the name_property" do
-    expect(resource.cask_name).to eql("fakey_fakerton")
+  context 'name with high fun' do
+    let(:resource) { Chef::Resource::HomebrewCask.new("fakey-fakerton") }
+
+    it "the cask_name property is the name_property" do
+      expect(resource.cask_name).to eql("fakey-fakerton")
+    end
   end
 
-  it "sets the default action as :install" do
-    expect(resource.action).to eql([:install])
-  end
+  context 'name with at mark' do
+    let(:resource) { Chef::Resource::HomebrewCask.new("fakey-fakerton@10") }
 
-  it "supports :install, :remove actions" do
-    expect { resource.action :install }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
+    it "the cask_name property is the name_property" do
+      expect(resource.cask_name).to eql("fakey-fakerton@10")
+    end
   end
 end
