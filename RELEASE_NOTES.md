@@ -791,17 +791,17 @@ Chef InSpec has been updated from 4.31.1 to 4.38.9 with the following changes:
 
 #### New Features
 
-- Added the new --reporter-include-source CLI option, which includes the source code of the controls in the output of the CLI reporter
-- Added ability to pass inputs to InSpec shell using input file and cli
-- Added a new mongodb_conf resource
-- Fixed the inspec shell to allow loading profiles that have their own dependent profiles
-- Updated the inspec init plugin command with the following changes
+- Added the new `--reporter-include-source` CLI option, which includes the source code of the controls in the output of the CLI reporter.
+- Added ability to pass inputs to InSpec shell using input file and CLI.
+- Added a new mongodb_conf resource.
+- Fixed the inspec shell to allow loading profiles that have their own dependent profiles.
+- Updated the inspec init plugin command with the following changes.
   - The values of flags passed to the inspec init plugin command are now wrapped in double quotes instead of single quotes.
   - Template files are now ERB files.
   - The activator flag replaces the hook flag, which is now an alias.
-- Added support for zfs_pool and zfs_dataset resources on Linux
-- Improved port resource performance: adding more specific search while using ss command
-- The new inspec automate command replaces the inspec compliance command, which is now deprecated
+- Added support for zfs_pool and zfs_dataset resources on Linux.
+- Improved port resource performance: adding more specific search while using ss command.
+- The new inspec automate command replaces the inspec compliance command, which is now deprecated.
 - Added the selinux resource which includes support for modules and booleans.
 - Added the pattern input option for DSL and metadata inputs.
 - Added the members_array property for group & groups resources.
