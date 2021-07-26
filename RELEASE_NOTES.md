@@ -778,6 +778,88 @@ On AIX, Solaris, macOS, and Linux platforms the Chef Infra Client packages will 
 
 In Chef Infra Client 16 we introduced Unified Mode allowing you to collapse the sometimes confusing compile and converge phases into a single unified phase. Unified mode makes it easier to write and troubleshoot failures in custom resources and for Chef Infra Client 18 we plan to make this the default execution phase for custom resources. We've backported the unified mode feature to the Chef Infra Client 14 and 15 systems and for Chef Infra Client 17 we will now begin warning if resources don't explicitly set this new mode. Enabling unified mode now lets you validate that resources will continue to function as expected in Chef Infra Client 18. To enable unified  mode in your resource add `unified_mode true` to the file.
 
+## What's New in 16.14
+
+## Bug Fixes
+
+- `bundle install` now correctly installs gems from cookbook `metadata.rb` files. Thanks for this fix [@nvwls](https://github.com/nvwls)
+- `knife bootstrap` on Windows now correctly uses `https://omnitruck.chef.io` to download packages.
+
+### Chef InSpec 4.31
+
+Chef InSpec has been updated from 4.31.1 to 4.38.9 with the following changes:
+
+#### New Features
+
+- Added the new `--reporter-include-source` CLI option, which includes the source code of the controls in the output of the CLI reporter.
+- Added ability to pass inputs to InSpec shell using input file and CLI.
+- Added a new mongodb_conf resource.
+- Fixed the inspec shell to allow loading profiles that have their own dependent profiles.
+- Updated the inspec init plugin command with the following changes.
+  - The values of flags passed to the inspec init plugin command are now wrapped in double quotes instead of single quotes.
+  - Template files are now ERB files.
+  - The activator flag replaces the hook flag, which is now an alias.
+- Added support for zfs_pool and zfs_dataset resources on Linux.
+- Improved port resource performance: adding more specific search while using ss command.
+- The new inspec automate command replaces the inspec compliance command, which is now deprecated.
+- Added the selinux resource which includes support for modules and booleans.
+- Added the pattern input option for DSL and metadata inputs.
+- Added the members_array property for group & groups resources.
+- Train now reads the username and port from the .ssh/config file and will use these values if present.
+
+#### Bug Fixes
+
+- Removed the default of 3600 seconds for `--command-timeout` CLI option.
+- Fix SSH Timeout PTY allocation.
+- Changed the Windows local pipe server connection to retry once on EPIPE.
+- Fixed the postgres_session resource to raise an exception if there is an error in a connection or query.
+- Fixed the mysql_session resource to raise an exception if there is an error in a connection or query.
+- Removed support for Chef Compliance Server and Chef Automate 1 from the inspec automate command, as both products are EOL.
+- `inspec detect --no-color` returns color-free output.
+- file resource more_permissive_than matcher returns nil instead of throwing exception when file does not exist.
+- The HTTP resource response body is now coerced into UTF-8.
+- Modified the windows_feature resource to indicate if a feature is enabled rather than just available.
+- Fixed an error when using profile dependencies and require_controls.
+- Fixed the windows_firewall_rule resource when it failed to validate more than one rule.
+- Switch to GNU timeout-based implementation of SSH timeouts.
+- Fixed the group resource when a member does not exist.
+
+### Packaging
+
+#### M1 macOS Monterey Packages
+
+Chef Infra Client packages are now produced for Apple's macOS Monterey preview release. Packages for Intel-based Macs will ship at a later date.
+
+#### Solaris 11.3 EOL / Solaris 11.4 Packages
+
+Oracle Solaris 11.3 became end-of-life (EOL) in January 2021. Chef Infra Client packages are no longer produced for Solaris 11.3 and new Solaris 11.4 packages are available in their place.
+
+### PowerPC RHEL FIPS Support
+
+We now produce FIPS capable packages for RHEL on PowerPC.
+
+#### RHEL 8 Packages
+
+We improved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
+
+#### RPM Package Digests
+
+The file digest in Chef Infra RPM packages has been updated from MD5 to SHA256 to prevent failures installing on some FIPS-enabled systems.
+
+### Security
+
+#### Ruby 2.7.4
+
+Ruby has been updated to 2.7.4 to resolve a large number of bugs as well as the following CVEs:
+
+- [CVE-2021-31810](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31810)
+- [CVE-2021-32066](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32066)
+- [CVE-2021-31799](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31799)
+
+#### Addressable
+
+We've updated the addressable gem from 2.7 to 2.8 to resolve [CVE-2021-32740](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32740).
+
 ## What's New in 16.13
 
 ### Chef InSpec 4.31
