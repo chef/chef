@@ -809,19 +809,19 @@ Chef InSpec has been updated from 4.31.1 to 4.38.9 with the following changes:
 
 #### Bug Fixes
 
-- Removed the default of 3600 seconds for --command-timeout CLI option
-- Fix SSH Timeout PTY allocation
-- Changed the Windows local pipe server connection to retry once on EPIPE
-- Fixed the postgres_session resource to raise an exception if there is an error in a connection or query
-- Fixed the mysql_session resource to raise an exception if there is an error in a connection or query
-- Removed support for Chef Compliance Server and Chef Automate 1 from the inspec automate command, as both products are EOL
-- inspec detect --no-color returns color-free output
-- file resource more_permissive_than matcher returns nil instead of throwing exception when file does not exist
+- Removed the default of 3600 seconds for `--command-timeout` CLI option.
+- Fix SSH Timeout PTY allocation.
+- Changed the Windows local pipe server connection to retry once on EPIPE.
+- Fixed the postgres_session resource to raise an exception if there is an error in a connection or query.
+- Fixed the mysql_session resource to raise an exception if there is an error in a connection or query.
+- Removed support for Chef Compliance Server and Chef Automate 1 from the inspec automate command, as both products are EOL.
+- `inspec detect --no-color` returns color-free output.
+- file resource more_permissive_than matcher returns nil instead of throwing exception when file does not exist.
 - The HTTP resource response body is now coerced into UTF-8.
 - Modified the windows_feature resource to indicate if a feature is enabled rather than just available.
 - Fixed an error when using profile dependencies and require_controls.
 - Fixed the windows_firewall_rule resource when it failed to validate more than one rule.
-- Switch to GNU timeout-based implementation of SSH timeouts
+- Switch to GNU timeout-based implementation of SSH timeouts.
 - Fixed the group resource when a member does not exist.
 
 ### Packaging
