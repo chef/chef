@@ -782,7 +782,7 @@ In Chef Infra Client 16 we introduced Unified Mode allowing you to collapse the 
 
 ## Bug Fixes
 
-- `bundle install` when installing gems from cookbook `metadata.rb` files. Thanks for this fix [@nvwls](https://github.com/nvwls)
+- `bundle install` now correctly installs gems from cookbook `metadata.rb` files. Thanks for this fix [@nvwls](https://github.com/nvwls)
 - `knife bootstrap` on Windows now correctly uses `https://omnitruck.chef.io` to download packages.
 
 ### Chef InSpec 4.31
