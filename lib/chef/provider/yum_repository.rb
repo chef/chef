@@ -45,7 +45,7 @@ class Chef
           if new_resource.make_cache
             notifies :run, "execute[yum clean metadata #{new_resource.repositoryid}]", :immediately if new_resource.clean_metadata || new_resource.clean_headers
             notifies :run, "execute[yum-makecache-#{new_resource.repositoryid}]", :immediately
-            notifies :run, "ruby_block[package-cache-reload-#{new_resource.repositoryid}]", :immediately
+            notifies :flush_cache, "package[package-cache-reload-#{new_resource.repositoryid}]", :immediately
           end
         end
 
@@ -61,7 +61,9 @@ class Chef
           only_if { new_resource.enabled }
         end
 
-        package_cache_reload_resource
+        package "package-cache-reload-#{new_resource.repositoryid}" do
+          action :nothing
+        end
       end
 
       action :delete do
@@ -73,10 +75,12 @@ class Chef
 
         file ::File.join(new_resource.reposdir, "#{new_resource.repositoryid}.repo") do
           action :delete
-          notifies :run, "ruby_block[package-cache-reload-#{new_resource.repositoryid}]", :immediately
+          notifies :flush_cache, "package[package-cache-reload-#{new_resource.repositoryid}]", :immediately
         end
 
-        package_cache_reload_resource
+        package "package-cache-reload-#{new_resource.repositoryid}" do
+          action :nothing
+        end
       end
 
       action :makecache do
@@ -84,25 +88,16 @@ class Chef
           command "yum -q -y makecache --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
           action :run
           only_if { new_resource.enabled }
-          notifies :run, "ruby_block[package-cache-reload-#{new_resource.repositoryid}]", :immediately
+          notifies :flush_cache, "package[package-cache-reload-#{new_resource.repositoryid}]", :immediately
         end
 
-        package_cache_reload_resource
+        package "package-cache-reload-#{new_resource.repositoryid}" do
+          action :nothing
+        end
       end
 
       alias_method :action_add, :action_create
       alias_method :action_remove, :action_delete
-
-      def package_cache_reload_resource
-        ruby_block "package-cache-reload-#{new_resource.repositoryid}" do
-          if ( fedora? && node["platform_version"].to_i >= 22 ) || ( rhel? && node["platform_version"].to_i >= 8 )
-            block { Chef::Provider::Package::Dnf::PythonHelper.instance.restart }
-          else
-            block { Chef::Provider::Package::Yum::YumCache.instance.reload }
-          end
-          action :nothing
-        end
-      end
 
       def template_available?(path)
         !path.nil? && run_context.has_template_in_cookbook?(new_resource.cookbook_name, path)
