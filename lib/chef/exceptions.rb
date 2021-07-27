@@ -308,8 +308,6 @@ class Chef
           super("No secret service provided. Supported services are: :#{fetcher_service_names.join(" :")}")
         end
       end
-
-      class MissingVaultName < RuntimeError; end
     end
 
     # Exception class for collecting multiple failures. Used when running
