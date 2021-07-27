@@ -2,62 +2,60 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.14.1 -->
-## [v16.14.1](https://github.com/chef/chef/tree/v16.14.1) (2021-07-27)
-
-#### Merged Pull Requests
-- Bump train-core to 3.8.1 [#11868](https://github.com/chef/chef/pull/11868) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.13.16 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump train-core to 3.8.1 [#11868](https://github.com/chef/chef/pull/11868) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.14.1 -->
-- Update to 16.14.0 [#11860](https://github.com/chef/chef/pull/11860) ([tas50](https://github.com/tas50)) <!-- 16.14.0 -->
-- Produce macOS m1 monterey packages [#11859](https://github.com/chef/chef/pull/11859) ([tas50](https://github.com/tas50)) <!-- 16.13.55 -->
-- Update Ruby to 2.7.4 [#11857](https://github.com/chef/chef/pull/11857) ([tas50](https://github.com/tas50)) <!-- 16.13.54 -->
-- Bump inspec-core-bin to 4.38.9 [#11848](https://github.com/chef/chef/pull/11848) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.53 -->
-- Bump omnibus-software from `237c0a4` to `07291b0` in /omnibus [#11844](https://github.com/chef/chef/pull/11844) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.52 -->
-- Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11828](https://github.com/chef/chef/pull/11828) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.51 -->
-- Remove external testing on the chef-16 branch [#11829](https://github.com/chef/chef/pull/11829) ([tas50](https://github.com/tas50)) <!-- 16.13.50 -->
-- Bump omnibus from `5803fdc` to `6d109b6` in /omnibus [#11823](https://github.com/chef/chef/pull/11823) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.49 -->
-- Bump omnibus-software from `e9feb35` to `cdef22f` in /omnibus [#11816](https://github.com/chef/chef/pull/11816) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.48 -->
-- Bump omnibus from `8b50107` to `5803fdc` in /omnibus [#11818](https://github.com/chef/chef/pull/11818) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.47 -->
-- Bump kitchen-vagrant from 1.8.0 to 1.9.0 in /omnibus [#11817](https://github.com/chef/chef/pull/11817) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.13.46 -->
-- Bump omnibus-software from `c626aa2` to `e9feb35` in /omnibus [#11797](https://github.com/chef/chef/pull/11797) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.45 -->
-- Bump addressable to 2.8.0 [#11773](https://github.com/chef/chef/pull/11773) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.44 -->
-- Bump inspec-core-bin to 4.38.3 [#11770](https://github.com/chef/chef/pull/11770) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.43 -->
-- Build RHEL 8 packages on RHEL 8 [#11769](https://github.com/chef/chef/pull/11769) ([tas50](https://github.com/tas50)) <!-- 16.13.42 -->
-- Enable FIPS on PPC RHEL builds [#11768](https://github.com/chef/chef/pull/11768) ([tas50](https://github.com/tas50)) <!-- 16.13.41 -->
-- Move some testing to GitHub actions [#11767](https://github.com/chef/chef/pull/11767) ([tas50](https://github.com/tas50)) <!-- 16.13.40 -->
-- Pin pry and fix omnibus gemfile.locki [#11757](https://github.com/chef/chef/pull/11757) ([tas50](https://github.com/tas50)) <!-- 16.13.40 -->
-- Bump omnibus from `87db446` to `8b50107` in /omnibus [#11755](https://github.com/chef/chef/pull/11755) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.39 -->
-- Bump train-core to 3.7.4 [#11738](https://github.com/chef/chef/pull/11738) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.38 -->
-- Bump omnibus-software from `68f693d` to `c626aa2` in /omnibus [#11730](https://github.com/chef/chef/pull/11730) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.37 -->
-- Bump berkshelf from 7.2.1 to 7.2.2 in /omnibus [#11724](https://github.com/chef/chef/pull/11724) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.36 -->
-- Bump omnibus-software from `b1e7b08` to `68f693d` in /omnibus [#11725](https://github.com/chef/chef/pull/11725) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.35 -->
-- Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11709](https://github.com/chef/chef/pull/11709) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.34 -->
-- Bump inspec-core-bin to 4.37.25 [#11685](https://github.com/chef/chef/pull/11685) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.33 -->
-- Bump inspec-core-bin to 4.37.23 [#11656](https://github.com/chef/chef/pull/11656) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.32 -->
-- Bump inspec-core-bin to 4.37.20 [#11631](https://github.com/chef/chef/pull/11631) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.31 -->
-- Bump ffi to 1.15.1 [#11613](https://github.com/chef/chef/pull/11613) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.30 -->
-- updating Gemfile to support environment variables [#11461](https://github.com/chef/chef/pull/11461) ([jayashrig158](https://github.com/jayashrig158)) <!-- 16.13.29 -->
-- Bump inspec-core-bin to 4.37.17 [#11600](https://github.com/chef/chef/pull/11600) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.28 -->
-- Bump inspec-core-bin to 4.37.8 [#11574](https://github.com/chef/chef/pull/11574) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.27 -->
-- Silence `bundle install` warning when installing gems for cookbooks [#11553](https://github.com/chef/chef/pull/11553) ([nvwls](https://github.com/nvwls)) <!-- 16.13.26 -->
-- Bump train-core to 3.7.0 [#11465](https://github.com/chef/chef/pull/11465) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.25 -->
-- Bump omnibus-software from `810a6c4` to `3ac1dbe` in /omnibus [#11409](https://github.com/chef/chef/pull/11409) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.24 -->
-- Update the download URL for windows MSI [#11401](https://github.com/chef/chef/pull/11401) ([marcparadise](https://github.com/marcparadise)) <!-- 16.13.23 -->
-- Update tests to handle local omnibus packages from Buildkite artifacts api [#11383](https://github.com/chef/chef/pull/11383) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.13.22 -->
-- Bump omnibus-software from `56f6321` to `810a6c4` in /omnibus [#11395](https://github.com/chef/chef/pull/11395) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.21 -->
-- Bump tty-prompt to 0.23.1 [#11390](https://github.com/chef/chef/pull/11390) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.20 -->
-- Bump train-core to 3.6.2 [#11363](https://github.com/chef/chef/pull/11363) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.19 -->
-- Bump inspec-core-bin to 4.32.0 [#11365](https://github.com/chef/chef/pull/11365) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.18 -->
-- Chef 16: Use dist constants in rubygems provider for is_omnibus? method [#11348](https://github.com/chef/chef/pull/11348) ([ramereth](https://github.com/ramereth)) <!-- 16.13.17 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.14.1](https://github.com/chef/chef/tree/v16.14.1) (2021-07-27)
+
+#### Merged Pull Requests
+- Chef 16: Use dist constants in rubygems provider for is_omnibus? method [#11348](https://github.com/chef/chef/pull/11348) ([ramereth](https://github.com/ramereth))
+- Bump inspec-core-bin to 4.32.0 [#11365](https://github.com/chef/chef/pull/11365) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump train-core to 3.6.2 [#11363](https://github.com/chef/chef/pull/11363) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump tty-prompt to 0.23.1 [#11390](https://github.com/chef/chef/pull/11390) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `56f6321` to `810a6c4` in /omnibus [#11395](https://github.com/chef/chef/pull/11395) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update tests to handle local omnibus packages from Buildkite artifacts api [#11383](https://github.com/chef/chef/pull/11383) ([nkierpiec](https://github.com/nkierpiec))
+- Update the download URL for windows MSI [#11401](https://github.com/chef/chef/pull/11401) ([marcparadise](https://github.com/marcparadise))
+- Bump omnibus-software from `810a6c4` to `3ac1dbe` in /omnibus [#11409](https://github.com/chef/chef/pull/11409) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump train-core to 3.7.0 [#11465](https://github.com/chef/chef/pull/11465) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Silence `bundle install` warning when installing gems for cookbooks [#11553](https://github.com/chef/chef/pull/11553) ([nvwls](https://github.com/nvwls))
+- Bump inspec-core-bin to 4.37.8 [#11574](https://github.com/chef/chef/pull/11574) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.37.17 [#11600](https://github.com/chef/chef/pull/11600) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- updating Gemfile to support environment variables [#11461](https://github.com/chef/chef/pull/11461) ([jayashrig158](https://github.com/jayashrig158))
+- Bump ffi to 1.15.1 [#11613](https://github.com/chef/chef/pull/11613) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.37.20 [#11631](https://github.com/chef/chef/pull/11631) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.37.23 [#11656](https://github.com/chef/chef/pull/11656) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.37.25 [#11685](https://github.com/chef/chef/pull/11685) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11709](https://github.com/chef/chef/pull/11709) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus-software from `b1e7b08` to `68f693d` in /omnibus [#11725](https://github.com/chef/chef/pull/11725) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump berkshelf from 7.2.1 to 7.2.2 in /omnibus [#11724](https://github.com/chef/chef/pull/11724) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus-software from `68f693d` to `c626aa2` in /omnibus [#11730](https://github.com/chef/chef/pull/11730) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump train-core to 3.7.4 [#11738](https://github.com/chef/chef/pull/11738) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `87db446` to `8b50107` in /omnibus [#11755](https://github.com/chef/chef/pull/11755) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Pin pry and fix omnibus gemfile.locki [#11757](https://github.com/chef/chef/pull/11757) ([tas50](https://github.com/tas50))
+- Move some testing to GitHub actions [#11767](https://github.com/chef/chef/pull/11767) ([tas50](https://github.com/tas50))
+- Enable FIPS on PPC RHEL builds [#11768](https://github.com/chef/chef/pull/11768) ([tas50](https://github.com/tas50))
+- Build RHEL 8 packages on RHEL 8 [#11769](https://github.com/chef/chef/pull/11769) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.38.3 [#11770](https://github.com/chef/chef/pull/11770) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump addressable to 2.8.0 [#11773](https://github.com/chef/chef/pull/11773) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `c626aa2` to `e9feb35` in /omnibus [#11797](https://github.com/chef/chef/pull/11797) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump kitchen-vagrant from 1.8.0 to 1.9.0 in /omnibus [#11817](https://github.com/chef/chef/pull/11817) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `8b50107` to `5803fdc` in /omnibus [#11818](https://github.com/chef/chef/pull/11818) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `e9feb35` to `cdef22f` in /omnibus [#11816](https://github.com/chef/chef/pull/11816) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `5803fdc` to `6d109b6` in /omnibus [#11823](https://github.com/chef/chef/pull/11823) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Remove external testing on the chef-16 branch [#11829](https://github.com/chef/chef/pull/11829) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11828](https://github.com/chef/chef/pull/11828) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `237c0a4` to `07291b0` in /omnibus [#11844](https://github.com/chef/chef/pull/11844) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump inspec-core-bin to 4.38.9 [#11848](https://github.com/chef/chef/pull/11848) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update Ruby to 2.7.4 [#11857](https://github.com/chef/chef/pull/11857) ([tas50](https://github.com/tas50))
+- Produce macOS m1 monterey packages [#11859](https://github.com/chef/chef/pull/11859) ([tas50](https://github.com/tas50))
+- Update to 16.14.0 [#11860](https://github.com/chef/chef/pull/11860) ([tas50](https://github.com/tas50))
+- Bump train-core to 3.8.1 [#11868](https://github.com/chef/chef/pull/11868) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_stable_release -->
+
 ## [v16.13.16](https://github.com/chef/chef/tree/v16.13.16) (2021-04-09)
 
 #### Merged Pull Requests
@@ -78,7 +76,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Update Ohai to 16.13 [#11335](https://github.com/chef/chef/pull/11335) ([tas50](https://github.com/tas50))
 - Produce FIPS builds on Ubuntu as well [#11328](https://github.com/chef/chef/pull/11328) ([tas50](https://github.com/tas50))
 - Bump inspec-core-bin to 4.31.1 [#11341](https://github.com/chef/chef/pull/11341) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-<!-- latest_stable_release -->
 
 ## [v16.12.3](https://github.com/chef/chef/tree/v16.12.3) (2021-04-03)
 
