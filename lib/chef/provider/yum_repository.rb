@@ -49,20 +49,23 @@ class Chef
           end
         end
 
-        execute "yum clean metadata #{new_resource.repositoryid}" do
-          command "yum clean metadata --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
-          action :nothing
-        end
+        # avoid extra logging if make_cache property isn't set
+        if new_resource.make_cache
+          execute "yum clean metadata #{new_resource.repositoryid}" do
+            command "yum clean metadata --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
+            action :nothing
+          end
 
-        # get the metadata for this repo only
-        execute "yum-makecache-#{new_resource.repositoryid}" do
-          command "yum -q -y makecache --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
-          action :nothing
-          only_if { new_resource.enabled }
-        end
+          # get the metadata for this repo only
+          execute "yum-makecache-#{new_resource.repositoryid}" do
+            command "yum -q -y makecache --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
+            action :nothing
+            only_if { new_resource.enabled }
+          end
 
-        package "package-cache-reload-#{new_resource.repositoryid}" do
-          action :nothing
+          package "package-cache-reload-#{new_resource.repositoryid}" do
+            action :nothing
+          end
         end
       end
 
