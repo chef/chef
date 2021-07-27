@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.14.0 -->
-## [v16.14.0](https://github.com/chef/chef/tree/v16.14.0) (2021-07-23)
+<!-- latest_release 16.14.1 -->
+## [v16.14.1](https://github.com/chef/chef/tree/v16.14.1) (2021-07-27)
 
 #### Merged Pull Requests
-- Update to 16.14.0 [#11860](https://github.com/chef/chef/pull/11860) ([tas50](https://github.com/tas50))
+- Bump train-core to 3.8.1 [#11868](https://github.com/chef/chef/pull/11868) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core to 3.8.1 [#11868](https://github.com/chef/chef/pull/11868) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.14.1 -->
 - Update to 16.14.0 [#11860](https://github.com/chef/chef/pull/11860) ([tas50](https://github.com/tas50)) <!-- 16.14.0 -->
 - Produce macOS m1 monterey packages [#11859](https://github.com/chef/chef/pull/11859) ([tas50](https://github.com/tas50)) <!-- 16.13.55 -->
 - Update Ruby to 2.7.4 [#11857](https://github.com/chef/chef/pull/11857) ([tas50](https://github.com/tas50)) <!-- 16.13.54 -->
