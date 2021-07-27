@@ -119,4 +119,7 @@ jobs:
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+          cd kitchen-tests
+          sudo bundle install
+          sudo bundle exec chef-cli install
+          sudo bundle exec kitchen test end-to-end-${{ matrix.os }}
