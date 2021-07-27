@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.2 -->
-## [v17.4.2](https://github.com/chef/chef/tree/v17.4.2) (2021-07-27)
+<!-- latest_release 17.4.3 -->
+## [v17.4.3](https://github.com/chef/chef/tree/v17.4.3) (2021-07-27)
 
 #### Merged Pull Requests
-- Bump all deps and resolve a chefstyle warning [#11864](https://github.com/chef/chef/pull/11864) ([tas50](https://github.com/tas50))
+- Fixed issues facing while bootstrapping the node using ssh config file. [#11531](https://github.com/chef/chef/pull/11531) ([sanga1794](https://github.com/sanga1794))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixed issues facing while bootstrapping the node using ssh config file. [#11531](https://github.com/chef/chef/pull/11531) ([sanga1794](https://github.com/sanga1794)) <!-- 17.4.3 -->
 - Bump all deps and resolve a chefstyle warning [#11864](https://github.com/chef/chef/pull/11864) ([tas50](https://github.com/tas50)) <!-- 17.4.2 -->
 - Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#11842](https://github.com/chef/chef/pull/11842) ([byplayer](https://github.com/byplayer)) <!-- 17.4.1 -->
 - secrets: add support for default config from ohai data  [#11853](https://github.com/chef/chef/pull/11853) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.0 -->
