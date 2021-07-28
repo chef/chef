@@ -3,7 +3,7 @@
 export DOCKER_CLI_EXPERIMENTAL=enabled
 
 function create_and_push_manifest() {
-  manifest_tag="$1"
+  manifest_tag="${1}"
 
   echo "--- Creating manifest for ${manifest_tag}"
   docker manifest create "chef/chef:${manifest_tag}" \
