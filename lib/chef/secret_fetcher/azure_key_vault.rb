@@ -8,23 +8,30 @@ class Chef
     # In this initial iteration this authenticates via token obtained from the OAuth2  /token
     # endpoint.
     #
-    # Usage Example:
+    # Validation of required configuration (vault name) is not performed until
+    # `fetch` time, to allow for embedding the vault name in with the secret
+    # name, such as "my_vault/secretkey1".
     #
-    # fetcher = SecretFetcher.for_service(:azure_key_vault)
+    # @example
+    #
+    # fetcher = SecretFetcher.for_service(:azure_key_vault, { vault: "my_vault" }, run_context )
     # fetcher.fetch("secretkey1", "v1")
+    #
+    # @example
+    #
+    # fetcher = SecretFetcher.for_service(:azure_key_vault, {}, run_context )
+    # fetcher.fetch("my_vault/secretkey1", "v1")
     class AzureKeyVault < Base
-      def validate!
-        @vault = config[:vault]
-        if @vault.nil?
-          raise Chef::Exceptions::Secret::MissingVaultName.new("You must provide a vault name to service options as vault: 'vault_name'")
-        end
-      end
 
       def do_fetch(name, version)
         token = fetch_token
+        vault, name = resolve_vault_and_secret_name(name)
+        if vault.nil?
+          raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide a vault name to fetcher options as vault: 'vault_name' or in the secret name as 'vault_name/secret_name'")
+        end
 
         # Note that `version` is optional after the final `/`. If nil/"", the latest secret version will be fetched.
-        secret_uri = URI.parse("https://#{@vault}.vault.azure.net/secrets/#{name}/#{version}?api-version=7.2")
+        secret_uri = URI.parse("https://#{vault}.vault.azure.net/secrets/#{name}/#{version}?api-version=7.2")
         http = Net::HTTP.new(secret_uri.host, secret_uri.port)
         http.use_ssl = true
 
@@ -38,6 +45,21 @@ class Chef
           result["value"]
         else
           raise Chef::Exceptions::Secret::FetchFailed.new("#{result["error"]["code"]}: #{result["error"]["message"]}")
+        end
+      end
+
+      # Determine the vault name and secret name from the provided name.
+      # If it is not in the provided name in the form "vault_name/secret_name"
+      # it will determine the vault name from `config[:vault]`.
+      # @param name [String] the secret name or vault and secret name in the form "vault_name/secret_name"
+      # @return Array[String, String] vault and secret name respectively
+      def resolve_vault_and_secret_name(name)
+        # We support a simplified approach where the vault name is not passed i
+        # into configuration, but
+        if name.include?("/")
+          name.split("/", 2)
+        else
+          [config[:vault], name]
         end
       end
 
