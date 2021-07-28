@@ -1,4 +1,5 @@
 #! /bin/bash
+set -eu -o pipefail
 
 arch=$1
 
