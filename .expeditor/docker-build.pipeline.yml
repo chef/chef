@@ -9,3 +9,8 @@ steps:
   agents:
     queue: docker-linux-arm64
   command: .expeditor/build-docker-images.sh arm64
+
+- wait
+
+- label: ":docker: create manifest for multi arch"
+  command: .expeditor/docker-manifest-create.sh

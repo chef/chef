@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# EXPEDITOR_VERSION exists within the artifact_published workload
+
 export DOCKER_CLI_EXPERIMENTAL=enabled
 
 echo "--- Creating manifest for ${EXPEDITOR_TARGET_CHANNEL}"
