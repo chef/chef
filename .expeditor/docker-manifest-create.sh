@@ -1,4 +1,5 @@
 #! /bin/bash
+set -eu -o pipefail
 
 export DOCKER_CLI_EXPERIMENTAL=enabled
 
