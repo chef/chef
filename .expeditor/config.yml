@@ -20,7 +20,9 @@ rubygems:
 pipelines:
   - verify:
       public: true
-  - docker/build
+  - docker/build:
+      definition: .expeditor/docker-build.pipeline.yml
+      trigger: default
   - habitat/build
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
@@ -66,12 +68,12 @@ subscriptions:
       - trigger_pipeline:docker/build
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
-      - built_in:promote_docker_images
+      - bash:.expeditor/promote-docker-images.sh
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
-      - built_in:promote_docker_images
+      - bash:.expeditor/promote-docker-images.sh
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
