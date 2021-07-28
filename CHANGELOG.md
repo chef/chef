@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.5 -->
-## [v17.4.5](https://github.com/chef/chef/tree/v17.4.5) (2021-07-28)
+<!-- latest_release 17.4.6 -->
+## [v17.4.6](https://github.com/chef/chef/tree/v17.4.6) (2021-07-28)
 
 #### Merged Pull Requests
-- Add custom docker pipeline for multiarch builds [#11871](https://github.com/chef/chef/pull/11871) ([nkierpiec](https://github.com/nkierpiec))
+- Allow az vault name to be included in secret name [#11867](https://github.com/chef/chef/pull/11867) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Allow az vault name to be included in secret name [#11867](https://github.com/chef/chef/pull/11867) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.6 -->
 - Add custom docker pipeline for multiarch builds [#11871](https://github.com/chef/chef/pull/11871) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.5 -->
 - Bump train-core to 3.8.1 [#11869](https://github.com/chef/chef/pull/11869) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.4 -->
 - Fixed issues facing while bootstrapping the node using ssh config file. [#11531](https://github.com/chef/chef/pull/11531) ([sanga1794](https://github.com/sanga1794)) <!-- 17.4.3 -->

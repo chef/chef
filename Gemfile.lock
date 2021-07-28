@@ -35,11 +35,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.4.5)
+    chef (17.4.6)
       addressable
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.4.5)
-      chef-utils (= 17.4.5)
+      chef-config (= 17.4.6)
+      chef-utils (= 17.4.6)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -63,11 +63,11 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.4.5-universal-mingw32)
+    chef (17.4.6-universal-mingw32)
       addressable
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.4.5)
-      chef-utils (= 17.4.5)
+      chef-config (= 17.4.6)
+      chef-utils (= 17.4.6)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -106,15 +106,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.4.5)
-      chef (= 17.4.5)
+    chef-bin (17.4.6)
+      chef (= 17.4.6)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.4.5)
+    chef-config (17.4.6)
       addressable
-      chef-utils (= 17.4.5)
+      chef-utils (= 17.4.6)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -123,7 +123,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.4.5)
+    chef-utils (17.4.6)
       concurrent-ruby
 
 GEM
