@@ -113,8 +113,17 @@ class Chef
         logger.info "Chef Infra Compliance Phase Complete"
       end
 
+      def inputs_from_attributes
+        if !node["audit"]["inputs"].empty?
+          node["audit"]["inputs"].to_h
+        else
+          node["audit"]["attributes"].to_h
+        end
+      end
+
       def inspec_opts
-        inputs = node["audit"]["attributes"].to_h
+        inputs = inputs_from_attributes
+
         if node["audit"]["chef_node_attribute_enabled"]
           inputs["chef_node"] = node.to_h
           inputs["chef_node"]["chef_environment"] = node.chef_environment
@@ -300,6 +309,11 @@ class Chef
             raise "CMPL002: Unrecognized Compliance Phase fetcher (node['audit']['fetcher'] = #{fetcher}). Supported fetchers are: #{SUPPORTED_FETCHERS.join(", ")}, or nil. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#fetch-profiles"
           end
         end
+
+        if !node["audit"]["attributes"].empty? && !node["audit"]["inputs"].empty?
+          raise "CMPL004: both node['audit']['inputs'] and node['audit']['attributes'] are set.  The node['audit']['attributes'] setting is deprecated and should not be used."
+        end
+
         @validation_passed = true
       end
     end
