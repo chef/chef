@@ -88,7 +88,7 @@ class Chef
 
       # If enabled, a hash representation of the Chef Infra node object will be sent to Chef InSpec in an input
       # named `chef_node`.
-      "chef_node_attribute_enabled" => false,
+      "chef_node_attribute_enabled" => true,
 
       # Should the built-in compliance phase run. True and false force the behavior. Nil does magic based on if you have
       # profiles defined but do not have the audit cookbook enabled.
