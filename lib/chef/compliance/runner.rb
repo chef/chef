@@ -311,7 +311,7 @@ class Chef
         end
 
         if !node["audit"]["attributes"].empty? && !node["audit"]["inputs"].empty?
-          raise "CMPL004: both node['audit']['inputs'] and node['audit']['attributes'] are set.  The node['audit']['attributes'] setting is deprecated and should not be used."
+          raise "CMPL011: both node['audit']['inputs'] and node['audit']['attributes'] are set.  The node['audit']['attributes'] setting is deprecated and should not be used."
         end
 
         @validation_passed = true
