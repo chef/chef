@@ -221,7 +221,7 @@ describe Chef::Compliance::Runner do
       inputs = runner.inspec_opts[:inputs]
 
       expect(inputs["tacos"]).to eq("lunch")
-      expect(inputs.key?("chef_node")).to eq(false)
+      expect(inputs.key?("chef_node")).to eq(true)
     end
 
     it "includes chef_node in inputs with chef_node_attribute_enabled set" do
