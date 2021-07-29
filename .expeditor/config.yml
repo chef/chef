@@ -32,6 +32,12 @@ pipelines:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
+  # the adhoc-canary pipeline is used to test new omnibus workers
+  - omnibus/adhoc-canary:
+      canary: true
+      definition: .expeditor/adhoc-canary.omnibus.yml
+      env:
+        - ADHOC: true
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
