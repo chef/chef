@@ -209,7 +209,7 @@ describe Chef::Compliance::Runner do
       node.normal["audit"]["inputs"] = {
         "tacos" => "lunch",
       }
-      expect { runner.load_and_validate! }.to raise_error(/^CMPL004:/)
+      expect { runner.load_and_validate! }.to raise_error(/^CMPL011:/)
     end
 
     it "validates configured reporters" do
