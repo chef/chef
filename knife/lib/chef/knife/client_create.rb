@@ -105,7 +105,7 @@ class Chef
         end
       end
 
-      # To check if file or directory exists or writable and raise execption accordingly
+      # To check if file or directory exists or writable and raise exception accordingly
       def check_writable_or_exists(file, type)
         if File.exist?(file)
           unless File.writable?(file)
