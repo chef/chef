@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.13 -->
-## [v17.4.13](https://github.com/chef/chef/tree/v17.4.13) (2021-07-29)
+<!-- latest_release 17.4.14 -->
+## [v17.4.14](https://github.com/chef/chef/tree/v17.4.14) (2021-07-31)
 
 #### Merged Pull Requests
-- update dockerfile to use correct package for os/arch [#11883](https://github.com/chef/chef/pull/11883) ([nkierpiec](https://github.com/nkierpiec))
+- Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.14 -->
 - update dockerfile to use correct package for os/arch [#11883](https://github.com/chef/chef/pull/11883) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.13 -->
 - clean up scripts and docker login to auth to chef docker org [#11878](https://github.com/chef/chef/pull/11878) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.12 -->
 - Turn on chef_node_attribute_enabled for compliance phase by default [#11874](https://github.com/chef/chef/pull/11874) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.11 -->
