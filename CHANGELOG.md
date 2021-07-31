@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.14 -->
-## [v17.4.14](https://github.com/chef/chef/tree/v17.4.14) (2021-07-31)
+<!-- latest_release 17.4.15 -->
+## [v17.4.15](https://github.com/chef/chef/tree/v17.4.15) (2021-07-31)
 
 #### Merged Pull Requests
-- Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11885](https://github.com/chef/chef/pull/11885) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11885](https://github.com/chef/chef/pull/11885) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.4.15 -->
 - Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.14 -->
 - update dockerfile to use correct package for os/arch [#11883](https://github.com/chef/chef/pull/11883) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.13 -->
 - clean up scripts and docker login to auth to chef docker org [#11878](https://github.com/chef/chef/pull/11878) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.12 -->
