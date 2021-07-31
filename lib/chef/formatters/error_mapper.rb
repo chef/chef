@@ -27,7 +27,7 @@ class Chef
       # Failed to register this client with the server.
       def self.registration_failed(node_name, exception, config)
         error_inspector = ErrorInspectors::RegistrationErrorInspector.new(node_name, exception, config)
-        headline = "Chef encountered an error attempting to create the client \"#{node_name}\""
+        headline = "Chef Infra Client encountered an error attempting to create the client \"#{node_name}\""
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
         description
@@ -35,7 +35,7 @@ class Chef
 
       def self.node_load_failed(node_name, exception, config)
         error_inspector = ErrorInspectors::NodeLoadErrorInspector.new(node_name, exception, config)
-        headline = "Chef encountered an error attempting to load the node data for \"#{node_name}\""
+        headline = "Chef Infra Client encountered an error attempting to load the node data for \"#{node_name}\""
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
         description
