@@ -47,8 +47,10 @@ class Chef
       "profiles" => {},
 
       # Extra inputs passed to Chef InSpec to allow finer-grained control over behavior.
-      # These are mapped to Chef InSpec's inputs, but are named attributes here for legacy reasons.
       # See Chef Inspec's documentation for more information: https://docs.chef.io/inspec/inputs/
+      "inputs" => {},
+
+      # Legacy alias for inputs
       "attributes" => {},
 
       # A string path or an array of paths to Chef InSpec waiver files.

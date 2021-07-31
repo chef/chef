@@ -202,6 +202,16 @@ describe Chef::Compliance::Runner do
       expect { runner.load_and_validate! }.to raise_error(/^CMPL002:/)
     end
 
+    it "raises CMPL004 if both the inputs and attributes node attributes are set" do
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "lunch",
+      }
+      node.normal["audit"]["inputs"] = {
+        "tacos" => "lunch",
+      }
+      expect { runner.load_and_validate! }.to raise_error(/^CMPL011:/)
+    end
+
     it "validates configured reporters" do
       node.normal["audit"]["reporter"] = [ "chef-automate" ]
       reporter_double = double("reporter", validate_config!: nil)
@@ -212,6 +222,40 @@ describe Chef::Compliance::Runner do
   end
 
   describe "#inspec_opts" do
+    it "pulls inputs from the attributes setting" do
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "lunch",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+    end
+
+    it "pulls inputs from the inputs setting" do
+      node.normal["audit"]["inputs"] = {
+        "tacos" => "lunch",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+    end
+
+    it "favors inputs over attributes" do
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "dinner",
+      }
+
+      node.normal["audit"]["inputs"] = {
+        "tacos" => "lunch",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+    end
+
     it "does not include chef_node in inputs by default" do
       node.normal["audit"]["attributes"] = {
         "tacos" => "lunch",
