@@ -2,10 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 16.14.2 -->
+## [v16.14.2](https://github.com/chef/chef/tree/v16.14.2) (2021-07-31)
+
+#### Merged Pull Requests
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11884](https://github.com/chef/chef/pull/11884) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.14.1 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11884](https://github.com/chef/chef/pull/11884) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.14.2 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
