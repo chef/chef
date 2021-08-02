@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.17 -->
-## [v17.4.17](https://github.com/chef/chef/tree/v17.4.17) (2021-08-02)
+<!-- latest_release 17.4.18 -->
+## [v17.4.18](https://github.com/chef/chef/tree/v17.4.18) (2021-08-02)
 
 #### Merged Pull Requests
-- Bootstrap: Fix for performing sudo operations once sudo password ente… [#11654](https://github.com/chef/chef/pull/11654) ([msys-sgarg](https://github.com/msys-sgarg))
+- knife bootstrap windows: log_level should be updated as in client.rb [#11658](https://github.com/chef/chef/pull/11658) ([msys-sgarg](https://github.com/msys-sgarg))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- knife bootstrap windows: log_level should be updated as in client.rb [#11658](https://github.com/chef/chef/pull/11658) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.4.18 -->
 - Bootstrap: Fix for performing sudo operations once sudo password ente… [#11654](https://github.com/chef/chef/pull/11654) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.4.17 -->
 - Chef -&gt; Chef Infra Client in error message [#11888](https://github.com/chef/chef/pull/11888) ([tas50](https://github.com/tas50)) <!-- 17.4.16 -->
 - Move some words to the global dictionary [#11891](https://github.com/chef/chef/pull/11891) ([tas50](https://github.com/tas50)) <!-- 17.4.15 -->
