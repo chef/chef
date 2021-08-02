@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.4.16 -->
+## [v17.4.16](https://github.com/chef/chef/tree/v17.4.16) (2021-08-02)
 
 #### Merged Pull Requests
+- Chef -&gt; Chef Infra Client in error message [#11888](https://github.com/chef/chef/pull/11888) ([tas50](https://github.com/tas50))
 - Move some words to the global dictionary [#11891](https://github.com/chef/chef/pull/11891) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef -&gt; Chef Infra Client in error message [#11888](https://github.com/chef/chef/pull/11888) ([tas50](https://github.com/tas50)) <!-- 17.4.16 -->
 - Move some words to the global dictionary [#11891](https://github.com/chef/chef/pull/11891) ([tas50](https://github.com/tas50)) <!-- 17.4.15 -->
 - Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11885](https://github.com/chef/chef/pull/11885) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.4.15 -->
 - Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.14 -->
