@@ -2050,6 +2050,19 @@ describe Chef::Knife::Bootstrap do
         expect { knife.do_connect({}) }.to raise_error(expected_error)
       end
     end
+
+    context "when a train sudo error is thrown for missing terminal" do
+      let(:ui_error_msg) { "Sudo password is required for this operation. Please enter password using -P or --ssh-password option" }
+      let(:expected_error) { Train::UserError.new(ui_error_msg, :sudo_missing_terminal) }
+      before do
+        allow(connection).to receive(:connect!).and_raise(expected_error)
+      end
+      it "outputs user friendly error message" do
+        expect { knife.do_connect({}) }.not_to raise_error
+        expect(stderr.string).to include(ui_error_msg)
+      end
+    end
+
   end
 
   describe "validate_winrm_transport_opts!" do
