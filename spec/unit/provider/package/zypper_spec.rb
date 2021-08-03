@@ -249,7 +249,7 @@ describe Chef::Provider::Package::Zypper do
         provider.remove_package(["emacs"], ["1.0"])
       end
 
-      it "should run zypper remove for non existing package" do
+      it "should run zypper remove for non-existent package without raising an error" do
         shell_out_expectation!(
           "zypper", "--non-interactive", "remove", "noname=1.0"
         )
