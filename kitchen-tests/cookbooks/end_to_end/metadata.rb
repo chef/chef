@@ -12,7 +12,7 @@ depends          "ntp"
 depends          "openssh"
 depends          "resolver"
 depends          "selinux"
-depends          "users"
+depends          "users", "< 7.1" # 7.1 breaks macos / opensuse
 depends          "git"
 
 supports         "ubuntu"
