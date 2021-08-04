@@ -129,7 +129,7 @@ class Chef
           Chef::Log.debug("Removing defaults key: #{new_resource.key}")
           user = to_cf_user new_resource.user
           host = to_cf_host new_resource.host
-          CF::Preferences.set(new_resource.key, nil, new_resource.domain, user, host)
+          CF::Preferences.set!(new_resource.key, nil, new_resource.domain, user, host)
         end
       end
 
@@ -142,7 +142,7 @@ class Chef
       def set_preference(new_resource)
         user = to_cf_user new_resource.user
         host = to_cf_host new_resource.host
-        CF::Preferences.set(new_resource.key, new_resource.value, new_resource.domain, user, host)
+        CF::Preferences.set!(new_resource.key, new_resource.value, new_resource.domain, user, host)
       end
 
       # Return valid hostname based on the input from host property
