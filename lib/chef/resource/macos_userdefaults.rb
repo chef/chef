@@ -17,6 +17,7 @@
 
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "corefoundation"
 autoload :Plist, "plist"
 
 class Chef
@@ -78,7 +79,7 @@ class Chef
         required: true
 
       property :host, [String, Symbol],
-        description: "Set either :current or a hostname to set the user default at the host level.",
+        description: "Set either :current, :all or a hostname to set the user default at the host level.",
         desired_state: false,
         introduced: "16.3"
 
@@ -92,8 +93,8 @@ class Chef
         equal_to: %w{bool string int float array dict},
         desired_state: false
 
-      property :user, String,
-        description: "The system user that the default will be applied to.",
+      property :user, [String, Symbol],
+        description: "The system user that the default will be applied to. Set :current for current user, :all for all users or pass a valid username",
         desired_state: false
 
       property :sudo, [TrueClass, FalseClass],
@@ -102,151 +103,78 @@ class Chef
         desired_state: false
 
       load_current_value do |new_resource|
-        Chef::Log.debug "#load_current_value: shelling out \"#{defaults_export_cmd(new_resource).join(" ")}\" to determine state"
-        state = shell_out(defaults_export_cmd(new_resource), user: new_resource.user)
+        Chef::Log.debug "#load_current_value: attempting to read \"#{new_resource.domain}\" value from preferences to determine state"
 
-        if state.error? || state.stdout.empty?
-          Chef::Log.debug "#load_current_value: #{defaults_export_cmd(new_resource).join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
-          current_value_does_not_exist!
-        end
-
-        plist_data = ::Plist.parse_xml(state.stdout)
-
-        # handle the situation where the key doesn't exist in the domain
-        if plist_data.key?(new_resource.key)
+        if valid_key?(new_resource)
           key new_resource.key
         else
           current_value_does_not_exist!
         end
 
-        value plist_data[new_resource.key]
-      end
-
-      #
-      # The defaults command to export a domain
-      #
-      # @return [Array] defaults command
-      #
-      def defaults_export_cmd(resource)
-        state_cmd = ["/usr/bin/defaults"]
-
-        if resource.host == "current"
-          state_cmd.concat(["-currentHost"])
-        elsif resource.host # they specified a non-nil value, which is a hostname
-          state_cmd.concat(["-host", resource.host])
-        end
-
-        state_cmd.concat(["export", resource.domain, "-"])
-        state_cmd
+        value get_preference(new_resource)
       end
 
       action :write, description: "Write the value to the specified domain/key." do
         converge_if_changed do
-          cmd = defaults_modify_cmd
-          Chef::Log.debug("Updating defaults value by shelling out: #{cmd.join(" ")}")
-
-          shell_out!(cmd, user: new_resource.user)
+          Chef::Log.debug("Updating defaults value for #{new_resource.key} in #{new_resource.domain}")
+          set_preference(new_resource)
         end
       end
 
       action :delete, description: "Delete a key from a domain." do
         # if it's not there there's nothing to remove
-        return unless current_resource
+        return if current_resource.value.nil?
 
         converge_by("delete domain:#{new_resource.domain} key:#{new_resource.key}") do
-
-          cmd = defaults_modify_cmd
-          Chef::Log.debug("Removing defaults key by shelling out: #{cmd.join(" ")}")
-
-          shell_out!(cmd, user: new_resource.user)
+          Chef::Log.debug("Removing defaults key: #{new_resource.key}")
+          user = to_cf_user new_resource.user
+          host = to_cf_host new_resource.host
+          CF::Preferences.set(new_resource.key, nil, new_resource.domain, user, host)
         end
       end
 
-      action_class do
-        #
-        # The command used to write or delete delete values from domains
-        #
-        # @return [Array] Array representation of defaults command to run
-        #
-        def defaults_modify_cmd
-          cmd = ["/usr/bin/defaults"]
+      def get_preference(new_resource)
+        user = to_cf_user new_resource.user
+        host = to_cf_host new_resource.host
+        CF::Preferences.get(new_resource.key, new_resource.domain, user, host)
+      end
 
-          if new_resource.host == :current
-            cmd.concat(["-currentHost"])
-          elsif new_resource.host # they specified a non-nil value, which is a hostname
-            cmd.concat(["-host", new_resource.host])
-          end
+      def set_preference(new_resource)
+        user = to_cf_user new_resource.user
+        host = to_cf_host new_resource.host
+        CF::Preferences.set(new_resource.key, new_resource.value, new_resource.domain, user, host)
+      end
 
-          cmd.concat([action.to_s, new_resource.domain, new_resource.key])
-          cmd.concat(processed_value) if action == :write
-          cmd.prepend("sudo") if new_resource.sudo
-          cmd
-        end
-
-        #
-        # convert the provided value into the format defaults expects
-        #
-        # @return [array] array of values starting with the type if applicable
-        #
-        def processed_value
-          type = new_resource.type || value_type(new_resource.value)
-
-          # when dict this creates an array of values ["Key1", "Value1", "Key2", "Value2" ...]
-          cmd_values = ["-#{type}"]
-
-          case type
-          when "dict"
-            cmd_values.concat(new_resource.value.flatten)
-          when "array"
-            cmd_values.concat(new_resource.value)
-          when "bool"
-            cmd_values.concat(bool_to_defaults_bool(new_resource.value))
-          else
-            cmd_values.concat([new_resource.value])
-          end
-
-          cmd_values
-        end
-
-        #
-        # defaults booleans on the CLI must be 'TRUE' or 'FALSE' so convert various inputs to that
-        #
-        # @param [String, Integer, Boolean] input <description>
-        #
-        # @return [String] TRUE or FALSE
-        #
-        def bool_to_defaults_bool(input)
-          return ["TRUE"] if [true, "TRUE", "1", "true", "YES", "yes"].include?(input)
-          return ["FALSE"] if [false, "FALSE", "0", "false", "NO", "no"].include?(input)
-
-          # make sure it's very clear bad input was given
-          raise ArgumentError, "#{input} cannot be converted to a boolean value for use with Apple's defaults command. Acceptable values are: 'TRUE', 'YES', 'true, 'yes', '0', true, 'FALSE', 'false', 'NO', 'no', '1', or false."
-        end
-
-        #
-        # convert ruby type to defaults type
-        #
-        # @param [Integer, Float, String, TrueClass, FalseClass, Hash, Array] value The value being set
-        #
-        # @return [string, nil] the type value used by defaults or nil if not applicable
-        #
-        def value_type(value)
-          case value
-          when true, false
-            "bool"
-          when Integer
-            "int"
-          when Float
-            "float"
-          when Hash
-            "dict"
-          when Array
-            "array"
-          when String
-            "string"
-          end
+      # Return valid hostname based on the input from host property
+      def to_cf_host(value)
+        case value
+        when :all
+          CF::Preferences::ALL_HOSTS
+        when :current
+          CF::Preferences::CURRENT_HOST
+        else
+          value
         end
       end
+
+      # Return valid username based on the input from user property
+      def to_cf_user(value)
+        case value
+        when :all
+          CF::Preferences::ALL_USERS
+        when :current
+          CF::Preferences::CURRENT_USER
+        else
+          value
+        end
+      end
+
+      def valid_key?(new_resource)
+        user = to_cf_user new_resource.user
+        host = to_cf_host new_resource.host
+        CF::Preferences.valid_key?(new_resource.key, new_resource.domain, user, host)
+      end
+
     end
   end
 end
