@@ -255,6 +255,11 @@ describe Chef::Provider::Package::Zypper do
         )
         provider.remove_package(["noname"], ["1.0"])
       end
+
+      it "should return nil for #resolve_available_version if package does not exists" do
+        result = provider.send(:resolve_available_version, 'noname', nil)
+        expect(result).to be(nil)
+      end 
     end
   end
 
