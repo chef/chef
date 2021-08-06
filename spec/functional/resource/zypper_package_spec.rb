@@ -171,6 +171,26 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
       end
 
+      it "does not remove the package twice" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        zypper_package.run_action(:remove)
+        expect(zypper_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
+        zypper_package.run_action(:remove)
+        expect(zypper_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
+      end
+
+      it "does not remove the package if doesn't exists" do
+        # preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        zypper_package.run_action(:remove)
+        expect(zypper_package.updated_by_last_action?).to be true
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
+        zypper_package.run_action(:remove)
+        expect(zypper_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
+      end
+
       it "removes the package if the prior version package is installed" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         zypper_package.run_action(:remove)
