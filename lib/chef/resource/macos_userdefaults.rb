@@ -105,13 +105,11 @@ class Chef
       load_current_value do |new_resource|
         Chef::Log.debug "#load_current_value: attempting to read \"#{new_resource.domain}\" value from preferences to determine state"
 
-        if valid_key?(new_resource)
-          key new_resource.key
-        else
-          current_value_does_not_exist!
-        end
+        pref = get_preference(new_resource)
+        current_value_does_not_exist! if pref.nil?
 
-        value get_preference(new_resource)
+        key new_resource.key
+        value pref
       end
 
       action :write, description: "Write the value to the specified domain/key." do
@@ -123,7 +121,7 @@ class Chef
 
       action :delete, description: "Delete a key from a domain." do
         # if it's not there there's nothing to remove
-        return if current_resource.value.nil?
+        return if current_resource.nil?
 
         converge_by("delete domain:#{new_resource.domain} key:#{new_resource.key}") do
           Chef::Log.debug("Removing defaults key: #{new_resource.key}")
@@ -168,13 +166,6 @@ class Chef
           value
         end
       end
-
-      def valid_key?(new_resource)
-        user = to_cf_user new_resource.user
-        host = to_cf_host new_resource.host
-        CF::Preferences.valid_key?(new_resource.key, new_resource.domain, user, host)
-      end
-
     end
   end
 end
