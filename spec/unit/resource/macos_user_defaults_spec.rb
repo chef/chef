@@ -18,119 +18,60 @@
 require "spec_helper"
 
 describe Chef::Resource::MacosUserDefaults do
-
-  let(:resource) { Chef::Resource::MacosUserDefaults.new("foo") }
+  let(:test_value) { "fakest_key_value" }
+  let(:test_key) { "fakest_key" }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) {
+    Chef::Resource::MacosUserDefaults.new("foo", run_context).tap do |r|
+      r.value test_value
+      r.key test_key
+    end
+  }
   let(:provider) { resource.provider_for_action(:write) }
 
-  it "has a resource name of :macos_userdefaults" do
-    expect(resource.resource_name).to eq(:macos_userdefaults)
-  end
-
-  it "the domain property defaults to NSGlobalDomain" do
-    expect(resource.domain).to eq("NSGlobalDomain")
-  end
-
-  it "the value property coerces keys in hashes to strings so we can compare them with plist data" do
-    resource.value "User": "/Library/Managed Installs/way_fake.log"
-    expect(resource.value).to eq({ "User" => "/Library/Managed Installs/way_fake.log" })
-  end
-
-  it "the host property defaults to nil" do
-    expect(resource.host).to be_nil
-  end
-
-  it "the sudo property defaults to false" do
-    expect(resource.sudo).to be false
-  end
-
-  it "sets the default action as :write" do
-    expect(resource.action).to eq([:write])
-  end
-
-  it "supports :write action" do
-    expect { resource.action :write }.not_to raise_error
-  end
-
-  describe "#defaults_export_cmd" do
-    it "exports NSGlobalDomain if no domain is set" do
-      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "export", "NSGlobalDomain", "-"])
+  context "has a default value" do
+    it ":macos_userdefaults for resource name" do
+      expect(resource.resource_name).to eq(:macos_userdefaults)
     end
 
-    it "exports a provided domain" do
-      resource.domain "com.tim"
-      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "export", "com.tim", "-"])
+    it "NSGlobalDomain for the domain property" do
+      expect(resource.domain).to eq("NSGlobalDomain")
     end
 
-    it "sets -currentHost if host is 'current'" do
-      resource.host "current"
-      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "-currentHost", "export", "NSGlobalDomain", "-"])
+    it "nil for the host property" do
+      expect(resource.host).to be_nil
     end
 
-    it "sets -host 'tim-laptop if host is 'tim-laptop'" do
-      resource.host "tim-laptop"
-      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "-host", "tim-laptop", "export", "NSGlobalDomain", "-"])
+    it "nil for the user property" do
+      expect(resource.user).to be_nil
+    end
+
+    it ":write for resource action" do
+      expect(resource.action).to eq([:write])
     end
   end
 
-  describe "#defaults_modify_cmd" do
-    # avoid needing to set these required values over and over. We'll overwrite them where necessary
-    before do
-      resource.key = "foo"
-      resource.value = "bar"
+  context ":write" do
+    it "is a supported action" do
+      expect { resource.action :write }.not_to raise_error
     end
 
-    it "writes to NSGlobalDomain if domain isn't specified" do
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "bar"])
+    it "successfully updates the preference" do
+      resource.run_action(:write)
+      expect(resource.get_preference resource).eql? test_value
+    end
+  end
+
+  context ":delete" do
+    it "is a supported action" do
+      expect { resource.action :delete }.not_to raise_error
     end
 
-    it "uses the domain property if set" do
-      resource.domain = "MyCustomDomain"
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "MyCustomDomain", "foo", "-string", "bar"])
-    end
-
-    it "sets host specific values using host property" do
-      resource.host = "tims_laptop"
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "-host", "tims_laptop", "write", "NSGlobalDomain", "foo", "-string", "bar"])
-    end
-
-    it "if host is set to :current it passes CurrentHost" do
-      resource.host = :current
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "-string", "bar"])
-    end
-
-    it "raises ArgumentError if bool is specified, but the value can't be made into a bool" do
-      resource.type "bool"
-      expect { provider.defaults_modify_cmd }.to raise_error(ArgumentError)
-    end
-
-    it "autodetects array type and passes individual values" do
-      resource.value = %w{one two three}
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-array", "one", "two", "three"])
-    end
-
-    it "autodetects string type and passes a single value" do
-      resource.value = "one"
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "one"])
-    end
-
-    it "autodetects integer type and passes a single value" do
-      resource.value = 1
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-int", 1])
-    end
-
-    it "autodetects boolean type from TrueClass value and passes a 'TRUE' string" do
-      resource.value = true
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "TRUE"])
-    end
-
-    it "autodetects boolean type from FalseClass value and passes a 'FALSE' string" do
-      resource.value = false
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "FALSE"])
-    end
-
-    it "autodetects dict type from Hash value and flattens keys & values" do
-      resource.value = { "foo" => "bar" }
-      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-dict", "foo", "bar"])
+    it "successfully deletes the preference" do
+      resource.run_action(:delete)
+      expect(resource.get_preference resource).to be_nil
     end
   end
 end
