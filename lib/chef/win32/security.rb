@@ -229,7 +229,7 @@ class Chef
           result = LsaEnumerateAccountsWithUserRight(policy_handle.read_pointer, privilege_pointer, buffer, count)
           if result == 0
             win32_error = LsaNtStatusToWinError(result)
-            return [] if win32_error == 1313 # NO_SUCH_PRIVILEGE - https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
+            return [] if win32_error == 1313 # NO_SUCH_PRIVILEGE - https://docs.microsoft.com/windows/win32/debug/system-error-codes--1300-1699-
 
             test_and_raise_lsa_nt_status(result)
 

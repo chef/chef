@@ -46,7 +46,7 @@ class Chef
       ```
       DOC
 
-      # https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/user-account-control-group-policy-and-registry-key-settings#user-account-control-virtualize-file-and-registry-write-failures-to-per-user-locations
+      # https://docs.microsoft.com/windows/security/identity-protection/user-account-control/user-account-control-group-policy-and-registry-key-settings#user-account-control-virtualize-file-and-registry-write-failures-to-per-user-locations
       property :enable_uac, [TrueClass, FalseClass],
         description: 'Enable or disable UAC Admin Approval Mode. If this is changed a system restart is required. Sets HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA.',
         default: true # EnableLUA

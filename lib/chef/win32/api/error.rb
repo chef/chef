@@ -933,7 +933,7 @@ UINT WINAPI SetErrorMode(
         safe_attach_function :SetErrorMode, [:UINT], :UINT
 
 =begin
-https://msdn.microsoft.com/en-us/library/windows/desktop/ms684179(v=vs.85).aspx
+https://msdn.microsoft.com/library/windows/desktop/ms684179(v=vs.85).aspx
 HMODULE WINAPI LoadLibraryEx(
   _In_       LPCTSTR lpFileName,
   _Reserved_ HANDLE  hFile,
@@ -943,7 +943,7 @@ HMODULE WINAPI LoadLibraryEx(
         safe_attach_function :LoadLibraryExW, %i{LPCTSTR HANDLE DWORD}, :HANDLE
 
 =begin
-https://msdn.microsoft.com/en-us/library/windows/desktop/ms683152(v=vs.85).aspx
+https://msdn.microsoft.com/library/windows/desktop/ms683152(v=vs.85).aspx
 BOOL WINAPI FreeLibrary(
   _In_ HMODULE hModule
 );

@@ -85,7 +85,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         # 2's complement representation. We cover multiple versions
         # of PowerShell in this example by including both the signed
         # exit code and its converted counterpart as permitted return values.
-        # See http://support.microsoft.com/en-us/kb/2646183/zh-cn
+        # See http://support.microsoft.com/kb/2646183/zh-cn
         resource.returns([negative_exit_status, unsigned_exit_status])
         expect { resource.run_action(:run) }.not_to raise_error
       ensure

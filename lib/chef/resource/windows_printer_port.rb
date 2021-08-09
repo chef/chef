@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 # See here for more info:
-# http://msdn.microsoft.com/en-us/library/windows/desktop/aa394492(v=vs.85).aspx
+# http://msdn.microsoft.com/library/windows/desktop/aa394492(v=vs.85).aspx
 
 require_relative "../resource"
 

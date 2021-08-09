@@ -15,7 +15,7 @@ Chef-client exit codes signal outside tools to the result of the Chef-Client run
 
 ### Exit codes Reserved by Operating System
 
-* Windows- [Link](https://msdn.microsoft.com/en-us/library/windows/desktop/ms681381(v=vs.85).aspx)
+* Windows- [Link](https://msdn.microsoft.com/library/windows/desktop/ms681381(v=vs.85).aspx)
 * Linux - [Sysexits](http://www.freebsd.org/cgi/man.cgi?query=sysexits&apropos=0&sektion=0&manpath=FreeBSD+4.3-RELEASE&format=html), [Bash Scripting](http://tldp.org/LDP/abs/html/exitcodes.html)
 
 ### Remaining Available Exit Codes

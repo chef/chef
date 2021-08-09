@@ -297,7 +297,7 @@ class Chef
           layout :PrimaryGroup, :pointer
         end
 
-        # https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572%28v=vs.85%29.aspx
+        # https://docs.microsoft.com/windows/win32/api/winnt/ne-winnt-security_impersonation_level
         SECURITY_IMPERSONATION_LEVEL = enum :SECURITY_IMPERSONATION_LEVEL, %i{
              SecurityAnonymous
              SecurityIdentification
@@ -305,7 +305,7 @@ class Chef
              SecurityDelegation
         }
 
-        # https://msdn.microsoft.com/en-us/library/windows/desktop/bb530718%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+        # https://docs.microsoft.com/windows/win32/api/winnt/ne-winnt-token_elevation_type
         ELEVATION_TYPE = enum :ELEVATION_TYPE, [
             :TokenElevationTypeDefault, 1,
             :TokenElevationTypeFull,
@@ -318,12 +318,12 @@ class Chef
 
         # SECURITY_DESCRIPTOR is an opaque structure whose contents can vary.  Pass the
         # pointer around and free it with LocalFree.
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/aa379561(v=vs.85).aspx
+        # https://docs.microsoft.com/windows/win32/api/winnt/ns-winnt-security_descriptor
 
         # SID is an opaque structure.  Pass the pointer around.
 
         # ACL type is a header with some information, followed by an array of ACEs
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/aa374931(v=VS.85).aspx
+        # https://docs.microsoft.com/windows/win32/api/winnt/ns-winnt-acl
         class ACLStruct < FFI::Struct
           layout :AclRevision, :uchar,
             :Sbzl, :uchar,
@@ -396,7 +396,7 @@ class Chef
           end
         end
 
-        # https://msdn.microsoft.com/en-us/library/windows/desktop/ms721829(v=vs.85).aspx
+        # https://docs.microsoft.com/windows/win32/api/lsalookup/ns-lsalookup-lsa_object_attributes
         class LSA_OBJECT_ATTRIBUTES < FFI::Struct
           layout :Length, :ULONG,
             :RootDirectory, :HANDLE,
@@ -406,14 +406,14 @@ class Chef
             :SecurityQualityOfService, :PVOID
         end
 
-        # https://msdn.microsoft.com/en-us/library/windows/desktop/ms721841(v=vs.85).aspx
+        # https://msdn.microsoft.com/library/windows/desktop/ms721841(v=vs.85).aspx
         class LSA_UNICODE_STRING < FFI::Struct
           layout :Length, :USHORT,
             :MaximumLength, :USHORT,
             :Buffer, :PWSTR
         end
 
-        # https://docs.microsoft.com/en-us/windows/win32/api/ntsecapi/ns-ntsecapi-lsa_enumeration_information
+        # https://docs.microsoft.com/windows/win32/api/ntsecapi/ns-ntsecapi-lsa_enumeration_information
         class LSA_ENUMERATION_INFORMATION < FFI::Struct
           layout :Sid, :PSID
         end

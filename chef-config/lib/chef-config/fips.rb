@@ -28,7 +28,7 @@ module ChefConfig
         return false
       end
 
-      # from http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129(v=vs.85).aspx
+      # from http://msdn.microsoft.com/library/windows/desktop/aa384129(v=vs.85).aspx
       reg_type =
         case ::RbConfig::CONFIG["target_cpu"]
         when "i386"

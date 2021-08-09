@@ -1547,7 +1547,7 @@ The `windows_user_privilege` resource has been updated to better validate the `p
 
 #### Windows securable resources
 
-All Windows securable resources now support using SID in addition to user or group name when specifying `owner`, `group`, or `rights` principal. These resources include the `template`, `file`, `remote_file`, `cookbook_file`, `directory`, and `remote_directory` resources. When using a SID, you may use either the standard string representation of a SID (S-R-I-S-S) or one of the [SDDL string constants](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-strings).
+All Windows securable resources now support using SID in addition to user or group name when specifying `owner`, `group`, or `rights` principal. These resources include the `template`, `file`, `remote_file`, `cookbook_file`, `directory`, and `remote_directory` resources. When using a SID, you may use either the standard string representation of a SID (S-R-I-S-S) or one of the [SDDL string constants](https://docs.microsoft.com/windows/win32/secauthz/sid-strings).
 
 ### Ohai Improvements
 
@@ -5858,7 +5858,7 @@ Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
 
 ### Ifconfig provider on Red Hat now supports additional properties
 
-It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` properties on interfaces on Red Hat compatible systems. See <https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/s1-networkscripts-interfaces.html> for further information
+It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` properties on interfaces on Red Hat compatible systems. See <https://access.redhat.com/documentation/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/s1-networkscripts-interfaces.html> for further information
 
 #### Properties
 

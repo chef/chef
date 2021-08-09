@@ -70,7 +70,7 @@ class Chef
       #####################################################
       # Releases the mutex
       def release
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685066(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms685066(v=vs.85).aspx
         # Note that release method needs to be called more than once
         # if mutex is acquired more than once.
         unless ReleaseMutex(handle)

@@ -31,7 +31,7 @@ class Chef
         include Chef::ReservedNames::Win32::API::File
         include Chef::ReservedNames::Win32::API
 
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/aa363788(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/aa363788(v=vs.85).aspx
         def initialize(file_name)
           raise Errno::ENOENT, file_name unless ::File.exist?(file_name)
 

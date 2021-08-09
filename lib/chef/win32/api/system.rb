@@ -28,7 +28,7 @@ class Chef
         # Win32 API Constants
         ###############################################
 
-        # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/ms724833(v=vs.85).aspx
 
         # Suite Masks
         # Microsoft BackOffice components are installed.
@@ -69,7 +69,7 @@ class Chef
         VER_NT_WORKSTATION = 0x0000001
 
         # Product Info
-        # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/ms724358(v=vs.85).aspx
         PRODUCT_BUSINESS = 0x00000006 # Business
         PRODUCT_BUSINESS_N = 0x00000010 # Business N
         PRODUCT_CLUSTER_SERVER = 0x00000012 # HPC Edition

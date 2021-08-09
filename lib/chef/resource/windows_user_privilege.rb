@@ -24,7 +24,7 @@ class Chef
       unified_mode true
 
       provides :windows_user_privilege
-      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
+      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
 
       introduced "16.0"
 

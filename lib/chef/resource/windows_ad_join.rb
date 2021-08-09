@@ -206,7 +206,7 @@ class Chef
         #   if this is the case we do not append the domain_name property to the domain_user property
         #   the domain_user and domain_name form the UPN (userPrincipalName)
         #   The specification for the UPN format is RFC 822
-        #   links: https://docs.microsoft.com/en-us/windows/win32/ad/naming-properties#userprincipalname https://tools.ietf.org/html/rfc822
+        #   links: https://docs.microsoft.com/windows/win32/ad/naming-properties#userprincipalname https://tools.ietf.org/html/rfc822
         #   regex: https://rubular.com/r/isAWojpTMKzlnp
         def sanitize_usename
           if /@/.match?(new_resource.domain_user)

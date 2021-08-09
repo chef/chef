@@ -32,7 +32,7 @@ class Chef
         include Chef::ReservedNames::Win32::API::System
       end
 
-      # see: http://msdn.microsoft.com/en-us/library/ms682653%28VS.85%29.aspx
+      # see: http://msdn.microsoft.com/library/ms682653%28VS.85%29.aspx
       HWND_BROADCAST = 0xffff
       WM_SETTINGCHANGE = 0x001A
       SMTO_BLOCK = 0x0001
@@ -54,7 +54,7 @@ class Chef
       end
 
       def expand_path(path)
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724265%28v=vs.85%29.aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms724265%28v=vs.85%29.aspx
         # Max size of env block on windows is 32k
         buf = 0.chr * 32 * 1024
         if ExpandEnvironmentStringsA(path, buf, buf.length) == 0

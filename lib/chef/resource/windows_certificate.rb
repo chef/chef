@@ -337,7 +337,7 @@ class Chef
           return "" if new_resource.private_key_acl.nil? || new_resource.private_key_acl.empty?
 
           # this PS came from http://blogs.technet.com/b/operationsguy/archive/2010/11/29/provide-access-to-private-keys-commandline-vs-powershell.aspx
-          # and from https://msdn.microsoft.com/en-us/library/windows/desktop/bb204778(v=vs.85).aspx
+          # and from https://msdn.microsoft.com/library/windows/desktop/bb204778(v=vs.85).aspx
           set_acl_script = <<-EOH
   $hash = #{hash}
   $storeCert = Get-ChildItem "cert:\\#{ps_cert_location}\\#{new_resource.store_name}\\$hash"

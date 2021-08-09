@@ -407,7 +407,7 @@ class Chef
       def validate_create_day(day, frequency, frequency_modifier)
         raise ArgumentError, "day property is only valid for tasks that run monthly or weekly" unless %i{weekly monthly}.include?(frequency)
 
-        # This has been verified with schtask.exe https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks#d-dayday--
+        # This has been verified with schtask.exe https://docs.microsoft.com/windows-server/administration/windows-commands/schtasks#d-dayday--
         # verified with earlier code if day "*" is given with frequency it raised exception Invalid value for /D option
         raise ArgumentError, "day wild card (*) is only valid with frequency :weekly" if frequency == :monthly && day == "*"
 
@@ -721,7 +721,7 @@ class Chef
             ::Win32::TaskScheduler::WEEKLY
           when :monthly
             # If frequency modifier is set with frequency :monthly we are setting taskscheduler as monthlydow
-            # Ref https://msdn.microsoft.com/en-us/library/windows/desktop/aa382061(v=vs.85).aspx
+            # Ref https://msdn.microsoft.com/library/windows/desktop/aa382061(v=vs.85).aspx
             new_resource.frequency_modifier.to_i.between?(1, 12) ? ::Win32::TaskScheduler::MONTHLYDATE : ::Win32::TaskScheduler::MONTHLYDOW
           when :on_idle
             ::Win32::TaskScheduler::ON_IDLE
@@ -828,7 +828,7 @@ class Chef
 
         # This values are set for frequency_modifier set as 1-12
         # This is to give backward compatibility validated this values with earlier code and running schtask.exe
-        # Used this as reference https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/schtasks#d-dayday--
+        # Used this as reference https://docs.microsoft.com/windows-server/administration/windows-commands/schtasks#d-dayday--
         def set_months(frequency_modifier)
           case frequency_modifier
           when 1
@@ -903,7 +903,7 @@ class Chef
         end
 
         def logon_type
-          # Ref: https://msdn.microsoft.com/en-us/library/windows/desktop/aa383566(v=vs.85).aspx
+          # Ref: https://msdn.microsoft.com/library/windows/desktop/aa383566(v=vs.85).aspx
           # if nothing is passed as logon_type the TASK_LOGON_SERVICE_ACCOUNT is getting set as default so using that for comparison.
           user_id = new_resource.user.to_s
           password = new_resource.password.to_s

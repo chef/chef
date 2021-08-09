@@ -55,7 +55,7 @@ class Chef
         description: "Working directory to use when the target is executed."
 
       property :iconlocation, String,
-        description: "Icon to use for the shortcut. Accepts the format of `path, index`, where index is the icon file to use. See Microsoft's [documentation](https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx) for details"
+        description: "Icon to use for the shortcut. Accepts the format of `path, index`, where index is the icon file to use. See Microsoft's [documentation](https://msdn.microsoft.com/library/3s9bx7at.aspx) for details"
 
       load_current_value do |new_resource|
         require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)

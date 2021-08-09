@@ -285,7 +285,7 @@ class Chef
           SYSTEM_USER.include?(user.to_s.upcase)
         end
 
-        # See https://technet.microsoft.com/en-us/library/cc961992.aspx
+        # See https://technet.microsoft.com/library/cc961992.aspx
         # In practice, this is SID.Administrators if the current_user is an admin (even if not
         # running elevated), and is current_user otherwise.
         def self.default_security_object_owner
@@ -293,7 +293,7 @@ class Chef
           Chef::ReservedNames::Win32::Security.get_token_information_owner(token)
         end
 
-        # See https://technet.microsoft.com/en-us/library/cc961996.aspx
+        # See https://technet.microsoft.com/library/cc961996.aspx
         # In practice, this seems to be SID.current_user for Microsoft Accounts, the current
         # user's Domain Users group for domain accounts, and SID.None otherwise.
         def self.default_security_object_group
@@ -306,7 +306,7 @@ class Chef
             admin_account_name = nil
 
             # Call NetUserEnum to enumerate the users without hitting network
-            # http://msdn.microsoft.com/en-us/library/windows/desktop/aa370652(v=vs.85).aspx
+            # http://msdn.microsoft.com/library/windows/desktop/aa370652(v=vs.85).aspx
             servername = nil # We are querying the local server
             level = 3 # We want USER_INFO_3 structure which contains the SID
             filter = FILTER_NORMAL_ACCOUNT # Only query the user accounts

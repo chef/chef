@@ -108,7 +108,7 @@ class Chef
 
         symlink_file_handle(link_name) do |handle|
           # Go to DeviceIoControl to get the symlink information
-          # http://msdn.microsoft.com/en-us/library/windows/desktop/aa364571(v=vs.85).aspx
+          # http://msdn.microsoft.com/library/windows/desktop/aa364571(v=vs.85).aspx
           reparse_buffer = FFI::MemoryPointer.new(MAXIMUM_REPARSE_DATA_BUFFER_SIZE)
           parsed_size = FFI::Buffer.new(:long).write_long(0)
           if DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, nil, 0, reparse_buffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, parsed_size, nil) == 0

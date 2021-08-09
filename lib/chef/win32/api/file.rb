@@ -186,7 +186,7 @@ class Chef
         ffi_lib "kernel32", "version"
 
         # Does not map directly to a win32 struct
-        # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
+        # see https://msdn.microsoft.com/library/windows/desktop/ms647464(v=vs.85).aspx
         class Translation < FFI::Struct
           layout :w_lang, :WORD,
             :w_code_page, :WORD

@@ -436,7 +436,7 @@ describe Chef::Resource::Link do
           Dir.mkdir(to)
         end
         # On Windows, readlink fails to open the link.  FILE_FLAG_OPEN_REPARSE_POINT
-        # might help, from http://msdn.microsoft.com/en-us/library/windows/desktop/aa363858(v=vs.85).aspx
+        # might help, from http://msdn.microsoft.com/library/windows/desktop/aa363858(v=vs.85).aspx
         context "and the link does not yet exist" do
           include_context "create symbolic link succeeds"
           include_context "delete is noop"

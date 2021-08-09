@@ -91,7 +91,7 @@ class Chef
           # Does not load the Windows PowerShell profile.
           "-NoProfile",
           # always set the ExecutionPolicy flag
-          # see http://technet.microsoft.com/en-us/library/ee176961.aspx
+          # see http://technet.microsoft.com/library/ee176961.aspx
           "-ExecutionPolicy Unrestricted",
           # PowerShell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected

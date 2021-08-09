@@ -33,8 +33,8 @@ class Chef
       attr_reader :major_version, :minor_version, :build_number
 
       # Ruby implementation of
-      # http://msdn.microsoft.com/en-us/library/ms724833(v=vs.85).aspx
-      # http://msdn.microsoft.com/en-us/library/ms724358(v=vs.85).aspx
+      # http://msdn.microsoft.com/library/ms724833(v=vs.85).aspx
+      # http://msdn.microsoft.com/library/ms724358(v=vs.85).aspx
 
       def self.get_system_metrics(n_index)
         GetSystemMetrics(n_index)
@@ -119,7 +119,7 @@ class Chef
         # Use WMI here because API's like GetVersion return faked
         # version numbers on Windows Server 2012 R2 and Windows 8.1 --
         # WMI always returns the truth. See article at
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724439(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms724439(v=vs.85).aspx
 
         wmi = WmiLite::Wmi.new
         os_info = wmi.first_of("Win32_OperatingSystem")

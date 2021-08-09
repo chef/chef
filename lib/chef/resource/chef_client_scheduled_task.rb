@@ -139,7 +139,7 @@ class Chef
           end
         end
 
-        # According to https://docs.microsoft.com/en-us/windows/desktop/taskschd/schtasks,
+        # According to https://docs.microsoft.com/windows/desktop/taskschd/schtasks,
         # the :once, :onstart, :onlogon, and :onidle schedules don't accept schedule modifiers
 
         windows_task new_resource.task_name do

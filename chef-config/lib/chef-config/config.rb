@@ -906,7 +906,7 @@ module ChefConfig
     def self.set_defaults_for_windows
       # Those lists of regular expressions define what chef considers a
       # valid user and group name
-      # From http://technet.microsoft.com/en-us/library/cc776019(WS.10).aspx
+      # From http://technet.microsoft.com/library/cc776019(WS.10).aspx
       principal_valid_regex_part = '[^"\/\\\\\[\]\:;|=,+*?<>]+'
       default :user_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]
       default :group_valid_regex, [ /^(#{principal_valid_regex_part}\\)?#{principal_valid_regex_part}$/ ]

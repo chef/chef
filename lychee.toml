@@ -1,0 +1,71 @@
+###
+### Display
+###
+# Verbose program output
+verbose = false
+
+# Show progress
+progress = false
+
+
+###
+### Runtime
+###
+# Number of threads to utilize.
+# Defaults to number of cores available to the system if omitted.
+#threads = 2
+
+# Maximum number of allowed redirects
+max_redirects = 10
+
+
+###
+### Requests
+###
+# User agent to send with each request
+user_agent = "curl/7.71.1"
+
+# Website timeout from connect to response finished
+timeout = 20
+
+# Comma-separated list of accepted status codes for valid links.
+# Omit to accept all response types.
+#accept = "text/html"
+
+# Proceed for server connections considered insecure (invalid TLS)
+insecure = false
+
+# Only test links with the given scheme (e.g. https)
+# Omit to check links with any scheme
+#scheme = "https"
+
+# Request method
+method = "get"
+
+# Custom request headers
+headers = []
+
+
+###
+### Exclusions
+###
+# Exclude URLs from checking (supports regex)
+exclude = []
+
+include = []
+
+# Exclude all private IPs from checking
+# Equivalent to setting `exclude_private`, `exclude_link_local`, and `exclude_loopback` to true
+exclude_all_private = false
+
+# Exclude private IP address ranges from checking
+exclude_private = false
+
+# Exclude link-local IP address range from checking
+exclude_link_local = false
+
+# Exclude loopback IP address range from checking
+exclude_loopback = false
+
+# Exclude all mail addresses from checking
+exclude_mail = true

@@ -33,7 +33,7 @@ class Chef
         end
 
         # defining method for each predefined version resource string
-        # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
+        # see https://msdn.microsoft.com/library/windows/desktop/ms647464(v=vs.85).aspx
         %i{
           Comments
           CompanyName

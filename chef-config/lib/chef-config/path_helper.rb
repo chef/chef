@@ -86,7 +86,7 @@ module ChefConfig
 
     def self.windows_max_length_exceeded?(path)
       # Check to see if paths without the \\?\ prefix are over the maximum allowed length for the Windows API
-      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+      # http://msdn.microsoft.com/library/windows/desktop/aa365247%28v=vs.85%29.aspx
       unless /^\\\\?\\/.match?(path)
         if path.length > WIN_MAX_PATH
           return true

@@ -31,14 +31,14 @@ class Chef
         INFINITE = 0xFFFFFFFF
 
         # Return codes
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms687032(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms687032(v=vs.85).aspx
         WAIT_FAILED = 0xFFFFFFFF
         WAIT_TIMEOUT = 0x00000102
         WAIT_OBJECT_0 = 0x00000000
         WAIT_ABANDONED = 0x00000080
 
         # Security and access rights for synchronization objects
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686670(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms686670(v=vs.85).aspx
         DELETE = 0x00010000
         READ_CONTROL = 0x00020000
         SYNCHRONIZE = 0x00100000

@@ -264,7 +264,7 @@ describe "windows_task provider", :windows_only do
     end
   end
 
-  # REF: https://msdn.microsoft.com/en-us/library/windows/desktop/aa382063(v=vs.85).aspx
+  # REF: https://msdn.microsoft.com/library/windows/desktop/aa382063(v=vs.85).aspx
   describe "#days_of_month" do
     it "returns the binary value 1 if day is set as string 1" do
       new_resource.day "1"
@@ -292,7 +292,7 @@ describe "windows_task provider", :windows_only do
     end
   end
 
-  # Ref : https://msdn.microsoft.com/en-us/library/windows/desktop/aa380729(v=vs.85).aspx
+  # Ref : https://msdn.microsoft.com/library/windows/desktop/aa380729(v=vs.85).aspx
   describe "#days_of_week" do
     it "returns the binary value 2 if day is set as 'Mon'" do
       new_resource.day "Mon"
@@ -335,7 +335,7 @@ describe "windows_task provider", :windows_only do
     end
   end
 
-  # REf: https://msdn.microsoft.com/en-us/library/windows/desktop/aa382064(v=vs.85).aspx
+  # REf: https://msdn.microsoft.com/library/windows/desktop/aa382064(v=vs.85).aspx
   describe "#monts_of_year" do
     it "returns the binary value 1 if day is set as 'Jan'" do
       new_resource.months "Jan"

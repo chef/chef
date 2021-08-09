@@ -49,12 +49,12 @@ class Chef
         host.typedef :ushort,  :ATOM # Atom ~= Symbol: Atom table stores strings and corresponding identifiers. Application
         # places a string in an atom table and receives a 16-bit integer, called an atom, that
         # can be used to access the string. Placed string is called an atom name.
-        # See: http://msdn.microsoft.com/en-us/library/ms648708%28VS.85%29.aspx
+        # See: http://msdn.microsoft.com/library/ms648708%28VS.85%29.aspx
         host.typedef :bool,    :BOOL
         host.typedef :bool,    :BOOLEAN
         host.typedef :uchar,   :BYTE # Byte (8 bits). Declared as unsigned char
         # CALLBACK:  K,       # Win32.API gem-specific ?? MSDN: #define CALLBACK __stdcall
-        host.typedef :char,    :CHAR # 8-bit Windows (ANSI) character. See http://msdn.microsoft.com/en-us/library/dd183415%28VS.85%29.aspx
+        host.typedef :char,    :CHAR # 8-bit Windows (ANSI) character. See http://msdn.microsoft.com/library/dd183415%28VS.85%29.aspx
         host.typedef :uint32,  :COLORREF # Red, green, blue (RGB) color value (32 bits). See COLORREF for more info.
         host.typedef :uint32,  :DWORD # 32-bit unsigned integer. The range is 0 through 4,294,967,295 decimal.
         host.typedef :uint64,  :DWORDLONG # 64-bit unsigned integer. The range is 0 through 18,446,744,073,709,551,615 decimal.
@@ -66,46 +66,46 @@ class Chef
         host.typedef :int,     :HALF_PTR # Half the size of a pointer. Use within a structure that contains a pointer and two small fields.
         # BaseTsd.h: #ifdef (_WIN64) host.typedef int HALF_PTR; #else host.typedef short HALF_PTR;
         host.typedef :ulong,   :HACCEL # (L) Handle to an accelerator table. WinDef.h: #host.typedef HANDLE HACCEL;
-        # See http://msdn.microsoft.com/en-us/library/ms645526%28VS.85%29.aspx
+        # See http://msdn.microsoft.com/library/ms645526%28VS.85%29.aspx
         host.typedef :size_t, :HANDLE # (L) Handle to an object. WinNT.h: #host.typedef PVOID HANDLE;
         # todo: Platform-dependent! Need to change to :uint64 for Win64
-        host.typedef :ulong,   :HBITMAP # (L) Handle to a bitmap: http://msdn.microsoft.com/en-us/library/dd183377%28VS.85%29.aspx
-        host.typedef :ulong,   :HBRUSH # (L) Handle to a brush. http://msdn.microsoft.com/en-us/library/dd183394%28VS.85%29.aspx
-        host.typedef :ulong,   :HCOLORSPACE # (L) Handle to a color space. http://msdn.microsoft.com/en-us/library/ms536546%28VS.85%29.aspx
-        host.typedef :ulong,   :HCURSOR # (L) Handle to a cursor. http://msdn.microsoft.com/en-us/library/ms646970%28VS.85%29.aspx
+        host.typedef :ulong,   :HBITMAP # (L) Handle to a bitmap: http://msdn.microsoft.com/library/dd183377%28VS.85%29.aspx
+        host.typedef :ulong,   :HBRUSH # (L) Handle to a brush. http://msdn.microsoft.com/library/dd183394%28VS.85%29.aspx
+        host.typedef :ulong,   :HCOLORSPACE # (L) Handle to a color space. http://msdn.microsoft.com/library/ms536546%28VS.85%29.aspx
+        host.typedef :ulong,   :HCURSOR # (L) Handle to a cursor. http://msdn.microsoft.com/library/ms646970%28VS.85%29.aspx
         host.typedef :ulong,   :HCONV # (L) Handle to a dynamic data exchange (DDE) conversation.
         host.typedef :ulong,   :HCONVLIST # (L) Handle to a DDE conversation list. HANDLE - L ?
         host.typedef :ulong,   :HDDEDATA # (L) Handle to DDE data (structure?)
-        host.typedef :ulong,   :HDC # (L) Handle to a device context (DC). http://msdn.microsoft.com/en-us/library/dd183560%28VS.85%29.aspx
-        host.typedef :ulong,   :HDESK # (L) Handle to a desktop. http://msdn.microsoft.com/en-us/library/ms682573%28VS.85%29.aspx
+        host.typedef :ulong,   :HDC # (L) Handle to a device context (DC). http://msdn.microsoft.com/library/dd183560%28VS.85%29.aspx
+        host.typedef :ulong,   :HDESK # (L) Handle to a desktop. http://msdn.microsoft.com/library/ms682573%28VS.85%29.aspx
         host.typedef :ulong,   :HDROP # (L) Handle to an internal drop structure.
         host.typedef :ulong,   :HDWP # (L) Handle to a deferred window position structure.
-        host.typedef :ulong,   :HENHMETAFILE # (L) Handle to an enhanced metafile. http://msdn.microsoft.com/en-us/library/dd145051%28VS.85%29.aspx
+        host.typedef :ulong,   :HENHMETAFILE # (L) Handle to an enhanced metafile. http://msdn.microsoft.com/library/dd145051%28VS.85%29.aspx
         host.typedef :uint,    :HFILE # (I) Special file handle to a file opened by OpenFile, not CreateFile.
         # WinDef.h: #host.typedef int HFILE;
-        host.typedef :ulong,   :HFONT # (L) Handle to a font. http://msdn.microsoft.com/en-us/library/dd162470%28VS.85%29.aspx
+        host.typedef :ulong,   :HFONT # (L) Handle to a font. http://msdn.microsoft.com/library/dd162470%28VS.85%29.aspx
         host.typedef :ulong,   :HGDIOBJ # (L) Handle to a GDI object.
         host.typedef :ulong,   :HGLOBAL # (L) Handle to a global memory block.
-        host.typedef :ulong,   :HHOOK # (L) Handle to a hook. http://msdn.microsoft.com/en-us/library/ms632589%28VS.85%29.aspx
-        host.typedef :ulong,   :HICON # (L) Handle to an icon. http://msdn.microsoft.com/en-us/library/ms646973%28VS.85%29.aspx
+        host.typedef :ulong,   :HHOOK # (L) Handle to a hook. http://msdn.microsoft.com/library/ms632589%28VS.85%29.aspx
+        host.typedef :ulong,   :HICON # (L) Handle to an icon. http://msdn.microsoft.com/library/ms646973%28VS.85%29.aspx
         host.typedef :ulong,   :HINSTANCE # (L) Handle to an instance. This is the base address of the module in memory.
         # HMODULE and HINSTANCE are the same today, but were different in 16-bit Windows.
         host.typedef :ulong,   :HKEY # (L) Handle to a registry key.
         host.typedef :ulong,   :HKL # (L) Input locale identifier.
         host.typedef :ulong,   :HLOCAL # (L) Handle to a local memory block.
-        host.typedef :ulong,   :HMENU # (L) Handle to a menu. http://msdn.microsoft.com/en-us/library/ms646977%28VS.85%29.aspx
-        host.typedef :ulong,   :HMETAFILE # (L) Handle to a metafile. http://msdn.microsoft.com/en-us/library/dd145051%28VS.85%29.aspx
+        host.typedef :ulong,   :HMENU # (L) Handle to a menu. http://msdn.microsoft.com/library/ms646977%28VS.85%29.aspx
+        host.typedef :ulong,   :HMETAFILE # (L) Handle to a metafile. http://msdn.microsoft.com/library/dd145051%28VS.85%29.aspx
         host.typedef :ulong,   :HMODULE # (L) Handle to an instance. Same as HINSTANCE today, but was different in 16-bit Windows.
         host.typedef :ulong,   :HMONITOR # (L) Handle to a display monitor. WinDef.h: if(WINVER >= 0x0500) host.typedef HANDLE HMONITOR;
         host.typedef :ulong,   :HPALETTE # (L) Handle to a palette.
-        host.typedef :ulong,   :HPEN # (L) Handle to a pen. http://msdn.microsoft.com/en-us/library/dd162786%28VS.85%29.aspx
+        host.typedef :ulong,   :HPEN # (L) Handle to a pen. http://msdn.microsoft.com/library/dd162786%28VS.85%29.aspx
         host.typedef :long,    :HRESULT # Return code used by COM interfaces. For more info, Structure of the COM Error Codes.
         # To test an HRESULT value, use the FAILED and SUCCEEDED macros.
-        host.typedef :ulong,   :HRGN # (L) Handle to a region. http://msdn.microsoft.com/en-us/library/dd162913%28VS.85%29.aspx
+        host.typedef :ulong,   :HRGN # (L) Handle to a region. http://msdn.microsoft.com/library/dd162913%28VS.85%29.aspx
         host.typedef :ulong,   :HRSRC # (L) Handle to a resource.
         host.typedef :ulong,   :HSZ # (L) Handle to a DDE string.
-        host.typedef :ulong,   :HWINSTA # (L) Handle to a window station. http://msdn.microsoft.com/en-us/library/ms687096%28VS.85%29.aspx
-        host.typedef :ulong,   :HWND # (L) Handle to a window. http://msdn.microsoft.com/en-us/library/ms632595%28VS.85%29.aspx
+        host.typedef :ulong,   :HWINSTA # (L) Handle to a window station. http://msdn.microsoft.com/library/ms687096%28VS.85%29.aspx
+        host.typedef :ulong,   :HWND # (L) Handle to a window. http://msdn.microsoft.com/library/ms632595%28VS.85%29.aspx
         host.typedef :int,     :INT # 32-bit signed integer. The range is -2147483648 through 2147483647 decimal.
         host.typedef :int,     :INT_PTR # Signed integer type for pointer precision. Use when casting a pointer to an integer
         # to perform pointer arithmetic. BaseTsd.h:
@@ -113,7 +113,7 @@ class Chef
         host.typedef :int32,   :INT32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :INT64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
         host.typedef :ushort,  :LANGID # Language identifier. For more information, see Locales. WinNT.h: #host.typedef WORD LANGID;
-        # See http://msdn.microsoft.com/en-us/library/dd318716%28VS.85%29.aspx
+        # See http://msdn.microsoft.com/library/dd318716%28VS.85%29.aspx
         host.typedef :uint32,  :LCID # Locale identifier. For more information, see Locales.
         host.typedef :uint32,  :LCTYPE # Locale information type. For a list, see Locale Information Constants.
         host.typedef :uint32,  :LGRPID # Language group identifier. For a list, see EnumLanguageGroupLocales.
@@ -135,7 +135,7 @@ class Chef
         host.typedef :pointer, :LPBYTE # Pointer to a BYTE. WinDef.h as follows: #host.typedef BYTE far *LPBYTE;
         host.typedef :pointer, :LPCOLORREF # Pointer to a COLORREF value. WinDef.h as follows: #host.typedef DWORD *LPCOLORREF;
         host.typedef :pointer, :LPCSTR # Pointer to a constant null-terminated string of 8-bit Windows (ANSI) characters.
-        # See Character Sets Used By Fonts. http://msdn.microsoft.com/en-us/library/dd183415%28VS.85%29.aspx
+        # See Character Sets Used By Fonts. http://msdn.microsoft.com/library/dd183415%28VS.85%29.aspx
         host.typedef :pointer, :LPCTSTR # An LPCWSTR if UNICODE is defined, an LPCSTR otherwise.
         host.typedef :pointer, :LPCVOID # Pointer to a constant of any type. WinDef.h as follows: host.typedef CONST void *LPCVOID;
         host.typedef :pointer, :LPCWSTR # Pointer to a constant null-terminated string of 16-bit Unicode characters.
@@ -217,14 +217,14 @@ class Chef
         host.typedef :pointer, :PWSTR # Pointer to a null- terminated string of 16-bit Unicode characters.
         # For more information, see Character Sets Used By Fonts.
         host.typedef :ulong,   :SC_HANDLE # (L) Handle to a service control manager database.
-        # See SCM Handles http://msdn.microsoft.com/en-us/library/ms685104%28VS.85%29.aspx
+        # See SCM Handles http://msdn.microsoft.com/library/ms685104%28VS.85%29.aspx
         host.typedef :pointer, :SC_LOCK # Lock to a service control manager database. For more information, see SCM Handles.
         host.typedef :ulong,   :SERVICE_STATUS_HANDLE # (L) Handle to a service status value. See SCM Handles.
         host.typedef :short,   :SHORT # A 16-bit integer. The range is –32768 through 32767 decimal.
         host.typedef :ulong,   :SIZE_T #  The maximum number of bytes to which a pointer can point. Use for a count that must span the full range of a pointer.
         host.typedef :long,    :SSIZE_T # Signed SIZE_T.
         host.typedef :char,    :TBYTE # A WCHAR if UNICODE is defined, a CHAR otherwise.TCHAR:
-        # http://msdn.microsoft.com/en-us/library/c426s321%28VS.80%29.aspx
+        # http://msdn.microsoft.com/library/c426s321%28VS.80%29.aspx
         host.typedef :char,    :TCHAR # A WCHAR if UNICODE is defined, a CHAR otherwise.TCHAR:
         host.typedef :uchar,   :UCHAR # Unsigned CHAR (8 bit)
         host.typedef :uint,    :UHALF_PTR # Unsigned HALF_PTR. Use within a structure that contains a pointer and two small fields.
@@ -263,42 +263,42 @@ class Chef
 
         # Creates a WORD value by concatenating the specified values.
         #
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632663(v=VS.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms632663(v=VS.85).aspx
         def MAKEWORD(low, high)
           ((low & 0xff) | (high & 0xff)) << 8
         end
 
         # Creates a LONG value by concatenating the specified values.
         #
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632660(v=vs.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms632660(v=vs.85).aspx
         def MAKELONG(low, high)
           ((low & 0xffff) | (high & 0xffff)) << 16
         end
 
         # Retrieves the low-order word from the specified value.
         #
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632659(v=VS.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms632659(v=VS.85).aspx
         def LOWORD(l)
           l & 0xffff
         end
 
         # Retrieves the high-order word from the specified 32-bit value.
         #
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632657(v=VS.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms632657(v=VS.85).aspx
         def HIWORD(l)
           l >> 16
         end
 
         # Retrieves the low-order byte from the specified value.
         #
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632658(v=VS.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms632658(v=VS.85).aspx
         def LOBYTE(w)
           w & 0xff
         end
 
         # Retrieves the high-order byte from the given 16-bit value.
         #
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms632656(v=VS.85).aspx
+        # http://msdn.microsoft.com/library/windows/desktop/ms632656(v=VS.85).aspx
         def HIBYTE(w)
           w >> 8
         end
@@ -354,7 +354,7 @@ class Chef
 
       # Represents a 64-bit unsigned integer value.
       #
-      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa383742(v=vs.85).aspx
+      # http://msdn.microsoft.com/library/windows/desktop/aa383742(v=vs.85).aspx
       def make_uint64(low, high)
         low + (high * (2**32))
       end
@@ -368,7 +368,7 @@ class Chef
       # FILETIME structure contains a 64-bit value representing the number
       # of 100-nanosecond intervals since January 1, 1601 (UTC).
       #
-      # http://msdn.microsoft.com/en-us/library/ms724284(VS.85).aspx
+      # http://msdn.microsoft.com/library/ms724284(VS.85).aspx
       #
       def wtime_to_time(wtime)
         Time.at((wtime - WIN32_EPOC_MINUS_POSIX_EPOC) / 10000000)

@@ -90,7 +90,7 @@ class Chef
       end
 
       # Gets the System-locale setting for the current computer.
-      # @see https://docs.microsoft.com/en-us/powershell/module/international/get-winsystemlocale
+      # @see https://docs.microsoft.com/powershell/module/international/get-winsystemlocale
       # @return [String] the current value of the System-locale setting.
       #
       def get_system_locale_windows
@@ -132,7 +132,7 @@ class Chef
         def set_system_locale
           if windows?
             # Sets the system locale for the current computer.
-            # @see https://docs.microsoft.com/en-us/powershell/module/internationalcmdlets/set-winsystemlocale
+            # @see https://docs.microsoft.com/powershell/module/internationalcmdlets/set-winsystemlocale
             #
             response = powershell_exec("Set-WinSystemLocale -SystemLocale #{new_resource.lang}")
             raise response.errors.join(" ") if response.error?

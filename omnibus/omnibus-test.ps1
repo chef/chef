@@ -93,7 +93,7 @@ $env:Path = $p
 # Running the specs separately fixes an edge case on 2012R2-i386 where the desktop heap's
 # allocated limit is hit and any test's attempt to create a new process is met with
 # exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
-# desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
+# desktop heap exhaustion seems likely (https://docs.microsoft.com/archive/blogs/ntdebugging/desktop-heap-overview)
 $exit = 0
 
 bundle exec rspec -f progress --profile -- ./spec/unit
