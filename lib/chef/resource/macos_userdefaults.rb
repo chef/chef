@@ -91,7 +91,8 @@ class Chef
       property :type, String,
         description: "The value type of the preference key.",
         equal_to: %w{bool string int float array dict},
-        desired_state: false
+        desired_state: false,
+        deprecated: true
 
       property :user, [String, Symbol],
         description: "The system user that the default will be applied to. Set :current for current user, :all for all users or pass a valid username",
@@ -100,7 +101,8 @@ class Chef
       property :sudo, [TrueClass, FalseClass],
         description: "Set to true if the setting you wish to modify requires privileged access. This requires passwordless sudo for the `/usr/bin/defaults` command to be setup for the user running #{ChefUtils::Dist::Infra::PRODUCT}.",
         default: false,
-        desired_state: false
+        desired_state: false,
+        deprecated: true
 
       load_current_value do |new_resource|
         Chef::Log.debug "#load_current_value: attempting to read \"#{new_resource.domain}\" value from preferences to determine state"
