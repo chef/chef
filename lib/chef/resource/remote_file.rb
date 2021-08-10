@@ -85,7 +85,7 @@ class Chef
       end
 
       property :use_etag, [ TrueClass, FalseClass ], default: true,
-        description: "Enable ETag headers. Set to false to disable ETag headers. To use this setting, `use_conditional_get` must also be set to true."
+        description: "Enable ETag headers. Set to `false` to disable ETag headers. To use this setting, `use_conditional_get` must also be set to true."
 
       alias :use_etags :use_etag
 

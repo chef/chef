@@ -41,7 +41,7 @@ class Chef
         end
       end
 
-      action :run do
+      action :run, description: "Run a command." do
         if creates && sentinel_file.exist?
           logger.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
