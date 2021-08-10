@@ -177,6 +177,12 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
         expect(zypper_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^package chef_rpm is not installed$")
       end
+
+      it "will not raise exception when removing non existing package" do
+        zypper_package.run_action(:remove)
+        expect(zypper_package.updated_by_last_action?).to be false
+        expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' noname").stdout.chomp).to match("^package noname is not installed$")
+      end
     end
 
     context "with no available version" do
