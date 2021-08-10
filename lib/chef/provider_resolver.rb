@@ -57,10 +57,16 @@ class Chef
     end
 
     def resolve
-      maybe_explicit_provider(resource) ||
+      resolved = maybe_explicit_provider(resource) ||
         maybe_custom_resource(resource) ||
-        maybe_dynamic_provider_resolution(resource, action) ||
+        maybe_dynamic_provider_resolution(resource, action)
+
+      if resolved.nil?
+        raise(Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource}") if node.nil?
+
         raise(Chef::Exceptions::ProviderNotFound, "Cannot find a provider for #{resource} on #{node["platform"]} version #{node["platform_version"]}")
+      end
+      resolved
     end
 
     # Does NOT call provides? on the resource (it is assumed this is being
