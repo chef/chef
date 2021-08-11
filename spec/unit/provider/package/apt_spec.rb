@@ -244,16 +244,6 @@ describe Chef::Provider::Package::Apt do
       @provider.load_current_resource
     end
 
-    # it "raises an exception if a source is specified (CHEF-5113)" do
-    #   @new_resource.source "pluto"
-    #   expect(@provider).to receive(:shell_out_compacted!).with(
-    #     "apt-cache", "policy", @new_resource.package_name,
-    #     env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
-    #     timeout: @timeout
-    #   ).and_return(@shell_out)
-    #   expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
-    # end
-
     it "downgrades when requested" do
       ubuntu1804downgrade_stubs
       so = instance_double(Mixlib::ShellOut, stdout: "apt 1.6~beta1 (amd64)\notherstuff\n")
