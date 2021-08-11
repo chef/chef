@@ -26,6 +26,7 @@ describe Chef::Provider::Package::Apt do
 
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:source) { "/tmp/wget_1.11.4-1ubuntu1_amd64.deb" }
 
   before(:each) do
     @run_context = Chef::RunContext.new(node, {}, events)
@@ -243,15 +244,15 @@ describe Chef::Provider::Package::Apt do
       @provider.load_current_resource
     end
 
-    it "raises an exception if a source is specified (CHEF-5113)" do
-      @new_resource.source "pluto"
-      expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", @new_resource.package_name,
-        env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
-        timeout: @timeout
-      ).and_return(@shell_out)
-      expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
-    end
+    # it "raises an exception if a source is specified (CHEF-5113)" do
+    #   @new_resource.source "pluto"
+    #   expect(@provider).to receive(:shell_out_compacted!).with(
+    #     "apt-cache", "policy", @new_resource.package_name,
+    #     env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
+    #     timeout: @timeout
+    #   ).and_return(@shell_out)
+    #   expect { @provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    # end
 
     it "downgrades when requested" do
       ubuntu1804downgrade_stubs
@@ -389,6 +390,45 @@ describe Chef::Provider::Package::Apt do
       end
     end
 
+    describe "performs all operations with source option" do
+      before(:each) do
+        ubuntu1804downgrade_stubs
+        allow(::File).to receive(:exist?).with(source).and_return(true)
+        @resource_with_source = Chef::Resource::AptPackage.new("wget", @run_context)
+        @resource_with_source.source source
+        @provider.new_resource = @resource_with_source
+        @resource_with_source.options("--force-yes")
+      end
+
+      it "installs package if source is provided" do
+        allow(@provider).to receive(:package_data).and_return({
+          "wget" => {
+            virtual: true,
+            candidate_version: nil,
+            installed_version: nil,
+          },
+        })
+        expect(@provider).to receive(:shell_out_compacted!).with(
+          "dpkg", "-i", "--force-yes", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+          { env: { "DEBIAN_FRONTEND" => "noninteractive" },
+          timeout: @timeout }
+        )
+        @provider.install_package(["wget"], ["1.11.4-1ubuntu1"])
+      end
+
+      it "upgrades package even with source option" do
+        allow(@provider).to receive(:package_data).and_return({
+          "wget" => {
+            virtual: true,
+            candidate_version: nil,
+            installed_version: nil,
+          },
+        })
+        expect(@provider).to receive(:install_package).with(["wget"], ["1.11.4-1ubuntu1"])
+        @provider.upgrade_package(["wget"], ["1.11.4-1ubuntu1"])
+      end
+    end
+
     describe "install_package with old apt-get" do
       # tests apt-get on 1404 that does not support --allow-downgrades
       before(:each) do
@@ -447,6 +487,7 @@ describe Chef::Provider::Package::Apt do
         expect(@provider).to receive(:install_package).with(["irssi"], ["0.8.12-7"])
         @provider.upgrade_package(["irssi"], ["0.8.12-7"])
       end
+
     end
 
     describe Chef::Resource::AptPackage, "remove_package" do

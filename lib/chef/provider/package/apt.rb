@@ -26,6 +26,7 @@ class Chef
       class Apt < Chef::Provider::Package
         include Chef::Provider::Package::Deb
         use_multipackage_api
+        use_package_name_for_source
 
         provides :package, platform_family: "debian", target_mode: true
         provides :apt_package, target_mode: true
@@ -37,23 +38,22 @@ class Chef
         def load_current_resource
           @current_resource = Chef::Resource::AptPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-          current_resource.version(get_current_versions)
+
+          if source_files_exist?
+            @candidate_version = get_candidate_versions
+            current_resource.package_name(get_package_name)
+            # if the source file exists then our package_name is right
+            current_resource.version(get_current_version_from(current_package_name_array))
+          else
+
+            current_resource.version(get_current_versions)
+          end
+
           current_resource
         end
 
         def define_resource_requirements
           super
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, "apt package provider cannot handle source property. Use dpkg provider instead")
-          end
-        end
-
-        def package_data
-          @package_data ||= Hash.new do |hash, key|
-            hash[key] = package_data_for(key)
-          end
         end
 
         def get_current_versions
@@ -66,6 +66,16 @@ class Chef
           package_name_array.map do |package_name|
             package_data[package_name][:candidate_version]
           end
+        end
+
+        def package_data
+          @package_data ||= Hash.new do |hash, key|
+            hash[key] = package_data_for(key)
+          end
+        end
+
+        def current_package_name_array
+          [ current_resource.package_name ].flatten
         end
 
         def candidate_version
@@ -89,11 +99,19 @@ class Chef
         end
 
         def install_package(name, version)
-          package_name = name.zip(version).map do |n, v|
-            package_data[n][:virtual] ? n : "#{n}=#{v}"
+          if source_files_exist?
+            sources = name.map { |n| name_sources[n] }
+            logger.info("#{new_resource} installing package(s): #{name.join(" ")}")
+            run_noninteractive("dpkg", "-i", *options, *sources)
+
+          else
+            package_name = name.zip(version).map do |n, v|
+              package_data[n][:virtual] ? n : "#{n}=#{v}"
+            end
+
+            dgrade = "--allow-downgrades" if supports_allow_downgrade? && allow_downgrade
+            run_noninteractive("apt-get", "-q", "-y", dgrade, config_file_options, default_release_options, options, "install", package_name)
           end
-          dgrade = "--allow-downgrades" if supports_allow_downgrade? && allow_downgrade
-          run_noninteractive("apt-get", "-q", "-y", dgrade, config_file_options, default_release_options, options, "install", package_name)
         end
 
         def upgrade_package(name, version)
@@ -253,6 +271,81 @@ class Chef
             candidate_version: candidate_version,
             virtual: virtual,
           }
+        end
+
+        # Helper to construct Hash of names-to-package-information.
+        #
+        # @return [Hash] Mapping of package names to package information
+        def name_pkginfo
+          @name_pkginfo ||=
+            begin
+              pkginfos = resolved_source_array.map do |src|
+                logger.trace("#{new_resource} checking #{src} dpkg status")
+                status = shell_out("dpkg-deb", "-W", src)
+                status.stdout
+              end
+              Hash[*package_name_array.zip(pkginfos).flatten]
+            end
+        end
+
+        def name_package_name
+          @name_package_name ||= name_pkginfo.transform_values { |v| v ? v.split("\t")[0] : nil }
+        end
+
+        # Return package names from the candidate source file(s).
+        #
+        # @return [Array] Array of actual package names read from the source files
+        def get_package_name
+          package_name_array.map { |name| name_package_name[name] }
+        end
+
+        def read_current_version_of_package(package_name)
+          logger.trace("#{new_resource} checking install state of #{package_name}")
+          status = shell_out!("dpkg", "-s", package_name, returns: [0, 1])
+          package_installed = false
+          status.stdout.each_line do |line|
+            case line
+            when /^Status: deinstall ok config-files/.freeze
+              # if we are 'purging' then we consider 'removed' to be 'installed'
+              package_installed = true if action == :purge
+            when /^Status: install ok installed/.freeze
+              package_installed = true
+            when /^Version: (.+)$/.freeze
+              if package_installed
+                logger.trace("#{new_resource} current version is #{$1}")
+                return $1
+              end
+            end
+          end
+          nil
+        end
+
+        def get_current_version_from(array)
+          array.map do |name|
+            read_current_version_of_package(name)
+          end
+        end
+
+        # Helper to construct Hash of names-to-sources.
+        #
+        # @return [Hash] Mapping of package names to sources
+        def name_sources
+          @name_sources ||= Hash[*package_name_array.zip(resolved_source_array).flatten]
+        end
+
+        # Returns true if all sources exist.  Returns false if any do not, or if no
+        # sources were specified.
+        #
+        # @return [Boolean] True if all sources exist
+        def source_files_exist?
+          resolved_source_array.all? { |s| s && ::File.exist?(s) }
+        end
+
+        # Helper to return all the names of the missing sources for error messages.
+        #
+        # @return [Array<String>] Array of missing sources
+        def missing_sources
+          resolved_source_array.select { |s| s.nil? || !::File.exist?(s) }
         end
 
       end
