@@ -139,7 +139,7 @@ class Chef
         coerce: proc { |v| Array(v) },
         callbacks: {
           "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
-        }
+        }, identity: true
 
       load_current_value do |new_resource|
         if new_resource.principal && (new_resource.action.include?(:add) || new_resource.action.include?(:remove))
