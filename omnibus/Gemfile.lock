@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: a4f73e48a8d2e276fccda71dc99d217ee27a5464
+  revision: a4fab5f0c2314f73fc79dfb77bde63e45588dfc0
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 999a4e0cb8b5aad5490f01c3ef25489883087cd6
+  revision: e3573e77f3de5944a2fcd998ba50c773c2212ab7
   branch: master
   specs:
-    omnibus (8.2.0)
+    omnibus (8.2.1)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -33,7 +33,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.485.0)
+    aws-partitions (1.487.0)
     aws-sdk-core (3.119.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -65,12 +65,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.13.16)
+    chef (16.14.1)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.13.16)
-      chef-utils (= 16.13.16)
+      chef-config (= 16.14.1)
+      chef-utils (= 16.14.1)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -102,12 +102,12 @@ GEM
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (16.13.16-universal-mingw32)
+    chef (16.14.1-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.13.16)
-      chef-utils (= 16.13.16)
+      chef-config (= 16.14.1)
+      chef-utils (= 16.14.1)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -151,9 +151,9 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.2)
-    chef-config (16.13.16)
+    chef-config (16.14.1)
       addressable
-      chef-utils (= 16.13.16)
+      chef-utils (= 16.14.1)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -161,7 +161,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (16.13.16)
+    chef-utils (16.14.1)
     chef-vault (4.1.0)
     chef-zero (15.0.7)
       ffi-yajl (~> 2.2)
@@ -192,7 +192,7 @@ GEM
     faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
     faraday-net_http_persistent (1.2.0)
-    faraday_middleware (1.0.0)
+    faraday_middleware (1.1.0)
       faraday (~> 1.0)
     ffi (1.15.3)
     ffi (1.15.3-x64-mingw32)
@@ -279,7 +279,7 @@ GEM
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
-    molinillo (0.7.0)
+    molinillo (0.8.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
     net-scp (3.0.0)
