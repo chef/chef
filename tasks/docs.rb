@@ -35,8 +35,6 @@ namespace :docs_site do
       text = ""
       text << "#{resource_name} 'name' do\n"
       properties.each do |p|
-        next if p["name"] == "sensitive" # we don't need to document sensitive twice
-
         pretty_default = pretty_default(p["default"])
 
         text << "  #{p["name"].ljust(padding_size)}"
@@ -80,6 +78,7 @@ namespace :docs_site do
     def friendly_property_list(arr)
       return nil if arr.empty? # resources w/o properties
 
+      # create an array of backticked property names for use in markdown.
       props = arr.map { |x| "`#{x["name"]}`" }
 
       # build the text string containing all properties bolded w/ punctuation
@@ -142,8 +141,6 @@ namespace :docs_site do
     # @todo what to do about "lazy default" for default?
     def properties_list(properties)
       properties.filter_map do |property|
-        next if property["name"] == "sensitive" # we don't need to document sensitive twice
-
         default_val = friendly_default_value(property)
 
         values = {}
@@ -261,7 +258,7 @@ namespace :docs_site do
 
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
-      properties = data["properties"].reject { |v| v["name"] == "name" || v["deprecated"] }.sort_by! { |v| v["name"] }
+      properties = data["properties"].reject { |v| %w{name sensitive}.include?(v["name"]) || v["deprecated"] }.sort_by! { |v| v["name"] }
 
       r = {}
 
