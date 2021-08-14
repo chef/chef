@@ -42,9 +42,9 @@ class Chef
         ```
 
         **Run a block on a particular platform**
-        
+
         The following example shows how an if statement can be used with the `windows?` method in the Chef Infra Language to run code specific to Microsoft Windows. The code is defined using the ruby_block resource:
-        
+
         ```ruby
         if windows?
           ruby_block 'copy libmysql.dll into ruby path' do
@@ -57,11 +57,11 @@ class Chef
           end
         end
         ```
-        
+
         **Stash a file in a data bag**
-        
+
         The following example shows how to use the ruby_block resource to stash a BitTorrent file in a data bag so that it can be distributed to nodes in the organization.
-        
+
         ```ruby
         ruby_block 'share the torrent file' do
           block do
@@ -82,11 +82,11 @@ class Chef
           subscribes :create, "bittorrent_torrent[#{node['bittorrent']['torrent']}]", :immediately
         end
         ```
-        
+
         **Update the /etc/hosts file**
-        
+
         The following example shows how the ruby_block resource can be used to update the /etc/hosts file:
-        
+
         ```ruby
         ruby_block 'edit etc hosts' do
           block do
@@ -97,15 +97,15 @@ class Chef
           end
         end
         ```
-        
+
         **Set environment variables**
-        
+
         The following example shows how to use variables within a Ruby block to set environment variables using rbenv.
-        
+
         ```ruby
         node.override[:rbenv][:root] = rbenv_root
         node.override[:ruby_build][:bin_path] = rbenv_binary_path
-        
+
         ruby_block 'initialize' do
           block do
             ENV['RBENV_ROOT'] = node[:rbenv][:root]
@@ -115,9 +115,9 @@ class Chef
         ```
 
         **Call methods in a gem**
-        
+
         The following example shows how to call methods in gems not shipped in Chef Infra Client
-        
+
         ```ruby
         chef_gem 'mongodb'
 
@@ -128,7 +128,7 @@ class Chef
           action :run
         end
         ```
-        DOC
+      DOC
 
       default_action :run
       allowed_actions :create, :run
