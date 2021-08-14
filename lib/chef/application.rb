@@ -377,7 +377,9 @@ class Chef
 
         Chef::FileCache.store("#{ChefUtils::Dist::Infra::SHORT}-stacktrace.out", chef_stacktrace_out)
         logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{ChefUtils::Dist::Infra::SHORT}-stacktrace.out", false)}")
-        logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
+        logger.fatal("---------------------------------------------------------------------------------------")
+        logger.fatal("PLEASE PROVIDE THE CONTENTS OF THE stacktrace.out FILE (above) IF YOU FILE A BUG REPORT")
+        logger.fatal("---------------------------------------------------------------------------------------")
         if Chef::Config[:always_dump_stacktrace]
           logger.fatal(message)
         else
