@@ -31,7 +31,7 @@ class Chef
 
       def load_current_resource; end
 
-      action :create do
+      action :create, description: "Create a repository based on the properties." do
         template ::File.join(new_resource.reposdir, "#{new_resource.repositoryid}.repo") do
           if template_available?(new_resource.source)
             source new_resource.source
@@ -69,7 +69,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Remove a repository." do
         # clean the repo cache first
         execute "yum clean all #{new_resource.repositoryid}" do
           command "yum clean all --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
@@ -86,7 +86,7 @@ class Chef
         end
       end
 
-      action :makecache do
+      action :makecache, description: "Force the creation of the repository cache. This is also done automatically when a repository is updated." do
         execute "yum-makecache-#{new_resource.repositoryid}" do
           command "yum -q -y makecache --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
           action :run
