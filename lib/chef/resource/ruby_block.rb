@@ -30,7 +30,7 @@ class Chef
 
       description "Use the **ruby_block** resource to execute Ruby code during a #{ChefUtils::Dist::Infra::PRODUCT} run. Ruby code in the `ruby_block` resource is evaluated with other resources during convergence, whereas Ruby code outside of a `ruby_block` resource is evaluated before other resources, as the recipe is compiled."
       examples <<~'DOC'
-        Re-read configuration data
+        **Reload Chef Infra Client configuration data**
 
         ```ruby
         ruby_block 'reload_client_config' do
@@ -41,7 +41,7 @@ class Chef
         end
         ```
 
-        Run a block on a particular platform
+        **Run a block on a particular platform**
         
         The following example shows how an if statement can be used with the `windows?` method in the Chef Infra Language to run code specific to Microsoft Windows. The code is defined using the ruby_block resource:
         
@@ -58,7 +58,7 @@ class Chef
         end
         ```
         
-        Stash a file in a data bag
+        **Stash a file in a data bag**
         
         The following example shows how to use the ruby_block resource to stash a BitTorrent file in a data bag so that it can be distributed to nodes in the organization.
         
@@ -83,7 +83,7 @@ class Chef
         end
         ```
         
-        Update the /etc/hosts file
+        **Update the /etc/hosts file**
         
         The following example shows how the ruby_block resource can be used to update the /etc/hosts file:
         
@@ -98,7 +98,7 @@ class Chef
         end
         ```
         
-        Set environment variables
+        **Set environment variables**
         
         The following example shows how to use variables within a Ruby block to set environment variables using rbenv.
         
@@ -114,7 +114,7 @@ class Chef
         end
         ```
 
-        Call methods in a gem
+        **Call methods in a gem**
         
         The following example shows how to call methods in gems not shipped in Chef Infra Client
         
