@@ -10,7 +10,7 @@ This project creates full-stack platform-specific packages for the following pro
 You must have a sane Ruby environment with Bundler installed. Ensure all the required gems are installed:
 
 ```shell
-bundle config set without development
+bundle config set --local without development
 bundle install
 ```
 
@@ -81,7 +81,7 @@ Then login to the instance and build the project as described in the Usage secti
 ```shell
 $ bundle exec kitchen login <PROJECT>-ubuntu-1204
 [vagrant@ubuntu...] $ cd chef/omnibus
-[vagrant@ubuntu...] $ bundle config set without development # Don't install dev tools!
+[vagrant@ubuntu...] $ bundle config set --local without development # Don't install dev tools!
 [vagrant@ubuntu...] $ bundle install
 [vagrant@ubuntu...] $ ...
 [vagrant@ubuntu...] $ bundle exec omnibus build <PROJECT> -l internal
@@ -91,7 +91,7 @@ $ bundle exec kitchen login <PROJECT>-ubuntu-1204
 $ kitchen login chef-ubuntu-1604
 [vagrant@ubuntu...] $ source load-omnibus-toolchain.sh
 [vagrant@ubuntu...] $ cd chef/omnibus
-[vagrant@ubuntu...] $ bundle config set without development # Don't install dev tools!
+[vagrant@ubuntu...] $ bundle config set --local without development # Don't install dev tools!
 [vagrant@ubuntu...] $ bundle install
 [vagrant@ubuntu...] $ ...
 [vagrant@ubuntu...] $ bundle exec omnibus build chef -l internal
@@ -109,7 +109,7 @@ C:\>C:\vagrant\load-omnibus-toolchain.ps1
 
 C:\>cd C:\vagrant\chef\omnibus
 
-C:\vagrant\chef\omnibus>bundle config set without development
+C:\vagrant\chef\omnibus>bundle config set --local without development
 
 C:\vagrant\chef\omnibus>bundle install
 
