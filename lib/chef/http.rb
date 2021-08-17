@@ -94,6 +94,8 @@ class Chef
       @redirect_limit = 10
       @keepalives = options[:keepalives] || false
       @options = options
+      @http_retry_delay = options[:http_retry_delay] || config[:http_retry_delay]
+      @http_retry_count = options[:http_retry_count] || config[:http_retry_count]
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -421,9 +423,9 @@ class Chef
           response, request, return_value = yield
           # handle HTTP 50X Error
           if response.is_a?(Net::HTTPServerError) && !Chef::Config.local_mode
-            if http_retry_count - http_attempts >= 0
+            if @http_retry_count - http_attempts >= 0
               sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
-              Chef::Log.warn("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s") # Updated from error to warn
+              Chef::Log.warn("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{@http_retry_count} in #{sleep_time}s") # Updated from error to warn
               sleep(sleep_time)
               redo
             end
@@ -431,31 +433,31 @@ class Chef
           return [response, request, return_value]
         end
       rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
-        if http_retry_count - http_attempts >= 0
-          Chef::Log.warn("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
-          sleep(http_retry_delay)
+        if @http_retry_count - http_attempts >= 0
+          Chef::Log.warn("Error connecting to #{url}, retry #{http_attempts}/#{@http_retry_count}") # Updated from error to warn
+          sleep(@http_retry_delay)
           retry
         end
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
-        if http_retry_count - http_attempts >= 0
-          Chef::Log.warn("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
-          sleep(http_retry_delay)
+        if @http_retry_count - http_attempts >= 0
+          Chef::Log.warn("Connection refused connecting to #{url}, retry #{http_attempts}/#{@http_retry_count}") # Updated from error to warn
+          sleep(@http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
       rescue Timeout::Error
-        if http_retry_count - http_attempts >= 0
-          Chef::Log.warn("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
-          sleep(http_retry_delay)
+        if @http_retry_count - http_attempts >= 0
+          Chef::Log.warn("Timeout connecting to #{url}, retry #{http_attempts}/#{@http_retry_count}") # Updated from error to warn
+          sleep(@http_retry_delay).
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
       rescue OpenSSL::SSL::SSLError => e
-        if (http_retry_count - http_attempts >= 0) && !e.message.include?("certificate verify failed")
-          Chef::Log.warn("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
-          sleep(http_retry_delay)
+        if (@http_retry_count - http_attempts >= 0) && !e.message.include?("certificate verify failed")
+          Chef::Log.warn("SSL Error connecting to #{url}, retry #{http_attempts}/#{@http_retry_count}") # Updated from error to warn
+          sleep(@http_retry_delay)
           retry
         end
         raise OpenSSL::SSL::SSLError, "SSL Error connecting to #{url} - #{e.message}"
@@ -464,16 +466,6 @@ class Chef
 
     def version_retries
       @version_retries ||= options[:version_class]&.possible_requests || 1
-    end
-
-    # @api private
-    def http_retry_delay
-      config[:http_retry_delay]
-    end
-
-    # @api private
-    def http_retry_count
-      config[:http_retry_count]
     end
 
     # @api private
