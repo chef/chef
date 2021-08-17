@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.21 -->
-## [v17.4.21](https://github.com/chef/chef/tree/v17.4.21) (2021-08-16)
+<!-- latest_release 17.4.22 -->
+## [v17.4.22](https://github.com/chef/chef/tree/v17.4.22) (2021-08-17)
 
 #### Merged Pull Requests
-- group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda))
+- Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.22 -->
 - group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.21 -->
 - Add x25519 dependency back to knife [#11903](https://github.com/chef/chef/pull/11903) ([tas50](https://github.com/tas50)) <!-- 17.4.20 -->
 - fix mac_user create_user for running without full disk access [#11731](https://github.com/chef/chef/pull/11731) ([bunnypak](https://github.com/bunnypak)) <!-- 17.4.19 -->
