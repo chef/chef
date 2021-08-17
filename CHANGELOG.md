@@ -14,6 +14,13 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 #### Merged Pull Requests
 - Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.22 -->
 - group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.21 -->
+- Optionally check for cookbook dependencies when using knife cookbook upload [#11676](https://github.com/chef/chef/pull/11676) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Flush package cache after attaching to rhsm subscription [#11534](https://github.com/chef/chef/pull/11534) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Make the stacktrace.out message more visible [#11923](https://github.com/chef/chef/pull/11923) ([lamont-granquist](https://github.com/lamont-granquist))
+- Improve docs generation + update property / action descriptions [#11922](https://github.com/chef/chef/pull/11922) ([tas50](https://github.com/tas50))
+- Update all deps to current [#11920](https://github.com/chef/chef/pull/11920) ([tas50](https://github.com/tas50))
+- Add support for provider action description [#11908](https://github.com/chef/chef/pull/11908) ([marcparadise](https://github.com/marcparadise))
+- Bump omnibus from 9ffcd89 to 999a4e0 in /omnibus [#11912](https://github.com/chef/chef/pull/11912) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 - Add x25519 dependency back to knife [#11903](https://github.com/chef/chef/pull/11903) ([tas50](https://github.com/tas50)) <!-- 17.4.20 -->
 - fix mac_user create_user for running without full disk access [#11731](https://github.com/chef/chef/pull/11731) ([bunnypak](https://github.com/bunnypak)) <!-- 17.4.19 -->
 - Pin users cookbook in testing [#11895](https://github.com/chef/chef/pull/11895) ([tas50](https://github.com/tas50)) <!-- 17.4.18 -->
