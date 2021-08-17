@@ -144,27 +144,27 @@ class Chef
 
         def create_user
           uid = prop_is_set?(:uid) ? new_resource.uid : get_free_uid
-          # "sysadminctl" cannot create user with specified UID
+          # 'sysadminctl' cannot create user with specified UID
           # on Mac where Chef does not have full disk access
-          # But "dscl" can
-          run_dscl("create", "/Users/#{new_resource.username}",
-                   "UniqueID", uid)
+          # But 'dscl' can
+          run_dscl('create', "/Users/#{new_resource.username}",
+                   'UniqueID', uid)
           if prop_is_set?(:comment)
-            run_dscl("create", "/Users/#{new_resource.username}",
-                     "RealName", new_resource.comment)
+            run_dscl('create', "/Users/#{new_resource.username}",
+                     'RealName', new_resource.comment)
           else
-            # "comment" field is optional for mac_user
-            # but "load_current_resource" above needs it
+            # 'comment' field is optional for mac_user
+            # but 'load_current_resource' above needs it
             # otherwise it will fail
-            run_dscl("create", "/Users/#{new_resource.username}",
-                     "RealName", new_resource.username)
+            run_dscl('create', "/Users/#{new_resource.username}",
+                     'RealName', new_resource.username)
           end
-          run_dscl("create", "/Users/#{new_resource.username}",
-                   "UserShell", new_resource.shell)
-          run_dscl("create", "/Users/#{new_resource.username}",
-                   "NFSHomeDirectory", new_resource.home)
+          run_dscl('create', "/Users/#{new_resource.username}",
+                   'UserShell', new_resource.shell)
+          run_dscl('create', "/Users/#{new_resource.username}",
+                   'NFSHomeDirectory', new_resource.home)
           if new_resource.admin
-            run_dscl("append", "/Groups/admin", "GroupMembership",
+            run_dscl('append', '/Groups/admin', 'GroupMembership',
                      new_resource.username)
           end
 
@@ -205,9 +205,9 @@ class Chef
           # createhomedir needs user GID set first
           # otherwise createhomedir will do nothing
           # Always create homedir for all users
-          # because "sysadminctl" does but "dscl" does not
+          # because 'sysadminctl' does but 'dscl' does not
           unless ::File.directory?(new_resource.home) && ::File.exist?(new_resource.home)
-            converge_by("create home directory") do
+            converge_by('create home directory') do
               shell_out!("createhomedir -c -u #{new_resource.username}")
             end
           end
