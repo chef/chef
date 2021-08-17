@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.22 -->
-## [v17.4.22](https://github.com/chef/chef/tree/v17.4.22) (2021-08-17)
+<!-- latest_release 17.4.23 -->
+## [v17.4.23](https://github.com/chef/chef/tree/v17.4.23) (2021-08-17)
 
 #### Merged Pull Requests
-- Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise))
+- Fix failures in mac_user when not all user fields are present [#11925](https://github.com/chef/chef/pull/11925) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.3.48 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix failures in mac_user when not all user fields are present [#11925](https://github.com/chef/chef/pull/11925) ([tas50](https://github.com/tas50)) <!-- 17.4.23 -->
 - Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.22 -->
 - group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.21 -->
 - Optionally check for cookbook dependencies when using knife cookbook upload [#11676](https://github.com/chef/chef/pull/11676) ([jasonwbarnett](https://github.com/jasonwbarnett))
