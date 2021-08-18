@@ -1,5 +1,99 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## What's New in 17.4
+
+### Compliance Phase Improvements
+
+#### Chef InSpec 4.41.2
+
+Chef InSpec has been updated from 4.38.3 to 4.41.2 with the following improvements for Compliance Phase
+
+- New Open Policy Agent resources `opa_cli` and `opa_api`
+- New `mongodb_session` resource
+- The `mssql_session` resource now allows named connections by no longer forcing a port.
+- The PostgreSQL resources (`postgres_session`, `postgres_conf`, `postgres_hba_conf`, and `postgres_ident_conf`) now work with Windows.
+- Fixed a bug where the year in an expiration date was misinterpreted in waiver files
+
+#### json-file Reporter Off By Default
+
+The InSpec `json-file` reporter is no longer enabled by default in Compliance Phase. Outputting compliance data to file by default potentially exposed sensitive data to the filesystem, without much upside. If you are relying on this file for processing by external systems you can set the reporter attribute `node['audit']['reporter']` to `%w{json-file cli}` to restore the previous default.
+
+#### Chef Attribute Integration
+
+The `chef_node_attribute_enabled` configuration option for Compliance Phase is now enabled by default. This provides a `chef_node` object in InSpec profiles containing all attributes from the Chef Infra Client including Ohai configuration attributes.
+
+#### Compliance Phase Inputs Attribute
+
+In 2019 we renamed InSpec attributes to inputs to avoid confusion between InSpec attributes and Chef Infra attributes. Compliance Phase is now updated to use the updated inputs name. Instead of passing `node['audit']['attributes']` you can now use `node['audit']['inputs']`. Don't worry about rushing to update your code though because Compliance Phase will still work with the existing attributes, giving you time to migrate to the new name.
+
+### Secrets Manager Integration
+
+We've updated our beta secrets management integration helper to make it easier to fetch secrets from AWS Secrets Manager and Azure Key Vault. We'd still love to hear from you if you are integrating Chef Infra with a secrets management system or you'd like to do so in the future. E-mail us at secrets_management_beta@progress.com.
+
+#### Simpler Azure Key Vault Names Declaration
+
+The `secrets` helper has been updated to allow specifying the Azure Key Vault to fetch a secret from within the name instead of using the config hash:
+
+**Specifying the Vault in the Name**
+
+```ruby
+secret(name: "test-chef-infra-secrets/test-secret-1", service: :azure_key_vault)
+```
+
+**Specifying the Vault in the Options Hash**
+
+```ruby
+secret(name: "test-secret-1", service: :azure_key_vault, config: {vault: "test-chef-infra-secrets" })
+```
+
+#### AWS Default to Node's Region in AWS Secrets Manager
+
+When fetching secrets from AWS Secrets Manager the `secrets` helper will now default to fetching secrets from the region where the node resides. You can still specify the region if you'd like to fetch secrets from another region by passing the region config option:
+
+**Specifying AWS Region**
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager, config: { region: 'us-west-2' })
+```
+
+**Using the Node's Region**
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager)
+```
+
+### Resource Updates
+
+#### group
+
+The `group` resource has been updated to prevent failures on macOS systems when passing the GID as an Integer. Thanks for reporting this [@rb2k](https://github.com/rb2k)!
+
+#### homebrew_cask
+
+The `homebrew_cask` resource now supports Homebrew Casks with '-' or '@' in their name. Thanks for this fix [@byplayer](https://github.com/byplayer)!
+
+#### rhsm_subscription
+
+The `rhsm_subscription` resource now flushes all DNF or YUM cache after adding a new subscription so that subsequent package installs can use packages from the subscription. Thanks for fixing this [@jasonwbarnett](https://github.com/jasonwbarnett)!
+
+#### systemd_unit
+
+The `systemd_unit` resource now generated valid unit files when passing a hash of data. Thanks for reporting this issue [@gregkare](https://github.com/gregkare)
+
+#### user
+
+The `user` resource on macOS no longer fails if the `shell` or `hidden` fields are not present for the user being updated.
+
+#### yum_repository
+
+The `yum_repository` has been refactored to better flush cache on RHEL and Fedora derivatives Linux distributions.
+
+### Packaging
+
+#### Arm64 Docker Containers
+
+Chef Infra Client Docker containers are now published for the `arm64` architecture on DockerHub at https://hub.docker.com/r/chef/chef. These containers can be used for testing Chef Infra Client on `arm64` architecture Linux distributions with Test Kitchen.
+
 ## What's New in 17.3
 
 ### Compliance Phase Improvements
