@@ -74,7 +74,7 @@ The `homebrew_cask` resource now supports Homebrew Casks with '-' or '@' in thei
 
 #### rhsm_subscription
 
-The `rhsm_subscription` resource now flushes all DNF or YUM cache after adding a new subscription so that subsequent package installs can use packages from the subscription. Thanks for fixing this [@jasonwbarnett](https://github.com/jasonwbarnett)!
+The `rhsm_subscription` resource now flushes all DNF or YUM caches after adding a new subscription so that subsequent package installs can use packages from the subscription. Thanks for fixing this [@jasonwbarnett](https://github.com/jasonwbarnett)!
 
 #### systemd_unit
 
