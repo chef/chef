@@ -32,7 +32,7 @@ We've updated our beta secrets management integration helper to make it easier t
 
 #### Simpler Azure Key Vault Names Declaration
 
-The `secrets` helper has been updated to allow specifying the Azure Key Vault to fetch a secret from within the name instead of using the config hash:
+The `secrets` helper has been updated to allow specifying the Azure Key Vault to fetch a secret using the name instead of the config hash:
 
 **Specifying the Vault in the Name**
 
