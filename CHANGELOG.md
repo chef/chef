@@ -1,57 +1,48 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.25 -->
-## [v17.4.25](https://github.com/chef/chef/tree/v17.4.25) (2021-08-23)
-
-#### Merged Pull Requests
-- Remove the default json logger from the compliance API [#11924](https://github.com/chef/chef/pull/11924) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.3.48 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Remove the default json logger from the compliance API [#11924](https://github.com/chef/chef/pull/11924) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.25 -->
-- Update InSpec to 4.41 [#11943](https://github.com/chef/chef/pull/11943) ([tas50](https://github.com/tas50)) <!-- 17.4.24 -->
-- Fix failures in mac_user when not all user fields are present [#11925](https://github.com/chef/chef/pull/11925) ([tas50](https://github.com/tas50)) <!-- 17.4.23 -->
-- Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.22 -->
-- group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.21 -->
-- Optionally check for cookbook dependencies when using knife cookbook upload [#11676](https://github.com/chef/chef/pull/11676) ([jasonwbarnett](https://github.com/jasonwbarnett))
-- Flush package cache after attaching to rhsm subscription [#11534](https://github.com/chef/chef/pull/11534) ([jasonwbarnett](https://github.com/jasonwbarnett))
-- Make the stacktrace.out message more visible [#11923](https://github.com/chef/chef/pull/11923) ([lamont-granquist](https://github.com/lamont-granquist))
-- Improve docs generation + update property / action descriptions [#11922](https://github.com/chef/chef/pull/11922) ([tas50](https://github.com/tas50))
-- Update all deps to current [#11920](https://github.com/chef/chef/pull/11920) ([tas50](https://github.com/tas50))
-- Add support for provider action description [#11908](https://github.com/chef/chef/pull/11908) ([marcparadise](https://github.com/marcparadise))
-- Bump omnibus from 9ffcd89 to 999a4e0 in /omnibus [#11912](https://github.com/chef/chef/pull/11912) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-- Add x25519 dependency back to knife [#11903](https://github.com/chef/chef/pull/11903) ([tas50](https://github.com/tas50)) <!-- 17.4.20 -->
-- fix mac_user create_user for running without full disk access [#11731](https://github.com/chef/chef/pull/11731) ([bunnypak](https://github.com/bunnypak)) <!-- 17.4.19 -->
-- Pin users cookbook in testing [#11895](https://github.com/chef/chef/pull/11895) ([tas50](https://github.com/tas50)) <!-- 17.4.18 -->
-- knife bootstrap windows: log_level should be updated as in client.rb [#11658](https://github.com/chef/chef/pull/11658) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.4.18 -->
-- Bootstrap: Fix for performing sudo operations once sudo password ente… [#11654](https://github.com/chef/chef/pull/11654) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.4.17 -->
-- Chef -&gt; Chef Infra Client in error message [#11888](https://github.com/chef/chef/pull/11888) ([tas50](https://github.com/tas50)) <!-- 17.4.16 -->
-- Move some words to the global dictionary [#11891](https://github.com/chef/chef/pull/11891) ([tas50](https://github.com/tas50)) <!-- 17.4.15 -->
-- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11885](https://github.com/chef/chef/pull/11885) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.4.15 -->
-- Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.14 -->
-- update dockerfile to use correct package for os/arch [#11883](https://github.com/chef/chef/pull/11883) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.13 -->
-- clean up scripts and docker login to auth to chef docker org [#11878](https://github.com/chef/chef/pull/11878) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.12 -->
-- Turn on chef_node_attribute_enabled for compliance phase by default [#11874](https://github.com/chef/chef/pull/11874) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.11 -->
-- Update use of environment variable when artifact is promoted [#11873](https://github.com/chef/chef/pull/11873) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.10 -->
-- make files readable by buildkite and simplify manifest script [#11872](https://github.com/chef/chef/pull/11872) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.9 -->
-- knife client create should check file permissions [#11241](https://github.com/chef/chef/pull/11241) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.4.8 -->
-- Cleanup the yum_repository resource [#11661](https://github.com/chef/chef/pull/11661) ([tas50](https://github.com/tas50)) <!-- 17.4.7 -->
-- Allow az vault name to be included in secret name [#11867](https://github.com/chef/chef/pull/11867) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.6 -->
-- Add custom docker pipeline for multiarch builds [#11871](https://github.com/chef/chef/pull/11871) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.4.5 -->
-- Bump train-core to 3.8.1 [#11869](https://github.com/chef/chef/pull/11869) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.4 -->
-- Fixed issues facing while bootstrapping the node using ssh config file. [#11531](https://github.com/chef/chef/pull/11531) ([sanga1794](https://github.com/sanga1794)) <!-- 17.4.3 -->
-- Bump all deps and resolve a chefstyle warning [#11864](https://github.com/chef/chef/pull/11864) ([tas50](https://github.com/tas50)) <!-- 17.4.2 -->
-- Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#11842](https://github.com/chef/chef/pull/11842) ([byplayer](https://github.com/byplayer)) <!-- 17.4.1 -->
-- secrets: add support for default config from ohai data  [#11853](https://github.com/chef/chef/pull/11853) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.0 -->
-- systemd_unit generates invalid units when passing a hash issue fix [#11856](https://github.com/chef/chef/pull/11856) ([antima-gupta](https://github.com/antima-gupta)) <!-- 17.3.50 -->
-- Bump inspec-core-bin to 4.38.9 [#11849](https://github.com/chef/chef/pull/11849) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.49 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.4.25](https://github.com/chef/chef/tree/v17.4.25) (2021-08-23)
+
+#### Merged Pull Requests
+- Bump inspec-core-bin to 4.38.9 [#11849](https://github.com/chef/chef/pull/11849) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- systemd_unit generates invalid units when passing a hash issue fix [#11856](https://github.com/chef/chef/pull/11856) ([antima-gupta](https://github.com/antima-gupta))
+- secrets: add support for default config from ohai data  [#11853](https://github.com/chef/chef/pull/11853) ([marcparadise](https://github.com/marcparadise))
+- Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#11842](https://github.com/chef/chef/pull/11842) ([byplayer](https://github.com/byplayer))
+- Bump all deps and resolve a chefstyle warning [#11864](https://github.com/chef/chef/pull/11864) ([tas50](https://github.com/tas50))
+- Fixed issues facing while bootstrapping the node using ssh config file. [#11531](https://github.com/chef/chef/pull/11531) ([sanga1794](https://github.com/sanga1794))
+- Bump train-core to 3.8.1 [#11869](https://github.com/chef/chef/pull/11869) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add custom docker pipeline for multiarch builds [#11871](https://github.com/chef/chef/pull/11871) ([nkierpiec](https://github.com/nkierpiec))
+- Allow az vault name to be included in secret name [#11867](https://github.com/chef/chef/pull/11867) ([marcparadise](https://github.com/marcparadise))
+- Cleanup the yum_repository resource [#11661](https://github.com/chef/chef/pull/11661) ([tas50](https://github.com/tas50))
+- knife client create should check file permissions [#11241](https://github.com/chef/chef/pull/11241) ([snehaldwivedi](https://github.com/snehaldwivedi))
+- make files readable by buildkite and simplify manifest script [#11872](https://github.com/chef/chef/pull/11872) ([nkierpiec](https://github.com/nkierpiec))
+- Update use of environment variable when artifact is promoted [#11873](https://github.com/chef/chef/pull/11873) ([nkierpiec](https://github.com/nkierpiec))
+- Turn on chef_node_attribute_enabled for compliance phase by default [#11874](https://github.com/chef/chef/pull/11874) ([lamont-granquist](https://github.com/lamont-granquist))
+- clean up scripts and docker login to auth to chef docker org [#11878](https://github.com/chef/chef/pull/11878) ([nkierpiec](https://github.com/nkierpiec))
+- update dockerfile to use correct package for os/arch [#11883](https://github.com/chef/chef/pull/11883) ([nkierpiec](https://github.com/nkierpiec))
+- Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11885](https://github.com/chef/chef/pull/11885) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Move some words to the global dictionary [#11891](https://github.com/chef/chef/pull/11891) ([tas50](https://github.com/tas50))
+- Chef -&gt; Chef Infra Client in error message [#11888](https://github.com/chef/chef/pull/11888) ([tas50](https://github.com/tas50))
+- Bootstrap: Fix for performing sudo operations once sudo password ente… [#11654](https://github.com/chef/chef/pull/11654) ([msys-sgarg](https://github.com/msys-sgarg))
+- knife bootstrap windows: log_level should be updated as in client.rb [#11658](https://github.com/chef/chef/pull/11658) ([msys-sgarg](https://github.com/msys-sgarg))
+- Pin users cookbook in testing [#11895](https://github.com/chef/chef/pull/11895) ([tas50](https://github.com/tas50))
+- fix mac_user create_user for running without full disk access [#11731](https://github.com/chef/chef/pull/11731) ([bunnypak](https://github.com/bunnypak))
+- Add x25519 dependency back to knife [#11903](https://github.com/chef/chef/pull/11903) ([tas50](https://github.com/tas50))
+- group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda))
+- Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise))
+- Fix failures in mac_user when not all user fields are present [#11925](https://github.com/chef/chef/pull/11925) ([tas50](https://github.com/tas50))
+- Update InSpec to 4.41 [#11943](https://github.com/chef/chef/pull/11943) ([tas50](https://github.com/tas50))
+- Remove the default json logger from the compliance API [#11924](https://github.com/chef/chef/pull/11924) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v17.3.48](https://github.com/chef/chef/tree/v17.3.48) (2021-07-21)
 
 #### Merged Pull Requests
@@ -112,7 +103,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Add windows_update_settings resource [#11839](https://github.com/chef/chef/pull/11839) ([tas50](https://github.com/tas50))
 - Bump omnibus-software from `07291b0` to `a4f73e4` in /omnibus [#11845](https://github.com/chef/chef/pull/11845) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - secrets: Ensure provided config is passed into AWS [#11847](https://github.com/chef/chef/pull/11847) ([marcparadise](https://github.com/marcparadise))
-<!-- latest_stable_release -->
 
 ## [v17.2.29](https://github.com/chef/chef/tree/v17.2.29) (2021-06-09)
 
