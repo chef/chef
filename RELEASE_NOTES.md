@@ -78,7 +78,7 @@ The `rhsm_subscription` resource now flushes all DNF or YUM caches after adding 
 
 #### systemd_unit
 
-The `systemd_unit` resource now generated valid unit files when passing a hash of data. Thanks for reporting this issue [@gregkare](https://github.com/gregkare)
+The `systemd_unit` resource now generates valid unit files when passing a hash of data. Thanks for reporting this issue [@gregkare](https://github.com/gregkare)
 
 #### user
 
