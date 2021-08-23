@@ -47,6 +47,7 @@ describe "chef-client with compliance phase" do
         {
           "audit": {
             "compliance_phase": true,
+            "reporter": "json-file",
             "json_file": {
               "location": "#{report_file}"
             },
