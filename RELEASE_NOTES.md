@@ -16,7 +16,7 @@ Chef InSpec has been updated from 4.38.3 to 4.41.2 with the following improvemen
 
 #### json-file Reporter Off By Default
 
-The InSpec `json-file` reporter is no longer enabled by default in Compliance Phase. Outputting compliance data to file by default potentially exposed sensitive data to the filesystem, without much upside. If you are relying on this file for processing by external systems you can set the reporter attribute `node['audit']['reporter']` to `%w{json-file cli}` to restore the previous default.
+The InSpec `json-file` reporter is no longer enabled by default in Compliance Phase. Outputting compliance data to file by default potentially exposed sensitive data to the filesystem, without much upside. If you rely on this file for processing by external systems you can produce it by setting the reporter attribute `node['audit']['reporter']` to `%w{json-file cli}`.
 
 #### Chef Attribute Integration
 
