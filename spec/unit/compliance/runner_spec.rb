@@ -278,7 +278,7 @@ describe Chef::Compliance::Runner do
       inputs = runner.inspec_opts[:inputs]
 
       expect(inputs["tacos"]).to eq("lunch")
-      expect(inputs["chef_node"]["audit"]["reporter"]).to eq(%w{json-file cli})
+      expect(inputs["chef_node"]["audit"]["reporter"]).to eq("cli")
       expect(inputs["chef_node"]["chef_environment"]).to eq("_default")
     end
   end
