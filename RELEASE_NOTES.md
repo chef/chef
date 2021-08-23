@@ -34,13 +34,13 @@ We've updated our beta secrets management integration helper to improve the expe
 
 The `secrets` helper has been updated to allow specifying the Azure Key Vault to fetch a secret using the name instead of the config hash:
 
-**Specifying the Vault in the Name**
+Specifying the Vault in the Name:
 
 ```ruby
 secret(name: "test-chef-infra-secrets/test-secret-1", service: :azure_key_vault)
 ```
 
-**Specifying the Vault in the Options Hash**
+Specifying the Vault in the Options Hash:
 
 ```ruby
 secret(name: "test-secret-1", service: :azure_key_vault, config: {vault: "test-chef-infra-secrets" })
@@ -50,13 +50,13 @@ secret(name: "test-secret-1", service: :azure_key_vault, config: {vault: "test-c
 
 When fetching secrets from AWS Secrets Manager, the `secrets` helper now defaults to fetching secrets from the region where the node resides. If you need to fetch secrets from another region, you can use the region config option:
 
-**Specifying AWS Region**
+Specifying AWS Region:
 
 ```ruby
 secret(name: 'test1', service: :aws_secrets_manager, config: { region: 'us-west-2' })
 ```
 
-**Using the Node's Region**
+Using the Node's Region:
 
 ```ruby
 secret(name: 'test1', service: :aws_secrets_manager)
