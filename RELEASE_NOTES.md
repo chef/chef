@@ -48,7 +48,7 @@ secret(name: "test-secret-1", service: :azure_key_vault, config: {vault: "test-c
 
 #### AWS Default to Node's Region in AWS Secrets Manager
 
-When fetching secrets from AWS Secrets Manager the `secrets` helper will now default to fetching secrets from the region where the node resides. You can still specify the region if you'd like to fetch secrets from another region by passing the region config option:
+When fetching secrets from AWS Secrets Manager, the `secrets` helper now defaults to fetching secrets from the region where the node resides. If you need to fetch secrets from another region, you can use the region config option:
 
 **Specifying AWS Region**
 
