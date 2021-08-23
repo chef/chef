@@ -28,7 +28,7 @@ In 2019 we renamed InSpec attributes to inputs to avoid confusion between InSpec
 
 ### Secrets Manager Integration
 
-We've updated our beta secrets management integration helper to make it easier to fetch secrets from AWS Secrets Manager and Azure Key Vault. We'd still love to hear from you if you are integrating Chef Infra with a secrets management system or you'd like to do so in the future. E-mail us at secrets_management_beta@progress.com.
+We've updated our beta secrets management integration helper to improve the experience of fetching secrets from AWS Secrets Manager and Azure Key Vault. We'd still love to hear from you if you are integrating Chef Infra with a secrets management system or you'd like to do so in the future. E-mail us at secrets_management_beta@progress.com.
 
 #### Simpler Azure Key Vault Names Declaration
 
