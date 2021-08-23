@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 4653e837544b9cf3b4580b2ad6b25e73005da1a2
+  revision: 01f52a2524a303a26eeac9f115a8b526fa7cf494
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,8 +33,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.488.0)
-    aws-sdk-core (3.119.0)
+    aws-partitions (1.489.0)
+    aws-sdk-core (3.119.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -212,7 +212,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.38.9)
+    inspec-core (4.41.2)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -266,7 +266,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-install (3.12.11)
+    mixlib-install (3.12.16)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -475,4 +475,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.1.4
+   2.2.22

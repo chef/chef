@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: f428cdfc4bb915741c363e6f42b23a0b3ca3989f
+  revision: 69162f41bd5af837a81a735a7ce091fe4cdfe0f9
   branch: master
   specs:
     ohai (17.3.2)
@@ -136,8 +136,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.488.0)
-    aws-sdk-core (3.119.0)
+    aws-partitions (1.489.0)
+    aws-sdk-core (3.119.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -209,7 +209,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.38.9)
+    inspec-core (4.41.2)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -232,8 +232,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.38.9)
-      inspec-core (= 4.38.9)
+    inspec-core-bin (4.41.2)
+      inspec-core (= 4.41.2)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
@@ -420,6 +420,7 @@ GEM
     wmi-lite (1.0.5)
 
 PLATFORMS
+  arm64-darwin-20
   ruby
   x64-mingw32
   x86-mingw32
