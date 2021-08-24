@@ -41,6 +41,6 @@ git commit --message "Bump $DEPNAME to $EXPEDITOR_VERSION" --message "This pull 
 
 open_pull_request "$EXPEDITOR_BRANCH"
 
-# Get back to master and cleanup the leftovers - any changed files left over at the end of this script will get committed to master.
+# Get back to main and cleanup the leftovers - any changed files left over at the end of this script will get committed to main.
 git checkout -
 git branch -D "$branch"
