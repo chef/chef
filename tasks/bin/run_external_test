@@ -21,7 +21,7 @@ build_dir = Dir.pwd
 
 env = {
   "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'; " \
-    "gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'master'",
+    "gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'main'",
   "CHEF_LICENSE" => "accept-no-persist",
 }
 
