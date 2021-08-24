@@ -1,15 +1,15 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 3ee0e9ee0d9a606c7f15a90e6e2bec3e3d74e073
-  branch: master
+  revision: 55b60964c0fdd289375030d82444fe5dd06ee1b1
+  branch: main
   specs:
     chefstyle (2.0.8)
       rubocop (= 1.19.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 69162f41bd5af837a81a735a7ce091fe4cdfe0f9
-  branch: master
+  revision: de7b4f4349c767120f223b0569687187082ad73c
+  branch: main
   specs:
     ohai (17.3.2)
       chef-config (>= 14.12, < 18)
@@ -322,7 +322,7 @@ GEM
       rubocop-ast (>= 1.9.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.10.0)
+    rubocop-ast (1.11.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
@@ -420,11 +420,9 @@ GEM
     wmi-lite (1.0.5)
 
 PLATFORMS
-  arm64-darwin-20
   ruby
   x64-mingw32
   x86-mingw32
-  x86_64-linux
 
 DEPENDENCIES
   appbundler
@@ -448,4 +446,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.2.22
+   2.2.26
