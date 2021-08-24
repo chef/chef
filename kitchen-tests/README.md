@@ -25,7 +25,7 @@ end-to-end-amazonlinux    Dokken  Dokken       Inspec    Dokken     <Not Created
 
 ## Testing
 
-We use Test Kitchen to build instances, test client code, and destroy instances. If you are unfamiliar with Test Kitchen, we recommend checking out the [tutorial](http://kitchen.ci/) along with the `kitchen-dokken` [driver documentation](https://github.com/someara/kitchen-dokken). Test Kitchen is configured to manipulate instances using [Docker](https://www.docker.com/) when testing locally, and when testing, pull requests on [Buildkite](https://buildkite.com/chef-oss/chef-chef-master-verify).
+We use Test Kitchen to build instances, test client code, and destroy instances. If you are unfamiliar with Test Kitchen, we recommend checking out the [tutorial](http://kitchen.ci/) along with the `kitchen-dokken` [driver documentation](https://github.com/someara/kitchen-dokken). Test Kitchen is configured to manipulate instances using [Docker](https://www.docker.com/) when testing locally, and when testing, pull requests on [Buildkite](https://buildkite.com/chef-oss/chef-chef-main-verify).
 
 ### Commands
 
@@ -60,13 +60,13 @@ The provisioner can be configured to pull client source code from a GitHub repos
 By default, the provisioner is configured to pull your most recent commit to `chef/chef`. You can change this by modifying the `github` and `branch` provisioner options:
 
 - `github`: Set this to `"<your_username>/<your_chef_repo>"`. The default is `"chef/chef"`.
-- `branch`: This can be any valid git reference (e.g., branch name, tag, or commit SHA). If omitted, it defaults to `master`.
+- `branch`: This can be any valid git reference (e.g., branch name, tag, or commit SHA). If omitted, it defaults to `main`.
 
 The branch you choose must be accessible on GitHub. You cannot use a local commit at this time.
 
 ### Testing pull requests
 
-These end-to-end tests are also configured to run on Buildkite with Docker containers when you submit a pull request to `chef/chef`. Kitchen is configured to pull chef client source code from the branch it is testing. There is no need to modify `kitchen.yml` unless you are contributing tests.
+These end-to-end tests are also configured to run on Buildkite with Docker containers when you submit a pull request to `chef/chef`. Test Kitchen is configured to pull Chef Infra Client source code from the branch it is testing. There is no need to modify `kitchen.yml` unless you are contributing tests.
 
 ## Contributing
 

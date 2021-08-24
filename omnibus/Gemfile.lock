@@ -33,7 +33,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.489.0)
+    aws-partitions (1.490.0)
     aws-sdk-core (3.119.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -309,7 +309,7 @@ GEM
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
-    parallel (1.20.1)
+    parallel (1.20.2)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
