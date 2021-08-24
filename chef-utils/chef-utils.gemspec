@@ -10,17 +10,17 @@ Gem::Specification.new do |spec|
   spec.email         = ["oss@chef.io"]
 
   spec.summary       = %q{Basic utility functions for Core Chef Infra development}
-  spec.homepage      = "https://github.com/chef/chef/tree/master/chef-utils"
+  spec.homepage      = "https://github.com/chef/chef/tree/main/chef-utils"
   spec.license       = "Apache-2.0"
 
   spec.required_ruby_version = ">= 2.6"
 
   spec.metadata = {
     "bug_tracker_uri" => "https://github.com/chef/chef/issues",
-    "changelog_uri" => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
-    "documentation_uri" => "https://github.com/chef/chef/tree/master/chef-utils/README.md",
-    "homepage_uri" => "https://github.com/chef/chef/tree/master/chef-utils",
-    "source_code_uri" => "https://github.com/chef/chef/tree/master/chef-utils",
+    "changelog_uri" => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
+    "documentation_uri" => "https://github.com/chef/chef/tree/main/chef-utils/README.md",
+    "homepage_uri" => "https://github.com/chef/chef/tree/main/chef-utils",
+    "source_code_uri" => "https://github.com/chef/chef/tree/main/chef-utils",
   }
 
   spec.require_paths = ["lib"]
