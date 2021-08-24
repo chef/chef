@@ -55,7 +55,7 @@ github:
 # (as determined by the value in the VERSION file) those branches are responsible
 # for building.
 release_branches:
-  - master:
+  - main:
       version_constraint: 17*
   - chef-16:
       version_constraint: 16*
