@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
 
   s.metadata = {
     "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
-    "changelog_uri"     => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
+    "changelog_uri"     => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
     "documentation_uri" => "https://docs.chef.io/",
     "homepage_uri"      => "https://www.chef.io",
     "mailing_list_uri"  => "https://discourse.chef.io/",
