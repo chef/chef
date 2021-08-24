@@ -5,7 +5,7 @@ name: kitchen
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   windows:
@@ -113,7 +113,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@master
+        uses: actions/checkout@main
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

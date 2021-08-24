@@ -236,10 +236,10 @@ subscriptions:
     actions:
       - bash:.expeditor/update_dep.sh
   # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
-  - workload: chef/ohai:master_completed:pull_request_merged:chef/ohai:master:*
+  - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh
   # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
-  - workload: chef/chefstyle:master_completed:pull_request_merged:chef/chefstyle:master:*
+  - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh

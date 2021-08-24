@@ -280,7 +280,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
+    - bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant
   expeditor:
     executor:
       docker:
@@ -294,7 +294,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
+    - bundle exec tasks/bin/run_external_test chef/cheffish main rake spec
   expeditor:
     executor:
       docker:
@@ -305,7 +305,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
+    - bundle exec tasks/bin/run_external_test chefspec/chefspec main rake
   expeditor:
     executor:
       docker:
@@ -316,7 +316,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec tasks/bin/run_external_test chef/knife-windows master rake spec
+    - bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec
   expeditor:
     executor:
       docker:
@@ -329,7 +329,7 @@ steps:
     - apt-get install -y graphviz
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
+    - bundle exec tasks/bin/run_external_test berkshelf/berkshelf main rake
   expeditor:
     executor:
       docker:

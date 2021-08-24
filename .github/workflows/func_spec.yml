@@ -5,7 +5,7 @@ name: func_spec
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   choco:
