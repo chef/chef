@@ -4565,7 +4565,7 @@ end
 
 ### InSpec 3.0
 
-Inspec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See <https://blog.chef.io/2018/10/16/announcing-inspec-3-0/> for details.
+InSpec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See <https://blog.chef.io/2018/10/16/announcing-inspec-3-0/> for details.
 
 ### macOS Mojave (10.14)
 
@@ -5916,7 +5916,7 @@ In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and
 
 - **The mount resource's password property is now marked as **sensitive** Passwords passed to mount won't show up in logs.
 - **The windows_task resource now correctly handles start_day** Previously, the resource would accept any date that was formatted correctly in the local locale, unlike the Windows cookbook and Windows itself. We now support only the MM/DD/YYYY format, in keeping with the Windows cookbook.
--   **InSpec updated to 1.39.1**
+- **InSpec updated to 1.39.1**
 
 ### Ohai 13.5
 
@@ -6553,7 +6553,7 @@ The `recommends`, `suggests`, `conflicts`, `replaces` and `grouping` metadata fi
 
 ### All unignored cookbook files will now be uploaded.
 
-We now treat every file under a cookbook directory as belonging to a cookbook, unless that file is ignored with a `chefignore` file. This is a change from the previous behavior where only files in certain directories, such as `recipes` or `templates`, were treated as special. This change allows chef to support new classes of files, such as Ohai plugins or Inspec tests, without having to make changes to the cookbook format to support them.
+We now treat every file under a cookbook directory as belonging to a cookbook, unless that file is ignored with a `chefignore` file. This is a change from the previous behavior where only files in certain directories, such as `recipes` or `templates`, were treated as special. This change allows chef to support new classes of files, such as Ohai plugins or InSpec tests, without having to make changes to the cookbook format to support them.
 
 ### DSL-based custom resources and providers no longer get module constants
 
