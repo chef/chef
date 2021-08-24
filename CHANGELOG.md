@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.27 -->
-## [v17.4.27](https://github.com/chef/chef/tree/v17.4.27) (2021-08-24)
+<!-- latest_release 17.4.28 -->
+## [v17.4.28](https://github.com/chef/chef/tree/v17.4.28) (2021-08-24)
 
 #### Merged Pull Requests
-- Improve phase logging [#11946](https://github.com/chef/chef/pull/11946) ([tas50](https://github.com/tas50))
+- Fix Test Kitchen tests [#11949](https://github.com/chef/chef/pull/11949) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix Test Kitchen tests [#11949](https://github.com/chef/chef/pull/11949) ([tas50](https://github.com/tas50)) <!-- 17.4.28 -->
 - Improve phase logging [#11946](https://github.com/chef/chef/pull/11946) ([tas50](https://github.com/tas50)) <!-- 17.4.27 -->
 - testing main [#11947](https://github.com/chef/chef/pull/11947) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.4.26 -->
 <!-- release_rollup -->
