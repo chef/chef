@@ -1154,11 +1154,11 @@ On AWS instances, we now gather data from the latest metadata API versions, expo
 - placement/region
 - spot/instance-action
 
-#### Alma Linux Detection
+#### AlmaLinux Detection
 
-Chef Infra Client now maps [Alma Linux](https://almalinux.org/) to the `rhel` `platform_family` value. Alma Linux is a new open-source RHEL fork produced by the CloudLinux team. Alma Linux falls under Chef's [Community Support](https://docs.chef.io/platforms/#community-support) platform support policy providing community driven support without the extensive testing given to commercially supported platforms in Chef Infra Client.
+Chef Infra Client now maps [AlmaLinux](https://almalinux.org/) to the `rhel` `platform_family` value. AlmaLinux is a new open-source RHEL fork produced by the CloudLinux team. AlmaLinux falls under Chef's [Community Support](https://docs.chef.io/platforms/#community-support) platform support policy providing community driven support without the extensive testing given to commercially supported platforms in Chef Infra Client.
 
-You can test cookbooks on Alma Linux in Test Kitchen using [Alma Linux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8 on VirtualBox, Parallels, and VMware hypervisors as follows:
+You can test cookbooks on AlmaLinux in Test Kitchen using [AlmaLinux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8 on VirtualBox, Parallels, and VMware hypervisors as follows:
 
 ```yaml
 platforms:
