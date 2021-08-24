@@ -28,10 +28,11 @@ class Chef
 
       # Called at the very start of a Chef Run
       def run_start(version, run_status)
-        puts_line "Starting #{ChefUtils::Dist::Infra::PRODUCT}, version #{version}"
+        puts_line "#{ChefUtils::Dist::Infra::PRODUCT}, version #{version}"
         puts_line "Patents: #{ChefUtils::Dist::Org::PATENTS}"
-        puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
+        puts_line "Starting Infra Phase"
+        puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
       end
 
       # Called at the end of the Chef run.
@@ -71,7 +72,7 @@ class Chef
 
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
-        puts "resolving cookbooks for run list: #{expanded_run_list.inspect}"
+        puts "Resolving cookbooks for run list: #{expanded_run_list.inspect}"
       end
 
       # Called when there is an error getting the cookbook collection from the

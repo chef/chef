@@ -40,7 +40,7 @@ describe Chef::Formatters::Base do
     }
 
     formatter.policyfile_loaded(minimal_policyfile)
-    expect(out.string).to include("Using policy 'jenkins' at revision '613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073'")
+    expect(out.string).to include("Using Policyfile 'jenkins' at revision '613f803bdd035d574df7fa6da525b38df45a74ca82b38b79655efed8a189e073'")
   end
 
   it "prints cookbook name and version" do
