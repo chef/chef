@@ -125,7 +125,7 @@ class Chef
 
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
-        puts_line "Resolving Cookbooks for run list: #{expanded_run_list.inspect}"
+        puts_line "Resolving cookbooks for run list: #{expanded_run_list.inspect}"
       end
 
       # Called when there is an error getting the cookbook collection from the
@@ -150,7 +150,7 @@ class Chef
 
       # Called before cookbook sync starts
       def cookbook_sync_start(cookbook_count)
-        puts_line "Synchronizing Cookbooks:"
+        puts_line "Synchronizing cookbooks:"
         indent
       end
 
@@ -169,7 +169,7 @@ class Chef
 
       # Called when starting to collect gems from the cookbooks
       def cookbook_gem_start(gems)
-        puts_line "Installing Cookbook Gem Dependencies:"
+        puts_line "Installing cookbook gem dependencies:"
         indent
       end
 
@@ -195,7 +195,7 @@ class Chef
 
       # Called when cookbook loading starts.
       def library_load_start(file_count)
-        puts_line "Compiling Cookbooks..."
+        puts_line "Compiling cookbooks..."
       end
 
       # Called after a file in a cookbook is loaded.
@@ -281,7 +281,7 @@ class Chef
       end
 
       def resource_bypassed(resource, action, provider)
-        puts " (Skipped: whyrun not supported by provider #{provider.class.name})", stream: resource
+        puts " (Skipped: Why-Run not supported by provider #{provider.class.name})", stream: resource
         unindent
       end
 
@@ -318,7 +318,7 @@ class Chef
       # Called when resource current state load is skipped due to the provider
       # not supporting whyrun mode.
       def resource_current_state_load_bypassed(resource, action, current_resource)
-        puts_line("* Whyrun not supported for #{resource}, bypassing load.", :yellow)
+        puts_line("* Why-Run not supported for #{resource}, bypassing load.", :yellow)
       end
 
       def stream_output(stream, output, options = {})

@@ -115,7 +115,7 @@ class Chef
 
       # Called when cookbook loading starts.
       def library_load_start(file_count)
-        puts "Compiling Cookbooks"
+        puts "Compiling cookbooks"
       end
 
       # Called after a file in a cookbook is loaded.
