@@ -71,7 +71,7 @@ class Chef
 
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
-        puts "resolving cookbooks for run list: #{expanded_run_list.inspect}"
+        puts "Resolving cookbooks for run list: #{expanded_run_list.inspect}"
       end
 
       # Called when there is an error getting the cookbook collection from the
@@ -114,7 +114,7 @@ class Chef
 
       # Called when cookbook loading starts.
       def library_load_start(file_count)
-        puts "Compiling cookbooks"
+        puts "Compiling Cookbooks"
       end
 
       # Called after a file in a cookbook is loaded.

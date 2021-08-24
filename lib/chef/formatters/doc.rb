@@ -119,12 +119,12 @@ class Chef
       def node_load_completed(node, expanded_run_list, config); end
 
       def policyfile_loaded(policy)
-        puts_line "Using policy '#{policy["name"]}' at revision '#{policy["revision_id"]}'"
+        puts_line "Using Policyfile '#{policy["name"]}' at revision '#{policy["revision_id"]}'"
       end
 
       # Called before the cookbook collection is fetched from the server.
       def cookbook_resolution_start(expanded_run_list)
-        puts_line "resolving cookbooks for run list: #{expanded_run_list.inspect}"
+        puts_line "Resolving Cookbooks for run list: #{expanded_run_list.inspect}"
       end
 
       # Called when there is an error getting the cookbook collection from the
@@ -168,7 +168,7 @@ class Chef
 
       # Called when starting to collect gems from the cookbooks
       def cookbook_gem_start(gems)
-        puts_line "Installing Cookbook Gems:"
+        puts_line "Installing Cookbook Gem Dependencies:"
         indent
       end
 
