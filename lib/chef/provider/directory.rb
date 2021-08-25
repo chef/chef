@@ -90,7 +90,9 @@ class Chef
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
               if !whyrun_mode? || ::File.exist?(parent_directory)
-                if Chef::FileAccessControl.writable?(parent_directory)
+                if ::File.exist?(new_resource.path) && Chef::FileAccessControl.writable?(new_resource.path)
+                  true
+                elsif Chef::FileAccessControl.writable?(parent_directory)
                   true
                 elsif Chef::Util::PathHelper.is_sip_path?(parent_directory, node)
                   Chef::Util::PathHelper.writable_sip_path?(new_resource.path)
@@ -102,13 +104,8 @@ class Chef
               end
             end
           end
-          if !::File.exist?(parent_directory)
-            a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist,
-              "Parent directory #{parent_directory} does not exist.")
-          elsif !Chef::FileAccessControl.writable?(parent_directory)
-            a.failure_message(Chef::Exceptions::InsufficientPermissions,
-              "Cannot create #{new_resource} at #{new_resource.path} due to insufficient permissions")
-          end
+          a.failure_message(Chef::Exceptions::InsufficientPermissions,
+            "Cannot create #{new_resource} at #{new_resource.path} due to insufficient permissions")
         end
 
         requirements.assert(:delete) do |a|
