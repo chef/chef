@@ -44,7 +44,7 @@ class Chef
         puts_line "#{ChefUtils::Dist::Infra::PRODUCT}, version #{version}"
         puts_line "Patents: #{ChefUtils::Dist::Org::PATENTS}"
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
-        puts_line "Starting Infra Phase"
+        puts_line "Infra Phase starting"
         puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
       end
 
@@ -80,18 +80,18 @@ class Chef
           puts_line ""
         end
         if Chef::Config[:why_run]
-          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} finished, #{@updated_resources}/#{total_resources} resources would have been updated"
+          puts_line "Infra Phase complete, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
+          puts_line "Infra Phase complete, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
         end
       end
 
       def run_failed(exception)
         @end_time = Time.now
         if Chef::Config[:why_run]
-          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} failed. #{@updated_resources} resources would have been updated"
+          puts_line "Infra Phase failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
+          puts_line "Infra Phase failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
         end
       end
 

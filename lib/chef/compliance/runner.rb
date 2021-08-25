@@ -180,7 +180,7 @@ class Chef
         logger.info "Running profiles from: #{profiles.inspect}"
         runner.run
         runner.report.tap do |r|
-          logger.debug "Compliance Report #{r}"
+          logger.debug "Compliance Phase report #{r}"
         end
       rescue Inspec::FetcherFailure => e
         failed_report("Cannot fetch all profiles: #{profiles}. Please make sure you're authenticated and the server is reachable. #{e.message}")
