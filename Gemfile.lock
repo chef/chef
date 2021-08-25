@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: de7b4f4349c767120f223b0569687187082ad73c
+  revision: 5545eca02969338cff7a138ee92c5c0e8b8ae564
   branch: main
   specs:
-    ohai (17.3.2)
+    ohai (17.5.0)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -136,7 +136,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.490.0)
+    aws-partitions (1.491.0)
     aws-sdk-core (3.119.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
