@@ -76,7 +76,7 @@ class Chef
 
           begin
             Chef::Log.info "Report to #{ChefUtils::Dist::Automate::PRODUCT}: #{@url}"
-            Chef::Log.debug "Compliance Report: #{json_report}"
+            Chef::Log.debug "Compliance Phase report: #{json_report}"
             http_client.post(nil, json_report, headers)
             true
           rescue => e
