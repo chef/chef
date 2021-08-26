@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier", "~> 1.0"
 
-  s.add_dependency "aws-sdk-s3", "~> 1.99"
+  s.add_dependency "aws-sdk-s3", "~> 1.91"
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", "~> 0.16" # hashi vault official client gem
   s.bindir       = "bin"
