@@ -240,7 +240,7 @@ GEM
     iso8601 (0.13.0)
     jmespath (1.4.0)
     json (2.5.1)
-    kitchen-vagrant (1.9.0)
+    kitchen-vagrant (1.10.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -266,7 +266,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-install (3.12.11)
+    mixlib-install (3.12.16)
       mixlib-shellout
       mixlib-versioning
       thor
