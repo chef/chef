@@ -2,7 +2,7 @@ require_relative "base"
 
 class Chef
   class SecretFetcher
-    # == Chef::SecretFetcher::AWSSecretsManager
+    # == Chef::SecretFetcher::AzureKeyVault
     # A fetcher that fetches a secret from Azure Key Vault. Supports fetching with version.
     #
     # In this initial iteration this authenticates via token obtained from the OAuth2  /token
