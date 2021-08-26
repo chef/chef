@@ -167,12 +167,12 @@ describe Chef::Provider::Directory do
       it "does not raise any exception if the parent directory is exists and writable" do
         allow(::File).to receive(:exist?).and_return(true)
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(true)
-        expect { directory.run_action(:create) }.not_to raise_error(Chef::Exceptions::InsufficientPermissions)
+        expect { directory.run_action(:create) }.not_to raise_error
       end
 
       it "lets does not raise error if child directory exists and writable even if parent directory is read-only" do
         allow(Chef::FileAccessControl).to receive(:writable?).with(anything).and_return(false)
-        allow(Chef::FileAccessControl).to receive(:writable?).with('/tmp/').and_return(false)
+        allow(Chef::FileAccessControl).to receive(:writable?).with("/tmp/").and_return(false)
         allow(Chef::FileAccessControl).to receive(:writable?).with(new_resource.path).and_return(true)
         expect { directory.run_action(:create) }.not_to raise_error
       end
