@@ -27,7 +27,7 @@ OpenSSL has been updated from 1.1.1k to 1.1.1l on macOS systems to resolve the f
 
 #### libarchive 3.5.2
 
-The libarchive library which powers the archive_file resource has been updated from 3.5.1 to 3.5.2 to resolve security vulnerabilities in libarchive's handling of symbolic links.
+Updated the libarchive library which powers the archive_file resource from 3.5.1 to 3.5.2 to resolve security vulnerabilities in libarchive's handling of symbolic links.
 
 ## What's New in 17.4.25
 
