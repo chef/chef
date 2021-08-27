@@ -8,7 +8,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### Enhancements
 
-- Log output has been improved to better deliniate when the Infra Phase and Compliance Phase start and end.
+- Improved log output to clearly define where the Infra Phase ends and the Compliance Phase begins.
 - Ohai data collection of Amazon EC2 metadata has been improved to collect additional data for some configurations.
 - Removed ERROR logs when retrying failed communication with the Chef Infra Server.
 - Improved the `archive_file` resource by upgrading the `libarchive` library it uses, which includes the following improvements:
