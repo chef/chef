@@ -93,6 +93,10 @@ class Chef
           install_package(name, version)
         end
 
+        def allow_downgrade
+          false
+        end
+
         # Override the superclass check.  Multiple sources are required here.
         def check_resource_semantics!; end
 

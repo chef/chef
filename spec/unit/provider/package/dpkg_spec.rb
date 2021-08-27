@@ -311,4 +311,8 @@ describe Chef::Provider::Package::Dpkg do
       let(:preseed_path) { "/preseed--wget--wget-1.11.4.seed" }
     end
   end
+
+  it "allows you to specify whether allow_downgrade is true or false" do
+    expect(new_resource.allow_downgrade).to eq(false)
+  end
 end

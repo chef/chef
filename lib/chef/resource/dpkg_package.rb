@@ -37,6 +37,11 @@ class Chef
       property :response_file_variables, Hash,
         description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
         default: {}, desired_state: false
+
+      property :allow_downgrade, [ TrueClass, FalseClass ],
+              description: "Allow downgrading a package to satisfy requested version requirements.",
+              default: false,
+              desired_state: true
     end
   end
 end
