@@ -1,6 +1,35 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-## What's New in 17.4
+## What's New in 17.4.38
+
+### Bug fixes
+
+- Resolved a regression introduced in Chef Infra Client 17.4 that caused HWRP-style resources inheriting from LWRPBase to fail.
+
+### Enhancements
+
+- Improved log output to clearly define where the Infra Phase ends and the Compliance Phase begins.
+- Enhanced Ohai data collection of Amazon EC2 metadata to collect additional data for some configurations.
+- Removed ERROR logs when retrying failed communication with the Chef Infra Server.
+- Improved the `archive_file` resource by upgrading the `libarchive` library it uses, which includes the following improvements:
+  - Support for PWB and v7 binary CPIO formats.
+  - Support for the deflate algorithm in symbolic link decompression with zip files.
+  - Various bug fixes when working with CAB, ZIP, 7zip, and RAR files.
+
+### Security
+
+#### OpenSSL 1.1.1l
+
+OpenSSL has been updated from 1.1.1k to 1.1.1l on macOS systems to resolve the following CVEs:
+
+- [CVE-2021-3711](https://nvd.nist.gov/vuln/detail/CVE-2021-3711)
+- [CVE-2021-3712](https://nvd.nist.gov/vuln/detail/CVE-2021-3712)
+
+#### libarchive 3.5.2
+
+Updated the libarchive library that powers the `archive_file` resource from 3.5.1 to 3.5.2 to resolve security vulnerabilities in libarchive's handling of symbolic links.
+
+## What's New in 17.4.25
 
 ### Compliance Phase Improvements
 
