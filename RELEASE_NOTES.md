@@ -10,7 +10,7 @@ This file holds "in progress" release notes for the current release under develo
 
 - Log output has been improved to better deliniate when the Infra Phase and Compliance Phase start and end.
 - Ohai data collection of Amazon EC2 metadata has been improved to collect additional data for some configurations.
-- Removed ERROR logs when retrying failed communication with the Chef Infra Server
+- Removed ERROR logs when retrying failed communication with the Chef Infra Server.
 - The `archive_file` resource has been improved by upgrading the `libarchive` library it uses.
   - Support for PWB and v7 binary CPIO formats.
   - Support for the deflate algorithm in symbolic link decompression with zip files.
