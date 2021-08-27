@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.33 -->
-## [v17.4.33](https://github.com/chef/chef/tree/v17.4.33) (2021-08-26)
+<!-- latest_release 17.4.34 -->
+## [v17.4.34](https://github.com/chef/chef/tree/v17.4.34) (2021-08-27)
 
 #### Merged Pull Requests
-- Bump chef/ohai to 17.5.1 [#11959](https://github.com/chef/chef/pull/11959) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update pipeline references from master -&gt; main [#11967](https://github.com/chef/chef/pull/11967) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update pipeline references from master -&gt; main [#11967](https://github.com/chef/chef/pull/11967) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.34 -->
 - Bump chef/ohai to 17.5.1 [#11959](https://github.com/chef/chef/pull/11959) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.33 -->
 - Update libarchive to 3.5.2 [#11958](https://github.com/chef/chef/pull/11958) ([tas50](https://github.com/tas50)) <!-- 17.4.32 -->
 - Remove the yanked parallel 1.20.2 gem [#11954](https://github.com/chef/chef/pull/11954) ([tas50](https://github.com/tas50)) <!-- 17.4.31 -->
