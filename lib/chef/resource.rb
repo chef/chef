@@ -1183,7 +1183,7 @@ class Chef
         begin
           is_custom_resource!
           base_provider =
-            if superclass.custom_resource? || superclass != Chef::Resource
+            if superclass.custom_resource?
               superclass.action_class
             else
 
