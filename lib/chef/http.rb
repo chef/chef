@@ -423,7 +423,7 @@ class Chef
           if response.is_a?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts >= 0
               sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
-              Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+              Chef::Log.warn("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s") # Updated from error to warn
               sleep(sleep_time)
               redo
             end
@@ -432,7 +432,7 @@ class Chef
         end
       rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
         if http_retry_count - http_attempts >= 0
-          Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
@@ -440,21 +440,21 @@ class Chef
         raise e
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts >= 0
-          Chef::Log.error("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
       rescue Timeout::Error
         if http_retry_count - http_attempts >= 0
-          Chef::Log.error("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
       rescue OpenSSL::SSL::SSLError => e
         if (http_retry_count - http_attempts >= 0) && !e.message.include?("certificate verify failed")
-          Chef::Log.error("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
