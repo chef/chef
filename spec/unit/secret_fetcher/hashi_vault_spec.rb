@@ -23,34 +23,24 @@ require "chef/secret_fetcher/hashi_vault"
 describe Chef::SecretFetcher::HashiVault do
   let(:node) { {} }
   let(:run_context) { double("run_context", node: node) }
-  let(:fetcher_config) { {} }
-  let(:fetcher) {
-    Chef::SecretFetcher::HashiVault.new( fetcher_config, run_context )
-  }
 
   context "when validating HashiVault provided configuration" do
-    context "and role_name is not provided" do
-      let(:fetcher_config) { { vault_addr: "vault.example.com" } }
-      it "raises ConfigurationInvalid" do
-        expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
-      end
+    it "raises ConfigurationInvalid when the role_name is not provided" do
+      fetcher = Chef::SecretFetcher::HashiVault.new( { vault_addr: "vault.example.com" }, run_context)
+      expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
     end
-    context "and vault_addr is not provided" do
-      let(:fetcher_config) { { role_name: "example-role" } }
-      it "raises ConfigurationInvalid" do
-        expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
-      end
-    end
-  end
 
-  context "when all required config is provided" do
-    let(:fetcher_config) { { vault_addr: "vault.example.com", role_name: "example-role" } }
-    it "obtains a token via AWS IAM auth" do
-      auth_stub = double("vault auth", aws_iam: nil)
+    it "raises ConfigurationInvalid when the vault_addr is not provided" do
+      fetcher = Chef::SecretFetcher::HashiVault.new( { role_name: "vault.example.com" }, run_context)
+      expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
+    end
+
+    it "obtains a token via AWS IAM auth to allow the gem to do its own validations when all required config is provided" do
+      fetcher = Chef::SecretFetcher::HashiVault.new( { vault_addr: "vault.example.com", role_name: "example-role" }, run_context)
+      auth_stub =
       allow(Aws::InstanceProfileCredentials).to receive(:new).and_return double("credentials")
-      allow(Vault).to receive(:auth).and_return(auth_stub)
+      allow(Vault).to receive(:auth).and_return(instance_double(Vault::Authenticate, aws_iam: nil))
       fetcher.validate!
-
     end
   end
 end
