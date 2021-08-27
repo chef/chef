@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### Bug fixes
 
-- Resolved a regression introduced in Chef Infra Client 17.4 that would cause HWRP-style resources inheriting from LWRPBase to fail.
+- Resolved a regression introduced in Chef Infra Client 17.4 that caused HWRP-style resources inheriting from LWRPBase to fail.
 
 ### Enhancements
 
