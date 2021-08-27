@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.35 -->
-## [v17.4.35](https://github.com/chef/chef/tree/v17.4.35) (2021-08-27)
+<!-- latest_release 17.4.36 -->
+## [v17.4.36](https://github.com/chef/chef/tree/v17.4.36) (2021-08-27)
 
 #### Merged Pull Requests
-- Downgraded the Log level to warn as per AHA idea I-25 [#11945](https://github.com/chef/chef/pull/11945) ([rgjoshi24](https://github.com/rgjoshi24))
+- Bump chef/ohai to d7b28f39f6ef17ba20d2cc0ddbdb62e40b02d8bd [#11972](https://github.com/chef/chef/pull/11972) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to d7b28f39f6ef17ba20d2cc0ddbdb62e40b02d8bd [#11972](https://github.com/chef/chef/pull/11972) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.36 -->
 - Downgraded the Log level to warn as per AHA idea I-25 [#11945](https://github.com/chef/chef/pull/11945) ([rgjoshi24](https://github.com/rgjoshi24)) <!-- 17.4.35 -->
 - Update pipeline references from master -&gt; main [#11967](https://github.com/chef/chef/pull/11967) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.34 -->
 - Bump chef/ohai to 17.5.1 [#11959](https://github.com/chef/chef/pull/11959) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.33 -->
