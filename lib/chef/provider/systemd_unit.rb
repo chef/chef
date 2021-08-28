@@ -58,19 +58,27 @@ class Chef
 
       def systemd_unit_status
         @systemd_unit_status ||= begin
+          status = {}
+
           # Collect all the status information for a unit and return it at once
-          # This may fail if we are managing a template unit (e.g. with '@'), in which case
-          # we just ignore the error because unit status is irrelevant in that case
+          # This will fail if we are managing a template unit (e.g. with '@'), which is why
+          # we capture 'is-enabled' below
+          # This fails because '--system show' returns 'enabled' for *all* templated units
+          # if *any* of the templated units are enabled
+          # e.g. if daemon@env1 is enabled daemon@env2 will also show enabled,
+          # whether or not daemon@env2 is actually enabled
           s = shell_out(*systemctl_cmd, "show", "-p", "UnitFileState", "-p", "ActiveState", new_resource.unit_name, **systemctl_opts)
           # e.g. /bin/systemctl --system show -p UnitFileState -p ActiveState syslog.socket
           # Returns something like:
           # ActiveState=inactive
           # UnitFileState=static
-          status = {}
           s.stdout.each_line do |line|
             k, v = line.strip.split("=")
             status[k] = v
           end
+
+          status["is-enabled"] = shell_out(*systemctl_cmd, "is-enabled", new_resource.unit_name, **systemctl_opts).stdout.strip
+          # Returns "enabled" or "disabled"
 
           status
         end
@@ -227,10 +235,9 @@ class Chef
       end
 
       def enabled?
-        # See https://github.com/systemd/systemd/blob/master/src/systemctl/systemctl-is-enabled.c
-        # Note: enabled-runtime is excluded because this is volatile, and the state of enabled-runtime
-        # specifically means that the service is not enabled
-        %w{enabled static generated alias indirect}.include?(systemd_unit_status["UnitFileState"])
+        return true if systemd_unit_status["is-enabled"] == "enabled"
+        return true if %w{static generated alias indirect}.include?(systemd_unit_status["UnitFileState"])
+        false
       end
 
       def masked?
