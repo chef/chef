@@ -63,6 +63,7 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
+      vault (~> 0.16)
     chef (17.4.38-universal-mingw32)
       addressable
       aws-sdk-secretsmanager (~> 1.46)
@@ -92,6 +93,7 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
+      vault (~> 0.16)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.6.2)
       win32-event (~> 0.6.1)
@@ -371,6 +373,8 @@ GEM
     unicode-display_width (2.0.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
+    vault (0.16.0)
+      aws-sigv4
     webmock (3.14.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)

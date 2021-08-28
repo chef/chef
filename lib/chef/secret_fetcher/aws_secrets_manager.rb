@@ -52,7 +52,7 @@ class Chef
       end
 
       # @param identifier [String] the secret_id
-      # @param version [String] the secret version. Not usd at this time
+      # @param version [String] the secret version.
       # @return Aws::SecretsManager::Types::GetSecretValueResponse
       def do_fetch(identifier, version)
         client = Aws::SecretsManager::Client.new(config)
