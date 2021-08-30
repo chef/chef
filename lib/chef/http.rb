@@ -450,7 +450,7 @@ class Chef
       rescue Timeout::Error
         if @http_retry_count - http_attempts >= 0
           Chef::Log.warn("Timeout connecting to #{url}, retry #{http_attempts}/#{@http_retry_count}") # Updated from error to warn
-          sleep(@http_retry_delay).
+          sleep(@http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
