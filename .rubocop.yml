@@ -41,7 +41,6 @@ Chef/Ruby/LegacyPowershellOutMethods:
     - 'spec/functional/mixin/powershell_out_spec.rb'
     - 'spec/unit/mixin/powershell_out_spec.rb'
     - 'lib/chef/resource/windows_feature_powershell.rb' # https://github.com/chef/chef/issues/10927
-    - 'lib/chef/provider/package/powershell.rb' # https://github.com/chef/chef/issues/10926
 
 # set additional paths
 Chef/Ruby/UnlessDefinedRequire:
