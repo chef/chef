@@ -17,13 +17,13 @@
 
 require_relative "../package"
 require_relative "../../resource/powershell_package"
-require_relative "../../mixin/powershell_out"
+require_relative "../../mixin/powershell_exec"
 
 class Chef
   class Provider
     class Package
       class Powershell < Chef::Provider::Package
-        include Chef::Mixin::PowershellOut
+        include Chef::Mixin::PowershellExec
 
         provides :powershell_package
 
@@ -54,9 +54,9 @@ class Chef
         # Installs the package specified with the version passed else latest version will be installed
         def install_package(names, versions)
           names.each_with_index do |name, index|
-            cmd = powershell_out(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
+            cmd = powershell_exec(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
             next if cmd.nil?
-            raise Chef::Exceptions::PowershellCmdletException, "Failed to install package due to catalog signing error, use skip_publisher_check to force install" if /SkipPublisherCheck/.match?(cmd.stderr)
+            raise Chef::Exceptions::PowershellCmdletException, "Failed to install package due to catalog signing error, use skip_publisher_check to force install" if /SkipPublisherCheck/.match?(cmd.error)
           end
         end
 
@@ -64,11 +64,11 @@ class Chef
         def remove_package(names, versions)
           names.each_with_index do |name, index|
             if versions && !versions[index].nil?
-              powershell_out(build_powershell_package_command("Uninstall-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
+              powershell_exec(build_powershell_package_command("Uninstall-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
             else
               version = "0"
               until version.empty?
-                version = powershell_out(build_powershell_package_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
+                version = powershell_exec(build_powershell_package_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).result.strip
                 unless version.empty?
                   logger.info("Removed package '#{name}' with version #{version}")
                 end
@@ -82,9 +82,9 @@ class Chef
           versions = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_out(build_powershell_package_command("Find-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).stdout.strip
+                        powershell_exec(build_powershell_package_command("Find-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).result.strip
                       else
-                        powershell_out(build_powershell_package_command("Find-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
+                        powershell_exec(build_powershell_package_command("Find-Package '#{name}'"), timeout: new_resource.timeout).result.strip
                       end
             if version.empty?
               version = nil
@@ -99,9 +99,9 @@ class Chef
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_out(build_powershell_package_command("Get-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).stdout.strip
+                        powershell_exec(build_powershell_package_command("Get-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).result.strip
                       else
-                        powershell_out(build_powershell_package_command("Get-Package '#{name}'"), timeout: new_resource.timeout).stdout.strip
+                        powershell_exec(build_powershell_package_command("Get-Package '#{name}'"), timeout: new_resource.timeout).result.strip
                       end
             if version.empty?
               version = nil
