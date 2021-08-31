@@ -100,8 +100,8 @@ class Chef
             install_command << " -Source \"#{new_resource.source}\"" if new_resource.source
             install_command << " -IncludeManagementTools" if new_resource.management_tools
 
-            cmd = powershell_out!(install_command, timeout: new_resource.timeout)
-            Chef::Log.info(cmd.stdout)
+            cmd = powershell_exec!(install_command, timeout: new_resource.timeout)
+            Chef::Log.info(cmd.result)
 
             reload_cached_powershell_data # Reload cached powershell feature state
           end
@@ -115,8 +115,8 @@ class Chef
 
         unless features_to_remove.empty?
           converge_by("remove Windows feature#{"s" if features_to_remove.count > 1} #{features_to_remove.join(",")}") do
-            cmd = powershell_out!("Uninstall-WindowsFeature #{features_to_remove.join(",")}", timeout: new_resource.timeout)
-            Chef::Log.info(cmd.stdout)
+            cmd = powershell_exec!("Uninstall-WindowsFeature #{features_to_remove.join(",")}", timeout: new_resource.timeout)
+            Chef::Log.info(cmd.result)
 
             reload_cached_powershell_data # Reload cached powershell feature state
           end
@@ -132,8 +132,8 @@ class Chef
 
         unless features_to_delete.empty?
           converge_by("delete Windows feature#{"s" if features_to_delete.count > 1} #{features_to_delete.join(",")} from the image") do
-            cmd = powershell_out!("Uninstall-WindowsFeature #{features_to_delete.join(",")} -Remove", timeout: new_resource.timeout)
-            Chef::Log.info(cmd.stdout)
+            cmd = powershell_exec!("Uninstall-WindowsFeature #{features_to_delete.join(",")} -Remove", timeout: new_resource.timeout)
+            Chef::Log.info(cmd.result)
 
             reload_cached_powershell_data # Reload cached powershell feature state
           end
@@ -215,7 +215,7 @@ class Chef
         # fetch the list of available feature names and state in JSON and parse the JSON
         def parsed_feature_list
           # Grab raw feature information from WindowsFeature
-          raw_list_of_features = powershell_out!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).stdout
+          raw_list_of_features = powershell_exec!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).result
 
           Chef::JSONCompat.from_json(raw_list_of_features)
         end
