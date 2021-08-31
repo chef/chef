@@ -54,6 +54,10 @@ class Chef
         @client_field ||= Chef::ApiClientV1.new
       end
 
+      def file
+        config[:file]
+      end
+
       def create_client(client)
         # should not be using save :( bad behavior
         Chef::ApiClientV1.from_hash(client).save
@@ -81,13 +85,7 @@ class Chef
           client.public_key File.read(File.expand_path(config[:public_key]))
         end
 
-        # Check the file before creating the client so the api is more transactional.
-        if config[:file]
-          file = config[:file]
-          dir_name = File.dirname(file)
-          check_writable_or_exists(dir_name, "Directory")
-          check_writable_or_exists(file, "File")
-        end
+        file_is_writable!
 
         output = edit_hash(client)
         final_client = create_client(output)
@@ -105,15 +103,35 @@ class Chef
         end
       end
 
-      # To check if file or directory exists or writable and raise exception accordingly
-      def check_writable_or_exists(file, type)
-        if File.exist?(file)
-          unless File.writable?(file)
-            ui.fatal "#{type} #{file} is not writable. Check permissions."
-            exit 1
-          end
-        else
-          ui.fatal "#{type} #{file} does not exist."
+      #
+      # This method is used to verify that the file and it's containing
+      # directory are writable.  This ensures that you don't create the client
+      # and then lose the private key because you weren't able to write it to
+      # disk.
+      #
+      # @return [void]
+      #
+      def file_is_writable!
+        return unless file
+
+        dir = File.dirname(File.expand_path(file))
+        unless File.exist?(dir)
+          ui.fatal "Directory #{dir} does not exist. Please create and retry."
+          exit 1
+        end
+
+        unless File.directory?(dir)
+          ui.fatal "#{dir} exists, but is not a directory. Please update your file path (--file #{file}) or re-create #{dir} as a directory."
+          exit 1
+        end
+
+        unless File.writable?(dir)
+          ui.fatal "Directory #{dir} is not writable. Please check the permissions."
+          exit 1
+        end
+
+        if File.exist?(file) && !File.writable?(file)
+          ui.fatal "File #{file} is not writable. Please check the permissions."
           exit 1
         end
       end
