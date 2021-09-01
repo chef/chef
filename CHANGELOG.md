@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.39 -->
-## [v17.4.39](https://github.com/chef/chef/tree/v17.4.39) (2021-08-28)
+<!-- latest_release 17.4.40 -->
+## [v17.4.40](https://github.com/chef/chef/tree/v17.4.40) (2021-09-01)
 
 #### Merged Pull Requests
-- Add support for secrets stored in HashiCorp Vault [#11942](https://github.com/chef/chef/pull/11942) ([marcparadise](https://github.com/marcparadise))
+- bump openssl-1.0.2za [#11982](https://github.com/chef/chef/pull/11982) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- bump openssl-1.0.2za [#11982](https://github.com/chef/chef/pull/11982) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 17.4.40 -->
 - Add support for secrets stored in HashiCorp Vault [#11942](https://github.com/chef/chef/pull/11942) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.39 -->
 <!-- release_rollup -->
 
