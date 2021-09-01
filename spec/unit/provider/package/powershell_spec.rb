@@ -17,10 +17,10 @@
 #
 
 require "spec_helper"
-require "chef/mixin/powershell_out"
+require "chef/mixin/powershell_exec"
 
 describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
-  include Chef::Mixin::PowershellOut
+  include Chef::Mixin::PowershellExec
   let(:timeout) { 900 }
   let(:source) { nil }
 
@@ -35,63 +35,63 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
   end
 
   let(:package_xcertificate_installed) do
-    double("powershell_out", stdout: "2.1.0.0\r\n")
+    double("powershell_exec", result: "2.1.0.0\r\n")
   end
 
   let(:package_xcertificate_installed_2_0_0_0) do
-    double("powershell_out", stdout: "2.0.0.0\r\n")
+    double("powershell_exec", result: "2.0.0.0\r\n")
   end
 
   let(:package_xcertificate_available) do
-    double("powershell_out", stdout: "2.1.0.0\r\n")
+    double("powershell_exec", result: "2.1.0.0\r\n")
   end
 
   let(:package_xcertificate_available_2_0_0_0) do
-    double("powershell_out", stdout: "2.0.0.0\r\n")
+    double("powershell_exec", result: "2.0.0.0\r\n")
   end
 
   let(:package_xcertificate_not_installed) do
-    double("powershell_out", stdout: "")
+    double("powershell_exec", result: "")
   end
 
   let(:package_xcertificate_not_available) do
-    double("powershell_out", stdout: "")
+    double("powershell_exec", result: "")
   end
 
   let(:package_xnetworking_installed) do
-    double("powershell_out", stdout: "2.12.0.0\r\n")
+    double("powershell_exec", result: "2.12.0.0\r\n")
   end
 
   let(:package_xnetworking_installed_2_11_0_0) do
-    double("powershell_out", stdout: "2.11.0.0\r\n")
+    double("powershell_exec", result: "2.11.0.0\r\n")
   end
 
   let(:package_xnetworking_available) do
-    double("powershell_out", stdout: "2.12.0.0\r\n")
+    double("powershell_exec", result: "2.12.0.0\r\n")
   end
 
   let(:package_xnetworking_available_2_11_0_0) do
-    double("powershell_out", stdout: "2.11.0.0\r\n")
+    double("powershell_exec", result: "2.11.0.0\r\n")
   end
 
   let(:package_xnetworking_not_installed) do
-    double("powershell_out", stdout: "")
+    double("powershell_exec", result: "")
   end
 
   let(:package_xnetworking_not_available) do
-    double("powershell_out", stdout: "")
+    double("powershell_exec", result: "")
   end
 
   let(:package_7zip_available) do
-    double("powershell_out", stdout: "16.02\r\n")
+    double("powershell_exec", result: "16.02\r\n")
   end
 
   let(:package_7zip_not_installed) do
-    double("powershell_out", stdout: "")
+    double("powershell_exec", result: "")
   end
 
   let(:powershell_installed_version) do
-    double("powershell_out", stdout: "5")
+    double("powershell_exec", result: "5")
   end
 
   let(:tls_set_command) { "if ([Net.ServicePointManager]::SecurityProtocol -lt [Net.SecurityProtocolType]::Tls12) { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 };" }
@@ -122,14 +122,14 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
   describe "#candidate_version" do
 
     it "should set the candidate_version to the latest version when not pinning" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(["xNetworking"])
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["2.12.0.0"])
     end
 
     it "should use the candidate_version from the correct source" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(["xNetworking"])
       new_resource.version(nil)
       new_resource.source("MyGallery")
@@ -137,60 +137,60 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     end
 
     it "should set the candidate_version to the latest version when not pinning and package name is space separated" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_available)
       new_resource.package_name(["7-Zip 16.02 (x64)"])
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["16.02"])
     end
 
     it "should set the candidate_version to pinned version if available" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.0.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available_2_0_0_0)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.0.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available_2_0_0_0)
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.0.0.0"])
       expect(provider.candidate_version).to eql(["2.0.0.0"])
     end
 
     it "should set the candidate_version to nil if there is no candidate" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
       new_resource.package_name(["xCertificate"])
       expect(provider.candidate_version).to eql([nil])
     end
 
     it "should set the candidate_version correctly when there are two packages to install" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["2.1.0.0", "2.12.0.0"])
     end
 
     it "should set the candidate_version correctly when only the first is installable" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["2.1.0.0", nil])
     end
 
     it "should set the candidate_version correctly when only the last is installable" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql([nil, "2.12.0.0"])
     end
 
     it "should set the candidate_version correctly when neither are is installable and version is passed as nil array" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
       new_resource.package_name(%w{xNetworking xCertificate})
       new_resource.version([nil, nil])
       expect(provider.candidate_version).to eql([nil, nil])
     end
 
     it "should set the candidate_version correctly when neither are is installable and version is not passed" do
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
       new_resource.package_name(%w{xNetworking xCertificate})
       new_resource.version(nil)
       expect(provider.candidate_version).to eql([nil, nil])
@@ -322,10 +322,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       provider.load_current_resource
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -335,10 +335,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
       new_resource.source("MyGallery")
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -Source MyGallery ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -Source MyGallery ).Version", { timeout: new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -348,10 +348,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
       new_resource.skip_publisher_check(true)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -SkipPublisherCheck ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -SkipPublisherCheck ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -SkipPublisherCheck ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -SkipPublisherCheck ).Version", { timeout: new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -360,10 +360,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       provider.load_current_resource
       new_resource.package_name(["7-Zip 16.02 (x64)"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_not_installed)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 16.02 ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_not_installed)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 16.02 ).Version", { timeout: new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -375,10 +375,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
         provider.load_current_resource
         new_resource.package_name(["xCertificate"])
         new_resource.version(nil)
-        allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-        allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-        allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-        expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+        allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+        allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+        allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+        expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
         provider.run_action(:install)
         expect(new_resource).to be_updated_by_last_action
       end
@@ -387,9 +387,9 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "should not install packages that are up-to-date" do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).not_to receive(:install_package)
       provider.run_action(:install)
@@ -399,9 +399,9 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "should not install packages that are up-to-date" do
       new_resource.package_name(["xNetworking"])
       new_resource.version(["2.11.0.0"])
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).not_to receive(:install_package)
       provider.run_action(:install)
@@ -413,13 +413,13 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       # new_version.resource[0]
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version([nil, "2.11.0.0"])
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available_2_11_0_0)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.11.0.0 ).Version", { timeout: new_resource.timeout })
       provider.load_current_resource
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -428,13 +428,13 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "should split up commands when given two packages, one with a version pin" do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(["2.1.0.0", nil])
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.12.0.0 ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.12.0.0 ).Version", { timeout: new_resource.timeout })
 
       provider.load_current_resource
       provider.run_action(:install)
@@ -444,13 +444,13 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "should do multipackage installs when given two packages without constraints" do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.12.0.0 ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.12.0.0 ).Version", { timeout: new_resource.timeout })
       provider.load_current_resource
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -460,13 +460,13 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
       new_resource.source("MyGallery")
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -Source MyGallery ).Version", { timeout: new_resource.timeout })
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.12.0.0 -Source MyGallery ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -Source MyGallery ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.12.0.0 -Source MyGallery ).Version", { timeout: new_resource.timeout })
       provider.load_current_resource
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
@@ -477,10 +477,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
       new_resource.options(%w{-AcceptLicense -Verbose})
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -AcceptLicense -Verbose ).Version", { timeout: new_resource.timeout })
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -AcceptLicense -Verbose ).Version", { timeout: new_resource.timeout })
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -491,9 +491,9 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       provider.load_current_resource
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.1.0.0"])
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       expect(provider).not_to receive(:remove_package)
       provider.run_action(:remove)
       expect(new_resource).not_to be_updated_by_last_action
@@ -503,11 +503,11 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.1.0.0"])
       new_resource.source("MyGallery")
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -Source MyGallery).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -Source MyGallery).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -515,11 +515,11 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "does nothing when all the packages are already removed" do
       new_resource.package_name(%w{xCertificate xNetworking})
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xNetworking' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xnetworking_not_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).not_to receive(:remove_package)
       provider.run_action(:remove)
@@ -529,11 +529,11 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "removes a package when version is specified" do
       new_resource.package_name(["xCertificate"])
       new_resource.version(["2.1.0.0"])
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 ).Version", { timeout: new_resource.timeout })
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -541,11 +541,11 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "removes a package when version is not specified" do
       new_resource.package_name(["xCertificate"])
       new_resource.version(nil)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -553,11 +553,11 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     it "should remove a package using provided options" do
       new_resource.package_name(["xCertificate"])
       new_resource.options(%w{-AllVersions})
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
-      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_exec).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
-      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -AllVersions ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      expect(provider).to receive(:powershell_exec).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -AllVersions ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
