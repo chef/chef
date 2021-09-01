@@ -104,7 +104,9 @@ class Chef
         #
         # @return [Integer]
         def consent_behavior_users_symbol_to_reg(sym)
-          %i{auto_deny secure_prompt_for_creds prompt_for_creds}.index(sym)
+          # Since 2 isn't a valid value for ConsentPromptBehaviorUser, assign the value at index as nil.
+          # https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/user-account-control-group-policy-and-registry-key-settings#registry-key-settings
+          [:auto_deny, :secure_prompt_for_creds, nil, :prompt_for_creds].index(sym)
         end
       end
     end
