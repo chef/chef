@@ -40,8 +40,8 @@ class Chef
 
       property :allow_downgrade, [ TrueClass, FalseClass ],
               description: "Allow downgrading a package to satisfy requested version requirements.",
-              default: false,
-              desired_state: true
+              default: true,
+              desired_state: false
     end
   end
 end
