@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.43 -->
-## [v17.4.43](https://github.com/chef/chef/tree/v17.4.43) (2021-09-01)
+<!-- latest_release 17.4.44 -->
+## [v17.4.44](https://github.com/chef/chef/tree/v17.4.44) (2021-09-01)
 
 #### Merged Pull Requests
-- windows_uac: fix registry settings for consent_behavior_users [#11987](https://github.com/chef/chef/pull/11987) ([rishichawda](https://github.com/rishichawda))
+- Build packages on Intel macOS 12 [#11990](https://github.com/chef/chef/pull/11990) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Build packages on Intel macOS 12 [#11990](https://github.com/chef/chef/pull/11990) ([tas50](https://github.com/tas50)) <!-- 17.4.44 -->
 - windows_uac: fix registry settings for consent_behavior_users [#11987](https://github.com/chef/chef/pull/11987) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.43 -->
 - Fix knife client create [#11986](https://github.com/chef/chef/pull/11986) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.4.42 -->
 - Bump ffi to 1.15.4 [#11989](https://github.com/chef/chef/pull/11989) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.41 -->
