@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.46 -->
-## [v17.4.46](https://github.com/chef/chef/tree/v17.4.46) (2021-09-02)
+<!-- latest_release 17.4.47 -->
+## [v17.4.47](https://github.com/chef/chef/tree/v17.4.47) (2021-09-02)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Disable x25519 until we fix RHEL 7 failures [#11993](https://github.com/chef/chef/pull/11993) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable x25519 until we fix RHEL 7 failures [#11993](https://github.com/chef/chef/pull/11993) ([tas50](https://github.com/tas50)) <!-- 17.4.47 -->
 - Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.46 -->
 - windows_user_privilege.rb : fixed exception: privilege is a required property, even when it was set [#11914](https://github.com/chef/chef/pull/11914) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.4.45 -->
 - Build packages on Intel macOS 12 [#11990](https://github.com/chef/chef/pull/11990) ([tas50](https://github.com/tas50)) <!-- 17.4.44 -->
