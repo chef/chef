@@ -57,10 +57,12 @@ class Chef
     #
     # @since 13.0
     # @param name [String, Symbol] Name of the action to define.
+    # @param description [String] description of the action
     # @param block [Proc] Body of the action.
     #
     # @return [void]
-    def self.action(name, &block)
+    def self.action(name, description: nil, &block)
+      action_descriptions[name.to_sym] = description unless description.nil?
       # We need the block directly in a method so that `return` works.
       define_method("compile_action_#{name}", &block)
       class_eval <<-EOM
@@ -68,6 +70,29 @@ class Chef
           compile_and_converge_action { compile_action_#{name} }
         end
       EOM
+    end
+
+    # Return the hash of action descriptions defined for
+    # the provider class.
+    #
+    # @return [Hash] hash of [Symbol] => [String] containing
+    # any provided action descriptions.
+    def self.action_descriptions
+      @action_descriptions ||= {}
+    end
+
+    # Retrieve the description for a provider's action, if
+    # any description has been included in the definition.
+    #
+    # @param action [Symbol,String] the action name
+    # @return [String] the description of the action provided, or nil if no description
+    # was defined
+    def self.action_description(action)
+      description = action_descriptions[action.to_sym]
+      if description.nil? && superclass.respond_to?(:action_description)
+        description = superclass.action_description(action)
+      end
+      description
     end
 
     # Deprecation stub for the old use_inline_resources mode.

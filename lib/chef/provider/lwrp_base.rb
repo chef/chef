@@ -45,7 +45,7 @@ class Chef
       def load_current_resource; end
 
       # class methods
-      class <<self
+      class << self
         include Chef::Mixin::ConvertToClassName
         include Chef::Mixin::FromFile
 

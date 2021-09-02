@@ -134,6 +134,18 @@ class Chef
         boolean: true,
         default: false
 
+      option :pty,
+        long: "--[no-]pty",
+        description: "Request a PTY, enabled by default.",
+        boolean: true,
+        default: true
+
+      option :require_pty,
+        long: "--[no-]require-pty",
+        description: "Raise exception if a PTY cannot be acquired, disabled by default.",
+        boolean: true,
+        default: false
+
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:on_error]
@@ -353,26 +365,26 @@ class Chef
         ui.msg(str)
       end
 
-      def ssh_command(command, subsession = nil)
-        exit_status = 0
-        subsession ||= session
-        command = fixup_sudo(command)
-        command.force_encoding("binary") if command.respond_to?(:force_encoding)
-        begin
-          open_session(subsession, command)
-        rescue => e
-          open_session(subsession, command, true)
-        end
-      end
-
-      def open_session(subsession, command, pty = false)
+      # @param command [String] the command to run
+      # @param session_list [???] list of sessions, one per node
+      #
+      def ssh_command(command, session_list = session)
         stderr = ""
         exit_status = 0
-        subsession.open_channel do |chan|
+        command = fixup_sudo(command)
+        command.force_encoding("binary") if command.respond_to?(:force_encoding)
+        session_list.open_channel do |chan|
           if config[:on_error] && exit_status != 0
             chan.close
           else
-            chan.request_pty if pty
+            if config[:pty]
+              chan.request_pty do |ch, success|
+                unless success
+                  ui.warn("Failed to obtain a PTY from #{ch.connection.host}")
+                  raise ArgumentError, "Request for PTY failed" if config[:require_pty]
+                end
+              end
+            end
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
 
@@ -383,13 +395,11 @@ class Chef
                   ichannel.send_data("#{get_password}\n")
                 end
               end
-
               ch.on_extended_data do |_, _type, data|
-                raise ArgumentError if data.eql?("sudo: no tty present and no askpass program specified\n")
+                raise ArgumentError, "No PTY present. If a PTY is required use --require-pty" if data.eql?("sudo: no tty present and no askpass program specified\n")
 
                 stderr += data
               end
-
               ch.on_request "exit-status" do |ichannel, data|
                 exit_status = [exit_status, data.read_long].max
               end
@@ -398,6 +408,8 @@ class Chef
         end
         session.loop
         exit_status
+      ensure
+        session_list.close
       end
 
       def get_password

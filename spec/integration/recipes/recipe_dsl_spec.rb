@@ -19,7 +19,7 @@ describe "Recipe DSL methods" do
         provides :base_thingy
         default_action :create
 
-        class<<self
+        class << self
           attr_accessor :created_name
           attr_accessor :created_resource
           attr_accessor :created_provider

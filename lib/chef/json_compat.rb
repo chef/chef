@@ -25,7 +25,7 @@ require "json" unless defined?(JSON)
 class Chef
   class JSONCompat
 
-    class <<self
+    class << self
 
       def parse(source, opts = {})
         FFI_Yajl::Parser.parse(source, opts)

@@ -9,7 +9,7 @@ class NoActionJackson < Chef::Resource
     @foo
   end
 
-  class <<self
+  class << self
     attr_accessor :action_was
   end
 end
@@ -17,7 +17,7 @@ end
 class WeirdActionJackson < Chef::Resource
   provides :weird_action_jackson
 
-  class <<self
+  class << self
     attr_accessor :action_was
   end
 
@@ -176,7 +176,7 @@ module ResourceActionSpec
           @blarghle
         end
 
-        class <<self
+        class << self
           attr_accessor :ran_action
           attr_accessor :succeeded
           attr_accessor :ruby_block_converged
@@ -284,7 +284,7 @@ module ResourceActionSpec
             @bar = "#{value}alope" if value
             @bar
           end
-          class <<self
+          class << self
             attr_accessor :load_current_resource_ran
             attr_accessor :jackalope_ran
           end
@@ -354,8 +354,8 @@ module ResourceActionSpec
         end
 
         it "allows overridden action to have a description separate from the action defined in the base resource" do
-          expect(ActionJackson.action_description(:test1)).to eql "Original description"
-          expect(ActionJackalope.action_description(:test1)).to eql "An old action with a new description"
+          expect(ActionJackson.new("ActionJackson", nil).action_description(:test1)).to eql "Original description"
+          expect(ActionJackalope.new("ActionJackalope", nil).action_description(:test1)).to eql "An old action with a new description"
         end
 
         it "non-overridden actions run and can access overridden and non-overridden variables (but not necessarily new ones)" do

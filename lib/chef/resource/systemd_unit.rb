@@ -34,7 +34,7 @@ class Chef
 
       ```ruby
       systemd_unit 'etcd.service' do
-        content(Unit: {
+        content({ Unit: {
                   Description: 'Etcd',
                   Documentation: ['https://coreos.com/etcd', 'man:etcd(1)'],
                   After: 'network.target',
@@ -46,7 +46,7 @@ class Chef
                 },
                 Install: {
                   WantedBy: 'multi-user.target',
-                })
+                } })
         action [:create, :enable]
       end
       ```
@@ -113,7 +113,7 @@ class Chef
         when Hash
           IniParse.gen do |doc|
             content.each_pair do |sect, opts|
-              doc.section(sect) do |section|
+              doc.section(sect, { option_sep: "=" }) do |section|
                 opts.each_pair do |opt, val|
                   [val].flatten.each do |v|
                     section.option(opt, v)

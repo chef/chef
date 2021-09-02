@@ -79,13 +79,13 @@ class Chef
         process_paths new_resource.process_paths & values["ExclusionProcess"]
       end
 
-      action :add do
+      action :add, description: "Add an exclusion to Windows Defender." do
         converge_if_changed do
           powershell_exec!(add_cmd)
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove an exclusion to Windows Defender." do
         converge_if_changed do
           powershell_exec!(remove_cmd)
         end

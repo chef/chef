@@ -55,7 +55,7 @@ class Chef
         end
       end
 
-      action :checkout do
+      action :checkout, description: "Clone or check out the source. When a checkout is available, this provider does nothing." do
         if target_dir_non_existent_or_empty?
           converge_by("perform checkout of #{new_resource.repository} into #{new_resource.destination}") do
             shell_out!(checkout_command, run_options)
@@ -65,7 +65,7 @@ class Chef
         end
       end
 
-      action :export do
+      action :export, description: "Export the source, excluding or removing any version control artifacts." do
         if target_dir_non_existent_or_empty?
           action_force_export
         else
@@ -73,13 +73,13 @@ class Chef
         end
       end
 
-      action :force_export do
+      action :force_export, description: "Export the source, excluding or removing any version control artifacts and force an export of the source that is overwriting the existing copy (if it exists)." do
         converge_by("export #{new_resource.repository} into #{new_resource.destination}") do
           shell_out!(export_command, run_options)
         end
       end
 
-      action :sync do
+      action :sync, description: "Update the source to the specified version, or get a new clone or checkout. This action causes a hard reset of the index and working tree, discarding any uncommitted changes." do
         assert_target_directory_valid!
         if ::File.exist?(::File.join(new_resource.destination, ".svn"))
           current_rev = find_current_revision

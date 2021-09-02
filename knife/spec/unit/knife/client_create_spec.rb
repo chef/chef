@@ -54,6 +54,19 @@ describe Chef::Knife::ClientCreate do
     Chef::Config[:node_name] = "webmonkey.example.com"
   end
 
+  let(:tmpdir) { Dir.mktmpdir }
+  let(:file_path) { File.join(tmpdir, "client.pem") }
+  let(:dir_path) { File.dirname(file_path) }
+
+  before do
+    allow(File).to receive(:exist?).and_call_original
+    allow(File).to receive(:exist?).with(file_path).and_return(false)
+    allow(File).to receive(:exist?).with(dir_path).and_return(true)
+    allow(File).to receive(:directory?).with(dir_path).and_return(true)
+    allow(File).to receive(:writable?).with(file_path).and_return(true)
+    allow(File).to receive(:writable?).with(dir_path).and_return(true)
+  end
+
   describe "run" do
     context "when nothing is passed" do
       # from spec/support/shared/unit/knife_shared.rb
@@ -118,15 +131,65 @@ describe Chef::Knife::ClientCreate do
 
       describe "with -f or --file" do
         before do
+          knife.config[:file] = file_path
           client.private_key "woot"
         end
 
         it "should write the private key to a file" do
-          knife.config[:file] = "/tmp/monkeypants"
           filehandle = double("Filehandle")
           expect(filehandle).to receive(:print).with("woot")
-          expect(File).to receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
+          expect(File).to receive(:open).with(file_path, "w").and_yield(filehandle)
           knife.run
+        end
+
+        context "when the directory does not exist" do
+          before { allow(File).to receive(:exist?).with(dir_path).and_return(false) }
+
+          it "writes a fatal message and exits 1" do
+            expect(knife.ui).to receive(:fatal).with("Directory #{dir_path} does not exist. Please create and retry.")
+            expect { knife.run }.to raise_error(SystemExit)
+          end
+        end
+
+        context "when the directory is not writable" do
+          before { allow(File).to receive(:writable?).with(dir_path).and_return(false) }
+
+          it "writes a fatal message and exits 1" do
+            expect(knife.ui).to receive(:fatal).with("Directory #{dir_path} is not writable. Please check the permissions.")
+            expect { knife.run }.to raise_error(SystemExit)
+          end
+        end
+
+        context "when the directory is a file" do
+          before { allow(File).to receive(:directory?).with(dir_path).and_return(false) }
+
+          it "writes a fatal message and exits 1" do
+            expect(knife.ui).to receive(:fatal).with("#{dir_path} exists, but is not a directory. Please update your file path (--file #{file_path}) or re-create #{dir_path} as a directory.")
+            expect { knife.run }.to raise_error(SystemExit)
+          end
+        end
+
+        context "when the file does not exist" do
+          before do
+            allow(File).to receive(:exist?).with(file_path).and_return(false)
+          end
+
+          it "does not log a fatal message and does not raise exception" do
+            expect(knife.ui).not_to receive(:fatal)
+            expect { knife.run }.not_to raise_error
+          end
+        end
+
+        context "when the file exists and is not writable" do
+          before do
+            allow(File).to receive(:exist?).with(file_path).and_return(true)
+            allow(File).to receive(:writable?).with(file_path).and_return(false)
+          end
+
+          it "writes a fatal message and exits 1" do
+            expect(knife.ui).to receive(:fatal).with("File #{file_path} is not writable. Please check the permissions.")
+            expect { knife.run }.to raise_error(SystemExit)
+          end
         end
       end
 

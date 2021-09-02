@@ -64,7 +64,7 @@ class Chef
       property :certificate, String, required: [:add],
         description: "The text of the certificate file including the BEGIN/END comment lines."
 
-      action :add do
+      action :add, description: "Add a trusted certificate to #{ChefUtils::Dist::Infra::PRODUCT}'s trusted certificate directory" do
         unless ::Dir.exist?(Chef::Config[:trusted_certs_dir])
           directory Chef::Config[:trusted_certs_dir] do
             mode "0640"
@@ -78,7 +78,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a trusted certificate from #{ChefUtils::Dist::Infra::PRODUCT}'s trusted certificate directory" do
         file cert_path do
           action :delete
         end

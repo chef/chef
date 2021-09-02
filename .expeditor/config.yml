@@ -20,7 +20,9 @@ rubygems:
 pipelines:
   - verify:
       public: true
-  - docker/build
+  - docker/build:
+      definition: .expeditor/docker-build.pipeline.yml
+      trigger: default
   - habitat/build
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
@@ -28,6 +30,12 @@ pipelines:
   - omnibus/release
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
+      env:
+        - ADHOC: true
+  # the adhoc-canary pipeline is used to test new omnibus workers
+  - omnibus/adhoc-canary:
+      canary: true
+      definition: .expeditor/adhoc-canary.omnibus.yml
       env:
         - ADHOC: true
 
@@ -47,7 +55,7 @@ github:
 # (as determined by the value in the VERSION file) those branches are responsible
 # for building.
 release_branches:
-  - master:
+  - main:
       version_constraint: 17*
   - chef-16:
       version_constraint: 16*
@@ -66,12 +74,12 @@ subscriptions:
       - trigger_pipeline:docker/build
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
-      - built_in:promote_docker_images
+      - bash:.expeditor/promote-docker-images.sh
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
-      - built_in:promote_docker_images
+      - bash:.expeditor/promote-docker-images.sh
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
@@ -228,10 +236,10 @@ subscriptions:
     actions:
       - bash:.expeditor/update_dep.sh
   # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
-  - workload: chef/ohai:master_completed:pull_request_merged:chef/ohai:master:*
+  - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh
   # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
-  - workload: chef/chefstyle:master_completed:pull_request_merged:chef/chefstyle:master:*
+  - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh

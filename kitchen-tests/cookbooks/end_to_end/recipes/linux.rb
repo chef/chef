@@ -142,6 +142,15 @@ include_recipe "::_openssl"
 include_recipe "::_tests"
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
+if ::File.exist?("/etc/systemd/system")
+  include_recipe "::_habitat_config"
+  include_recipe "::_habitat_install_no_user"
+  include_recipe "::_habitat_package"
+  # include_recipe "::_habitat_service"
+  include_recipe "::_habitat_sup_toml_config"
+  include_recipe "::_habitat_sup"
+  include_recipe "::_habitat_user_toml"
+end
 
 # at the moment these do not run properly in docker
 # we need to investigate if this is a snap on docker issue or a chef issue

@@ -202,7 +202,7 @@ describe Chef::Provider::Mount::Aix do
     it "should enable mount if it is mounted and not enabled" do
       @new_resource.options("nodev,rw")
       stub_mounted_enabled(@provider, @mounted_output, "")
-      # Add existing mount to test enable action appends additional mount with seperating blank line
+      # Add existing mount to test enable action appends additional mount with separating blank line
       filesystems = StringIO.new
       filesystems.puts <<~ETCFILESYSTEMS
         /tmp/abc:

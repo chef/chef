@@ -83,7 +83,8 @@ class Chef
 
       property :clear_sources, [ TrueClass, FalseClass, nil ],
         description: "Set to `true` to download a gem from the path specified by the `source` property (and not from RubyGems).",
-        default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
+        default: lazy { Chef::Config[:clear_gem_sources] },
+        default_description: "false unless `clear_gem_sources` set to true in the `client.rb` config.", desired_state: false
 
       property :gem_binary, String, desired_state: false,
         description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{ChefUtils::Dist::Infra::PRODUCT} will be used."

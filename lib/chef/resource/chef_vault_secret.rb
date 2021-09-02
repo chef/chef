@@ -33,7 +33,7 @@ class Chef
         ```ruby
         chef_vault_secret 'foo' do
           data_bag 'bar'
-          raw_data({'auth' => 'baz'})
+          raw_data({ 'auth' => 'baz' })
           admins 'jtimberman'
           search '*:*'
         end
@@ -45,7 +45,7 @@ class Chef
         chef_vault_secret 'root-password' do
           admins 'jtimberman,paulmooring'
           data_bag 'secrets'
-          raw_data({'auth' => 'DoNotUseThisPasswordForRoot'})
+          raw_data({ 'auth' => 'DoNotUseThisPasswordForRoot' })
           search '*:*'
         end
         ```

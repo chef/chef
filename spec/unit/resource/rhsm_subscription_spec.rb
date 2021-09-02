@@ -18,15 +18,24 @@
 require "spec_helper"
 
 describe Chef::Resource::RhsmSubscription do
-  let(:resource) { Chef::Resource::RhsmSubscription.new("fakey_fakerton") }
-  let(:provider) { resource.provider_for_action(:attach) }
+  let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
+  let(:node) { Chef::Node.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, event_dispatch) }
+
+  let(:pool_id) { "8a8dd78c766232550226b46e59404aba" }
+  let(:resource) { Chef::Resource::RhsmSubscription.new(pool_id, run_context) }
+  let(:provider) { resource.provider_for_action(Array(resource.action).first) }
+
+  before do
+    allow(resource).to receive(:provider_for_action).with(:attach).and_return(provider)
+  end
 
   it "has a resource name of :rhsm_subscription" do
     expect(resource.resource_name).to eql(:rhsm_subscription)
   end
 
   it "the pool_id property is the name_property" do
-    expect(resource.pool_id).to eql("fakey_fakerton")
+    expect(resource.pool_id).to eql(pool_id)
   end
 
   it "sets the default action as :attach" do
@@ -36,6 +45,44 @@ describe Chef::Resource::RhsmSubscription do
   it "supports :attach, :remove actions" do
     expect { resource.action :attach }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
+  end
+
+  describe "#action_attach" do
+    let(:yum_package_double) { instance_double("Chef::Resource::YumPackage") }
+    let(:so_double) { instance_double("Mixlib::ShellOut", stdout: "Successfully attached a subscription for: My Subscription", exitstatus: 0, error?: false) }
+
+    before do
+      allow(provider).to receive(:shell_out!).with("subscription-manager attach --pool=#{resource.pool_id}").and_return(so_double)
+      allow(provider).to receive(:build_resource).with(:package, "rhsm_subscription-#{pool_id}-flush_cache").and_return(yum_package_double)
+      allow(yum_package_double).to receive(:run_action).with(:flush_cache)
+    end
+
+    context "when already attached to pool" do
+      before do
+        allow(provider).to receive(:subscription_attached?).with(resource.pool_id).and_return(true)
+      end
+
+      it "does not attach to pool" do
+        expect(provider).not_to receive(:shell_out!)
+        resource.run_action(:attach)
+      end
+    end
+
+    context "when not attached to pool" do
+      before do
+        allow(provider).to receive(:subscription_attached?).with(resource.pool_id).and_return(false)
+      end
+
+      it "attaches to pool" do
+        expect(provider).to receive(:shell_out!).with("subscription-manager attach --pool=#{resource.pool_id}")
+        resource.run_action(:attach)
+      end
+
+      it "flushes package provider cache" do
+        expect(yum_package_double).to receive(:run_action).with(:flush_cache)
+        resource.run_action(:attach)
+      end
+    end
   end
 
   describe "#subscription_attached?" do

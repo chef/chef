@@ -28,7 +28,7 @@ class Chef
       # Controls what is done with the resulting report after the Chef InSpec run.
       # Accepts a single string value or an array of multiple values.
       # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer', 'cli'
-      "reporter" => %w{json-file cli},
+      "reporter" => "cli",
 
       # Controls if Chef InSpec profiles should be fetched from Chef Automate or Chef Infra Server
       # in addition to the default fetch locations provided by Chef Inspec.
@@ -47,8 +47,10 @@ class Chef
       "profiles" => {},
 
       # Extra inputs passed to Chef InSpec to allow finer-grained control over behavior.
-      # These are mapped to Chef InSpec's inputs, but are named attributes here for legacy reasons.
       # See Chef Inspec's documentation for more information: https://docs.chef.io/inspec/inputs/
+      "inputs" => {},
+
+      # Legacy alias for inputs
       "attributes" => {},
 
       # A string path or an array of paths to Chef InSpec waiver files.
@@ -88,7 +90,7 @@ class Chef
 
       # If enabled, a hash representation of the Chef Infra node object will be sent to Chef InSpec in an input
       # named `chef_node`.
-      "chef_node_attribute_enabled" => false,
+      "chef_node_attribute_enabled" => true,
 
       # Should the built-in compliance phase run. True and false force the behavior. Nil does magic based on if you have
       # profiles defined but do not have the audit cookbook enabled.

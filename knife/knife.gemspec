@@ -30,8 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
   s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
-  # we can't use this gem until illegal instruction issues are resolved
-  # s.add_dependency "x25519" # ed25519 KEX module
+  s.add_dependency "x25519", ">= 1.0.9" # ed25519 KEX module. 1.0.9+ required to resolve sigill failures
   s.add_dependency "highline", ">= 1.6.9", "< 3" # Used in UI to present a list, no other usage.
 
   s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
@@ -52,7 +51,7 @@ Gem::Specification.new do |s|
 
   s.metadata = {
     "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
-    "changelog_uri"     => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
+    "changelog_uri"     => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
     "documentation_uri" => "https://docs.chef.io/",
     "homepage_uri"      => "https://www.chef.io",
     "mailing_list_uri"  => "https://discourse.chef.io/",

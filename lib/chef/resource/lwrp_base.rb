@@ -37,7 +37,7 @@ class Chef
     class LWRPBase < Resource
 
       # Class methods
-      class <<self
+      class << self
 
         include Chef::Mixin::ConvertToClassName
         include Chef::Mixin::FromFile

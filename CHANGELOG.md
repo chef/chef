@@ -1,42 +1,141 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.3.13 -->
-## [v17.3.13](https://github.com/chef/chef/tree/v17.3.13) (2021-06-30)
+<!-- latest_release 17.4.46 -->
+## [v17.4.46](https://github.com/chef/chef/tree/v17.4.46) (2021-09-02)
 
 #### Merged Pull Requests
-- Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
-<!-- release_rollup since=17.2.29 -->
+<!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50)) <!-- 17.3.13 -->
-- Pin `pry` to 0.13.0 [#11756](https://github.com/chef/chef/pull/11756) ([marcparadise](https://github.com/marcparadise)) <!-- 17.3.12 -->
-- Fix edge condition in deprecation silence checker [#11749](https://github.com/chef/chef/pull/11749) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.11 -->
-- Bump train-core to 3.7.4 [#11739](https://github.com/chef/chef/pull/11739) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.9 -->
-- Bump chef/chefstyle to latest and ffi to 1.15.3 [#11728](https://github.com/chef/chef/pull/11728) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.3.8 -->
-- Run Linux Kitchen jobs on Ruby 3 [#11734](https://github.com/chef/chef/pull/11734) ([tas50](https://github.com/tas50)) <!-- 17.3.7 -->
-- Revert addition of x25519 gem to knife [#11733](https://github.com/chef/chef/pull/11733) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.6 -->
-- Revert &quot;Fixed Validation failed while creating databag and databag item&quot; [#11732](https://github.com/chef/chef/pull/11732) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.3.5 -->
-- Update Ohai to 17.2, InSpec to 4.37.20 and add back windows deps [#11727](https://github.com/chef/chef/pull/11727) ([tas50](https://github.com/tas50)) <!-- 17.3.4 -->
-- Bump berkshelf from 7.2.1 to 7.2.2 in /omnibus [#11723](https://github.com/chef/chef/pull/11723) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.3.3 -->
-- Bump omnibus-software from `e86bf08` to `68f693d` in /omnibus [#11722](https://github.com/chef/chef/pull/11722) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.3.2 -->
-- Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11708](https://github.com/chef/chef/pull/11708) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.3.1 -->
-- Add windows_defender and windows_defender_exclusion resources [#11702](https://github.com/chef/chef/pull/11702) ([tas50](https://github.com/tas50)) <!-- 17.3.0 -->
-- Add the x25519 gem to knife [#11706](https://github.com/chef/chef/pull/11706) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.38 -->
-- windows_printer: Install drivers, allow skipping port creation, and load state properly [#11665](https://github.com/chef/chef/pull/11665) ([tas50](https://github.com/tas50)) <!-- 17.2.37 -->
-- Handle source_line being nil gracefully [#11691](https://github.com/chef/chef/pull/11691) ([fuegas](https://github.com/fuegas)) <!-- 17.2.36 -->
-- Enable slow resource reporting in our kitchen tests [#11698](https://github.com/chef/chef/pull/11698) ([tas50](https://github.com/tas50)) <!-- 17.2.35 -->
-- Minor improvements for our self documented resources [#11697](https://github.com/chef/chef/pull/11697) ([tas50](https://github.com/tas50)) <!-- 17.2.34 -->
-- Add macos_ruby? helper and wire to the macos? helper [#11693](https://github.com/chef/chef/pull/11693) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.2.33 -->
-- Bump inspec-core-bin to 4.37.25 [#11686](https://github.com/chef/chef/pull/11686) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.2.32 -->
-- Add 17.2 release notes [#11669](https://github.com/chef/chef/pull/11669) ([tas50](https://github.com/tas50)) <!-- 17.2.30 -->
-- Add testing of installing knife into the client [#11682](https://github.com/chef/chef/pull/11682) ([tas50](https://github.com/tas50)) <!-- 17.2.31 -->
+- Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.46 -->
+- windows_user_privilege.rb : fixed exception: privilege is a required property, even when it was set [#11914](https://github.com/chef/chef/pull/11914) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.4.45 -->
+- Build packages on Intel macOS 12 [#11990](https://github.com/chef/chef/pull/11990) ([tas50](https://github.com/tas50)) <!-- 17.4.44 -->
+- windows_uac: fix registry settings for consent_behavior_users [#11987](https://github.com/chef/chef/pull/11987) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.43 -->
+- Fix knife client create [#11986](https://github.com/chef/chef/pull/11986) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.4.42 -->
+- Bump ffi to 1.15.4 [#11989](https://github.com/chef/chef/pull/11989) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.41 -->
+- bump openssl-1.0.2za [#11982](https://github.com/chef/chef/pull/11982) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 17.4.40 -->
+- Add support for secrets stored in HashiCorp Vault [#11942](https://github.com/chef/chef/pull/11942) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.39 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.4.38](https://github.com/chef/chef/tree/v17.4.38) (2021-08-28)
+
+#### Merged Pull Requests
+- testing main [#11947](https://github.com/chef/chef/pull/11947) ([lamont-granquist](https://github.com/lamont-granquist))
+- Improve phase logging [#11946](https://github.com/chef/chef/pull/11946) ([tas50](https://github.com/tas50))
+- Fix Test Kitchen tests [#11949](https://github.com/chef/chef/pull/11949) ([tas50](https://github.com/tas50))
+- Other fixes for branch renaming [#11948](https://github.com/chef/chef/pull/11948) ([lamont-granquist](https://github.com/lamont-granquist))
+- More updates to logging wording [#11951](https://github.com/chef/chef/pull/11951) ([tas50](https://github.com/tas50))
+- Remove the yanked parallel 1.20.2 gem [#11954](https://github.com/chef/chef/pull/11954) ([tas50](https://github.com/tas50))
+- Update libarchive to 3.5.2 [#11958](https://github.com/chef/chef/pull/11958) ([tas50](https://github.com/tas50))
+- Bump chef/ohai to 17.5.1 [#11959](https://github.com/chef/chef/pull/11959) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update pipeline references from master -&gt; main [#11967](https://github.com/chef/chef/pull/11967) ([marcparadise](https://github.com/marcparadise))
+- Downgraded the Log level to warn as per AHA idea I-25 [#11945](https://github.com/chef/chef/pull/11945) ([rgjoshi24](https://github.com/rgjoshi24))
+- Bump chef/ohai to d7b28f39f6ef17ba20d2cc0ddbdb62e40b02d8bd [#11972](https://github.com/chef/chef/pull/11972) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update openssl on macOS to 1.1.1l [#11973](https://github.com/chef/chef/pull/11973) ([tas50](https://github.com/tas50))
+- Revert experimental/debug code [#11974](https://github.com/chef/chef/pull/11974) ([marcparadise](https://github.com/marcparadise))
+<!-- latest_stable_release -->
+
+## [v17.4.25](https://github.com/chef/chef/tree/v17.4.25) (2021-08-23)
+
+#### Merged Pull Requests
+- Bump inspec-core-bin to 4.38.9 [#11849](https://github.com/chef/chef/pull/11849) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- systemd_unit generates invalid units when passing a hash issue fix [#11856](https://github.com/chef/chef/pull/11856) ([antima-gupta](https://github.com/antima-gupta))
+- secrets: add support for default config from ohai data  [#11853](https://github.com/chef/chef/pull/11853) ([marcparadise](https://github.com/marcparadise))
+- Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#11842](https://github.com/chef/chef/pull/11842) ([byplayer](https://github.com/byplayer))
+- Bump all deps and resolve a chefstyle warning [#11864](https://github.com/chef/chef/pull/11864) ([tas50](https://github.com/tas50))
+- Fixed issues facing while bootstrapping the node using ssh config file. [#11531](https://github.com/chef/chef/pull/11531) ([sanga1794](https://github.com/sanga1794))
+- Bump train-core to 3.8.1 [#11869](https://github.com/chef/chef/pull/11869) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add custom docker pipeline for multiarch builds [#11871](https://github.com/chef/chef/pull/11871) ([nkierpiec](https://github.com/nkierpiec))
+- Allow az vault name to be included in secret name [#11867](https://github.com/chef/chef/pull/11867) ([marcparadise](https://github.com/marcparadise))
+- Cleanup the yum_repository resource [#11661](https://github.com/chef/chef/pull/11661) ([tas50](https://github.com/tas50))
+- knife client create should check file permissions [#11241](https://github.com/chef/chef/pull/11241) ([snehaldwivedi](https://github.com/snehaldwivedi))
+- make files readable by buildkite and simplify manifest script [#11872](https://github.com/chef/chef/pull/11872) ([nkierpiec](https://github.com/nkierpiec))
+- Update use of environment variable when artifact is promoted [#11873](https://github.com/chef/chef/pull/11873) ([nkierpiec](https://github.com/nkierpiec))
+- Turn on chef_node_attribute_enabled for compliance phase by default [#11874](https://github.com/chef/chef/pull/11874) ([lamont-granquist](https://github.com/lamont-granquist))
+- clean up scripts and docker login to auth to chef docker org [#11878](https://github.com/chef/chef/pull/11878) ([nkierpiec](https://github.com/nkierpiec))
+- update dockerfile to use correct package for os/arch [#11883](https://github.com/chef/chef/pull/11883) ([nkierpiec](https://github.com/nkierpiec))
+- Rename inspec attributes to inputs in compliance phase [#11882](https://github.com/chef/chef/pull/11882) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11885](https://github.com/chef/chef/pull/11885) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Move some words to the global dictionary [#11891](https://github.com/chef/chef/pull/11891) ([tas50](https://github.com/tas50))
+- Chef -&gt; Chef Infra Client in error message [#11888](https://github.com/chef/chef/pull/11888) ([tas50](https://github.com/tas50))
+- Bootstrap: Fix for performing sudo operations once sudo password ente… [#11654](https://github.com/chef/chef/pull/11654) ([msys-sgarg](https://github.com/msys-sgarg))
+- knife bootstrap windows: log_level should be updated as in client.rb [#11658](https://github.com/chef/chef/pull/11658) ([msys-sgarg](https://github.com/msys-sgarg))
+- Pin users cookbook in testing [#11895](https://github.com/chef/chef/pull/11895) ([tas50](https://github.com/tas50))
+- fix mac_user create_user for running without full disk access [#11731](https://github.com/chef/chef/pull/11731) ([bunnypak](https://github.com/bunnypak))
+- Add x25519 dependency back to knife [#11903](https://github.com/chef/chef/pull/11903) ([tas50](https://github.com/tas50))
+- group: fix gid in use error on macOS [#11927](https://github.com/chef/chef/pull/11927) ([rishichawda](https://github.com/rishichawda))
+- Revert 11731 [#11935](https://github.com/chef/chef/pull/11935) ([marcparadise](https://github.com/marcparadise))
+- Fix failures in mac_user when not all user fields are present [#11925](https://github.com/chef/chef/pull/11925) ([tas50](https://github.com/tas50))
+- Update InSpec to 4.41 [#11943](https://github.com/chef/chef/pull/11943) ([tas50](https://github.com/tas50))
+- Remove the default json logger from the compliance API [#11924](https://github.com/chef/chef/pull/11924) ([lamont-granquist](https://github.com/lamont-granquist))
+
+## [v17.3.48](https://github.com/chef/chef/tree/v17.3.48) (2021-07-21)
+
+#### Merged Pull Requests
+- Add testing of installing knife into the client [#11682](https://github.com/chef/chef/pull/11682) ([tas50](https://github.com/tas50))
+- Add 17.2 release notes [#11669](https://github.com/chef/chef/pull/11669) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.37.25 [#11686](https://github.com/chef/chef/pull/11686) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add macos_ruby? helper and wire to the macos? helper [#11693](https://github.com/chef/chef/pull/11693) ([lamont-granquist](https://github.com/lamont-granquist))
+- Minor improvements for our self documented resources [#11697](https://github.com/chef/chef/pull/11697) ([tas50](https://github.com/tas50))
+- Enable slow resource reporting in our kitchen tests [#11698](https://github.com/chef/chef/pull/11698) ([tas50](https://github.com/tas50))
+- Handle source_line being nil gracefully [#11691](https://github.com/chef/chef/pull/11691) ([fuegas](https://github.com/fuegas))
+- windows_printer: Install drivers, allow skipping port creation, and load state properly [#11665](https://github.com/chef/chef/pull/11665) ([tas50](https://github.com/tas50))
+- Add the x25519 gem to knife [#11706](https://github.com/chef/chef/pull/11706) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add windows_defender and windows_defender_exclusion resources [#11702](https://github.com/chef/chef/pull/11702) ([tas50](https://github.com/tas50))
+- Bump berkshelf from 7.2.0 to 7.2.1 in /omnibus [#11708](https://github.com/chef/chef/pull/11708) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus-software from `e86bf08` to `68f693d` in /omnibus [#11722](https://github.com/chef/chef/pull/11722) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump berkshelf from 7.2.1 to 7.2.2 in /omnibus [#11723](https://github.com/chef/chef/pull/11723) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update Ohai to 17.2, InSpec to 4.37.20 and add back windows deps [#11727](https://github.com/chef/chef/pull/11727) ([tas50](https://github.com/tas50))
+- Revert &quot;Fixed Validation failed while creating databag and databag item&quot; [#11732](https://github.com/chef/chef/pull/11732) ([lamont-granquist](https://github.com/lamont-granquist))
+- Revert addition of x25519 gem to knife [#11733](https://github.com/chef/chef/pull/11733) ([lamont-granquist](https://github.com/lamont-granquist))
+- Run Linux Kitchen jobs on Ruby 3 [#11734](https://github.com/chef/chef/pull/11734) ([tas50](https://github.com/tas50))
+- Bump chef/chefstyle to latest and ffi to 1.15.3 [#11728](https://github.com/chef/chef/pull/11728) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump train-core to 3.7.4 [#11739](https://github.com/chef/chef/pull/11739) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix edge condition in deprecation silence checker [#11749](https://github.com/chef/chef/pull/11749) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pin `pry` to 0.13.0 [#11756](https://github.com/chef/chef/pull/11756) ([marcparadise](https://github.com/marcparadise))
+- Produce packages for macOS 12 on Arm [#11759](https://github.com/chef/chef/pull/11759) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.38.3 [#11771](https://github.com/chef/chef/pull/11771) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump addressable to 2.8.0 [#11772](https://github.com/chef/chef/pull/11772) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chef/ohai to ffea38b6c84f96197fbb05b0768d01c2345e20a9 [#11776](https://github.com/chef/chef/pull/11776) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Chefstyle fixes for RuboCop 1.18.3 [#11787](https://github.com/chef/chef/pull/11787) ([tas50](https://github.com/tas50))
+- Bump chef/chefstyle to c15585ef352577df1cbd06f2c430a6e2372653b3 [#11786](https://github.com/chef/chef/pull/11786) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix handling of ohai properties in chef_client_config [#11766](https://github.com/chef/chef/pull/11766) ([tas50](https://github.com/tas50))
+- Support override run_lists in policyfiles [#11741](https://github.com/chef/chef/pull/11741) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update omnibus/omnibus-software to the latest [#11789](https://github.com/chef/chef/pull/11789) ([tas50](https://github.com/tas50))
+- Add &#39;secret&#39; to the Chef DSL [beta] [#11753](https://github.com/chef/chef/pull/11753) ([marcparadise](https://github.com/marcparadise))
+- Add user provided options to powershell_package commands [#11793](https://github.com/chef/chef/pull/11793) ([gscho](https://github.com/gscho))
+- Add habitat resources + content rendering helpers for json/toml/yaml [#11577](https://github.com/chef/chef/pull/11577) ([sam1el](https://github.com/sam1el))
+- Fix links to master agreement [#11794](https://github.com/chef/chef/pull/11794) ([IanMadd](https://github.com/IanMadd))
+- Update to Ruby 3.0.2 with bundler 2.2.22 [#11792](https://github.com/chef/chef/pull/11792) ([tas50](https://github.com/tas50))
+- Mark resource blocks containing secrets sensitive [#11798](https://github.com/chef/chef/pull/11798) ([marcparadise](https://github.com/marcparadise))
+- Add a flag to `knife ssh` to allow the user to enable/disable pty [#11431](https://github.com/chef/chef/pull/11431) ([gscho](https://github.com/gscho))
+- adds unix_bootstrap and windows_bootstrap path configs [#11592](https://github.com/chef/chef/pull/11592) ([skylerto](https://github.com/skylerto))
+- Update descriptions for the new habitat resources [#11801](https://github.com/chef/chef/pull/11801) ([tas50](https://github.com/tas50))
+- Deprecate the old policyfile compat mode [#11804](https://github.com/chef/chef/pull/11804) ([lamont-granquist](https://github.com/lamont-granquist))
+- Experimental support for an AWS Secrets Fetcher [#11791](https://github.com/chef/chef/pull/11791) ([marcparadise](https://github.com/marcparadise))
+- Don&#39;t cleanup the VERSION file in the aws gem install [#11806](https://github.com/chef/chef/pull/11806) ([tas50](https://github.com/tas50))
+- Add dependabot config [#11807](https://github.com/chef/chef/pull/11807) ([tas50](https://github.com/tas50))
+- Bump omnibus from `5c1b453` to `5803fdc` in /omnibus [#11814](https://github.com/chef/chef/pull/11814) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `e9feb35` to `cdef22f` in /omnibus [#11815](https://github.com/chef/chef/pull/11815) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `5803fdc` to `6d109b6` in /omnibus [#11822](https://github.com/chef/chef/pull/11822) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `cdef22f` to `237c0a4` in /omnibus [#11827](https://github.com/chef/chef/pull/11827) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Support command line setting of run_list with policyfiles [#11803](https://github.com/chef/chef/pull/11803) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update unshare error message [#11830](https://github.com/chef/chef/pull/11830) ([vkarve-chef](https://github.com/vkarve-chef))
+- Secrets: Azure Key Vault fetcher; versioned secret support [#11802](https://github.com/chef/chef/pull/11802) ([marcparadise](https://github.com/marcparadise))
+- chef_client_config: Add the ability to set policy_persist_run_list [#11833](https://github.com/chef/chef/pull/11833) ([tas50](https://github.com/tas50))
+- Bump ohai to 17.3.1 [#11838](https://github.com/chef/chef/pull/11838) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add warning to secret DSL usage [#11840](https://github.com/chef/chef/pull/11840) ([marcparadise](https://github.com/marcparadise))
+- Bump omnibus-software from `237c0a4` to `07291b0` in /omnibus [#11843](https://github.com/chef/chef/pull/11843) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add windows_update_settings resource [#11839](https://github.com/chef/chef/pull/11839) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `07291b0` to `a4f73e4` in /omnibus [#11845](https://github.com/chef/chef/pull/11845) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- secrets: Ensure provided config is passed into AWS [#11847](https://github.com/chef/chef/pull/11847) ([marcparadise](https://github.com/marcparadise))
+
 ## [v17.2.29](https://github.com/chef/chef/tree/v17.2.29) (2021-06-09)
 
 #### Merged Pull Requests
@@ -80,7 +179,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Improve the automatically generated docs [#11670](https://github.com/chef/chef/pull/11670) ([tas50](https://github.com/tas50))
 - Update omnibus-software to the latest [#11673](https://github.com/chef/chef/pull/11673) ([tas50](https://github.com/tas50))
 - Support attribute block/allow list in data collector [#11674](https://github.com/chef/chef/pull/11674) ([marcparadise](https://github.com/marcparadise))
-<!-- latest_stable_release -->
 
 ## [v17.1.35](https://github.com/chef/chef/tree/v17.1.35) (2021-05-11)
 

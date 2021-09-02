@@ -29,7 +29,7 @@ class Chef
 
       def load_current_resource; end
 
-      action :create do
+      action :create, description: "Add a new Zypper repository." do
         if new_resource.gpgautoimportkeys
           install_gpg_keys(new_resource.gpgkey)
         else
@@ -50,13 +50,13 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Remove a Zypper repository." do
         execute "zypper --quiet --non-interactive removerepo #{escaped_repo_name}" do
           only_if "zypper --quiet lr #{escaped_repo_name}"
         end
       end
 
-      action :refresh do
+      action :refresh, description: "Refresh Zypper repository." do
         execute "zypper --quiet --non-interactive refresh --force #{escaped_repo_name}" do
           only_if "zypper --quiet lr #{escaped_repo_name}"
         end

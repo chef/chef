@@ -259,6 +259,10 @@ class Chef
       target 34
     end
 
+    class PolicyfileCompatMode < Base
+      target 35
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client/"

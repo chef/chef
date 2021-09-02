@@ -1,5 +1,442 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## What's New in 17.4.38
+
+### Bug fixes
+
+- Resolved a regression introduced in Chef Infra Client 17.4 that caused HWRP-style resources inheriting from LWRPBase to fail.
+
+### Enhancements
+
+- Improved log output to clearly define where the Infra Phase ends and the Compliance Phase begins.
+- Enhanced Ohai data collection of Amazon EC2 metadata to collect additional data for some configurations.
+- Removed ERROR logs when retrying failed communication with the Chef Infra Server.
+- Improved the `archive_file` resource by upgrading the `libarchive` library it uses, which includes the following improvements:
+  - Support for PWB and v7 binary CPIO formats.
+  - Support for the deflate algorithm in symbolic link decompression with zip files.
+  - Various bug fixes when working with CAB, ZIP, 7zip, and RAR files.
+
+### Security
+
+#### OpenSSL 1.1.1l
+
+OpenSSL has been updated from 1.1.1k to 1.1.1l on macOS systems to resolve the following CVEs:
+
+- [CVE-2021-3711](https://nvd.nist.gov/vuln/detail/CVE-2021-3711)
+- [CVE-2021-3712](https://nvd.nist.gov/vuln/detail/CVE-2021-3712)
+
+#### libarchive 3.5.2
+
+Updated the libarchive library that powers the `archive_file` resource from 3.5.1 to 3.5.2 to resolve security vulnerabilities in libarchive's handling of symbolic links.
+
+## What's New in 17.4.25
+
+### Compliance Phase Improvements
+
+#### Chef InSpec 4.41.2
+
+Chef InSpec has been updated from 4.38.3 to 4.41.2 with the following improvements for Compliance Phase
+
+- New Open Policy Agent resources `opa_cli` and `opa_api`
+- New `mongodb_session` resource
+- The `mssql_session` resource now allows named connections by no longer forcing a port.
+- The PostgreSQL resources (`postgres_session`, `postgres_conf`, `postgres_hba_conf`, and `postgres_ident_conf`) now work with Windows.
+- Fixed a bug where the year in an expiration date was misinterpreted in waiver files
+
+#### json-file Reporter Off By Default
+
+The InSpec `json-file` reporter is no longer enabled by default in Compliance Phase. Outputting compliance data to file by default potentially exposed sensitive data to the filesystem, without much upside. If you rely on this file for processing by external systems you can produce it by setting the reporter attribute `node['audit']['reporter']` to `%w{json-file cli}`.
+
+#### Chef Attribute Integration
+
+The `chef_node_attribute_enabled` configuration option for Compliance Phase is now enabled by default. This provides a `chef_node` object in InSpec profiles containing all attributes from the Chef Infra Client including Ohai configuration attributes.
+
+#### Compliance Phase Inputs Attribute
+
+In 2019 we renamed InSpec attributes to inputs to avoid confusion between InSpec attributes and Chef Infra attributes. Compliance Phase is now updated to use the updated inputs name. Instead of passing `node['audit']['attributes']` you can now use `node['audit']['inputs']`. Don't worry about rushing to update your code though because Compliance Phase will still work with the existing attributes, giving you time to migrate to the new name.
+
+### Secrets Manager Integration
+
+We've updated our beta secrets management integration helper to improve the experience of fetching secrets from AWS Secrets Manager and Azure Key Vault. We'd still love to hear from you if you are integrating Chef Infra with a secrets management system or you'd like to do so in the future. E-mail us at secrets_management_beta@progress.com.
+
+#### Simpler Azure Key Vault Names Declaration
+
+The `secrets` helper has been updated to allow specifying the Azure Key Vault to fetch a secret using the name instead of the config hash:
+
+Specifying the Vault in the Name:
+
+```ruby
+secret(name: "test-chef-infra-secrets/test-secret-1", service: :azure_key_vault)
+```
+
+Specifying the Vault in the Options Hash:
+
+```ruby
+secret(name: "test-secret-1", service: :azure_key_vault, config: {vault: "test-chef-infra-secrets" })
+```
+
+#### AWS Default to Node's Region in AWS Secrets Manager
+
+When fetching secrets from AWS Secrets Manager, the `secrets` helper now defaults to fetching secrets from the region where the node resides. If you need to fetch secrets from another region, you can use the region config option:
+
+Specifying AWS Region:
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager, config: { region: 'us-west-2' })
+```
+
+Using the Node's Region:
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager)
+```
+
+### Resource Updates
+
+#### group
+
+The `group` resource has been updated to prevent failures on macOS systems when passing the GID as an Integer. Thanks for reporting this [@rb2k](https://github.com/rb2k)!
+
+#### homebrew_cask
+
+The `homebrew_cask` resource now supports Homebrew Casks with '-' or '@' in their name. Thanks for this fix [@byplayer](https://github.com/byplayer)!
+
+#### rhsm_subscription
+
+The `rhsm_subscription` resource now flushes all DNF or YUM caches after adding a new subscription so that subsequent package installs can use packages from the subscription. Thanks for fixing this [@jasonwbarnett](https://github.com/jasonwbarnett)!
+
+#### systemd_unit
+
+The `systemd_unit` resource now generates valid unit files when passing a hash of data. Thanks for reporting this issue [@gregkare](https://github.com/gregkare)
+
+#### user
+
+The `user` resource on macOS no longer fails if the `shell` or `hidden` fields are not present for the user being updated.
+
+#### yum_repository
+
+The `yum_repository` has been refactored to better flush cache on RHEL and Fedora derivatives Linux distributions.
+
+### Packaging
+
+#### Arm64 Docker Containers
+
+Chef Infra Client Docker containers are now published for the `arm64` architecture on DockerHub at https://hub.docker.com/r/chef/chef. These containers can be used for testing Chef Infra Client on `arm64` architecture Linux distributions with Test Kitchen.
+
+## What's New in 17.3
+
+### Compliance Phase Improvements
+
+#### Chef InSpec 4.38
+
+We've updated Chef InSpec from 4.37.23 to 4.38.3:
+
+##### New Features
+
+- Added a new mongodb_conf resource.
+
+##### Bug Fixes
+
+- Changed the Windows local pipe server connection to retry once on EPIPE.
+- Exceptions are now handled correctly in the oracledb_session resource.
+- Fixed the mysql_session resource to raise an exception if there is an error in a connection or query.
+- Fixed the postgres_session resource to raise an exception if there is an error in a connection or query
+
+### Run Lists with Policyfiles
+
+You can now optionally execute Chef Infra Client with a specified run list on nodes that are managed with Policyfiles. This differs from the traditional Policyfile workflow by allowing you to run any cookbook/recipe combination that exists within the Policyfile lock.
+
+#### Safety With Flexibility
+
+Run lists with Policyfiles give you the safety of locked sets of cookbook dependencies while also giving you the flexibility to change run lists or run different run lists on nodes for adhoc Chef Infra Client converges. Without Policyfiles, manually specifying or overriding a run list determines an entirely new set of dependencies. When using run lists with Policyfiles, Chef Infra Client executes within the predefined set of cookbook dependencies in your Policyfile lock. This allows you to change or override run lists without introducing new, and potentially untested, cookbook dependencies.
+
+To execute a run list defined on a node in Chef Infra Server instead of the run list defined directly in a Policyfile, set the Chef Config `policy_persist_run_list` to true. An override run list that is specified on the command line with Policyfiles will execute without any additional configuration.
+
+#### How This Differs From Named Run Lists
+
+Policyfiles with run lists offer additional flexibility over named run lists and are better suited for adhoc Chef Infra Client execution or programmatically changing run lists during bootstrap. Named run lists within Policyfiles need to be defined when the Policyfile is created, requiring you to predefine each potential run list you may want to run at a future date. Run lists with Policyfiles allows you to run any run list for cookbooks included in the Policyfile lock. Override run lists with Policyfiles offer adhoc flexibility as the override run list is not saved to the node on Chef Infra Server, unlike named run lists which permanently update the node.
+
+#### Examples
+
+##### Override Run List
+
+```shell
+chef-client -o my_cookbook::some_recipe
+```
+
+##### Set Permanent Run List via CLI
+
+```shell
+chef-client -r my_cookbook::some_recipe
+```
+
+or
+
+```shell
+chef-client -j my_run_list_and_attribute_data.json
+```
+
+##### Configuring Chef Infra Client to Use Run Lists
+
+```ruby
+chef_client_config 'Configure Infra Client' do
+  policy_persist_run_list true
+end
+```
+
+### New Resources
+
+#### habitat_package
+
+Use the habitat_package to install or remove Chef Habitat packages from Habitat Builder. See the [habitat_package Resource documentation](https://docs.chef.io/resources/habitat_package/) for additional details and example usage.
+
+#### habitat_sup
+
+Use the habitat_sup resource to run a Chef Habitat supervisor for one or more Chef Habitat services. The resource is commonly used in conjunction with the habitat_service resource, which will manage the services loaded and started within the supervisor. See the [habitat_sup Resource documentation](https://docs.chef.io/resources/habitat_sup/) for additional details and example usage.
+
+#### habitat_config
+
+Use the habitat_config resource to apply a configuration to a Chef Habitat service. See the [habitat_config Resource documentation](https://docs.chef.io/resources/habitat_config/) for additional details and example usage.
+
+#### habitat_install
+
+Use the habitat_install resource to install Chef Habitat. See the [habitat_install Resource documentation](https://docs.chef.io/resources/habitat_install/) for additional details and example usage.
+
+#### habitat_service
+
+Use the habitat_service resource to manage Chef Habitat services. This requires that core/hab-sup be running as a service. See the habitat_sup resource documentation for more information. See the [habitat_service Resource documentation](https://docs.chef.io/resources/habitat_service/) for additional details and example usage.
+
+#### habitat_user_toml
+
+Use the habitat_user_toml resource to template a `user.toml` for Chef Habitat services. Configurations set in the `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration. See the [habitat_user_toml Resource documentation](https://docs.chef.io/resources/habitat_user_toml/) for additional details and example usage.
+
+#### windows_defender
+
+Use the windows_defender resource to enable, configure, or disable the Microsoft Windows Defender service. See the [windows_defender Resource documentation](https://docs.chef.io/resources/windows_defender/) for additional details and example usage.
+
+#### windows_defender_exclusion
+
+Use the windows_defender_exclusion resource to exclude paths, processes, or file types from Windows Defender realtime protection scanning. See the [windows_defender_exclusion Resource documentation](https://docs.chef.io/resources/windows_defender_exclusion/) for additional details and example usage.
+
+#### windows_update_settings
+
+Use the windows_update_settings resource to manage the various Windows Update patching options. See the [windows_update_settings Resource documentation](https://docs.chef.io/resources/windows_update_settings/) for additional details and example usage.
+
+### Updated Resources
+
+#### powershell_package
+
+Updated the powershell_package resource to allow passing an array of install options via the `options` property. Thanks for reporting this issue [@kimbernator](https://github.com/kimbernator)
+
+#### windows_printer
+
+Updated the `windows_printer` resource to better load the current state of the printer and to allow controlling the creation of the printer port. The resource now includes a `create_port` property that allows skipping the creation of the printer port and a `port_name` property that allows specifying the name of the port to use. With these new properties, users can create advanced printer ports using the `windows_printer_port` resource and then attach a new printer to those ports using the `windows_printer` resource.
+
+```ruby
+windows_printer_port '10.4.64.39' do
+  port_name 'My awesome printer port'
+  snmp_enabled true
+  port_protocol 2
+end
+
+windows_printer 'HP LaserJet 5th Floor' do
+  driver_name 'HP LaserJet 4100 Series PCL6'
+  port_name 'My awesome printer port'
+  ipv4_address '10.4.64.38'
+  create_port false
+end
+```
+
+#### chef_client_config
+
+Updated the chef_client_config resource to properly format the `client.rb` config when the user sets the `ohai_optional_plugins` or `ohai_disabled_plugins` properties. Thanks for reporting this issue [@caneylan](https://github.com/caneylan). The resource can now also set the new `policy_persist_run_list` configuration with the `client.rb` file by setting the `policy_persist_run_list` property to `true`.
+
+### Chef Language Improvements
+
+We've added several new helpers to the Chef Infra Language to make writing out various data formats easier. These helpers allow you to convert data from Ruby Hashes or Chef Infra attributes into YAML, JSON, or TOML formatted data. A great use case for these helpers is writing system or application configuration files to disk without having to template out data formats using a template resource.
+
+Given this Ruby hash:
+
+```ruby
+example_hash = {
+          "golf": "hotel",
+          "kilo": %w{lima mike},
+          "india": {
+                    "juliett": "blue",
+                   },
+          "alpha": {
+                    "charlie": true,
+                    "bravo": 10,
+                   },
+          "echo": "foxtrot",
+         }
+```
+
+Output the data in JSON format:
+
+```ruby
+render_json(example_hash)
+```
+
+```json
+{
+  "golf": "hotel",
+  "kilo": [
+    "lima",
+    "mike"
+  ],
+  "india": {
+    "juliett": "blue"
+  },
+  "alpha": {
+    "charlie": true,
+    "bravo": 10
+  },
+  "echo": "foxtrot"
+}
+```
+
+Output the data in TOML format:
+
+```ruby
+render_toml(example_hash)
+```
+
+```toml
+echo = "foxtrot"
+golf = "hotel"
+kilo = ["lima", "mike"]
+[alpha]
+bravo = 10
+charlie = true
+[india]
+juliett = "blue"
+```
+
+Output the data in YAML format:
+
+```ruby
+render_yaml(example_hash)
+```
+
+```yaml
+---
+golf: hotel
+kilo:
+- lima
+- mike
+india:
+  juliett: blue
+alpha:
+  charlie: true
+  bravo: 10
+echo: foxtrot
+```
+
+Using this helper with the file resource:
+
+```ruby
+file '/etc/some_app/config.yml' do
+  content render_yml(example_hash)
+  mode '0640'
+end
+```
+
+### Experimental Secrets Management
+
+With Chef Infra Client 17.3, we're introducing experimental secrets management integration with a new `secrets` helper in the Infra Language. This helper has a plugable model for fetching secrets from multiple secrets management systems. In this release of Chef Infra Client we're support AWS Secrets Manager and Azure Key Vault with additional secrets managers coming in future releases. This new functionality should be considered a beta and not not necessarily ready for production usage. We'd love to get feedback on how how this works for you and additional features you'd like, or need, in order to utilize secrets from secret managers within your cookbooks. E-mail us at secrets_management_beta@progress.com.
+
+#### Authentication
+
+The `secrets` helper uses cloud instance authentication to access secrets in both Azure Key Vault and AWS Secrets Manager. This avoids the need to pass authentication in the helper and allows you to control access to secrets using existing cloud vendor access control models. When using AWS Secrets Manager, this is IAM roles applied to instances. In Azure this is Manged Identities applied to the VMs.
+
+#### Fetching Secrets
+
+The secrets helper accepts the secret name, and secrets service, secret version (optional), and connection options for the secrets service.
+
+##### Fetching an AWS Secrets Manager secret
+
+```ruby
+secret(name: 'test1', service: :aws_secrets_manager, config: { region: 'us-west-2' })
+```
+
+##### Fetching an Azure Key Vault secret
+
+```ruby
+secret(name: 'test1', service: :azure_key_vault, config: { vault: 'vault1' })
+```
+
+##### Fetching a specific version of an Azure Key Vault secret
+
+```ruby
+secret(name: 'test1', version: 'v1', service: :azure_key_vault, config: { vault: 'vault1' })
+```
+
+#### Using in Cookbooks
+
+The secrets helper returns a text string, so it can be used anywhere in Chef Infra where you might hard code a value or access a value from a data bag.
+
+##### Writing a Secret To a File
+
+```ruby
+file '/home/ubuntu/aws-secret' do
+  content secret(name: 'test1', service: :aws_secrets_manager)
+end
+```
+
+##### Passing a Secret to a Template
+
+```ruby
+template '/etc/my_fancy_service/my_fancy_service.conf' do
+  source 'config.erb'
+  variables(
+    db_token: secret(name: 'db_token', service: :aws_secrets_manager)
+  )
+end
+```
+
+### System Detection Improvements
+
+#### virtuozzo Support
+
+The `virtuozzo` platform is now detected as a member of the RHEL platform family. Thanks for this addition [@robertmasztalerz](https://github.com/robertmasztalerz)!
+
+#### Linux Livepatch Detection
+
+A new Ohai optional plugin `:Livepatch` has been added to detect Linux kernel Livepatch modules that have been loaded on a system. This plugin can be enabled on systems using the `ohai_optional_plugins` property in the [chef_client_config resource](https://docs.chef.io/resources/chef_client_config). Thanks for this new plugin [@liu-song-6](https://github.com/liu-song-6)!
+
+### Package Improvements
+
+#### M1 macOS Monterey Packages
+
+Chef Infra Client packages are now produced for Apple's macOS Monterey preview release. Packages for Intel-based Macs will ship at a later date.
+
+#### Solaris 11.3 EOL / Solaris 11.4 Packages
+
+Oracle Solaris 11.3 became end-of-life (EOL) in January 2021. Chef Infra Client packages are no longer produced for Solaris 11.3 and new Solaris 11.4 packages are available in their place.
+
+#### FIPS on PPC RHEL
+
+Failures initializing Chef Infra Client on FIPS enabled PowerPC RHEL systems have been resolved.
+
+#### RPM Package Digests
+
+The file digest in Chef Infra RPM packages has been updated from MD5 to SHA256 to prevent failures installing on some FIPS-enabled systems.
+
+### Security
+
+#### Ruby 3.0.2
+
+Ruby has been updated to 3.0.2 to resolve a large number of bugs as well as the following CVEs:
+
+- [CVE-2021-31810](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31810)
+- [CVE-2021-32066](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32066)
+- [CVE-2021-31799](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31799)
+
+#### Addressable
+
+We've updated the addressable gem from 2.7 to 2.8 to resolve [CVE-2021-32740](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32740).
+
 ## What's New in 17.2
 
 ### Compliance Phase Improvements
@@ -464,6 +901,88 @@ On AIX, Solaris, macOS, and Linux platforms the Chef Infra Client packages will 
 
 In Chef Infra Client 16 we introduced Unified Mode allowing you to collapse the sometimes confusing compile and converge phases into a single unified phase. Unified mode makes it easier to write and troubleshoot failures in custom resources and for Chef Infra Client 18 we plan to make this the default execution phase for custom resources. We've backported the unified mode feature to the Chef Infra Client 14 and 15 systems and for Chef Infra Client 17 we will now begin warning if resources don't explicitly set this new mode. Enabling unified mode now lets you validate that resources will continue to function as expected in Chef Infra Client 18. To enable unified  mode in your resource add `unified_mode true` to the file.
 
+## What's New in 16.14
+
+## Bug Fixes
+
+- `bundle install` now correctly installs gems from cookbook `metadata.rb` files. Thanks for this fix [@nvwls](https://github.com/nvwls)
+- `knife bootstrap` on Windows now correctly uses `https://omnitruck.chef.io` to download packages.
+
+### Chef InSpec 4.31
+
+Chef InSpec has been updated from 4.31.1 to 4.38.9 with the following changes:
+
+#### New Features
+
+- Added the new `--reporter-include-source` CLI option, which includes the source code of the controls in the output of the CLI reporter.
+- Added ability to pass inputs to InSpec shell using input file and CLI.
+- Added a new mongodb_conf resource.
+- Fixed the inspec shell to allow loading profiles that have their own dependent profiles.
+- Updated the inspec init plugin command with the following changes.
+  - The values of flags passed to the inspec init plugin command are now wrapped in double quotes instead of single quotes.
+  - Template files are now ERB files.
+  - The activator flag replaces the hook flag, which is now an alias.
+- Added support for zfs_pool and zfs_dataset resources on Linux.
+- Improved port resource performance: adding more specific search while using ss command.
+- The new inspec automate command replaces the inspec compliance command, which is now deprecated.
+- Added the selinux resource which includes support for modules and booleans.
+- Added the pattern input option for DSL and metadata inputs.
+- Added the members_array property for group & groups resources.
+- Train now reads the username and port from the .ssh/config file and will use these values if present.
+
+#### Bug Fixes
+
+- Removed the default of 3600 seconds for `--command-timeout` CLI option.
+- Fix SSH Timeout PTY allocation.
+- Changed the Windows local pipe server connection to retry once on EPIPE.
+- Fixed the postgres_session resource to raise an exception if there is an error in a connection or query.
+- Fixed the mysql_session resource to raise an exception if there is an error in a connection or query.
+- Removed support for Chef Compliance Server and Chef Automate 1 from the inspec automate command, as both products are EOL.
+- `inspec detect --no-color` returns color-free output.
+- file resource more_permissive_than matcher returns nil instead of throwing exception when file does not exist.
+- The HTTP resource response body is now coerced into UTF-8.
+- Modified the windows_feature resource to indicate if a feature is enabled rather than just available.
+- Fixed an error when using profile dependencies and require_controls.
+- Fixed the windows_firewall_rule resource when it failed to validate more than one rule.
+- Switch to GNU timeout-based implementation of SSH timeouts.
+- Fixed the group resource when a member does not exist.
+
+### Packaging
+
+#### M1 macOS Monterey Packages
+
+Chef Infra Client packages are now produced for Apple's macOS Monterey preview release. Packages for Intel-based Macs will ship at a later date.
+
+#### Solaris 11.3 EOL / Solaris 11.4 Packages
+
+Oracle Solaris 11.3 became end-of-life (EOL) in January 2021. Chef Infra Client packages are no longer produced for Solaris 11.3 and new Solaris 11.4 packages are available in their place.
+
+### PowerPC RHEL FIPS Support
+
+We now produce FIPS capable packages for RHEL on PowerPC.
+
+#### RHEL 8 Packages
+
+We improved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
+
+#### RPM Package Digests
+
+The file digest in Chef Infra RPM packages has been updated from MD5 to SHA256 to prevent failures installing on some FIPS-enabled systems.
+
+### Security
+
+#### Ruby 2.7.4
+
+Ruby has been updated to 2.7.4 to resolve a large number of bugs as well as the following CVEs:
+
+- [CVE-2021-31810](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31810)
+- [CVE-2021-32066](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32066)
+- [CVE-2021-31799](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31799)
+
+#### Addressable
+
+We've updated the addressable gem from 2.7 to 2.8 to resolve [CVE-2021-32740](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32740).
+
 ## What's New in 16.13
 
 ### Chef InSpec 4.31
@@ -664,11 +1183,11 @@ On AWS instances, we now gather data from the latest metadata API versions, expo
 - placement/region
 - spot/instance-action
 
-#### Alma Linux Detection
+#### AlmaLinux Detection
 
-Chef Infra Client now maps [Alma Linux](https://almalinux.org/) to the `rhel` `platform_family` value. Alma Linux is a new open-source RHEL fork produced by the CloudLinux team. Alma Linux falls under Chef's [Community Support](https://docs.chef.io/platforms/#community-support) platform support policy providing community driven support without the extensive testing given to commercially supported platforms in Chef Infra Client.
+Chef Infra Client now maps [AlmaLinux](https://almalinux.org/) to the `rhel` `platform_family` value. AlmaLinux is a new open-source RHEL fork produced by the CloudLinux team. AlmaLinux falls under Chef's [Community Support](https://docs.chef.io/platforms/#community-support) platform support policy providing community driven support without the extensive testing given to commercially supported platforms in Chef Infra Client.
 
-You can test cookbooks on Alma Linux in Test Kitchen using [Alma Linux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8 on VirtualBox, Parallels, and VMware hypervisors as follows:
+You can test cookbooks on AlmaLinux in Test Kitchen using [AlmaLinux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8 on VirtualBox, Parallels, and VMware hypervisors as follows:
 
 ```yaml
 platforms:
@@ -4075,7 +4594,7 @@ end
 
 ### InSpec 3.0
 
-Inspec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See <https://blog.chef.io/2018/10/16/announcing-inspec-3-0/> for details.
+InSpec has been updated to version 3.0 with addition resources, exception handling, and a new plugin system. See <https://blog.chef.io/2018/10/16/announcing-inspec-3-0/> for details.
 
 ### macOS Mojave (10.14)
 
@@ -5426,7 +5945,7 @@ In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and
 
 - **The mount resource's password property is now marked as **sensitive** Passwords passed to mount won't show up in logs.
 - **The windows_task resource now correctly handles start_day** Previously, the resource would accept any date that was formatted correctly in the local locale, unlike the Windows cookbook and Windows itself. We now support only the MM/DD/YYYY format, in keeping with the Windows cookbook.
--   **InSpec updated to 1.39.1**
+- **InSpec updated to 1.39.1**
 
 ### Ohai 13.5
 
@@ -6063,7 +6582,7 @@ The `recommends`, `suggests`, `conflicts`, `replaces` and `grouping` metadata fi
 
 ### All unignored cookbook files will now be uploaded.
 
-We now treat every file under a cookbook directory as belonging to a cookbook, unless that file is ignored with a `chefignore` file. This is a change from the previous behavior where only files in certain directories, such as `recipes` or `templates`, were treated as special. This change allows chef to support new classes of files, such as Ohai plugins or Inspec tests, without having to make changes to the cookbook format to support them.
+We now treat every file under a cookbook directory as belonging to a cookbook, unless that file is ignored with a `chefignore` file. This is a change from the previous behavior where only files in certain directories, such as `recipes` or `templates`, were treated as special. This change allows chef to support new classes of files, such as Ohai plugins or InSpec tests, without having to make changes to the cookbook format to support them.
 
 ### DSL-based custom resources and providers no longer get module constants
 

@@ -43,22 +43,22 @@ class Chef
         types[type]
       end
 
-      action :create do
+      action :create, description: "Create a launchd property list." do
         manage_plist(:create)
       end
 
-      action :create_if_missing do
+      action :create_if_missing, description: "Create a launchd property list, if it does not already exist." do
         manage_plist(:create_if_missing)
       end
 
-      action :delete do
+      action :delete, description: "Delete a launchd property list. This will unload a daemon or agent, if loaded." do
         if ::File.exists?(path)
           manage_service(:disable)
         end
         manage_plist(:delete)
       end
 
-      action :enable do
+      action :enable, description: "Create a launchd property list, and then ensure that it is enabled. If a launchd property list already exists, but does not match, updates the property list to match, and then restarts the daemon or agent." do
         manage_service(:nothing)
         manage_plist(:create) do
           notifies :restart, "macosx_service[#{label}]", :immediately
@@ -66,13 +66,13 @@ class Chef
         manage_service(:enable)
       end
 
-      action :disable do
+      action :disable, description: "Disable a launchd property list." do
         return unless ::File.exist?(path)
 
         manage_service(:disable)
       end
 
-      action :restart do
+      action :restart, description: "Restart a launchd managed daemon or agent." do
         manage_service(:restart)
       end
 

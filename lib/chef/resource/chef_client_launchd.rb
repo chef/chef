@@ -65,7 +65,7 @@ class Chef
         description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time."
 
       property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
+        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement>",
         default: false
 
       property :config_directory, String,

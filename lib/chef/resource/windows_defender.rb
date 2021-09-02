@@ -110,7 +110,7 @@ class Chef
         scan_mapped_drives !values["DisableScanningMappedNetworkDrivesForFullScan"]
       end
 
-      action :enable do
+      action :enable, description: "Enable and configure Windows Defender." do
         windows_service "Windows Defender" do
           service_name "WinDefend"
           action %i{start enable}
@@ -122,7 +122,7 @@ class Chef
         end
       end
 
-      action :disable do
+      action :disable, description: "Disable Windows Defender." do
         windows_service "Windows Defender" do
           service_name "WinDefend"
           action %i{disable stop}
