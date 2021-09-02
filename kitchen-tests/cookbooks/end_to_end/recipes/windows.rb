@@ -191,4 +191,8 @@ windows_update_settings "Disable Windows Update" do
   disable_automatic_updates true
 end
 
+windows_feature_powershell "RSAT-AD-PowerShell" do
+  action :install
+end
+
 include_recipe "::_chef_gem"

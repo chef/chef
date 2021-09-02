@@ -6,6 +6,7 @@ gem "knife", path: "../knife"
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main" # avoids failures when we bump chef major
 gem "berkshelf", git: "https://github.com/berkshelf/berkshelf.git", branch: "main"
 gem "kitchen-dokken", ">= 2.0"
+gem "kitchen-vagrant", ">= 1.0"
 gem "kitchen-inspec", git: "https://github.com/chef/kitchen-inspec.git", branch: "main"
 gem "inspec"
 gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "master"
