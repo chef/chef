@@ -181,7 +181,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
     describe "when the users exist" do
       before do
-        high_uid = 30000
+        high_uid = 40000
         (spec_members).each do |member|
           remove_user(member)
           create_user(member, high_uid)
