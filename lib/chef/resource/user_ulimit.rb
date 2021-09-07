@@ -83,6 +83,7 @@ class Chef
           source ::File.expand_path("support/ulimit.erb", __dir__)
           local true
           mode "0644"
+          sensitive new_resource.sensitive
           variables(
             ulimit_user: new_resource.username,
             filehandle_limit: new_resource.filehandle_limit,
