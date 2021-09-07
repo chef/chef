@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.48 -->
-## [v17.4.48](https://github.com/chef/chef/tree/v17.4.48) (2021-09-07)
+<!-- latest_release 17.4.49 -->
+## [v17.4.49](https://github.com/chef/chef/tree/v17.4.49) (2021-09-07)
 
 #### Merged Pull Requests
-- ulimit: Fix sensitive property [#12000](https://github.com/chef/chef/pull/12000) ([ashwin-msys](https://github.com/ashwin-msys))
+- Bump chef-vault to 4.1.3 [#12002](https://github.com/chef/chef/pull/12002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef-vault to 4.1.3 [#12002](https://github.com/chef/chef/pull/12002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.49 -->
 - ulimit: Fix sensitive property [#12000](https://github.com/chef/chef/pull/12000) ([ashwin-msys](https://github.com/ashwin-msys)) <!-- 17.4.48 -->
 - Disable x25519 until we fix RHEL 7 failures [#11993](https://github.com/chef/chef/pull/11993) ([tas50](https://github.com/tas50)) <!-- 17.4.47 -->
 - Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.46 -->
