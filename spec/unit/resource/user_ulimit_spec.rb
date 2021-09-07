@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-
 describe Chef::Resource::UserUlimit do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
@@ -61,7 +60,7 @@ describe Chef::Resource::UserUlimit do
 
       it "should be set on the resource" do
         expect(resource.sensitive).to(be_truthy)
-      end 
+      end
     end
   end
 end
