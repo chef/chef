@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.50 -->
-## [v17.4.50](https://github.com/chef/chef/tree/v17.4.50) (2021-09-07)
+<!-- latest_release 17.4.51 -->
+## [v17.4.51](https://github.com/chef/chef/tree/v17.4.51) (2021-09-07)
 
 #### Merged Pull Requests
-- Fix tests for new omnibus test systems [#12004](https://github.com/chef/chef/pull/12004) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Bump chef-zero to 15.0.9 [#12005](https://github.com/chef/chef/pull/12005) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef-zero to 15.0.9 [#12005](https://github.com/chef/chef/pull/12005) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.51 -->
 - Fix tests for new omnibus test systems [#12004](https://github.com/chef/chef/pull/12004) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.4.50 -->
 - Bump chef-vault to 4.1.3 [#12002](https://github.com/chef/chef/pull/12002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.49 -->
 - ulimit: Fix sensitive property [#12000](https://github.com/chef/chef/pull/12000) ([ashwin-msys](https://github.com/ashwin-msys)) <!-- 17.4.48 -->
