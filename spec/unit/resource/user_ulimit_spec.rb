@@ -50,4 +50,18 @@ describe Chef::Resource::UserUlimit do
     expect { resource.action :create }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
   end
+
+  describe "sensitive attribute" do
+    context "should be insensitive by default" do
+      it { expect(resource.sensitive).to(be_falsey) }
+    end
+
+    context "when set" do
+      before { resource.sensitive(true) }
+
+      it "should be set on the resource" do
+        expect(resource.sensitive).to(be_truthy)
+      end 
+    end
+  end
 end
