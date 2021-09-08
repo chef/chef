@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.4.51 -->
-## [v17.4.51](https://github.com/chef/chef/tree/v17.4.51) (2021-09-07)
+<!-- latest_release 17.4.52 -->
+## [v17.4.52](https://github.com/chef/chef/tree/v17.4.52) (2021-09-08)
 
 #### Merged Pull Requests
-- Bump chef-zero to 15.0.9 [#12005](https://github.com/chef/chef/pull/12005) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update HashiCorp Vault fetcher to support token auth [#12008](https://github.com/chef/chef/pull/12008) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update HashiCorp Vault fetcher to support token auth [#12008](https://github.com/chef/chef/pull/12008) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.52 -->
 - Bump chef-zero to 15.0.9 [#12005](https://github.com/chef/chef/pull/12005) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.51 -->
 - Fix tests for new omnibus test systems [#12004](https://github.com/chef/chef/pull/12004) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.4.50 -->
 - Bump chef-vault to 4.1.3 [#12002](https://github.com/chef/chef/pull/12002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.49 -->
