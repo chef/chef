@@ -1,5 +1,92 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## What's New in 17.5
+
+### Compliance Phase Improvements
+
+#### InSpec Profiles Within Cookbooks
+
+Chef InSpec profiles, waivers, and inputs can now be shipped directly in cookbooks allow you to combine infrastructure and compliance concerns in a single artifact. Bringing infra and compliance together ensures security is always a consideration when making changes to systems and enables collaboration in DevSecOps through shared pipelines.
+
+#### Chef Inspec 4.41.20
+
+Chef InSpec has been updated from 4.41.2 to 4.41.20 with the following improvements and fixes for Compliance Phase:
+
+- Added support for Alibaba Cloud Linux 3 to the Chef InSpec service resource.
+- Replaced the WMI command-line (WMIC) utility in the Chef InSpec security_identifier resource with Common Information Model (CIM) cmdlets as the WMIC utility will be deprecated soon.
+- Fixed range based filtering in filter tables
+- Fixed an issue in the Chef InSpec apache_conf resource when the ServerRoot is not specified in the Apache configuration file.
+- Fixed an issue when testing files with `chef exec` where the `--insecure` flag doesn't bypass SSL verification when downloading profiles over HTTPS.
+- Fixed an error in the Chef InSpec `postgres_session` resource where the resource was unable to connect to a database.
+- Fixed an error in the Chef InSpec apache_conf resource where it would overwrite any Apache configurations from the main Apache configuration file with configurations from any included configuration files.
+- Fixed an error where the Chef InSpec `security_policy` resource returned a comma-separated string of local groups (rather than SIDs) instead of an array.
+- Updated the git fetcher to handle profiles that have a default git branch that is not `master`.
+
+### Secrets Management Beta
+
+Our secrets management beta within Chef Infra Client has been updated to support HashiCorp Vault and Akeyless Vault secrets. These can fetched using the new `secrets` helper using either AWS IAM authentication or token based authentication.
+
+**Fetching Secrets From HashiCorp Vault Using AWS IAM**
+
+```ruby
+secret(name: "secret/example", 
+      service: :hashi_vault,
+      config: {
+        vault_addr: "vault.example.com",
+        role_name: "example-role"
+      })
+```
+
+**Fetching Secrets From HashiCorp Vault Using Tokens**
+
+```ruby
+secret(name: "secret/example", 
+      service: :hashi_vault,
+      config: {
+        vault_addr: "vault.example.com",
+        token: "123456"
+      })
+```
+
+**Fetching Secrets From Akeyless Vault Using Tokens**
+
+```ruby
+secret(name: "/secret/data/my_secret",
+       service: :akeyless_vault,
+       config: {
+         access_key: "12345678910=",
+         access_id: "p-12345678910"
+      })
+```
+
+### Fetching Chef Solo Recipes from AWS S3
+
+You can now fetch recipes from Amazon's S3 storage when using Chef Solo. To have Chef Solo fetch recipes from AWS S3 pass a S3 URL with the `--recipe-url` command line flag such as `s3://my-private-bucket/setup-0.1.0.tgz`. Thanks for this improvement [@tecracer-theinen](https://github.com/tecracer-theinen)!
+
+### Resource Updates
+
+#### chef_client_scheduled_task
+
+The `chef_client_scheduled_task` resource now supports setting the scheduled task priority for executing the Chef Infra Client with a new `priority` property. Thanks for this improvement [@gholtiii](https://github.com/gholtiii)!
+
+#### ulimit
+
+The `ulimit` resource now supports setting `sensitive true` to prevent logging ulimit data as it is written to disk.
+
+#### windows_uac
+
+The `windows_uac` resource now sets the proper registry key value when using the `consent_behavior_users` property. Thanks for reporting this [@ahembree](https://github.com/ahembree)!
+
+#### windows_user_privilege
+
+The `windows_user_privilege` resource no longer fails with an error stating that the `privilege` property needs to be set, even if it is set.
+
+### Security
+
+#### OpenSSL 1.0.2za
+
+OpenSSL has been updated from 1.0.2y to 1.0.2za to resolve [CVE-2021-3712](https://nvd.nist.gov/vuln/detail/CVE-2021-3712).
+
 ## What's New in 17.4.38
 
 ### Bug fixes
