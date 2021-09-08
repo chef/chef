@@ -1,15 +1,15 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 4653e837544b9cf3b4580b2ad6b25e73005da1a2
-  branch: master
+  revision: e0d92a629f91918272b7460addfd4462c539e8a0
+  branch: main
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: e3573e77f3de5944a2fcd998ba50c773c2212ab7
-  branch: master
+  revision: 7ce6173d7a7e9ee501ee2aed20f82d873926b299
+  branch: main
   specs:
     omnibus (8.2.1)
       aws-sdk-s3 (~> 1)
@@ -32,21 +32,21 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     artifactory (3.0.15)
     awesome_print (1.9.2)
-    aws-eventstream (1.1.1)
-    aws-partitions (1.488.0)
-    aws-sdk-core (3.119.0)
+    aws-eventstream (1.2.0)
+    aws-partitions (1.497.0)
+    aws-sdk-core (3.121.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.46.0)
-      aws-sdk-core (~> 3, >= 3.119.0)
+    aws-sdk-kms (1.48.0)
+      aws-sdk-core (~> 3, >= 3.120.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.99.0)
-      aws-sdk-core (~> 3, >= 3.119.0)
+    aws-sdk-s3 (1.102.0)
+      aws-sdk-core (~> 3, >= 3.120.0)
       aws-sdk-kms (~> 1)
-      aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.2.4)
+      aws-sigv4 (~> 1.4)
+    aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
@@ -194,9 +194,9 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
-    ffi (1.15.3)
-    ffi (1.15.3-x64-mingw32)
-    ffi (1.15.3-x86-mingw32)
+    ffi (1.15.4)
+    ffi (1.15.4-x64-mingw32)
+    ffi (1.15.4-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
