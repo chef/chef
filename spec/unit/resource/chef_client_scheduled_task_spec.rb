@@ -73,6 +73,20 @@ describe Chef::Resource::ChefClientScheduledTask do
     expect(resource.chef_binary_path).to eql("C:/opscode/chef/bin/chef-client")
   end
 
+  context "priority" do
+    it "default value is 7" do
+      expect(resource.priority).to eq(7)
+    end
+
+    it "raise error when priority value less than 0" do
+      expect { resource.priority(-1) }.to raise_error(Chef::Exceptions::ValidationFailed, "Option priority's value -1 should be in range of 0 to 10!")
+    end
+
+    it "raise error when priority values is greater than 10" do
+      expect { resource.priority 11 }.to raise_error(Chef::Exceptions::ValidationFailed, "Option priority's value 11 should be in range of 0 to 10!")
+    end
+  end
+
   it "supports :add and :remove actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
