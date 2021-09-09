@@ -57,7 +57,7 @@ class Chef
     SUPPORTED_AUTH_TYPES = %i{iam_role token}.freeze
     class HashiVault < Base
 
-      # Validate and authenticate the current session using the configurated auth strategy and parameters
+      # Validate and authenticate the current session using the configured auth strategy and parameters
       def validate!
         if config[:vault_addr].nil?
           raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the Vault address in the configuration as :vault_addr")
