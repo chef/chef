@@ -21,7 +21,7 @@ require_relative "exceptions"
 class Chef
   class SecretFetcher
 
-    SECRET_FETCHERS = %i{example aws_secrets_manager azure_key_vault hashi_vault}.freeze
+    SECRET_FETCHERS = %i{example aws_secrets_manager azure_key_vault hashi_vault akeyless_vault}.freeze
 
     # Returns a configured and validated instance
     # of a [Chef::SecretFetcher::Base]  for the given
@@ -45,10 +45,13 @@ class Chef
                 when :hashi_vault
                   require_relative "secret_fetcher/hashi_vault"
                   Chef::SecretFetcher::HashiVault.new(config, run_context)
+                when :akeyless_vault
+                  require_relative "secret_fetcher/akeyless_vault"
+                  Chef::SecretFetcher::AKeylessVault.new(config, run_context)
                 when nil, ""
                   raise Chef::Exceptions::Secret::MissingFetcher.new(SECRET_FETCHERS)
                 else
-                  raise Chef::Exceptions::Secret::InvalidFetcherService.new("Unsupported secret service: #{service}", SECRET_FETCHERS)
+                  raise Chef::Exceptions::Secret::InvalidFetcherService.new("Unsupported secret service: '#{service}'", SECRET_FETCHERS)
                 end
       fetcher.validate!
       fetcher

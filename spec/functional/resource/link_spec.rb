@@ -345,9 +345,17 @@ describe Chef::Resource::Link do
             let(:test_user) { "test-link-user" }
             before do
               user(test_user).run_action(:create)
+              # TODO For some reason our temporary AIX 7.2 system does not correctly report user existence immediately after changes have been made.
+              # Adding a 2 second delay for this platform is enough to get correct results.
+              # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
+              sleep 2 if aix? && (ohai[:platform_version] == "7.2")
             end
             after do
               user(test_user).run_action(:remove)
+              # TODO For some reason our temporary AIX 7.2 system does not correctly report user existence immediately after changes have been made.
+              # Adding a 2 second delay for this platform is enough to get correct results.
+              # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
+              sleep 2 if aix? && (ohai[:platform_version] == "7.2")
             end
             before(:each) do
               resource.owner(test_user)
