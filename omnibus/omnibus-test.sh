@@ -122,5 +122,8 @@ fi
 export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
-sudo -E bundle install --jobs=3 --retry=3
+# -H is used for "bundle install" so ".bundle/cache" is put in the root user's HOME instead of
+# the user running this script. This helps avoid file permission related problems in subsequent runs of 
+# "bundle install" that are not run with sudo.
+sudo -E -H bundle install --jobs=3 --retry=3
 sudo -E bundle exec rspec --profile -f progress
