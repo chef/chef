@@ -129,6 +129,10 @@ class Chef
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
         default: []
 
+      property :priority, Integer,
+        description: "Use to set Priority Levels range from 0 to 10.",
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+      
       action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless Dir.exist?(new_resource.log_directory)
@@ -153,6 +157,7 @@ class Chef
           start_day                      new_resource.start_date unless new_resource.start_date.nil?
           random_delay                   new_resource.splay if frequency_supports_random_delay?
           disallow_start_if_on_batteries new_resource.splay unless new_resource.run_on_battery
+          priority                       new_resource.priority
           action                         %i{create enable}
         end
       end
