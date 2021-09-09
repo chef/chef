@@ -17,7 +17,6 @@
 #
 
 require_relative "base"
-require "aws-sdk-core" # Support for aws instance profile auth
 require_relative "hashi_vault"
 
 class Chef
@@ -26,8 +25,32 @@ class Chef
     # A fetcher that fetches a secret from AKeyless Vault.  Initial implementation is
     # based on HashiVault , because AKeyless provides a compatibility layer that makes this possible.
     # Future revisions will use native akeyless authentication.
+    #
+    # Required config:
+    # :access_id - the access id of the API key
+    # :access_key - the access key of the API key
+    #
+    #
+    # @example
+    #
+    # fetcher = SecretFetcher.for_service(:akeyless_vault, { access_id: "my-access-id", access_key: "my-access-key"  }, run_context )
+    # fetcher.fetch("/secret/data/secretkey1")
+    #
+    AKEYLESS_VAULT_PROXY_ADDR = "https://hvp.akeyless.io".freeze
     class AKeylessVault < HashiVault
+      def validate!
+        if config[:access_key].nil?
+          raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the secret access key in the configuration as :secret_access_key")
+        end
+        if config[:access_id].nil?
+          raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the access key id in the configuration as :access_key_id")
+        end
 
+        config[:vault_addr] ||= AKEYLESS_VAULT_PROXY_ADDR
+        config[:auth_method] = :token
+        config[:token] = "#{config[:access_id]}..#{config[:access_key]}"
+        super
+      end
     end
   end
 end
