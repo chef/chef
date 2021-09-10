@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.5.4 -->
-## [v17.5.4](https://github.com/chef/chef/tree/v17.5.4) (2021-09-09)
+<!-- latest_release 17.5.5 -->
+## [v17.5.5](https://github.com/chef/chef/tree/v17.5.5) (2021-09-10)
 
 #### Merged Pull Requests
-- Bump chef-vault to 4.1.4 [#12015](https://github.com/chef/chef/pull/12015) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Clean up some more File.exists? uses [#12016](https://github.com/chef/chef/pull/12016) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Clean up some more File.exists? uses [#12016](https://github.com/chef/chef/pull/12016) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.5 -->
 - Bump chef-vault to 4.1.4 [#12015](https://github.com/chef/chef/pull/12015) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.5.4 -->
 - Enable directly using AWS S3 with --recipe-url parameter of Chef Client [#11962](https://github.com/chef/chef/pull/11962) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.5.3 -->
 - [chef-client] Enable chef_client_scheduled_task resource to leverage … [#12014](https://github.com/chef/chef/pull/12014) ([gholtiii](https://github.com/gholtiii)) <!-- 17.5.2 -->
