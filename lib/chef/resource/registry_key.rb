@@ -118,8 +118,6 @@ class Chef
       Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by Chef Infra Client.
       DOC
 
-      state_attrs :values
-
       default_action :create
       allowed_actions :create, :create_if_missing, :delete, :delete_key
 
@@ -154,45 +152,33 @@ class Chef
       # See lib/chef/resource_reporter.rb for more information.
       attr_reader :unscrubbed_values
 
-      def initialize(name, run_context = nil)
-        super
-        @values, @unscrubbed_values = [], []
-      end
+      VALID_VALUE_HASH_KEYS = %i{name type data}.freeze
 
       property :key, String, name_property: true
 
-      VALID_VALUE_HASH_KEYS = %i{name type data}.freeze
-
-      def values(arg = nil)
-        if not arg.nil?
-          if arg.is_a?(Hash)
-            @values = [ Mash.new(arg).symbolize_keys ]
-          elsif arg.is_a?(Array)
-            @values = []
-            arg.each do |value|
-              @values << Mash.new(value).symbolize_keys
-            end
+      property :values, [Hash, Array],
+        default: [],
+        coerce: proc { |v|
+          case v
+          when Hash
+            @unscrubbed_values = [ Mash.new(v).symbolize_keys ]
+          when Array
+            @unscrubbed_values = v.map { |value| Mash.new(value).symbolize_keys }
           else
             raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
           end
-
-          @values.each do |v|
-            raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.key?(:name)
-
-            v.each_key do |key|
-              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless VALID_VALUE_HASH_KEYS.include?(key)
-            end
-            raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
-
-            if v[:type]
-              raise ArgumentError, "Type of type => #{v[:type]} should be symbol" unless v[:type].is_a?(Symbol)
-            end
+          scrub_values(@unscrubbed_values)
+        },
+        callbacks: {
+        "Missing name key in RegistryKey values hash" => lambda { |v| v.all? { |value| value.key?(:name) } },
+        "Bad key in RegistryKey values hash. Should be one of: #{VALID_VALUE_HASH_KEYS}" => lambda do |v|
+          v.all? do |value|
+            value.keys.all? { |key| VALID_VALUE_HASH_KEYS.include?(key) }
           end
-          @unscrubbed_values = @values
-        elsif instance_variable_defined?(:@values)
-          scrub_values(@values)
-        end
-      end
+        end,
+        "Type of name should be a string" => lambda { |v| v.all? { |value| value[:name].is_a?(String) } },
+        "Type of type should be a symbol" => lambda { |v| v.all? { |value| value[:type] ? value[:type].is_a?(Symbol) : true } },
+      }
 
       property :recursive, [TrueClass, FalseClass], default: false
       property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
