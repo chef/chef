@@ -39,13 +39,11 @@ class Chef
           provides :yaml
 
           def verify(path, opts = {})
-            begin
-              Psych.parse_file(path)
-              return true
-            rescue Psych::SyntaxError => e
-              Chef::Log.error("Yaml syntax verify failed with : #{e.message}")
-              return false
-            end
+            Psych.parse_file(path)
+            true
+          rescue Psych::SyntaxError => e
+            Chef::Log.error("Yaml syntax verify failed with : #{e.message}")
+            false
           end
         end
       end

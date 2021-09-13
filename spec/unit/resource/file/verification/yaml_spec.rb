@@ -28,7 +28,7 @@ describe Chef::Resource::File::Verification::Yaml do
         svc:
           mysqlPassword: sepppasswd
         ")
-    f.close()
+    f.close
 
     @invalid_yaml = "invalid-#{Time.now.to_i}.yaml"
     f = File.new(@invalid_yaml, "w")
@@ -36,10 +36,10 @@ describe Chef::Resource::File::Verification::Yaml do
         svc:
           mysqlPassword: 'sepppasswd
         ")
-    f.close()
+    f.close
 
     @empty_yaml = "empty-#{Time.now.to_i}.yaml"
-    File.new(@empty_yaml, "w").close()
+    File.new(@empty_yaml, "w").close
   end
 
   context "verify" do
