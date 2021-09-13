@@ -42,7 +42,7 @@ class Chef
         sensitive: true
 
       property :mount_point, String, name_property: true,
-               coerce: proc { |arg| arg.chomp("/") }, # Removed "/" from the end of str, because it was causing idempotency issue.
+               coerce: proc { |arg| (arg == "/" || arg.match?(":/$"))? arg : arg.chomp("/") }, # Removed "/" from the end of str, because it was causing idempotency issue.
                description: "The directory (or path) in which the device is to be mounted. Defaults to the name of the resource block if not provided."
 
       property :device, String, identity: true,
