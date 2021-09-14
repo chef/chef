@@ -66,7 +66,6 @@ class Chef
         use_consistent_splay true
       end
       ```
-
       DOC
 
       resource_name :chef_client_scheduled_task
@@ -145,6 +144,7 @@ class Chef
 
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
+        introduced: "17.5",
         default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
 
       action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
