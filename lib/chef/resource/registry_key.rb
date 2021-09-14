@@ -18,6 +18,7 @@
 
 require_relative "../resource"
 require_relative "../digester"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -26,7 +27,7 @@ class Chef
 
       provides(:registry_key) { true }
 
-      description "Use the **registry_key** resource to create and delete registry keys in Microsoft Windows."
+      description "Use the **registry_key** resource to create and delete registry keys in Microsoft Windows. Note: 64-bit versions of Microsoft Windows have a 32-bit compatibility layer in the registry that reflects and redirects certain keys (and their values) into specific locations (or logical views) of the registry hive.\n\n#{ChefUtils::Dist::Infra::PRODUCT} can access any reflected or redirected registry key. The machine architecture of the system on which #{ChefUtils::Dist::Infra::PRODUCT} is running is used as the default (non-redirected) location. Access to the SysWow64 location is redirected must be specified. Typically, this is only necessary to ensure compatibility with 32-bit applications that are running on a 64-bit operating system.\n\nFor more information, see: [Registry Reflection](https://docs.microsoft.com/en-us/windows/win32/winprog64/registry-reflection)."
       examples <<~'DOC'
       **Create a registry key**
 
@@ -66,7 +67,7 @@ class Chef
       end
       ```
 
-      **Set proxy settings to be the same as those used by Chef Infra Client**
+      **Set proxy settings to be the same as those used by #{ChefUtils::Dist::Infra::PRODUCT}**
 
       ```ruby
       proxy = URI.parse(Chef::Config[:http_proxy])
@@ -115,7 +116,7 @@ class Chef
       end
       ```
 
-      Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by Chef Infra Client.
+      Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by #{ChefUtils::Dist::Infra::PRODUCT}.
       DOC
 
       state_attrs :values
