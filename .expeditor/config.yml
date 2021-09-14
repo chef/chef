@@ -51,7 +51,7 @@ github:
   major_bump_labels:
     - "Expeditor: Bump Version Major"
 
-# Which Github branches to build Omnibus releases from, and what versions
+# Which GitHub branches to build Omnibus releases from, and what versions
 # (as determined by the value in the VERSION file) those branches are responsible
 # for building.
 release_branches:
@@ -59,10 +59,6 @@ release_branches:
       version_constraint: 17*
   - chef-16:
       version_constraint: 16*
-  - chef-15:
-      version_constraint: 15*
-  - chef-14:
-      version_constraint: 14*
 
 changelog:
   rollup_header: Changes not yet released to stable
@@ -80,6 +76,8 @@ subscriptions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
       - bash:.expeditor/promote-docker-images.sh
+      - bash:.expeditor/publish-release-notes.sh
+      - bash:.expeditor/announce-release.sh
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
