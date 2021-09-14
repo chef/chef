@@ -114,6 +114,8 @@ class Chef
         default: 300
 
       property :use_consistent_splay, [true, false],
+        description: "Always use the same random splay amount for each node to ensure consistent frequencies between #{ChefUtils::Dist::Infra::CLIENT} execution.",
+        introduced: "17.5",
         default: false
 
       property :run_on_battery, [true, false],
