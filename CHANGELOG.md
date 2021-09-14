@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.5.6 -->
-## [v17.5.6](https://github.com/chef/chef/tree/v17.5.6) (2021-09-13)
+<!-- latest_release 17.5.7 -->
+## [v17.5.7](https://github.com/chef/chef/tree/v17.5.7) (2021-09-14)
 
 #### Merged Pull Requests
-- Add Yaml verifier for `file` resource [#12020](https://github.com/chef/chef/pull/12020) ([gogsbread](https://github.com/gogsbread))
+- Enable chef-client scheduled task to behave like chef_client_cron, with consistent delay calculated once from splay [#11894](https://github.com/chef/chef/pull/11894) ([gholtiii](https://github.com/gholtiii))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enable chef-client scheduled task to behave like chef_client_cron, with consistent delay calculated once from splay [#11894](https://github.com/chef/chef/pull/11894) ([gholtiii](https://github.com/gholtiii)) <!-- 17.5.7 -->
 - Add Yaml verifier for `file` resource [#12020](https://github.com/chef/chef/pull/12020) ([gogsbread](https://github.com/gogsbread)) <!-- 17.5.6 -->
 - Clean up some more File.exists? uses [#12016](https://github.com/chef/chef/pull/12016) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.5 -->
 - Bump chef-vault to 4.1.4 [#12015](https://github.com/chef/chef/pull/12015) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.5.4 -->
