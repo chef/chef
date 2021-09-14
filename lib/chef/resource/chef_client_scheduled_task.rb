@@ -58,6 +58,15 @@ class Chef
         daemon_options ['-n audit_only']
       end
       ```
+
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} with a persistent delay on every run calculated once, similar to how chef_client_cron resource works**:
+
+      ```ruby
+      chef_client_scheduled_task 'Run chef-client with persistent splay' do
+        use_consistent_splay true
+      end
+      ```
+
       DOC
 
       resource_name :chef_client_scheduled_task
@@ -103,6 +112,9 @@ class Chef
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time.",
         default: 300
+
+      property :use_consistent_splay, [true, false],
+        default: false
 
       property :run_on_battery, [true, false],
         description: "Run the #{ChefUtils::Dist::Infra::PRODUCT} task when the system is on batteries.",
@@ -155,7 +167,7 @@ class Chef
           frequency_modifier             new_resource.frequency_modifier if frequency_supports_frequency_modifier?
           start_time                     new_resource.start_time
           start_day                      new_resource.start_date unless new_resource.start_date.nil?
-          random_delay                   new_resource.splay if frequency_supports_random_delay?
+          random_delay                   new_resource.splay if frequency_supports_random_delay? && !new_resource.use_consistent_splay
           disallow_start_if_on_batteries new_resource.splay unless new_resource.run_on_battery
           priority                       new_resource.priority
           action                         %i{create enable}
@@ -178,7 +190,31 @@ class Chef
           # Fetch path of cmd.exe through environment variable comspec
           cmd_path = ENV["COMSPEC"]
 
-          "#{cmd_path} /c \"#{client_cmd}\""
+          "#{cmd_path} /c \"#{consistent_splay_command}#{client_cmd}\""
+        end
+
+        #
+        # Generate a uniformly distributed unique number to sleep from 0 to the splay time
+        #
+        # @param [Integer] splay The number of seconds to splay
+        #
+        # @return [Integer]
+        #
+        def splay_sleep_time(splay)
+          seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
+          random = Random.new(seed.to_i)
+          random.rand(splay)
+        end
+
+        #
+        # The consistent splay sleep time when use_consistent_splay is true.
+        #
+        # @return [NilClass,String] The prepended sleep command to run prior to executing the full command.
+        #
+        def consistent_splay_command
+          return unless new_resource.use_consistent_splay
+
+          "C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s #{splay_sleep_time(new_resource.splay)} && "
         end
 
         #

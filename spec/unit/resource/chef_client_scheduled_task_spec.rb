@@ -25,6 +25,11 @@ describe Chef::Resource::ChefClientScheduledTask do
   let(:resource) { Chef::Resource::ChefClientScheduledTask.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:add) }
 
+  before do
+    allow(ENV).to receive(:[]).and_call_original
+    allow(ENV).to receive(:[]).with("COMSPEC").and_return("C:\\Windows\\System32\\cmd.exe")
+  end
+  
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
   end
@@ -90,6 +95,56 @@ describe Chef::Resource::ChefClientScheduledTask do
   it "supports :add and :remove actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
+  end
+
+  it "expects use_consistent_splay to be true when set" do
+    resource.use_consistent_splay = true
+    expect(resource.use_consistent_splay).to eql(true)
+  end
+
+  context "when configured to use a consistent splay" do
+    before do
+      node.automatic_attrs[:shard_seed] = nil
+      allow(node).to receive(:name).and_return("test_node")
+      resource.config_directory = "C:/chef" # Allows local unit testing on nix flavors
+      resource.use_consistent_splay = true
+    end
+
+    it "sleeps the same amount each time based on splay before running the task" do
+      expect(provider.full_command).to eql("C:\\Windows\\System32\\cmd.exe /c \"C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s 272 && C:/opscode/chef/bin/chef-client -L C:/chef/log/client.log -c C:/chef/client.rb\"")
+    end
+  end
+
+  describe "#consistent_splay_command" do
+    context "when use_consistent_splay is false" do
+      it "returns nil" do
+        expect(provider.consistent_splay_command).to eql(nil)
+      end
+    end
+
+    context "when use_consistent_splay is true" do
+      before do
+        resource.use_consistent_splay true
+        allow(provider).to receive(:splay_sleep_time).and_return(222)
+      end
+
+      it "returns a powershell sleep command to be appended to the chef client run command" do
+        expect(provider.consistent_splay_command).to eql("C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s 222 && ")
+      end
+    end
+  end
+
+  describe "#splay_sleep_time" do
+    it "uses shard_seed attribute if present" do
+      node.automatic_attrs[:shard_seed] = "73399073"
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+    end
+
+    it "uses a hex conversion of a md5 hash of the splay if present" do
+      node.automatic_attrs[:shard_seed] = nil
+      allow(node).to receive(:name).and_return("test_node")
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+    end
   end
 
   describe "#client_cmd" do
