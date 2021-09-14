@@ -29,7 +29,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("COMSPEC").and_return("C:\\Windows\\System32\\cmd.exe")
   end
-  
+
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
   end
