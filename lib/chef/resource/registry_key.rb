@@ -121,6 +121,35 @@ class Chef
       default_action :create
       allowed_actions :create, :create_if_missing, :delete, :delete_key
 
+      VALID_VALUE_HASH_KEYS = %i{name type data}.freeze
+
+      property :key, String, name_property: true
+      property :values, [Hash, Array],
+        default: [],
+        coerce: proc { |v|
+          case v
+          when Hash
+            @unscrubbed_values = [ Mash.new(v).symbolize_keys ]
+          when Array
+            @unscrubbed_values = v.map { |value| Mash.new(value).symbolize_keys }
+          else
+            @unscrubbed_values = []
+          end
+          scrub_values(@unscrubbed_values)
+        },
+        callbacks: {
+        "Missing name key in RegistryKey values hash" => lambda { |v| v.all? { |value| value.key?(:name) } },
+        "Bad key in RegistryKey values hash. Should be one of: #{VALID_VALUE_HASH_KEYS}" => lambda do |v|
+          v.all? do |value|
+            value.keys.all? { |key| VALID_VALUE_HASH_KEYS.include?(key) }
+          end
+        end,
+        "Type of name should be a string" => lambda { |v| v.all? { |value| value[:name].is_a?(String) } },
+        "Type of type should be a symbol" => lambda { |v| v.all? { |value| value[:type] ? value[:type].is_a?(Symbol) : true } },
+      }
+      property :recursive, [TrueClass, FalseClass], default: false
+      property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
+
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):
       #
@@ -150,38 +179,9 @@ class Chef
       # may want to extend the state_attrs API with the ability to rename POST'd attrs.
       #
       # See lib/chef/resource_reporter.rb for more information.
-      attr_reader :unscrubbed_values
-
-      VALID_VALUE_HASH_KEYS = %i{name type data}.freeze
-
-      property :key, String, name_property: true
-
-      property :values, [Hash, Array],
-        default: [],
-        coerce: proc { |v|
-          case v
-          when Hash
-            @unscrubbed_values = [ Mash.new(v).symbolize_keys ]
-          when Array
-            @unscrubbed_values = v.map { |value| Mash.new(value).symbolize_keys }
-          else
-            raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
-          end
-          scrub_values(@unscrubbed_values)
-        },
-        callbacks: {
-        "Missing name key in RegistryKey values hash" => lambda { |v| v.all? { |value| value.key?(:name) } },
-        "Bad key in RegistryKey values hash. Should be one of: #{VALID_VALUE_HASH_KEYS}" => lambda do |v|
-          v.all? do |value|
-            value.keys.all? { |key| VALID_VALUE_HASH_KEYS.include?(key) }
-          end
-        end,
-        "Type of name should be a string" => lambda { |v| v.all? { |value| value[:name].is_a?(String) } },
-        "Type of type should be a symbol" => lambda { |v| v.all? { |value| value[:type] ? value[:type].is_a?(Symbol) : true } },
-      }
-
-      property :recursive, [TrueClass, FalseClass], default: false
-      property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
+      def unscrubbed_values
+        @unscrubbed_values ||= []
+      end
 
       private
 
