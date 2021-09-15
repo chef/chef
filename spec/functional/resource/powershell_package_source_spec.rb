@@ -22,7 +22,7 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
   include Chef::Mixin::PowershellExec
 
   let(:source_name) { "fake" }
-  let(:url) { "https://www.nuget.org/api/v2" }
+  let(:source_location) { "https://www.nuget.org/api/v2" }
   let(:trusted) { true }
 
   let(:run_context) do
@@ -32,7 +32,7 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
   subject do
     new_resource = Chef::Resource::PowershellPackageSource.new("test powershell package source", run_context)
     new_resource.source_name source_name
-    new_resource.url url
+    new_resource.source_location source_location
     new_resource.trusted trusted
     new_resource.provider_name provider_name
     new_resource
@@ -61,7 +61,7 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
       it "updates an existing package source if changed" do
         subject.run_action(:register)
         subject.trusted !trusted
-        subject.run_action(:register)
+        subject.run_action(:set)
         expect(subject).to be_updated_by_last_action
       end
     end
@@ -73,9 +73,11 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
         expect(get_installed_package_source_name).to be_empty
       end
 
-      it "does not unregister the package source if not already installed" do
-        subject.run_action(:unregister)
-        expect(subject).not_to be_updated_by_last_action
+      it "does not unregister the package source if not installed" do
+        # subject.run_action(:unregister)
+        # expect(subject).not_to be_updated_by_last_action
+        # expect(subject).to raise_error(RuntimeError)
+        expect{subject.run_action(:unregister)}.to raise_error(RuntimeError)
       end
     end
   end
