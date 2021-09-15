@@ -37,7 +37,7 @@ class Chef
           publish_location             "https://pkgs.dev.azure.com/some-org/some-project/_packaging/some_feed/nuget/v2"
           trusted                      false
           user_name                    "someuser@somelocation.io"
-          user_pass                    "mypassword"
+          user_pass                    "my_password"
           provider_name                "PSRepository"
           action                       :register
         end
@@ -62,7 +62,7 @@ class Chef
         powershell_package_source 'MyDodgyScript' do
           source_name                  "MyDodgyScript"
           script_source_location       "https://pkgs.dev.azure.com/some-org/some-project/_packaging/some_feed/nuget/v2"
-          script_bublish_location      "https://pkgs.dev.azure.com/some-org/some-project/_packaging/some_feed/nuget/v2"
+          script_publish_location      "https://pkgs.dev.azure.com/some-org/some-project/_packaging/some_feed/nuget/v2"
           trusted                      true
           action                       :register
         end
@@ -98,7 +98,7 @@ class Chef
           new_name                     "GoldFishBowl"
           trusted                      true
           user_name                    "user@domain.io"
-          user_pass                    "somesecretpassword"
+          user_pass                    "some_secret_password"
           action                       :set
         end
         ```
@@ -145,7 +145,7 @@ class Chef
       property :provider_name, String,
         equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey winget },
         validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl', 'chocolatey' or 'winget'",
-        description: "The package management provider for the package source. The default is PowerShellGet and this option need only be set otheriwse in specific use cases.",
+        description: "The package management provider for the package source. The default is PowerShellGet and this option need only be set otherwise in specific use cases.",
         default: "NuGet"
 
       load_current_value do
@@ -169,7 +169,7 @@ class Chef
       # Notes:
       # There are 2 objects we care about with this code. 1) The Package Provider which can be Nuget, PowerShellGet, Chocolatey, et al. 2) The PackageSource where the files we want access to live. The Package Provider gets us access to the Package Source.
       # Per the Microsoft docs you can only have one provider for one source. Enter the PSRepository. It is a sub-type of Package Source.
-      # If you register a new PSRepository you get both a PSRepository object AND a Package Source object which are distinct. If you call "Get-PSRepository -Name 'PSGallery'" from powershell, notice that the Pacakgeprovider is Nuget
+      # If you register a new PSRepository you get both a PSRepository object AND a Package Source object which are distinct. If you call "Get-PSRepository -Name 'PSGallery'" from powershell, notice that the Packageprovider is Nuget
       # now go execute "Get-PackageSource -Name 'PSGallery'" and notice that the PackageProvider is PowerShellGet. If you set a new PSRepository without specifying a PackageProvider ("Register-PSRepository -Name 'foo' -source...") the command will create both
       # a PackageSource and a PSRepository with different providers.
 
@@ -180,7 +180,7 @@ class Chef
         package_details = get_package_source_details
         output = package_details.result
         if output == "PSRepository" || output == "PackageSource"
-         action_set
+          action_set
         elsif new_resource.provider_name.downcase.strip == "powershellget"
           converge_by("register source: #{new_resource.source_name}") do
             register_cmd = build_ps_repository_command("Register", new_resource)
@@ -200,17 +200,17 @@ class Chef
         package_details = get_package_source_details
         output = package_details.result
         if output == "PSRepository"
-            converge_if_changed :source_location, :trusted, :publish_location, :script_source_location, :script_publish_location, :source_name do
-                set_cmd = build_ps_repository_command("Set", new_resource)
-                res = powershell_exec(set_cmd)
-                raise "Failed to Update #{new_resource.source_name}: #{res.errors}" if res.error?
-            end
+          converge_if_changed :source_location, :trusted, :publish_location, :script_source_location, :script_publish_location, :source_name do
+            set_cmd = build_ps_repository_command("Set", new_resource)
+            res = powershell_exec(set_cmd)
+            raise "Failed to Update #{new_resource.source_name}: #{res.errors}" if res.error?
+          end
         elsif output == "PackageSource"
-            converge_if_changed :source_location, :trusted, :new_name, :provider_name do
-                set_cmd = build_package_source_command("Set", new_resource)
-                res = powershell_exec(set_cmd)
-                raise "Failed to Update #{new_resource.source_name}: #{res.errors}" if res.error?
-            end
+          converge_if_changed :source_location, :trusted, :new_name, :provider_name do
+            set_cmd = build_package_source_command("Set", new_resource)
+            res = powershell_exec(set_cmd)
+            raise "Failed to Update #{new_resource.source_name}: #{res.errors}" if res.error?
+          end
         end
       end
 

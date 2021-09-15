@@ -74,10 +74,7 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
       end
 
       it "does not unregister the package source if not installed" do
-        # subject.run_action(:unregister)
-        # expect(subject).not_to be_updated_by_last_action
-        # expect(subject).to raise_error(RuntimeError)
-        expect{subject.run_action(:unregister)}.to raise_error(RuntimeError)
+        expect { subject.run_action(:unregister) }.to raise_error(RuntimeError)
       end
     end
   end
