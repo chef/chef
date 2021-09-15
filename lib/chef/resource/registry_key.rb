@@ -127,14 +127,15 @@ class Chef
       property :values, [Hash, Array],
         default: [],
         coerce: proc { |v|
-          case v
-          when Hash
-            @unscrubbed_values = [ Mash.new(v).symbolize_keys ]
-          when Array
-            @unscrubbed_values = v.map { |value| Mash.new(value).symbolize_keys }
-          else
-            @unscrubbed_values = []
-          end
+          @unscrubbed_values =
+            case v
+            when Hash
+              [ Mash.new(v).symbolize_keys ]
+            when Array
+              v.map { |value| Mash.new(value).symbolize_keys }
+            else
+              raise ArgumentError, "Bad type for RegistryKey resource, use Hash or Array"
+            end
           scrub_values(@unscrubbed_values)
         },
         callbacks: {
