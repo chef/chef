@@ -51,10 +51,8 @@ class Chef
       #   log "My secret is #{value}"
       def secret(name: nil, version: nil, service: nil, config: {})
         Chef::Log.warn <<~EOM.gsub("\n", " ")
-          The secrets Chef Infra language helper is currently in beta.
-          This helper will most likely change over time in potentially breaking ways.
-          If you have feedback or you'd like to be part of the future design of this
-          helper e-mail us at secrets_management_beta@progress.com"
+          The secrets Chef Infra language helper is currently in beta. If you have feedback or you'd 
+          like to be part of the future design of this helper e-mail us at secrets_management_beta@progress.com"
         EOM
         sensitive(true) if is_a?(Chef::Resource)
         Chef::SecretFetcher.for_service(service, config, run_context).fetch(name, version)
