@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.3 -->
-## [v16.15.3](https://github.com/chef/chef/tree/v16.15.3) (2021-09-17)
+<!-- latest_release 16.15.4 -->
+## [v16.15.4](https://github.com/chef/chef/tree/v16.15.4) (2021-09-17)
 
 #### Merged Pull Requests
-- use int64 on x64 architecture for LPARAM and LONG_PTR types [#12037](https://github.com/chef/chef/pull/12037) ([tas50](https://github.com/tas50))
+- Fix a typo setting up cookbook_name value in templates [#12038](https://github.com/chef/chef/pull/12038) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.14.1 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix a typo setting up cookbook_name value in templates [#12038](https://github.com/chef/chef/pull/12038) ([tas50](https://github.com/tas50)) <!-- 16.15.4 -->
 - use int64 on x64 architecture for LPARAM and LONG_PTR types [#12037](https://github.com/chef/chef/pull/12037) ([tas50](https://github.com/tas50)) <!-- 16.15.3 -->
 - systemd_unit generates invalid units when passing a hash issue fix [#12036](https://github.com/chef/chef/pull/12036) ([tas50](https://github.com/tas50)) <!-- 16.15.2 -->
 - Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#12035](https://github.com/chef/chef/pull/12035) ([tas50](https://github.com/tas50)) <!-- 16.15.1 -->
