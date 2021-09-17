@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.6 -->
-## [v16.15.6](https://github.com/chef/chef/tree/v16.15.6) (2021-09-17)
+<!-- latest_release 16.15.7 -->
+## [v16.15.7](https://github.com/chef/chef/tree/v16.15.7) (2021-09-17)
 
 #### Merged Pull Requests
-- Fix tests for new omnibus test systems [#12040](https://github.com/chef/chef/pull/12040) ([tas50](https://github.com/tas50))
+- ulimit: Fix sensitive property [#12041](https://github.com/chef/chef/pull/12041) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.14.1 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- ulimit: Fix sensitive property [#12041](https://github.com/chef/chef/pull/12041) ([tas50](https://github.com/tas50)) <!-- 16.15.7 -->
 - Fix tests for new omnibus test systems [#12040](https://github.com/chef/chef/pull/12040) ([tas50](https://github.com/tas50)) <!-- 16.15.6 -->
 - pass homebrew_path, owner props to homebrew_tap if installing cask [#12039](https://github.com/chef/chef/pull/12039) ([tas50](https://github.com/tas50)) <!-- 16.15.5 -->
 - Fix a typo setting up cookbook_name value in templates [#12038](https://github.com/chef/chef/pull/12038) ([tas50](https://github.com/tas50)) <!-- 16.15.4 -->
