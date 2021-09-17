@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.14 -->
-## [v16.15.14](https://github.com/chef/chef/tree/v16.15.14) (2021-09-17)
+<!-- latest_release 16.15.15 -->
+## [v16.15.15](https://github.com/chef/chef/tree/v16.15.15) (2021-09-17)
 
 #### Merged Pull Requests
-- Fix edge condition in deprecation silence checker [#12048](https://github.com/chef/chef/pull/12048) ([tas50](https://github.com/tas50))
+- Coerce mount_point only when it is not root directory [#12049](https://github.com/chef/chef/pull/12049) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.14.1 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Coerce mount_point only when it is not root directory [#12049](https://github.com/chef/chef/pull/12049) ([tas50](https://github.com/tas50)) <!-- 16.15.15 -->
 - Fix edge condition in deprecation silence checker [#12048](https://github.com/chef/chef/pull/12048) ([tas50](https://github.com/tas50)) <!-- 16.15.14 -->
 - Fix handling of ohai properties in chef_client_config [#12047](https://github.com/chef/chef/pull/12047) ([tas50](https://github.com/tas50)) <!-- 16.15.13 -->
 - Support recipes that end in .yaml as well as .yml  [#12046](https://github.com/chef/chef/pull/12046) ([tas50](https://github.com/tas50)) <!-- 16.15.12 -->
