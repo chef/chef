@@ -14,6 +14,16 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 
 #### Merged Pull Requests
 - Bump ffi-libarchive to 1.1.3 [#12032](https://github.com/chef/chef/pull/12032) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.15.0 -->
+- Build on macOS 12 x86
+- Update libarchive and openssl to the latest
+- Update chef-vault and inspec to the latest
+- Bump omnibus from `e3573e7` to `7ce6173` in /omnibus
+- Replace deprecated --without flag with bundle config
+- Bump kitchen-vagrant from 1.9.0 to 1.10.0 in /omnibus
+- Bump omnibus-software from `a4f73e4` to `4653e83` in /omnibus
+- Backport: group: fix gid in use error on macOS
+- Bump omnibus from `999a4e0` to `e3573e7` in /omnibus
+- Bump omnibus from `9ffcd89` to `999a4e0` in /omnibus
 - Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11884](https://github.com/chef/chef/pull/11884) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.14.2 -->
 <!-- release_rollup -->
 
