@@ -79,10 +79,12 @@ class Chef
         return true if location =~ /^(.*?):(\d+):in/ && begin
           # Don't buffer the whole file in memory, so read it one line at a time.
           line_no = $2.to_i
-          location_file = ::File.open($1)
-          (line_no - 1).times { location_file.readline } # Read all the lines we don't care about.
-          relevant_line = location_file.readline
-          relevant_line.match?(/#.*chef:silence_deprecation($|[^:]|:#{self.class.deprecation_key})/)
+          if File.exist?($1) # some stacktraces come from `eval` and not a file
+            location_file = ::File.open($1)
+            (line_no - 1).times { location_file.readline } # Read all the lines we don't care about.
+            relevant_line = location_file.readline
+            relevant_line.match?(/#.*chef:silence_deprecation($|[^:]|:#{self.class.deprecation_key})/)
+          end
         end
 
         false
