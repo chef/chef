@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::Resource::HomebrewCask do
 
-  context 'name with under bar' do
+  context "name with under bar" do
     let(:resource) { Chef::Resource::HomebrewCask.new("fakey_fakerton") }
 
     it "has a resource name of :homebrew_cask" do
@@ -40,7 +40,7 @@ describe Chef::Resource::HomebrewCask do
     end
   end
 
-  context 'name with high fun' do
+  context "name with high fun" do
     let(:resource) { Chef::Resource::HomebrewCask.new("fakey-fakerton") }
 
     it "the cask_name property is the name_property" do
@@ -48,7 +48,7 @@ describe Chef::Resource::HomebrewCask do
     end
   end
 
-  context 'name with at mark' do
+  context "name with at mark" do
     let(:resource) { Chef::Resource::HomebrewCask.new("fakey-fakerton@10") }
 
     it "the cask_name property is the name_property" do
