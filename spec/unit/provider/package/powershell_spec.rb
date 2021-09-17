@@ -105,6 +105,10 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
   let(:generated_install_cmdlet) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version" }
   let(:generated_install_cmdlet_with_version) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 1.0.0.0 ).Version" }
   let(:generated_install_cmdlet_with_source) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery ).Version" }
+  let(:generated_install_cmdlet_with_options) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -AcceptLicense -Verbose ).Version" }
+  let(:generated_install_cmdlet_with_version_and_options) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 1.0.0.0 -AcceptLicense -Verbose ).Version" }
+  let(:generated_install_cmdlet_with_source_and_options) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -Source MyGallery -AcceptLicense -Verbose ).Version" }
+  let(:generated_install_cmdlet_with_source_and_version_and_options) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 1.0.0.0 -Source MyGallery -AcceptLicense -Verbose ).Version" }
   let(:generated_install_cmdlet_with_source_and_version) { "#{tls_set_command} ( Install-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 1.0.0.0 -Source MyGallery ).Version" }
   let(:generated_uninstall_cmdlet) { "#{tls_set_command} ( Uninstall-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version" }
   let(:generated_uninstall_cmdlet_with_version) { "#{tls_set_command} ( Uninstall-Package xNetworking -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 1.0.0.0 ).Version" }
@@ -204,11 +208,11 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
     end
 
     context "when source is nil" do
-      it "build get commands correctly" do
+      it "builds get commands correctly" do
         expect(provider.build_powershell_package_command("Get-Package xNetworking")).to eql(generated_get_cmdlet)
       end
 
-      it "build get commands correctly when a version is passed" do
+      it "builds get commands correctly when a version is passed" do
         expect(provider.build_powershell_package_command("Get-Package xNetworking", "1.0.0.0")).to eql(generated_get_cmdlet_with_version)
       end
 
@@ -220,30 +224,45 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
         expect(provider.build_powershell_package_command("Find-Package xNetworking", "1.0.0.0")).to eql(generated_find_cmdlet_with_version)
       end
 
-      it "build install commands correctly" do
+      it "builds install commands correctly" do
         expect(provider.build_powershell_package_command("Install-Package xNetworking")).to eql(generated_install_cmdlet)
       end
 
-      it "build install commands correctly when a version is passed" do
+      it "builds install commands correctly when a version is passed" do
         expect(provider.build_powershell_package_command("Install-Package xNetworking", "1.0.0.0")).to eql(generated_install_cmdlet_with_version)
       end
 
-      it "build install commands correctly" do
+      it "builds install commands correctly when options are passed" do
+        new_resource.options("-AcceptLicense -Verbose")
+        expect(provider.build_powershell_package_command("Install-Package xNetworking")).to eql(generated_install_cmdlet_with_options)
+      end
+
+      it "builds install commands correctly when duplicate options are passed" do
+        new_resource.options("-WarningAction SilentlyContinue")
+        expect(provider.build_powershell_package_command("Install-Package xNetworking")).to eql(generated_install_cmdlet)
+      end
+
+      it "builds install commands correctly when a version and options are passed" do
+        new_resource.options("-AcceptLicense -Verbose")
+        expect(provider.build_powershell_package_command("Install-Package xNetworking", "1.0.0.0")).to eql(generated_install_cmdlet_with_version_and_options)
+      end
+
+      it "builds install commands correctly" do
         expect(provider.build_powershell_package_command("Uninstall-Package xNetworking")).to eql(generated_uninstall_cmdlet)
       end
 
-      it "build install commands correctly when a version is passed" do
+      it "builds install commands correctly when a version is passed" do
         expect(provider.build_powershell_package_command("Uninstall-Package xNetworking", "1.0.0.0")).to eql(generated_uninstall_cmdlet_with_version)
       end
     end
 
     context "when source is set" do
-      it "build get commands correctly" do
+      it "builds get commands correctly" do
         new_resource.source("MyGallery")
         expect(provider.build_powershell_package_command("Get-Package xNetworking")).to eql(generated_get_cmdlet)
       end
 
-      it "build get commands correctly when a version is passed" do
+      it "builds get commands correctly when a version is passed" do
         new_resource.source("MyGallery")
         expect(provider.build_powershell_package_command("Get-Package xNetworking", "1.0.0.0")).to eql(generated_get_cmdlet_with_version)
       end
@@ -258,22 +277,40 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
         expect(provider.build_powershell_package_command("Find-Package xNetworking", "1.0.0.0")).to eql(generated_find_cmdlet_with_source_and_version)
       end
 
-      it "build install commands correctly" do
+      it "builds install commands correctly" do
         new_resource.source("MyGallery")
         expect(provider.build_powershell_package_command("Install-Package xNetworking")).to eql(generated_install_cmdlet_with_source)
       end
 
-      it "build install commands correctly when a version is passed" do
+      it "builds install commands correctly when a version is passed" do
         new_resource.source("MyGallery")
         expect(provider.build_powershell_package_command("Install-Package xNetworking", "1.0.0.0")).to eql(generated_install_cmdlet_with_source_and_version)
       end
 
-      it "build install commands correctly" do
+      it "builds install commands correctly when options are passed" do
+        new_resource.source("MyGallery")
+        new_resource.options("-AcceptLicense -Verbose")
+        expect(provider.build_powershell_package_command("Install-Package xNetworking")).to eql(generated_install_cmdlet_with_source_and_options)
+      end
+
+      it "builds install commands correctly when duplicate options are passed" do
+        new_resource.source("MyGallery")
+        new_resource.options("-Force -ForceBootstrap")
+        expect(provider.build_powershell_package_command("Install-Package xNetworking")).to eql(generated_install_cmdlet_with_source)
+      end
+
+      it "builds install commands correctly when a version and options are passed" do
+        new_resource.source("MyGallery")
+        new_resource.options("-AcceptLicense -Verbose")
+        expect(provider.build_powershell_package_command("Install-Package xNetworking", "1.0.0.0")).to eql(generated_install_cmdlet_with_source_and_version_and_options)
+      end
+
+      it "builds install commands correctly" do
         new_resource.source("MyGallery")
         expect(provider.build_powershell_package_command("Uninstall-Package xNetworking")).to eql(generated_uninstall_cmdlet)
       end
 
-      it "build install commands correctly when a version is passed" do
+      it "builds install commands correctly when a version is passed" do
         new_resource.source("MyGallery")
         expect(provider.build_powershell_package_command("Uninstall-Package xNetworking", "1.0.0.0")).to eql(generated_uninstall_cmdlet_with_version)
       end
@@ -434,6 +471,19 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       provider.run_action(:install)
       expect(new_resource).to be_updated_by_last_action
     end
+
+    it "should install a package using provided options" do
+      provider.load_current_resource
+      new_resource.package_name(["xCertificate"])
+      new_resource.version(nil)
+      new_resource.options(%w{-AcceptLicense -Verbose})
+      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Install-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -RequiredVersion 2.1.0.0 -AcceptLicense -Verbose ).Version", { timeout: new_resource.timeout })
+      provider.run_action(:install)
+      expect(new_resource).to be_updated_by_last_action
+    end
   end
 
   describe "#action_remove" do
@@ -496,6 +546,18 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
       allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
       provider.load_current_resource
       expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
+      provider.run_action(:remove)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should remove a package using provided options" do
+      new_resource.package_name(["xCertificate"])
+      new_resource.options(%w{-AllVersions})
+      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Find-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("#{tls_set_command} ( Get-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_available)
+      allow(provider).to receive(:powershell_out).with("$PSVersionTable.PSVersion.Major").and_return(powershell_installed_version)
+      provider.load_current_resource
+      expect(provider).to receive(:powershell_out).with("#{tls_set_command} ( Uninstall-Package 'xCertificate' -Force -ForceBootstrap -WarningAction SilentlyContinue -AllVersions ).Version", { timeout: new_resource.timeout }).and_return(package_xcertificate_not_available)
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
     end
