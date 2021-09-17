@@ -59,6 +59,16 @@ describe Chef::Resource::Mount do
     expect(resource.mount_point).to eql("//192.168.11.102/Share/backup")
   end
 
+  it "does not strip slash when mount_point is root directory" do
+    resource.mount_point "/"
+    expect(resource.mount_point).to eql("/")
+  end
+
+  it "does not strip slash when mount_point is root of network mount" do
+    resource.mount_point "127.0.0.1:/"
+    expect(resource.mount_point).to eql("127.0.0.1:/")
+  end
+
   it "raises error when mount_point property is not set" do
     expect { resource.mount_point nil }.to raise_error(Chef::Exceptions::ValidationFailed, "Property mount_point must be one of: String!  You passed nil.")
   end
