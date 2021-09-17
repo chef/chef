@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.16 -->
-## [v16.15.16](https://github.com/chef/chef/tree/v16.15.16) (2021-09-17)
+<!-- latest_release 16.15.17 -->
+## [v16.15.17](https://github.com/chef/chef/tree/v16.15.17) (2021-09-17)
 
 #### Merged Pull Requests
-- Deprecate the old policyfile compat mode [#12050](https://github.com/chef/chef/pull/12050) ([tas50](https://github.com/tas50))
+- Support attribute block/allow list in data collector [#12051](https://github.com/chef/chef/pull/12051) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.14.1 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support attribute block/allow list in data collector [#12051](https://github.com/chef/chef/pull/12051) ([tas50](https://github.com/tas50)) <!-- 16.15.17 -->
 - Deprecate the old policyfile compat mode [#12050](https://github.com/chef/chef/pull/12050) ([tas50](https://github.com/tas50)) <!-- 16.15.16 -->
 - Coerce mount_point only when it is not root directory [#12049](https://github.com/chef/chef/pull/12049) ([tas50](https://github.com/tas50)) <!-- 16.15.15 -->
 - Fix edge condition in deprecation silence checker [#12048](https://github.com/chef/chef/pull/12048) ([tas50](https://github.com/tas50)) <!-- 16.15.14 -->
