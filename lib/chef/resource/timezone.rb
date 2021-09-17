@@ -38,7 +38,7 @@ class Chef
       **Set the timezone to America/Los_Angeles with a friendly resource name on Linux/macOS**
 
       ```ruby
-      timezone 'Set the host's timezone to America/Los_Angeles' do
+      timezone "Set the host's timezone to America/Los_Angeles" do
         timezone 'America/Los_Angeles'
       end
       ```
@@ -46,7 +46,7 @@ class Chef
       **Set the timezone to PST with a friendly resource name on Windows**
 
       ```ruby
-      timezone 'Set the host's timezone to PST' do
+      timezone "Set the host's timezone to PST" do
         timezone 'Pacific Standard time'
       end
       ```
