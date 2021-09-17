@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.10 -->
-## [v16.15.10](https://github.com/chef/chef/tree/v16.15.10) (2021-09-17)
+<!-- latest_release 16.15.11 -->
+## [v16.15.11](https://github.com/chef/chef/tree/v16.15.11) (2021-09-17)
 
 #### Merged Pull Requests
-- windows_uac: fix registry settings for consent_behavior_users [#12044](https://github.com/chef/chef/pull/12044) ([tas50](https://github.com/tas50))
+- Chef -&gt; Chef Infra Client in error message [#12045](https://github.com/chef/chef/pull/12045) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.14.1 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef -&gt; Chef Infra Client in error message [#12045](https://github.com/chef/chef/pull/12045) ([tas50](https://github.com/tas50)) <!-- 16.15.11 -->
 - windows_uac: fix registry settings for consent_behavior_users [#12044](https://github.com/chef/chef/pull/12044) ([tas50](https://github.com/tas50)) <!-- 16.15.10 -->
 - Downgraded the Log level to warn as per AHA idea I-25 [#12043](https://github.com/chef/chef/pull/12043) ([tas50](https://github.com/tas50)) <!-- 16.15.9 -->
 - windows_uac: fix registry settings for consent_behavior_users [#12042](https://github.com/chef/chef/pull/12042) ([tas50](https://github.com/tas50)) <!-- 16.15.8 -->
