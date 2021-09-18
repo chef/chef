@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15] # macos-11.0 is not public for now
+        os: [macos-10.15, macos-11]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
         ruby: ['3.0']
     runs-on: ${{ matrix.os }}
