@@ -32,6 +32,7 @@ class Chef
       attr_reader :events
       attr_reader :run_list_expansion
       attr_reader :logger
+      attr_reader :run_context
 
       def initialize(run_context, run_list_expansion, events)
         @run_context = run_context
@@ -43,23 +44,51 @@ class Chef
 
       # Chef::Node object for the current run.
       def node
-        @run_context.node
+        run_context.node
       end
 
       # Chef::CookbookCollection object for the current run
       def cookbook_collection
-        @run_context.cookbook_collection
+        run_context.cookbook_collection
       end
 
       # Resource Definitions from the compiled cookbooks. This is populated by
       # calling #compile_resource_definitions (which is called by #compile)
       def definitions
-        @run_context.definitions
+        run_context.definitions
+      end
+
+      # The global waiver_collection hanging off of the run_context, used by
+      # compile_compliance and the compliance phase that runs inspec
+      #
+      # @returns [Chef::Compliance::WaiverCollection]
+      #
+      def waiver_collection
+        run_context.waiver_collection
+      end
+
+      # The global input_collection hanging off of the run_context, used by
+      # compile_compliance and the compliance phase that runs inspec
+      #
+      # @returns [Chef::Compliance::inputCollection]
+      #
+      def input_collection
+        run_context.input_collection
+      end
+
+      # The global profile_collection hanging off of the run_context, used by
+      # compile_compliance and the compliance phase that runs inspec
+      #
+      # @returns [Chef::Compliance::ProfileCollection]
+      #
+      def profile_collection
+        run_context.profile_collection
       end
 
       # Run the compile phase of the chef run. Loads files in the following order:
       # * Libraries
       # * Ohai
+      # * Compliance Profiles/Waivers
       # * Attributes
       # * LWRPs
       # * Resource Definitions
@@ -73,6 +102,7 @@ class Chef
       def compile
         compile_libraries
         compile_ohai_plugins
+        compile_compliance
         compile_attributes
         compile_lwrps
         compile_resource_definitions
@@ -134,6 +164,30 @@ class Chef
         @events.ohai_plugin_load_complete
       end
 
+      # Loads the compliance segment files from the cookbook into the collections
+      # hanging off of the run_context, for later use in the compliance phase
+      # inspec run.
+      #
+      def compile_compliance
+        @events.compliance_load_start
+        @events.profiles_load_start
+        cookbook_order.each do |cookbook|
+          load_profiles_from_cookbook(cookbook)
+        end
+        @events.profiles_load_complete
+        @events.inputs_load_start
+        cookbook_order.each do |cookbook|
+          load_inputs_from_cookbook(cookbook)
+        end
+        @events.inputs_load_complete
+        @events.waivers_load_start
+        cookbook_order.each do |cookbook|
+          load_waivers_from_cookbook(cookbook)
+        end
+        @events.waivers_load_complete
+        @events.compliance_load_complete
+      end
+
       # Loads attributes files from cookbooks. Attributes files are loaded
       # according to #cookbook_order; within a cookbook, +default.rb+ is loaded
       # first, then the remaining attributes files in lexical sort order.
@@ -171,7 +225,7 @@ class Chef
         run_list_expansion.recipes.each do |recipe|
 
           path = resolve_recipe(recipe)
-          @run_context.load_recipe(recipe)
+          run_context.load_recipe(recipe)
           @events.recipe_file_loaded(path, recipe)
         rescue Chef::Exceptions::RecipeNotFound => e
           @events.recipe_not_found(e)
@@ -285,6 +339,36 @@ class Chef
 
           FileUtils.mkdir_p(File.dirname(target_name))
           FileUtils.cp(filename, target_name)
+        end
+      end
+
+      # Load the compliance segment files from a single cookbook
+      #
+      def load_profiles_from_cookbook(cookbook_name)
+        # This identifies profiles by their inspec.yml file, we recurse into subdirs so the profiles may be deeply
+        # nested in a subdir structure for organization.  You could have profiles inside of profiles but
+        # since that is not coherently defined, you should not.
+        #
+        each_file_in_cookbook_by_segment(cookbook_name, :compliance, [ "profiles/**/inspec.{yml,yaml}" ]) do |filename|
+          profile_collection.from_file(filename, cookbook_name)
+        end
+      end
+
+      def load_waivers_from_cookbook(cookbook_name)
+        # This identifies waiver files as any yaml files under the waivers subdir.  We recurse into subdirs as well
+        # so that waivers may be nested in subdirs for organization.  Any other files are ignored.
+        #
+        each_file_in_cookbook_by_segment(cookbook_name, :compliance, [ "waivers/**/*.{yml,yaml}" ]) do |filename|
+          waiver_collection.from_file(filename, cookbook_name)
+        end
+      end
+
+      def load_inputs_from_cookbook(cookbook_name)
+        # This identifies input files as any yaml files under the inputs subdir.  We recurse into subdirs as well
+        # so that inputs may be nested in subdirs for organization.  Any other files are ignored.
+        #
+        each_file_in_cookbook_by_segment(cookbook_name, :compliance, [ "inputs/**/*.{yml,yaml}" ]) do |filename|
+          input_collection.from_file(filename, cookbook_name)
         end
       end
 

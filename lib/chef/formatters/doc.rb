@@ -363,6 +363,52 @@ class Chef
         end
       end
 
+      # Called when compliance profile loading starts
+      def profiles_load_start
+        puts_line("Loading #{Inspec::Dist::PRODUCT_NAME} profile files:")
+      end
+
+      # Called when compliance input loading starts
+      def inputs_load_start
+        puts_line("Loading #{Inspec::Dist::PRODUCT_NAME} input files:")
+      end
+
+      # Called when compliance waiver loading starts
+      def waivers_load_start
+        puts_line("Loading #{Inspec::Dist::PRODUCT_NAME} waiver files:")
+      end
+
+      # Called when a compliance profile is found in a cookbook by the cookbook_compiler
+      def compliance_profile_loaded(profile)
+        start_line("  - #{profile.cookbook_name}::#{profile.pathname}", :cyan)
+        puts " (#{profile.version})", :cyan if profile.version
+      end
+
+      # Called when a compliance waiver is found in a cookbook by the cookbook_compiler
+      def compliance_input_loaded(input)
+        puts_line("  - #{input.cookbook_name}::#{input.pathname}", :cyan)
+      end
+
+      # Called when a compliance waiver is found in a cookbook by the cookbook_compiler
+      def compliance_waiver_loaded(waiver)
+        puts_line("  - #{waiver.cookbook_name}::#{waiver.pathname}", :cyan)
+      end
+
+      # Called when a compliance profile is enabled (by include_profile)
+      def compliance_profile_enabled(profile)
+        # puts_line("  * FIXME", :cyan)
+      end
+
+      # Called when a compliance waiver is enabled (by include_waiver)
+      def compliance_waiver_enabled(waiver)
+        # puts_line("  * FIXME", :cyan)
+      end
+
+      # Called when a compliance input is enabled (by include_input)
+      def compliance_input_enabled(input)
+        # puts_line("  * FIXME", :cyan)
+      end
+
       # (see Base#deprecation)
       def deprecation(deprecation, _location = nil)
         if Chef::Config[:treat_deprecation_warnings_as_errors]
