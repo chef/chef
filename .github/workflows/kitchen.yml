@@ -108,7 +108,7 @@ jobs:
           - 'oraclelinux-8'
           - 'ubuntu-1804'
           - 'ubuntu-2004'
-          - 'ubuntu-2104'
+          - 'ubuntu-2110'
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
