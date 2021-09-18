@@ -64,8 +64,8 @@ describe Chef::Compliance::Input do
     expect(input.enabled?).to eql(false)
   end
 
-  it "has a #for_inspec method that renders the path" do
-    expect(input.for_inspec).to eql(path)
+  it "has a #for_inspec method that renders the data" do
+    expect(input.for_inspec).to eql(data)
   end
 
   it "doesn't render the events in the inspect output" do
