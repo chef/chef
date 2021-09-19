@@ -11,10 +11,10 @@ dmg_package "LittleSecrets" do
   action   :install
 end
 
-dmg_package "virtualbox" do
-  app "virtualbox"
-  source "http://download.virtualbox.org/virtualbox/6.1.8/VirtualBox-6.1.8-137981-OSX.dmg"
-  checksum "569e91eb3c7cb002d407b236a7aa71ac610cf2ad1afa03730dab11fbd4b89e7c"
+dmg_package "InSpec" do
+  app "InSpec"
+  source "https://packages.chef.io/files/stable/inspec/4.41.20/mac_os_x/11/inspec-4.41.20-1.x86_64.dmg"
+  checksum "e18cecc1b5827b172a0be3f12da71746b9b731c60248577163e63498b7afb050"
   type "pkg"
   accept_eula true
   allow_untrusted true
