@@ -59,7 +59,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
-    - apt-get install -y cron locales # needed for functional tests to pass
+    - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:functional
@@ -72,6 +72,8 @@ steps:
 - label: "Unit Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - apt-get update -y
+    - apt-get install -y libarchive-dev
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:unit
@@ -97,7 +99,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
-    - apt-get install -y cron locales # needed for functional tests to pass
+    - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:functional
@@ -110,6 +112,8 @@ steps:
 - label: "Unit Ubuntu 20.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - apt-get update -y
+    - apt-get install -y libarchive-dev
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:unit
@@ -135,6 +139,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
+    - yum install -y libarchive-devel
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:functional
@@ -147,6 +152,7 @@ steps:
 - label: "Unit CentOS 7 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - yum install -y libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:unit
@@ -173,6 +179,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
+    - zypper install -y libarchive-devel
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:functional
@@ -185,7 +192,7 @@ steps:
 - label: "Unit openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - zypper install -y cron insserv-compat
+    - zypper install -y cron insserv-compat libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:unit
@@ -226,6 +233,7 @@ steps:
 - label: "Unit Fedora :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle
     - bundle exec rake spec:unit
