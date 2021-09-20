@@ -20,29 +20,6 @@
 require "rubygems"
 require "rake"
 
-puts "--- Loading ruby_installer"
-
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  begin
-    require "ruby_installer"
-    libarchive_path = File.expand_path(Dir.glob("#{Gem.dir}/**/libarchive.dll")&.first)
-    raise "Could not find libarchive.dll in #{Gem.dir}"
-    libarchive_dir = File.dirname(libarchive_path)
-
-    if defined?(RubyInstaller::Build)
-      RubyInstaller::Build.add_dll_directory(libarchive_path)
-    elsif defined?(RubyInstaller::Runtime)
-      RubyInstaller::Runtime.add_dll_directory(libarchive_path)
-    else
-      puts "Unable to find the right namespace to call #add_dll_directory! Please raise an issue on GitHub."
-    end
-  rescue LoadError
-    puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
-  end
-end
-
-puts "--- After loading ruby_installer"
-
 begin
   require "rspec/core/rake_task"
 
