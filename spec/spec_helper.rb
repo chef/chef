@@ -26,6 +26,7 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
     require "ruby_installer"
     libarchive_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/libarchive.dll").map { |f| File.expand_path(f) }
     raise "Could not find a libarchive.dll in #{Gem.dir} or C:/hab" if libarchive_paths.empty?
+
     puts "Found the following libarchive paths:\n\n#{libarchive_paths.map { |f| "- #{f}\n" }.join}\n"
     libarchive_path = libarchive_paths.first
     libarchive_dir = File.dirname(libarchive_path)
