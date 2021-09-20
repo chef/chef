@@ -32,10 +32,10 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 
     if defined?(RubyInstaller::Build) && RubyInstaller::Build.methods.include?(:add_dll_directory)
       puts "Adding #{libarchive_dir} as a DLL load path using RubyInstaller::Build#add_dll_directory"
-      p RubyInstaller::Build.add_dll_directory(libarchive_path)
+      p RubyInstaller::Build.add_dll_directory(libarchive_dir)
     elsif defined?(RubyInstaller::Runtime) && RubyInstaller::Runtime.methods.include?(:add_dll_directory)
       puts "Adding #{libarchive_dir} as a DLL load path using RubyInstaller::Runtime#add_dll_directory"
-      p RubyInstaller::Runtime.add_dll_directory(libarchive_path)
+      p RubyInstaller::Runtime.add_dll_directory(libarchive_dir)
     else
       puts "Unable to find the right namespace to call #add_dll_directory! Please raise an issue on GitHub."
     end
