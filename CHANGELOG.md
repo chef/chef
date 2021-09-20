@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.21 -->
-## [v16.15.21](https://github.com/chef/chef/tree/v16.15.21) (2021-09-17)
+<!-- latest_release 16.15.22 -->
+## [v16.15.22](https://github.com/chef/chef/tree/v16.15.22) (2021-09-20)
 
 #### Merged Pull Requests
-- Flush package cache after attaching to rhsm subscription [#12057](https://github.com/chef/chef/pull/12057) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `e0d92a6` to `d880e20` in /omnibus [#12063](https://github.com/chef/chef/pull/12063) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.14.1 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `e0d92a6` to `d880e20` in /omnibus [#12063](https://github.com/chef/chef/pull/12063) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.15.22 -->
 - Flush package cache after attaching to rhsm subscription [#12057](https://github.com/chef/chef/pull/12057) ([tas50](https://github.com/tas50)) <!-- 16.15.21 -->
 - Refactor the code for windows_security_policy resource [#12056](https://github.com/chef/chef/pull/12056) ([tas50](https://github.com/tas50)) <!-- 16.15.20 -->
 - windows_security_policy: Add AuditPolicyChange and LockoutDuration capabilities [#12055](https://github.com/chef/chef/pull/12055) ([tas50](https://github.com/tas50)) <!-- 16.15.19 -->
