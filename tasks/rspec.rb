@@ -25,6 +25,8 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
     require "ruby_installer"
     proj_root = File.expand_path("..", __dir__)
     libarchive_path = File.expand_path(Dir.glob("#{proj_root}/**/libarchive.dll")&.first)
+    raise "Could not find libarchive.dll in #{proj_dir}"
+
     if defined?(RubyInstaller::Build)
       RubyInstaller::Build.add_dll_directory(libarchive_path)
     elsif defined?(RubyInstaller::Runtime)
