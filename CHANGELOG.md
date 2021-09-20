@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.5.13 -->
+## [v17.5.13](https://github.com/chef/chef/tree/v17.5.13) (2021-09-20)
 
 #### Merged Pull Requests
+- Don&#39;t setup broken symlink to knife [#12064](https://github.com/chef/chef/pull/12064) ([lamont-granquist](https://github.com/lamont-granquist))
 - Test on Windows 2022 in GitHub actions [#12060](https://github.com/chef/chef/pull/12060) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t setup broken symlink to knife [#12064](https://github.com/chef/chef/pull/12064) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.13 -->
 - Test on Windows 2022 in GitHub actions [#12060](https://github.com/chef/chef/pull/12060) ([tas50](https://github.com/tas50)) <!-- 17.5.12 -->
 - registry_key: convert values to a real property [#12018](https://github.com/chef/chef/pull/12018) ([rishichawda](https://github.com/rishichawda)) <!-- 17.5.12 -->
 - Bump ffi-libarchive to 1.1.3 [#12031](https://github.com/chef/chef/pull/12031) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.5.11 -->
