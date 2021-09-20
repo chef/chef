@@ -20,6 +20,15 @@
 require "rubygems"
 require "rake"
 
+if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  begin
+    require "ruby_installer"
+  rescue LoadError
+    defined?(RubyInstaller::Runtime)
+    RubyInstaller::Runtime.add_dll_directory()
+  end
+end
+
 begin
   require "rspec/core/rake_task"
 
