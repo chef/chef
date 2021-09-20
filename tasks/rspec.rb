@@ -23,9 +23,17 @@ require "rake"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   begin
     require "ruby_installer"
+    proj_root = File.expand_path("..", __dir__)
+    libarchive_path = File.expand_path(Dir.glob("#{proj_root}/**/libarchive.dll")&.first)
+    if defined?(RubyInstaller::Build)
+      RubyInstaller::Build.add_dll_directory(libarchive_path)
+    elsif defined?(RubyInstaller::Runtime)
+      RubyInstaller::Runtime.add_dll_directory(libarchive_path)
+    else
+      puts "Unable to find the right namespace to call #add_dll_directory! Please raise an issue on GitHub."
+    end
   rescue LoadError
-    defined?(RubyInstaller::Runtime)
-    RubyInstaller::Runtime.add_dll_directory()
+    puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
   end
 end
 
