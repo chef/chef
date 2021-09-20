@@ -26,17 +26,16 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
     require "ruby_installer"
     libarchive_paths = Dir.glob("#{Gem.dir}/**/libarchive.dll").map { |f| File.expand_path(f) }
     raise "Could not find a libarchive.dll in #{Gem.dir}" if libarchive_paths.empty?
-    puts "Found the following libarchive paths:\n\n#{libarchive_paths.map { |f| "- #{f}\n" }.join}"
+    puts "Found the following libarchive paths:\n\n#{libarchive_paths.map { |f| "- #{f}\n" }.join}\n"
     libarchive_path = libarchive_paths.first
     libarchive_dir = File.dirname(libarchive_path)
 
-    puts "Adding #{libarchive_dir} as a DLL load path"
     if defined?(RubyInstaller::Build) && RubyInstaller::Build.methods.include?(:add_dll_directory)
       puts "Adding #{libarchive_dir} as a DLL load path using RubyInstaller::Build#add_dll_directory"
-      RubyInstaller::Build.add_dll_directory(libarchive_path)
+      p RubyInstaller::Build.add_dll_directory(libarchive_path)
     elsif defined?(RubyInstaller::Runtime) && RubyInstaller::Runtime.methods.include?(:add_dll_directory)
       puts "Adding #{libarchive_dir} as a DLL load path using RubyInstaller::Runtime#add_dll_directory"
-      RubyInstaller::Runtime.add_dll_directory(libarchive_path)
+      p RubyInstaller::Runtime.add_dll_directory(libarchive_path)
     else
       puts "Unable to find the right namespace to call #add_dll_directory! Please raise an issue on GitHub."
     end
