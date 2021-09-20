@@ -2,9 +2,6 @@ Write-Output "--- system details"
 $Properties = 'Caption', 'CSName', 'Version', 'BuildType', 'OSArchitecture'
 Get-CimInstance Win32_OperatingSystem | Select-Object $Properties | Format-Table -AutoSize
 
-$CurrentDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-$env:RUBY_DLL_PATH = "${CurrentDirectory}\..\..\vendor\bundle\ruby\3.0.0\gems\mixlib-archive-1.1.7-universal-mingw32\distro\ruby_bin_folder"
-
 # chocolatey functional tests fail so delete the chocolatey binary to avoid triggering them
 Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyContinue
 
