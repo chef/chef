@@ -25,9 +25,9 @@ puts "--- Loading ruby_installer"
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   begin
     require "ruby_installer"
-    proj_root = File.expand_path("..", __dir__)
-    libarchive_path = File.expand_path(Dir.glob("#{proj_root}/**/libarchive.dll")&.first)
-    raise "Could not find libarchive.dll in #{proj_dir}"
+    libarchive_path = File.expand_path(Dir.glob("#{Gem.dir}/**/libarchive.dll")&.first)
+    raise "Could not find libarchive.dll in #{Gem.dir}"
+    libarchive_dir = File.dirname(libarchive_path)
 
     if defined?(RubyInstaller::Build)
       RubyInstaller::Build.add_dll_directory(libarchive_path)
