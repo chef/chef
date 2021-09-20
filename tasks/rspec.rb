@@ -20,6 +20,8 @@
 require "rubygems"
 require "rake"
 
+puts "--- Loading ruby_installer"
+
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
   begin
     require "ruby_installer"
@@ -38,6 +40,8 @@ if RUBY_PLATFORM =~ /mswin|mingw32|windows/
     puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
   end
 end
+
+puts "--- After loading ruby_installer"
 
 begin
   require "rspec/core/rake_task"
