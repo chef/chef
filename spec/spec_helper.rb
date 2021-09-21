@@ -18,37 +18,6 @@
 # If you need to add anything in here, don't.
 # Add it to one of the files in spec/support
 
-puts "--- Loading ruby_installer"
-
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  puts "Running on Windows, attempting to add the directory that houses libarchive.dll as a DLL directory to load from."
-  begin
-    require "ruby_installer"
-    libarchive_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/libarchive.dll").map { |f| File.expand_path(f) }
-    raise "Could not find a libarchive.dll in #{Gem.dir} or C:/hab" if libarchive_paths.empty?
-
-    puts "Found the following libarchive paths:\n\n#{libarchive_paths.map { |f| "- #{f}\n" }.join}\n"
-    libarchive_path = libarchive_paths.first
-    libarchive_dir = File.dirname(libarchive_path)
-
-    if defined?(RubyInstaller::Build) && RubyInstaller::Build.methods.include?(:add_dll_directory)
-      puts "Adding #{libarchive_dir} as a DLL load path using RubyInstaller::Build#add_dll_directory"
-      p RubyInstaller::Build.add_dll_directory(libarchive_dir)
-    elsif defined?(RubyInstaller::Runtime) && RubyInstaller::Runtime.methods.include?(:add_dll_directory)
-      puts "Adding #{libarchive_dir} as a DLL load path using RubyInstaller::Runtime#add_dll_directory"
-      p RubyInstaller::Runtime.add_dll_directory(libarchive_dir)
-    else
-      puts "Unable to find the right namespace to call #add_dll_directory! Please raise an issue on GitHub."
-    end
-  rescue LoadError
-    puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
-  end
-else
-  puts "Running on Linux, no need to load ruby_installer."
-end
-
-puts "--- After loading ruby_installer"
-
 # Abuse ruby's constant lookup to avoid undefined constant errors
 module Shell
   JUST_TESTING_MOVE_ALONG = true unless defined? JUST_TESTING_MOVE_ALONG
