@@ -33,7 +33,8 @@ export CHEF_LICENSE="accept-silent"
 echo "--- Installing Gems"
 echo 'gem: --no-document' >> ~/.gemrc
 sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-bundle install --jobs=3 --retry=3 --path=../vendor/bundle
+bundle config set --local path 'vendor/bundle'
+bundle install --jobs=3 --retry=3
 
 echo "--- Config information"
 

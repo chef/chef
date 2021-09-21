@@ -20,7 +20,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd chef-utils
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec
   expeditor:
     executor:
@@ -32,7 +33,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd chef-config
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec
   expeditor:
     executor:
@@ -47,7 +49,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -61,7 +64,8 @@ steps:
     - apt-get update -y
     - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -75,7 +79,8 @@ steps:
     - apt-get update -y
     - apt-get install -y libarchive-dev
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -87,7 +92,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -101,7 +107,8 @@ steps:
     - apt-get update -y
     - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -115,7 +122,8 @@ steps:
     - apt-get update -y
     - apt-get install -y libarchive-dev
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -127,7 +135,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -141,7 +150,8 @@ steps:
     - yum install -y crontabs e2fsprogs
     - yum install -y libarchive-devel
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -154,7 +164,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y libarchive-devel
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -167,7 +178,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -181,7 +193,8 @@ steps:
     - zypper install -y cronie insserv-compat
     - zypper install -y libarchive-devel
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -194,7 +207,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat libarchive-devel
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -206,7 +220,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -219,7 +234,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -235,7 +251,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -287,7 +304,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant
   expeditor:
     executor:
@@ -301,7 +319,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chef/cheffish main rake spec
   expeditor:
     executor:
@@ -312,7 +331,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chefspec/chefspec main rake
   expeditor:
     executor:
@@ -323,7 +343,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec
   expeditor:
     executor:
@@ -336,7 +357,8 @@ steps:
     - apt-get update -y
     - apt-get install -y graphviz
     - bundle config set --local without omnibus_package
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
     - bundle exec tasks/bin/run_external_test berkshelf/berkshelf main rake
   expeditor:
     executor:
