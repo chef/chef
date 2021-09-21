@@ -30,7 +30,8 @@ begin
         puts "--- Running #{gem} specs"
         Bundler.with_unbundled_env do
           puts "Executing tests in #{Dir.pwd}:"
-          sh("bundle install --jobs=3 --retry=3 --path=../vendor/bundle")
+          sh("bundle config set --local path 'vendor/bundle'")
+          sh("bundle install --jobs=3 --retry=3")
           sh("bundle exec rake spec")
         end
       end
