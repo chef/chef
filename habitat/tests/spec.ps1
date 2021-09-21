@@ -11,10 +11,6 @@ try {
     Push-Location $chef_gem_root
     $env:PATH = "C:\hab\bin;$env:PATH"
 
-    $libarchive_dir = (Get-ChildItem -Recurse -Path C:\hab -Filter libarchive.dll)[0].Directory.FullName
-    Write-Output "libarchive_dir: ${libarchive_dir}"
-    $env:RUBY_DLL_PATH = $libarchive_dir
-
     # Put chef's GEM_PATH in the machine environment so that the windows service
     # tests will be able to consume the win32-service gem
     $pkgEnv = hab pkg env $PackageIdentifier

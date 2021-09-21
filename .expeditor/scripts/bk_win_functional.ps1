@@ -2,11 +2,6 @@ Write-Output "--- system details"
 $Properties = 'Caption', 'CSName', 'Version', 'BuildType', 'OSArchitecture'
 Get-CimInstance Win32_OperatingSystem | Select-Object $Properties | Format-Table -AutoSize
 
-$gemdir = (bundle exec gem environment gemdir)
-$libarchive_dir = (Get-ChildItem -Recurse -Path $gemdir -Filter libarchive.dll)[0].Directory.FullName
-Write-Output "libarchive_dir: ${libarchive_dir}"
-$env:RUBY_DLL_PATH = $libarchive_dir
-
 # chocolatey functional tests fail so delete the chocolatey binary to avoid triggering them
 Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyContinue
 
