@@ -119,6 +119,7 @@ class Chef
       property :authentication, Symbol, equal_to: %i{remote local}, default: :remote
 
       property :http_options, Hash, default: {},
+        introduced: "17.5",
         description: "A Hash of custom HTTP options. For example: `http_options({ http_retry_count: 0, http_retry_delay: 2 })`"
 
       def after_created
