@@ -15,15 +15,15 @@ builder-to-testers-map:
   debian-9-x86_64:
     - debian-9-x86_64
     - debian-10-x86_64
+    - debian-11-x86_64
   debian-10-aarch64:
     - debian-10-aarch64
+    - debian-11-aarch64
   el-6-x86_64:
     - el-6-x86_64
   el-7-aarch64:
     - el-7-aarch64
     - amazon-2-aarch64
-  el-8-aarch64:
-    - el-8-aarch64
   el-7-ppc64:
     - el-7-ppc64
   el-7-ppc64le:
@@ -34,12 +34,13 @@ builder-to-testers-map:
   el-7-x86_64:
     - el-7-x86_64
     - amazon-2-x86_64
+  el-8-aarch64:
+    - el-8-aarch64
   el-8-x86_64:
     - el-8-x86_64
   freebsd-11-amd64:
     - freebsd-11-amd64
     - freebsd-12-amd64
-#    - freebsd-13-amd64
   mac_os_x-10.14-x86_64:
     - mac_os_x-10.14-x86_64
     - mac_os_x-10.15-x86_64
@@ -73,5 +74,7 @@ builder-to-testers-map:
     - windows-2012r2-x86_64
     - windows-2016-x86_64
     - windows-2019-x86_64
+    - windows-2022-x86_64
     - windows-8-x86_64
     - windows-10-x86_64
+    - windows-11-x86_64
