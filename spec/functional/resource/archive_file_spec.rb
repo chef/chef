@@ -18,8 +18,7 @@
 require "spec_helper"
 require "tmpdir"
 
-# Excluding this test on Windows until CI issues can be addressed.
-describe Chef::Resource::ArchiveFile, :not_supported_on_windows do
+describe Chef::Resource::ArchiveFile do
   include RecipeDSLHelper
 
   let(:tmp_path) { Dir.mktmpdir }
