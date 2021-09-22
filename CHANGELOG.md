@@ -2,54 +2,42 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.15.22 -->
-## [v16.15.22](https://github.com/chef/chef/tree/v16.15.22) (2021-09-20)
-
-#### Merged Pull Requests
-- Bump omnibus-software from `e0d92a6` to `d880e20` in /omnibus [#12063](https://github.com/chef/chef/pull/12063) ([dependabot[bot]](https://github.com/dependabot[bot]))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.14.1 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump omnibus-software from `e0d92a6` to `d880e20` in /omnibus [#12063](https://github.com/chef/chef/pull/12063) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.15.22 -->
-- Flush package cache after attaching to rhsm subscription [#12057](https://github.com/chef/chef/pull/12057) ([tas50](https://github.com/tas50)) <!-- 16.15.21 -->
-- Refactor the code for windows_security_policy resource [#12056](https://github.com/chef/chef/pull/12056) ([tas50](https://github.com/tas50)) <!-- 16.15.20 -->
-- windows_security_policy: Add AuditPolicyChange and LockoutDuration capabilities [#12055](https://github.com/chef/chef/pull/12055) ([tas50](https://github.com/tas50)) <!-- 16.15.19 -->
-- Add user provided options to powershell_package commands  [#12054](https://github.com/chef/chef/pull/12054) ([tas50](https://github.com/tas50)) <!-- 16.15.18 -->
-- Support attribute block/allow list in data collector [#12051](https://github.com/chef/chef/pull/12051) ([tas50](https://github.com/tas50)) <!-- 16.15.17 -->
-- Deprecate the old policyfile compat mode [#12050](https://github.com/chef/chef/pull/12050) ([tas50](https://github.com/tas50)) <!-- 16.15.16 -->
-- Coerce mount_point only when it is not root directory [#12049](https://github.com/chef/chef/pull/12049) ([tas50](https://github.com/tas50)) <!-- 16.15.15 -->
-- Fix edge condition in deprecation silence checker [#12048](https://github.com/chef/chef/pull/12048) ([tas50](https://github.com/tas50)) <!-- 16.15.14 -->
-- Fix handling of ohai properties in chef_client_config [#12047](https://github.com/chef/chef/pull/12047) ([tas50](https://github.com/tas50)) <!-- 16.15.13 -->
-- Support recipes that end in .yaml as well as .yml  [#12046](https://github.com/chef/chef/pull/12046) ([tas50](https://github.com/tas50)) <!-- 16.15.12 -->
-- Chef -&gt; Chef Infra Client in error message [#12045](https://github.com/chef/chef/pull/12045) ([tas50](https://github.com/tas50)) <!-- 16.15.11 -->
-- windows_uac: fix registry settings for consent_behavior_users [#12044](https://github.com/chef/chef/pull/12044) ([tas50](https://github.com/tas50)) <!-- 16.15.10 -->
-- Downgraded the Log level to warn as per AHA idea I-25 [#12043](https://github.com/chef/chef/pull/12043) ([tas50](https://github.com/tas50)) <!-- 16.15.9 -->
-- windows_uac: fix registry settings for consent_behavior_users [#12042](https://github.com/chef/chef/pull/12042) ([tas50](https://github.com/tas50)) <!-- 16.15.8 -->
-- ulimit: Fix sensitive property [#12041](https://github.com/chef/chef/pull/12041) ([tas50](https://github.com/tas50)) <!-- 16.15.7 -->
-- Fix tests for new omnibus test systems [#12040](https://github.com/chef/chef/pull/12040) ([tas50](https://github.com/tas50)) <!-- 16.15.6 -->
-- pass homebrew_path, owner props to homebrew_tap if installing cask [#12039](https://github.com/chef/chef/pull/12039) ([tas50](https://github.com/tas50)) <!-- 16.15.5 -->
-- Fix a typo setting up cookbook_name value in templates [#12038](https://github.com/chef/chef/pull/12038) ([tas50](https://github.com/tas50)) <!-- 16.15.4 -->
-- use int64 on x64 architecture for LPARAM and LONG_PTR types [#12037](https://github.com/chef/chef/pull/12037) ([tas50](https://github.com/tas50)) <!-- 16.15.3 -->
-- systemd_unit generates invalid units when passing a hash issue fix [#12036](https://github.com/chef/chef/pull/12036) ([tas50](https://github.com/tas50)) <!-- 16.15.2 -->
-- Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#12035](https://github.com/chef/chef/pull/12035) ([tas50](https://github.com/tas50)) <!-- 16.15.1 -->
-- Bump ffi-libarchive to 1.1.3 [#12032](https://github.com/chef/chef/pull/12032) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.15.0 -->
-- Build on macOS 12 x86
-- Update libarchive and openssl to the latest
-- Update chef-vault and inspec to the latest
-- Bump omnibus from `e3573e7` to `7ce6173` in /omnibus
-- Replace deprecated --without flag with bundle config
-- Bump kitchen-vagrant from 1.9.0 to 1.10.0 in /omnibus
-- Bump omnibus-software from `a4f73e4` to `4653e83` in /omnibus
-- Backport: group: fix gid in use error on macOS
-- Bump omnibus from `999a4e0` to `e3573e7` in /omnibus
-- Bump omnibus from `9ffcd89` to `999a4e0` in /omnibus
-- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11884](https://github.com/chef/chef/pull/11884) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.14.2 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.15.22](https://github.com/chef/chef/tree/v16.15.22) (2021-09-22)
+
+#### Merged Pull Requests
+- Bump omnibus from `6d109b6` to `9ffcd89` in /omnibus [#11884](https://github.com/chef/chef/pull/11884) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ffi-libarchive to 1.1.3 [#12032](https://github.com/chef/chef/pull/12032) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Support &#39;-&#39; and &#39;@&#39; for homebrew cask name [#12035](https://github.com/chef/chef/pull/12035) ([tas50](https://github.com/tas50))
+- systemd_unit generates invalid units when passing a hash issue fix [#12036](https://github.com/chef/chef/pull/12036) ([tas50](https://github.com/tas50))
+- use int64 on x64 architecture for LPARAM and LONG_PTR types [#12037](https://github.com/chef/chef/pull/12037) ([tas50](https://github.com/tas50))
+- Fix a typo setting up cookbook_name value in templates [#12038](https://github.com/chef/chef/pull/12038) ([tas50](https://github.com/tas50))
+- pass homebrew_path, owner props to homebrew_tap if installing cask [#12039](https://github.com/chef/chef/pull/12039) ([tas50](https://github.com/tas50))
+- Fix tests for new omnibus test systems [#12040](https://github.com/chef/chef/pull/12040) ([tas50](https://github.com/tas50))
+- ulimit: Fix sensitive property [#12041](https://github.com/chef/chef/pull/12041) ([tas50](https://github.com/tas50))
+- windows_uac: fix registry settings for consent_behavior_users [#12042](https://github.com/chef/chef/pull/12042) ([tas50](https://github.com/tas50))
+- Downgraded the Log level to warn as per AHA idea I-25 [#12043](https://github.com/chef/chef/pull/12043) ([tas50](https://github.com/tas50))
+- windows_uac: fix registry settings for consent_behavior_users [#12044](https://github.com/chef/chef/pull/12044) ([tas50](https://github.com/tas50))
+- Chef -&gt; Chef Infra Client in error message [#12045](https://github.com/chef/chef/pull/12045) ([tas50](https://github.com/tas50))
+- Support recipes that end in .yaml as well as .yml  [#12046](https://github.com/chef/chef/pull/12046) ([tas50](https://github.com/tas50))
+- Fix handling of ohai properties in chef_client_config [#12047](https://github.com/chef/chef/pull/12047) ([tas50](https://github.com/tas50))
+- Fix edge condition in deprecation silence checker [#12048](https://github.com/chef/chef/pull/12048) ([tas50](https://github.com/tas50))
+- Coerce mount_point only when it is not root directory [#12049](https://github.com/chef/chef/pull/12049) ([tas50](https://github.com/tas50))
+- Deprecate the old policyfile compat mode [#12050](https://github.com/chef/chef/pull/12050) ([tas50](https://github.com/tas50))
+- Support attribute block/allow list in data collector [#12051](https://github.com/chef/chef/pull/12051) ([tas50](https://github.com/tas50))
+- Add user provided options to powershell_package commands  [#12054](https://github.com/chef/chef/pull/12054) ([tas50](https://github.com/tas50))
+- windows_security_policy: Add AuditPolicyChange and LockoutDuration capabilities [#12055](https://github.com/chef/chef/pull/12055) ([tas50](https://github.com/tas50))
+- Refactor the code for windows_security_policy resource [#12056](https://github.com/chef/chef/pull/12056) ([tas50](https://github.com/tas50))
+- Flush package cache after attaching to rhsm subscription [#12057](https://github.com/chef/chef/pull/12057) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `e0d92a6` to `d880e20` in /omnibus [#12063](https://github.com/chef/chef/pull/12063) ([dependabot[bot]](https://github.com/dependabot[bot]))
+<!-- latest_stable_release -->
+
 ## [v16.14.1](https://github.com/chef/chef/tree/v16.14.1) (2021-07-27)
 
 #### Merged Pull Requests
@@ -95,7 +83,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Produce macOS m1 monterey packages [#11859](https://github.com/chef/chef/pull/11859) ([tas50](https://github.com/tas50))
 - Update to 16.14.0 [#11860](https://github.com/chef/chef/pull/11860) ([tas50](https://github.com/tas50))
 - Bump train-core to 3.8.1 [#11868](https://github.com/chef/chef/pull/11868) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-<!-- latest_stable_release -->
 
 ## [v16.13.16](https://github.com/chef/chef/tree/v16.13.16) (2021-04-09)
 
