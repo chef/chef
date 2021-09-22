@@ -137,7 +137,7 @@ class Chef
           if new_resource.ssl_verify_mode
             opts[:ssl_verify_mode] = new_resource.ssl_verify_mode
           end
-          opts
+          opts.merge(new_resource.http_options)
         end
 
       end

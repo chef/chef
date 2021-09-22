@@ -321,4 +321,14 @@ describe Chef::Provider::RemoteFile::HTTP do
 
   end
 
+  describe "#http_client_opts" do
+    before do
+      new_resource.http_options({ retries: 2, retry_delay: 3 })
+    end
+
+    it "should set http client options" do
+      expect(fetcher.send(:http_client_opts)).to eq({ retries: 2, retry_delay: 3 })
+    end
+  end
+
 end

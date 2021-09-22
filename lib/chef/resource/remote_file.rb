@@ -34,6 +34,36 @@ class Chef
 
       description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 
+      examples <<~DOC
+      **Download a file from an http server**:
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+        end
+      ```
+
+      **Set Chef::HTTP options and configure the Net::HTTP object**
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+          http_options({
+            http_retry_delay: 0,
+            http_retry_count: 0,
+            keepalives: false,
+            nethttp: {
+              continue_timeout: 5,
+              max_retries: 5,
+              read_timeout: 5,
+              write_timeout: 5,
+              ssl_timeout: 5,
+            },
+          })
+        end
+      ```
+      DOC
+
       def initialize(name, run_context = nil)
         super
         @source = []
@@ -117,6 +147,10 @@ class Chef
         description: "**Windows only** The password of the user specified by the `remote_user` property. This property is required if `remote_user` is specified and may only be specified if `remote_user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `remote_password` is specified."
 
       property :authentication, Symbol, equal_to: %i{remote local}, default: :remote
+
+      property :http_options, Hash, default: {},
+        introduced: "17.5",
+        description: "A Hash of custom HTTP options. For example: `http_options({ http_retry_count: 0, http_retry_delay: 2 })`"
 
       def after_created
         validate_identity_platform(remote_user, remote_password, remote_domain)
