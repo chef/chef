@@ -73,7 +73,7 @@ subscriptions:
       - bash:.expeditor/promote-docker-images.sh
   - workload: project_promoted:{{agent_id}}:*
     actions:
-      - built_in:promoted_artifactory_artifact
+      - built_in:promote_artifactory_artifact
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
