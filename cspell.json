@@ -1046,6 +1046,7 @@
     "netbw",
     "NETCARD",
     "netdom",
+    "nethttp",
     "NETLOGON",
     "netmsg",
     "NETNAME",
