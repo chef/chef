@@ -35,7 +35,7 @@ class Chef
       description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 
       examples <<~DOC
-      **Download a file from an http server**:
+      **Download a file without checking the checksum**:
 
       ```ruby
         remote_file '/tmp/remote.txt' do
@@ -43,7 +43,17 @@ class Chef
         end
       ```
 
-      **Set Chef::HTTP options and configure the Net::HTTP object**
+      **Download a file with a checksum to validate**:
+
+      ```ruby
+        remote_file '/tmp/testfile' do
+          source 'http://www.example.com/tempfiles/testfile'
+          mode '0755'
+          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+        end
+      ```
+
+      **Specify advanced http connection options including Net::HTTP (nethttp) options**
 
       ```ruby
         remote_file '/tmp/remote.txt' do
@@ -126,9 +136,29 @@ class Chef
         description: "Whether #{ChefUtils::Dist::Infra::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
 
       property :headers, Hash, default: {},
-        description: "A Hash of custom HTTP headers."
+        description: <<~'DOCS'
+        A Hash of custom headers. For example:
+        
+        ```ruby
+        headers({ "Cookie" => "user=grantmc; pass=p@ssw0rd!" })
+        ```
 
-      property :show_progress, [ TrueClass, FalseClass ], default: false
+        or:
+        
+        ```ruby
+        headers({ "Referer" => "#{header}" })
+        ```
+        
+        or:
+        
+        ```ruby
+        headers( "Authorization"=>"Basic #{ Base64.encode64("#{username}:#{password}").gsub("\n", "") }" )
+        ```
+        DOCS
+
+      property :show_progress, [ TrueClass, FalseClass ], 
+        description: "Displays the progress of the file download.",
+        default: false
 
       property :ssl_verify_mode, Symbol, equal_to: %i{verify_none verify_peer},
         introduced: "16.2",
