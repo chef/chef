@@ -51,10 +51,16 @@ describe Chef::Resource::File::Verification::Json do
       expect(v.verify(@invalid_json)).to eq(false)
     end
 
-    it "returns false for empty file" do
-      # empty string is invalid per JSON spec https://stackoverflow.com/questions/30621802/why-does-json-parse-fail-with-the-empty-string
+    it "returns true for empty file" do
+      # Expectation here is different from that of default JSON parser included in ruby 2.4+.
+      # The default parser considers empty string as invalid JSON
+      # https://stackoverflow.com/questions/30621802/why-does-json-parse-fail-with-the-empty-string,
+      # however JSONCompat parses an empty string to `nil`.
+      # We are retaining the behavior of JSONCompat for two reasons
+      # - It is universal inside Chef codebase
+      # - It can be helpful to not throw an error when a `file` or `template` is empty
       v = Chef::Resource::File::Verification::Json.new(parent_resource, :json, {})
-      expect(v.verify(@empty_json)).to eq(false)
+      expect(v.verify(@empty_json)).to eq(true)
     end
   end
 
