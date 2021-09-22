@@ -1,6 +1,6 @@
 #
 # Author:: Antony Thomas (<antonydeepak@gmail.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) Facebook, Inc. and its affiliates.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
