@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.5.18 -->
-## [v17.5.18](https://github.com/chef/chef/tree/v17.5.18) (2021-09-22)
+<!-- latest_release 17.5.19 -->
+## [v17.5.19](https://github.com/chef/chef/tree/v17.5.19) (2021-09-22)
 
 #### Merged Pull Requests
-- Add Windows 11, Windows 2022, and Debian 11 builds [#12079](https://github.com/chef/chef/pull/12079) ([tas50](https://github.com/tas50))
+- Add http_options property to remote_file [#12083](https://github.com/chef/chef/pull/12083) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add http_options property to remote_file [#12083](https://github.com/chef/chef/pull/12083) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.19 -->
 - Add Windows 11, Windows 2022, and Debian 11 builds [#12079](https://github.com/chef/chef/pull/12079) ([tas50](https://github.com/tas50)) <!-- 17.5.18 -->
 - Fix windows CI for archive_file [#12070](https://github.com/chef/chef/pull/12070) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.5.17 -->
 - Update bundle config set path [#12069](https://github.com/chef/chef/pull/12069) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.5.15 -->
