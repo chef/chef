@@ -47,6 +47,36 @@ describe "HTTP Connection" do
       expect(Net::HTTP).to receive(:new).and_return(net_http_mock)
       expect(basic_client.http_client).to eql(net_http_mock)
     end
+
+    it "allows setting net-http accessor options" do
+      basic_client = Chef::HTTP::BasicClient.new(uri, nethttp_opts: {
+        "continue_timeout" => 5,
+        "max_retries" => 5,
+        "read_timeout" => 5,
+        "write_timeout" => 5,
+        "ssl_timeout" => 5,
+      })
+      expect(basic_client.http_client.continue_timeout).to eql(5)
+      expect(basic_client.http_client.max_retries).to eql(5)
+      expect(basic_client.http_client.read_timeout).to eql(5)
+      expect(basic_client.http_client.write_timeout).to eql(5)
+      expect(basic_client.http_client.ssl_timeout).to eql(5)
+    end
+
+    it "allows setting net-http accssor options as symbols" do
+      basic_client = Chef::HTTP::BasicClient.new(uri, nethttp_opts: {
+        continue_timeout: 5,
+        max_retries: 5,
+        read_timeout: 5,
+        write_timeout: 5,
+        ssl_timeout: 5,
+      })
+      expect(basic_client.http_client.continue_timeout).to eql(5)
+      expect(basic_client.http_client.max_retries).to eql(5)
+      expect(basic_client.http_client.read_timeout).to eql(5)
+      expect(basic_client.http_client.write_timeout).to eql(5)
+      expect(basic_client.http_client.ssl_timeout).to eql(5)
+    end
   end
 
   describe "#build_http_client" do

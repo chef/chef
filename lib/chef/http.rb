@@ -82,6 +82,9 @@ class Chef
     # [Boolean] if we're doing keepalives or not
     attr_reader :keepalives
 
+    # @returns [Hash] options for Net::HTTP to be sent to setters on the object
+    attr_reader :nethttp_opts
+
     # Create a HTTP client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
@@ -94,6 +97,7 @@ class Chef
       @redirect_limit = 10
       @keepalives = options[:keepalives] || false
       @options = options
+      @nethttp_opts = options[:nethttp] || {}
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -311,7 +315,7 @@ class Chef
 
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, ssl_policy: ssl_policy, keepalives: keepalives)
+        BasicClient.new(base_url, ssl_policy: ssl_policy, keepalives: keepalives, nethttp_opts: nethttp_opts)
       end
     end
 
