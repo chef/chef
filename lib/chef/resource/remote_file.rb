@@ -118,6 +118,9 @@ class Chef
 
       property :authentication, Symbol, equal_to: %i{remote local}, default: :remote
 
+      property :http_options, Hash, default: {},
+        description: "A Hash of custom HTTP options. For example: `http_options({ http_retry_count: 0, http_retry_delay: 2 })`"
+
       def after_created
         validate_identity_platform(remote_user, remote_password, remote_domain)
         identity = qualify_user(remote_user, remote_password, remote_domain)

@@ -468,12 +468,12 @@ class Chef
 
     # @api private
     def http_retry_delay
-      config[:http_retry_delay]
+      options[:http_retry_delay] || config[:http_retry_delay]
     end
 
     # @api private
     def http_retry_count
-      config[:http_retry_count]
+      options[:http_retry_count] || config[:http_retry_count]
     end
 
     # @api private
