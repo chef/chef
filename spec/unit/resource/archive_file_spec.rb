@@ -16,7 +16,7 @@
 #
 
 require "spec_helper"
-require 'ffi-libarchive'
+require "ffi-libarchive"
 
 # Excluding this test on Windows until CI issues can be addressed.
 describe Chef::Resource::ArchiveFile do
