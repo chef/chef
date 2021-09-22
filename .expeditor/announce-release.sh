@@ -14,27 +14,27 @@ $(cat release-notes.md)
 ---
 ## Get the Build
 
-As always, you can download binaries directly from [downloads.chef.io](https://downloads.chef.io/products/infra?v=${EXPEDITOR_VERSION}) or by using the `mixlib-install` command-line utility:
+As always, you can download binaries directly from [downloads.chef.io](https://downloads.chef.io/products/infra?v=${EXPEDITOR_VERSION}) or by using the \`mixlib-install\` command-line utility:
 
-```
+\`\`\`
 $ mixlib-install download chef -v ${EXPEDITOR_VERSION}
-```
+\`\`\`
 
 Alternatively, you can install Chef Infra Client using one of the following command options:
 
-```
+\`\`\`
 # In Shell
 $ curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -v ${EXPEDITOR_VERSION}
 # In Windows Powershell
 . { iwr -useb https://omnitruck.chef.io/install.ps1 } | iex; install -project chef -version ${EXPEDITOR_VERSION}
-```
+\`\`\`
 If you want to give this version a spin in Test Kitchen, create or add the following to your `kitchen.yml` file:
 
-```
+\`\`\`
 provisioner:
   product_name: chef
   product_version: ${EXPEDITOR_VERSION}
-```
+\`\`\`
 EOH
 )
 
