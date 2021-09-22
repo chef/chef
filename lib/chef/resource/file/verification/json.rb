@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require "json" unless defined?(JSON)
-
 class Chef
   class Resource
     class File
@@ -39,9 +37,9 @@ class Chef
           provides :json
 
           def verify(path, opts = {})
-            JSON.parse(IO.read(path))
+            Chef::JSONCompat.parse(IO.read(path))
             true
-          rescue JSON::ParserError => e
+          rescue Chef::Exceptions::JSON::ParseError => e
             Chef::Log.error("Json syntax verify failed with : #{e.message}")
             false
           end
