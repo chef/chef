@@ -34,7 +34,7 @@ class Chef
 
       description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 
-      examples <<~DOC
+      examples <<~'DOC'
       **Download a file without checking the checksum**:
 
       ```ruby
@@ -46,14 +46,46 @@ class Chef
       **Download a file with a checksum to validate**:
 
       ```ruby
-        remote_file '/tmp/testfile' do
-          source 'http://www.example.com/tempfiles/testfile'
+        remote_file '/tmp/test_file' do
+          source 'http://www.example.com/tempfiles/test_file'
           mode '0755'
           checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
         end
       ```
 
-      **Specify advanced http connection options including Net::HTTP (nethttp) options**
+      **Download a file only if it's not already present**:
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+          action :create_if_missing
+        end
+      ```
+
+      **Using HTTP Basic Authentication in Headers**:
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+          headers('Authorization' => "Basic #{Base64.encode64("USERNAME_VALUE:PASSWORD_VALUE").delete("\n")}")
+          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+          action :create_if_missing
+        end
+      ```
+
+      **Downloading a file to the Chef file cache dir for execution**:
+
+      ```ruby
+        remote_file '#{Chef::Config['file_cache_path']}/install.sh' do
+          source 'https://example.org/install.sh'
+          action :create_if_missing
+        end
+
+        execute '#{Chef::Config['file_cache_path']}/install.sh'
+      ```
+
+      **Specify advanced HTTP connection options including Net::HTTP (nethttp) options:**
 
       ```ruby
         remote_file '/tmp/remote.txt' do
@@ -138,25 +170,25 @@ class Chef
       property :headers, Hash, default: {},
         description: <<~'DOCS'
         A Hash of custom headers. For example:
-        
+
         ```ruby
-        headers({ "Cookie" => "user=grantmc; pass=p@ssw0rd!" })
+        headers({ "Cookie" => "user=some_user; pass=p@ssw0rd!" })
         ```
 
         or:
-        
+
         ```ruby
         headers({ "Referer" => "#{header}" })
         ```
-        
+
         or:
-        
+
         ```ruby
         headers( "Authorization"=>"Basic #{ Base64.encode64("#{username}:#{password}").gsub("\n", "") }" )
         ```
         DOCS
 
-      property :show_progress, [ TrueClass, FalseClass ], 
+      property :show_progress, [ TrueClass, FalseClass ],
         description: "Displays the progress of the file download.",
         default: false
 
