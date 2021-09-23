@@ -16,10 +16,10 @@ Gem::Specification.new do |spec|
 
   spec.metadata = {
     "bug_tracker_uri" => "https://github.com/chef/chef/issues",
-    "changelog_uri" => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
-    "documentation_uri" => "https://github.com/chef/chef/tree/master/chef-config/README.md",
-    "homepage_uri" => "https://github.com/chef/chef/tree/master/chef-config",
-    "source_code_uri" => "https://github.com/chef/chef/tree/master/chef-config",
+    "changelog_uri" => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
+    "documentation_uri" => "https://github.com/chef/chef/tree/main/chef-config/README.md",
+    "homepage_uri" => "https://github.com/chef/chef/tree/main/chef-config",
+    "source_code_uri" => "https://github.com/chef/chef/tree/main/chef-config",
   }
 
   spec.require_paths = ["lib"]

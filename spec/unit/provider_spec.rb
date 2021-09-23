@@ -32,6 +32,21 @@ class NoWhyrunDemonstrator < Chef::Provider
   end
 end
 
+class ActionDescriptionDemonstrator < Chef::Provider
+  def load_current_resource; end
+
+  action :foo, description: "foo described" do
+    true
+  end
+
+  action :foo2 do
+    true
+  end
+
+end
+
+context "blah" do
+end
 class ConvergeActionDemonstrator < Chef::Provider
   attr_reader :system_state_altered
 
@@ -96,6 +111,14 @@ describe Chef::Provider do
 
   it "should return true for action_nothing" do
     expect(@provider.action_nothing).to eql(true)
+  end
+
+  it "should return an action description for action_description when one is available" do
+    expect(ActionDescriptionDemonstrator.action_description(:foo)).to eq "foo described"
+  end
+
+  it "should return nil for action_description when no description is available" do
+    expect(ActionDescriptionDemonstrator.action_description(:none)).to eq nil
   end
 
   it "evals embedded recipes with a pristine resource collection" do

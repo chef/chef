@@ -50,7 +50,8 @@ class Chef
         rescue Net::HTTPClientException => e
           raise e unless /Forbidden/.match?(e.message)
 
-          ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
+          ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it & #{config[:supermarket_site]} must allow maintainers to unshare cookbooks."
+          ui.warn "The default supermarket #{default_config[:supermarket_site]} does not allow maintainers to unshare cookbooks."
           exit 1
         end
 

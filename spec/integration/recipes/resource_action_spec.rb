@@ -354,8 +354,8 @@ module ResourceActionSpec
         end
 
         it "allows overridden action to have a description separate from the action defined in the base resource" do
-          expect(ActionJackson.action_description(:test1)).to eql "Original description"
-          expect(ActionJackalope.action_description(:test1)).to eql "An old action with a new description"
+          expect(ActionJackson.new("ActionJackson", nil).action_description(:test1)).to eql "Original description"
+          expect(ActionJackalope.new("ActionJackalope", nil).action_description(:test1)).to eql "An old action with a new description"
         end
 
         it "non-overridden actions run and can access overridden and non-overridden variables (but not necessarily new ones)" do

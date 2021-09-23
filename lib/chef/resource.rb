@@ -1063,7 +1063,8 @@ class Chef
     # action for the resource.
     #
     # @param name [Symbol] The action name to define.
-    # @param description [String] optional description for the action
+    # @param description [String] optional description for the action. Used for
+    #   documentation generation.
     # @param recipe_block The recipe to run when the action is taken. This block
     #   takes no parameters, and will be evaluated in a new context containing:
     #
@@ -1076,11 +1077,8 @@ class Chef
     def self.action(action, description: nil, &recipe_block)
       action = action.to_sym
       declare_action_class
-      action_class.action(action, &recipe_block)
+      action_class.action(action, description: description, &recipe_block)
       self.allowed_actions += [ action ]
-      # Accept any non-nil description, which will correctly override
-      # any specific inherited description.
-      action_descriptions[action] = description unless description.nil?
       default_action action if Array(default_action) == [:nothing]
     end
 
@@ -1090,18 +1088,15 @@ class Chef
     # @param action [Symbol,String] the action name
     # @return the description of the action provided, or nil if no description
     # was defined
-    def self.action_description(action)
-      action_descriptions[action.to_sym]
-    end
-
-    # @api private
-    #
-    # @return existing action description hash, or newly-initialized
-    # hash containing action descriptions inherited from parent Resource,
-    # if any.
-    def self.action_descriptions
-      @action_descriptions ||=
-        superclass.respond_to?(:action_descriptions) ? superclass.action_descriptions.dup : { nothing: nil }
+    def action_description(action)
+      provider_for_action(action).class.action_description(action)
+    rescue Chef::Exceptions::ProviderNotFound
+      # If a provider can't be found, there can be no description defined on the provider.
+      nil
+    rescue NameError => e
+      # This can happen when attempting to load a provider in a platform-specific
+      # environment where we have not required the necessary files yet
+      raise unless e.message =~ /uninitialized constant/
     end
 
     # Define a method to load up this resource's properties with the current
@@ -1191,6 +1186,7 @@ class Chef
             if superclass.custom_resource?
               superclass.action_class
             else
+
               ActionClass
             end
 

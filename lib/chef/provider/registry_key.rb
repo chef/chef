@@ -19,7 +19,7 @@
 
 require_relative "../config"
 require_relative "../log"
-require_relative "../resource/file"
+require_relative "../resource/registry_key"
 require_relative "../mixin/checksum"
 require_relative "../provider"
 require "etc" unless defined?(Etc)
@@ -50,7 +50,8 @@ class Chef
         current_resource.architecture(new_resource.architecture)
         current_resource.recursive(new_resource.recursive)
         if registry.key_exists?(new_resource.key)
-          current_resource.values(registry.get_values(new_resource.key))
+          current_registry_values = registry.get_values(new_resource.key) || []
+          current_resource.values(current_registry_values)
         end
         values_to_hash(current_resource.unscrubbed_values)
         current_resource

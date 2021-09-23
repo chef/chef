@@ -21,7 +21,7 @@ require_relative "exceptions"
 class Chef
   class SecretFetcher
 
-    SECRET_FETCHERS = %i{example aws_secrets_manager}.freeze
+    SECRET_FETCHERS = %i{example aws_secrets_manager azure_key_vault hashi_vault akeyless_vault}.freeze
 
     # Returns a configured and validated instance
     # of a [Chef::SecretFetcher::Base]  for the given
@@ -30,23 +30,32 @@ class Chef
     # @param service [Symbol] the identifier for the service that will support this request. Must be in
     #                         SECRET_FETCHERS
     # @param config [Hash] configuration that the secrets service requires
-    def self.for_service(service, config)
+    # @param run_context [Chef::RunContext] the run context this is being invoked from
+    def self.for_service(service, config, run_context)
       fetcher = case service
                 when :example
                   require_relative "secret_fetcher/example"
-                  Chef::SecretFetcher::Example.new(config)
+                  Chef::SecretFetcher::Example.new(config, run_context)
                 when :aws_secrets_manager
                   require_relative "secret_fetcher/aws_secrets_manager"
-                  Chef::SecretFetcher::AWSSecretsManager.new(config)
+                  Chef::SecretFetcher::AWSSecretsManager.new(config, run_context)
+                when :azure_key_vault
+                  require_relative "secret_fetcher/azure_key_vault"
+                  Chef::SecretFetcher::AzureKeyVault.new(config, run_context)
+                when :hashi_vault
+                  require_relative "secret_fetcher/hashi_vault"
+                  Chef::SecretFetcher::HashiVault.new(config, run_context)
+                when :akeyless_vault
+                  require_relative "secret_fetcher/akeyless_vault"
+                  Chef::SecretFetcher::AKeylessVault.new(config, run_context)
                 when nil, ""
                   raise Chef::Exceptions::Secret::MissingFetcher.new(SECRET_FETCHERS)
                 else
-                  raise Chef::Exceptions::Secret::InvalidFetcherService.new("Unsupported secret service: #{service}", SECRET_FETCHERS)
+                  raise Chef::Exceptions::Secret::InvalidFetcherService.new("Unsupported secret service: '#{service}'", SECRET_FETCHERS)
                 end
       fetcher.validate!
       fetcher
     end
-
   end
 end
 

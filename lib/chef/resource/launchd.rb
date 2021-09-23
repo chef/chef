@@ -36,7 +36,7 @@ class Chef
 
       property :backup, [Integer, FalseClass],
         desired_state: false,
-        description: "The number of backups to be kept in /var/chef/backup. Set to false to prevent backups from being kept."
+        description: "The number of backups to be kept in `/var/chef/backup`. Set to `false` to prevent backups from being kept."
 
       property :cookbook, String,
         desired_state: false,
@@ -197,10 +197,10 @@ class Chef
         description: "The intended purpose of the job: `Adaptive`, `Background`, `Interactive`, or `Standard`."
 
       property :program, String,
-        description: "The first argument of execvp, typically the file name associated with the file to be executed. This value must be specified if program_arguments is not specified, and vice-versa."
+        description: "The first argument of `execvp`, typically the file name associated with the file to be executed. This value must be specified if `program_arguments` is not specified, and vice-versa."
 
       property :program_arguments, Array,
-        description: "The second argument of execvp. If program is not specified, this property must be specified and will be handled as if it were the first argument."
+        description: "The second argument of `execvp`. If program is not specified, this property must be specified and will be handled as if it were the first argument."
 
       property :queue_directories, Array,
         description: "An array of non-empty directories which, if any are modified, will cause a job to be started."

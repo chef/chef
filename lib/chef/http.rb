@@ -82,6 +82,9 @@ class Chef
     # [Boolean] if we're doing keepalives or not
     attr_reader :keepalives
 
+    # @returns [Hash] options for Net::HTTP to be sent to setters on the object
+    attr_reader :nethttp_opts
+
     # Create a HTTP client object. The supplied +url+ is used as the base for
     # all subsequent requests. For example, when initialized with a base url
     # http://localhost:4000, a call to +get+ with 'nodes' will make an
@@ -94,6 +97,7 @@ class Chef
       @redirect_limit = 10
       @keepalives = options[:keepalives] || false
       @options = options
+      @nethttp_opts = options[:nethttp] || {}
 
       @middlewares = []
       self.class.middlewares.each do |middleware_class|
@@ -311,7 +315,7 @@ class Chef
 
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, ssl_policy: ssl_policy, keepalives: keepalives)
+        BasicClient.new(base_url, ssl_policy: ssl_policy, keepalives: keepalives, nethttp_opts: nethttp_opts)
       end
     end
 
@@ -423,7 +427,7 @@ class Chef
           if response.is_a?(Net::HTTPServerError) && !Chef::Config.local_mode
             if http_retry_count - http_attempts >= 0
               sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
-              Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
+              Chef::Log.warn("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s") # Updated from error to warn
               sleep(sleep_time)
               redo
             end
@@ -432,7 +436,7 @@ class Chef
         end
       rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
         if http_retry_count - http_attempts >= 0
-          Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
@@ -440,21 +444,21 @@ class Chef
         raise e
       rescue Errno::ECONNREFUSED
         if http_retry_count - http_attempts >= 0
-          Chef::Log.error("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
       rescue Timeout::Error
         if http_retry_count - http_attempts >= 0
-          Chef::Log.error("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
       rescue OpenSSL::SSL::SSLError => e
         if (http_retry_count - http_attempts >= 0) && !e.message.include?("certificate verify failed")
-          Chef::Log.error("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
+          Chef::Log.warn("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}") # Updated from error to warn
           sleep(http_retry_delay)
           retry
         end
@@ -468,12 +472,12 @@ class Chef
 
     # @api private
     def http_retry_delay
-      config[:http_retry_delay]
+      options[:http_retry_delay] || config[:http_retry_delay]
     end
 
     # @api private
     def http_retry_count
-      config[:http_retry_count]
+      options[:http_retry_count] || config[:http_retry_count]
     end
 
     # @api private

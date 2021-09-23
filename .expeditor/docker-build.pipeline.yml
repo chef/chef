@@ -1,0 +1,16 @@
+---
+steps:
+- label: ":docker: build chef amd64"
+  agents:
+    queue: docker-linux
+  command: .expeditor/build-docker-images.sh amd64
+
+- label: ":docker: build chef arm64"
+  agents:
+    queue: docker-linux-arm64
+  command: .expeditor/build-docker-images.sh arm64
+
+- wait
+
+- label: ":docker: create manifest for multi arch"
+  command: .expeditor/docker-manifest-create.sh

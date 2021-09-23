@@ -378,9 +378,19 @@ class Chef::Application::Base < Chef::Application
 
   def fetch_recipe_tarball(url, path)
     require "open-uri" unless defined?(OpenURI)
+    uri = URI.parse(url)
+
     Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
     if File.exist?(url)
       FileUtils.cp(url, path)
+    elsif uri.scheme == "s3"
+      require "aws-sdk-s3" unless defined?(Aws::S3)
+
+      s3 = Aws::S3::Client.new
+      object = s3.get_object(bucket: uri.hostname, key: uri.path[1..-1])
+      File.open(path, "wb") do |f|
+        f.write(object.body.read)
+      end
     elsif URI::DEFAULT_PARSER.make_regexp.match?(url)
       File.open(path, "wb") do |f|
         URI.open(url) do |r|
@@ -388,7 +398,7 @@ class Chef::Application::Base < Chef::Application
         end
       end
     else
-      Chef::Application.fatal! "You specified --recipe-url but the value is neither a valid URL nor a path to a file that exists on disk." +
+      Chef::Application.fatal! "You specified --recipe-url but the value is neither a valid URL, an S3 bucket nor a path to a file that exists on disk." +
         "Please confirm the location of the tarball and try again."
     end
   end

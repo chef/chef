@@ -289,7 +289,7 @@ describe Chef::Knife::Ssh do
     let(:execution_channel2) { double(:execution_channel, on_data: nil, on_extended_data: nil) }
     let(:session_channel2) { double(:session_channel, request_pty: nil) }
 
-    let(:session) { double(:session, loop: nil) }
+    let(:session) { double(:session, loop: nil, close: nil) }
 
     let(:command) { "false" }
 

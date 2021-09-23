@@ -33,7 +33,7 @@ class Chef
 
       provides(:windows_printer) { true }
 
-      description "Use the **windows_printer** resource to setup Windows printers. This resource will automatically install the driver specified in the `driver_name` property and will automatically create a printer port using either the `ipv4_address` property or the `port_name property."
+      description "Use the **windows_printer** resource to setup Windows printers. This resource will automatically install the driver specified in the `driver_name` property and will automatically create a printer port using either the `ipv4_address` property or the `port_name` property."
       introduced "14.0"
       examples <<~DOC
       **Create a printer**:

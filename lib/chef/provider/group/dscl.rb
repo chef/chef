@@ -158,7 +158,7 @@ class Chef
           if new_resource.group_name && (current_resource.group_name != new_resource.group_name)
             dscl_create_group
           end
-          if new_resource.gid && (current_resource.gid != new_resource.gid)
+          if new_resource.gid && (current_resource.gid != new_resource.gid.to_s)
             set_gid
           end
           if new_resource.members || new_resource.excluded_members

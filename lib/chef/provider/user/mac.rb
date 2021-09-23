@@ -28,7 +28,7 @@ class Chef
   class Provider
     class User
       # A macOS user provider that is compatible with default TCC restrictions
-      # in macOS 10.14. See resource/user/mac_user.rb for complete description
+      # in macOS 10.14+. See resource/user/mac_user.rb for complete description
       # of the mac_user resource
       class MacUser < Chef::Provider::User
         include Chef::Mixin::Which
@@ -49,11 +49,11 @@ class Chef
             current_resource.uid(user_plist[:uid][0])
             current_resource.gid(user_plist[:gid][0])
             current_resource.home(user_plist[:home][0])
-            current_resource.shell(user_plist[:shell][0])
+            current_resource.shell(user_plist[:shell]&.first) # use &.first since shell can be nil
             current_resource.comment(user_plist[:comment][0])
 
             if user_plist[:is_hidden]
-              current_resource.hidden(user_plist[:is_hidden][0] == "1" ? true : false)
+              current_resource.hidden(user_plist[:is_hidden]&.first == "1" ? true : false) # when not hidden the value seems to be nil so &.first to handle that
             end
 
             shadow_hash = user_plist[:shadow_hash]

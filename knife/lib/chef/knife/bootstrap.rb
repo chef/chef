@@ -20,6 +20,7 @@ require_relative "../knife"
 require_relative "data_bag_secret_options"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
+
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
 end
@@ -705,6 +706,8 @@ class Chef
           ui.warn("#{e.message} - trying with pty request")
           conn_options[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
           retry
+        elsif e.reason == :sudo_missing_terminal
+          ui.error "Sudo password is required for this operation. Please enter password using -P or --ssh-password option"
         elsif config[:use_sudo_password] && (e.reason == :sudo_password_required || e.reason == :bad_sudo_password) && limit < 3
           ui.warn("Failed to authenticate #{conn_options[:user]} to #{server_name} - #{e.message} \n sudo: #{limit} incorrect password attempt")
           sudo_password = ui.ask("Enter sudo password for #{conn_options[:user]}@#{server_name}:", echo: false)
