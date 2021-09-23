@@ -84,6 +84,14 @@ class Chef
       #
       # include_waiver ".*::ssh.*"
       #
+      # @example Adding an arbitrary hash of data (not from any file in a cookbook)
+      #
+      # include_waiver({ "ssh-01" => {
+      #   "expiration_date" => "2033-07-31",
+      #   "run" => false,
+      #   "justification" => "the reason it is waived",
+      # } })
+      #
       def include_waiver(arg)
         raise "include_waiver was given a nil value" if arg.nil?
 

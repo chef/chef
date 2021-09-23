@@ -84,6 +84,10 @@ class Chef
       #
       # include_input ".*::ssh.*"
       #
+      # @example Adding an arbitrary hash of data (not from any file in a cookbook)
+      #
+      # include_input({ "ssh_custom_path": "/usr/local/bin" })
+      #
       def include_input(arg)
         raise "include_input was given a nil value" if arg.nil?
 
