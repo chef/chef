@@ -81,6 +81,11 @@ class Chef
         description: "Should the resource overwrite the destination file contents if they already exist? If set to `:auto` the date stamp of files within the archive will be compared to those on disk and disk contents will be overwritten if they differ. This may cause unintended consequences if disk date stamps are changed between runs, which will result in the files being overwritten during each client run. Make sure to properly test any change to this property.",
         default: false
 
+      property :strip_components, Integer,
+        description: "Remove the specified number of leading path elements.  Pathnames with fewer elements will be silently skipped. This behaves similarly to tar's --strip-components command line argument.",
+        introduced: "17.5",
+        default: 0
+
       # backwards compatibility for the legacy cookbook names
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
@@ -117,7 +122,7 @@ class Chef
 
         if new_resource.owner || new_resource.group
           converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            archive = Archive::Reader.open_filename(new_resource.path)
+            archive = Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components)
             archive.each_entry do |e|
               FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
             end
@@ -160,18 +165,16 @@ class Chef
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
           modified = false
-          Dir.chdir(dest) do
-            archive = Archive::Reader.open_filename(src)
-            Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
-            archive.each_entry do |e|
-              pathname = ::File.expand_path(e.pathname)
-              if ::File.exist?(pathname)
-                Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
-                modified = true unless ::File.mtime(pathname) == e.mtime
-              else
-                Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
-                modified = true
-              end
+          archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
+          Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
+          archive.each_entry do |e|
+            pathname = ::File.expand_path(e.pathname, dest)
+            if ::File.exist?(pathname)
+              Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
+              modified = true unless ::File.mtime(pathname) == e.mtime
+            else
+              Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
+              modified = true
             end
           end
           modified
@@ -189,7 +192,7 @@ class Chef
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
             Dir.chdir(dest) do
-              archive = Archive::Reader.open_filename(src)
+              archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
 
               archive.each_entry do |e|
                 archive.extract(e, flags.to_i)
