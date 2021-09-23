@@ -52,8 +52,8 @@ class Chef
 
       # @return [Array<Profile>] inspec profiles which are enabled in a form suitable to pass to inspec
       #
-      def for_inspec
-        select(&:enabled?).each_with_object([]) { |profile, arry| arry << profile.for_inspec }
+      def inspec_data
+        select(&:enabled?).each_with_object([]) { |profile, arry| arry << profile.inspec_data }
       end
 
       # DSL method to enable profile files.  This matches on the name of the profile being included it

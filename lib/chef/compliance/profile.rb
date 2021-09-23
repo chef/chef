@@ -82,7 +82,7 @@ class Chef
 
       # Render the profile in a way that it can be consumed by inspec
       #
-      def for_inspec
+      def inspec_data
         { name: name, path: File.dirname(path) }
       end
 

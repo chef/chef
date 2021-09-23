@@ -56,8 +56,8 @@ class Chef
 
       # @return [Array<Waiver>] inspec waivers which are enabled in a form suitable to pass to inspec
       #
-      def for_inspec
-        select(&:enabled?).each_with_object({}) { |waiver, hash| hash.merge(waiver.for_inspec) }
+      def inspec_data
+        select(&:enabled?).each_with_object({}) { |waiver, hash| hash.merge(waiver.inspec_data) }
       end
 
       # DSL method to enable waiver files.  This matches on the filename of the waiver file.

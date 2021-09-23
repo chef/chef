@@ -68,8 +68,8 @@ describe Chef::Compliance::Profile do
     expect(profile.enabled?).to eql(false)
   end
 
-  it "has a #for_inspec method that renders the path" do
-    expect(profile.for_inspec).to eql( { name: "ssh-baseline", path: "/var/chef/cache/cookbooks/acme_compliance/compliance/profiles/thisdirectoryisnotthename" } )
+  it "has a #inspec_data method that renders the path" do
+    expect(profile.inspec_data).to eql( { name: "ssh-baseline", path: "/var/chef/cache/cookbooks/acme_compliance/compliance/profiles/thisdirectoryisnotthename" } )
   end
 
   it "doesn't render the events in the inspect output" do

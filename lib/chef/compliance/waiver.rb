@@ -75,7 +75,7 @@ class Chef
 
       # Render the waiver in a way that it can be consumed by inspec
       #
-      def for_inspec
+      def inspec_data
         data
       end
 

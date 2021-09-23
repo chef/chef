@@ -134,11 +134,11 @@ class Chef
       end
 
       def inputs_from_collection
-        safe_input_collection&.for_inspec || {}
+        safe_input_collection&.inspec_data || {}
       end
 
       def waivers_from_collection
-        safe_waiver_collection&.for_inspec || {}
+        safe_waiver_collection&.inspec_data || {}
       end
 
       def inspec_opts
@@ -178,7 +178,7 @@ class Chef
           profile.transform_keys(&:to_sym).update(name: name)
         end || []
 
-        from_cookbooks = safe_profile_collection&.for_inspec || []
+        from_cookbooks = safe_profile_collection&.inspec_data || []
 
         from_attributes + from_cookbooks
       end
