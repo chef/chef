@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.1 -->
-## [v17.6.1](https://github.com/chef/chef/tree/v17.6.1) (2021-09-24)
+<!-- latest_release 17.6.2 -->
+## [v17.6.2](https://github.com/chef/chef/tree/v17.6.2) (2021-09-24)
 
 #### Merged Pull Requests
-- Add Ubuntu 16.04 back to the builds [#12086](https://github.com/chef/chef/pull/12086) ([tas50](https://github.com/tas50))
+- Docs edits for inspec_input and inspec_waiver resources [#12087](https://github.com/chef/chef/pull/12087) ([IanMadd](https://github.com/IanMadd))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.5.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Docs edits for inspec_input and inspec_waiver resources [#12087](https://github.com/chef/chef/pull/12087) ([IanMadd](https://github.com/IanMadd)) <!-- 17.6.2 -->
 - Add Ubuntu 16.04 back to the builds [#12086](https://github.com/chef/chef/pull/12086) ([tas50](https://github.com/tas50)) <!-- 17.6.1 -->
 - Remove EOL FreeBSD 11 builds [#12085](https://github.com/chef/chef/pull/12085) ([tas50](https://github.com/tas50)) <!-- 17.6.0 -->
 <!-- release_rollup -->
