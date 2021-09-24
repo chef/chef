@@ -71,3 +71,6 @@ default["chef_client"]["chef_license"] = "accept-no-persist"
 #
 
 default["nscd"]["server_user"] = "nobody" unless platform_family?("suse") # this breaks SLES 15
+
+# enable CLI output for the compliance phase
+default["audit"]["reporter"] = "cli"
