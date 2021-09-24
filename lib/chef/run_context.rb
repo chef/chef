@@ -25,6 +25,9 @@ require_relative "log"
 require_relative "recipe"
 require_relative "run_context/cookbook_compiler"
 require_relative "event_dispatch/events_output_stream"
+require_relative "compliance/input_collection"
+require_relative "compliance/waiver_collection"
+require_relative "compliance/profile_collection"
 require_relative "train_transport"
 require_relative "exceptions"
 require "forwardable" unless defined?(Forwardable)
@@ -120,9 +123,27 @@ class Chef
 
     # Handle to the global action_collection of executed actions for reporting / data_collector /etc
     #
-    # @return [Chef::ActionCollection
+    # @return [Chef::ActionCollection]
     #
     attr_accessor :action_collection
+
+    # Handle to the global profile_collection of inspec profiles for the compliance phase
+    #
+    # @return [Chef::Compliance::ProfileCollection]
+    #
+    attr_accessor :profile_collection
+
+    # Handle to the global waiver_collection of inspec waiver files for the compliance phase
+    #
+    # @return [Chef::Compliance::WaiverCollection]
+    #
+    attr_accessor :waiver_collection
+
+    # Handle to the global input_collection of inspec input files for the compliance phase
+    #
+    # @return [Chef::Compliance::inputCollection]
+    #
+    attr_accessor :input_collection
 
     # Pointer back to the Chef::Runner that created this
     #
@@ -198,6 +219,9 @@ class Chef
       @loaded_attributes_hash = {}
       @reboot_info = {}
       @cookbook_compiler = nil
+      @input_collection = Chef::Compliance::InputCollection.new(events)
+      @waiver_collection = Chef::Compliance::WaiverCollection.new(events)
+      @profile_collection = Chef::Compliance::ProfileCollection.new(events)
 
       initialize_child_state
     end
@@ -674,6 +698,8 @@ class Chef
         events=
         has_cookbook_file_in_cookbook?
         has_template_in_cookbook?
+        input_collection
+        input_collection=
         load
         loaded_attribute
         loaded_attributes
@@ -688,6 +714,8 @@ class Chef
         node
         node=
         open_stream
+        profile_collection
+        profile_collection=
         reboot_info
         reboot_info=
         reboot_requested?
@@ -700,6 +728,8 @@ class Chef
         transport
         transport_connection
         unreachable_cookbook?
+        waiver_collection
+        waiver_collection=
       }
 
       def initialize(parent_run_context)

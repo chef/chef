@@ -56,7 +56,7 @@ class Chef
       # @raise [Chef::Exceptions::Secret::ConfigurationInvalid] if it is not.
       def validate!; end
 
-      # Called to fetch the secret identified by 'identifer'.  Implementations
+      # Called to fetch the secret identified by 'identifier'.  Implementations
       # should expect that `validate!` has been invoked before `do_fetch`.
       #
       # @param identifier [Object] Unique identifier of the secret to be retrieved.

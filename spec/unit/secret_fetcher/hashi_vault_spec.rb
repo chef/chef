@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#
 
 require_relative "../../spec_helper"
 require "chef/secret_fetcher/hashi_vault"
@@ -24,23 +23,57 @@ describe Chef::SecretFetcher::HashiVault do
   let(:node) { {} }
   let(:run_context) { double("run_context", node: node) }
 
-  context "when validating HashiVault provided configuration" do
-    it "raises ConfigurationInvalid when the role_name is not provided" do
-      fetcher = Chef::SecretFetcher::HashiVault.new( { vault_addr: "vault.example.com" }, run_context)
-      expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
+  context "when validating provided HashiVault configuration" do
+    it "raises ConfigurationInvalid when the :auth_method is not valid" do
+      fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :invalid, vault_addr: "https://vault.example.com:8200" }, run_context)
+      expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid, /:auth_method/)
     end
 
     it "raises ConfigurationInvalid when the vault_addr is not provided" do
-      fetcher = Chef::SecretFetcher::HashiVault.new( { role_name: "vault.example.com" }, run_context)
+      fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :iam_role, role_name: "example-role" }, run_context)
       expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
     end
 
-    it "obtains a token via AWS IAM auth to allow the gem to do its own validations when all required config is provided" do
-      fetcher = Chef::SecretFetcher::HashiVault.new( { vault_addr: "vault.example.com", role_name: "example-role" }, run_context)
-      auth_stub =
-      allow(Aws::InstanceProfileCredentials).to receive(:new).and_return double("credentials")
-      allow(Vault).to receive(:auth).and_return(instance_double(Vault::Authenticate, aws_iam: nil))
-      fetcher.validate!
+    context "and using auth_method: :iam_role" do
+      it "raises ConfigurationInvalid when the role_name is not provided" do
+        fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :iam_role, vault_addr: "https://vault.example.com:8200" }, run_context)
+        expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
+      end
+
+      it "obtains a token via AWS IAM auth to allow the gem to do its own validations when all required config is provided" do
+        fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :iam_role, vault_addr: "https://vault.example.com:8200", role_name: "example-role" }, run_context)
+        allow(Aws::InstanceProfileCredentials).to receive(:new).and_return instance_double(Aws::InstanceProfileCredentials)
+        auth_double = instance_double(Vault::Authenticate)
+        expect(auth_double).to receive(:aws_iam)
+        allow(Vault).to receive(:auth).and_return(auth_double)
+        fetcher.validate!
+      end
+    end
+
+    context "and using auth_method: :token" do
+      it "raises ConfigurationInvalid when no token is provided" do
+        fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :token, vault_addr: "https://vault.example.com:8200" }, run_context)
+        expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
+      end
+
+      it "authenticates using the token during validation when all configuration is correct" do
+        fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :token, token: "t.1234abcd", vault_addr: "https://vault.example.com:8200" }, run_context)
+        auth = instance_double(Vault::Authenticate)
+        auth_double = instance_double(Vault::Authenticate)
+        expect(auth_double).to receive(:token)
+        allow(Vault).to receive(:auth).and_return(auth_double)
+        fetcher.validate!
+      end
+    end
+  end
+
+  context "when fetching a secret from Hashi Vault" do
+    it "raises an FetchFailed message when no secret is returned due to invalid engine path" do
+      fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :invalid, vault_addr: "https://vault.example.com:8200" }, run_context)
+      logical_double = instance_double(Vault::Logical)
+      expect(logical_double).to receive(:read).and_return nil
+      expect(Vault).to receive(:logical).and_return(logical_double)
+      expect { fetcher.do_fetch("anything", nil) }.to raise_error(Chef::Exceptions::Secret::FetchFailed)
     end
   end
 end

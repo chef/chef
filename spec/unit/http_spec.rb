@@ -46,13 +46,19 @@ describe Chef::HTTP do
   describe "#initialize" do
     it "accepts a keepalive option and passes it to the http_client" do
       http = Chef::HTTP.new(uri, keepalives: true)
-      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: true).and_call_original
+      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, nethttp_opts: {}, keepalives: true).and_call_original
       expect(http.http_client).to be_a_kind_of(Chef::HTTP::BasicClient)
     end
 
     it "the default is not to use keepalives" do
       http = Chef::HTTP.new(uri)
-      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: false).and_call_original
+      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, nethttp_opts: {}, keepalives: false).and_call_original
+      expect(http.http_client).to be_a_kind_of(Chef::HTTP::BasicClient)
+    end
+
+    it "allows setting the nethttp options hash" do
+      http = Chef::HTTP.new(uri, { nethttp: { "continue_timeout" => 5 } })
+      expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, nethttp_opts: { "continue_timeout" => 5 }, keepalives: false).and_call_original
       expect(http.http_client).to be_a_kind_of(Chef::HTTP::BasicClient)
     end
   end

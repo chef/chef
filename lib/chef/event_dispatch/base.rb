@@ -164,7 +164,7 @@ class Chef
       # Called when LWRPs are finished loading
       def lwrp_load_complete; end
 
-      # Called when an ohai plugin file loading starts
+      # Called when ohai plugin file loading starts
       def ohai_plugin_load_start(file_count); end
 
       # Called when an ohai plugin file has been loaded
@@ -173,8 +173,50 @@ class Chef
       # Called when an ohai plugin file has an error on load.
       def ohai_plugin_file_load_failed(path, exception); end
 
-      # Called when an ohai plugin file loading has finished
+      # Called when ohai plugin file loading has finished
       def ohai_plugin_load_complete; end
+
+      # Called when compliance file loading starts
+      def compliance_load_start; end
+
+      # Called when compliance file loading ends
+      def compliance_load_complete; end
+
+      # Called when compliance profile loading starts
+      def profiles_load_start; end
+
+      # Called when compliance profile loading end
+      def profiles_load_complete; end
+
+      # Called when compliance input loading starts
+      def inputs_load_start; end
+
+      # Called when compliance input loading end
+      def inputs_load_complete; end
+
+      # Called when compliance waiver loading starts
+      def waivers_load_start; end
+
+      # Called when compliance waiver loading end
+      def waivers_load_complete; end
+
+      # Called when a compliance profile is found in a cookbook by the cookbook_compiler
+      def compliance_profile_loaded(profile); end
+
+      # Called when a compliance waiver is found in a cookbook by the cookbook_compiler
+      def compliance_waiver_loaded(waiver); end
+
+      # Called when a compliance waiver is found in a cookbook by the cookbook_compiler
+      def compliance_input_loaded(input); end
+
+      # Called when a compliance profile is enabled (by include_profile)
+      def compliance_profile_enabled(profile); end
+
+      # Called when a compliance waiver is enabled (by include_waiver)
+      def compliance_waiver_enabled(waiver); end
+
+      # Called when a compliance input is enabled (by include_input)
+      def compliance_input_enabled(input); end
 
       # Called before attribute files are loaded
       def attribute_load_start(attribute_file_count); end

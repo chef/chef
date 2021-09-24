@@ -68,6 +68,7 @@ end
 require "spec/support/local_gems" if File.exist?(File.join(File.dirname(__FILE__), "support", "local_gems.rb"))
 
 # Explicitly require spec helpers that need to load first
+require "spec/support/ruby_installer"
 require "spec/support/platform_helpers"
 require "spec/support/shared/unit/mock_shellout"
 
@@ -185,6 +186,8 @@ RSpec.configure do |config|
   config.filter_run_excluding not_rhel6: true if rhel6?
   config.filter_run_excluding not_rhel7: true if rhel7?
   config.filter_run_excluding not_intel_64bit: true if intel_64bit?
+
+  config.filter_run_excluding libarchive_loading_broken: true if aix? || amazon_linux? || rhel7?
 
   # these let us use chef: ">= 13" or ruby: "~> 2.0.0" or any other Gem::Dependency-style constraint
   config.filter_run_excluding chef: DependencyProc.with(Chef::VERSION)

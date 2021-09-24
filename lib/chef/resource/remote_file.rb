@@ -34,6 +34,78 @@ class Chef
 
       description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 
+      examples <<~'DOC'
+      **Download a file without checking the checksum**:
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+        end
+      ```
+
+      **Download a file with a checksum to validate**:
+
+      ```ruby
+        remote_file '/tmp/test_file' do
+          source 'http://www.example.com/tempfiles/test_file'
+          mode '0755'
+          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+        end
+      ```
+
+      **Download a file only if it's not already present**:
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+          action :create_if_missing
+        end
+      ```
+
+      **Using HTTP Basic Authentication in Headers**:
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+          headers('Authorization' => "Basic #{Base64.encode64("USERNAME_VALUE:PASSWORD_VALUE").delete("\n")}")
+          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+          action :create_if_missing
+        end
+      ```
+
+      **Downloading a file to the Chef file cache dir for execution**:
+
+      ```ruby
+        remote_file '#{Chef::Config['file_cache_path']}/install.sh' do
+          source 'https://example.org/install.sh'
+          action :create_if_missing
+        end
+
+        execute '#{Chef::Config['file_cache_path']}/install.sh'
+      ```
+
+      **Specify advanced HTTP connection options including Net::HTTP (nethttp) options:**
+
+      ```ruby
+        remote_file '/tmp/remote.txt' do
+          source 'https://example.org/remote.txt'
+          http_options({
+            http_retry_delay: 0,
+            http_retry_count: 0,
+            keepalives: false,
+            nethttp: {
+              continue_timeout: 5,
+              max_retries: 5,
+              read_timeout: 5,
+              write_timeout: 5,
+              ssl_timeout: 5,
+            },
+          })
+        end
+      ```
+      DOC
+
       def initialize(name, run_context = nil)
         super
         @source = []
@@ -96,9 +168,29 @@ class Chef
         description: "Whether #{ChefUtils::Dist::Infra::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
 
       property :headers, Hash, default: {},
-        description: "A Hash of custom HTTP headers."
+        description: <<~'DOCS'
+        A Hash of custom headers. For example:
 
-      property :show_progress, [ TrueClass, FalseClass ], default: false
+        ```ruby
+        headers({ "Cookie" => "user=some_user; pass=p@ssw0rd!" })
+        ```
+
+        or:
+
+        ```ruby
+        headers({ "Referer" => "#{header}" })
+        ```
+
+        or:
+
+        ```ruby
+        headers( "Authorization"=>"Basic #{ Base64.encode64("#{username}:#{password}").gsub("\n", "") }" )
+        ```
+        DOCS
+
+      property :show_progress, [ TrueClass, FalseClass ],
+        description: "Displays the progress of the file download.",
+        default: false
 
       property :ssl_verify_mode, Symbol, equal_to: %i{verify_none verify_peer},
         introduced: "16.2",
@@ -117,6 +209,10 @@ class Chef
         description: "**Windows only** The password of the user specified by the `remote_user` property. This property is required if `remote_user` is specified and may only be specified if `remote_user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `remote_password` is specified."
 
       property :authentication, Symbol, equal_to: %i{remote local}, default: :remote
+
+      property :http_options, Hash, default: {},
+        introduced: "17.5",
+        description: "A Hash of custom HTTP options. For example: `http_options({ http_retry_count: 0, http_retry_delay: 2 })`"
 
       def after_created
         validate_identity_platform(remote_user, remote_password, remote_domain)

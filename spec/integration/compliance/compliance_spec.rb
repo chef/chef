@@ -80,4 +80,64 @@ describe "chef-client with compliance phase" do
       expect(result["status"]).to eq("passed")
     end
   end
+
+  when_the_repository "has a compliance segment" do
+    let(:report_file) { path_to("report_file.json") }
+
+    before do
+      directory "cookbooks/x" do
+        directory "compliance" do
+          directory "profiles/my_profile" do
+            file "inspec.yml", <<~FILE
+              ---
+              name: my-profile
+            FILE
+
+            directory "controls" do
+              file "my_control.rb", <<~FILE
+                control "my control" do
+                  describe Dir.home do
+                    it { should be_kind_of String }
+                  end
+                end
+              FILE
+            end
+          end
+        end
+        file "attributes/default.rb", <<~FILE
+        default['audit']['reporter'] = "json-file"
+        default['audit']['json_file'] = {
+              "location" => "#{report_file}"
+            }
+        FILE
+        file "recipes/default.rb", <<~FILE
+          include_profile ".*::.*"
+        FILE
+      end
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+        log_level :warn
+      EOM
+    end
+
+    it "should complete with success" do
+      result = shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -r 'recipe[x]'", cwd: chef_dir)
+      result.error!
+
+      inspec_report = JSON.parse(File.read(report_file))
+      expect(inspec_report["profiles"].length).to eq(1)
+
+      profile = inspec_report["profiles"].first
+      expect(profile["name"]).to eq("my-profile")
+      expect(profile["controls"].length).to eq(1)
+
+      control = profile["controls"].first
+      expect(control["id"]).to eq("my control")
+      expect(control["results"].length).to eq(1)
+
+      result = control["results"].first
+      expect(result["status"]).to eq("passed")
+    end
+  end
 end

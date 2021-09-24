@@ -36,16 +36,18 @@ class Chef
       attr_reader :url
       attr_reader :ssl_policy
       attr_reader :keepalives
+      attr_reader :nethttp_opts
 
       # Instantiate a BasicClient.
       # === Arguments:
       # url:: An URI for the remote server.
       # === Options:
       # ssl_policy:: The SSL Policy to use, defaults to DefaultSSLPolicy
-      def initialize(url, opts = {})
+      def initialize(url, ssl_policy: DefaultSSLPolicy, keepalives: false, nethttp_opts: {})
         @url = url
-        @ssl_policy = opts[:ssl_policy] || DefaultSSLPolicy
-        @keepalives = opts[:keepalives] || false
+        @ssl_policy = ssl_policy
+        @keepalives = keepalives
+        @nethttp_opts = ChefUtils::Mash.new(nethttp_opts)
       end
 
       def http_client
@@ -118,8 +120,14 @@ class Chef
           configure_ssl(http_client)
         end
 
-        http_client.read_timeout = config[:rest_timeout]
-        http_client.open_timeout = config[:rest_timeout]
+        opts = nethttp_opts.dup
+        opts["read_timeout"] ||= config[:rest_timeout]
+        opts["open_timeout"] ||= config[:rest_timeout]
+
+        opts.each do |key, value|
+          http_client.send(:"#{key}=", value)
+        end
+
         if keepalives
           http_client.start
         else
@@ -142,11 +150,11 @@ class Chef
       end
 
       def http_proxy_user(proxy_uri)
-        proxy_uri.user || Chef::Config["#{proxy_uri.scheme}_proxy_user"]
+        proxy_uri.user || config["#{proxy_uri.scheme}_proxy_user"]
       end
 
       def http_proxy_pass(proxy_uri)
-        proxy_uri.password || Chef::Config["#{proxy_uri.scheme}_proxy_pass"]
+        proxy_uri.password || config["#{proxy_uri.scheme}_proxy_pass"]
       end
 
       def configure_ssl(http_client)

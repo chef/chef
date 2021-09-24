@@ -43,8 +43,8 @@ class Chef
           )
         else
           current_resource.link_type(:hard)
-          if ::File.exists?(current_resource.target_file)
-            if ::File.exists?(new_resource.to) &&
+          if ::File.exist?(current_resource.target_file)
+            if ::File.exist?(new_resource.to) &&
                 file_class.stat(current_resource.target_file).ino ==
                     file_class.stat(new_resource.to).ino
               current_resource.to(canonicalize(new_resource.to))

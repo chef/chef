@@ -32,6 +32,7 @@ class Chef
       attr_reader :events
       attr_reader :run_list_expansion
       attr_reader :logger
+      attr_reader :run_context
 
       def initialize(run_context, run_list_expansion, events)
         @run_context = run_context
@@ -43,23 +44,51 @@ class Chef
 
       # Chef::Node object for the current run.
       def node
-        @run_context.node
+        run_context.node
       end
 
       # Chef::CookbookCollection object for the current run
       def cookbook_collection
-        @run_context.cookbook_collection
+        run_context.cookbook_collection
       end
 
       # Resource Definitions from the compiled cookbooks. This is populated by
       # calling #compile_resource_definitions (which is called by #compile)
       def definitions
-        @run_context.definitions
+        run_context.definitions
+      end
+
+      # The global waiver_collection hanging off of the run_context, used by
+      # compile_compliance and the compliance phase that runs inspec
+      #
+      # @returns [Chef::Compliance::WaiverCollection]
+      #
+      def waiver_collection
+        run_context.waiver_collection
+      end
+
+      # The global input_collection hanging off of the run_context, used by
+      # compile_compliance and the compliance phase that runs inspec
+      #
+      # @returns [Chef::Compliance::inputCollection]
+      #
+      def input_collection
+        run_context.input_collection
+      end
+
+      # The global profile_collection hanging off of the run_context, used by
+      # compile_compliance and the compliance phase that runs inspec
+      #
+      # @returns [Chef::Compliance::ProfileCollection]
+      #
+      def profile_collection
+        run_context.profile_collection
       end
 
       # Run the compile phase of the chef run. Loads files in the following order:
       # * Libraries
       # * Ohai
+      # * Compliance Profiles/Waivers
       # * Attributes
       # * LWRPs
       # * Resource Definitions
@@ -73,6 +102,7 @@ class Chef
       def compile
         compile_libraries
         compile_ohai_plugins
+        compile_compliance
         compile_attributes
         compile_lwrps
         compile_resource_definitions
@@ -98,7 +128,7 @@ class Chef
 
       # Loads library files from cookbooks according to #cookbook_order.
       def compile_libraries
-        @events.library_load_start(count_files_by_segment(:libraries))
+        events.library_load_start(count_files_by_segment(:libraries))
         cookbook_order.each do |cookbook|
           eager_load_libraries = cookbook_collection[cookbook].metadata.eager_load_libraries
           if eager_load_libraries == true # actually true, not truthy
@@ -110,14 +140,14 @@ class Chef
             end
           end
         end
-        @events.library_load_complete
+        events.library_load_complete
       end
 
       # Loads Ohai Plugins from cookbooks, and ensure any old ones are
       # properly cleaned out
       def compile_ohai_plugins
         ohai_plugin_count = count_files_by_segment(:ohai)
-        @events.ohai_plugin_load_start(ohai_plugin_count)
+        events.ohai_plugin_load_start(ohai_plugin_count)
         FileUtils.rm_rf(Chef::Config[:ohai_segment_plugin_path])
 
         cookbook_order.each do |cookbook|
@@ -131,57 +161,81 @@ class Chef
           node.consume_ohai_data(ohai)
         end
 
-        @events.ohai_plugin_load_complete
+        events.ohai_plugin_load_complete
+      end
+
+      # Loads the compliance segment files from the cookbook into the collections
+      # hanging off of the run_context, for later use in the compliance phase
+      # inspec run.
+      #
+      def compile_compliance
+        events.compliance_load_start
+        events.profiles_load_start
+        cookbook_order.each do |cookbook|
+          load_profiles_from_cookbook(cookbook)
+        end
+        events.profiles_load_complete
+        events.inputs_load_start
+        cookbook_order.each do |cookbook|
+          load_inputs_from_cookbook(cookbook)
+        end
+        events.inputs_load_complete
+        events.waivers_load_start
+        cookbook_order.each do |cookbook|
+          load_waivers_from_cookbook(cookbook)
+        end
+        events.waivers_load_complete
+        events.compliance_load_complete
       end
 
       # Loads attributes files from cookbooks. Attributes files are loaded
       # according to #cookbook_order; within a cookbook, +default.rb+ is loaded
       # first, then the remaining attributes files in lexical sort order.
       def compile_attributes
-        @events.attribute_load_start(count_files_by_segment(:attributes, "attributes.rb"))
+        events.attribute_load_start(count_files_by_segment(:attributes, "attributes.rb"))
         cookbook_order.each do |cookbook|
           load_attributes_from_cookbook(cookbook)
         end
-        @events.attribute_load_complete
+        events.attribute_load_complete
       end
 
       # Loads LWRPs according to #cookbook_order. Providers are loaded before
       # resources on a cookbook-wise basis.
       def compile_lwrps
         lwrp_file_count = count_files_by_segment(:providers) + count_files_by_segment(:resources)
-        @events.lwrp_load_start(lwrp_file_count)
+        events.lwrp_load_start(lwrp_file_count)
         cookbook_order.each do |cookbook|
           load_lwrps_from_cookbook(cookbook)
         end
-        @events.lwrp_load_complete
+        events.lwrp_load_complete
       end
 
       # Loads resource definitions according to #cookbook_order
       def compile_resource_definitions
-        @events.definition_load_start(count_files_by_segment(:definitions))
+        events.definition_load_start(count_files_by_segment(:definitions))
         cookbook_order.each do |cookbook|
           load_resource_definitions_from_cookbook(cookbook)
         end
-        @events.definition_load_complete
+        events.definition_load_complete
       end
 
       # Iterates over the expanded run_list, loading each recipe in turn.
       def compile_recipes
-        @events.recipe_load_start(run_list_expansion.recipes.size)
+        events.recipe_load_start(run_list_expansion.recipes.size)
         run_list_expansion.recipes.each do |recipe|
 
           path = resolve_recipe(recipe)
-          @run_context.load_recipe(recipe)
-          @events.recipe_file_loaded(path, recipe)
+          run_context.load_recipe(recipe)
+          events.recipe_file_loaded(path, recipe)
         rescue Chef::Exceptions::RecipeNotFound => e
-          @events.recipe_not_found(e)
+          events.recipe_not_found(e)
           raise
         rescue Exception => e
-          @events.recipe_file_load_failed(path, e, recipe)
+          events.recipe_file_load_failed(path, e, recipe)
           raise
 
         end
-        @events.recipe_load_complete
+        events.recipe_load_complete
       end
 
       # Whether or not a cookbook is reachable from the set of cookbook given
@@ -225,7 +279,7 @@ class Chef
         attr_file_basename = ::File.basename(filename, ".rb")
         node.include_attribute("#{cookbook_name}::#{attr_file_basename}")
       rescue Exception => e
-        @events.attribute_file_load_failed(filename, e)
+        events.attribute_file_load_failed(filename, e)
         raise
       end
 
@@ -234,9 +288,9 @@ class Chef
 
           logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
           Kernel.require(filename)
-          @events.library_file_loaded(filename)
+          events.library_file_loaded(filename)
         rescue Exception => e
-          @events.library_file_load_failed(filename, e)
+          events.library_file_load_failed(filename, e)
           raise
 
         end
@@ -260,18 +314,18 @@ class Chef
       def load_lwrp_provider(cookbook_name, filename)
         logger.trace("Loading cookbook #{cookbook_name}'s providers from #{filename}")
         Chef::Provider::LWRPBase.build_from_file(cookbook_name, filename, self)
-        @events.lwrp_file_loaded(filename)
+        events.lwrp_file_loaded(filename)
       rescue Exception => e
-        @events.lwrp_file_load_failed(filename, e)
+        events.lwrp_file_load_failed(filename, e)
         raise
       end
 
       def load_lwrp_resource(cookbook_name, filename)
         logger.trace("Loading cookbook #{cookbook_name}'s resources from #{filename}")
         Chef::Resource::LWRPBase.build_from_file(cookbook_name, filename, self)
-        @events.lwrp_file_loaded(filename)
+        events.lwrp_file_loaded(filename)
       rescue Exception => e
-        @events.lwrp_file_load_failed(filename, e)
+        events.lwrp_file_load_failed(filename, e)
         raise
       end
 
@@ -288,6 +342,36 @@ class Chef
         end
       end
 
+      # Load the compliance segment files from a single cookbook
+      #
+      def load_profiles_from_cookbook(cookbook_name)
+        # This identifies profiles by their inspec.yml file, we recurse into subdirs so the profiles may be deeply
+        # nested in a subdir structure for organization.  You could have profiles inside of profiles but
+        # since that is not coherently defined, you should not.
+        #
+        each_file_in_cookbook_by_segment(cookbook_name, :compliance, [ "profiles/**/inspec.{yml,yaml}" ]) do |filename|
+          profile_collection.from_file(filename, cookbook_name)
+        end
+      end
+
+      def load_waivers_from_cookbook(cookbook_name)
+        # This identifies waiver files as any yaml files under the waivers subdir.  We recurse into subdirs as well
+        # so that waivers may be nested in subdirs for organization.  Any other files are ignored.
+        #
+        each_file_in_cookbook_by_segment(cookbook_name, :compliance, [ "waivers/**/*.{yml,yaml}" ]) do |filename|
+          waiver_collection.from_file(filename, cookbook_name)
+        end
+      end
+
+      def load_inputs_from_cookbook(cookbook_name)
+        # This identifies input files as any yaml files under the inputs subdir.  We recurse into subdirs as well
+        # so that inputs may be nested in subdirs for organization.  Any other files are ignored.
+        #
+        each_file_in_cookbook_by_segment(cookbook_name, :compliance, [ "inputs/**/*.{yml,yaml}" ]) do |filename|
+          input_collection.from_file(filename, cookbook_name)
+        end
+      end
+
       def load_resource_definitions_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :definitions).each do |filename|
           next unless File.extname(filename) == ".rb"
@@ -300,9 +384,9 @@ class Chef
               logger.info("Overriding duplicate definition #{key}, new definition found in #{filename}")
               newval
             end
-            @events.definition_file_loaded(filename)
+            events.definition_file_loaded(filename)
           rescue Exception => e
-            @events.definition_file_load_failed(filename, e)
+            events.definition_file_load_failed(filename, e)
             raise
           end
         end
