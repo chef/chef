@@ -38,8 +38,7 @@ builder-to-testers-map:
     - el-8-aarch64
   el-8-x86_64:
     - el-8-x86_64
-  freebsd-11-amd64:
-    - freebsd-11-amd64
+  freebsd-12-amd64:
     - freebsd-12-amd64
   mac_os_x-10.14-x86_64:
     - mac_os_x-10.14-x86_64
