@@ -146,7 +146,10 @@ class Chef
         end
 
         if ::File.extname(new_resource.output_path) == ".pfx"
-          powershell_exec!(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_resource.output_path, password: new_resource.pfx_password ))
+          thumbprint = resolve_thumbprint(new_resource.source)
+          store = Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
+          store.valid?(thumbprint)
+          powershell_exec!(pfx_ps_cmd(thumbprint, store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_resource.output_path, password: new_resource.pfx_password ))
         else
           cert_obj = fetch_cert
         end
@@ -251,7 +254,9 @@ class Chef
 
         # Thumbprints should be exactly 40 Hex characters
         def valid_thumbprint?(string)
-          string.match?(/[0-9A-Fa-f]/) && string.length == 40
+          unless string.match?(/[0-9A-Fa-f]/) && string.length == 40
+            raise ArgumentError, "Invalid certificate thumbprint."
+          end
         end
 
         def get_thumbprint(store_name, location, source)
@@ -292,7 +297,7 @@ class Chef
         def pfx_ps_cmd(thumbprint, store_location: "LocalMachine", store_name: "My", output_path:, password: )
           <<-CMD
             $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText
-            $cert = Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse | Where { $_.Thumbprint -eq "#{thumbprint.upcase}" }
+            $cert = Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse | Where { $_.Thumbprint -eq "#{thumbprint}" }
             Export-PfxCertificate -Cert $cert -FilePath "#{output_path}" -Password $my_pwd
           CMD
         end
