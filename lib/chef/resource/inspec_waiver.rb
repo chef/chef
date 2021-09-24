@@ -62,7 +62,7 @@ class Chef
         end
       ```
 
-      **Add an InSpec waiver to the Compliance Phase using an arbitrary YAML, JSON or TOML file**:
+      **Add an InSpec waiver to the Compliance Phase using an arbitrary YAML, JSON, or TOML file**:
 
       ```ruby
         # files ending in .yml or .yaml that exist are parsed as YAML
@@ -101,12 +101,11 @@ class Chef
         end
       ```
 
-      Note that the inspec_waiver resource does not update and will not fire notifications (similar to the log resource).  This is done to preserve the ability to use
-      the resource while not causing the updated resource count to be larger than zero.  Since the resource does not update the state of the node being managed this
-      behavior is still consistent with the configuration management model.  Events should be used to observe configuration changes for the compliance phase.  It is
-      possible to use the `notify_group` resource to chain notifications of the two resources, but notifications are the wrong model to use and pure ruby conditionals
-      should be used instead.  Compliance configuration should be independent of other resources and should only be made conditional based on state/attributes not
-      on other resources.
+      Note that the **inspec_waiver** resource does not update and will not fire notifications (similar to the log resource). This is done to preserve the ability to use
+      the resource while not causing the updated resource count to be larger than zero. Since the resource does not update the state of the managed node, this behavior
+      is still consistent with the configuration management model. Instead, you should use events to observe configuration changes for the compliance phase. It is
+      possible to use the `notify_group` resource to chain notifications of the two resources, but notifications are the wrong model to use, and you should use pure ruby
+      conditionals instead. Compliance configuration should be independent of other resources and should only be conditional based on state/attributes, not other resources.
       DOC
 
       property :control, String,
