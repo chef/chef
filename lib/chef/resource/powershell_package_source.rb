@@ -1,4 +1,5 @@
 # Author:: Tor Magnus Rakvåg (tm@intility.no)
+# Author:: John McCrae (john.mccrae@progress.com)
 # Copyright:: 2018, Intility AS
 # License:: Apache License, Version 2.0
 #
@@ -24,8 +25,7 @@ class Chef
 
       provides :powershell_package_source
 
-      description "Use the **powershell_package_source** resource to register a PowerShell Repository or other Package Source type with. There are 2 distinct objects we care about here. The first is a Package Source like a PowerShell Repository
-      or a Nuget Source. The second object is a provider that PowerShell uses to get to that source with, like PowerShellGet, Nuget, Chocolatey, etc. "
+      description "Use the **powershell_package_source** resource to register a PowerShell Repository or other Package Source type with. There are 2 distinct objects we care about here. The first is a Package Source like a PowerShell Repository or a Nuget Source. The second object is a provider that PowerShell uses to get to that source with, like PowerShellGet, Nuget, Chocolatey, etc. "
       introduced "14.3"
       examples <<~DOC
         **Add a new PSRepository that is not trusted and which requires credentials to connect to**:
@@ -122,6 +122,8 @@ class Chef
 
       property :source_location, String,
         description: "The URL to the location to retrieve modules from."
+
+      alias :url :source_location
 
       property :publish_location, String,
         description: "The URL where modules will be published to. Only valid if the provider is `PowerShellGet`."
@@ -220,7 +222,7 @@ class Chef
         if output == "PackageSource" || output == "PSRepository"
           unregister_cmd = "Unregister-PackageSource -Name '#{new_resource.source_name}'"
           converge_by("unregister source: #{new_resource.source_name}") do
-            res = powershell_exec(unregister_cmd)
+            res = powershell_exec!(unregister_cmd)
             raise "Failed to unregister #{new_resource.source_name}: #{res.errors}" if res.error?
           end
         else
