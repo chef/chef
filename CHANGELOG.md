@@ -1,57 +1,55 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.5.22 -->
-## [v17.5.22](https://github.com/chef/chef/tree/v17.5.22) (2021-09-23)
-
-#### Merged Pull Requests
-- Add Json verifier [#12062](https://github.com/chef/chef/pull/12062) ([gogsbread](https://github.com/gogsbread))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.4.38 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Add Json verifier [#12062](https://github.com/chef/chef/pull/12062) ([gogsbread](https://github.com/gogsbread)) <!-- 17.5.22 -->
-- Native compliance phase [#11904](https://github.com/chef/chef/pull/11904) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.21 -->
-- Exclude running libarchive tests on platforms where loading libarchive is broken [#12084](https://github.com/chef/chef/pull/12084) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.5.20 -->
-- Add http_options property to remote_file [#12083](https://github.com/chef/chef/pull/12083) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.19 -->
-- Add Windows 11, Windows 2022, and Debian 11 builds [#12079](https://github.com/chef/chef/pull/12079) ([tas50](https://github.com/tas50)) <!-- 17.5.18 -->
-- Fix windows CI for archive_file [#12070](https://github.com/chef/chef/pull/12070) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.5.17 -->
-- Update bundle config set path [#12069](https://github.com/chef/chef/pull/12069) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.5.15 -->
-- Add strip_components property to archive_file [#11907](https://github.com/chef/chef/pull/11907) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.5.14 -->
-- Don&#39;t setup broken symlink to knife [#12064](https://github.com/chef/chef/pull/12064) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.13 -->
-- Test on Windows 2022 in GitHub actions [#12060](https://github.com/chef/chef/pull/12060) ([tas50](https://github.com/tas50)) <!-- 17.5.12 -->
-- registry_key: convert values to a real property [#12018](https://github.com/chef/chef/pull/12018) ([rishichawda](https://github.com/rishichawda)) <!-- 17.5.12 -->
-- Bump ffi-libarchive to 1.1.3 [#12031](https://github.com/chef/chef/pull/12031) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.5.11 -->
-- Make the beta warning less scary [#12028](https://github.com/chef/chef/pull/12028) ([tas50](https://github.com/tas50)) <!-- 17.5.10 -->
-- Coerce mount_point only when it is not root directory [#12022](https://github.com/chef/chef/pull/12022) ([jiokmiso](https://github.com/jiokmiso)) <!-- 17.5.9 -->
-- Add a description to use_consistent_splay [#12024](https://github.com/chef/chef/pull/12024) ([tas50](https://github.com/tas50)) <!-- 17.5.8 -->
-- Enable chef-client scheduled task to behave like chef_client_cron, with consistent delay calculated once from splay [#11894](https://github.com/chef/chef/pull/11894) ([gholtiii](https://github.com/gholtiii)) <!-- 17.5.7 -->
-- Add Yaml verifier for `file` resource [#12020](https://github.com/chef/chef/pull/12020) ([gogsbread](https://github.com/gogsbread)) <!-- 17.5.6 -->
-- Clean up some more File.exists? uses [#12016](https://github.com/chef/chef/pull/12016) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.5.5 -->
-- Bump chef-vault to 4.1.4 [#12015](https://github.com/chef/chef/pull/12015) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.5.4 -->
-- Enable directly using AWS S3 with --recipe-url parameter of Chef Client [#11962](https://github.com/chef/chef/pull/11962) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.5.3 -->
-- [chef-client] Enable chef_client_scheduled_task resource to leverage … [#12014](https://github.com/chef/chef/pull/12014) ([gholtiii](https://github.com/gholtiii)) <!-- 17.5.2 -->
-- Add AKeyless Vault support [#12012](https://github.com/chef/chef/pull/12012) ([marcparadise](https://github.com/marcparadise)) <!-- 17.5.1 -->
-- Update all deps to the latest [#12009](https://github.com/chef/chef/pull/12009) ([tas50](https://github.com/tas50)) <!-- 17.5.0 -->
-- Update HashiCorp Vault fetcher to support token auth [#12008](https://github.com/chef/chef/pull/12008) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.52 -->
-- Bump chef-zero to 15.0.9 [#12005](https://github.com/chef/chef/pull/12005) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.51 -->
-- Fix tests for new omnibus test systems [#12004](https://github.com/chef/chef/pull/12004) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.4.50 -->
-- Bump chef-vault to 4.1.3 [#12002](https://github.com/chef/chef/pull/12002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.49 -->
-- ulimit: Fix sensitive property [#12000](https://github.com/chef/chef/pull/12000) ([ashwin-msys](https://github.com/ashwin-msys)) <!-- 17.4.48 -->
-- Disable x25519 until we fix RHEL 7 failures [#11993](https://github.com/chef/chef/pull/11993) ([tas50](https://github.com/tas50)) <!-- 17.4.47 -->
-- Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.46 -->
-- windows_user_privilege.rb : fixed exception: privilege is a required property, even when it was set [#11914](https://github.com/chef/chef/pull/11914) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.4.45 -->
-- Build packages on Intel macOS 12 [#11990](https://github.com/chef/chef/pull/11990) ([tas50](https://github.com/tas50)) <!-- 17.4.44 -->
-- windows_uac: fix registry settings for consent_behavior_users [#11987](https://github.com/chef/chef/pull/11987) ([rishichawda](https://github.com/rishichawda)) <!-- 17.4.43 -->
-- Fix knife client create [#11986](https://github.com/chef/chef/pull/11986) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.4.42 -->
-- Bump ffi to 1.15.4 [#11989](https://github.com/chef/chef/pull/11989) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.4.41 -->
-- bump openssl-1.0.2za [#11982](https://github.com/chef/chef/pull/11982) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 17.4.40 -->
-- Add support for secrets stored in HashiCorp Vault [#11942](https://github.com/chef/chef/pull/11942) ([marcparadise](https://github.com/marcparadise)) <!-- 17.4.39 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.5.22](https://github.com/chef/chef/tree/v17.5.22) (2021-09-24)
+
+#### Merged Pull Requests
+- Add support for secrets stored in HashiCorp Vault [#11942](https://github.com/chef/chef/pull/11942) ([marcparadise](https://github.com/marcparadise))
+- bump openssl-1.0.2za [#11982](https://github.com/chef/chef/pull/11982) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Bump ffi to 1.15.4 [#11989](https://github.com/chef/chef/pull/11989) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix knife client create [#11986](https://github.com/chef/chef/pull/11986) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- windows_uac: fix registry settings for consent_behavior_users [#11987](https://github.com/chef/chef/pull/11987) ([rishichawda](https://github.com/rishichawda))
+- Build packages on Intel macOS 12 [#11990](https://github.com/chef/chef/pull/11990) ([tas50](https://github.com/tas50))
+- windows_user_privilege.rb : fixed exception: privilege is a required property, even when it was set [#11914](https://github.com/chef/chef/pull/11914) ([snehaldwivedi](https://github.com/snehaldwivedi))
+- Bump inspec-core-bin to 4.41.20 [#11991](https://github.com/chef/chef/pull/11991) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Disable x25519 until we fix RHEL 7 failures [#11993](https://github.com/chef/chef/pull/11993) ([tas50](https://github.com/tas50))
+- ulimit: Fix sensitive property [#12000](https://github.com/chef/chef/pull/12000) ([ashwin-msys](https://github.com/ashwin-msys))
+- Bump chef-vault to 4.1.3 [#12002](https://github.com/chef/chef/pull/12002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix tests for new omnibus test systems [#12004](https://github.com/chef/chef/pull/12004) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Bump chef-zero to 15.0.9 [#12005](https://github.com/chef/chef/pull/12005) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update HashiCorp Vault fetcher to support token auth [#12008](https://github.com/chef/chef/pull/12008) ([marcparadise](https://github.com/marcparadise))
+- Update all deps to the latest [#12009](https://github.com/chef/chef/pull/12009) ([tas50](https://github.com/tas50))
+- Add AKeyless Vault support [#12012](https://github.com/chef/chef/pull/12012) ([marcparadise](https://github.com/marcparadise))
+- [chef-client] Enable chef_client_scheduled_task resource to leverage … [#12014](https://github.com/chef/chef/pull/12014) ([gholtiii](https://github.com/gholtiii))
+- Enable directly using AWS S3 with --recipe-url parameter of Chef Client [#11962](https://github.com/chef/chef/pull/11962) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- Bump chef-vault to 4.1.4 [#12015](https://github.com/chef/chef/pull/12015) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Clean up some more File.exists? uses [#12016](https://github.com/chef/chef/pull/12016) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add Yaml verifier for `file` resource [#12020](https://github.com/chef/chef/pull/12020) ([gogsbread](https://github.com/gogsbread))
+- Enable chef-client scheduled task to behave like chef_client_cron, with consistent delay calculated once from splay [#11894](https://github.com/chef/chef/pull/11894) ([gholtiii](https://github.com/gholtiii))
+- Add a description to use_consistent_splay [#12024](https://github.com/chef/chef/pull/12024) ([tas50](https://github.com/tas50))
+- Coerce mount_point only when it is not root directory [#12022](https://github.com/chef/chef/pull/12022) ([jiokmiso](https://github.com/jiokmiso))
+- Make the beta warning less scary [#12028](https://github.com/chef/chef/pull/12028) ([tas50](https://github.com/tas50))
+- Bump ffi-libarchive to 1.1.3 [#12031](https://github.com/chef/chef/pull/12031) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- registry_key: convert values to a real property [#12018](https://github.com/chef/chef/pull/12018) ([rishichawda](https://github.com/rishichawda))
+- Test on Windows 2022 in GitHub actions [#12060](https://github.com/chef/chef/pull/12060) ([tas50](https://github.com/tas50))
+- Don&#39;t setup broken symlink to knife [#12064](https://github.com/chef/chef/pull/12064) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add strip_components property to archive_file [#11907](https://github.com/chef/chef/pull/11907) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Update bundle config set path [#12069](https://github.com/chef/chef/pull/12069) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Fix windows CI for archive_file [#12070](https://github.com/chef/chef/pull/12070) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Add Windows 11, Windows 2022, and Debian 11 builds [#12079](https://github.com/chef/chef/pull/12079) ([tas50](https://github.com/tas50))
+- Add http_options property to remote_file [#12083](https://github.com/chef/chef/pull/12083) ([lamont-granquist](https://github.com/lamont-granquist))
+- Exclude running libarchive tests on platforms where loading libarchive is broken [#12084](https://github.com/chef/chef/pull/12084) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Native compliance phase [#11904](https://github.com/chef/chef/pull/11904) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add Json verifier [#12062](https://github.com/chef/chef/pull/12062) ([gogsbread](https://github.com/gogsbread))
+<!-- latest_stable_release -->
+
 ## [v17.4.38](https://github.com/chef/chef/tree/v17.4.38) (2021-08-28)
 
 #### Merged Pull Requests
@@ -68,7 +66,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump chef/ohai to d7b28f39f6ef17ba20d2cc0ddbdb62e40b02d8bd [#11972](https://github.com/chef/chef/pull/11972) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 - Update openssl on macOS to 1.1.1l [#11973](https://github.com/chef/chef/pull/11973) ([tas50](https://github.com/tas50))
 - Revert experimental/debug code [#11974](https://github.com/chef/chef/pull/11974) ([marcparadise](https://github.com/marcparadise))
-<!-- latest_stable_release -->
 
 ## [v17.4.25](https://github.com/chef/chef/tree/v17.4.25) (2021-08-23)
 
