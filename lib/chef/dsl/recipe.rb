@@ -18,12 +18,13 @@
 #
 
 require_relative "../exceptions"
-require_relative "resources"
+require_relative "compliance"
+require_relative "declare_resource"
 require_relative "definitions"
 require_relative "include_recipe"
 require_relative "reboot_pending"
+require_relative "resources"
 require_relative "universal"
-require_relative "declare_resource"
 require_relative "../mixin/notifying_block"
 require_relative "../mixin/lazy_module_include"
 
@@ -42,6 +43,7 @@ class Chef
     #   - it also pollutes the namespace of nearly every context, watch out.
     #
     module Recipe
+      include Chef::DSL::Compliance
       include Chef::DSL::Universal
       include Chef::DSL::DeclareResource
       include Chef::Mixin::NotifyingBlock

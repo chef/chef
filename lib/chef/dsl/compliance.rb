@@ -1,3 +1,4 @@
+#
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -15,10 +16,23 @@
 #
 
 class Chef
-  class Knife
-    KNIFE_ROOT = File.expand_path("../..", __dir__)
-    VERSION = "17.6.1".freeze
+  module DSL
+    module Compliance
+
+      # @see Chef::Compliance::ProfileCollection#include_profile
+      def include_profile(*args)
+        run_context.profile_collection.include_profile(*args)
+      end
+
+      # @see Chef::Compliance::WaiverCollection#include_waiver
+      def include_waiver(*args)
+        run_context.waiver_collection.include_waiver(*args)
+      end
+
+      # @see Chef::Compliance::inputCollection#include_input
+      def include_input(*args)
+        run_context.input_collection.include_input(*args)
+      end
+    end
   end
 end
-
-

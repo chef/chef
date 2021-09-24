@@ -82,7 +82,7 @@ class Chef
         default: false
 
       property :strip_components, Integer,
-        description: "Remove the specified number of leading path elements.  Pathnames with fewer elements will be silently skipped. This behaves similarly to tar's --strip-components command line argument.",
+        description: "Remove the specified number of leading path elements. Pathnames with fewer elements will be silently skipped. This behaves similarly to tar's --strip-components command line argument.",
         introduced: "17.5",
         default: 0
 

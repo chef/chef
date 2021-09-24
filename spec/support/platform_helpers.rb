@@ -163,6 +163,10 @@ def aix?
   RUBY_PLATFORM.include?("aix")
 end
 
+def amazon_linux?
+  ohai[:platform_family] == "amazon"
+end
+
 def wpar?
   !((ohai[:virtualization] || {})[:wpar_no].nil?)
 end

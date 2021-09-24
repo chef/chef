@@ -241,8 +241,7 @@ class Chef
 
         run_status.run_id = request_id = Chef::RequestID.instance.request_id
 
-        @run_context = Chef::RunContext.new
-        run_context.events = events
+        @run_context = Chef::RunContext.new(nil, nil, events)
         run_status.run_context = run_context
 
         events.run_start(Chef::VERSION, run_status)
