@@ -226,7 +226,9 @@ class Chef
             raise "Failed to unregister #{new_resource.source_name}: #{res.errors}" if res.error?
           end
         else
-          raise "Failed to unregister #{new_resource.source_name}: Package Source does not exist"
+          logger.warn("*****************************************")
+          logger.warn("Failed to unregister #{new_resource.source_name}: Package Source does not exist")
+          logger.warn("*****************************************")
         end
       end
 
