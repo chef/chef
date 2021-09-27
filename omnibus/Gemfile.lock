@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: e0d92a629f91918272b7460addfd4462c539e8a0
-  branch: main
+  revision: 0fc5a6d7c9f0a87f4cfcb33ee6ee92aa0e16bbc2
+  branch: lcg/no-weak-ciphers
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
@@ -33,8 +33,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.498.0)
-    aws-sdk-core (3.121.0)
+    aws-partitions (1.506.0)
+    aws-sdk-core (3.121.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -42,7 +42,7 @@ GEM
     aws-sdk-kms (1.48.0)
       aws-sdk-core (~> 3, >= 3.120.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.102.0)
+    aws-sdk-s3 (1.103.0)
       aws-sdk-core (~> 3, >= 3.120.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
@@ -65,12 +65,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.14.1)
+    chef (16.15.22)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.14.1)
-      chef-utils (= 16.14.1)
+      chef-config (= 16.15.22)
+      chef-utils (= 16.15.22)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -102,12 +102,12 @@ GEM
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (16.14.1-universal-mingw32)
+    chef (16.15.22-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.14.1)
-      chef-utils (= 16.14.1)
+      chef-config (= 16.15.22)
+      chef-utils (= 16.15.22)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -151,9 +151,9 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.2)
-    chef-config (16.14.1)
+    chef-config (16.15.22)
       addressable
-      chef-utils (= 16.14.1)
+      chef-utils (= 16.15.22)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -161,8 +161,8 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (16.14.1)
-    chef-vault (4.1.3)
+    chef-utils (16.15.22)
+    chef-vault (4.1.4)
     chef-zero (15.0.9)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
@@ -197,7 +197,7 @@ GEM
     ffi (1.15.4)
     ffi (1.15.4-x64-mingw32)
     ffi (1.15.4-x86-mingw32)
-    ffi-libarchive (1.0.17)
+    ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
@@ -309,7 +309,7 @@ GEM
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
-    parallel (1.20.1)
+    parallel (1.21.0)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
@@ -410,7 +410,7 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unicode-display_width (2.0.0)
+    unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     webrick (1.7.0)
