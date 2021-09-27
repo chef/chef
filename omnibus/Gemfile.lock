@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 0fc5a6d7c9f0a87f4cfcb33ee6ee92aa0e16bbc2
+  revision: 6646b4015576f8cce234674e39187c82706919d2
   branch: lcg/no-weak-ciphers
   specs:
     omnibus-software (4.0.0)
