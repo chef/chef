@@ -226,7 +226,7 @@ class Chef
         end
 
         def ca_private_key
-          if new_resource.csr_file.nil?
+          if new_resource.ca_key_file.nil?
             key
           else
             OpenSSL::PKey.read ::File.read(new_resource.ca_key_file), new_resource.ca_key_pass
