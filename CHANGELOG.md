@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.4 -->
-## [v17.6.4](https://github.com/chef/chef/tree/v17.6.4) (2021-09-27)
+<!-- latest_release 17.6.5 -->
+## [v17.6.5](https://github.com/chef/chef/tree/v17.6.5) (2021-09-28)
 
 #### Merged Pull Requests
-- Revert &quot;Remove EOL FreeBSD 11 builds&quot; [#12090](https://github.com/chef/chef/pull/12090) ([lamont-granquist](https://github.com/lamont-granquist))
+- Check for ca_key_file before loading ca key [#12092](https://github.com/chef/chef/pull/12092) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.5.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Check for ca_key_file before loading ca key [#12092](https://github.com/chef/chef/pull/12092) ([marcparadise](https://github.com/marcparadise)) <!-- 17.6.5 -->
 - Revert &quot;Remove EOL FreeBSD 11 builds&quot; [#12090](https://github.com/chef/chef/pull/12090) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.6.4 -->
 - Updated the package source resource to accept credentials and updated… [#12029](https://github.com/chef/chef/pull/12029) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.6.3 -->
 - Docs edits for inspec_input and inspec_waiver resources [#12087](https://github.com/chef/chef/pull/12087) ([IanMadd](https://github.com/IanMadd)) <!-- 17.6.2 -->
