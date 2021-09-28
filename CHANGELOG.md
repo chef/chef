@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.16.0 -->
-## [v16.16.0](https://github.com/chef/chef/tree/v16.16.0) (2021-09-22)
+<!-- latest_release 16.16.1 -->
+## [v16.16.1](https://github.com/chef/chef/tree/v16.16.1) (2021-09-28)
 
 #### Merged Pull Requests
-- Add Debian / Windows 11 / Windows 2022 packages [#12078](https://github.com/chef/chef/pull/12078) ([tas50](https://github.com/tas50))
+- Bump omnibus from `7ce6173` to `cd9cf3f` in /omnibus [#12093](https://github.com/chef/chef/pull/12093) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.15.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `7ce6173` to `cd9cf3f` in /omnibus [#12093](https://github.com/chef/chef/pull/12093) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.1 -->
 - Add Debian / Windows 11 / Windows 2022 packages [#12078](https://github.com/chef/chef/pull/12078) ([tas50](https://github.com/tas50)) <!-- 16.16.0 -->
 <!-- release_rollup -->
 
