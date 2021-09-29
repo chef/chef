@@ -68,7 +68,7 @@ class Chef
 
     def exec(script, timeout: nil)
       FFI.ffi_lib @dll
-      FFI.attach_function :execute_powershell, :ExecuteScript, [:string, :int], :pointer
+      FFI.attach_function :execute_powershell, :ExecuteScript, %i{string int}, :pointer
       timeout = timeout&.nonzero? ? timeout : -1
       execution = FFI.execute_powershell(script, timeout).read_utf16string
       hashed_outcome = Chef::JSONCompat.parse(execution)
