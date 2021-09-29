@@ -315,6 +315,7 @@ describe Chef::Resource do
 
       run_context.resource_collection << Chef::Resource::ZenMaster.new("bean")
       zrb = run_context.resource_collection.find(zen_master: "bean")
+      zrb.run_context = run_context
       zrb.subscribes :reload, zr
       expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
     end
@@ -1046,6 +1047,15 @@ describe Chef::Resource do
             resource.notifies(:run, "typo[missing-closing-bracket")
           end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
         end
+      end
+    end
+
+      describe "with a syntax error in the resource for subscribes" do
+
+        it "raises an exception immediately" do
+          expect do
+            resource.subscribes(:run, "typo[missing-closing-bracket")
+        end.to raise_error(Chef::Exceptions::InvalidResourceSpecification) 
       end
     end
 

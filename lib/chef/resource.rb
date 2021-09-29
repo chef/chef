@@ -339,6 +339,7 @@ class Chef
     #   end
     #
     def subscribes(action, resources, timing = :delayed)
+      validate_resource_spec_sub!(resources)  
       resources = [resources].flatten
       resources.each do |resource|
         if resource.is_a?(String)
@@ -352,6 +353,10 @@ class Chef
       true
     end
 
+    # Helper for Subscribes
+    def validate_resource_spec_sub!(resources)
+      run_context.resource_collection.validate_lookup_spec!(resources)
+    end
     #
     # A command or block that indicates whether to actually run this resource.
     # The command or block is run just before the action actually executes, and
