@@ -15,7 +15,7 @@ class Chef
 
       provides :kernel_module
 
-      description "Use the **kernel_module** resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
+      description "Use the **kernel_module** resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, enable, install, and uninstall modules."
       introduced "14.3"
       examples <<~DOC
         Install and load a kernel module, and ensure it loads on reboot.
@@ -68,11 +68,19 @@ class Chef
         end
         ```
 
-        Disable a kernel module.
+        Disable a kernel module so that it is uninstallable.
 
         ```ruby
         kernel_module 'loop' do
           action :disable
+        end
+        ```
+
+        Enable a kernel module so that it is installable.  Does not load or install.
+
+        ```ruby
+        kernel_module 'loop' do
+          action :enable
         end
         ```
       DOC
@@ -100,6 +108,9 @@ class Chef
             action :nothing
           end
         end
+
+        # Remove the "disable file" before trying to install
+        action_enable
 
         # create options file before loading the module
         unless new_resource.options.nil?
@@ -176,6 +187,20 @@ class Chef
         end
 
         action_unload
+      end
+
+      action :enable, description: "Enable a kernel module.  Reverse :disable actions" do
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
+        end
+
+        file "#{new_resource.unload_dir}/disable_#{new_resource.modname}.conf" do
+          action :delete
+          notifies :run, "execute[update initramfs]", :delayed
+        end
       end
 
       action :load, description: "Load a kernel module." do
