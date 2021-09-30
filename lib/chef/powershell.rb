@@ -33,6 +33,7 @@ class Chef
     # Requires: .NET Framework 4.0 or higher on the target machine.
     #
     # @param script [String] script to run
+    # @param timeout [Integer, nil] timeout in seconds.
     # @return [Object] output
     def initialize(script, timeout: nil)
       # This Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
@@ -41,7 +42,7 @@ class Chef
       # the built packages and copy the binaries to distro/ruby_bin_folder. Bundle install
       # ensures that the correct architecture binaries are installed into the path.
       @dll ||= "Chef.PowerShell.Wrapper.dll"
-      exec(script, timeout)
+      exec(script, timeout: timeout)
     end
 
     #
