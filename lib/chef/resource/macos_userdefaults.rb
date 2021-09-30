@@ -118,7 +118,7 @@ class Chef
       action :write, description: "Write the value to the specified domain/key." do
         converge_if_changed do
           Chef::Log.debug("Updating defaults value for #{new_resource.key} in #{new_resource.domain}")
-          set_preference(new_resource)
+          CF::Preferences.set!(new_resource.key, new_resource.value, new_resource.domain, new_resource.user, new_resource.host)
         end
       end
 
@@ -134,10 +134,6 @@ class Chef
 
       def get_preference(new_resource)
         CF::Preferences.get(new_resource.key, new_resource.domain, new_resource.user, new_resource.host)
-      end
-
-      def set_preference(new_resource)
-        CF::Preferences.set!(new_resource.key, new_resource.value, new_resource.domain, new_resource.user, new_resource.host)
       end
 
       # Return valid hostname based on the input from host property
