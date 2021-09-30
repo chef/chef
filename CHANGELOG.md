@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.11 -->
-## [v17.6.11](https://github.com/chef/chef/tree/v17.6.11) (2021-09-30)
+<!-- latest_release 17.6.12 -->
+## [v17.6.12](https://github.com/chef/chef/tree/v17.6.12) (2021-09-30)
 
 #### Merged Pull Requests
-- Update the omnibus version to use for openssl [#12118](https://github.com/chef/chef/pull/12118) ([tas50](https://github.com/tas50))
+- Updated the package source resource to accept credentials and updated… [#12119](https://github.com/chef/chef/pull/12119) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.5.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updated the package source resource to accept credentials and updated… [#12119](https://github.com/chef/chef/pull/12119) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.6.12 -->
 - Update the omnibus version to use for openssl [#12118](https://github.com/chef/chef/pull/12118) ([tas50](https://github.com/tas50)) <!-- 17.6.11 -->
 - Bump omnibus software for openssl update (letsencrypt issue) [#12114](https://github.com/chef/chef/pull/12114) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.6.10 -->
 - Bump omnibus from `7ce6173` to `37897ad` in /omnibus [#12098](https://github.com/chef/chef/pull/12098) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.9 -->
