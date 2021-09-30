@@ -339,7 +339,7 @@ class Chef
     #   end
     #
     def subscribes(action, resources, timing = :delayed)
-      validate_resource_spec_sub!(resources)  
+      validate_resource_spec_sub!(resources)
       resources = [resources].flatten
       resources.each do |resource|
         if resource.is_a?(String)
@@ -381,6 +381,7 @@ class Chef
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
     def only_if(command = nil, opts = {}, &block)
+        
       if command || block_given?
         @only_if << Conditional.only_if(self, command, opts, &block)
       end
