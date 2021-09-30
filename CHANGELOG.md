@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.16.5 -->
-## [v16.16.5](https://github.com/chef/chef/tree/v16.16.5) (2021-09-30)
+<!-- latest_release 16.16.6 -->
+## [v16.16.6](https://github.com/chef/chef/tree/v16.16.6) (2021-09-30)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `d880e20` to `7002802` in /omnibus [#12112](https://github.com/chef/chef/pull/12112) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Product Ubuntu 16.04 packages again [#12115](https://github.com/chef/chef/pull/12115) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.15.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Product Ubuntu 16.04 packages again [#12115](https://github.com/chef/chef/pull/12115) ([tas50](https://github.com/tas50)) <!-- 16.16.6 -->
 - Bump omnibus-software from `d880e20` to `7002802` in /omnibus [#12112](https://github.com/chef/chef/pull/12112) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.5 -->
 - Bump inspec-core-bin to 4.46.13 [#12110](https://github.com/chef/chef/pull/12110) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.16.4 -->
 - Bump omnibus from `cd9cf3f` to `37897ad` in /omnibus [#12100](https://github.com/chef/chef/pull/12100) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.3 -->
