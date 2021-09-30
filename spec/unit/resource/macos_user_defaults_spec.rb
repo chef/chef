@@ -29,7 +29,6 @@ describe Chef::Resource::MacosUserDefaults do
       r.key test_key
     end
   }
-  let(:provider) { resource.provider_for_action(:write) }
 
   context "has a default value" do
     it ":macos_userdefaults for resource name" do
