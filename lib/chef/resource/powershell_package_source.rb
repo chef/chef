@@ -117,10 +117,12 @@ class Chef
         description: "A label that names your package source.",
         name_property: true
 
-      property :new_name, introduced: "17.6", String,
+      property :new_name, String,
+        introduced: "17.6",
         description: "Used to change the name of a standard package source."
 
-      property :source_location, introduced: "17.6", String,
+      property :source_location, String,
+        introduced: "17.6",
         description: "The URL to the location to retrieve modules from."
 
       alias :url :source_location
@@ -138,10 +140,12 @@ class Chef
         description: "Whether or not to trust packages from this source. Used when creating a NON-PSRepository Package Source",
         default: false
 
-      property :user, introduced: "17.6", String,
+      property :user, String,
+        introduced: "17.6",
         description: "A username that, as part of a credential object, is used to register a repository or other package source with."
 
-      property :password, introduced: "17.6", String,
+      property :password, String,
+        introduced: "17.6",
         description: "A password that, as part of a credential object, is used to register a repository or other package source with."
 
       property :provider_name, String,
