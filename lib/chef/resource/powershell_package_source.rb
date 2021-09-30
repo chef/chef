@@ -36,8 +36,8 @@ class Chef
           source_location              "https://pkgs.dev.azure.com/some-org/some-project/_packaging/some_feed/nuget/v2"
           publish_location             "https://pkgs.dev.azure.com/some-org/some-project/_packaging/some_feed/nuget/v2"
           trusted                      false
-          user_name                    "someuser@somelocation.io"
-          user_pass                    "my_password"
+          user                         "someuser@somelocation.io"
+          password                     "my_password"
           provider_name                "PSRepository"
           action                       :register
         end
@@ -97,8 +97,8 @@ class Chef
           source_name                  "PowerShellModules"
           new_name                     "GoldFishBowl"
           trusted                      true
-          user_name                    "user@domain.io"
-          user_pass                    "some_secret_password"
+          user                         "user@domain.io"
+          password                     "some_secret_password"
           action                       :set
         end
         ```
@@ -117,10 +117,10 @@ class Chef
         description: "A label that names your package source.",
         name_property: true
 
-      property :new_name, String,
-        description: "Used when updating the name of a NON-PSRepository"
+      property :new_name, introduced: "17.5.23", String,
+        description: "Used to change the name of a standard PackageSource."
 
-      property :source_location, String,
+      property :source_location, introduced: "17.5.23", String,
         description: "The URL to the location to retrieve modules from."
 
       alias :url :source_location
@@ -138,10 +138,10 @@ class Chef
         description: "Whether or not to trust packages from this source. Used when creating a NON-PSRepository Package Source",
         default: false
 
-      property :user_name, String,
+      property :user, introduced: "17.5.23", String,
         description: "A username that, as part of a credential object, is used to register a repository or other package source with."
 
-      property :user_pass, String,
+      property :password, introduced: "17.5.23", String,
         description: "A password that, as part of a credential object, is used to register a repository or other package source with."
 
       property :provider_name, String,
@@ -256,9 +256,9 @@ class Chef
           else
             install_policy = "Untrusted"
           end
-          if new_resource.user_name && new_resource.user_pass
-            cmd =  "$user = '#{new_resource.user_name}';"
-            cmd << "[securestring]$secure_password = Convertto-SecureString -String '#{new_resource.user_pass}' -AsPlainText -Force;"
+          if new_resource.user && new_resource.password
+            cmd =  "$user = '#{new_resource.user}';"
+            cmd << "[securestring]$secure_password = Convertto-SecureString -String '#{new_resource.password}' -AsPlainText -Force;"
             cmd << "$Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password);"
             cmd << "#{cmdlet_type}-PSRepository -Name '#{new_resource.source_name}'"
             cmd << " -SourceLocation '#{new_resource.source_location}'" if new_resource.source_location
@@ -281,9 +281,9 @@ class Chef
         end
 
         def build_package_source_command(cmdlet_type, new_resource)
-          if new_resource.user_name && new_resource.user_pass
-            cmd =  "$user = '#{new_resource.user_name}';"
-            cmd << "[securestring]$secure_password = Convertto-SecureString -String '#{new_resource.user_pass}' -AsPlainText -Force;"
+          if new_resource.user && new_resource.password
+            cmd =  "$user = '#{new_resource.user}';"
+            cmd << "[securestring]$secure_password = Convertto-SecureString -String '#{new_resource.password}' -AsPlainText -Force;"
             cmd << "$Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password);"
             cmd << "#{cmdlet_type}-PackageSource -Name '#{new_resource.source_name}'"
             cmd << " -Location '#{new_resource.source_location}'" if new_resource.source_location
