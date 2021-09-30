@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.8 -->
-## [v17.6.8](https://github.com/chef/chef/tree/v17.6.8) (2021-09-30)
+<!-- latest_release 17.6.9 -->
+## [v17.6.9](https://github.com/chef/chef/tree/v17.6.9) (2021-09-30)
 
 #### Merged Pull Requests
-- Bump chefstyle to 2.1.0 [#12108](https://github.com/chef/chef/pull/12108) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `7ce6173` to `37897ad` in /omnibus [#12098](https://github.com/chef/chef/pull/12098) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.5.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `7ce6173` to `37897ad` in /omnibus [#12098](https://github.com/chef/chef/pull/12098) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.9 -->
 - Bump chefstyle to 2.1.0 [#12108](https://github.com/chef/chef/pull/12108) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.8 -->
 - Bump inspec-core-bin to 4.46.13 [#12109](https://github.com/chef/chef/pull/12109) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.7 -->
 - Windows Server 2022 - version / build information ADD [#12094](https://github.com/chef/chef/pull/12094) ([knightorc](https://github.com/knightorc)) <!-- 17.6.6 -->
