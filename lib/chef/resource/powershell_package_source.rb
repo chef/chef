@@ -25,7 +25,7 @@ class Chef
 
       provides :powershell_package_source
 
-      description "Use the **powershell_package_source** resource to register a PowerShell Repository or other Package Source type with. There are 2 distinct objects we care about here. The first is a Package Source like a PowerShell Repository or a Nuget Source. The second object is a provider that PowerShell uses to get to that source with, like PowerShellGet, Nuget, Chocolatey, etc. "
+      description "Use the **powershell_package_source** resource to register a PowerShell package source and a Powershell package provider. There are 2 distinct objects we care about here. The first is a Package Source like a PowerShell Repository or a Nuget Source. The second object is a provider that PowerShell uses to get to that source with, like PowerShellGet, Nuget, Chocolatey, etc. "
       introduced "14.3"
       examples <<~DOC
         **Add a new PSRepository that is not trusted and which requires credentials to connect to**:
@@ -118,7 +118,7 @@ class Chef
         name_property: true
 
       property :new_name, introduced: "17.6", String,
-        description: "Used to change the name of a standard PackageSource."
+        description: "Used to change the name of a standard package source."
 
       property :source_location, introduced: "17.6", String,
         description: "The URL to the location to retrieve modules from."
