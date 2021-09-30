@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 641469ef571ac0db66e5b0a8471b09a49b929d4d
+  revision: dfd248ee656b842312c3768182d0cc45ac6a9865
   branch: main
   specs:
-    chefstyle (2.0.9)
-      rubocop (= 1.20.0)
+    chefstyle (2.1.0)
+      rubocop (= 1.22.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -140,7 +140,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.507.0)
+    aws-partitions (1.508.0)
     aws-sdk-core (3.121.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -220,7 +220,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.41.20)
+    inspec-core (4.46.13)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -243,8 +243,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.41.20)
-      inspec-core (= 4.41.20)
+    inspec-core-bin (4.46.13)
+      inspec-core (= 4.46.13)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
@@ -324,16 +324,16 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.20.0)
+    rubocop (1.22.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.9.1, < 2.0)
+      rubocop-ast (>= 1.12.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.11.0)
+    rubocop-ast (1.12.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
