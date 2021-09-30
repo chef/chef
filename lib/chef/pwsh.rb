@@ -24,15 +24,16 @@ class Chef
     # bindir directory.
     #
     # @param script [String] script to run
+    # @param timeout [Integer, nil] timeout in seconds.
     # @return [Object] output
-    def initialize(script)
+    def initialize(script, timeout: nil)
       @dll = Pwsh.dll
       super
     end
 
     protected
 
-    def exec(script)
+    def exec(script, timeout: nil)
       # Note that we need to override the location of the shared dotnet core library
       # location. With most .net core applications, you can simply publish them as a
       # "self-contained" application allowing consumers of the application to run them
