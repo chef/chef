@@ -150,7 +150,7 @@ GEM
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
-    chef-cleanroom (1.0.3)
+    chef-cleanroom (1.0.4)
     chef-config (16.16.7)
       addressable
       chef-utils (= 16.16.7)
