@@ -1,36 +1,34 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.15 -->
-## [v17.6.15](https://github.com/chef/chef/tree/v17.6.15) (2021-10-01)
-
-#### Merged Pull Requests
-- CHEF17 - Windows2019 - Version ceiling lib/chef/win32/version.rb [#12124](https://github.com/chef/chef/pull/12124) ([knightorc](https://github.com/knightorc))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.5.22 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- CHEF17 - Windows2019 - Version ceiling lib/chef/win32/version.rb [#12124](https://github.com/chef/chef/pull/12124) ([knightorc](https://github.com/knightorc)) <!-- 17.6.15 -->
-- Fix some invalid ruby [#12123](https://github.com/chef/chef/pull/12123) ([tas50](https://github.com/tas50)) <!-- 17.6.14 -->
-- Bump ohai to 17.6.0 [#12122](https://github.com/chef/chef/pull/12122) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.13 -->
-- Updated the package source resource to accept credentials and updated… [#12119](https://github.com/chef/chef/pull/12119) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.6.12 -->
-- Update the omnibus version to use for openssl [#12118](https://github.com/chef/chef/pull/12118) ([tas50](https://github.com/tas50)) <!-- 17.6.11 -->
-- Bump omnibus software for openssl update (letsencrypt issue) [#12114](https://github.com/chef/chef/pull/12114) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.6.10 -->
-- Bump omnibus from `7ce6173` to `37897ad` in /omnibus [#12098](https://github.com/chef/chef/pull/12098) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.9 -->
-- Bump chefstyle to 2.1.0 [#12108](https://github.com/chef/chef/pull/12108) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.8 -->
-- Bump inspec-core-bin to 4.46.13 [#12109](https://github.com/chef/chef/pull/12109) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.7 -->
-- Windows Server 2022 - version / build information ADD [#12094](https://github.com/chef/chef/pull/12094) ([knightorc](https://github.com/knightorc)) <!-- 17.6.6 -->
-- Check for ca_key_file before loading ca key [#12092](https://github.com/chef/chef/pull/12092) ([marcparadise](https://github.com/marcparadise)) <!-- 17.6.5 -->
-- Revert &quot;Remove EOL FreeBSD 11 builds&quot; [#12090](https://github.com/chef/chef/pull/12090) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.6.4 -->
-- Updated the package source resource to accept credentials and updated… [#12029](https://github.com/chef/chef/pull/12029) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.6.3 -->
-- Docs edits for inspec_input and inspec_waiver resources [#12087](https://github.com/chef/chef/pull/12087) ([IanMadd](https://github.com/IanMadd)) <!-- 17.6.2 -->
-- Add Ubuntu 16.04 back to the builds [#12086](https://github.com/chef/chef/pull/12086) ([tas50](https://github.com/tas50)) <!-- 17.6.1 -->
-- Remove EOL FreeBSD 11 builds [#12085](https://github.com/chef/chef/pull/12085) ([tas50](https://github.com/tas50)) <!-- 17.6.0 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.6.15](https://github.com/chef/chef/tree/v17.6.15) (2021-10-01)
+
+#### Merged Pull Requests
+- Remove EOL FreeBSD 11 builds [#12085](https://github.com/chef/chef/pull/12085) ([tas50](https://github.com/tas50))
+- Add Ubuntu 16.04 back to the builds [#12086](https://github.com/chef/chef/pull/12086) ([tas50](https://github.com/tas50))
+- Docs edits for inspec_input and inspec_waiver resources [#12087](https://github.com/chef/chef/pull/12087) ([IanMadd](https://github.com/IanMadd))
+- Updated the package source resource to accept credentials and updated… [#12029](https://github.com/chef/chef/pull/12029) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Remove EOL FreeBSD 11 builds&quot; [#12090](https://github.com/chef/chef/pull/12090) ([lamont-granquist](https://github.com/lamont-granquist))
+- Check for ca_key_file before loading ca key [#12092](https://github.com/chef/chef/pull/12092) ([marcparadise](https://github.com/marcparadise))
+- Windows Server 2022 - version / build information ADD [#12094](https://github.com/chef/chef/pull/12094) ([knightorc](https://github.com/knightorc))
+- Bump inspec-core-bin to 4.46.13 [#12109](https://github.com/chef/chef/pull/12109) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chefstyle to 2.1.0 [#12108](https://github.com/chef/chef/pull/12108) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `7ce6173` to `37897ad` in /omnibus [#12098](https://github.com/chef/chef/pull/12098) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus software for openssl update (letsencrypt issue) [#12114](https://github.com/chef/chef/pull/12114) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update the omnibus version to use for openssl [#12118](https://github.com/chef/chef/pull/12118) ([tas50](https://github.com/tas50))
+- Updated the package source resource to accept credentials and updated… [#12119](https://github.com/chef/chef/pull/12119) ([johnmccrae](https://github.com/johnmccrae))
+- Bump ohai to 17.6.0 [#12122](https://github.com/chef/chef/pull/12122) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix some invalid ruby [#12123](https://github.com/chef/chef/pull/12123) ([tas50](https://github.com/tas50))
+- CHEF17 - Windows2019 - Version ceiling lib/chef/win32/version.rb [#12124](https://github.com/chef/chef/pull/12124) ([knightorc](https://github.com/knightorc))
+<!-- latest_stable_release -->
+
 ## [v17.5.22](https://github.com/chef/chef/tree/v17.5.22) (2021-09-24)
 
 #### Merged Pull Requests
@@ -71,7 +69,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Exclude running libarchive tests on platforms where loading libarchive is broken [#12084](https://github.com/chef/chef/pull/12084) ([jasonwbarnett](https://github.com/jasonwbarnett))
 - Native compliance phase [#11904](https://github.com/chef/chef/pull/11904) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add Json verifier [#12062](https://github.com/chef/chef/pull/12062) ([gogsbread](https://github.com/gogsbread))
-<!-- latest_stable_release -->
 
 ## [v17.4.38](https://github.com/chef/chef/tree/v17.4.38) (2021-08-28)
 
