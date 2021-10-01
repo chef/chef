@@ -473,7 +473,7 @@ class Chef
       end
 
       # The server_name is the DNS or IP we are going to connect to, it is not necessarily
-      # the node name, the fqdn, or the hostname of the server.  This is a public API hook
+      # the node name, the fqdn, or the hostname of the server. This is a public API hook
       # which knife plugins use or inherit and override.
       #
       # @return [String] The DNS or IP that bootstrap will connect to
