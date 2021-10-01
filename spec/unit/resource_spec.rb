@@ -1050,12 +1050,12 @@ describe Chef::Resource do
       end
     end
 
-      describe "with a syntax error in the resource for subscribes" do
+    describe "with a syntax error in the resource for subscribes" do
 
-        it  "raises an exception immediately" do
-          expect do
-            resource.subscribes(:run, "typo[missing-closing-bracket")
-        end.to raise_error(Chef::Exceptions::InvalidResourceSpecification) 
+      it "raises an exception immediately" do
+        expect do
+          resource.subscribes(:run, "typo[missing-closing-bracket")
+        end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
       end
     end
 
