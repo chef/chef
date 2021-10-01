@@ -381,7 +381,7 @@ class Chef
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
     def only_if(command = nil, opts = {}, &block)
-        
+    
       if command || block_given?
         @only_if << Conditional.only_if(self, command, opts, &block)
       end
