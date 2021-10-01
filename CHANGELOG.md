@@ -1,22 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.17 -->
-## [v17.6.17](https://github.com/chef/chef/tree/v17.6.17) (2021-10-01)
-
-#### Merged Pull Requests
-- Fix compilation of openssl with -DOPENSSL_TRUSTED_FIRST_DEFAULT [#12129](https://github.com/chef/chef/pull/12129) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.6.15 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix compilation of openssl with -DOPENSSL_TRUSTED_FIRST_DEFAULT [#12129](https://github.com/chef/chef/pull/12129) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.6.17 -->
-- Bump omnibus-software from `7002802` to `0966668` in /omnibus [#12127](https://github.com/chef/chef/pull/12127) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.16 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.6.18](https://github.com/chef/chef/tree/v17.6.18) (2021-10-01)
+
+#### Merged Pull Requests
+- Bump omnibus-software from `7002802` to `0966668` in /omnibus [#12127](https://github.com/chef/chef/pull/12127) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix compilation of openssl with -DOPENSSL_TRUSTED_FIRST_DEFAULT [#12129](https://github.com/chef/chef/pull/12129) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v17.6.15](https://github.com/chef/chef/tree/v17.6.15) (2021-10-01)
 
 #### Merged Pull Requests
@@ -36,7 +34,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump ohai to 17.6.0 [#12122](https://github.com/chef/chef/pull/12122) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 - Fix some invalid ruby [#12123](https://github.com/chef/chef/pull/12123) ([tas50](https://github.com/tas50))
 - CHEF17 - Windows2019 - Version ceiling lib/chef/win32/version.rb [#12124](https://github.com/chef/chef/pull/12124) ([knightorc](https://github.com/knightorc))
-<!-- latest_stable_release -->
 
 ## [v17.5.22](https://github.com/chef/chef/tree/v17.5.22) (2021-09-24)
 
