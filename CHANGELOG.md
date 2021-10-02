@@ -2,24 +2,22 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.16.11 -->
-## [v16.16.11](https://github.com/chef/chef/tree/v16.16.11) (2021-10-01)
-
-#### Merged Pull Requests
-- Reverting cleanroom back to working ruby 2.7 code [#12131](https://github.com/chef/chef/pull/12131) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.16.7 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Reverting cleanroom back to working ruby 2.7 code [#12131](https://github.com/chef/chef/pull/12131) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.16.11 -->
-- Fix compilation of openssl with -DOPENSSL_TRUSTED_FIRST_DEFAULT [#12130](https://github.com/chef/chef/pull/12130) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.16.10 -->
-- Bump omnibus-software from `7002802` to `0966668` in /omnibus [#12128](https://github.com/chef/chef/pull/12128) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.9 -->
-- CHEF16 - Windows2019 - Version ceiling lib/chef/win32/version.rb [#12125](https://github.com/chef/chef/pull/12125) ([knightorc](https://github.com/knightorc)) <!-- 16.16.8 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.16.13](https://github.com/chef/chef/tree/v16.16.13) (2021-10-02)
+
+#### Merged Pull Requests
+- CHEF16 - Windows2019 - Version ceiling lib/chef/win32/version.rb [#12125](https://github.com/chef/chef/pull/12125) ([knightorc](https://github.com/knightorc))
+- Bump omnibus-software from `7002802` to `0966668` in /omnibus [#12128](https://github.com/chef/chef/pull/12128) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix compilation of openssl with -DOPENSSL_TRUSTED_FIRST_DEFAULT [#12130](https://github.com/chef/chef/pull/12130) ([lamont-granquist](https://github.com/lamont-granquist))
+- Reverting cleanroom back to working ruby 2.7 code [#12131](https://github.com/chef/chef/pull/12131) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v16.16.7](https://github.com/chef/chef/tree/v16.16.7) (2021-09-30)
 
 #### Merged Pull Requests
@@ -31,7 +29,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump omnibus-software from `d880e20` to `7002802` in /omnibus [#12112](https://github.com/chef/chef/pull/12112) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Product Ubuntu 16.04 packages again [#12115](https://github.com/chef/chef/pull/12115) ([tas50](https://github.com/tas50))
 - Update openssl 1.0.2za to 1.0.2zb [#12117](https://github.com/chef/chef/pull/12117) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.15.22](https://github.com/chef/chef/tree/v16.15.22) (2021-09-22)
 
