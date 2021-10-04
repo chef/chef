@@ -1,7 +1,7 @@
 version: 2
 updates:
 - package-ecosystem: bundler
-  target-branch: "master"
+  target-branch: "main"
   directory: "/omnibus"
   schedule:
     interval: daily
