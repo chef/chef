@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", ">= 5.1", "< 7"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
-  s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
   s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
   # disabling this until we get get it to compile on RHEL 7
   # s.add_dependency "x25519", ">= 1.0.9" # ed25519 KEX module. 1.0.9+ required to resolve sigill failures
