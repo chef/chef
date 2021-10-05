@@ -39,6 +39,11 @@ group(:ruby_shadow) do
   gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
 end
 
+# deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
+group(:knife_windows_deps) do
+  gem "ed25519", "~> 1.2" # ed25519 ssh key support
+end
+
 group(:development, :test) do
   gem "rake"
   gem "rspec"
