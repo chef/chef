@@ -308,6 +308,16 @@ class Chef
           super("No secret service provided. Supported services are: :#{fetcher_service_names.join(" :")}")
         end
       end
+
+      class Azure
+        class IdentityNotFound < RuntimeError
+          def initialize
+            super("The managed identity could not be found. This could mean one of the following things:\n\n" \
+                  "  1. The VM has no system or user assigned identities.\n" \
+                  "  2. The managed identity object_id or client_id that was specified is not assigned to the VM.\n")
+          end
+        end
+      end
     end
 
     # Exception class for collecting multiple failures. Used when running
