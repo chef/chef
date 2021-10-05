@@ -145,6 +145,16 @@ class Chef
     #
     attr_accessor :input_collection
 
+    #
+    # @return [Symbol, nil]
+    #
+    attr_accessor :default_secret_service
+
+    #
+    # @return [Hash<Symbol,Object>]
+    #
+    attr_accessor :default_secret_config
+
     # Pointer back to the Chef::Runner that created this
     #
     attr_accessor :runner
@@ -222,6 +232,8 @@ class Chef
       @input_collection = Chef::Compliance::InputCollection.new(events)
       @waiver_collection = Chef::Compliance::WaiverCollection.new(events)
       @profile_collection = Chef::Compliance::ProfileCollection.new(events)
+      @default_secret_service = nil
+      @default_secret_config = {}
 
       initialize_child_state
     end
@@ -693,6 +705,10 @@ class Chef
         cookbook_collection
         cookbook_collection=
         cookbook_compiler
+        default_secret_config
+        default_secret_config=
+        default_secret_service
+        default_secret_service=
         definitions
         events
         events=
