@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.6.20 -->
-## [v17.6.20](https://github.com/chef/chef/tree/v17.6.20) (2021-10-06)
+<!-- latest_release 17.6.21 -->
+## [v17.6.21](https://github.com/chef/chef/tree/v17.6.21) (2021-10-06)
 
 #### Merged Pull Requests
-- Fix failing knife installs on windows / Test knife install on all platforms in TK [#12142](https://github.com/chef/chef/pull/12142) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `24f508c` to `a2a70e2` in /omnibus [#12147](https://github.com/chef/chef/pull/12147) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `24f508c` to `a2a70e2` in /omnibus [#12147](https://github.com/chef/chef/pull/12147) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.21 -->
 - Fix failing knife installs on windows / Test knife install on all platforms in TK [#12142](https://github.com/chef/chef/pull/12142) ([tas50](https://github.com/tas50)) <!-- 17.6.20 -->
 - Bump chef/ohai to 6ca8519cc204912937676dc223384787dde6aab7 [#12141](https://github.com/chef/chef/pull/12141) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.19 -->
 <!-- release_rollup -->
