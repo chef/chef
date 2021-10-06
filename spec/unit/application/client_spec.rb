@@ -123,6 +123,11 @@ describe Chef::Application::Client, "reconfigure" do
         named_run_list: "arglebargle-example"
     end
 
+    describe "--validation_key KEY_FILE" do
+      it_behaves_like "sets the configuration", "--validation_key validation.pem",
+      validation_key: "validation.pem"
+    end
+
     describe "--no-listen" do
       it_behaves_like "sets the configuration", "--no-listen", listen: false
     end
@@ -469,6 +474,11 @@ describe Chef::Application::Client, "setup_application" do
     allow(@app).to receive(:configure_opt_parser).and_return(true)
     allow(@app).to receive(:configure_chef).and_return(true)
     allow(@app).to receive(:configure_logging).and_return(true)
+  end
+
+  it "should return full path for validation_key" do
+    Chef::Config.validation_key = "/path/to/file"
+    expect(Chef::Config.validation_key).to eql("/path/to/file")
   end
 
   it "should change privileges" do

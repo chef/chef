@@ -70,6 +70,18 @@ class Chef::Application::Client < Chef::Application::Base
     long: "--recipe-url=RECIPE_URL",
     description: "Pull down a remote archive of recipes and unpack it to the cookbook cache. Only used in local mode."
 
+  option :validation_key,
+    short: "-K KEY_FILE",
+    long: "--validation_key KEY_FILE",
+    description: "Set the validation key file location, used for registering new clients.",
+    proc: lambda { |argument|
+      if File.exist?(File.expand_path(argument))
+        File.expand_path(argument)
+      else
+        argument
+      end
+    }
+
   # Reconfigure the chef client
   # Re-open the JSON attributes and load them into the node
   def reconfigure
