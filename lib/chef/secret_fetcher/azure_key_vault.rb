@@ -1,4 +1,6 @@
 require_relative "base"
+require_relative "../exceptions"
+require "uri" unless defined?(URI)
 
 class Chef
   class SecretFetcher
@@ -14,13 +16,19 @@ class Chef
     #
     # @example
     #
-    # fetcher = SecretFetcher.for_service(:azure_key_vault, { vault: "my_vault" }, run_context )
+    # fetcher = SecretFetcher.for_service(:azure_key_vault, { vault: "my_vault" }, run_context)
     # fetcher.fetch("secretkey1", "v1")
     #
     # @example
     #
-    # fetcher = SecretFetcher.for_service(:azure_key_vault, {}, run_context )
+    # fetcher = SecretFetcher.for_service(:azure_key_vault, {}, run_context)
     # fetcher.fetch("my_vault/secretkey1", "v1")
+    #
+    # @example
+    #
+    # fetcher = SecretFetcher.for_service(:azure_key_vault, { client_id: "540d76b6-7f76-456c-b68b-ccae4dc9d99d" }, run_context)
+    # fetcher.fetch("my_vault/secretkey1", "v1")
+    #
     class AzureKeyVault < Base
 
       def do_fetch(name, version)
@@ -48,6 +56,12 @@ class Chef
         end
       end
 
+      def validate!
+        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :object_id, :client_id, or :mi_res_id" if [object_id, client_id, mi_res_id].select { |x| !x.nil? }.length > 1
+      end
+
+      private
+
       # Determine the vault name and secret name from the provided name.
       # If it is not in the provided name in the form "vault_name/secret_name"
       # it will determine the vault name from `config[:vault]`.
@@ -63,16 +77,56 @@ class Chef
         end
       end
 
+      def api_version
+        "2018-02-01"
+      end
+
+      def resource
+        "https://vault.azure.net"
+      end
+
+      def object_id
+        config[:object_id]
+      end
+
+      def client_id
+        config[:client_id]
+      end
+
+      def mi_res_id
+        config[:mi_res_id]
+      end
+
+      def token_query
+        @token_query ||= begin
+          p = {}
+          p["api-version"] = api_version
+          p["resource"] = resource
+          p["object_id"] = object_id if object_id
+          p["client_id"] = client_id if client_id
+          p["mi_res_id"] = mi_res_id if mi_res_id
+          URI.encode_www_form(p)
+        end
+      end
+
       def fetch_token
-        token_uri = URI.parse("http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net")
+        token_uri = URI.parse("http://169.254.169.254/metadata/identity/oauth2/token")
+        token_uri.query = token_query
         http = Net::HTTP.new(token_uri.host, token_uri.port)
         response = http.get(token_uri, { "Metadata" => "true" })
-        body = JSON.parse(response.body)
-        body["access_token"]
+
+        case response
+        when Net::HTTPSuccess
+          body = JSON.parse(response.body)
+          body["access_token"]
+        when Net::HTTPBadRequest
+          body = JSON.parse(response.body)
+          raise Chef::Exceptions::Secret::Azure::IdentityNotFound if body["error_description"] =~ /identity not found/i
+        else
+          body = JSON.parse(response.body)
+          body["access_token"]
+        end
       end
     end
   end
 end
-
-
-
