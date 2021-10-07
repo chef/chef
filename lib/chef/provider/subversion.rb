@@ -58,7 +58,7 @@ class Chef
       action :checkout, description: "Clone or check out the source. When a checkout is available, this provider does nothing." do
         if target_dir_non_existent_or_empty?
           converge_by("perform checkout of #{new_resource.repository} into #{new_resource.destination}") do
-            shell_out!(checkout_command, run_options)
+            shell_out!(checkout_command, **run_options)
           end
         else
           logger.debug "#{new_resource} checkout destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
@@ -75,7 +75,7 @@ class Chef
 
       action :force_export, description: "Export the source, excluding or removing any version control artifacts and force an export of the source that is overwriting the existing copy (if it exists)." do
         converge_by("export #{new_resource.repository} into #{new_resource.destination}") do
-          shell_out!(export_command, run_options)
+          shell_out!(export_command, **run_options)
         end
       end
 
@@ -86,7 +86,7 @@ class Chef
           logger.trace "#{new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
             converge_by("sync #{new_resource.destination} from #{new_resource.repository}") do
-              shell_out!(sync_command, run_options)
+              shell_out!(sync_command, **run_options)
               logger.info "#{new_resource} updated to revision: #{revision_int}"
             end
           end
@@ -125,7 +125,7 @@ class Chef
                             new_resource.revision
                           else
                             command = scm(:info, new_resource.repository, new_resource.svn_info_args, authentication, "-r#{new_resource.revision}")
-                            svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
+                            svn_info = shell_out!(command, **run_options(cwd: cwd, returns: [0, 1])).stdout
 
                             extract_revision_info(svn_info)
                           end
@@ -137,7 +137,7 @@ class Chef
         return nil unless ::File.exist?(::File.join(new_resource.destination, ".svn"))
 
         command = scm(:info)
-        svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
+        svn_info = shell_out!(command, **run_options(cwd: cwd, returns: [0, 1])).stdout
 
         extract_revision_info(svn_info)
       end
