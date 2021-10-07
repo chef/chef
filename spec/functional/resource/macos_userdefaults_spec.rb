@@ -64,7 +64,7 @@ describe Chef::Resource::MacosUserDefaults do
       resource.run_action(:write)
       expect(resource.get_preference resource).to eq([ "/Library/Managed Installs/fake.log", "/Library/Managed Installs/also_fake.log"])
     end
-    
+
     it "set dictionary value" do
       resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestDictionaryValues"
@@ -72,13 +72,13 @@ describe Chef::Resource::MacosUserDefaults do
       resource.run_action(:write)
       expect(resource.get_preference resource).to eq("User" => "/Library/Managed Installs/way_fake.log")
     end
-    
+
     it "set array of dictionaries" do
       resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestArrayWithDictionary"
       resource.value [ { "User": "/Library/Managed Installs/way_fake.log" } ]
       resource.run_action(:write)
-      expect(resource.get_preference resource).to eq([ { "User"=> "/Library/Managed Installs/way_fake.log" } ])
+      expect(resource.get_preference resource).to eq([ { "User" => "/Library/Managed Installs/way_fake.log" } ])
     end
 
     it "set boolean for preference value" do
@@ -88,14 +88,14 @@ describe Chef::Resource::MacosUserDefaults do
       resource.run_action(:write)
       expect(resource.get_preference resource).to eq(true)
     end
-    
+
     it "sets value to global domain when domain is not passed" do
       resource.key "TestKey"
       resource.value 1
       resource.run_action(:write)
       expect(resource.get_preference resource).to eq(1)
     end
-    
+
     it "short domain names" do
       resource.domain "com.apple.dock"
       resource.key "titlesize"
@@ -108,12 +108,12 @@ describe Chef::Resource::MacosUserDefaults do
   it "we can delete a preference with full path" do
     resource.domain "/Library/Preferences/ManagedInstalls"
     resource.key "TestKey"
-    expect { resource.run_action(:delete) }. to_not raise_error 
+    expect { resource.run_action(:delete) }. to_not raise_error
   end
 
   it "we can delete a preference with short name" do
     resource.domain "com.apple.dock"
     resource.key "titlesize"
-    expect { resource.run_action(:delete) }. to_not raise_error 
+    expect { resource.run_action(:delete) }. to_not raise_error
   end
 end
