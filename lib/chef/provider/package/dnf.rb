@@ -120,8 +120,24 @@ class Chef
           flushcache
         end
 
-        # dnf upgrade does not work on uninstalled packaged, while install will upgrade
-        alias upgrade_package install_package
+        # dnf upgrade does not work on uninstalled packaged in that case redirecting them to install and upgrade will not work with allow_downgrade option
+        def upgrade_package(names, versions)
+          begin
+            if new_resource.source
+              dnf(options, "-y", "upgrade", new_resource.source)
+            else
+              resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
+              dnf(options, "-y", "upgrade", resolved_names)
+            end
+          rescue => e
+            if e.message.match("Error: No packages marked for upgrade.")
+              Chef::Log.error(e.message.slice(/\STDERR(.*?)not installed./))
+            else
+              raise e
+            end
+          end
+          flushcache
+        end
 
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| magical_version(i).to_s unless name.nil? }
