@@ -120,7 +120,7 @@ class Chef
           flushcache
         end
 
-        # dnf upgrade does not work on uninstalled packaged in that case redirecting them to install and upgrade will not work with allow_downgrade option
+        # dnf upgrade does not work when no version of the package is already installed. in this case, dnf install must be used.
         def upgrade_package(names, versions)
           begin
             if new_resource.source
