@@ -108,12 +108,14 @@ module ChefConfig
 
         # Load the target_mode config context from config, and place any valid settings into the train configuration
         tm_config = config.target_mode
-        protocol = tm_config.protocol
-        train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
-        logger.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
         # Load the credentials file, and place any valid settings into the train configuration
         credentials = load_credentials(tm_config.host)
+
+        protocol = credentials[:train_protocol] || tm_config.protocol
+        train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
+        logger.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
+
         if credentials
           valid_settings = credentials.select { |k| Train.options(protocol).key?(k) }
           valid_settings[:enable_password] = credentials[:enable_password] if credentials.key?(:enable_password)
@@ -126,7 +128,7 @@ module ChefConfig
         # Train handles connection retries for us
         Train.create(protocol, train_config)
       rescue SocketError => e # likely a dns failure, not caught by train
-        e.message.replace "Error connecting to #{train_config[:target]} - #{e.message}"
+        e.message.replace "Error connecting to #{train_config[:target]} via #{protocol} - #{e.message}"
         raise e
       rescue Train::PluginLoadError
         logger.error("Invalid target mode protocol: #{protocol}")
