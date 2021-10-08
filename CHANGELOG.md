@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.1 -->
-## [v17.7.1](https://github.com/chef/chef/tree/v17.7.1) (2021-10-07)
+<!-- latest_release 17.7.2 -->
+## [v17.7.2](https://github.com/chef/chef/tree/v17.7.2) (2021-10-08)
 
 #### Merged Pull Requests
-- Use ** when passing options in subversion provider [#12150](https://github.com/chef/chef/pull/12150) ([tomhughes](https://github.com/tomhughes))
+- Bump chef/ohai to f65a21cc7e6f4cf9f54e50f170deec549e78f0dd [#12154](https://github.com/chef/chef/pull/12154) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to f65a21cc7e6f4cf9f54e50f170deec549e78f0dd [#12154](https://github.com/chef/chef/pull/12154) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.2 -->
 - Use ** when passing options in subversion provider [#12150](https://github.com/chef/chef/pull/12150) ([tomhughes](https://github.com/tomhughes)) <!-- 17.7.1 -->
 - Add secrets support for multiple User Assigned Managed Identities in Azure [#12139](https://github.com/chef/chef/pull/12139) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.7.0 -->
 - Bump omnibus-software from `24f508c` to `a2a70e2` in /omnibus [#12147](https://github.com/chef/chef/pull/12147) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.21 -->
