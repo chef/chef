@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.7.3 -->
+## [v17.7.3](https://github.com/chef/chef/tree/v17.7.3) (2021-10-11)
 
 #### Merged Pull Requests
+- (doc) Add note about requirement for Chocolatey [#12157](https://github.com/chef/chef/pull/12157) ([gep13](https://github.com/gep13))
 - Skip ssl verification in our centos-6 test [#12155](https://github.com/chef/chef/pull/12155) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- (doc) Add note about requirement for Chocolatey [#12157](https://github.com/chef/chef/pull/12157) ([gep13](https://github.com/gep13)) <!-- 17.7.3 -->
 - Skip ssl verification in our centos-6 test [#12155](https://github.com/chef/chef/pull/12155) ([tas50](https://github.com/tas50)) <!-- 17.7.2 -->
 - Bump chef/ohai to f65a21cc7e6f4cf9f54e50f170deec549e78f0dd [#12154](https://github.com/chef/chef/pull/12154) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.2 -->
 - Use ** when passing options in subversion provider [#12150](https://github.com/chef/chef/pull/12150) ([tomhughes](https://github.com/tomhughes)) <!-- 17.7.1 -->
