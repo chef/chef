@@ -63,6 +63,22 @@ class Chef
 
       property :disabled, [TrueClass, FalseClass], default: false, desired_state: false, skip_docs: true
 
+      property :username, String,
+               description: "The username to use when authenticating against the source",
+               introduced: "17.7"
+
+      property :password, String, sensitive: true, desired_state: false,
+               description: "The password to use when authenticating against the source",
+               introduced: "17.7"
+
+      property :cert, String,
+               description: "The certificate to use when authenticating against the source",
+               introduced: "17.7"
+
+      property :cert_password, String, sensitive: true, desired_state: false,
+               description: "The password for the certificate to use when authenticating against the source",
+               introduced: "17.7"
+
       load_current_value do
         element = fetch_source_element(source_name)
         current_value_does_not_exist! if element.nil?
@@ -74,6 +90,8 @@ class Chef
         allow_self_service element["selfService"] == "true"
         priority element["priority"].to_i
         disabled element["disabled"] == "true"
+        username element["user"]
+        cert element["certificate"]
       end
 
       # @param [String] id the source name
@@ -133,6 +151,10 @@ class Chef
             cmd << " --bypassproxy" if new_resource.bypass_proxy
             cmd << " --allowselfservice" if new_resource.allow_self_service
             cmd << " --adminonly" if new_resource.admin_only
+            cmd << " --user=\"#{new_resource.username}\"" if new_resource.username
+            cmd << " --password=\"#{new_resource.password}\"" if new_resource.password
+            cmd << " --cert=\"#{new_resource.cert}\"" if new_resource.cert
+            cmd << " --certpassword=\"#{new_resource.cert_password}\"" if new_resource.cert_password
           end
           cmd
         end
