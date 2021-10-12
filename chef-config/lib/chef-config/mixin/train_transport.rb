@@ -112,7 +112,7 @@ module ChefConfig
         # Load the credentials file, and place any valid settings into the train configuration
         credentials = load_credentials(tm_config.host)
 
-        protocol = credentials[:train_protocol] || tm_config.protocol
+        protocol = credentials[:transport_protocol] || tm_config.protocol
         train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
         logger.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
