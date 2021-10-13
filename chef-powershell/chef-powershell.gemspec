@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
     "source_code_uri" => "https://github.com/chef/chef/tree/main/chef-powershell",
   }
 
-  spec.require_paths = ["lib", "bin"]
+  spec.require_paths = %w{lib bin}
 
   #
   # NOTE: DO NOT ADD RUNTIME DEPS TO OTHER CHEF ECOSYSTEM GEMS

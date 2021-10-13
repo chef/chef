@@ -95,7 +95,6 @@ require_relative "./pwsh"
 #   credentials of the user running Chef Client are used.
 #
 
-
 module ChefPowerShell
   module PowershellExec
     # Run a command under PowerShell via a managed (.NET) API.

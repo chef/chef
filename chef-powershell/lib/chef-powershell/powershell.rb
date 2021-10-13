@@ -18,7 +18,6 @@
 require "ffi" unless defined?(FFI)
 require_relative "json_compat"
 
-
 module ChefPowerShell
   extend FFI::Library
 
