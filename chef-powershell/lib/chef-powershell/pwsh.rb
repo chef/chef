@@ -16,7 +16,7 @@
 # limitations under the License.
 
 class Chef
-  class Pwsh < Chef::PowerShell
+  class Pwsh < ChefPowerShell::PowerShell
 
     # Run a command under pwsh (powershell core) via FFI
     # This implementation requires the managed dll, native wrapper and a
