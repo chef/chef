@@ -37,7 +37,7 @@ ENV["CHEF_LICENSE"] = "accept-no-persist"
 namespace :pre_install do
   desc "Runs 'rake install' for the gems that live in subdirectories in this repo"
   task :install_gems_from_dirs do
-    %w{chef-utils chef-config}.each do |gem|
+    %w{chef-utils chef-config chef-powershell}.each do |gem|
       path = ::File.join(::File.dirname(__FILE__), gem)
       Dir.chdir(path) do
         sh("rake install")
@@ -112,10 +112,16 @@ task :update_chef_exec_dll do
   x86 = `hab pkg path chef/chef-powershell-shim-x86`.chomp.tr("\\", "/")
   FileUtils.rm_rf(Dir["distro/ruby_bin_folder/AMD64/*"])
   FileUtils.rm_rf(Dir["distro/ruby_bin_folder/x86/*"])
+  FileUtils.rm_rf(Dir["chef-powershell/bin/ruby_bin_folder/AMD64/*"])
+  FileUtils.rm_rf(Dir["chef-powershell/bin/ruby_bin_folder/x86/*"])
   puts "Copying #{x64}/bin/* to distro/ruby_bin_folder/AMD64"
   FileUtils.cp_r(Dir["#{x64}/bin/*"], "distro/ruby_bin_folder/AMD64")
+  puts "Copying #{x64}/bin/* to chef-powershell/bin/ruby_bin_folder/AMD64"
+  FileUtils.cp_r(Dir["#{x64}/bin/*"], "chef-powershell/bin/ruby_bin_folder/AMD64")
   puts "Copying #{x86}/bin/* to distro/ruby_bin_folder/x86"
   FileUtils.cp_r(Dir["#{x86}/bin/*"], "distro/ruby_bin_folder/x86")
+  puts "Copying #{x86}/bin/* to chef-powershell/bin/ruby_bin_folder/x86"
+  FileUtils.cp_r(Dir["#{x86}/bin/*"], "chef-powershell/bin/ruby_bin_folder/x86")
 end
 
 begin

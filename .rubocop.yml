@@ -7,6 +7,8 @@ AllCops:
     - "pkg/**/*"
     - "chef-config/pkg/**/*"
     - "habitat/**/*"
+    - "chef-powershell/bin/**/*"
+
 Security/Eval:
   Enabled: false
 Lint/UselessAssignment:
@@ -50,3 +52,4 @@ Chef/Ruby/UnlessDefinedRequire:
     - 'chef-bin/**/*'
     - 'chef-config/lib/**/*'
     - 'chef-utils/lib/**/*'
+    - 'chef-powershell/lib/**/*'

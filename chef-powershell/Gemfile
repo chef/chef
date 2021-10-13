@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+source "https://rubygems.org"
+
+gemspec
+
+group(:development, :test) do
+  gem "fauxhai-ng"
+  gem "rake"
+  gem "rspec"
+end
+
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+  ruby_exe_dir = RbConfig::CONFIG["bindir"]
+  assemblies = Dir.glob(File.expand_path("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
+  FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
+  ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
+end

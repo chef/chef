@@ -79,6 +79,11 @@ chef-utils/.bundle
 chef-utils/Gemfile.lock
 chef-utils/pkg
 
+# chef-powershell
+chef-powershell/.bundle
+chef-powershell/Gemfile.lock
+chef-powershell/pkg
+
 # knife
 knife/.bundle
 knife/Gemfile.lock

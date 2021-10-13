@@ -6,6 +6,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+gem "chef-powershell", path: File.expand_path("chef-powershell", __dir__) if File.exist?(File.expand_path("chef-powershell", __dir__))
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
