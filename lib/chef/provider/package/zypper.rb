@@ -73,6 +73,37 @@ class Chef
           @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
         end
 
+        def candidate_version
+          if source_files_exist?
+            unless uri_scheme?(new_resource.source) || ::File.exist?(new_resource.source)
+              @package_source_exists = false
+              return
+            end
+
+            logger.trace("#{new_resource} checking rpm status")
+            shell_out!("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", new_resource.source).stdout.each_line do |line|
+              case line
+              when /^(\S+)\s(\S+)$/
+                current_resource.package_name($1)
+                new_resource.version($2)
+                @candidate_version = $2
+              end
+            end
+
+          else
+            @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
+           end
+        end
+
+        def uri_scheme?(str)
+          scheme = URI.split(str).first
+          return false unless scheme
+
+          %w{http https ftp file}.include?(scheme.downcase)
+        rescue URI::InvalidURIError
+          false
+        end
+
         def resolve_current_version(package_name)
           latest_version = current_version = nil
           is_installed = false
@@ -129,6 +160,11 @@ class Chef
           @installed_version[index]
         end
 
+        def source_files_exist?
+          resolved_source_array.all? { |s| s && ::File.exist?(s) }
+        end
+
+
         def zip(names, versions)
           names.zip(versions).map do |n, v|
             (v.nil? || v.empty?) ? n : "#{n}=#{v}"
@@ -141,7 +177,7 @@ class Chef
         end
 
         def zypper_package(command, global_options, *options, names, versions)
-          zipped_names = zip(names, versions)
+          zipped_names = source_files_exist? ? [new_resource.source] : zip(names, versions)
           if zypper_version < 1.0
             shell_out!("zypper", global_options, gpg_checks, command, *options, "-y", names)
           else
