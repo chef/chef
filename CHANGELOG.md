@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.7 -->
-## [v17.7.7](https://github.com/chef/chef/tree/v17.7.7) (2021-10-14)
+<!-- latest_release 17.7.8 -->
+## [v17.7.8](https://github.com/chef/chef/tree/v17.7.8) (2021-10-14)
 
 #### Merged Pull Requests
-- Allow specifying transport protocol in RFC099 credential files [#12151](https://github.com/chef/chef/pull/12151) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- Fix spelling error typo in directory documentation [#12168](https://github.com/chef/chef/pull/12168) ([jgitlin-p21](https://github.com/jgitlin-p21))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix spelling error typo in directory documentation [#12168](https://github.com/chef/chef/pull/12168) ([jgitlin-p21](https://github.com/jgitlin-p21)) <!-- 17.7.8 -->
 - Allow specifying transport protocol in RFC099 credential files [#12151](https://github.com/chef/chef/pull/12151) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.7.7 -->
 - Clarify recursive delete [#12166](https://github.com/chef/chef/pull/12166) ([jgitlin-p21](https://github.com/jgitlin-p21)) <!-- 17.7.6 -->
 - Bump omnibus from `37897ad` to `90306c9` in /omnibus [#12161](https://github.com/chef/chef/pull/12161) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.5 -->
