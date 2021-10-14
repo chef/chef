@@ -100,8 +100,11 @@ class Chef
         newcron = get_crontab_entry
 
         if @cron_exists
-          unless cron_different?
-            logger.trace("Skipping existing cron entry '#{new_resource.name}'")
+          # Only compare the crontab if the current resource has a set command.
+          # This may not be set in cases where the Chef comment exists but the
+          # crontab command was commented out.
+          if current_resource.property_is_set?(:command) && !cron_different?
+            logger.debug("#{new_resource}: Skipping existing cron entry")
             return
           end
           read_crontab.each_line do |line|
