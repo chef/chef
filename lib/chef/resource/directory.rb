@@ -46,7 +46,7 @@ class Chef
                description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
 
       property :recursive, [ TrueClass, FalseClass ],
-        description: "Create parent directories recursively, or delete direcory and all children recursively. For the owner, group, and mode properties, the value of this property applies only to the leaf directory.",
+        description: "Create parent directories recursively, or delete directory and all children recursively. For the owner, group, and mode properties, the value of this property applies only to the leaf directory.",
         default: false
     end
   end
