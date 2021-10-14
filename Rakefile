@@ -45,18 +45,19 @@ namespace :pre_install do
     end
   end
 
-  desc "Renders the powershell extensions with distro flavoring"
-  task :render_powershell_extension do
-    require "erb"
-    template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
-    psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
-    FileUtils.mkdir_p psm1_path
-    template = ERB.new(IO.read(template_file))
-    chef_psm1 = template.result
-    File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
-  end
+  # desc "Renders the powershell extensions with distro flavoring"
+  # task :render_powershell_extension do
+  #   require "erb"
+  #   template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
+  #   psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
+  #   FileUtils.mkdir_p psm1_path
+  #   template = ERB.new(IO.read(template_file))
+  #   chef_psm1 = template.result
+  #   File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
+  # end
 
-  task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
+  # task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
+  task all: ["pre_install:install_gems_from_dirs"]
 end
 
 # hack in all the preinstall tasks to occur before the traditional install task
@@ -99,24 +100,24 @@ task :register_eventlog do
   end
 end
 
-desc "Copies powershell_exec related binaries from the latest built Habitat Packages"
-task :update_chef_exec_dll do
-  raise "This task must be run on Windows since we are installing a Windows targeted package!" unless Gem.win_platform?
+# desc "Copies powershell_exec related binaries from the latest built Habitat Packages"
+# task :update_chef_exec_dll do
+#   raise "This task must be run on Windows since we are installing a Windows targeted package!" unless Gem.win_platform?
 
-  require "mkmf"
-  raise "Unable to locate Habitat cli. Please install Habitat cli before invoking this task!" unless find_executable "hab"
+#   require "mkmf"
+#   raise "Unable to locate Habitat cli. Please install Habitat cli before invoking this task!" unless find_executable "hab"
 
-  sh("hab pkg install chef/chef-powershell-shim")
-  sh("hab pkg install chef/chef-powershell-shim-x86")
-  x64 = `hab pkg path chef/chef-powershell-shim`.chomp.tr("\\", "/")
-  x86 = `hab pkg path chef/chef-powershell-shim-x86`.chomp.tr("\\", "/")
-  FileUtils.rm_rf(Dir["distro/ruby_bin_folder/AMD64/*"])
-  FileUtils.rm_rf(Dir["distro/ruby_bin_folder/x86/*"])
-  puts "Copying #{x64}/bin/* to distro/ruby_bin_folder/AMD64"
-  FileUtils.cp_r(Dir["#{x64}/bin/*"], "distro/ruby_bin_folder/AMD64")
-  puts "Copying #{x86}/bin/* to distro/ruby_bin_folder/x86"
-  FileUtils.cp_r(Dir["#{x86}/bin/*"], "distro/ruby_bin_folder/x86")
-end
+#   sh("hab pkg install chef/chef-powershell-shim")
+#   sh("hab pkg install chef/chef-powershell-shim-x86")
+#   x64 = `hab pkg path chef/chef-powershell-shim`.chomp.tr("\\", "/")
+#   x86 = `hab pkg path chef/chef-powershell-shim-x86`.chomp.tr("\\", "/")
+#   FileUtils.rm_rf(Dir["distro/ruby_bin_folder/AMD64/*"])
+#   FileUtils.rm_rf(Dir["distro/ruby_bin_folder/x86/*"])
+#   puts "Copying #{x64}/bin/* to distro/ruby_bin_folder/AMD64"
+#   FileUtils.cp_r(Dir["#{x64}/bin/*"], "distro/ruby_bin_folder/AMD64")
+#   puts "Copying #{x86}/bin/* to distro/ruby_bin_folder/x86"
+#   FileUtils.cp_r(Dir["#{x86}/bin/*"], "distro/ruby_bin_folder/x86")
+# end
 
 begin
   require "chefstyle"
