@@ -26,10 +26,11 @@ require_relative "secret"
 require_relative "reader_helpers"
 require_relative "render_helpers"
 require_relative "toml"
-require_relative "../mixin/powershell_exec"
+# require_relative "../mixin/powershell_exec"
 require_relative "../mixin/powershell_out"
 require_relative "../mixin/shell_out"
 require_relative "../mixin/lazy_module_include"
+require "chef-powershell"
 
 class Chef
   module DSL
@@ -54,7 +55,8 @@ class Chef
       include Chef::DSL::ReaderHelpers
       include Chef::DSL::RenderHelpers
       include Chef::DSL::Secret
-      include Chef::Mixin::PowershellExec
+      include ChefPowerShell::PowershellExec
+      # include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
       extend Chef::Mixin::LazyModuleInclude
