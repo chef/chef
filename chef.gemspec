@@ -26,9 +26,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  if Gem.win_platform?
-    s.add_dependency "chef-powershell", ">= 17.7.5"
-  end
   s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
 
