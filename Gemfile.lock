@@ -199,7 +199,7 @@ GEM
     faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
     faraday-net_http_persistent (1.2.0)
-    faraday_middleware (1.1.0)
+    faraday_middleware (1.2.0)
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
@@ -249,7 +249,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
-    json (2.5.1)
+    json (2.6.0)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
