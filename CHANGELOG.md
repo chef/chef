@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.16.15 -->
-## [v16.16.15](https://github.com/chef/chef/tree/v16.16.15) (2021-10-17)
+<!-- latest_release 16.16.16 -->
+## [v16.16.16](https://github.com/chef/chef/tree/v16.16.16) (2021-10-17)
 
 #### Merged Pull Requests
-- Update all deps in chef 16 to the latest [#12179](https://github.com/chef/chef/pull/12179) ([tas50](https://github.com/tas50))
+- Bump chef-zero to 15.0.11 [#12178](https://github.com/chef/chef/pull/12178) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.16.13 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef-zero to 15.0.11 [#12178](https://github.com/chef/chef/pull/12178) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.16.16 -->
 - Update all deps in chef 16 to the latest [#12179](https://github.com/chef/chef/pull/12179) ([tas50](https://github.com/tas50)) <!-- 16.16.15 -->
 - Bump omnibus from `37897ad` to `90306c9` in /omnibus [#12160](https://github.com/chef/chef/pull/12160) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.14 -->
 <!-- release_rollup -->
