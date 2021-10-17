@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.8 -->
-## [v17.7.8](https://github.com/chef/chef/tree/v17.7.8) (2021-10-14)
+<!-- latest_release 17.7.9 -->
+## [v17.7.9](https://github.com/chef/chef/tree/v17.7.9) (2021-10-17)
 
 #### Merged Pull Requests
-- Fix spelling error typo in directory documentation [#12168](https://github.com/chef/chef/pull/12168) ([jgitlin-p21](https://github.com/jgitlin-p21))
+- Update all deps to the latest [#12174](https://github.com/chef/chef/pull/12174) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update all deps to the latest [#12174](https://github.com/chef/chef/pull/12174) ([tas50](https://github.com/tas50)) <!-- 17.7.9 -->
 - Fix spelling error typo in directory documentation [#12168](https://github.com/chef/chef/pull/12168) ([jgitlin-p21](https://github.com/jgitlin-p21)) <!-- 17.7.8 -->
 - Allow specifying transport protocol in RFC099 credential files [#12151](https://github.com/chef/chef/pull/12151) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.7.7 -->
 - Clarify recursive delete [#12166](https://github.com/chef/chef/pull/12166) ([jgitlin-p21](https://github.com/jgitlin-p21)) <!-- 17.7.6 -->
