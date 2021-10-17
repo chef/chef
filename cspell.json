@@ -1481,6 +1481,7 @@
     "hte"
   ],
   "ignorePaths": [
+    "CHEF_MVPS.md",
     "CHANGELOG.md",
     "CLA_ARCHIVE.md",
     "**/*.gemspec",
@@ -1497,7 +1498,8 @@
     "spec/**",
     "knife/spec/**",
     "docs_site",
-    "distro/ruby_bin_folder/**/*"
+    "distro/ruby_bin_folder/**/*",
+    "cspell.json"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".
