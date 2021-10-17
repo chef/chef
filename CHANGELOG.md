@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Start over in the cspell file [#12175](https://github.com/chef/chef/pull/12175) ([tas50](https://github.com/tas50))
 - Replace Ubuntu 21.04 kitchen tests with 21.10 [#12058](https://github.com/chef/chef/pull/12058) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Start over in the cspell file [#12175](https://github.com/chef/chef/pull/12175) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
 - Replace Ubuntu 21.04 kitchen tests with 21.10 [#12058](https://github.com/chef/chef/pull/12058) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
 - rewrite macos_userdefaults using corefoundation gem [#11898](https://github.com/chef/chef/pull/11898) ([rishichawda](https://github.com/rishichawda)) <!-- 17.7.10 -->
 - Update all deps to the latest [#12174](https://github.com/chef/chef/pull/12174) ([tas50](https://github.com/tas50)) <!-- 17.7.9 -->
