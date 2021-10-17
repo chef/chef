@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 540a973112d2473b9496c0f41027ca67df835f3c
+  revision: b7829e06dab0944d025eec0b1399cf8180244bf8
   branch: 16-stable
   specs:
     ohai (16.13.2)
@@ -148,7 +148,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
     chef-vault (4.1.4)
-    chef-zero (15.0.9)
+    chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -182,7 +182,7 @@ GEM
     faraday-excon (1.1.0)
     faraday-net_http (1.0.1)
     faraday-net_http_persistent (1.2.0)
-    faraday_middleware (1.1.0)
+    faraday_middleware (1.2.0)
       faraday (~> 1.0)
     fauxhai-ng (9.0.0)
       net-ssh
@@ -232,7 +232,7 @@ GEM
       inspec-core (= 4.46.13)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    json (2.5.1)
+    json (2.6.0)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
