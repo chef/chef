@@ -68,7 +68,7 @@ class Chef
         end
         ```
 
-        Disable a kernel module so that it is uninstallable.
+        Disable a kernel module so that it is not installable.
 
         ```ruby
         kernel_module 'loop' do
@@ -76,7 +76,7 @@ class Chef
         end
         ```
 
-        Enable a kernel module so that it is installable.  Does not load or install.
+        Enable a kernel module so that it is can be installed.  Does not load or install.
 
         ```ruby
         kernel_module 'loop' do
