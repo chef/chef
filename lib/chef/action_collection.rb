@@ -128,7 +128,7 @@ class Chef
     #
     def cookbook_compilation_start(run_context)
       run_context.action_collection = self
-      # fire the action_colleciton_registration hook after cookbook_compilation_start -- last chance for consumers to register
+      # fire the action_collection_registration hook after cookbook_compilation_start -- last chance for consumers to register
       run_context.events.enqueue(:action_collection_registration, self)
       @run_context = run_context
     end

@@ -1,3 +1,4 @@
+knife/pkg/*
 .autotest
 coverage
 .DS_Store

@@ -198,9 +198,9 @@ module Shell
           prints a detailed explanation of the command if available, or the
           description if no explanation is available.
       E
-      def help(commmand = nil)
-        if commmand
-          explain_command(commmand)
+      def help(command = nil)
+        if command
+          explain_command(command)
         else
           puts help_banner
         end
