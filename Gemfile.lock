@@ -35,12 +35,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.7.10)
+    chef (17.7.11)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.7.10)
-      chef-utils (= 17.7.10)
+      chef-config (= 17.7.11)
+      chef-utils (= 17.7.11)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -66,12 +66,12 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.7.10-universal-mingw32)
+    chef (17.7.11-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.7.10)
-      chef-utils (= 17.7.10)
+      chef-config (= 17.7.11)
+      chef-utils (= 17.7.11)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -112,15 +112,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.7.10)
-      chef (= 17.7.10)
+    chef-bin (17.7.11)
+      chef (= 17.7.11)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.7.10)
+    chef-config (17.7.11)
       addressable
-      chef-utils (= 17.7.10)
+      chef-utils (= 17.7.11)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +129,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.7.10)
+    chef-utils (17.7.11)
       concurrent-ruby
 
 GEM
@@ -143,20 +143,20 @@ GEM
     ast (2.4.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.516.0)
-    aws-sdk-core (3.121.1)
+    aws-sdk-core (3.121.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.49.0)
-      aws-sdk-core (~> 3, >= 3.120.0)
+    aws-sdk-kms (1.50.0)
+      aws-sdk-core (~> 3, >= 3.121.2)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.103.0)
-      aws-sdk-core (~> 3, >= 3.120.0)
+    aws-sdk-s3 (1.104.0)
+      aws-sdk-core (~> 3, >= 3.121.2)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.50.0)
-      aws-sdk-core (~> 3, >= 3.120.0)
+    aws-sdk-secretsmanager (1.51.0)
+      aws-sdk-core (~> 3, >= 3.121.2)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
