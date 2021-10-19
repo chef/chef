@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: a44b2577eef9ecb771ed492dce74f5050a460b97
+  revision: 240a99c3fd78d8157aebaa799a197ca5cea9b8d3
   branch: main
   specs:
     ohai (17.7.1)
@@ -168,7 +168,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
     chef-vault (4.1.4)
-    chef-zero (15.0.9)
+    chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
