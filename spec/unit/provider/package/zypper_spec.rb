@@ -170,7 +170,7 @@ describe Chef::Provider::Package::Zypper do
       new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_return(true)
       shell_out_expectation!(
-        "zypper","--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -216,7 +216,7 @@ describe Chef::Provider::Package::Zypper do
       new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_return(true)
       shell_out_expectation!(
-        "zypper","--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end
