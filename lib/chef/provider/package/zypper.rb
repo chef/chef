@@ -70,10 +70,6 @@ class Chef
         end
 
         def candidate_version
-          @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
-        end
-
-        def candidate_version
           if source_files_exist?
             unless uri_scheme?(new_resource.source) || ::File.exist?(new_resource.source)
               @package_source_exists = false
