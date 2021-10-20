@@ -254,7 +254,13 @@ class Chef::Application::Base < Chef::Application
     short: "-K KEY_FILE",
     long: "--validation_key KEY_FILE",
     description: "Set the validation key file location, used for registering new clients.",
-    proc: nil
+    proc: lambda { |argument|
+      if File.exist?(File.expand_path(argument))
+        File.expand_path(argument)
+      else
+        argument
+      end
+    }
 
   option :client_key,
     short: "-k KEY_FILE",
