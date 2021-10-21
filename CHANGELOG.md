@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.14 -->
-## [v17.7.14](https://github.com/chef/chef/tree/v17.7.14) (2021-10-21)
+<!-- latest_release 17.7.15 -->
+## [v17.7.15](https://github.com/chef/chef/tree/v17.7.15) (2021-10-21)
 
 #### Merged Pull Requests
-- Add cookbook_artifacts as valid knife acl object type [#12190](https://github.com/chef/chef/pull/12190) ([collinmcneese](https://github.com/collinmcneese))
+- Revert chef-zero back to 15.0.9 [#12191](https://github.com/chef/chef/pull/12191) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert chef-zero back to 15.0.9 [#12191](https://github.com/chef/chef/pull/12191) ([tas50](https://github.com/tas50)) <!-- 17.7.15 -->
 - Add cookbook_artifacts as valid knife acl object type [#12190](https://github.com/chef/chef/pull/12190) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.7.14 -->
 - Bump omnibus-software from `a2a70e2` to `0f8338a` in /omnibus [#12198](https://github.com/chef/chef/pull/12198) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.13 -->
 - Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12199](https://github.com/chef/chef/pull/12199) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.12 -->
