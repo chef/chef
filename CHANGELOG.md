@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.16.17 -->
-## [v16.16.17](https://github.com/chef/chef/tree/v16.16.17) (2021-10-19)
+<!-- latest_release 16.16.18 -->
+## [v16.16.18](https://github.com/chef/chef/tree/v16.16.18) (2021-10-21)
 
 #### Merged Pull Requests
-- Get spellcheck passing for chef-16 branch [#12181](https://github.com/chef/chef/pull/12181) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `a2a70e2` to `0f8338a` in /omnibus [#12197](https://github.com/chef/chef/pull/12197) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.16.13 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `a2a70e2` to `0f8338a` in /omnibus [#12197](https://github.com/chef/chef/pull/12197) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.18 -->
 - Get spellcheck passing for chef-16 branch [#12181](https://github.com/chef/chef/pull/12181) ([tas50](https://github.com/tas50)) <!-- 16.16.17 -->
 - Bump chef-zero to 15.0.11 [#12178](https://github.com/chef/chef/pull/12178) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.16.16 -->
 - Update all deps in chef 16 to the latest [#12179](https://github.com/chef/chef/pull/12179) ([tas50](https://github.com/tas50)) <!-- 16.16.15 -->
