@@ -1,20 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.11 -->
-## [v17.7.11](https://github.com/chef/chef/tree/v17.7.11) (2021-10-19)
+<!-- latest_release 17.7.12 -->
+## [v17.7.12](https://github.com/chef/chef/tree/v17.7.12) (2021-10-21)
 
 #### Merged Pull Requests
-- Bump chef-zero to 15.0.11 [#12177](https://github.com/chef/chef/pull/12177) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-- Skip the cspell config and MVPs file in cspell [#12176](https://github.com/chef/chef/pull/12176) ([tas50](https://github.com/tas50))
-- Start over in the cspell file [#12175](https://github.com/chef/chef/pull/12175) ([tas50](https://github.com/tas50))
-- Replace Ubuntu 21.04 kitchen tests with 21.10 [#12058](https://github.com/chef/chef/pull/12058) ([tas50](https://github.com/tas50))
+- Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12199](https://github.com/chef/chef/pull/12199) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12199](https://github.com/chef/chef/pull/12199) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.12 -->
 - Bump chef-zero to 15.0.11 [#12177](https://github.com/chef/chef/pull/12177) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.11 -->
 - Skip the cspell config and MVPs file in cspell [#12176](https://github.com/chef/chef/pull/12176) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
 - Start over in the cspell file [#12175](https://github.com/chef/chef/pull/12175) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
