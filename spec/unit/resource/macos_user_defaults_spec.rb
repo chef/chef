@@ -17,7 +17,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::MacosUserDefaults do
+describe Chef::Resource::MacosUserDefaults, :macos_only, requires_root: true  do
   let(:test_value) { "fakest_key_value" }
   let(:test_key) { "fakest_key" }
   let(:node) { Chef::Node.new }
