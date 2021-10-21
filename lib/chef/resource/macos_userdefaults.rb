@@ -132,6 +132,7 @@ class Chef
       end
 
       def get_preference(new_resource)
+        require "corefoundation"
         CF::Preferences.get(new_resource.key, new_resource.domain, new_resource.user, new_resource.host)
       end
 
