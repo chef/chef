@@ -26,6 +26,7 @@ class Chef
     class Package
       class Zypper < Chef::Provider::Package
         use_multipackage_api
+        use_package_name_for_source
         allow_nils
 
         provides :package, platform_family: "suse"
