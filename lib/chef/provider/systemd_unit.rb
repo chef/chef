@@ -237,6 +237,7 @@ class Chef
       def enabled?
         return true if systemd_unit_status["is-enabled"] == "enabled"
         return true if %w{static generated alias indirect}.include?(systemd_unit_status["UnitFileState"])
+
         false
       end
 
