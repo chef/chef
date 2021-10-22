@@ -95,10 +95,10 @@ class Chef
             path habfile
             destination "#{Chef::Config[:file_cache_path]}/habitat"
             action :extract
-            not_if { ::Dir.exist?('c:\habitat') }
+            not_if { ::Dir.exist?("c:\\habitat") }
           end
 
-          directory 'c:\habitat' do
+          directory "c:\\habitat" do
             notifies :run, "powershell_script[installing from archive]", :immediately
           end
 
@@ -110,7 +110,7 @@ class Chef
           end
 
           # TODO: This won't self heal if missing until the next upgrade
-          windows_path 'C:\habitat' do
+          windows_path "C:\\habitat" do
             action :add
           end
         else

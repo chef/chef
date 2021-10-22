@@ -335,7 +335,7 @@ module ChefConfig
       line.scan(/\s*(?>([^\s\\"]+|"([^"]*)"|'([^']*)')|(\S))(\s|\z)?/m) do |word, within_dq, within_sq, esc, sep|
 
         # Append the string with Word & Escape Character
-        field << (word || esc.gsub(/\\(.)/, '\\1'))
+        field << (word || esc.gsub(/\\(.)/, "\\1"))
 
         # Re-build the field when any whitespace character or
         # End of string is encountered

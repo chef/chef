@@ -62,31 +62,31 @@ RSpec.describe ChefConfig::PathHelper do
       context "platform-specific #join behavior" do
         it "joins components on Windows when some end with unix separators" do
           expected = "C:\\foo\\bar\\baz"
-          expect(path_helper.join('C:\\foo/', "bar", "baz", windows: true)).to eq(expected)
+          expect(path_helper.join("C:\\foo/", "bar", "baz", windows: true)).to eq(expected)
         end
 
         it "joins components when some end with separators" do
           expected = "C:\\foo\\bar\\baz"
-          expect(path_helper.join('C:\\foo\\', "bar", "baz", windows: true)).to eq(expected)
+          expect(path_helper.join("C:\\foo\\", "bar", "baz", windows: true)).to eq(expected)
         end
 
         it "joins components when some end and start with separators" do
           expected = "C:\\foo\\bar\\baz"
-          expect(path_helper.join('C:\\foo\\', "bar/", "/baz", windows: true)).to eq(expected)
+          expect(path_helper.join("C:\\foo\\", "bar/", "/baz", windows: true)).to eq(expected)
         end
 
         it "joins components that don't end in separators" do
           expected = "C:\\foo\\bar\\baz"
-          expect(path_helper.join('C:\\foo', "bar", "baz", windows: true)).to eq(expected)
+          expect(path_helper.join("C:\\foo", "bar", "baz", windows: true)).to eq(expected)
         end
       end
 
       it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
-        expect(path_helper.cleanpath('/a/b\\c/d/', windows: true)).to eq('\\a\\b\\c\\d')
+        expect(path_helper.cleanpath("/a/b\\c/d/", windows: true)).to eq("\\a\\b\\c\\d")
       end
 
       it "cleanpath does not remove leading double backslash" do
-        expect(path_helper.cleanpath('\\\\a/b\\c/d/', windows: true)).to eq('\\\\a\\b\\c\\d')
+        expect(path_helper.cleanpath("\\\\a/b\\c/d/", windows: true)).to eq("\\\\a\\b\\c\\d")
       end
     end
 
@@ -117,11 +117,11 @@ RSpec.describe ChefConfig::PathHelper do
       end
 
       it "cleanpath changes backslashes into slashes and leaves slashes alone" do
-        expect(path_helper.cleanpath('/a/b\\c/d/', windows: false)).to eq("/a/b/c/d")
+        expect(path_helper.cleanpath("/a/b\\c/d/", windows: false)).to eq("/a/b/c/d")
       end
 
       it "cleanpath does not remove leading double backslash" do
-        expect(path_helper.cleanpath('\\\\a/b\\c/d/', windows: false)).to eq("//a/b/c/d")
+        expect(path_helper.cleanpath("\\\\a/b\\c/d/", windows: false)).to eq("//a/b/c/d")
       end
     end
   end
@@ -139,31 +139,31 @@ RSpec.describe ChefConfig::PathHelper do
     context "platform-specific #join behavior" do
       it "joins components on Windows when some end with unix separators" do
         expected = "C:\\foo\\bar\\baz"
-        expect(path_helper.join('C:\\foo/', "bar", "baz")).to eq(expected)
+        expect(path_helper.join("C:\\foo/", "bar", "baz")).to eq(expected)
       end
 
       it "joins components when some end with separators" do
         expected = "C:\\foo\\bar\\baz"
-        expect(path_helper.join('C:\\foo\\', "bar", "baz")).to eq(expected)
+        expect(path_helper.join("C:\\foo\\", "bar", "baz")).to eq(expected)
       end
 
       it "joins components when some end and start with separators" do
         expected = "C:\\foo\\bar\\baz"
-        expect(path_helper.join('C:\\foo\\', "bar/", "/baz")).to eq(expected)
+        expect(path_helper.join("C:\\foo\\", "bar/", "/baz")).to eq(expected)
       end
 
       it "joins components that don't end in separators" do
         expected = "C:\\foo\\bar\\baz"
-        expect(path_helper.join('C:\\foo', "bar", "baz")).to eq(expected)
+        expect(path_helper.join("C:\\foo", "bar", "baz")).to eq(expected)
       end
     end
 
     it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
-      expect(path_helper.cleanpath('/a/b\\c/d/')).to eq('\\a\\b\\c\\d')
+      expect(path_helper.cleanpath("/a/b\\c/d/")).to eq("\\a\\b\\c\\d")
     end
 
     it "cleanpath does not remove leading double backslash" do
-      expect(path_helper.cleanpath('\\\\a/b\\c/d/')).to eq('\\\\a\\b\\c\\d')
+      expect(path_helper.cleanpath("\\\\a/b\\c/d/")).to eq("\\\\a\\b\\c\\d")
     end
   end
 
@@ -198,12 +198,12 @@ RSpec.describe ChefConfig::PathHelper do
     end
 
     it "cleanpath changes backslashes into slashes and leaves slashes alone" do
-      expect(path_helper.cleanpath('/a/b\\c/d/', windows: false)).to eq("/a/b/c/d")
+      expect(path_helper.cleanpath("/a/b\\c/d/", windows: false)).to eq("/a/b/c/d")
     end
 
     # NOTE: this seems a bit weird to me, but this is just the way Pathname#cleanpath works
     it "cleanpath does not remove leading double backslash" do
-      expect(path_helper.cleanpath('\\\\a/b\\c/d/')).to eq("//a/b/c/d")
+      expect(path_helper.cleanpath("\\\\a/b\\c/d/")).to eq("//a/b/c/d")
     end
   end
 

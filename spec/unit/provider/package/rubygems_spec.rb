@@ -503,11 +503,11 @@ describe Chef::Provider::Package::Rubygems do
           platform_mock :windows do
             allow(ENV).to receive(:[]).with("PATH").and_return('C:\windows\system32;C:\windows;C:\Ruby186\bin')
             allow(ENV).to receive(:[]).with("PATHEXT").and_return(nil)
-            allow(File).to receive(:executable?).with('C:\\windows\\system32/gem').and_return(false)
-            allow(File).to receive(:executable?).with('C:\\windows/gem').and_return(false)
-            allow(File).to receive(:executable?).with('C:\\Ruby186\\bin/gem').and_return(true)
-            allow(File).to receive(:executable?).with('d:\\opscode\\chef\\bin/gem').and_return(false) # should not get here
-            allow(File).to receive(:executable?).with('d:\\opscode\\chef\\bin/gem').and_return(false) # should not get here
+            allow(File).to receive(:executable?).with("C:\\windows\\system32/gem").and_return(false)
+            allow(File).to receive(:executable?).with("C:\\windows/gem").and_return(false)
+            allow(File).to receive(:executable?).with("C:\\Ruby186\\bin/gem").and_return(true)
+            allow(File).to receive(:executable?).with("d:\\opscode\\chef\\bin/gem").and_return(false) # should not get here
+            allow(File).to receive(:executable?).with("d:\\opscode\\chef\\bin/gem").and_return(false) # should not get here
             allow(File).to receive(:executable?).with("d:/opscode/chef/embedded/bin/gem").and_return(false) # should not get here
             expect(provider.gem_env.gem_binary_location).to eq('C:\Ruby186\bin/gem')
           end

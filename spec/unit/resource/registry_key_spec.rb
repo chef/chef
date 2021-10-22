@@ -19,14 +19,14 @@
 require "spec_helper"
 
 describe Chef::Resource::RegistryKey, "initialize" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   it "sets the resource_name to :registry_key" do
     expect(resource.resource_name).to eql(:registry_key)
   end
 
   it "the key property is the name_property" do
-    expect(resource.key).to eql('HKCU\Software\Raxicoricofallapatorius')
+    expect(resource.key).to eql("HKCU\\Software\\Raxicoricofallapatorius")
   end
 
   it "sets the default action as :create" do
@@ -60,11 +60,11 @@ describe Chef::Resource::RegistryKey, "initialize" do
 end
 
 describe Chef::Resource::RegistryKey, "key" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   it "allows a string" do
-    resource.key 'HKCU\Software\Poosh'
-    expect(resource.key).to eql('HKCU\Software\Poosh')
+    resource.key "HKCU\\Software\\Poosh"
+    expect(resource.key).to eql("HKCU\\Software\\Poosh")
   end
 
   it "does not allow an integer" do
@@ -77,7 +77,7 @@ describe Chef::Resource::RegistryKey, "key" do
 end
 
 describe Chef::Resource::RegistryKey, "values" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   it "allows a single proper hash of registry values" do
     resource.values( { name: "poosh", type: :string, data: "carmen" } )
@@ -140,7 +140,7 @@ describe Chef::Resource::RegistryKey, "values" do
 end
 
 describe Chef::Resource::RegistryKey, "recursive" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   it "allows a boolean" do
     resource.recursive(true)
@@ -165,7 +165,7 @@ describe Chef::Resource::RegistryKey, "recursive" do
 end
 
 describe Chef::Resource::RegistryKey, "architecture" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   %i{i386 x86_64 machine}.each do |arch|
     it "allows #{arch} as a symbol" do
@@ -196,7 +196,7 @@ describe Chef::Resource::RegistryKey, "architecture" do
 end
 
 describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   it "returns unsafe data as-is" do
     key_values = [ { name: "poosh", type: :binary, data: 255.chr * 1 } ]
@@ -206,7 +206,7 @@ describe Chef::Resource::RegistryKey, ":unscrubbed_values" do
 end
 
 describe Chef::Resource::RegistryKey, "state" do
-  let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
+  let(:resource) { Chef::Resource::RegistryKey.new("HKCU\\Software\\Raxicoricofallapatorius") }
 
   it "returns scrubbed values" do
     resource.values([ { name: "poosh", type: :binary, data: 255.chr * 1 } ])

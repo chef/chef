@@ -1,4 +1,4 @@
-describe command('C:\habitat\hab.exe sup -h') do
+describe command("C:\\habitat\\hab.exe sup -h") do
   its(:stdout) { should match(/The Habitat Supervisor/) }
 end
 

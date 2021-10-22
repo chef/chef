@@ -1,6 +1,6 @@
 # leaving this for the future where we test windows too
 base = if platform_family?("windows")
-         'C:\ssl_test'
+         "C:\\ssl_test"
        else
          "/etc/ssl_test"
        end

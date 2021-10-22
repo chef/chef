@@ -116,7 +116,7 @@ class Chef
         description: "The expiration date of the waiver - provided in YYYY-MM-DD format",
         callbacks: {
           "Expiration date should be a valid calendar date and match the following format: YYYY-MM-DD" => proc { |e|
-            re = Regexp.new('\d{4}-\d{2}-\d{2}$').freeze
+            re = Regexp.new("\\d{4}-\\d{2}-\\d{2}$").freeze
             if re.match?(e)
               Date.valid_date?(*e.split("-").map(&:to_i))
             else

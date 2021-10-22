@@ -76,7 +76,7 @@ describe Chef::Resource::WindowsFeaturePowershell do
     node.default["powershell_features_cache"]["disabled"] = ["dhcp"]
     node.default["powershell_features_cache"]["removed"] = ["snmp"]
     resource.feature_name "dhcp, snmp"
-    resource.source 'D:\\sources\\sxs'
+    resource.source "D:\\sources\\sxs"
 
     expect(provider.features_to_install).to eq(%w{dhcp snmp})
   end
