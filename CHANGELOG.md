@@ -1,10 +1,45 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 17.7.20 -->
+## [v17.7.20](https://github.com/chef/chef/tree/v17.7.20) (2021-10-23)
+
+#### Merged Pull Requests
+- Fix reporting/data_collector for @recipe_files [#12206](https://github.com/chef/chef/pull/12206) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=17.6.18 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Fix reporting/data_collector for @recipe_files [#12206](https://github.com/chef/chef/pull/12206) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.7.20 -->
+- Add &#39;enable&#39; action to &#39;kernel_module&#39; resource to reverse &#39;disable&#39; action. [#12105](https://github.com/chef/chef/pull/12105) ([qubitrenegade](https://github.com/qubitrenegade)) <!-- 17.7.19 -->
+- Fix cron resource commented job handling [#12170](https://github.com/chef/chef/pull/12170) ([wheatevo](https://github.com/wheatevo)) <!-- 17.7.18 -->
+- Only run macos_user_defaults tests on macOS hosts [#12201](https://github.com/chef/chef/pull/12201) ([rishichawda](https://github.com/rishichawda)) <!-- 17.7.17 -->
+- Bump ohai to 17.7.5 [#12203](https://github.com/chef/chef/pull/12203) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.16 -->
+- Revert chef-zero back to 15.0.9 [#12191](https://github.com/chef/chef/pull/12191) ([tas50](https://github.com/tas50)) <!-- 17.7.15 -->
+- Add cookbook_artifacts as valid knife acl object type [#12190](https://github.com/chef/chef/pull/12190) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.7.14 -->
+- Bump omnibus-software from `a2a70e2` to `0f8338a` in /omnibus [#12198](https://github.com/chef/chef/pull/12198) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.13 -->
+- Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12199](https://github.com/chef/chef/pull/12199) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.12 -->
+- Bump chef-zero to 15.0.11 [#12177](https://github.com/chef/chef/pull/12177) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.11 -->
+- Skip the cspell config and MVPs file in cspell [#12176](https://github.com/chef/chef/pull/12176) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
+- Start over in the cspell file [#12175](https://github.com/chef/chef/pull/12175) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
+- Replace Ubuntu 21.04 kitchen tests with 21.10 [#12058](https://github.com/chef/chef/pull/12058) ([tas50](https://github.com/tas50)) <!-- 17.7.10 -->
+- rewrite macos_userdefaults using corefoundation gem [#11898](https://github.com/chef/chef/pull/11898) ([rishichawda](https://github.com/rishichawda)) <!-- 17.7.10 -->
+- Update all deps to the latest [#12174](https://github.com/chef/chef/pull/12174) ([tas50](https://github.com/tas50)) <!-- 17.7.9 -->
+- Fix spelling error typo in directory documentation [#12168](https://github.com/chef/chef/pull/12168) ([jgitlin-p21](https://github.com/jgitlin-p21)) <!-- 17.7.8 -->
+- Allow specifying transport protocol in RFC099 credential files [#12151](https://github.com/chef/chef/pull/12151) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.7.7 -->
+- Clarify recursive delete [#12166](https://github.com/chef/chef/pull/12166) ([jgitlin-p21](https://github.com/jgitlin-p21)) <!-- 17.7.6 -->
+- Bump omnibus from `37897ad` to `90306c9` in /omnibus [#12161](https://github.com/chef/chef/pull/12161) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.5 -->
+- (#12158) Add ability to create authenticated sources with chocolatey_source resource [#12159](https://github.com/chef/chef/pull/12159) ([gep13](https://github.com/gep13)) <!-- 17.7.4 -->
+- (doc) Add note about requirement for Chocolatey [#12157](https://github.com/chef/chef/pull/12157) ([gep13](https://github.com/gep13)) <!-- 17.7.3 -->
+- Skip ssl verification in our centos-6 test [#12155](https://github.com/chef/chef/pull/12155) ([tas50](https://github.com/tas50)) <!-- 17.7.2 -->
+- Bump chef/ohai to f65a21cc7e6f4cf9f54e50f170deec549e78f0dd [#12154](https://github.com/chef/chef/pull/12154) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.2 -->
+- Use ** when passing options in subversion provider [#12150](https://github.com/chef/chef/pull/12150) ([tomhughes](https://github.com/tomhughes)) <!-- 17.7.1 -->
+- Add secrets support for multiple User Assigned Managed Identities in Azure [#12139](https://github.com/chef/chef/pull/12139) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.7.0 -->
+- Bump omnibus-software from `24f508c` to `a2a70e2` in /omnibus [#12147](https://github.com/chef/chef/pull/12147) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.6.21 -->
+- Fix failing knife installs on windows / Test knife install on all platforms in TK [#12142](https://github.com/chef/chef/pull/12142) ([tas50](https://github.com/tas50)) <!-- 17.6.20 -->
+- Bump chef/ohai to 6ca8519cc204912937676dc223384787dde6aab7 [#12141](https://github.com/chef/chef/pull/12141) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.6.19 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->

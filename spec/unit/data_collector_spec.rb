@@ -164,7 +164,7 @@ describe Chef::DataCollector do
       "after" => after_resource&.state_for_resource_reporter || {},
       "before" => before_resource&.state_for_resource_reporter || {},
       "cookbook_name" => cookbook_name,
-      "cookbook_version" => cookbook_version.version,
+      "cookbook_version" => cookbook_version&.version,
       "delta" => resource_has_diff(new_resource, status) ? new_resource.diff : "",
       "duration" => duration,
       "id" => new_resource.identity,
@@ -554,6 +554,29 @@ describe Chef::DataCollector do
         let(:status) { "success" }
 
         before do
+          events.resource_action_start(new_resource, :create)
+          events.resource_current_state_loaded(new_resource, :create, current_resource)
+          events.resource_up_to_date(new_resource, :create)
+          events.resource_after_state_loaded(new_resource, :create, after_resource)
+          new_resource.instance_variable_set(:@elapsed_time, 1.2345)
+          events.resource_completed(new_resource)
+          events.converge_complete
+          run_status.stop_clock
+        end
+
+        it_behaves_like "sends a converge message"
+      end
+
+      context "when the run contains a file resource that is up-to-date from a @recipe_files, returns nil for the version" do
+        let(:total_resource_count) { 1 }
+        let(:updated_resource_count) { 0 }
+        let(:cookbook_name) { "@recipe_files" }
+        let(:resource_record) { [ resource_record_for(new_resource, current_resource, after_resource, :create, "up-to-date", "1234") ] }
+        let(:status) { "success" }
+        let(:cookbook_version) { nil }
+
+        before do
+          allow(new_resource).to receive(:cookbook_version).and_call_original
           events.resource_action_start(new_resource, :create)
           events.resource_current_state_loaded(new_resource, :create, current_resource)
           events.resource_up_to_date(new_resource, :create)

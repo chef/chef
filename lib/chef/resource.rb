@@ -1508,7 +1508,7 @@ class Chef
     # @return Chef::CookbookVersion The cookbook in which this Resource was defined.
     #
     def cookbook_version
-      if cookbook_name
+      if cookbook_name && cookbook_name != "@recipe_files"
         run_context.cookbook_collection[cookbook_name]
       end
     end

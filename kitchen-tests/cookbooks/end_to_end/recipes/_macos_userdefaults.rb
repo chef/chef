@@ -52,6 +52,14 @@ macos_userdefaults "Bogus key with dict value" do
   value "User": "/Library/Managed Installs/way_fake.log"
 end
 
+# test that we can set an array with dict value
+macos_userdefaults "Bogus key with array value with dict items" do
+  domain "/Library/Preferences/ManagedInstalls"
+  type "array"
+  key "ArrayWithDict"
+  value [ { "User": "/Library/Managed Installs/way_fake.log" } ]
+end
+
 # test that we can set a bool
 macos_userdefaults "Bogus key with boolean value" do
   domain "/Library/Preferences/ManagedInstalls"

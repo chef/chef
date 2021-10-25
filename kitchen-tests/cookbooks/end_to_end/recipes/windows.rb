@@ -190,3 +190,5 @@ windows_update_settings "Disable Windows Update" do
   block_windows_update_website true
   disable_automatic_updates true
 end
+
+include_recipe "::_chef_gem"

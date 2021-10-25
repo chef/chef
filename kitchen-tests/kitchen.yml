@@ -49,7 +49,7 @@ platforms:
     image: dokken/debian-9
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: debian-10
@@ -57,7 +57,7 @@ platforms:
     image: dokken/debian-10
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: debian-11
@@ -65,7 +65,7 @@ platforms:
     image: dokken/debian-11
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: centos-6
@@ -74,7 +74,7 @@ platforms:
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
+      - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
       - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=http://vault.centos.org/centos/6/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
       - RUN yum install -y devtoolset-8
 
@@ -124,7 +124,7 @@ platforms:
     image: dokken/ubuntu-18.04
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: ubuntu-20.04
@@ -132,15 +132,15 @@ platforms:
     image: dokken/ubuntu-20.04
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
-- name: ubuntu-21.04
+- name: ubuntu-21.10
   driver:
-    image: dokken/ubuntu-21.04
+    image: dokken/ubuntu-21.10
     pid_one_command: /bin/systemd
     intermediate_instructions:
-      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get update -y
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
 - name: opensuse-leap-15
