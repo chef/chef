@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.22 -->
-## [v17.7.22](https://github.com/chef/chef/tree/v17.7.22) (2021-10-25)
+<!-- latest_release 17.7.23 -->
+## [v17.7.23](https://github.com/chef/chef/tree/v17.7.23) (2021-10-25)
 
 #### Merged Pull Requests
-- Bump chef/chefstyle to b5c712d298e240493020b8d5977f03172cc65e17 [#12204](https://github.com/chef/chef/pull/12204) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update habitat install script to use main branch [#12210](https://github.com/chef/chef/pull/12210) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.6.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update habitat install script to use main branch [#12210](https://github.com/chef/chef/pull/12210) ([tas50](https://github.com/tas50)) <!-- 17.7.23 -->
 - Bump chef/chefstyle to b5c712d298e240493020b8d5977f03172cc65e17 [#12204](https://github.com/chef/chef/pull/12204) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.22 -->
 - Fix reporting/data_collector for @recipe_files [#12206](https://github.com/chef/chef/pull/12206) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.7.20 -->
 - Add &#39;enable&#39; action to &#39;kernel_module&#39; resource to reverse &#39;disable&#39; action. [#12105](https://github.com/chef/chef/pull/12105) ([qubitrenegade](https://github.com/qubitrenegade)) <!-- 17.7.19 -->
