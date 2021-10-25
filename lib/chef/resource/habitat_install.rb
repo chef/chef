@@ -52,8 +52,8 @@ class Chef
       property :name, String, default: "install habitat",
         description: "Name of the resource block. This has no impact other than logging."
 
-      property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh",
-        description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh) ."
+      property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh",
+        description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh) ."
 
       property :bldr_url, String,
         description: "Optional URL to an alternate Habitat Builder."
