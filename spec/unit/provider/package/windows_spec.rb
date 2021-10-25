@@ -39,7 +39,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     new_resource
   end
   let(:provider) { Chef::Provider::Package::Windows.new(new_resource, run_context) }
-  let(:cache_path) { 'c:\\cache\\' }
+  let(:cache_path) { "c:\\cache\\" }
 
   before(:each) do
     allow(::File).to receive(:exist?).with(new_resource.source).and_return(true)

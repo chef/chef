@@ -84,7 +84,7 @@ describe Chef::Mixin::DefaultPaths do
       allow(Gem).to receive(:bindir).and_return(gem_bindir)
       allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(ruby_bindir)
       allow(ChefUtils).to receive(:windows?).and_return(true)
-      env = { "PATH" => 'C:\Windows\system32;C:\mr\softie' }
+      env = { "PATH" => "C:\\Windows\\system32;C:\\mr\\softie" }
       @default_paths.enforce_default_paths(env)
       expect(env["PATH"]).to eq("#{gem_bindir};#{ruby_bindir};C:\\Windows\\system32;C:\\mr\\softie")
     end

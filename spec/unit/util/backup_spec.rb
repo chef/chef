@@ -132,7 +132,7 @@ describe Chef::Util::Backup do
     end
 
     it "uses the configured Chef::Config[:file_backup_path] and strips the drive on windows" do
-      expect(@backup).to receive(:path).and_return('c:\\a\\b\\c.txt')
+      expect(@backup).to receive(:path).and_return("c:\\a\\b\\c.txt")
       Chef::Config[:file_backup_path] = 'c:\backupdir'
       expect(@backup.send(:backup_path)).to match(%r|^c:\\backupdir[\\/]+a\\b\\c.txt.chef-\d{14}.\d{6}$|)
     end

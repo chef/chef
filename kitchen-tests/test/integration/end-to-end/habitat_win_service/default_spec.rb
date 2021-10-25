@@ -1,4 +1,4 @@
-describe directory('C:\hab\pkgs\skylerto\splunkforwarder') do
+describe directory("C:\\hab\\pkgs\\skylerto\\splunkforwarder") do
   it { should exist }
 end
 
@@ -6,7 +6,7 @@ describe directory('C:\hab\pkgs\ncr_devops_platform\sensu-agent-win') do
   it { should exist }
 end
 
-describe file('C:\hab\sup\default\specs\splunkforwarder.spec') do
+describe file("C:\\hab\\sup\\default\\specs\\splunkforwarder.spec") do
   it { should_not exist }
 end
 
@@ -25,7 +25,7 @@ describe json(command: servicecheck) do
   its(%w{cfg backend-urls}) { should eq ["ws://127.0.0.1:8081"] }
   its(["channel"]) { should eq "stable" }
   its(["desired_state"]) { should eq "Down" }
-  its(["spec_file"]) { should eq 'C:\\hab/sup\\default\\specs\\sensu-agent-win.spec' }
+  its(["spec_file"]) { should eq "C:\\hab/sup\\default\\specs\\sensu-agent-win.spec" }
   its(["topology"]) { should eq "standalone" }
   its(["update_strategy"]) { should eq "rolling" }
 end

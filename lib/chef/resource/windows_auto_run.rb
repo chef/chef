@@ -88,7 +88,7 @@ class Chef
         # @return [String]
         def registry_path
           { machine: "HKLM", user: "HKCU" }[new_resource.root] + \
-            '\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run'
+            "\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
         end
       end
     end

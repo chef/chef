@@ -145,7 +145,7 @@ class Chef
       action :set, description: "Set Windows Update settings." do
         actual_day = convert_day(new_resource.scheduled_install_day)
 
-        registry_key 'HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate' do
+        registry_key "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate" do
           recursive true
           values [{
             name: "DisableOSUpgrade",
@@ -180,7 +180,7 @@ class Chef
           action :create
         end
 
-        registry_key 'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer' do
+        registry_key "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer" do
           recursive true
           values [{
             name: "NoWindowsUpdate",
@@ -190,7 +190,7 @@ class Chef
           action :create
         end
 
-        registry_key 'HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU' do
+        registry_key "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU" do
           recursive true
           values [{
             name: "AUOptions",

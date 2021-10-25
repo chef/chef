@@ -28,14 +28,14 @@ describe "Chef::Win32::Registry", :windows_only do
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\B®anch"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Flower"
-    ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+    ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|
       reg["RootType1", Win32::Registry::REG_SZ] = "fibrous"
       reg.write("Roots", Win32::Registry::REG_MULTI_SZ, ["strong roots", "healthy tree"])
     end
-    ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+    ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch", Win32::Registry::KEY_ALL_ACCESS) do |reg|
       reg["Strong", Win32::Registry::REG_SZ] = "bird nest"
     end
-    ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Flower', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+    ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch\\Flower", Win32::Registry::KEY_ALL_ACCESS) do |reg|
       reg["Petals", Win32::Registry::REG_MULTI_SZ] = %w{Pink Delicate}
     end
 
@@ -297,7 +297,7 @@ describe "Chef::Win32::Registry", :windows_only do
   describe "delete_value" do
     before(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk\\Peck\\Woodpecker"
-      ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Trunk\\Peck\\Woodpecker', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg["Peter", Win32::Registry::REG_SZ] = "Tiny"
       end
     end
@@ -324,11 +324,11 @@ describe "Chef::Win32::Registry", :windows_only do
   describe "delete_key" do
     before(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Fruit"
-      ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Fruit', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Branch\\Fruit", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg["Apple", Win32::Registry::REG_MULTI_SZ] = %w{Red Juicy}
       end
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk\\Peck\\Woodpecker"
-      ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Trunk\\Peck\\Woodpecker', Win32::Registry::KEY_ALL_ACCESS) do |reg|
+      ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk\\Peck\\Woodpecker", Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg["Peter", Win32::Registry::REG_SZ] = "Tiny"
       end
     end
@@ -519,12 +519,12 @@ describe "Chef::Win32::Registry", :windows_only do
         end
         # 64-bit
         ::Win32::Registry::HKEY_LOCAL_MACHINE.create("Software\\Root\\Mauve", ::Win32::Registry::KEY_ALL_ACCESS | 0x0100)
-        ::Win32::Registry::HKEY_LOCAL_MACHINE.open('Software\\Root\\Mauve', Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root\\Mauve", Win32::Registry::KEY_ALL_ACCESS | 0x0100) do |reg|
           reg["Alert", Win32::Registry::REG_SZ] = "Universal"
         end
         # 32-bit
         ::Win32::Registry::HKEY_LOCAL_MACHINE.create("Software\\Root\\Poosh", ::Win32::Registry::KEY_ALL_ACCESS | 0x0200)
-        ::Win32::Registry::HKEY_LOCAL_MACHINE.open('Software\\Root\\Poosh', Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
+        ::Win32::Registry::HKEY_LOCAL_MACHINE.open("Software\\Root\\Poosh", Win32::Registry::KEY_ALL_ACCESS | 0x0200) do |reg|
           reg["Status", Win32::Registry::REG_SZ] = "Lost"
         end
       end

@@ -45,6 +45,6 @@ describe Chef::Resource::WindowsAutorun do
 
   it "coerces forward slashes to backslashes for the path" do
     resource.path "C:/something.exe"
-    expect(resource.path).to eql('C:\\something.exe')
+    expect(resource.path).to eql("C:\\something.exe")
   end
 end

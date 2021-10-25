@@ -274,7 +274,7 @@ describe Chef::Provider::RegistryKey do
   end
 
   context "when the key data is safe" do
-    let(:keyname) { 'HKLM\Software\Opscode\Testing\Safe' }
+    let(:keyname) { "HKLM\\Software\\Opscode\\Testing\\Safe" }
     let(:testval1) { { name: "one", type: :string, data: "1" } }
     let(:testval1_wrong_type) { { name: "one", type: :multi_string, data: "1" } }
     let(:testval1_wrong_data) { { name: "one", type: :string, data: "2" } }
@@ -295,7 +295,7 @@ describe Chef::Provider::RegistryKey do
 
   describe "action_create" do
     context "when key exists and type matches" do
-      let(:keyname) { 'hklm\\software\\opscode\\testing\\dword' }
+      let(:keyname) { "hklm\\software\\opscode\\testing\\dword" }
       let(:dword_passed_as_integer) { { name: "one", type: :dword, data: 12345 } }
       let(:testval1) { { name: "one", type: :dword, data: "12345" } }
       before do
@@ -349,7 +349,7 @@ describe Chef::Provider::RegistryKey do
       end
 
       context "and key does not exist" do
-        let(:keyname) { 'hklm\\software\\opscode\\testing\\sensitive\missing' }
+        let(:keyname) { "hklm\\software\\opscode\\testing\\sensitive\\missing" }
         let(:testval1) { { name: "one", type: :string, data: "first_value" } }
 
         before(:each) do
@@ -368,7 +368,7 @@ describe Chef::Provider::RegistryKey do
 
   describe "action_create_if_missing" do
     context "when sensitive is true" do
-      let(:keyname) { 'hklm\\software\\opscode\\testing\\create_if_missing\\sensitive' }
+      let(:keyname) { "hklm\\software\\opscode\\testing\\create_if_missing\\sensitive" }
       let(:testval1) { { name: "one", type: :string, data: "first_value" } }
 
       before(:each) do

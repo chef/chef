@@ -23,12 +23,12 @@ describe Chef::Win32::Registry do
 
   let(:value1) { { name: "one", type: :string, data: "1" } }
   let(:value1_upcase_name) { { name: "ONE", type: :string, data: "1" } }
-  let(:key_path) { 'HKCU\Software\OpscodeNumbers' }
-  let(:key) { 'Software\OpscodeNumbers' }
+  let(:key_path) { "HKCU\\Software\\OpscodeNumbers" }
+  let(:key) { "Software\\OpscodeNumbers" }
   let(:key_parent) { "Software" }
   let(:key_to_delete) { "OpscodeNumbers" }
   let(:sub_key) { "OpscodePrimes" }
-  let(:missing_key_path) { 'HKCU\Software' }
+  let(:missing_key_path) { "HKCU\\Software" }
   let(:registry) { Chef::Win32::Registry.new }
   let(:hive_mock) { double("::Win32::Registry::HKEY_CURRENT_USER") }
   let(:reg_mock) { double("reg") }

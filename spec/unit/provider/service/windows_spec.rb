@@ -33,7 +33,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
   # Actual response from Win32::Service.config_info('chef-client')
   let(:chef_service_binary_path_name) do
-    'C:\\opscode\\chef\\embedded\\bin\\ruby.exe C:\\opscode\\chef\\bin\\chef-windows-service'
+    "C:\\opscode\\chef\\embedded\\bin\\ruby.exe C:\\opscode\\chef\\bin\\chef-windows-service"
   end
   let(:chef_service_config_info) do
     double("Struct::ServiceConfigInfo",
@@ -153,11 +153,11 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
           service_type: "share process",
           start_type: "demand start",
           error_control: "normal",
-          binary_path_name: 'C:\\Windows\\system32\\svchost.exe -k LocalServiceNetworkRestricted',
+          binary_path_name: "C:\\Windows\\system32\\svchost.exe -k LocalServiceNetworkRestricted",
           load_order_group: "TDI",
           tag_id: 0,
           dependencies: %w{NSI Tdx Afd},
-          service_start_name: 'NT Authority\\LocalService',
+          service_start_name: "NT Authority\\LocalService",
           display_name: "DHCP Client")
       )
     end
@@ -169,11 +169,11 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
             service_type: "share process",
             start_type: "demand start",
             error_control: "normal",
-            binary_path_name: 'C:\\Windows\\system32\\svchost.exe -k LocalServiceNetworkRestricted',
+            binary_path_name: "C:\\Windows\\system32\\svchost.exe -k LocalServiceNetworkRestricted",
             load_order_group: "TDI",
             tag_id: 0,
             dependencies: %w{NSI Tdx Afd},
-            service_start_name: 'NT Authority\\LocalService',
+            service_start_name: "NT Authority\\LocalService",
             display_name: "DHCP Client")
         )
       end
