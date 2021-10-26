@@ -36,6 +36,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @new_resource.home "/home/adam"
     @new_resource.shell "/usr/bin/zsh"
     @new_resource.password "abracadabra"
+    @new_resource.expire_date "2090-12-31"
+    @new_resource.inactive 90
     @new_resource.system false
     @new_resource.manage_home false
     @new_resource.force false
@@ -47,6 +49,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @current_resource.home "/home/adam"
     @current_resource.shell "/usr/bin/zsh"
     @current_resource.password "abracadabra"
+    @current_resource.expire_date "2090-12-31"
+    @current_resource.inactive 90
     @current_resource.system false
     @current_resource.manage_home false
     @current_resource.force false
@@ -151,15 +155,23 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     end
 
     it "runs useradd with the computed command options" do
-      command = ["useradd",
-                  "-c", "Adam Jacob",
-                  "-g", "23" ]
+      command = [
+        "useradd",
+        "-c", "Adam Jacob",
+        "-e", "2090-12-31",
+        "-g", "23",
+        "-f", "90"
+      ]
       command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
-      command.concat([ "-s", "/usr/bin/zsh",
-                       "-u", "1000",
-                       "-d", "/Users/mud",
-                       "-m",
-                       "adam"])
+      command.concat(
+        [
+          "-s", "/usr/bin/zsh",
+          "-u", "1000",
+          "-d", "/Users/mud",
+          "-m",
+          "adam"
+        ]
+      )
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
@@ -173,20 +185,26 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       end
 
       it "should not include -m or -d in the command options" do
-        command = ["useradd",
-                    "-c", "Adam Jacob",
-                    "-g", "23"]
+        command = [
+          "useradd",
+          "-c", "Adam Jacob",
+          "-e", "2090-12-31",
+          "-g", "23",
+          "-f", "90"
+        ]
         command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
-        command.concat([ "-s", "/usr/bin/zsh",
-                         "-u", "1000",
-                         "-r", "-m",
-                         "adam"])
+        command.concat(
+          [
+            "-s", "/usr/bin/zsh",
+            "-u", "1000",
+            "-r", "-m",
+            "adam"
+          ]
+        )
         expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
         provider.create_user
       end
-
     end
-
   end
 
   describe "when managing a user" do

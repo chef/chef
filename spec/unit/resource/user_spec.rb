@@ -29,7 +29,7 @@ describe Chef::Resource::User, "initialize" do
     expect(resource.username).to eql("notarealuser")
   end
 
-  %w{comment uid gid home shell password}.each do |prop|
+  %w{comment uid gid home shell password inactive expire_date}.each do |prop|
     it "sets #{prop} to nil" do
       expect(resource.send(prop)).to eql(nil)
     end
@@ -64,7 +64,7 @@ describe Chef::Resource::User, "initialize" do
   end
 end
 
-%w{username comment home shell password}.each do |attrib|
+%w{username comment home shell password expire_date}.each do |attrib|
   describe Chef::Resource::User, attrib do
     let(:resource) { Chef::Resource::User.new("notarealuser") }
 
@@ -79,7 +79,7 @@ end
   end
 end
 
-%w{uid gid}.each do |attrib|
+%w{uid gid inactive}.each do |attrib|
   describe Chef::Resource::User, attrib do
     let(:resource) { Chef::Resource::User.new("notarealuser") }
 
@@ -98,12 +98,13 @@ end
     end
   end
 
-  describe "when it has uid, gid, and home" do
+  describe "when it has uid, gid, inactive, and home" do
     let(:resource) { Chef::Resource::User.new("root") }
 
     before do
       resource.uid(123)
       resource.gid(456)
+      resource.inactive(90)
       resource.home("/usr/local/root/")
     end
 
@@ -111,11 +112,40 @@ end
       state = resource.state_for_resource_reporter
       expect(state[:uid]).to eq(123)
       expect(state[:gid]).to eq(456)
+      expect(state[:inactive]).to eq(90)
       expect(state[:home]).to eq("/usr/local/root/")
     end
 
     it "returns the username as its identity" do
       expect(resource.identity).to eq("root")
+    end
+  end
+end
+
+%w{expire_date}.each do |attrib|
+  describe Chef::Resource::User, attrib do
+    let(:resource) { Chef::Resource::User.new("notarealuser") }
+
+    before do
+      resource.expire_date("2090-12-31")
+    end
+
+    it "allows a string" do
+      resource.send(attrib, "100")
+      expect(resource.send(attrib)).to eql("100")
+    end
+
+    it "does not allow an integer" do
+      expect { resource.send(attrib, 90) }.to raise_error(ArgumentError)
+    end
+
+    it "does not allow a hash" do
+      expect { resource.send(attrib, { woot: "i found it" }) }.to raise_error(ArgumentError)
+    end
+
+    it "describes its state" do
+      state = resource.state_for_resource_reporter
+      expect(state[:expire_date]).to eq("2090-12-31")
     end
   end
 end

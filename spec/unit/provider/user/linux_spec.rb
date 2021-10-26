@@ -34,6 +34,8 @@ describe Chef::Provider::User::Linux do
     "uid" => "-u",
     "shell" => "-s",
     "password" => "-p",
+    "expire_date" => "-e",
+    "inactive" => "-f"
   }
 
   include_examples "a useradd-based user provider", supported_useradd_options
