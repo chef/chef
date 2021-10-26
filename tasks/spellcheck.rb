@@ -20,7 +20,19 @@ namespace :spellcheck do
     sh 'cspell lint --no-progress "**/*"'
   end
 
-  task prereqs: %i{cspell_check config_check fetch_common}
+  task prereqs: %i{wget_check cspell_check config_check fetch_common}
+
+  task :wget_check do
+    wget_version = begin
+                     `wget --version`
+                   rescue
+                     nil
+                   end
+
+    wget_version.is_a?(String) || abort(<<~INSTALL_WGET)
+      wget is not installed
+    INSTALL_WGET
+  end
 
   task :fetch_common do
     sh "wget -q https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -O chef_dictionary.txt"
