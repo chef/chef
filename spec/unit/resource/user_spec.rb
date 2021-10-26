@@ -104,7 +104,6 @@ end
     before do
       resource.uid(123)
       resource.gid(456)
-      resource.inactive(90)
       resource.home("/usr/local/root/")
     end
 
@@ -112,7 +111,6 @@ end
       state = resource.state_for_resource_reporter
       expect(state[:uid]).to eq(123)
       expect(state[:gid]).to eq(456)
-      expect(state[:inactive]).to eq(90)
       expect(state[:home]).to eq("/usr/local/root/")
     end
 
@@ -126,10 +124,6 @@ end
   describe Chef::Resource::User, attrib do
     let(:resource) { Chef::Resource::User.new("notarealuser") }
 
-    before do
-      resource.expire_date("2090-12-31")
-    end
-
     it "allows a string" do
       resource.send(attrib, "100")
       expect(resource.send(attrib)).to eql("100")
@@ -141,11 +135,6 @@ end
 
     it "does not allow a hash" do
       expect { resource.send(attrib, { woot: "i found it" }) }.to raise_error(ArgumentError)
-    end
-
-    it "describes its state" do
-      state = resource.state_for_resource_reporter
-      expect(state[:expire_date]).to eq("2090-12-31")
     end
   end
 end
