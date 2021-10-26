@@ -58,7 +58,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        ChefUtils.windows? ? '[\/\\\\]' : "/"
+        ChefUtils.windows? ? "[\\/\\\\]" : "/"
       end
 
       # Given a server path, determines if it is absolute.

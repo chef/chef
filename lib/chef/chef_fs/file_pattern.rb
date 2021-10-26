@@ -276,7 +276,7 @@ class Chef
               regexp << ".*"
             when "*"
               exact = nil
-              regexp << '[^\/]*'
+              regexp << "[^\\/]*"
             when "?"
               exact = nil
               regexp << "."

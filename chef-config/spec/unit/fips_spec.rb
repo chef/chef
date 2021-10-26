@@ -65,7 +65,7 @@ RSpec.describe "ChefConfig.fips?" do
   end
 
   context "on windows", :windows_only do
-    let(:fips_key) { 'System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy' }
+    let(:fips_key) { "System\\CurrentControlSet\\Control\\Lsa\\FIPSAlgorithmPolicy" }
     let(:win_reg_entry) { { "Enabled" => enabled } }
 
     before(:each) do

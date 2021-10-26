@@ -103,7 +103,7 @@ describe Chef::Provider::ZypperRepository do
 
   describe "#escaped_repo_name" do
     it "returns an escaped repo name" do
-      expect(provider.escaped_repo_name).to eq('Nginx\\ Repository')
+      expect(provider.escaped_repo_name).to eq("Nginx\\ Repository")
     end
   end
 

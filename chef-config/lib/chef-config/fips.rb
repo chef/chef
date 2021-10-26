@@ -39,7 +39,7 @@ module ChefConfig
           Win32::Registry::KEY_READ
         end
       begin
-        Win32::Registry::HKEY_LOCAL_MACHINE.open('System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy', reg_type) do |policy|
+        Win32::Registry::HKEY_LOCAL_MACHINE.open("System\\CurrentControlSet\\Control\\Lsa\\FIPSAlgorithmPolicy", reg_type) do |policy|
           policy["Enabled"] != 0
         end
       rescue Win32::Registry::Error

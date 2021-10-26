@@ -53,8 +53,8 @@ describe Chef::Mixin::Securable do
     end
 
     it "should accept group/owner names with spaces and backslashes" do
-      expect { @securable.group 'test\ group' }.not_to raise_error
-      expect { @securable.owner 'test\ group' }.not_to raise_error
+      expect { @securable.group "test\\ group" }.not_to raise_error
+      expect { @securable.owner "test\\ group" }.not_to raise_error
     end
 
     it "should accept group/owner names that are a single character or digit" do
@@ -186,7 +186,7 @@ describe Chef::Mixin::Securable do
     end
 
     it "should not accept a group name or id for group with spaces and multiple backslashes" do
-      expect { @securable.group 'test\ \group' }.to raise_error(ArgumentError)
+      expect { @securable.group "test\\ \\group" }.to raise_error(ArgumentError)
     end
 
     it "should accept a unix file mode in string form as an octal number" do

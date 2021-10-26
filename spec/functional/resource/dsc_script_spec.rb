@@ -85,7 +85,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only d
   let(:dsc_test_resource_base) do
     Chef::Resource::DscScript.new(dsc_test_resource_name, dsc_test_run_context)
   end
-  let(:test_registry_key) { 'HKEY_LOCAL_MACHINE\Software\Chef\Spec\Functional\Resource\dsc_script_spec' }
+  let(:test_registry_key) { "HKEY_LOCAL_MACHINE\\Software\\Chef\\Spec\\Functional\\Resource\\dsc_script_spec" }
   let(:test_registry_value) { "Registration" }
   let(:test_registry_data1) { "LL927" }
   let(:test_registry_data2) { "LL928" }
@@ -394,7 +394,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only d
       dsc_test_run_context.node.consume_external_attrs(OHAI_SYSTEM.data, {})
     end
 
-    let(:configuration_data_path) { 'C:\\configurationdata.psd1' }
+    let(:configuration_data_path) { "C:\\configurationdata.psd1" }
 
     let(:self_signed_cert_path) do
       File.join(CHEF_SPEC_DATA, "dsc_lcm.pfx")

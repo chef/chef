@@ -152,7 +152,7 @@ user "phil" do
   action :remove
 end
 
-directory 'C:\mordor' do
+directory "C:\\mordor" do
   rights :full_control, "everyone"
 end
 

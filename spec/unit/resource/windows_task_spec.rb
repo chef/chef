@@ -75,7 +75,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     context "a System User" do
       before do
         resource.frequency :hourly
-        resource.user 'NT AUTHORITY\SYSTEM'
+        resource.user "NT AUTHORITY\\SYSTEM"
       end
 
       context "for an interactive task" do
@@ -88,7 +88,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           expect { resource.after_created }.to raise_error(ArgumentError, "Password is not required for system users.")
         end
         it "does not raises an error even when user is in lowercase" do
-          resource.user 'nt authority\system'
+          resource.user "nt authority\\system"
           expect { resource.after_created }.to_not raise_error
         end
       end
@@ -103,7 +103,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           expect { resource.after_created }.to raise_error(ArgumentError, "Password is not required for system users.")
         end
         it "does not raises an error even when user is in lowercase" do
-          resource.user 'nt authority\system'
+          resource.user "nt authority\\system"
           expect { resource.after_created }.to_not raise_error
         end
       end

@@ -28,7 +28,7 @@ class Chef
       extend Forwardable
       provides :git
 
-      GIT_VERSION_PATTERN = Regexp.compile('git version (\d+\.\d+.\d+)')
+      GIT_VERSION_PATTERN = Regexp.compile("git version (\\d+\\.\\d+.\\d+)")
 
       def_delegator :new_resource, :destination, :cwd
 

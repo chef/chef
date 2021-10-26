@@ -358,7 +358,7 @@ describe "windows_env provider", :windows_only do
   context "when environment is PATH" do
     describe "for PATH" do
       let(:system_root) { "%SystemRoot%" }
-      let(:system_root_value) { 'D:\Windows' }
+      let(:system_root_value) { "D:\\Windows" }
       let(:new_resource) do
         new_resource = Chef::Resource::WindowsEnv.new("PATH", run_context)
         new_resource.value(system_root)

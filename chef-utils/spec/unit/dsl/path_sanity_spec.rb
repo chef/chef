@@ -79,7 +79,7 @@ RSpec.describe ChefUtils::DSL::DefaultPaths do
     end
 
     it "prepends to an existing path" do
-      env = { "PATH" => '%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\\' }
+      env = { "PATH" => "%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\" }
       expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\")
     end
   end

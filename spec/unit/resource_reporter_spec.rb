@@ -494,7 +494,7 @@ describe Chef::ResourceReporter do
 
     context "when the resource is a RegistryKey with binary data" do
       let(:new_resource) do
-        resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
+        resource = Chef::Resource::RegistryKey.new("Wubba\\Lubba\\Dub\\Dubs")
         resource.values([ { name: "rick", type: :binary, data: 255.chr * 1 } ])
         allow(resource).to receive(:cookbook_name).and_return(cookbook_name)
         allow(resource).to receive(:cookbook_version).and_return(cookbook_version)
@@ -502,7 +502,7 @@ describe Chef::ResourceReporter do
       end
 
       let(:current_resource) do
-        resource = Chef::Resource::RegistryKey.new('Wubba\Lubba\Dub\Dubs')
+        resource = Chef::Resource::RegistryKey.new("Wubba\\Lubba\\Dub\\Dubs")
         resource.values([ { name: "rick", type: :binary, data: 255.chr * 1 } ])
         resource
       end

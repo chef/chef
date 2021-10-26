@@ -52,8 +52,8 @@ class Chef
       property :name, String, default: "install habitat",
         description: "Name of the resource block. This has no impact other than logging."
 
-      property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh",
-        description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh) ."
+      property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh",
+        description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh) ."
 
       property :bldr_url, String,
         description: "Optional URL to an alternate Habitat Builder."
@@ -95,10 +95,10 @@ class Chef
             path habfile
             destination "#{Chef::Config[:file_cache_path]}/habitat"
             action :extract
-            not_if { ::Dir.exist?('c:\habitat') }
+            not_if { ::Dir.exist?("c:\\habitat") }
           end
 
-          directory 'c:\habitat' do
+          directory "c:\\habitat" do
             notifies :run, "powershell_script[installing from archive]", :immediately
           end
 
@@ -110,7 +110,7 @@ class Chef
           end
 
           # TODO: This won't self heal if missing until the next upgrade
-          windows_path 'C:\habitat' do
+          windows_path "C:\\habitat" do
             action :add
           end
         else
