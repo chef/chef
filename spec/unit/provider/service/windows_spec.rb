@@ -106,7 +106,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       .and_return(chef_service_config_info)
 
     allow(Win32::Service).to receive(:delayed_start).with(chef_service_name).and_return(1)
-    allow(Win32::Service).to receive(:exists?).and_return(true)
+    allow(Win32::Service).to receive(:exist?).and_return(true)
     allow(Win32::Service).to receive(:configure).and_return(Win32::Service)
     allow(Chef::ReservedNames::Win32::Security).to receive(:get_account_right).and_return([])
     allow(Chef::ReservedNames::Win32::Security).to receive(:add_account_right).with("localsystem", "SeServiceLogonRight").and_return(0)
@@ -134,7 +134,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
   context "service does not exist" do
     before do
-      allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(false)
+      allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(false)
     end
 
     %w{running enabled startup_type error_control binary_path_name
@@ -147,7 +147,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
   context "service exists" do
     before do
-      allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(true)
+      allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(true)
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
         double("Struct::ServiceConfigInfo",
           service_type: "share process",
@@ -250,7 +250,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     context "service exists" do
       before do
-        allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(true)
+        allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(true)
       end
 
       it "logs debug message" do
@@ -276,7 +276,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     context "service does not exist" do
       before do
-        allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(false)
+        allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(false)
         allow(Win32::Service).to receive(:new).with(anything).and_return(true)
       end
 
@@ -313,7 +313,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
   describe Chef::Provider::Service::Windows, "action_delete" do
     context "service exists" do
       before do
-        allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(true)
+        allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(true)
         allow(Win32::Service).to receive(:delete).with(chef_service_name).and_return(true)
       end
 
@@ -330,7 +330,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
 
     context "service does not exist" do
       before do
-        allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(false)
+        allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(false)
       end
 
       it "logs debug message" do
@@ -353,7 +353,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
   describe Chef::Provider::Service::Windows, "action_configure" do
     context "service exists" do
       before do
-        allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(true)
+        allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(true)
         allow(Win32::Service).to receive(:configure).with(anything).and_return(true)
       end
 
@@ -410,7 +410,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       let(:missing_service_warning_message) { "windows_service[#{chef_service_name}] does not exist. Maybe you need to prepend action :create" }
 
       before do
-        allow(Win32::Service).to receive(:exists?).with(chef_service_name).and_return(false)
+        allow(Win32::Service).to receive(:exist?).with(chef_service_name).and_return(false)
 
         # This prevents warnings being logged during unit tests which adds to
         # developer confusion when they aren't familiar with this specific test
@@ -563,7 +563,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
 
     it "does nothing if the service does not exist" do
-      allow(Win32::Service).to receive(:exists?).with(new_resource.service_name).and_return(false)
+      allow(Win32::Service).to receive(:exist?).with(new_resource.service_name).and_return(false)
       expect(Win32::Service).not_to receive(:start)
       provider.start_service
       expect(new_resource).not_to be_updated_by_last_action
@@ -703,7 +703,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
 
     it "does nothing if the service does not exist" do
-      allow(Win32::Service).to receive(:exists?).with(new_resource.service_name).and_return(false)
+      allow(Win32::Service).to receive(:exist?).with(new_resource.service_name).and_return(false)
       expect(Win32::Service).not_to receive(:stop).with(new_resource.service_name)
       provider.stop_service
       expect(new_resource).to_not be_updated_by_last_action
@@ -799,7 +799,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
 
     it "does nothing if the service does not exist" do
-      allow(Win32::Service).to receive(:exists?).with(new_resource.service_name).and_return(false)
+      allow(Win32::Service).to receive(:exist?).with(new_resource.service_name).and_return(false)
       expect(Win32::Service).not_to receive(:stop).with(new_resource.service_name)
       expect(Win32::Service).not_to receive(:start).with(new_resource.service_name)
       provider.restart_service
@@ -822,7 +822,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
 
     it "does nothing if the service does not exist" do
-      allow(Win32::Service).to receive(:exists?).with(new_resource.service_name).and_return(false)
+      allow(Win32::Service).to receive(:exist?).with(new_resource.service_name).and_return(false)
       expect(Win32::Service).not_to receive(:configure)
       provider.enable_service
       expect(new_resource).to_not be_updated_by_last_action
@@ -879,7 +879,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
     end
 
     it "does nothing if the service does not exist" do
-      allow(Win32::Service).to receive(:exists?).with(new_resource.service_name).and_return(false)
+      allow(Win32::Service).to receive(:exist?).with(new_resource.service_name).and_return(false)
       expect(Win32::Service).not_to receive(:configure)
       provider.disable_service
       expect(new_resource).to_not be_updated_by_last_action

@@ -197,7 +197,7 @@ describe Chef::Provider::Launchd do
     describe "with an :delete action" do
       describe "and the ld file is present" do
         before(:each) do
-          allow(File).to receive(:exists?).and_return(true)
+          allow(File).to receive(:exist?).and_return(true)
           allow(provider).to receive(
             :manage_service
           ).with(:disable).and_return(true)
@@ -218,7 +218,7 @@ describe Chef::Provider::Launchd do
 
       describe "and the ld file is not present" do
         before(:each) do
-          allow(File).to receive(:exists?).and_return(false)
+          allow(File).to receive(:exist?).and_return(false)
           allow(provider).to receive(
             :manage_plist
           ).with(:delete).and_return(true)

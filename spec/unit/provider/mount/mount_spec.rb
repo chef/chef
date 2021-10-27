@@ -34,8 +34,8 @@ describe Chef::Provider::Mount::Mount do
 
     @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
 
-    allow(::File).to receive(:exists?).with("/dev/sdz1").and_return true
-    allow(::File).to receive(:exists?).with("/tmp/foo").and_return true
+    allow(::File).to receive(:exist?).with("/dev/sdz1").and_return true
+    allow(::File).to receive(:exist?).with("/tmp/foo").and_return true
     allow(::File).to receive(:realpath).with("/dev/sdz1").and_return "/dev/sdz1"
     allow(::File).to receive(:realpath).with("/tmp/foo").and_return "/tmp/foo"
   end
@@ -83,12 +83,12 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should raise an error if the mount device does not exist" do
-      allow(::File).to receive(:exists?).with("/dev/sdz1").and_return false
+      allow(::File).to receive(:exist?).with("/dev/sdz1").and_return false
       expect { @provider.load_current_resource; @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should not call mountable? with load_current_resource - CHEF-1565" do
-      allow(::File).to receive(:exists?).with("/dev/sdz1").and_return false
+      allow(::File).to receive(:exist?).with("/dev/sdz1").and_return false
       expect(@provider).to receive(:mounted?).and_return(true)
       expect(@provider).to receive(:enabled?).and_return(true)
       expect(@provider).not_to receive(:mountable?)
@@ -100,12 +100,12 @@ describe Chef::Provider::Mount::Mount do
       @new_resource.device_type :uuid
       @new_resource.device "d21afe51-a0fe-4dc6-9152-ac733763ae0a"
       expect(@provider).to receive(:shell_out_compacted).with("/sbin/findfs", "UUID=d21afe51-a0fe-4dc6-9152-ac733763ae0a").and_return(status)
-      expect(::File).to receive(:exists?).with("").and_return(false)
+      expect(::File).to receive(:exist?).with("").and_return(false)
       expect { @provider.load_current_resource; @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
     it "should raise an error if the mount point does not exist" do
-      allow(::File).to receive(:exists?).with("/tmp/foo").and_return false
+      allow(::File).to receive(:exist?).with("/tmp/foo").and_return false
       expect { @provider.load_current_resource; @provider.mountable? }.to raise_error(Chef::Exceptions::Mount)
     end
 
@@ -521,8 +521,8 @@ describe Chef::Provider::Mount::Mount do
 
         @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
 
-        allow(::File).to receive(:exists?).with("cephserver:6789:/").and_return true
-        allow(::File).to receive(:exists?).with("/tmp/bar").and_return true
+        allow(::File).to receive(:exist?).with("cephserver:6789:/").and_return true
+        allow(::File).to receive(:exist?).with("/tmp/bar").and_return true
         allow(::File).to receive(:realpath).with("cephserver:6789:/").and_return "cephserver:6789:/"
         allow(::File).to receive(:realpath).with("/tmp/bar").and_return "/tmp/foo"
       end

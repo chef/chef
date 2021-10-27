@@ -65,8 +65,8 @@ describe Chef::Provider::Mount::Aix do
 
     @provider = Chef::Provider::Mount::Aix.new(@new_resource, @run_context)
 
-    allow(::File).to receive(:exists?).with("/dev/sdz1").and_return true
-    allow(::File).to receive(:exists?).with("/tmp/foo").and_return true
+    allow(::File).to receive(:exist?).with("/dev/sdz1").and_return true
+    allow(::File).to receive(:exist?).with("/tmp/foo").and_return true
   end
 
   def stub_mounted(provider, mounted_output)

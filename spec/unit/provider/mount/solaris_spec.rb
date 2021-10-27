@@ -97,7 +97,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
     allow(File).to receive(:exist?).and_call_original # Tempfile.open on ruby 1.8.7 calls File.exist?
     allow(File).to receive(:exist?).with(device).and_return(true)
     allow(File).to receive(:exist?).with(mountpoint).and_return(true)
-    expect(File).to_not receive(:exists?)
+    expect(File).to_not receive(:exist?)
   end
 
   describe "#define_resource_requirements" do
