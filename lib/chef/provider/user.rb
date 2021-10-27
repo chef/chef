@@ -82,6 +82,7 @@ class Chef
       end
 
       def load_shadow_options
+        shadow_info = Shadow::Passwd.getspnam(new_resource.username)
         unless shadow_info.nil?
           current_resource.inactive(shadow_info.sp_inact&.to_i)
 
