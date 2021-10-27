@@ -26,6 +26,16 @@ class Chef
         provides :linux_user
         provides :user, os: "linux"
 
+        property :expire_date, [ String, NilClass ],
+                 description: "(Linux) The date on which the user account will be disabled. The date is specified in the format YYYY-MM-DD.",
+                 introduced: "17.8",
+                 desired_state: false
+
+        property :inactive, [ String, Integer, NilClass ],
+                 description: "(Linux) The number of days after a password expires until the account is permanently disabled. A value of 0 disables the account as soon as the password has expired, and a value of -1 disables the feature.",
+                 introduced: "17.8",
+                 desired_state: false
+
       end
     end
   end

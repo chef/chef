@@ -23,6 +23,22 @@ class Chef
         provides :linux_user
         provides :user, os: "linux"
 
+        def load_current_resource
+          super
+          load_shadow_options
+        end
+
+        def compare_user
+          super
+          %i{expire_date inactive}.each do |user_attrib|
+            new_val = new_resource.send(user_attrib)
+            cur_val = current_resource.send(user_attrib)
+            if !new_val.nil? && new_val.to_s != cur_val.to_s
+              @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
+            end
+          end
+        end
+
         def create_user
           shell_out!("useradd", universal_options, useradd_options, new_resource.username)
         end

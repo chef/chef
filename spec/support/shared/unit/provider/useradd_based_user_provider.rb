@@ -36,8 +36,6 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     @new_resource.home "/home/adam"
     @new_resource.shell "/usr/bin/zsh"
     @new_resource.password "abracadabra"
-    @new_resource.expire_date "2090-12-31"
-    @new_resource.inactive 90
     @new_resource.system false
     @new_resource.manage_home false
     @new_resource.force false
@@ -158,9 +156,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command = [
         "useradd",
         "-c", "Adam Jacob",
-        "-e", "2090-12-31",
         "-g", "23",
-        "-f", "90"
       ]
       command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
       command.concat(
@@ -188,9 +184,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         command = [
           "useradd",
           "-c", "Adam Jacob",
-          "-e", "2090-12-31",
           "-g", "23",
-          "-f", "90"
         ]
         command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
         command.concat(
