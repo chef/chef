@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-EtcPwnamIsh = Struct.new(:name, :passwd, :uid, :gid, :gecos, :dir, :shell, :change, :uclass, :expire_date, :inactive)
+EtcPwnamIsh = Struct.new(:name, :passwd, :uid, :gid, :gecos, :dir, :shell, :change, :uclass, :expire)
 EtcGrnamIsh = Struct.new(:name, :passwd, :gid, :mem)
 
 describe Chef::Provider::User do
@@ -33,8 +33,6 @@ describe Chef::Provider::User do
     @new_resource.gid 1000
     @new_resource.home "/home/notarealuser"
     @new_resource.shell "/usr/bin/zsh"
-    @new_resource.expire_date "2090-12-31"
-    @new_resource.inactive "90"
 
     @current_resource = Chef::Resource::User.new("notarealuser")
     @current_resource.comment "Nota Realuser"
@@ -42,8 +40,6 @@ describe Chef::Provider::User do
     @current_resource.gid 1000
     @current_resource.home "/home/notarealuser"
     @current_resource.shell "/usr/bin/zsh"
-    @current_resource.expire_date "2090-12-31"
-    @current_resource.inactive 90
 
     @provider = Chef::Provider::User.new(@new_resource, @run_context)
     @provider.current_resource = @current_resource
@@ -72,8 +68,6 @@ describe Chef::Provider::User do
       #  :shell => "/usr/bin/zsh",
       #  :password => nil,
       #  :updated => nil,
-      #  :expire_date => nil,
-      #  :inactive => nil
       # )
       allow(Chef::Resource::User).to receive(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
@@ -84,8 +78,6 @@ describe Chef::Provider::User do
       @pw_user.dir = "/home/notarealuser"
       @pw_user.shell = "/usr/bin/zsh"
       @pw_user.passwd = "*"
-      @pw_user.expire_date = "2090-12-31"
-      @pw_user.inactive = 90
       allow(Etc).to receive(:getpwnam).and_return(@pw_user)
     end
 
@@ -205,8 +197,6 @@ describe Chef::Provider::User do
         "home" => ["/home/notarealuser", "/Users/notarealuser"],
         "shell" => ["/usr/bin/zsh", "/bin/bash"],
         "password" => %w{abcd 12345},
-        "expire_date" => "2090-12-31",
-        "inactive" => 90
       }
     end
 
@@ -218,7 +208,7 @@ describe Chef::Provider::User do
       end
     end
 
-    %w{uid gid inactive}.each do |property|
+    %w{uid gid}.each do |property|
       it "should return false if string #{property} matches fixnum" do
         @new_resource.send(property, "100")
         @current_resource.send(property, 100)
@@ -250,8 +240,6 @@ describe Chef::Provider::User do
       #   :shell => "/usr/bin/zsh",
       #   :password => nil,
       #   :updated => nil,
-      #   :expire_date => nil,
-      #   :inactive => nil
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource

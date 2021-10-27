@@ -20,6 +20,8 @@
 
 require "spec_helper"
 
+EtcPwnamIsh = Struct.new(:name, :passwd, :uid, :gid, :gecos, :dir, :shell, :change, :uclass, :expire_date, :inactive)
+
 describe Chef::Provider::User::Linux do
 
   subject(:provider) do
