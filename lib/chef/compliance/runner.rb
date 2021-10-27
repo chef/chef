@@ -107,10 +107,8 @@ class Chef
 
       def report_with_interval
         interval = node["audit"]["interval"]
-        interval_enabled = node["audit"]["interval"]["enabled"]
-        interval_time = node["audit"]["interval"]["time"]
-        if check_interval_settings(interval, interval_enabled, interval_time)
-          create_timestamp_file if interval_enabled
+        if check_interval_settings(interval)
+          create_timestamp_file if interval["enabled"]
           report
         else
           logger.info "Skipping Chef Infra Compliance Phase due to interval settings"
@@ -375,10 +373,7 @@ class Chef
       end
 
       def create_timestamp_file
-        timestamp = Time.now.utc
-        timestamp_file = File.new(report_timing_file, "w")
-        timestamp_file.puts(timestamp)
-        timestamp_file.close
+        FileUtils.touch report_timing_file
       end
 
       def report_timing_file
@@ -394,7 +389,9 @@ class Chef
         seconds_since_last_run > interval_seconds
       end
 
-      def check_interval_settings(interval, interval_enabled, interval_time)
+      def check_interval_settings(interval)
+        interval_enabled = interval["enabled"]
+        interval_time = interval["time"]
         # handle intervals
         interval_seconds = 0 # always run this by default, unless interval is defined
         if !interval.nil? && interval_enabled
