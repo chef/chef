@@ -438,7 +438,7 @@ class Chef
         def export_cert(cert_obj, output_path:, store_name:, store_location:, pfx_password:)
           # Delete the cert if it exists. This is non-destructive in that it only removes the file and not the entire path.
           # We want to ensure we're not randomly loading an old stinky cert.
-          if ::File.exists?(output_path)
+          if ::File.exist?(output_path)
             ::File.delete(output_path)
           end
 

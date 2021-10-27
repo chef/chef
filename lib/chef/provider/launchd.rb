@@ -52,7 +52,7 @@ class Chef
       end
 
       action :delete, description: "Delete a launchd property list. This will unload a daemon or agent, if loaded." do
-        if ::File.exists?(path)
+        if ::File.exist?(path)
           manage_service(:disable)
         end
         manage_plist(:delete)

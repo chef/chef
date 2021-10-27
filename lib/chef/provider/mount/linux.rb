@@ -33,7 +33,7 @@ class Chef
         def mounted?
           mounted = false
 
-          real_mount_point = if ::File.exists? @new_resource.mount_point
+          real_mount_point = if ::File.exist? @new_resource.mount_point
                                ::File.realpath(@new_resource.mount_point)
                              else
                                @new_resource.mount_point
