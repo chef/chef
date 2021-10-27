@@ -44,7 +44,7 @@ namespace :spellcheck do
     chef_dictionary = "chef_dictionary.txt"
 
     unless File.readable?(chef_dictionary)
-      abort "Dictionary file '#{config_file}' not found, skipping spellcheck"
+      abort "Dictionary file '#{chef_dictionary}' not found, skipping spellcheck"
     end
 
     config_file = "cspell.json"
