@@ -71,7 +71,7 @@ class Chef
 
         logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
-        report
+        report_with_interval
       end
 
       def run_failed(_exception, _run_status)
@@ -82,7 +82,7 @@ class Chef
 
         logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
-        report
+        report_with_interval
       end
 
       ### Below code adapted from audit cookbook's files/default/handler/audit_report.rb
@@ -92,7 +92,6 @@ class Chef
         fail_if_not_present
         inspec_gem_source
         inspec_version
-        interval
         owner
         raise_if_unreachable
       }.freeze
@@ -103,6 +102,18 @@ class Chef
         if deprecated_config_values.any?
           values = deprecated_config_values.sort.map { |v| "'#{v}'" }.join(", ")
           logger.warn "audit cookbook config values #{values} are not supported in #{ChefUtils::Dist::Infra::PRODUCT}'s Compliance Phase."
+        end
+      end
+
+      def report_with_interval
+        interval = node["audit"]["interval"]
+        interval_enabled = node["audit"]["interval"]["enabled"]
+        interval_time = node["audit"]["interval"]["time"]
+        if check_interval_settings(interval, interval_enabled, interval_time)
+          create_timestamp_file if interval_enabled
+          report
+        else
+          logger.info "Skipping Chef Infra Compliance Phase due to interval settings"
         end
       end
 
@@ -361,6 +372,37 @@ class Chef
 
       def requested_reporters
         (Array(node["audit"]["reporter"]) + ["cli"]).uniq
+      end
+
+      def create_timestamp_file
+        timestamp = Time.now.utc
+        timestamp_file = File.new(report_timing_file, "w")
+        timestamp_file.puts(timestamp)
+        timestamp_file.close
+      end
+
+      def report_timing_file
+        # Will create and return the complete folder path for the chef cache location and the passed in value
+        ::File.join(Chef::FileCache.create_cache_path("compliance"), "report_timing.json")
+      end
+
+      def profile_overdue_to_run?(interval_seconds)
+        # Calculate when a report was last created so we delay the next report if necessary
+        return true unless ::File.exist?(report_timing_file)
+
+        seconds_since_last_run = Time.now - ::File.mtime(report_timing_file)
+        seconds_since_last_run > interval_seconds
+      end
+
+      def check_interval_settings(interval, interval_enabled, interval_time)
+        # handle intervals
+        interval_seconds = 0 # always run this by default, unless interval is defined
+        if !interval.nil? && interval_enabled
+          interval_seconds = interval_time * 60 # seconds in interval
+          Chef::Log.debug "Running Chef Infra Compliance Phase every #{interval_seconds} seconds"
+        end
+        # returns true if profile is overdue to run
+        profile_overdue_to_run?(interval_seconds)
       end
     end
   end
