@@ -57,7 +57,7 @@ Test Kitchen is configured in the `kitchen.yml` file, which resides in this dire
 
 The provisioner can be configured to pull client source code from a GitHub repository using any valid Git reference. You are encouraged to modify any of these settings, but please return them to their original values before submitting a pull request for review (unless, of course, your changes are enhancements to the default provisioner settings).
 
-By default, the provisioner is configured to pull your most recent commit to `chef/chef`. You can change this by modifying the `github` and `branch` provisioner options:
+By default, the provisioner is configured to pull your most recent commit to the `GITHUB_REPOSITORY` environment variable (if executed via Github Actions), otherwise defaults to `chef/chef`. You can change this by modifying the `github` and `branch` provisioner options:
 
 - `github`: Set this to `"<your_username>/<your_chef_repo>"`. The default is `"chef/chef"`.
 - `branch`: This can be any valid git reference (e.g., branch name, tag, or commit SHA). If omitted, it defaults to `main`.
