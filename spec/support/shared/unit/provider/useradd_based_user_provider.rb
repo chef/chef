@@ -153,7 +153,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
     it "runs useradd with the computed command options" do
       command = ["useradd",
                   "-c", "Adam Jacob",
-                  "-g", "23", ]
+                  "-g", "23" ]
       command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
       command.concat([ "-s", "/usr/bin/zsh",
                        "-u", "1000",
