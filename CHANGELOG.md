@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.24 -->
-## [v17.7.24](https://github.com/chef/chef/tree/v17.7.24) (2021-10-26)
+<!-- latest_release 17.7.25 -->
+## [v17.7.25](https://github.com/chef/chef/tree/v17.7.25) (2021-10-27)
 
 #### Merged Pull Requests
-- Add support for `sensitive` in `chef_client_trusted_certificate` [#12213](https://github.com/chef/chef/pull/12213) ([jakauppila](https://github.com/jakauppila))
+- Enable tests on fork by updating repository reference [#12215](https://github.com/chef/chef/pull/12215) ([jakauppila](https://github.com/jakauppila))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enable tests on fork by updating repository reference [#12215](https://github.com/chef/chef/pull/12215) ([jakauppila](https://github.com/jakauppila)) <!-- 17.7.25 -->
 - Update habitat install script to use main branch [#12210](https://github.com/chef/chef/pull/12210) ([tas50](https://github.com/tas50)) <!-- 17.7.23 -->
 - Add support for `sensitive` in `chef_client_trusted_certificate` [#12213](https://github.com/chef/chef/pull/12213) ([jakauppila](https://github.com/jakauppila)) <!-- 17.7.24 -->
 <!-- release_rollup -->
