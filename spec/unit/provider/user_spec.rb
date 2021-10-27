@@ -67,7 +67,7 @@ describe Chef::Provider::User do
       #  :home => "/home/notarealuser",
       #  :shell => "/usr/bin/zsh",
       #  :password => nil,
-      #  :updated => nil,
+      #  :updated => nil
       # )
       allow(Chef::Resource::User).to receive(:new).and_return(@current_resource)
       @pw_user = EtcPwnamIsh.new
@@ -114,7 +114,7 @@ describe Chef::Provider::User do
       gid: :gid,
       comment: :gecos,
       home: :dir,
-      shell: :shell
+      shell: :shell,
     }
     user_attrib_map.each do |user_attrib, getpwnam_attrib|
       it "should set the current resources #{user_attrib} based on getpwnam #{getpwnam_attrib}" do
@@ -239,7 +239,7 @@ describe Chef::Provider::User do
       #   :home => "/home/notarealuser",
       #   :shell => "/usr/bin/zsh",
       #   :password => nil,
-      #   :updated => nil,
+      #   :updated => nil
       # )
       # @provider = Chef::Provider::User.new(@node, @new_resource)
       # @provider.current_resource = @current_resource
