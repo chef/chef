@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: c2d40814849a61868df612ca9964410390634c94
+  revision: 2f92bd6c5a23845acc9a0991815a232c842c8ff8
   branch: main
   specs:
-    chefstyle (2.1.1)
-      rubocop (= 1.22.2)
+    chefstyle (2.1.2)
+      rubocop (= 1.22.3)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 4b7264721a79c4372f42e164487deaa931ccb797
+  revision: 3ca514fead560d35e71c8b7a494697d00bf388be
   branch: main
   specs:
-    ohai (17.7.5)
+    ohai (17.7.8)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -143,7 +143,7 @@ GEM
     ast (2.4.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.520.1)
-    aws-sdk-core (3.121.4)
+    aws-sdk-core (3.121.3)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -225,7 +225,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.46.13)
+    inspec-core (4.49.0)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -248,12 +248,12 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.46.13)
-      inspec-core (= 4.46.13)
+    inspec-core-bin (4.49.0)
+      inspec-core (= 4.49.0)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
-    json (2.6.0)
+    json (2.6.1)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -329,7 +329,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.22.2)
+    rubocop (1.22.3)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
