@@ -3,7 +3,7 @@ require "spec_helper"
 describe Chef::Resource::User, "initialize" do
   let(:resource) { Chef::Resource::User::LinuxUser.new("notarealuser") }
 
-  describe 'inactive attribute' do
+  describe "inactive attribute" do
     it "allows a string" do
       resource.inactive "100"
       expect(resource.inactive).to eql("100")
@@ -19,7 +19,7 @@ describe Chef::Resource::User, "initialize" do
     end
   end
 
-  describe 'expire_date attribute' do
+  describe "expire_date attribute" do
     it "allows a string" do
       resource.expire_date "100"
       expect(resource.expire_date).to eql("100")

@@ -68,7 +68,7 @@ class Chef
         def universal_options
           opts = []
           opts << "-c" << new_resource.comment if should_set?(:comment)
-          opts << "-e" << new_resource.expire_date if should_set?(:expire_date)
+          opts << "-e" << new_resource.expire_date #if should_set?(:expire_date)
           opts << "-g" << new_resource.gid if should_set?(:gid)
           opts << "-f" << new_resource.inactive if should_set?(:inactive)
           opts << "-p" << new_resource.password if should_set?(:password)
