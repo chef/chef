@@ -66,15 +66,13 @@ class Chef
           end
           current_resource.comment(user_info.gecos)
 
-          if new_resource.password && current_resource.password == "x"
-            begin
-              require "shadow"
-            rescue LoadError
-              @shadow_lib_ok = false
-            else
-              shadow_info = Shadow::Passwd.getspnam(new_resource.username)
-              current_resource.password(shadow_info.sp_pwdp)
-            end
+          begin
+            require "shadow"
+          rescue LoadError
+            @shadow_lib_ok = false
+          else
+            @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+            current_resource.password(@shadow_info.sp_pwdp) if new_resource.password && current_resource.password == "x"
           end
 
           convert_group_name if new_resource.gid
@@ -84,17 +82,15 @@ class Chef
       end
 
       def load_shadow_options
-        require "shadow"
-
-        shadow_info = Shadow::Passwd.getspnam(new_resource.username)
-        unless shadow_info.nil?
-          current_resource.inactive(shadow_info.sp_inact&.to_i)
+        @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+        unless @shadow_info.nil?
+          current_resource.inactive(@shadow_info.sp_inact&.to_i)
           # sp_expire gives time since epoch in days till expiration. Need to convert that
           # to time in seconds since epoch and output date format for comparison
-          expire_date = if shadow_info.sp_expire.nil?
-                          shadow_info.sp_expire
+          expire_date = if @shadow_info.sp_expire.nil?
+                          @shadow_info.sp_expire
                         else
-                          Time.at(shadow_info.sp_expire * 60 * 60 * 24).strftime("%Y-%m-%d")
+                          Time.at(@shadow_info.sp_expire * 60 * 60 * 24).strftime("%Y-%m-%d")
                         end
           current_resource.expire_date(expire_date)
         end

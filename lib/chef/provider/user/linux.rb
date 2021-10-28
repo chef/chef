@@ -68,9 +68,9 @@ class Chef
         def universal_options
           opts = []
           opts << "-c" << new_resource.comment if should_set?(:comment)
-          opts << "-e" << new_resource.expire_date # if should_set?(:expire_date)
+          opts << "-e" << new_resource.expire_date if prop_is_set?(:expire_date)
           opts << "-g" << new_resource.gid if should_set?(:gid)
-          opts << "-f" << new_resource.inactive # if should_set?(:inactive)
+          opts << "-f" << new_resource.inactive if prop_is_set?(:inactive)
           opts << "-p" << new_resource.password if should_set?(:password)
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
@@ -133,6 +133,12 @@ class Chef
 
           # FIXME: should probably go on the current_resource
           @locked
+        end
+
+        def prop_is_set?(prop)
+          v = new_resource.send(prop.to_sym)
+
+          !v.nil? && v != ""
         end
       end
     end
