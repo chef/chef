@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.27 -->
-## [v17.7.27](https://github.com/chef/chef/tree/v17.7.27) (2021-10-28)
+<!-- latest_release 17.7.28 -->
+## [v17.7.28](https://github.com/chef/chef/tree/v17.7.28) (2021-10-28)
 
 #### Merged Pull Requests
-- Fix undefined method `to_cf_host&#39; for Chef::Resource::MacosUserDefaults error [#12219](https://github.com/chef/chef/pull/12219) ([rishichawda](https://github.com/rishichawda))
+- Bump chef/ohai to a2e98b656aee4f139b346ce1c8a91ed2784b74d3 [#12230](https://github.com/chef/chef/pull/12230) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to a2e98b656aee4f139b346ce1c8a91ed2784b74d3 [#12230](https://github.com/chef/chef/pull/12230) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.28 -->
 - Fix undefined method `to_cf_host&#39; for Chef::Resource::MacosUserDefaults error [#12219](https://github.com/chef/chef/pull/12219) ([rishichawda](https://github.com/rishichawda)) <!-- 17.7.27 -->
 - replace wget with curl in &#39;rake spellcheck&#39; [#12211](https://github.com/chef/chef/pull/12211) ([rpunt](https://github.com/rpunt)) <!-- 17.7.26 -->
 - Enable tests on fork by updating repository reference [#12215](https://github.com/chef/chef/pull/12215) ([jakauppila](https://github.com/jakauppila)) <!-- 17.7.25 -->
