@@ -16,7 +16,7 @@
 #
 require "spec_helper"
 
-describe Chef::Resource::MacosUserDefaults, :macos_only, requires_root: true do
+describe Chef::Resource::MacosUserDefaults, :macos_only do
   def create_resource
     node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
