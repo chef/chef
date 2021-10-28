@@ -110,7 +110,7 @@ class Chef
           create_timestamp_file if interval_enabled
           report
         else
-          logger.info "Skipping Chef Infra Compliance Phase due to interval settings (next run in #{interval_seconds_left} secs)"
+          logger.info "Skipping Chef Infra Compliance Phase due to interval settings (next run in #{interval_seconds_left / 60.0} mins)"
         end
       end
 
