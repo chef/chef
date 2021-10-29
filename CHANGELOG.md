@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.16.21 -->
-## [v16.16.21](https://github.com/chef/chef/tree/v16.16.21) (2021-10-29)
+<!-- latest_release 16.17.0 -->
+## [v16.17.0](https://github.com/chef/chef/tree/v16.17.0) (2021-10-29)
 
 #### Merged Pull Requests
-- Add support for `sensitive` in `chef_client_trusted_certificate` [#12225](https://github.com/chef/chef/pull/12225) ([tas50](https://github.com/tas50))
+- Fix reporting/data_collector for @recipe_files [#12223](https://github.com/chef/chef/pull/12223) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.16.13 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix reporting/data_collector for @recipe_files [#12223](https://github.com/chef/chef/pull/12223) ([tas50](https://github.com/tas50)) <!-- 16.17.0 -->
 - Add support for `sensitive` in `chef_client_trusted_certificate` [#12225](https://github.com/chef/chef/pull/12225) ([tas50](https://github.com/tas50)) <!-- 16.16.21 -->
 - Bump inspec-core-bin to 4.49.0 [#12221](https://github.com/chef/chef/pull/12221) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.16.20 -->
 - Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12196](https://github.com/chef/chef/pull/12196) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.19 -->
