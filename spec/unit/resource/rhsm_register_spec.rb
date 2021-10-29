@@ -158,6 +158,48 @@ describe Chef::Resource::RhsmRegister do
         end
       end
 
+      context "when a server_url is provided" do
+        it "returns a command containing the serverurl" do
+          allow(resource).to receive(:server_url).and_return("https://fqdn.example")
+          expect(provider.register_command).to match("--serverurl=https://fqdn.example")
+        end
+      end
+
+      context "when a base_url is provided" do
+        it "returns a command containing the baseurl" do
+          allow(resource).to receive(:base_url).and_return("https://fqdn.example")
+          expect(provider.register_command).to match("--baseurl=https://fqdn.example")
+        end
+      end
+
+      context "when a service_level is provided" do
+        it "returns a command containing the service level" do
+          allow(resource).to receive(:service_level).and_return("None")
+          allow(resource).to receive(:auto_attach).and_return(true)
+          expect(provider.register_command).to match("--servicelevel=None")
+        end
+
+        it "raises an exception if auto_attach is not set" do
+          allow(resource).to receive(:service_level).and_return("None")
+          allow(resource).to receive(:auto_attach).and_return(nil)
+          expect { provider.register_command }.to raise_error(RuntimeError)
+        end
+      end
+
+      context "when a release is provided" do
+        it "returns a command containing the release" do
+          allow(resource).to receive(:release).and_return("8.4")
+          allow(resource).to receive(:auto_attach).and_return(true)
+          expect(provider.register_command).to match("--release=8.4")
+        end
+
+        it "raises an exception if auto_attach is not set" do
+          allow(resource).to receive(:release).and_return("8.4")
+          allow(resource).to receive(:auto_attach).and_return(nil)
+          expect { provider.register_command }.to raise_error(RuntimeError)
+        end
+      end
+
       context "when a system_name is not provided" do
         it "returns a command containing the system name" do
           allow(resource).to receive(:system_name).and_return(nil)

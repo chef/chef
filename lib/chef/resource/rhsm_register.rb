@@ -64,7 +64,7 @@ class Chef
       property :auto_attach,
         [TrueClass, FalseClass],
         description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
-        default: false
+        introduced: "16.5"
 
       property :install_katello_agent, [TrueClass, FalseClass],
         description: "If true, the 'katello-agent' RPM will be installed.",
@@ -78,6 +78,23 @@ class Chef
         description: "If true, #{ChefUtils::Dist::Infra::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
         default: false, desired_state: false,
         introduced: "15.9"
+
+      property :server_url, String,
+        description: "The hostname of the subscription service to use. The default is for Customer Portal Subscription Management, subscription.rhn.redhat.com. If this option is not used, the system is registered with Customer Portal Subscription Management.",
+          introduced: "17.8"
+
+      property :base_url, String,
+        description: "The hostname of the content delivery server to use to receive updates. Both Customer Portal Subscription Management and Subscription Asset Manager use Red Hat's hosted content delivery services, with the URL https://cdn.redhat.com. Since Satellite 6 hosts its own content, the URL must be used for systems registered with Satellite 6.",
+        introduced: "17.8"
+
+      property :service_level, String,
+        description: "Sets the service level to use for subscriptions on the registering machine. This is only used with the auto_attach option.",
+        introduced: "17.8"
+
+      property :release,
+        [Integer, Float, String],
+        description: "Sets the operating system minor release to use for subscriptions for the system. Products and updates are limited to the specified minor release version. This is used only used with the auto_attach option.",
+        introduced: "17.8"
 
       action :register, description: "Register the node with RHSM." do
         package "subscription-manager"
@@ -170,6 +187,8 @@ class Chef
               command << new_resource.activation_key.map { |key| "--activationkey=#{Shellwords.shellescape(key)}" }
               command << "--org=#{Shellwords.shellescape(new_resource.organization)}"
               command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
+              command << "--serverurl=#{Shellwords.shellescape(new_resource.server_url)}" if new_resource.server_url
+              command << "--baseurl=#{Shellwords.shellescape(new_resource.base_url)}" if new_resource.base_url
               command << "--force" if new_resource.force
 
               return command.join(" ")
@@ -179,11 +198,23 @@ class Chef
           if new_resource.username && new_resource.password
             raise "Unable to register - you must specify environment when using username/password" if new_resource.environment.nil? && using_satellite_host?
 
+            if new_resource.service_level
+              raise "Unable to register - 'auto_attach' must be enabled when using property `service_level`." unless new_resource.auto_attach
+            end
+
+            if new_resource.release
+              raise "Unable to register - `auto_attach` must be enabled when using property `release`." unless new_resource.auto_attach
+            end
+
             command << "--username=#{Shellwords.shellescape(new_resource.username)}"
             command << "--password=#{Shellwords.shellescape(new_resource.password)}"
             command << "--environment=#{Shellwords.shellescape(new_resource.environment)}" if using_satellite_host?
             command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
+            command << "--serverurl=#{Shellwords.shellescape(new_resource.server_url)}" if new_resource.server_url
+            command << "--baseurl=#{Shellwords.shellescape(new_resource.base_url)}" if new_resource.base_url
             command << "--auto-attach" if new_resource.auto_attach
+            command << "--servicelevel=#{Shellwords.shellescape(new_resource.service_level)}" if new_resource.service_level
+            command << "--release=#{Shellwords.shellescape(new_resource.release)}" if new_resource.release
             command << "--force" if new_resource.force
 
             return command.join(" ")
