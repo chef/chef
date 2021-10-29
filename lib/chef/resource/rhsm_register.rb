@@ -64,7 +64,7 @@ class Chef
       property :auto_attach,
         [TrueClass, FalseClass],
         description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
-        introduced: "16.5"
+        default: false
 
       property :install_katello_agent, [TrueClass, FalseClass],
         description: "If true, the 'katello-agent' RPM will be installed.",
