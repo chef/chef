@@ -75,6 +75,7 @@ class Chef
         file cert_path do
           content new_resource.certificate
           mode "0640"
+          sensitive new_resource.sensitive
         end
       end
 
