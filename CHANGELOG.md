@@ -1,27 +1,25 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.29 -->
-## [v17.7.29](https://github.com/chef/chef/tree/v17.7.29) (2021-10-29)
-
-#### Merged Pull Requests
-- Fix Net::HTTPServerException deprecations [#12231](https://github.com/chef/chef/pull/12231) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.7.22 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix Net::HTTPServerException deprecations [#12231](https://github.com/chef/chef/pull/12231) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.7.29 -->
-- Bump chef/ohai to a2e98b656aee4f139b346ce1c8a91ed2784b74d3 [#12230](https://github.com/chef/chef/pull/12230) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.28 -->
-- Fix undefined method `to_cf_host&#39; for Chef::Resource::MacosUserDefaults error [#12219](https://github.com/chef/chef/pull/12219) ([rishichawda](https://github.com/rishichawda)) <!-- 17.7.27 -->
-- replace wget with curl in &#39;rake spellcheck&#39; [#12211](https://github.com/chef/chef/pull/12211) ([rpunt](https://github.com/rpunt)) <!-- 17.7.26 -->
-- Enable tests on fork by updating repository reference [#12215](https://github.com/chef/chef/pull/12215) ([jakauppila](https://github.com/jakauppila)) <!-- 17.7.25 -->
-- Update habitat install script to use main branch [#12210](https://github.com/chef/chef/pull/12210) ([tas50](https://github.com/tas50)) <!-- 17.7.23 -->
-- Add support for `sensitive` in `chef_client_trusted_certificate` [#12213](https://github.com/chef/chef/pull/12213) ([jakauppila](https://github.com/jakauppila)) <!-- 17.7.24 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.7.29](https://github.com/chef/chef/tree/v17.7.29) (2021-10-29)
+
+#### Merged Pull Requests
+- Add support for `sensitive` in `chef_client_trusted_certificate` [#12213](https://github.com/chef/chef/pull/12213) ([jakauppila](https://github.com/jakauppila))
+- Update habitat install script to use main branch [#12210](https://github.com/chef/chef/pull/12210) ([tas50](https://github.com/tas50))
+- Enable tests on fork by updating repository reference [#12215](https://github.com/chef/chef/pull/12215) ([jakauppila](https://github.com/jakauppila))
+- replace wget with curl in &#39;rake spellcheck&#39; [#12211](https://github.com/chef/chef/pull/12211) ([rpunt](https://github.com/rpunt))
+- Fix undefined method `to_cf_host&#39; for Chef::Resource::MacosUserDefaults error [#12219](https://github.com/chef/chef/pull/12219) ([rishichawda](https://github.com/rishichawda))
+- Bump chef/ohai to a2e98b656aee4f139b346ce1c8a91ed2784b74d3 [#12230](https://github.com/chef/chef/pull/12230) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix Net::HTTPServerException deprecations [#12231](https://github.com/chef/chef/pull/12231) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v17.7.22](https://github.com/chef/chef/tree/v17.7.22) (2021-10-26)
 
 #### Merged Pull Requests
@@ -54,7 +52,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Add &#39;enable&#39; action to &#39;kernel_module&#39; resource to reverse &#39;disable&#39; action. [#12105](https://github.com/chef/chef/pull/12105) ([qubitrenegade](https://github.com/qubitrenegade))
 - Fix reporting/data_collector for @recipe_files [#12206](https://github.com/chef/chef/pull/12206) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump chef/chefstyle to b5c712d298e240493020b8d5977f03172cc65e17 [#12204](https://github.com/chef/chef/pull/12204) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-<!-- latest_stable_release -->
 
 ## [v17.6.18](https://github.com/chef/chef/tree/v17.6.18) (2021-10-01)
 
