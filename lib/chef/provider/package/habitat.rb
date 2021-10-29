@@ -108,7 +108,7 @@ class Chef
               headers["Authorization"] = "Bearer #{new_resource.auth_token}" if new_resource.auth_token
 
               Chef::JSONCompat.parse(http.get(url, headers))
-            rescue Net::HTTPServerException
+            rescue Net::HTTPClientException
               nil
             end
         end
