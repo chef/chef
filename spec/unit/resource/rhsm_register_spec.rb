@@ -159,14 +159,14 @@ describe Chef::Resource::RhsmRegister do
       end
 
       context "when a server_url is provided" do
-        it "returns a command containing the serverurl" do
+        it "returns a command containing the server url" do
           allow(resource).to receive(:server_url).and_return("https://fqdn.example")
           expect(provider.register_command).to match("--serverurl=https://fqdn.example")
         end
       end
 
       context "when a base_url is provided" do
-        it "returns a command containing the baseurl" do
+        it "returns a command containing the base url" do
           allow(resource).to receive(:base_url).and_return("https://fqdn.example")
           expect(provider.register_command).to match("--baseurl=https://fqdn.example")
         end
