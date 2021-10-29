@@ -348,6 +348,11 @@ describe Chef::Resource do
     it "should recognize dynamically defined resources" do
       expect(resource.defined_at).to eq("dynamically defined")
     end
+
+    it "should return nil for the cookbook_version when the cookbook_name is @recipe_files" do
+      resource.cookbook_name = "@recipe_files"
+      expect(resource.cookbook_version).to be nil
+    end
   end
 
   describe "to_s" do

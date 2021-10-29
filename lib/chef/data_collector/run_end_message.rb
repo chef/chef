@@ -128,7 +128,7 @@ class Chef
 
           if new_resource.cookbook_name
             hash["cookbook_name"]    = new_resource.cookbook_name
-            hash["cookbook_version"] = new_resource.cookbook_version.version
+            hash["cookbook_version"] = new_resource.cookbook_version&.version
             hash["recipe_name"]      = new_resource.recipe_name
           end
 

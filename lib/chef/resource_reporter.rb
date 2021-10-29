@@ -41,7 +41,7 @@ class Chef
       as_hash["result"] = action_record.action.to_s
       if new_resource.cookbook_name
         as_hash["cookbook_name"] = new_resource.cookbook_name
-        as_hash["cookbook_version"] = new_resource.cookbook_version.version
+        as_hash["cookbook_version"] = new_resource.cookbook_version&.version
       end
 
       as_hash
