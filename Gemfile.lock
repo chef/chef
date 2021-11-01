@@ -184,7 +184,7 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
-    fauxhai-ng (9.0.0)
+    fauxhai-ng (9.1.0)
       net-ssh
     ffi (1.15.4)
     ffi (1.15.4-x64-mingw32)
