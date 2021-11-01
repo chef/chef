@@ -17,6 +17,7 @@
 
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "corefoundation" if RUBY_PLATFORM.match?(/darwin/)
 autoload :Plist, "plist"
 
 class Chef
@@ -135,31 +136,27 @@ class Chef
         CF::Preferences.get(new_resource.key, new_resource.domain, new_resource.user, new_resource.host)
       end
 
-      action_class do
-        require "corefoundation" if RUBY_PLATFORM.match?(/darwin/)
-
-        # Return valid hostname based on the input from host property
-        def to_cf_host(value)
-          case value
-          when :all
-            CF::Preferences::ALL_HOSTS
-          when :current
-            CF::Preferences::CURRENT_HOST
-          else
-            value
-          end
+      # Return valid hostname based on the input from host property
+      def to_cf_host(value)
+        case value
+        when :all
+          CF::Preferences::ALL_HOSTS
+        when :current
+          CF::Preferences::CURRENT_HOST
+        else
+          value
         end
+      end
 
-        # Return valid username based on the input from user property
-        def to_cf_user(value)
-          case value
-          when :all
-            CF::Preferences::ALL_USERS
-          when :current
-            CF::Preferences::CURRENT_USER
-          else
-            value
-          end
+      # Return valid username based on the input from user property
+      def to_cf_user(value)
+        case value
+        when :all
+          CF::Preferences::ALL_USERS
+        when :current
+          CF::Preferences::CURRENT_USER
+        else
+          value
         end
       end
     end
