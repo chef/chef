@@ -106,7 +106,7 @@ class Chef
       # @param interpreter [Symbol] the interpreter type, `:powershell` or `:pwsh`
       # @param timeout [Integer, nil] timeout in seconds.
       # @return [Chef::PowerShell] output
-      def powershell_exec(script, interpreter = :powershell, timeout: nil)
+      def powershell_exec(script, interpreter = :powershell, timeout: -1)
         case interpreter
         when :powershell
           Chef::PowerShell.new(script, timeout: timeout)
