@@ -74,7 +74,7 @@ describe "chef-client" do
       shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -K #{@path} ", cwd: chef_dir)
     end
 
-    it "should find validation.pem successfully in /etc/chef/ directory" do
+    it "should find validation.pem successfully in default directory" do
       shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" ", cwd: chef_dir)
     end
   end
