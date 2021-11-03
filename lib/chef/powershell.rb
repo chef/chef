@@ -35,7 +35,7 @@ class Chef
     # @param script [String] script to run
     # @param timeout [Integer, nil] timeout in seconds.
     # @return [Object] output
-    def initialize(script, timeout: nil)
+    def initialize(script, timeout: -1)
       # This Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
       # Every merge into that repo triggers a Habitat build and promotion. Running
       # the rake :update_chef_exec_dll task in this (chef/chef) repo will pull down
@@ -67,10 +67,10 @@ class Chef
 
     private
 
-    def exec(script, timeout: nil)
+    def exec(script, timeout: -1)
       FFI.ffi_lib @dll
       FFI.attach_function :execute_powershell, :ExecuteScript, %i{string int}, :pointer
-      timeout = timeout&.nonzero? ? timeout : -1
+      timeout = -1 if timeout == 0 || timeout.nil?
       execution = FFI.execute_powershell(script, timeout).read_utf16string
       hashed_outcome = Chef::JSONCompat.parse(execution)
       @result = Chef::JSONCompat.parse(hashed_outcome["result"])
