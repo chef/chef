@@ -238,9 +238,6 @@ class Chef
       property :time_out, Integer,
         description: "The amount of time (in seconds) a job may be idle before it times out. If no value is specified, the default timeout value for launchd will be used."
 
-      property :umask, Integer,
-        description: "A decimal value to pass to `umask` before running a job."
-
       property :username, String,
         description: "When launchd is run as the root user, the user to run the job as."
 
