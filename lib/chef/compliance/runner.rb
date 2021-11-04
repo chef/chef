@@ -118,7 +118,7 @@ class Chef
           return
         end
 
-        Array(node["audit"]["reporter"]).each do |reporter_type|
+        requested_reporters.each do |reporter_type|
           logger.info "Reporting to #{reporter_type}"
           @reporters[reporter_type].send_report(report)
         end
@@ -325,7 +325,7 @@ class Chef
         @reporters = {}
         # Note that the docs don't say you can use an array, but our implementation
         # supports it.
-        Array(node["audit"]["reporter"]).each do |type|
+        requested_reporters.each do |type|
           unless SUPPORTED_REPORTERS.include? type
             raise "CMPL003: '#{type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(", ")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#reporters"
           end
@@ -357,6 +357,10 @@ class Chef
 
       def safe_input_collection
         run_context&.input_collection
+      end
+
+      def requested_reporters
+        Array(node["audit"]["reporter"]) + ["cli"]
       end
     end
   end
