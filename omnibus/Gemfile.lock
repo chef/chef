@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 0f8338aa01b03ea494923fe397da27018963da7a
+  revision: 485b5352c210a7fb1b3d84f9b65fa3e89a433906
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -33,17 +33,17 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.517.0)
-    aws-sdk-core (3.121.3)
+    aws-partitions (1.525.0)
+    aws-sdk-core (3.122.0)
       aws-eventstream (~> 1, >= 1.0.2)
-      aws-partitions (~> 1, >= 1.239.0)
+      aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.50.0)
-      aws-sdk-core (~> 3, >= 3.121.2)
+    aws-sdk-kms (1.51.0)
+      aws-sdk-core (~> 3, >= 3.122.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.104.0)
-      aws-sdk-core (~> 3, >= 3.121.2)
+    aws-sdk-s3 (1.105.0)
+      aws-sdk-core (~> 3, >= 3.122.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
     aws-sigv4 (1.4.0)
@@ -239,7 +239,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
-    json (2.6.0)
+    json (2.6.1)
     kitchen-vagrant (1.10.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
@@ -378,7 +378,7 @@ GEM
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
     thor (1.1.0)
-    toml-rb (2.0.1)
+    toml-rb (2.1.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
     train-core (3.8.1)
