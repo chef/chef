@@ -18,6 +18,7 @@
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "corefoundation" if RUBY_PLATFORM.match?(/darwin/)
+require "ffi" unless defined?(FFI)
 autoload :Plist, "plist"
 
 class Chef
@@ -81,8 +82,7 @@ class Chef
       property :host, [String, Symbol],
         description: "Set either :current, :all or a hostname to set the user default at the host level.",
         desired_state: false,
-        introduced: "16.3",
-        coerce: proc { |value| to_cf_host(value) }
+        introduced: "16.3"
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
         description: "The value of the key. Note: With the `type` property set to `bool`, `String` forms of Boolean true/false values that Apple accepts in the defaults command will be coerced: 0/1, 'TRUE'/'FALSE,' 'true'/false', 'YES'/'NO', or 'yes'/'no'.",
@@ -96,8 +96,7 @@ class Chef
 
       property :user, [String, Symbol],
         description: "The system user that the default will be applied to. Set :current for current user, :all for all users or pass a valid username",
-        desired_state: false,
-        coerce: proc { |value| to_cf_user(value) }
+        desired_state: false
 
       property :sudo, [TrueClass, FalseClass],
         description: "Set to true if the setting you wish to modify requires privileged access. This requires passwordless sudo for the `/usr/bin/defaults` command to be setup for the user running #{ChefUtils::Dist::Infra::PRODUCT}.",
@@ -118,7 +117,7 @@ class Chef
       action :write, description: "Write the value to the specified domain/key." do
         converge_if_changed do
           Chef::Log.debug("Updating defaults value for #{new_resource.key} in #{new_resource.domain}")
-          CF::Preferences.set!(new_resource.key, new_resource.value, new_resource.domain, new_resource.user, new_resource.host)
+          CF::Preferences.set!(new_resource.key, new_resource.value, new_resource.domain, to_cf_user(new_resource.user), to_cf_host(new_resource.host))
         end
       end
 
@@ -128,12 +127,12 @@ class Chef
 
         converge_by("delete domain:#{new_resource.domain} key:#{new_resource.key}") do
           Chef::Log.debug("Removing defaults key: #{new_resource.key}")
-          CF::Preferences.set!(new_resource.key, nil, new_resource.domain, new_resource.user, new_resource.host)
+          CF::Preferences.set!(new_resource.key, nil, new_resource.domain, to_cf_user(new_resource.user), to_cf_host(new_resource.host))
         end
       end
 
       def get_preference(new_resource)
-        CF::Preferences.get(new_resource.key, new_resource.domain, new_resource.user, new_resource.host)
+        CF::Preferences.get(new_resource.key, new_resource.domain, to_cf_user(new_resource.user), to_cf_host(new_resource.host))
       end
 
       # Return valid hostname based on the input from host property
