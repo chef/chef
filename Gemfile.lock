@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: b7829e06dab0944d025eec0b1399cf8180244bf8
+  revision: 3ed3f8ccea7b317e4e4d0571eec7f6c75477dc6b
   branch: 16-stable
   specs:
     ohai (16.13.2)
@@ -184,7 +184,7 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
-    fauxhai-ng (9.0.0)
+    fauxhai-ng (9.1.0)
       net-ssh
     ffi (1.15.4)
     ffi (1.15.4-x64-mingw32)
@@ -312,7 +312,7 @@ GEM
     rspec-mocks (3.10.2)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
-    rspec-support (3.10.2)
+    rspec-support (3.10.3)
     rubocop (1.7.0)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
@@ -322,7 +322,7 @@ GEM
       rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (1.12.0)
+    rubocop-ast (1.13.0)
       parser (>= 3.0.1.1)
     ruby-prof (1.2.0)
     ruby-progressbar (1.11.0)
@@ -394,7 +394,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.9.0)
       ffi (>= 1.0.0)
-    win32-service (2.2.0)
+    win32-service (2.3.2)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
