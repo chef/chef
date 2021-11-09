@@ -1383,8 +1383,8 @@ describe "knife upload", :workstation do
           file "members.json", [ "bar" ]
           file "org.json", { "full_name" => "wootles" }
           file "nodes/x.json", { "normal" => { "tags" => [] } }
-          file "policies/x-1.0.0.json", {}
-          file "policies/blah-1.0.0.json", {}
+          file "policies/x-1.0.0.json", { "policy_group_list" => [ "x" ] }
+          file "policies/blah-1.0.0.json", { "policy_group_list" => [ "x" ] }
           file "policy_groups/x.json", { "policies" => { "x" => { "revision_id" => "1.0.0" }, "blah" => { "revision_id" => "1.0.0" } } }
           file "roles/x.json", {}
         end
@@ -1484,12 +1484,11 @@ describe "knife upload", :workstation do
             environment "x", { "description" => "foo" }
             group "x", { "groups" => [ "admin" ] }
             node "x", { "run_list" => [ "blah" ] }
-            policy "x", "1.0.0", {}
-            policy "x", "1.0.1", {}
-            policy "y", "1.0.0", {}
+            policy "x", "1.0.0", { "policy_group_list" => [ "x" ] }
+            policy "y", "1.0.0", { "policy_group_list" => [ "x" ] }
             policy_group "x", {
               "policies" => {
-                "x" => { "revision_id" => "1.0.1" },
+                "x" => { "revision_id" => "1.0.0" },
                 "y" => { "revision_id" => "1.0.0" },
               },
             }

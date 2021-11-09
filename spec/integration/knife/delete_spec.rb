@@ -992,7 +992,7 @@ describe "knife delete", :workstation do
     end
 
     it "knife delete /policies/x-1.2.3.json succeeds" do
-      knife("raw /policies/x/revisions/1.2.3").should_succeed "{\n  \"name\": \"x\",\n  \"revision_id\": \"1.2.3\",\n  \"run_list\": [\n\n  ],\n  \"cookbook_locks\": {\n\n  }\n}\n"
+      knife("raw /policies/x/revisions/1.2.3").should_succeed "{\n  \"policy_group_list\": [\n    \"x\"\n  ],\n  \"name\": \"x\",\n  \"revision_id\": \"1.2.3\",\n  \"run_list\": [\n\n  ],\n  \"cookbook_locks\": {\n\n  }\n}\n"
       knife("delete /policies/x-1.2.3.json").should_succeed "Deleted /policies/x-1.2.3.json\n"
       knife("raw /policies/x/revisions/1.2.3").should_fail(/404/)
     end
