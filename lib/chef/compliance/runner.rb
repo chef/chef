@@ -360,7 +360,7 @@ class Chef
       end
 
       def requested_reporters
-        Array(node["audit"]["reporter"]) + ["cli"]
+        (Array(node["audit"]["reporter"]) + ["cli"]).uniq
       end
     end
   end
