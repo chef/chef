@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.1 -->
-## [v16.17.1](https://github.com/chef/chef/tree/v16.17.1) (2021-11-09)
+<!-- latest_release 16.17.2 -->
+## [v16.17.2](https://github.com/chef/chef/tree/v16.17.2) (2021-11-09)
 
 #### Merged Pull Requests
-- Update all deps to latest [#12259](https://github.com/chef/chef/pull/12259) ([tas50](https://github.com/tas50))
+- Backport CI fixes for policy_group_list changes in knife [#12260](https://github.com/chef/chef/pull/12260) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.16.13 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport CI fixes for policy_group_list changes in knife [#12260](https://github.com/chef/chef/pull/12260) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.17.2 -->
 - Update all deps to latest [#12259](https://github.com/chef/chef/pull/12259) ([tas50](https://github.com/tas50)) <!-- 16.17.1 -->
 - Fix reporting/data_collector for @recipe_files [#12223](https://github.com/chef/chef/pull/12223) ([tas50](https://github.com/tas50)) <!-- 16.17.0 -->
 - Add support for `sensitive` in `chef_client_trusted_certificate` [#12225](https://github.com/chef/chef/pull/12225) ([tas50](https://github.com/tas50)) <!-- 16.16.21 -->
