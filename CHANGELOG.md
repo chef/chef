@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.3 -->
-## [v16.17.3](https://github.com/chef/chef/tree/v16.17.3) (2021-11-09)
+<!-- latest_release 16.17.4 -->
+## [v16.17.4](https://github.com/chef/chef/tree/v16.17.4) (2021-11-09)
 
 #### Merged Pull Requests
-- Bump fauxhai-ng to 9.1.0 [#12239](https://github.com/chef/chef/pull/12239) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump ohai to 16.17.0 [#12267](https://github.com/chef/chef/pull/12267) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.16.13 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai to 16.17.0 [#12267](https://github.com/chef/chef/pull/12267) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.4 -->
 - Bump fauxhai-ng to 9.1.0 [#12239](https://github.com/chef/chef/pull/12239) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.3 -->
 - Backport CI fixes for policy_group_list changes in knife [#12260](https://github.com/chef/chef/pull/12260) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.17.2 -->
 - Update all deps to latest [#12259](https://github.com/chef/chef/pull/12259) ([tas50](https://github.com/tas50)) <!-- 16.17.1 -->
