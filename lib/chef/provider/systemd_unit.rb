@@ -236,13 +236,7 @@ class Chef
       def masked?
         # Note: masked-runtime is excluded, because runtime is volatile, and
         # because masked-runtime is not masked.
-        # shell_out to get "masked" stdout.
-        shell_out!("systemctl list-unit-files | grep masked").stdout.each_line do |line|
-          if line.include?(new_resource.unit_name)
-            return %w{bad masked}.include?(systemd_unit_status["UnitFileState"])
-          end
-        end
-        false
+        %w{bad masked}.include?(systemd_unit_status["UnitFileState"])
       end
 
       def static?

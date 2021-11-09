@@ -929,9 +929,6 @@ describe Chef::Provider::SystemdUnit, :linux_only do
         before(:each) do
           provider.current_resource = current_resource
           allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
-          allow(provider).to receive(:shell_out_compacted!).with("systemctl list-unit-files | grep masked").and_return(
-            double(stdout: "sysstat-collect\\x2d.timer  masked")
-          )
         end
 
         masked_and_inactive = <<-STDOUT
