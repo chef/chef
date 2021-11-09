@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.7.35 -->
-## [v17.7.35](https://github.com/chef/chef/tree/v17.7.35) (2021-11-09)
+<!-- latest_release 17.7.36 -->
+## [v17.7.36](https://github.com/chef/chef/tree/v17.7.36) (2021-11-09)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `0f8338a` to `485b535` in /omnibus [#12244](https://github.com/chef/chef/pull/12244) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump gems manually [#12263](https://github.com/chef/chef/pull/12263) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump gems manually [#12263](https://github.com/chef/chef/pull/12263) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.7.36 -->
 - Bump omnibus-software from `0f8338a` to `485b535` in /omnibus [#12244](https://github.com/chef/chef/pull/12244) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.7.35 -->
 - Bump win32-service to 2.3.2 [#12249](https://github.com/chef/chef/pull/12249) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.7.34 -->
 - update powershell exec binaries [#12103](https://github.com/chef/chef/pull/12103) ([rishichawda](https://github.com/rishichawda)) <!-- 17.7.33 -->
