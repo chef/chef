@@ -78,6 +78,7 @@ class Chef
 
       action :rekey do
         assert_destination_writable!
+        pp put_data
         run_context.rest.put("clients/#{node_name}", put_data)
         write_key
       end
