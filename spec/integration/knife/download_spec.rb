@@ -1276,8 +1276,8 @@ describe "knife download", :workstation do
             file "members.json", [ "bar" ]
             file "nodes/x.json", { "normal" => { "tags" => [] } }
             file "org.json", { "full_name" => "Something" }
-            file "policies/x-1.0.0.json", {}
-            file "policies/blah-1.0.0.json", {}
+            file "policies/x-1.0.0.json", { "policy_group_list" => [ "x" ] }
+            file "policies/blah-1.0.0.json", { "policy_group_list" => [ "x" ] }
             file "policy_groups/x.json", { "policies" => { "x" => { "revision_id" => "1.0.0" }, "blah" => { "revision_id" => "1.0.0" } } }
             file "roles/x.json", {}
           end
