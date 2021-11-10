@@ -517,9 +517,6 @@ class Chef
         name_property: true,
         description: "An optional property to set the command to be executed if it differs from the resource block's name. Note: Use the **execute** resource to run a single command. Use multiple **execute** resource blocks to run multiple commands."
 
-      property :umask, [ String, Integer ],
-        description: "The file mode creation mask, or umask."
-
       property :creates, String,
         description: "Prevent a command from creating a file when that file already exists."
 

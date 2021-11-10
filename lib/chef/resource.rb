@@ -454,7 +454,7 @@ class Chef
     # @param arg [String] The umask to apply while converging the resource.
     # @return [Boolean] The umask to apply while converging the resource.
     #
-    property :umask, String,
+    property :umask, [String, Integer],
       desired_state: false,
       introduced: "16.2",
       description: "Set a umask to be used for the duration of converging the resource. Defaults to `nil`, which means to use the system umask. Unsupported on Windows because Windows lacks a direct equivalent to UNIX's umask."
