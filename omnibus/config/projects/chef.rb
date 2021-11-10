@@ -108,4 +108,4 @@ package :appx do
   skip_packager true
 end
 
-runtime_dependencies "coreutils" if rhel?
+runtime_dependency "coreutils" if rhel?
