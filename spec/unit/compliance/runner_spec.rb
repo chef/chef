@@ -216,6 +216,7 @@ describe Chef::Compliance::Runner do
       node.normal["audit"]["reporter"] = [ "chef-automate" ]
       reporter_double = double("reporter", validate_config!: nil)
       expect(runner).to receive(:reporter).with("chef-automate").and_return(reporter_double)
+      expect(runner).to receive(:reporter).with("cli").and_return(reporter_double)
       runner.load_and_validate!
     end
 
@@ -278,7 +279,7 @@ describe Chef::Compliance::Runner do
       inputs = runner.inspec_opts[:inputs]
 
       expect(inputs["tacos"]).to eq("lunch")
-      expect(inputs["chef_node"]["audit"]["reporter"]).to eq("cli")
+      expect(inputs["chef_node"]["audit"]["reporter"]).to eq(nil)
       expect(inputs["chef_node"]["chef_environment"]).to eq("_default")
     end
   end
