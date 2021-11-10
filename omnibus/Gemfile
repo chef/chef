@@ -14,8 +14,11 @@ group :development do
   # Use Berkshelf for resolving cookbook dependencies
   gem "berkshelf", ">= 7.0"
 
-  # We pin here to the last release Ohai so prevent more current chef coming in
-  gem "ohai"
+  # We have to use chef/ohai 16 until all builders are on ruby >= 2.7
+  gem "ohai", "~> 16.0"
+  gem "chef", "~> 16.0"
+  gem "chef-config", "~> 16.0"
+  gem "chef-utils", "~> 16.0"
 
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen", ">= 1.23"
