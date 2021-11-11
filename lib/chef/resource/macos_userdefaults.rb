@@ -18,7 +18,6 @@
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "corefoundation" if RUBY_PLATFORM.match?(/darwin/)
-require "ffi" unless defined?(FFI)
 autoload :Plist, "plist"
 
 class Chef
