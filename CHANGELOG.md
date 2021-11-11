@@ -2,33 +2,31 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.4 -->
-## [v16.17.4](https://github.com/chef/chef/tree/v16.17.4) (2021-11-09)
-
-#### Merged Pull Requests
-- Bump ohai to 16.17.0 [#12267](https://github.com/chef/chef/pull/12267) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.16.13 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump ohai to 16.17.0 [#12267](https://github.com/chef/chef/pull/12267) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.4 -->
-- Bump fauxhai-ng to 9.1.0 [#12239](https://github.com/chef/chef/pull/12239) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.3 -->
-- Backport CI fixes for policy_group_list changes in knife [#12260](https://github.com/chef/chef/pull/12260) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.17.2 -->
-- Update all deps to latest [#12259](https://github.com/chef/chef/pull/12259) ([tas50](https://github.com/tas50)) <!-- 16.17.1 -->
-- Fix reporting/data_collector for @recipe_files [#12223](https://github.com/chef/chef/pull/12223) ([tas50](https://github.com/tas50)) <!-- 16.17.0 -->
-- Add support for `sensitive` in `chef_client_trusted_certificate` [#12225](https://github.com/chef/chef/pull/12225) ([tas50](https://github.com/tas50)) <!-- 16.16.21 -->
-- Bump inspec-core-bin to 4.49.0 [#12221](https://github.com/chef/chef/pull/12221) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.16.20 -->
-- Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12196](https://github.com/chef/chef/pull/12196) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.19 -->
-- Bump omnibus-software from `a2a70e2` to `0f8338a` in /omnibus [#12197](https://github.com/chef/chef/pull/12197) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.18 -->
-- Get spellcheck passing for chef-16 branch [#12181](https://github.com/chef/chef/pull/12181) ([tas50](https://github.com/tas50)) <!-- 16.16.17 -->
-- Bump chef-zero to 15.0.11 [#12178](https://github.com/chef/chef/pull/12178) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.16.16 -->
-- Update all deps in chef 16 to the latest [#12179](https://github.com/chef/chef/pull/12179) ([tas50](https://github.com/tas50)) <!-- 16.16.15 -->
-- Bump omnibus from `37897ad` to `90306c9` in /omnibus [#12160](https://github.com/chef/chef/pull/12160) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.16.14 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.17.4](https://github.com/chef/chef/tree/v16.17.4) (2021-11-11)
+
+#### Merged Pull Requests
+- Bump omnibus from `37897ad` to `90306c9` in /omnibus [#12160](https://github.com/chef/chef/pull/12160) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update all deps in chef 16 to the latest [#12179](https://github.com/chef/chef/pull/12179) ([tas50](https://github.com/tas50))
+- Bump chef-zero to 15.0.11 [#12178](https://github.com/chef/chef/pull/12178) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Get spellcheck passing for chef-16 branch [#12181](https://github.com/chef/chef/pull/12181) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `a2a70e2` to `0f8338a` in /omnibus [#12197](https://github.com/chef/chef/pull/12197) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `90306c9` to `b1f410b` in /omnibus [#12196](https://github.com/chef/chef/pull/12196) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump inspec-core-bin to 4.49.0 [#12221](https://github.com/chef/chef/pull/12221) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add support for `sensitive` in `chef_client_trusted_certificate` [#12225](https://github.com/chef/chef/pull/12225) ([tas50](https://github.com/tas50))
+- Fix reporting/data_collector for @recipe_files [#12223](https://github.com/chef/chef/pull/12223) ([tas50](https://github.com/tas50))
+- Update all deps to latest [#12259](https://github.com/chef/chef/pull/12259) ([tas50](https://github.com/tas50))
+- Backport CI fixes for policy_group_list changes in knife [#12260](https://github.com/chef/chef/pull/12260) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump fauxhai-ng to 9.1.0 [#12239](https://github.com/chef/chef/pull/12239) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump ohai to 16.17.0 [#12267](https://github.com/chef/chef/pull/12267) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_stable_release -->
+
 ## [v16.16.13](https://github.com/chef/chef/tree/v16.16.13) (2021-10-02)
 
 #### Merged Pull Requests
@@ -36,7 +34,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump omnibus-software from `7002802` to `0966668` in /omnibus [#12128](https://github.com/chef/chef/pull/12128) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Fix compilation of openssl with -DOPENSSL_TRUSTED_FIRST_DEFAULT [#12130](https://github.com/chef/chef/pull/12130) ([lamont-granquist](https://github.com/lamont-granquist))
 - Reverting cleanroom back to working ruby 2.7 code [#12131](https://github.com/chef/chef/pull/12131) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v16.16.7](https://github.com/chef/chef/tree/v16.16.7) (2021-09-30)
 
