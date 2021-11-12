@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.1 -->
-## [v17.8.1](https://github.com/chef/chef/tree/v17.8.1) (2021-11-11)
+<!-- latest_release 17.8.2 -->
+## [v17.8.2](https://github.com/chef/chef/tree/v17.8.2) (2021-11-12)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `9222241` to `b6f2ff8` in /omnibus [#12277](https://github.com/chef/chef/pull/12277) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix zypper_package behavior when there is no candidate_version [#12279](https://github.com/chef/chef/pull/12279) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix zypper_package behavior when there is no candidate_version [#12279](https://github.com/chef/chef/pull/12279) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.2 -->
 - Bump omnibus-software from `9222241` to `b6f2ff8` in /omnibus [#12277](https://github.com/chef/chef/pull/12277) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.1 -->
 - pin omnibus builds to chef-16 [#12274](https://github.com/chef/chef/pull/12274) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.0 -->
 - Add coreutils dep for rhel omnibus builds [#12270](https://github.com/chef/chef/pull/12270) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.7.39 -->
