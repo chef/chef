@@ -242,8 +242,12 @@ class Chef
           end
         end
 
-        def initialize(resource, run_context)
-          @resource, @run_context = resource, run_context
+        attr_accessor :action
+
+        def initialize(resource, run_context, action)
+          @resource = resource
+          @run_context = run_context
+          @action = action
           @assertions = Hash.new { |h, k| h[k] = [] }
           @blocked_actions = []
         end
@@ -305,6 +309,8 @@ class Chef
         #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
         #   end
         def assert(*actions)
+          return unless actions.include?(action.to_sym)
+
           assertion = Assertion.new
           yield assertion
           actions.each { |action| @assertions[action] << assertion }
