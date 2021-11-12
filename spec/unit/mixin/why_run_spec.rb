@@ -44,7 +44,7 @@ describe Chef::Mixin::WhyRun::ResourceRequirements do
   let(:resource) { TestResource.new("name", run_context) }
 
   it "raises an exception for an action where the assertions raise exceptions" do
-    expect { resource.run_action(:boom) }.to raise_error(StandardError)
+    expect { resource.run_action(:boom) }.to raise_error(StandardError, /boom2/)
   end
 
   it "does not raise an exception for an action which has no assertions" do
