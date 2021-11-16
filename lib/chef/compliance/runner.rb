@@ -390,10 +390,10 @@ class Chef
       def interval_seconds
         @interval_seconds ||=
           if interval_enabled
-            Chef::Log.debug "Running Chef Infra Compliance Phase every #{interval_time * 60} seconds"
+            logger.debug "Running Chef Infra Compliance Phase every #{interval_time} minutes"
             interval_time * 60
           else
-            Chef::Log.debug "Running Chef Infra Compliance Phase on every run"
+            logger.debug "Running Chef Infra Compliance Phase on every run"
             0
           end
       end
