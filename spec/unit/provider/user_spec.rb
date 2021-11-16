@@ -170,6 +170,7 @@ describe Chef::Provider::User do
                                                     sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
               expect(Shadow::Passwd).to receive(:getspnam).with("notarealuser").and_return(passwd_info)
               @provider.load_current_resource
+              @provider.action = :create
               @provider.define_resource_requirements
               @provider.process_resource_requirements
             end
@@ -180,6 +181,7 @@ describe Chef::Provider::User do
       it "should fail assertions when ruby-shadow cannot be loaded" do
         expect(@provider).to receive(:require).with("shadow") { raise LoadError }
         @provider.load_current_resource
+        @provider.action = :create
         @provider.define_resource_requirements
         expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::MissingLibrary
       end

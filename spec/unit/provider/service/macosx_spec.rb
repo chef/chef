@@ -237,6 +237,7 @@ describe Chef::Provider::Service::Macosx do
                   allow(Dir).to receive(:glob).and_return([(plist).to_s,
                                               "/Users/wtf/something.plist"])
                   provider.load_current_resource
+                  provider.action = :enable
                   provider.define_resource_requirements
                   expect { provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
                 end

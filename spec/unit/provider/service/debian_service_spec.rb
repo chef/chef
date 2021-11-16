@@ -50,6 +50,7 @@ describe Chef::Provider::Service::Debian do
     it "ensures /usr/sbin/update-rc.d is available" do
       expect(File).to receive(:exist?).with("/usr/sbin/update-rc.d").and_return(false)
 
+      @provider.action = :start
       @provider.define_resource_requirements
       expect do
         @provider.process_resource_requirements

@@ -58,18 +58,18 @@ describe Chef::Provider::Group::Usermod do
       end
 
       it "should raise an error when setting the entire group directly" do
+        @provider.action = :modify
         @provider.define_resource_requirements
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
-        @provider.action = :modify
         expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "setting group members directly is not supported by #{@provider}, must set append true in group")
       end
 
       it "should raise an error when excluded_members are set" do
+        @provider.action = :modify
         @provider.define_resource_requirements
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
-        @provider.action = :modify
         @new_resource.append(true)
         @new_resource.excluded_members(["someone"])
         expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider}")

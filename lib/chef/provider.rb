@@ -269,7 +269,7 @@ class Chef
     end
 
     def requirements
-      @requirements ||= ResourceRequirements.new(@new_resource, run_context, action)
+      @requirements ||= ResourceRequirements.new(@new_resource, run_context, action || new_resource.action)
     end
 
     def description(description = "NOT_PASSED")

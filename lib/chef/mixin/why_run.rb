@@ -309,7 +309,7 @@ class Chef
         #                       "You don't have sufficient privileges to delete #{@new_resource.path}")
         #   end
         def assert(*actions)
-          return unless actions.include?(action.to_sym)
+          return unless actions.include?(action.to_sym) || actions.include?(:all_actions)
 
           assertion = Assertion.new
           yield assertion

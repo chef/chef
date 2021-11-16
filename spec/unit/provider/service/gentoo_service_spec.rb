@@ -42,6 +42,7 @@ describe Chef::Provider::Service::Gentoo do
   describe "load_current_resource" do
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
       expect(File).to receive(:exist?).with("/sbin/rc-update").and_return(false)
+      @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
