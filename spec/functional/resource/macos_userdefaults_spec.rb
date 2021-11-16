@@ -116,4 +116,24 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
     resource.key "titlesize"
     expect { resource.run_action(:delete) }. to_not raise_error
   end
+
+  context "resource can process FFI::Pointer type" do
+    it "for host property" do
+      resource.domain "/Library/Preferences/ManagedInstalls"
+      resource.key "TestDictionaryValues"
+      resource.value "User": "/Library/Managed Installs/way_fake.log"
+      resource.host :current
+      resource.run_action(:write)
+      expect { resource.run_action(:write) }. to_not raise_error
+    end
+
+    it "for user property" do
+      resource.domain "/Library/Preferences/ManagedInstalls"
+      resource.key "TestDictionaryValues"
+      resource.value "User": "/Library/Managed Installs/way_fake.log"
+      resource.user :current
+      resource.run_action(:write)
+      expect { resource.run_action(:write) }. to_not raise_error
+    end
+  end
 end
