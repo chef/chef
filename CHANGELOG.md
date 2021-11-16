@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.4 -->
-## [v17.8.4](https://github.com/chef/chef/tree/v17.8.4) (2021-11-16)
+<!-- latest_release 17.8.5 -->
+## [v17.8.5](https://github.com/chef/chef/tree/v17.8.5) (2021-11-16)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `b6f2ff8` to `32876cd` in /omnibus [#12287](https://github.com/chef/chef/pull/12287) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- fix invalid ffi type error after coerce in macos_userdefaults [#12234](https://github.com/chef/chef/pull/12234) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix invalid ffi type error after coerce in macos_userdefaults [#12234](https://github.com/chef/chef/pull/12234) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.5 -->
 - Bump omnibus-software from `b6f2ff8` to `32876cd` in /omnibus [#12287](https://github.com/chef/chef/pull/12287) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.4 -->
 - Bump chef/chefstyle to 3a1257b8c5934344bc854e604a882d7e7e5a8733 [#12284](https://github.com/chef/chef/pull/12284) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.3 -->
 - Fix zypper_package behavior when there is no candidate_version [#12279](https://github.com/chef/chef/pull/12279) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.2 -->
