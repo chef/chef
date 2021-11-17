@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.6 -->
-## [v17.8.6](https://github.com/chef/chef/tree/v17.8.6) (2021-11-17)
+<!-- latest_release 17.8.7 -->
+## [v17.8.7](https://github.com/chef/chef/tree/v17.8.7) (2021-11-17)
 
 #### Merged Pull Requests
-- Implement compliance phase interval runs [#12226](https://github.com/chef/chef/pull/12226) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix dpkg_package doesn&#39;t do version comparisons on upgrade [#11970](https://github.com/chef/chef/pull/11970) ([snehaldwivedi](https://github.com/snehaldwivedi))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix dpkg_package doesn&#39;t do version comparisons on upgrade [#11970](https://github.com/chef/chef/pull/11970) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.8.7 -->
 - Implement compliance phase interval runs [#12226](https://github.com/chef/chef/pull/12226) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.6 -->
 - fix invalid ffi type error after coerce in macos_userdefaults [#12234](https://github.com/chef/chef/pull/12234) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.5 -->
 - Bump omnibus-software from `b6f2ff8` to `32876cd` in /omnibus [#12287](https://github.com/chef/chef/pull/12287) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.4 -->
