@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.7 -->
-## [v16.17.7](https://github.com/chef/chef/tree/v16.17.7) (2021-11-16)
+<!-- latest_release 16.17.8 -->
+## [v16.17.8](https://github.com/chef/chef/tree/v16.17.8) (2021-11-17)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `b6f2ff8` to `7501e20` in /omnibus [#12289](https://github.com/chef/chef/pull/12289) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Stop producing macOS 10.14 packages [#12265](https://github.com/chef/chef/pull/12265) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop producing macOS 10.14 packages [#12265](https://github.com/chef/chef/pull/12265) ([tas50](https://github.com/tas50)) <!-- 16.17.8 -->
 - Bump omnibus-software from `b6f2ff8` to `7501e20` in /omnibus [#12289](https://github.com/chef/chef/pull/12289) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.7 -->
 - Bump omnibus from `b1f410b` to `2c309fa` in /omnibus [#12273](https://github.com/chef/chef/pull/12273) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.6 -->
 - Bump omnibus-software from `485b535` to `b6f2ff8` in /omnibus [#12275](https://github.com/chef/chef/pull/12275) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.5 -->
