@@ -94,7 +94,17 @@ class Chef
 
       # Should the built-in compliance phase run. True and false force the behavior. Nil does magic based on if you have
       # profiles defined but do not have the audit cookbook enabled.
-      "compliance_phase" => false
+      "compliance_phase" => false,
+
+      "interval" => {
+        # control how often inspec scans are run, if not on every node converge
+        # notes: false value will result in running inspec scan every converge
+        "enabled" => false,
+
+        # controls how often inspec scans are run (in minutes)
+        # notes: only used if interval is enabled above
+        "time" => 1440,
+      }
     )
   end
 end
