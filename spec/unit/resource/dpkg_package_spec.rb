@@ -57,4 +57,16 @@ describe Chef::Resource::DpkgPackage, "initialize" do
     end
   end
 
+  describe Chef::Resource::DpkgPackage, "allow_downgrade" do
+    before(:each) do
+      @resource = Chef::Resource::DpkgPackage.new("fakey_fakerton")
+    end
+
+    it "should allow you to specify whether allow_downgrade is true or false" do
+      expect { @resource.allow_downgrade true }.not_to raise_error
+      expect { @resource.allow_downgrade false }.not_to raise_error
+      expect { @resource.allow_downgrade "something" }.to raise_error(ArgumentError)
+    end
+  end
+
 end
