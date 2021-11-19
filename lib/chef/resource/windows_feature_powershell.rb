@@ -215,7 +215,7 @@ class Chef
         # fetch the list of available feature names and state in JSON and parse the JSON
         def parsed_feature_list
           # Grab raw feature information from WindowsFeature
-          raw_list_of_features = powershell_exec!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).result
+          raw_list_of_features = powershell_exec!("Get-WindowsFeature | Select-Object -Property Name,InstallState", timeout: new_resource.timeout).result
 
           Chef::JSONCompat.from_json(raw_list_of_features)
         end
