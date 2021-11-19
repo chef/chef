@@ -68,7 +68,8 @@ class Chef
             else
               version = "0"
               until version.empty?
-                version = powershell_exec(build_powershell_package_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).result.strip
+                version = powershell_exec(build_powershell_package_command("Uninstall-Package '#{name}'"), timeout: new_resource.timeout).result
+                version = version.strip if version.respond_to?(:strip)
                 unless version.empty?
                   logger.info("Removed package '#{name}' with version #{version}")
                 end
@@ -82,13 +83,14 @@ class Chef
           versions = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_exec(build_powershell_package_command("Find-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).result.strip
+                        powershell_exec(build_powershell_package_command("Find-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).result
                       else
-                        powershell_exec(build_powershell_package_command("Find-Package '#{name}'"), timeout: new_resource.timeout).result.strip
+                        powershell_exec(build_powershell_package_command("Find-Package '#{name}'"), timeout: new_resource.timeout).result
                       end
             if version.empty?
               version = nil
             end
+            version = version.strip if version.respond_to?(:strip)
             versions.push(version)
           end
           versions
@@ -99,13 +101,14 @@ class Chef
           version_list = []
           new_resource.package_name.each_with_index do |name, index|
             version = if new_resource.version && !new_resource.version[index].nil?
-                        powershell_exec(build_powershell_package_command("Get-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).result.strip
+                        powershell_exec(build_powershell_package_command("Get-Package '#{name}'", new_resource.version[index]), timeout: new_resource.timeout).result
                       else
-                        powershell_exec(build_powershell_package_command("Get-Package '#{name}'"), timeout: new_resource.timeout).result.strip
+                        powershell_exec(build_powershell_package_command("Get-Package '#{name}'"), timeout: new_resource.timeout).result
                       end
             if version.empty?
               version = nil
             end
+            version = version.strip if version.respond_to?(:strip)
             version_list.push(version)
           end
           version_list
