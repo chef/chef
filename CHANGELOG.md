@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.11 -->
-## [v17.8.11](https://github.com/chef/chef/tree/v17.8.11) (2021-11-23)
+<!-- latest_release 17.8.12 -->
+## [v17.8.12](https://github.com/chef/chef/tree/v17.8.12) (2021-11-23)
 
 #### Merged Pull Requests
-- Bump kitchen-vagrant from 1.10.0 to 1.11.0 in /omnibus [#12307](https://github.com/chef/chef/pull/12307) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Do not run assertions for actions that are not being executed [#12282](https://github.com/chef/chef/pull/12282) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Do not run assertions for actions that are not being executed [#12282](https://github.com/chef/chef/pull/12282) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.12 -->
 - Bump kitchen-vagrant from 1.10.0 to 1.11.0 in /omnibus [#12307](https://github.com/chef/chef/pull/12307) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.11 -->
 - Bump test-kitchen from 3.1.1 to 3.2.0 in /omnibus [#12296](https://github.com/chef/chef/pull/12296) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.10 -->
 - Bump omnibus-software from `32876cd` to `7501e20` in /omnibus [#12294](https://github.com/chef/chef/pull/12294) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.9 -->
