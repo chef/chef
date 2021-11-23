@@ -61,6 +61,7 @@ describe Chef::Provider::Ifconfig do
         expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
       end
       it "should thrown an exception when ifconfig fails" do
+        @provider.action = :add
         @provider.define_resource_requirements
         expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
       end
@@ -81,6 +82,7 @@ describe Chef::Provider::Ifconfig do
         expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
       end
       it "should thrown an exception when ifconfig fails" do
+        @provider.action = :add
         @provider.define_resource_requirements
         expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
       end
