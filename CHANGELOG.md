@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.11 -->
-## [v16.17.11](https://github.com/chef/chef/tree/v16.17.11) (2021-11-23)
+<!-- latest_release 16.17.12 -->
+## [v16.17.12](https://github.com/chef/chef/tree/v16.17.12) (2021-11-23)
 
 #### Merged Pull Requests
-- Bump test-kitchen from 3.1.1 to 3.2.0 in /omnibus [#12295](https://github.com/chef/chef/pull/12295) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump kitchen-vagrant from 1.10.0 to 1.11.0 in /omnibus [#12306](https://github.com/chef/chef/pull/12306) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump kitchen-vagrant from 1.10.0 to 1.11.0 in /omnibus [#12306](https://github.com/chef/chef/pull/12306) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.12 -->
 - Bump test-kitchen from 3.1.1 to 3.2.0 in /omnibus [#12295](https://github.com/chef/chef/pull/12295) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.11 -->
 - Bump ohai from 16.17.0 to 17.7.8 in /omnibus [#12293](https://github.com/chef/chef/pull/12293) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.10 -->
 - Bump inspec-core-bin to 4.50.3 [#12298](https://github.com/chef/chef/pull/12298) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.9 -->
