@@ -87,6 +87,17 @@ class Chef
         ]
       end
       ```
+
+      **Report directly to the [Chef Automate data collector endpoint](/automate/data_collection/#configure-chef-infra-client-to-use-the-data-collector-endpoint-in-chef-automate).**
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        data_collector_server_url 'https://automate.example.dmz'
+        data_collector_token 'TEST_TOKEN_TEST'
+      end
+      ```
+
       DOC
 
       # @todo policy_file or policy_group being set requires the other to be set so enforce that.
@@ -231,6 +242,12 @@ class Chef
       property :additional_config, String,
         description: "Additional text to add at the bottom of the client.rb config. This can be used to run custom Ruby or to add less common config options"
 
+      property :data_collector_server_url, String,
+        description: "The data collector url (typically automate) to send node, converge and compliance data. Note: Data collection reporting to Automate should be performed directly by Chef Infra Server if possible, as this removes the need to distribute tokens to individual nodes."
+
+      property :data_collector_token, String,
+        description: "The data collector token to interact with the data collector server url (Automate). Note: Data collection reporting to Automate should be performed directly by Chef Infra Server if possible, as this removes the need to distribute tokens to individual nodes."
+
       action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
         unless ::Dir.exist?(new_resource.config_directory)
           directory new_resource.config_directory do
@@ -282,7 +299,9 @@ class Chef
             ssl_verify_mode: new_resource.ssl_verify_mode,
             start_handlers: format_handler(new_resource.start_handlers),
             additional_config: new_resource.additional_config,
-            policy_persist_run_list: new_resource.policy_persist_run_list
+            policy_persist_run_list: new_resource.policy_persist_run_list,
+            data_collector_server_url: new_resource.data_collector_server_url,
+            data_collector_token: new_resource.data_collector_token
           )
           mode "0640"
           action :create
