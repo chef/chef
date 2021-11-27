@@ -243,10 +243,12 @@ class Chef
         description: "Additional text to add at the bottom of the client.rb config. This can be used to run custom Ruby or to add less common config options"
 
       property :data_collector_server_url, String,
-        description: "The data collector url (typically automate) to send node, converge and compliance data. Note: Data collection reporting to Automate should be performed directly by Chef Infra Server if possible, as this removes the need to distribute tokens to individual nodes."
+        description: "The data collector url (typically automate) to send node, converge and compliance data. Note: Data collection reporting to Automate should be performed directly by Chef Infra Server if possible, as this removes the need to distribute tokens to individual nodes.",
+        introduced: "17.8"
 
       property :data_collector_token, String,
-        description: "The data collector token to interact with the data collector server url (Automate). Note: Data collection reporting to Automate should be performed directly by Chef Infra Server if possible, as this removes the need to distribute tokens to individual nodes."
+        description: "The data collector token to interact with the data collector server url (Automate). Note: Data collection reporting to Automate should be performed directly by Chef Infra Server if possible, as this removes the need to distribute tokens to individual nodes.",
+        introduced: "17.8"
 
       action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
         unless ::Dir.exist?(new_resource.config_directory)
