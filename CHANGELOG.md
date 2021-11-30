@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.16 -->
-## [v17.8.16](https://github.com/chef/chef/tree/v17.8.16) (2021-11-30)
+<!-- latest_release 17.8.17 -->
+## [v17.8.17](https://github.com/chef/chef/tree/v17.8.17) (2021-11-30)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `461fc3e` to `8560231` in /omnibus [#12321](https://github.com/chef/chef/pull/12321) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Ruby 3.0.3 [#12323](https://github.com/chef/chef/pull/12323) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 3.0.3 [#12323](https://github.com/chef/chef/pull/12323) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.17 -->
 - Bump omnibus-software from `461fc3e` to `8560231` in /omnibus [#12321](https://github.com/chef/chef/pull/12321) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.16 -->
 - Add data collector config items for infra config [#12292](https://github.com/chef/chef/pull/12292) ([mvangoor](https://github.com/mvangoor)) <!-- 17.8.14 -->
 - Bump omnibus-software from `7501e20` to `461fc3e` in /omnibus [#12313](https://github.com/chef/chef/pull/12313) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.13 -->
