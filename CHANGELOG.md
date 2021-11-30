@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.21 -->
-## [v17.8.21](https://github.com/chef/chef/tree/v17.8.21) (2021-11-30)
+<!-- latest_release 17.8.22 -->
+## [v17.8.22](https://github.com/chef/chef/tree/v17.8.22) (2021-11-30)
 
 #### Merged Pull Requests
-- Remove support for macOS 10.14 [#12264](https://github.com/chef/chef/pull/12264) ([tas50](https://github.com/tas50))
+- Bump chef/ohai to 1c5ef4fa1e3a316749dca0d4c14127edaedfb33a [#12329](https://github.com/chef/chef/pull/12329) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to 1c5ef4fa1e3a316749dca0d4c14127edaedfb33a [#12329](https://github.com/chef/chef/pull/12329) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.22 -->
 - Remove support for macOS 10.14 [#12264](https://github.com/chef/chef/pull/12264) ([tas50](https://github.com/tas50)) <!-- 17.8.21 -->
 - use powershell exec in powershell resource [#12278](https://github.com/chef/chef/pull/12278) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.20 -->
 - Smriti/10918 mount resource not idempotent [#11579](https://github.com/chef/chef/pull/11579) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.8.19 -->
