@@ -65,6 +65,7 @@ describe Chef::Provider::Package::Solaris do
       allow(@provider).to receive(:shell_out_compacted).and_return(@status)
       allow(::File).to receive(:exist?).and_return(false)
       @provider.load_current_resource
+      @provider.action = :install
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Package)
     end

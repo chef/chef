@@ -52,12 +52,14 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
 
   it "should raise error if the node has a nil ps property and no other means to get status" do
     @node.automatic_attrs[:command] = { ps: nil }
+    @provider.action = :start
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
   it "should raise error if the node has an empty ps property and no other means to get status" do
     @node.automatic_attrs[:command] = { ps: "" }
+    @provider.action = :start
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
@@ -112,8 +114,8 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     end
 
     it "should raise an exception if no start command is specified" do
-      @provider.define_resource_requirements
       @provider.action = :start
+      @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
   end
@@ -126,8 +128,8 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     end
 
     it "should raise an exception if no stop command is specified" do
-      @provider.define_resource_requirements
       @provider.action = :stop
+      @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
   end
@@ -140,8 +142,8 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     end
 
     it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
-      @provider.define_resource_requirements
       @provider.action = :restart
+      @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
 
@@ -155,8 +157,8 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
 
   describe Chef::Provider::Service::Simple, "reload_service" do
     it "should raise an exception if reload is requested but no command is specified" do
-      @provider.define_resource_requirements
       @provider.action = :reload
+      @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::UnsupportedAction)
     end
 

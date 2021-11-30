@@ -1,17 +1,29 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.7 -->
-## [v17.8.7](https://github.com/chef/chef/tree/v17.8.7) (2021-11-17)
+<!-- latest_release 17.8.20 -->
+## [v17.8.20](https://github.com/chef/chef/tree/v17.8.20) (2021-11-30)
 
 #### Merged Pull Requests
-- fix dpkg_package doesn&#39;t do version comparisons on upgrade [#11970](https://github.com/chef/chef/pull/11970) ([snehaldwivedi](https://github.com/snehaldwivedi))
+- use powershell exec in powershell resource [#12278](https://github.com/chef/chef/pull/12278) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- use powershell exec in powershell resource [#12278](https://github.com/chef/chef/pull/12278) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.20 -->
+- Smriti/10918 mount resource not idempotent [#11579](https://github.com/chef/chef/pull/11579) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.8.19 -->
+- Add allow_downgrade back to DNF [#12291](https://github.com/chef/chef/pull/12291) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.18 -->
+- Ruby 3.0.3 [#12323](https://github.com/chef/chef/pull/12323) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.17 -->
+- Bump omnibus-software from `461fc3e` to `8560231` in /omnibus [#12321](https://github.com/chef/chef/pull/12321) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.16 -->
+- Add data collector config items for infra config [#12292](https://github.com/chef/chef/pull/12292) ([mvangoor](https://github.com/mvangoor)) <!-- 17.8.14 -->
+- Bump omnibus-software from `7501e20` to `461fc3e` in /omnibus [#12313](https://github.com/chef/chef/pull/12313) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.13 -->
+- Do not run assertions for actions that are not being executed [#12282](https://github.com/chef/chef/pull/12282) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.12 -->
+- Bump kitchen-vagrant from 1.10.0 to 1.11.0 in /omnibus [#12307](https://github.com/chef/chef/pull/12307) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.11 -->
+- Bump test-kitchen from 3.1.1 to 3.2.0 in /omnibus [#12296](https://github.com/chef/chef/pull/12296) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.10 -->
+- Bump omnibus-software from `32876cd` to `7501e20` in /omnibus [#12294](https://github.com/chef/chef/pull/12294) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.9 -->
+- Bump inspec-core-bin to 4.50.3 [#12297](https://github.com/chef/chef/pull/12297) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.8 -->
 - fix dpkg_package doesn&#39;t do version comparisons on upgrade [#11970](https://github.com/chef/chef/pull/11970) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.8.7 -->
 - Implement compliance phase interval runs [#12226](https://github.com/chef/chef/pull/12226) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.6 -->
 - fix invalid ffi type error after coerce in macos_userdefaults [#12234](https://github.com/chef/chef/pull/12234) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.5 -->
