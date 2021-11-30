@@ -65,12 +65,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.16.13)
+    chef (16.17.4)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.16.13)
-      chef-utils (= 16.16.13)
+      chef-config (= 16.17.4)
+      chef-utils (= 16.17.4)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -102,12 +102,12 @@ GEM
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (16.16.13-universal-mingw32)
+    chef (16.17.4-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.16.13)
-      chef-utils (= 16.16.13)
+      chef-config (= 16.17.4)
+      chef-utils (= 16.17.4)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -151,9 +151,9 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.4)
-    chef-config (16.16.13)
+    chef-config (16.17.4)
       addressable
-      chef-utils (= 16.16.13)
+      chef-utils (= 16.17.4)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -161,7 +161,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (16.16.13)
+    chef-utils (16.17.4)
     chef-vault (4.1.4)
     chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
@@ -212,7 +212,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.49.0)
+    inspec-core (4.50.3)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -363,7 +363,7 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    test-kitchen (3.2.0)
+    test-kitchen (3.2.1)
       bcrypt_pbkdf (~> 1.0)
       chef-utils (>= 16.4.35)
       ed25519 (~> 1.2)
@@ -478,4 +478,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.2.22
+   2.2.32
