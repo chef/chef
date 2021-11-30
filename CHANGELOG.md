@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.17 -->
-## [v16.17.17](https://github.com/chef/chef/tree/v16.17.17) (2021-11-30)
+<!-- latest_release 16.17.18 -->
+## [v16.17.18](https://github.com/chef/chef/tree/v16.17.18) (2021-11-30)
 
 #### Merged Pull Requests
-- Update nokogiri from 1.11.0 to 1.12.5 [#12326](https://github.com/chef/chef/pull/12326) ([tas50](https://github.com/tas50))
+- Pin Chef to a Ruby 2.6 version to fix Solaris builds [#12328](https://github.com/chef/chef/pull/12328) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pin Chef to a Ruby 2.6 version to fix Solaris builds [#12328](https://github.com/chef/chef/pull/12328) ([tas50](https://github.com/tas50)) <!-- 16.17.18 -->
 - Update nokogiri from 1.11.0 to 1.12.5 [#12326](https://github.com/chef/chef/pull/12326) ([tas50](https://github.com/tas50)) <!-- 16.17.17 -->
 - Update Ruby to 2.7.5 [#12325](https://github.com/chef/chef/pull/12325) ([tas50](https://github.com/tas50)) <!-- 16.17.16 -->
 - Bump omnibus-software from `461fc3e` to `8560231` in /omnibus [#12320](https://github.com/chef/chef/pull/12320) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.15 -->
