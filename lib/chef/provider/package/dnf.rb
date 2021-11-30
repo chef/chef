@@ -98,7 +98,7 @@ class Chef
           end
         end
 
-        def magic_version
+        def magic_version_array
           package_name_array.each_with_index.map do |pkg, i|
             magical_version(i).version_with_arch
           end
