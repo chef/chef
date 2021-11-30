@@ -32,6 +32,9 @@ class Chef
         def loop_mount_points
           # get loop_mount_points only if not initialized earlier
           @loop_mount_points ||= shell_out!("losetup -a").stdout
+
+        rescue Errno::ENOENT
+          @loop_mount_points = ""
         end
 
         def mounted?
