@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.13 -->
-## [v16.17.13](https://github.com/chef/chef/tree/v16.17.13) (2021-11-27)
+<!-- latest_release 16.17.14 -->
+## [v16.17.14](https://github.com/chef/chef/tree/v16.17.14) (2021-11-30)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `7501e20` to `461fc3e` in /omnibus [#12312](https://github.com/chef/chef/pull/12312) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump test-kitchen from 3.2.0 to 3.2.1 in /omnibus [#12319](https://github.com/chef/chef/pull/12319) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump test-kitchen from 3.2.0 to 3.2.1 in /omnibus [#12319](https://github.com/chef/chef/pull/12319) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.14 -->
 - Bump omnibus-software from `7501e20` to `461fc3e` in /omnibus [#12312](https://github.com/chef/chef/pull/12312) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.13 -->
 - Bump kitchen-vagrant from 1.10.0 to 1.11.0 in /omnibus [#12306](https://github.com/chef/chef/pull/12306) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.12 -->
 - Bump test-kitchen from 3.1.1 to 3.2.0 in /omnibus [#12295](https://github.com/chef/chef/pull/12295) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.11 -->
