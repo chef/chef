@@ -438,47 +438,81 @@ class Chef
         @target_version_array ||=
           begin
             target_version_array = []
-            each_package do |package_name, new_version, current_version, candidate_version|
+            each_package do |package_name, new_version, current_version, candidate_version, magic_version|
               case action
               when :upgrade
-                if current_version.nil?
-                  # with use_magic_version there may be a package installed, but it fails the user's
-                  # requested new_resource.version constraints
-                  logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
-                  target_version_array.push(candidate_version)
-                elsif !use_magic_version? && version_equals?(current_version, new_version)
-                  # this is a short-circuit (mostly for the rubygems provider) to avoid needing to expensively query the candidate_version which must come later
+                if version_equals?(current_version, new_version)
+                  # This is a short-circuit (mostly for the rubygems provider) to avoid needing to
+                  # expensively query the candidate_version which must come later.  This only checks
+                  # exact matching, the check for fuzzy matching is later.
                   logger.trace("#{new_resource} #{package_name} #{new_version} is already installed")
                   target_version_array.push(nil)
+                elsif current_version.nil?
+                  # This is a simple check to see if we have any currently installed version at all, this is
+                  # safe to do before the allow_downgrade check so we check this before.
+                  logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
+                  target_version_array.push(candidate_version)
+                elsif !allow_downgrade && version_compare(current_version, candidate_version) == 1
+                  # This check for downgrading when allow_downgrade is false uses the current_version rather
+                  # than the magic_version since we never want to downgrade even if the constraints are not met
+                  # if the version is higher.  This check does use the candidate_version and unlazies this so
+                  # there will a perf hit on idempotent use when allow_downgrade is false which is unavoidable.
+                  logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
+                  target_version_array.push(nil)
+                elsif magic_version.nil?
+                  # This is the check for fuzzy matching of the installed_version, where if the installed version
+                  # does not match the desired version constraints (but is not an exact match) then we need to
+                  # install the candidate_version (this must come after the allow_downgrade check)
+                  logger.trace("#{new_resource} has an installed version that does not match the version constraint. Installing install #{candidate_version}")
+                  target_version_array.push(candidate_version)
                 elsif candidate_version.nil?
+                  # This check necessarily unlazies the candidate_version and may be expensive (connecting to
+                  # rubygems.org or whatever).  It comes as late as possible.
                   logger.trace("#{new_resource} #{package_name} has no candidate_version to upgrade to")
                   target_version_array.push(nil)
                 elsif version_equals?(current_version, candidate_version)
+                  # This check sees if the candidate_version is already installed or if we should upgrade/update the
+                  # package.  This is the normal idempotent behavior of :upgrade and is inherently expensive due to
+                  # unlazying the candidate_version.  To prevent the perf hit the version may be specified with a full
+                  # version constraint.  Then the cookbook can roll the version forward and use :upgrade to force version
+                  # pinning.
                   logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
                   target_version_array.push(nil)
-                elsif !allow_downgrade && version_compare(current_version, candidate_version) == 1
-                  logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
-                  target_version_array.push(nil)
                 else
-                  logger.trace("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
+                  logger.trace("#{new_resource} #{package_name} is out of date, will update to #{candidate_version}")
                   target_version_array.push(candidate_version)
                 end
 
               when :install
-                if new_version && !use_magic_version?
+                if current_version && new_version && !allow_downgrade && version_compare(current_version, new_version) == 1
+                  # This is the idempotency guard for downgrades when downgrades are not allowed.  This should perhaps raise
+                  # an exception since we were told to install an exact package version but we are silently refusing to do so
+                  # because a higher version is already installed.  Maybe we need a flag for users to apply their preferred
+                  # declarative philosophy?  This has to come early and outside of the two code paths below.
+                  logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
+                  target_version_array.push(nil)
+                elsif new_version && !use_magic_version?
+                  # This is for "non magic version using" subclasses to do comparisons between the current_version and the
+                  # desired new_version.  XXX: If we converted this to current_version_requirement_satisfied? and made it specific
+                  # to the current version check and then eliminated the magic_version, we might be able to eliminate separate codepaths
+                  # here, and eliminate the semantic confusion around the magic_version?
                   if version_requirement_satisfied?(current_version, new_version)
                     logger.trace("#{new_resource} #{package_name} #{current_version} satisfies #{new_version} requirement")
                     target_version_array.push(nil)
-                  elsif current_version && !allow_downgrade && version_compare(current_version, new_version) == 1
-                    logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
-                    target_version_array.push(nil)
                   else
+                    # XXX: some subclasses seem to depend on this behavior where the new_version can be different from the
+                    # candidate_version and we install the new_version, it seems like the candidate_version should be fixed to
+                    # be resolved correctly to the new_version for those providers.  although it may just be unit test bugs.
+                    # it would be more correct to use the candidate_version here, but then it needs to be the correctly resolved
+                    # candidate_version against the new_version constraint.
                     logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
                     target_version_array.push(new_version)
                   end
-                elsif current_version.nil?
-                  # with use_magic_version there may be a package installed, but it fails the user's
-                  # requested new_resource.version constraints
+                elsif magic_version.nil?
+                  # This is for when we have a "magic version using" subclass and where the installed version does not match the
+                  # constraint specified in the new_version, so we need to upgrade to the candidate_version.  This is the only
+                  # codepath in the :install branch which references the candidate_version so it is slow, but it is the path where
+                  # we need to do work anyway.  XXX: should we check for candidate_version.nil? somewhere around here?
                   logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
                   target_version_array.push(candidate_version)
                 else
@@ -512,8 +546,8 @@ class Chef
         @packages_missing_candidates ||=
           begin
             missing = []
-            each_package do |package_name, new_version, current_version, candidate_version|
-              missing.push(package_name) if current_version.nil? && candidate_version.nil?
+            each_package do |package_name, new_version, current_version, candidate_version, magic_version|
+              missing.push(package_name) if magic_version.nil? && candidate_version.nil?
             end
             missing
           end
@@ -536,7 +570,7 @@ class Chef
         @forced_packages_missing_candidates ||=
           begin
             missing = []
-            each_package do |package_name, new_version, current_version, candidate_version|
+            each_package do |package_name, new_version, current_version, candidate_version, magic_version|
               next if new_version.nil? || current_version.nil?
 
               if use_magic_version?
@@ -559,9 +593,10 @@ class Chef
       def each_package
         package_name_array.each_with_index do |package_name, i|
           candidate_version = candidate_version_array[i]
-          current_version = use_magic_version? ? magic_version[i] : current_version_array[i]
+          current_version = current_version_array[i]
+          magic_version = use_magic_version? ? magic_version_array[i] : current_version_array[i]
           new_version = new_version_array[i]
-          yield package_name, new_version, current_version, candidate_version
+          yield package_name, new_version, current_version, candidate_version, magic_version
         end
       end
 
