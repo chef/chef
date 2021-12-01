@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.24 -->
-## [v17.8.24](https://github.com/chef/chef/tree/v17.8.24) (2021-12-01)
+<!-- latest_release 17.8.25 -->
+## [v17.8.25](https://github.com/chef/chef/tree/v17.8.25) (2021-12-01)
 
 #### Merged Pull Requests
-- Fix failures finding validation key when relative path is provided [#12145](https://github.com/chef/chef/pull/12145) ([snehaldwivedi](https://github.com/snehaldwivedi))
+- use powershell_exec instead of powershell_out in windows_feature_powershell [#11983](https://github.com/chef/chef/pull/11983) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- use powershell_exec instead of powershell_out in windows_feature_powershell [#11983](https://github.com/chef/chef/pull/11983) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.25 -->
 - Fix failures finding validation key when relative path is provided [#12145](https://github.com/chef/chef/pull/12145) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.8.24 -->
 - Update Nokogiri from 1.11.0 to 1.12.5 [#12327](https://github.com/chef/chef/pull/12327) ([tas50](https://github.com/tas50)) <!-- 17.8.23 -->
 - Bump chef/ohai to 1c5ef4fa1e3a316749dca0d4c14127edaedfb33a [#12329](https://github.com/chef/chef/pull/12329) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.22 -->
