@@ -48,6 +48,37 @@ describe "chef-client" do
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai" }
   let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
 
+  context "when validation.pem in current Directory" do
+    let(:validation_path) { "" }
+
+    before do
+      tempfile = Tempfile.new(validation_path)
+      tempfile.write "string"
+      tempfile.close
+      @path = tempfile.path
+      Chef::Config.validation_key = @path
+
+      file "config/client.rb", <<~EOM
+       local_mode true
+       cookbook_path "#{path_to("cookbooks")}"
+      EOM
+    end
+
+    it "should find validation.pem successfully in current dir" do
+      validation_path = "validation.pem"
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -K #{@path} ", cwd: chef_dir)
+    end
+
+    it "should find validation.pem successfully in current dir" do
+      validation_path = "/tmp/validation.pem"
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -K #{@path} ", cwd: chef_dir)
+    end
+
+    it "should find validation.pem successfully in default directory" do
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" ", cwd: chef_dir)
+    end
+  end
+
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file "cookbooks/x/recipes/default.rb", "" }
 
