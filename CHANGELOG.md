@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.23 -->
-## [v17.8.23](https://github.com/chef/chef/tree/v17.8.23) (2021-12-01)
+<!-- latest_release 17.8.24 -->
+## [v17.8.24](https://github.com/chef/chef/tree/v17.8.24) (2021-12-01)
 
 #### Merged Pull Requests
-- Update Nokogiri from 1.11.0 to 1.12.5 [#12327](https://github.com/chef/chef/pull/12327) ([tas50](https://github.com/tas50))
+- Fix failures finding validation key when relative path is provided [#12145](https://github.com/chef/chef/pull/12145) ([snehaldwivedi](https://github.com/snehaldwivedi))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix failures finding validation key when relative path is provided [#12145](https://github.com/chef/chef/pull/12145) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.8.24 -->
 - Update Nokogiri from 1.11.0 to 1.12.5 [#12327](https://github.com/chef/chef/pull/12327) ([tas50](https://github.com/tas50)) <!-- 17.8.23 -->
 - Bump chef/ohai to 1c5ef4fa1e3a316749dca0d4c14127edaedfb33a [#12329](https://github.com/chef/chef/pull/12329) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.22 -->
 - Remove support for macOS 10.14 [#12264](https://github.com/chef/chef/pull/12264) ([tas50](https://github.com/tas50)) <!-- 17.8.21 -->
