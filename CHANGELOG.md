@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.26 -->
-## [v17.8.26](https://github.com/chef/chef/tree/v17.8.26) (2021-12-01)
+<!-- latest_release 17.8.27 -->
+## [v17.8.27](https://github.com/chef/chef/tree/v17.8.27) (2021-12-01)
 
 #### Merged Pull Requests
-- Replace Ubuntu 21.10 testing with 22.04 testing [#12331](https://github.com/chef/chef/pull/12331) ([tas50](https://github.com/tas50))
+- Remove the unused bundler override [#12330](https://github.com/chef/chef/pull/12330) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.7.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the unused bundler override [#12330](https://github.com/chef/chef/pull/12330) ([tas50](https://github.com/tas50)) <!-- 17.8.27 -->
 - Replace Ubuntu 21.10 testing with 22.04 testing [#12331](https://github.com/chef/chef/pull/12331) ([tas50](https://github.com/tas50)) <!-- 17.8.26 -->
 - use powershell_exec instead of powershell_out in windows_feature_powershell [#11983](https://github.com/chef/chef/pull/11983) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.25 -->
 - Fix failures finding validation key when relative path is provided [#12145](https://github.com/chef/chef/pull/12145) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 17.8.24 -->
