@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: ae351f561032defcc8409ea01947100ced612230
+  revision: 8f4752b48a666630a1287c5f904a90b60fbea016
   branch: main
   specs:
     ohai (17.7.12)
@@ -24,13 +24,6 @@ GIT
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
-
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
 
 PATH
   remote: .
@@ -142,7 +135,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.537.0)
+    aws-partitions (1.539.0)
     aws-sdk-core (3.124.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -338,9 +331,10 @@ GEM
       rubocop-ast (>= 1.12.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.13.0)
+    rubocop-ast (1.14.0)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
+    ruby-shadow (2.5.1)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
@@ -462,7 +456,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
-  ruby-shadow!
+  ruby-shadow
   webmock
 
 BUNDLED WITH
