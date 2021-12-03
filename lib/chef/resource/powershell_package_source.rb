@@ -202,7 +202,7 @@ class Chef
         end
       end
 
-      action :set, description: "Updates an existing PSRepository or Package Source." do
+      action :set, description: "Updates an existing PowerShell repository or package source." do
         package_details = get_package_source_details
         output = package_details.result
         if output == "PSRepository"
