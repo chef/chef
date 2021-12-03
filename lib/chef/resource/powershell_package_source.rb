@@ -25,10 +25,10 @@ class Chef
 
       provides :powershell_package_source
 
-      description "Use the **powershell_package_source** resource to register a PowerShell package source and a Powershell package provider. There are 2 distinct objects we care about here. The first is a Package Source like a PowerShell Repository or a Nuget Source. The second object is a provider that PowerShell uses to get to that source with, like PowerShellGet, Nuget, Chocolatey, etc. "
+      description "Use the **powershell_package_source** resource to register a PowerShell package source and a Powershell package provider. There are two distinct objects we care about here. The first is a package source like a PowerShell repository or a NuGet Source. The second object is a provider that PowerShell uses to get to that source with, like PowerShellGet, NuGet, Chocolatey, etc."
       introduced "14.3"
       examples <<~DOC
-        **Add a new PSRepository that is not trusted and which requires credentials to connect to**:
+        **Add a new PowerShell repository that is not trusted and which requires credentials to connect to**:
 
         ```ruby
         powershell_package_source 'PowerShellModules' do
@@ -43,7 +43,7 @@ class Chef
         end
         ```
 
-        **Add a new Package Source that uses Chocolatey as the Package Provider**:
+        **Add a new package source that uses Chocolatey as the package provider**:
 
         ```ruby
         powershell_package_source 'PowerShellModules' do
@@ -56,7 +56,7 @@ class Chef
         end
         ```
 
-        **Add a new PowerShell Script source that is trusted**:
+        **Add a new PowerShell script source that is trusted**:
 
         ```ruby
         powershell_package_source 'MyDodgyScript' do
@@ -68,7 +68,7 @@ class Chef
         end
         ```
 
-        **Update my existing PSRepository to make it Trusted after all**:
+        **Update an existing PowerShell repository to make it trusted**:
 
         ```ruby
         powershell_package_source 'MyPSModule' do
@@ -137,7 +137,7 @@ class Chef
         description: "The location where scripts will be published to for this source. Only valid if the provider is `PowerShellGet`."
 
       property :trusted, [TrueClass, FalseClass],
-        description: "Whether or not to trust packages from this source. Used when creating a NON-PSRepository Package Source",
+        description: "Whether or not to trust packages from this source. Used when creating a non-PowerShell repository package source.",
         default: false
 
       property :user, String,
@@ -151,7 +151,7 @@ class Chef
       property :provider_name, String,
         equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey winget },
         validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl', 'chocolatey' or 'winget'",
-        description: "The package management provider for the package source. The default is PowerShellGet and this option need only be set otherwise in specific use cases.",
+        description: "The package management provider for the package source. The default is `PowerShellGet`. Only change this option in specific use cases.",
         default: "NuGet"
 
       load_current_value do
@@ -202,7 +202,7 @@ class Chef
         end
       end
 
-      action :set, description: "Updates an existing PSRepository or Package Source" do
+      action :set, description: "Updates an existing PSRepository or Package Source." do
         package_details = get_package_source_details
         output = package_details.result
         if output == "PSRepository"

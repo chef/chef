@@ -80,7 +80,7 @@ class Chef
         introduced: "15.9"
 
       property :server_url, String,
-        description: "The hostname of the subscription service to use. The default is for Customer Portal Subscription Management, subscription.rhn.redhat.com. If this option is not used, the system is registered with Customer Portal Subscription Management.",
+        description: "The hostname of the subscription service to use. The default is Customer Portal Subscription Management, subscription.rhn.redhat.com. If you do not use this option, the system registers with Customer Portal Subscription Management.",
           introduced: "17.8"
 
       property :base_url, String,
@@ -88,12 +88,12 @@ class Chef
         introduced: "17.8"
 
       property :service_level, String,
-        description: "Sets the service level to use for subscriptions on the registering machine. This is only used with the auto_attach option.",
+        description: "Sets the service level to use for subscriptions on the registering machine. This is only used with the `auto_attach` option.",
         introduced: "17.8"
 
       property :release,
         [Float, String],
-        description: "Sets the operating system minor release to use for subscriptions for the system. Products and updates are limited to the specified minor release version. This is used only used with the auto_attach option.  For example, `release '6.4'` will append `--release=6.4` to the register command.",
+        description: "Sets the operating system minor release to use for subscriptions for the system. Products and updates are limited to the specified minor release version. This is used only used with the `auto_attach` option.  For example, `release '6.4'` will append `--release=6.4` to the register command.",
         introduced: "17.8"
 
       action :register, description: "Register the node with RHSM." do
