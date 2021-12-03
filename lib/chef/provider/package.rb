@@ -107,7 +107,7 @@ class Chef
         end
       end
 
-      action :install do
+      action :install, description: "Install a package. If a version is specified, install the specified version of the package." do
         unless target_version_array.any?
           logger.debug("#{new_resource} is already installed - nothing to do")
           return
@@ -136,7 +136,7 @@ class Chef
 
       private :install_description
 
-      action :upgrade do
+      action :upgrade, description: "Install a package and/or ensure that a package is the latest version." do
         unless target_version_array.any?
           logger.debug("#{new_resource} no versions to upgrade - nothing to do")
           return
@@ -167,7 +167,7 @@ class Chef
 
       private :upgrade_description
 
-      action :remove do
+      action :remove, description: "Remove a package." do
         if removing_package?
           description = new_resource.version ? "version #{new_resource.version} of " : ""
           converge_by("remove #{description}package #{current_resource.package_name}") do
@@ -202,7 +202,7 @@ class Chef
         end
       end
 
-      action :purge do
+      action :purge, description: "Purge a package. This action typically removes the configuration files as well as the package." do
         if removing_package?
           description = new_resource.version ? "version #{new_resource.version} of" : ""
           converge_by("purge #{description} package #{current_resource.package_name}") do

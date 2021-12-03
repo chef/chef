@@ -92,7 +92,7 @@ class Chef
         end
       end
 
-      action :create do
+      action :create, description: "Create an entry in a cron table file (crontab). If an entry already exists (but does not match), update that entry to match." do
         crontab = ""
         newcron = ""
         cron_found = false
@@ -149,7 +149,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an entry from a cron table file (crontab)." do
         if @cron_exists
           crontab = ""
           cron_found = false
