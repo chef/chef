@@ -41,10 +41,6 @@ class Chef
       property :url, String,
         description: "The URL of the tap."
 
-      property :full, [TrueClass, FalseClass],
-        description: "Perform a full clone on the tap, as opposed to a shallow clone.",
-        default: false
-
       property :homebrew_path, String,
         description: "The path to the Homebrew binary.",
         default: "/usr/local/bin/brew"
