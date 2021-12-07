@@ -43,7 +43,7 @@ class Chef
       **Install multiple packages at once**:
 
       ```ruby
-      apt_package %(package1 package2 package3)
+      apt_package %w(package1 package2 package3)
       ```
 
       **Install without using recommend packages as a dependency**:
@@ -55,7 +55,7 @@ class Chef
       ```
       DOC
 
-      description "Use the **apt_package** resource to manage packages on Debian and Ubuntu platforms."
+      description "Use the **apt_package** resource to manage packages on Debian, Ubuntu, and other platforms that use the APT package system."
 
       property :default_release, String,
         description: "The default release. For example: `stable`.",

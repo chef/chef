@@ -149,7 +149,6 @@ class Chef
       DOC
 
       allowed_actions :create, :delete, :run, :end, :enable, :disable, :change
-      default_action :create
 
       property :task_name, String, regex: [%r{\A[^/\:\*\?\<\>\|]+\z}],
         description: "An optional property to set the task name if it differs from the resource block's name. Example: `Task Name` or `/Task Name`",
@@ -182,10 +181,19 @@ class Chef
         default: false
 
       property :frequency_modifier, [Integer, String],
-        default: 1
+        default: 1,
+        description: <<~DOCS
+          * For frequency `:minute` valid values are 1 to 1439
+          * For frequency `:hourly` valid values are 1 to 23
+          * For frequency `:daily` valid values are 1 to 365
+          * For frequency `:weekly` valid values are 1 to 52
+          * For frequency `:monthly` valid values are `('FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST')` OR `1-12`.
+            * e.g. If user want to run the task on `second week of the month` use `frequency_modifier` value as `SECOND`. Multiple values for weeks of the month should be comma separated e.g. `"FIRST, THIRD, LAST"`.
+            * To run task every (n) months use values 1 to 12.
+        DOCS
 
       property :frequency, Symbol, equal_to: %i{minute hourly daily weekly monthly once on_logon onstart on_idle none},
-        description: "The frequency with which to run the task."
+        description: "The frequency with which to run the task. Note: This property is required in Chef Infra Client 14.1 or later. Note: The `:once` value requires the `start_time` property to be set."
 
       property :start_day, String,
         description: "Specifies the first date on which the task runs in **MM/DD/YYYY** format.",
@@ -195,7 +203,14 @@ class Chef
         description: "Specifies the start time to run the task, in **HH:mm** format."
 
       property :day, [String, Integer],
-        description: "The day(s) on which the task runs."
+        description:  <<~DOCS
+        The day(s) on which the task runs.
+          * Use this property when setting `frequency` to `:monthly` or `:weekly`.
+          * Valid values with frequency `:weekly` are `MON`-`SUN` or `*`.
+          * Valid values with frequency `:monthly` are `1-31`, `MON`-`SUN`, and `LASTDAY`.
+          * Use `MON`-`SUN` or `LASTDAY` if you are setting `frequency_modifier` as "FIRST, SECOND, THIRD etc." else use 1-31.
+          * Multiple days should be comma separated. e.g `1, 2, 3` or `MON, WED, FRI`.
+        DOCS
 
       property :months, String,
         description: "The Months of the year on which the task runs, such as: `JAN, FEB` or `*`. Multiple months should be comma delimited. e.g. `Jan, Feb, Mar, Dec`."
@@ -961,7 +976,7 @@ class Chef
         end
       end
 
-      action :create do
+      action :create, description: "Creates a scheduled task, or updates an existing task if any property has changed." do
         set_command_and_arguments if new_resource.command
 
         if current_resource.exists
@@ -998,7 +1013,7 @@ class Chef
         end
       end
 
-      action :run do
+      action :run, description: "Runs a scheduled task." do
         if current_resource.exists
           logger.trace "#{new_resource} task exists"
           if current_resource.task.status == "running"
@@ -1013,7 +1028,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Deletes a scheduled task." do
         if current_resource.exists
           logger.trace "#{new_resource} task exists"
           converge_by("delete scheduled task #{new_resource}") do
@@ -1026,7 +1041,7 @@ class Chef
         end
       end
 
-      action :end do
+      action :end, description: "Ends a scheduled task." do
         if current_resource.exists
           logger.trace "#{new_resource} task exists"
           if current_resource.task.status != "running"
@@ -1041,7 +1056,7 @@ class Chef
         end
       end
 
-      action :enable do
+      action :enable, description: "Enables a scheduled task." do
         if current_resource.exists
           logger.trace "#{new_resource} task exists"
           if current_resource.task.status == "not scheduled"
@@ -1058,7 +1073,7 @@ class Chef
         end
       end
 
-      action :disable do
+      action :disable, description: "Disables a scheduled task." do
         if current_resource.exists
           logger.info "#{new_resource} task exists"
           if %w{ready running}.include?(current_resource.task.status)

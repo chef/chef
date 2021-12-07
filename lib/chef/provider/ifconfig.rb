@@ -168,7 +168,7 @@ class Chef
         end
       end
 
-      action :add do
+      action :add, description: "Run ifconfig to configure a network interface and (on some platforms) write a configuration file for that network interface." do
         # check to see if load_current_resource found interface in ifconfig
         unless current_resource.inet_addr
           unless new_resource.device == loopback_device
@@ -183,7 +183,7 @@ class Chef
         generate_config
       end
 
-      action :enable do
+      action :enable, description: "Run ifconfig to enable a network interface." do
         # check to see if load_current_resource found ifconfig
         # enables, but does not manage config files
         return if current_resource.inet_addr
@@ -196,7 +196,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Run ifconfig to disable a network interface and (on some platforms) delete that network interface’s configuration file." do
         # check to see if load_current_resource found the interface
         if current_resource.device
           command = delete_command
@@ -210,7 +210,7 @@ class Chef
         delete_config
       end
 
-      action :disable do
+      action :disable, description: "Run ifconfig to disable a network interface." do
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
         if current_resource.device
