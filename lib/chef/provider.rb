@@ -35,7 +35,6 @@ class Chef
     attr_accessor :after_resource
     attr_accessor :run_context
 
-    attr_reader :recipe_name
     attr_reader :logger
 
     include Chef::Mixin::WhyRun
@@ -172,6 +171,10 @@ class Chef
 
     def cookbook_name
       new_resource.cookbook_name
+    end
+
+    def recipe_name
+      new_resource.recipe_name
     end
 
     # hook that subclasses can use to do lazy validation for where properties aren't flexible enough
