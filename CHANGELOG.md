@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.29 -->
-## [v17.8.29](https://github.com/chef/chef/tree/v17.8.29) (2021-12-07)
+<!-- latest_release 17.8.30 -->
+## [v17.8.30](https://github.com/chef/chef/tree/v17.8.30) (2021-12-07)
 
 #### Merged Pull Requests
-- Bump test-kitchen from 3.2.1 to 3.2.2 in /omnibus [#12334](https://github.com/chef/chef/pull/12334) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core to 3.8.5 [#12339](https://github.com/chef/chef/pull/12339) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core to 3.8.5 [#12339](https://github.com/chef/chef/pull/12339) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.30 -->
 - Bump test-kitchen from 3.2.1 to 3.2.2 in /omnibus [#12334](https://github.com/chef/chef/pull/12334) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.29 -->
 - Replace Ubuntu 21.10 testing with 22.04 testing [#12331](https://github.com/chef/chef/pull/12331) ([tas50](https://github.com/tas50)) <!-- 17.8.26 -->
 - Remove the unused bundler override [#12330](https://github.com/chef/chef/pull/12330) ([tas50](https://github.com/tas50)) <!-- 17.8.27 -->
