@@ -108,7 +108,6 @@ require_relative "provider/group/groupadd"
 require_relative "provider/group/groupmod"
 require_relative "provider/group/pw"
 require_relative "provider/group/solaris"
-require_relative "provider/group/suse"
 require_relative "provider/group/usermod"
 require_relative "provider/group/windows"
 
