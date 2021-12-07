@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8f4752b48a666630a1287c5f904a90b60fbea016
+  revision: a2c2f9658402406dcbfb8e205dc6086ad38cb0d6
   branch: main
   specs:
-    ohai (17.7.12)
+    ohai (17.7.14)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -311,7 +311,7 @@ GEM
     rainbow (3.0.0)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.1.1)
+    regexp_parser (2.2.0)
     rexml (3.2.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
