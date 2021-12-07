@@ -35,7 +35,7 @@ namespace :spellcheck do
   end
 
   task :fetch_common do
-    sh "curl -s https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -o chef_dictionary.txt"
+    sh "curl -s https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt -o chef_dictionary.txt"
   end
 
   task :config_check do
