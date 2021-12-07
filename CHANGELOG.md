@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.32 -->
-## [v17.8.32](https://github.com/chef/chef/tree/v17.8.32) (2021-12-07)
+<!-- latest_release 17.8.33 -->
+## [v17.8.33](https://github.com/chef/chef/tree/v17.8.33) (2021-12-07)
 
 #### Merged Pull Requests
-- Remove the full option from homebrew_tap [#12346](https://github.com/chef/chef/pull/12346) ([damacus](https://github.com/damacus))
+- Remove group provider for EOL SLES &lt; 12 [#12344](https://github.com/chef/chef/pull/12344) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove group provider for EOL SLES &lt; 12 [#12344](https://github.com/chef/chef/pull/12344) ([tas50](https://github.com/tas50)) <!-- 17.8.33 -->
 - Remove the full option from homebrew_tap [#12346](https://github.com/chef/chef/pull/12346) ([damacus](https://github.com/damacus)) <!-- 17.8.32 -->
 - Bump pedump from 0.6.2 to 0.6.3 in /omnibus [#12351](https://github.com/chef/chef/pull/12351) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.31 -->
 - Bump train-core to 3.8.5 [#12339](https://github.com/chef/chef/pull/12339) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.30 -->
