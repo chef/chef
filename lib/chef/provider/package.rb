@@ -136,7 +136,7 @@ class Chef
 
       private :install_description
 
-      action :upgrade, description: "Install a package and/or ensure that a package is the latest version." do
+      action :upgrade, description: "Install a package and ensure that a package is the latest version." do
         unless target_version_array.any?
           logger.debug("#{new_resource} no versions to upgrade - nothing to do")
           return
