@@ -15,10 +15,10 @@ group :development do
   gem "berkshelf", ">= 7.0"
 
   # We have to use chef/ohai 16 until all builders are on ruby >= 2.7
-  gem "ohai", "~> 16.0"
-  gem "chef", "~> 16.0"
-  gem "chef-config", "~> 16.0"
-  gem "chef-utils", "~> 16.0"
+  gem "ohai", "~> 17.7"
+  gem "chef", "~> 17.8"
+  gem "chef-config", "~> 17.8"
+  gem "chef-utils", "~> 17.8"
 
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen", ">= 1.23"
