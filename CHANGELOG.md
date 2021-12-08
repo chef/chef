@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.8.35 -->
-## [v17.8.35](https://github.com/chef/chef/tree/v17.8.35) (2021-12-07)
+<!-- latest_release 17.8.36 -->
+## [v17.8.36](https://github.com/chef/chef/tree/v17.8.36) (2021-12-08)
 
 #### Merged Pull Requests
-- Add #recipe_name to Chef::Provider [#12207](https://github.com/chef/chef/pull/12207) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- remove unnecessary from_json call in windows_feature_powershell [#12355](https://github.com/chef/chef/pull/12355) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove unnecessary from_json call in windows_feature_powershell [#12355](https://github.com/chef/chef/pull/12355) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.36 -->
 - Add #recipe_name to Chef::Provider [#12207](https://github.com/chef/chef/pull/12207) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.8.35 -->
 - Move more documentation into the code [#12343](https://github.com/chef/chef/pull/12343) ([tas50](https://github.com/tas50)) <!-- 17.8.34 -->
 - Remove group provider for EOL SLES &lt; 12 [#12344](https://github.com/chef/chef/pull/12344) ([tas50](https://github.com/tas50)) <!-- 17.8.33 -->
