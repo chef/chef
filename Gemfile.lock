@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8f4752b48a666630a1287c5f904a90b60fbea016
+  revision: b16a591af0390d03f5450f67034df3c2aa9d1376
   branch: main
   specs:
-    ohai (17.7.12)
+    ohai (17.8.0)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -142,7 +142,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.539.0)
+    aws-partitions (1.540.0)
     aws-sdk-core (3.124.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -290,7 +290,7 @@ GEM
     net-ssh (6.1.0)
     nori (2.6.0)
     parallel (1.21.0)
-    parser (3.0.3.1)
+    parser (3.0.3.2)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
@@ -311,7 +311,7 @@ GEM
     rainbow (3.0.0)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.1.1)
+    regexp_parser (2.2.0)
     rexml (3.2.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
