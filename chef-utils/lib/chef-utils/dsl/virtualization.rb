@@ -140,6 +140,26 @@ module ChefUtils
         node.dig("virtualization", "system") == "vmware" && node.dig("virtualization", "role") == "host"
       end
 
+      # Determine if the current node is virtualized on VMware Desktop (Fusion/Player/Workstation).
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def vmware_desktop?(node = __getnode)
+        node.dig("virtualization", "system") == "vmware" && node.dig("vmware", "host", "type") == "vmware_desktop"
+      end
+
+      # Determine if the current node is virtualized on VMware vSphere (ESX).
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def vmware_vsphere?(node = __getnode)
+        node.dig("virtualization", "system") == "vmware" && node.dig("vmware", "host", "type") == "vmware_vsphere"
+      end
+
       # Determine if the current node is an openvz guest.
       #
       # @param [Chef::Node] node
