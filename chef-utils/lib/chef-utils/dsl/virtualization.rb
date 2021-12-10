@@ -143,6 +143,7 @@ module ChefUtils
       # Determine if the current node is virtualized on VMware Desktop (Fusion/Player/Workstation).
       #
       # @param [Chef::Node] node
+      # @since 17.9
       #
       # @return [Boolean]
       #
@@ -153,6 +154,7 @@ module ChefUtils
       # Determine if the current node is virtualized on VMware vSphere (ESX).
       #
       # @param [Chef::Node] node
+      # @since 17.9
       #
       # @return [Boolean]
       #
