@@ -31,26 +31,29 @@ jobs:
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
         gem install appbundler appbundle-updater --no-doc
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
         chef-client -v
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         ohai -v
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
         cd kitchen-tests
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        bundle config set --local without 'omnibus_package'
-        bundle config set --local path 'vendor/bundle'
         bundle install --jobs=3 --retry=3
+        # If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        # The bundle install command above fails because our build on windows on ruby-3.0 is
+        # completely broken when it comes to installing native gems.  Until that is fixed we
+        # need to ignore that error code and to manually install berkshelf below.  This is a
+        # very bad hack.
         gem install berkshelf --no-doc
-        # berks emits a ruby warning when it loads net/http due to a previously
-        # defined constant. Even though it is just a warning, powershell immediately
-        # exits 1. I'm not sure why but this just suppresses the warnings.
-        $env:RUBYOPT="-W0"
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         berks vendor cookbooks
-        # restore the default warning level
-        $env:RUBYOPT="-W1"
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         chef-client -z -o end_to_end --chef-license accept-no-persist
 
   macos:
