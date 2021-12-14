@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Setup auto issue labeler for docs [#12370](https://github.com/chef/chef/pull/12370) ([tas50](https://github.com/tas50))
 - Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Setup auto issue labeler for docs [#12370](https://github.com/chef/chef/pull/12370) ([tas50](https://github.com/tas50)) <!-- 17.9.1 -->
 - Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
 - Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12366](https://github.com/chef/chef/pull/12366) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
 - Update Ohai to 17.9 [#12362](https://github.com/chef/chef/pull/12362) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.0 -->
