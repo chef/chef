@@ -187,7 +187,7 @@ RSpec.configure do |config|
   config.filter_run_excluding not_rhel7: true if rhel7?
   config.filter_run_excluding not_intel_64bit: true if intel_64bit?
 
-  config.filter_run_excluding libarchive_loading_broken: true if aix? || amazon_linux? || rhel7?
+  # config.filter_run_excluding libarchive_loading_broken: true if aix? || amazon_linux? || rhel7?
 
   # these let us use chef: ">= 13" or ruby: "~> 2.0.0" or any other Gem::Dependency-style constraint
   config.filter_run_excluding chef: DependencyProc.with(Chef::VERSION)
