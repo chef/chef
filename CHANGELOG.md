@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.9.2 -->
+## [v17.9.2](https://github.com/chef/chef/tree/v17.9.2) (2021-12-14)
 
 #### Merged Pull Requests
+- Update for the new downloads site [#12361](https://github.com/chef/chef/pull/12361) ([tas50](https://github.com/tas50))
 - Setup auto issue labeler for docs [#12370](https://github.com/chef/chef/pull/12370) ([tas50](https://github.com/tas50))
 - Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
@@ -13,6 +14,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update for the new downloads site [#12361](https://github.com/chef/chef/pull/12361) ([tas50](https://github.com/tas50)) <!-- 17.9.2 -->
 - Setup auto issue labeler for docs [#12370](https://github.com/chef/chef/pull/12370) ([tas50](https://github.com/tas50)) <!-- 17.9.1 -->
 - Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
 - Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12366](https://github.com/chef/chef/pull/12366) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
