@@ -26,7 +26,7 @@ class Chef
 
       provides(:alternatives) { true }
 
-      description "Use the **alternatives** resource to configure command alternatives in Linux using the alternatives or update-alternatives packages."
+      description "I'm going to change some stuff. Use the **alternatives** resource to configure command alternatives in Linux using the alternatives or update-alternatives packages."
       introduced "16.0"
       examples <<~DOC
       **Install an alternative**:
