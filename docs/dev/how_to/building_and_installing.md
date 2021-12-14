@@ -5,7 +5,7 @@ Chef Infra can be built and installed in two distinct ways:
 - A gem built from this repository and installed into your own Ruby installation
 - A system native package containing its own Ruby built using our Omnibus packaging system
 
-**NOTE:** As an end user, please download the [Chef Infra package](https://downloads.chef.io/chef) for managing systems, or the [Chef Workstation package](https://downloads.chef.io/chef-workstation) for authoring Chef cookbooks and administering your Chef infrastructure.
+**NOTE:** As an end user, please download the [Chef Infra package](https://www.chef.io/downloads/tools/infra-client) for managing systems, or the [Chef Workstation package](https://www.chef.io/downloads/tools/workstation) for authoring Chef cookbooks and administering your Chef infrastructure.
 
 We do not recommend for end users to install Chef from gems or build from source. The following instructions apply only to those developing the Chef Infra client.
 

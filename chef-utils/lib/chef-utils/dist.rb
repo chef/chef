@@ -79,7 +79,7 @@ module ChefUtils
       WEBSITE = "https://chef.io"
 
       # The downloads site
-      DOWNLOADS_URL = "downloads.chef.io"
+      DOWNLOADS_URL = "chef.io/downloads"
 
       # The legacy conf folder: C:/opscode/chef. Specifically the "opscode" part
       # DIR_SUFFIX is appended to it in code where relevant

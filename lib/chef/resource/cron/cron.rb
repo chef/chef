@@ -106,7 +106,6 @@ class Chef
       ```
       DOC
 
-
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
       default_action :create
