@@ -817,7 +817,7 @@ describe Chef::Knife::Bootstrap do
             # Set everything to easily identifiable and obviously fake values
             # to verify that Chef::Config is being sourced instead of knife.config
             knife.config = {}
-            Chef::Config[:knife][:max_wait] = 9999
+            Chef::Config[:knife][:max_wait] = 9999.0
             Chef::Config[:knife][:winrm_user] = "winbob"
             Chef::Config[:knife][:winrm_port] = 9999
             Chef::Config[:knife][:ca_trust_file] = "trust.me"
@@ -836,7 +836,7 @@ describe Chef::Knife::Bootstrap do
               {
                 logger: Chef::Log, # not configurable
                 ca_trust_path: "trust.me",
-                max_wait_until_ready: 9999,
+                max_wait_until_ready: 9999, # converted to int
                 operation_timeout: 9999,
                 ssl_peer_fingerprint: "ABCDEF",
                 winrm_transport: "kerberos",
@@ -899,7 +899,7 @@ describe Chef::Knife::Bootstrap do
               # pull in the Chef::Config value
               Chef::Config[:knife][:winrm_auth_method] = "negotiate"
               knife.config[:connection_password] = "blue"
-              knife.config[:max_wait] = 1000
+              knife.config[:max_wait] = 1000.0
               knife.config[:connection_user] = "clippy"
               knife.config[:connection_port] = 1000
               knife.config[:winrm_port] = 1001 # We should not see this value get used
@@ -918,7 +918,7 @@ describe Chef::Knife::Bootstrap do
               {
                 logger: Chef::Log, # not configurable
                 ca_trust_path: "trust.the.internet",
-                max_wait_until_ready: 1000,
+                max_wait_until_ready: 1000, # converted to int
                 operation_timeout: 1000,
                 ssl_peer_fingerprint: "FEDCBA",
                 winrm_transport: "kerberos",
@@ -971,7 +971,7 @@ describe Chef::Knife::Bootstrap do
             # Set everything to easily identifiable and obviously fake values
             # to verify that Chef::Config is being sourced instead of knife.config
             knife.config = {}
-            Chef::Config[:knife][:max_wait] = 9999
+            Chef::Config[:knife][:max_wait] = 9999.0
             Chef::Config[:knife][:session_timeout] = 9999
             Chef::Config[:knife][:ssh_user] = "sshbob"
             Chef::Config[:knife][:ssh_port] = 9999
@@ -986,7 +986,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                max_wait_until_ready: 9999.0,
+                max_wait_until_ready: 9999, # converted to int
                 connection_timeout: 9999,
                 user: "sshbob",
                 bastion_host: "mygateway.local",
@@ -1032,7 +1032,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:connection_port] = 12
               knife.config[:ssh_port] = "13" # canary to indirectly verify we're not looking for the wrong CLI flag
               knife.config[:connection_password] = "feta cheese"
-              knife.config[:max_wait] = 150
+              knife.config[:max_wait] = 150.0
               knife.config[:session_timeout] = 120
               knife.config[:use_sudo] = true
               knife.config[:use_sudo_pasword] = true
@@ -1042,7 +1042,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                max_wait_until_ready: 150.0, # cli
+                max_wait_until_ready: 150, # cli (converted to int)
                 connection_timeout: 120, # cli
                 user: "sshalice", # cli
                 password: "feta cheese", # cli
@@ -1068,7 +1068,7 @@ describe Chef::Knife::Bootstrap do
           context "and all CLI options have been given" do
             before do
               knife.config = {}
-              knife.config[:max_wait] = 150
+              knife.config[:max_wait] = 150.0
               knife.config[:session_timeout] = 120
               knife.config[:connection_user] = "sshroot"
               knife.config[:connection_port] = 1000
@@ -1093,7 +1093,7 @@ describe Chef::Knife::Bootstrap do
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
-                max_wait_until_ready: 150,
+                max_wait_until_ready: 150, # converted to int
                 connection_timeout: 120,
                 user: "sshroot",
                 password: "blah",

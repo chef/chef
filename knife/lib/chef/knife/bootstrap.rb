@@ -930,7 +930,7 @@ class Chef
           opts[:logger] = Chef::Log
           opts[:password] = config[:connection_password] if config.key?(:connection_password)
           opts[:user] = user if user
-          opts[:max_wait_until_ready] = config[:max_wait].to_f unless config[:max_wait].nil?
+          opts[:max_wait_until_ready] = config[:max_wait].to_i unless config[:max_wait].nil?
           # TODO - when would we need to provide rdp_port vs port?  Or are they not mutually exclusive?
           opts[:port] = port if port
         end
