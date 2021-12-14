@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.1 -->
-## [v17.9.1](https://github.com/chef/chef/tree/v17.9.1) (2021-12-14)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12366](https://github.com/chef/chef/pull/12366) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
 - Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12366](https://github.com/chef/chef/pull/12366) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
 - Update Ohai to 17.9 [#12362](https://github.com/chef/chef/pull/12362) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.0 -->
 - Properly fail on windows tests [#12352](https://github.com/chef/chef/pull/12352) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.38 -->
