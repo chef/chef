@@ -70,7 +70,6 @@ describe Chef::SecretFetcher::HashiVault do
       it "raises ConfigurationInvalid message when :approle_name or :approle_id are not specified" do
         fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :approle, vault_addr: "https://vault.example.com:8200" }, run_context)
         expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
-        expect { fetcher.validate! }.to raise_error("You must provide the :approle_name or :approle_id in the configuration with :auth_method set to :approle")
       end
 
       it "authenticates using the approle_id and approle_secret_id during validation when all configuration is correct" do
