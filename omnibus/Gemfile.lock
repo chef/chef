@@ -162,7 +162,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
     chef-utils (16.17.18)
-    chef-vault (4.1.4)
+    chef-vault (4.1.5)
     chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
