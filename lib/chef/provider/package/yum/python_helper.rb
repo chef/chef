@@ -179,7 +179,7 @@ class Chef
             close_rpmdb unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
-            puts "parsed #{version} from python helper"
+            Chef::Log.trace "parsed #{version} from python helper"
             close_rpmdb unless repo_opts.empty?
             version
           end
@@ -213,11 +213,11 @@ class Chef
           def query(action, parameters)
             with_helper do
               json = build_query(action, parameters)
-              puts "sending '#{json}' to python helper"
-              outpipe.puts json
+              Chef::Log.trace "sending '#{json}' to python helper"
+              outpipe.Chef::Log.trace json
               outpipe.flush
               output = inpipe.readline.chomp
-              puts "got '#{output}' from python helper"
+              Chef::Log.trace "got '#{output}' from python helper"
               output
             end
           end
