@@ -71,6 +71,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 17.9.3)
+      chef-powershell
       chef-utils (= 17.9.3)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -441,7 +442,6 @@ GEM
     wmi-lite (1.0.5)
 
 PLATFORMS
-  arm64-darwin-20
   ruby
   x64-mingw32
   x86-mingw32
@@ -451,7 +451,6 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
-  chef-powershell
   chef-utils!
   chef-vault
   cheffish (>= 17)
@@ -470,4 +469,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.2.32
+   2.2.29
