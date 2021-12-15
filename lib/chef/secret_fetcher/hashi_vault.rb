@@ -31,6 +31,10 @@ class Chef
     # :auth_method - one of :iam_role, :token.  default: :iam_role
     # :vault_addr - the address of a running Vault instance, eg https://vault.example.com:8200
     #
+    # For `:approle`: one of `:approle_name` or `:approle_id`
+    #     `:approle_name`: The name of the approle to use for authentication.  When specified, associated `:approle_id` will be found via query to Vault instance.
+    #     `:approle_id`: The ID of the approle to use for authentication, requires `:approle_secret_id`
+    #     `:approle_secret_id`: The Vault `secret_id` associated with the provided `:approle_name` or `:approle_id`.  When specified, prevents need to create `:secret_id` with `:approle_name`.
     # For `:token` auth: `:token` - a Vault token valid for authentication.
     #
     # For `:iam_role`:  `:role_name` - the name of the role in Vault that was created
@@ -47,14 +51,25 @@ class Chef
     #
     # @example
     #
-    # fetcher = SecretFetcher.for_service(:hashi_vault, { role_name: "testing-role", vault_addr: https://localhost:8200}, run_context )
+    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :iam_role, role_name: "testing-role", vault_addr: https://localhost:8200}, run_context )
     # fetcher.fetch("secretkey1")
     #
     # @example
     #
-    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :token, token: "s.1234abcdef", vault_addr: https://localhost:8200}, run_context )
+    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :token, token: "s.1234abcdef", vault_addr: https://localhost:8200}, approle: 'approle_name', run_context )
     # fetcher.fetch("secretkey1")
-    SUPPORTED_AUTH_TYPES = %i{iam_role token}.freeze
+    #
+    # @example
+    #
+    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :approle, approle_id: "11111111-abcd-1111-abcd-111111111111", approle_secret_id: "22222222-abcd-2222-abcd-222222222222", vault_addr: https://localhost:8200}, run_context )
+    # fetcher.fetch("secretkey1")
+    #
+    # @example
+    #
+    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :approle, approle_name: "testing-role", token: "s.1234abcdef", vault_addr: https://localhost:8200}, run_context )
+    # fetcher.fetch("secretkey1")
+    #
+    SUPPORTED_AUTH_TYPES = %i{approle iam_role token}.freeze
     class HashiVault < Base
 
       # Validate and authenticate the current session using the configured auth strategy and parameters
@@ -67,6 +82,25 @@ class Chef
         Vault.namespace = config[:namespace] unless config[:namespace].nil?
 
         case config[:auth_method]
+        when :approle
+          unless config[:approle_name] || config[:approle_id]
+            raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the :approle_name or :approle_id in the configuration with :auth_method set to :approle")
+          end
+
+          # When :approle_id and :approle_secret_id are both specified, all pieces are present which are needed to authenticate using an approle.
+          #  If either is missing, we need to authenticate to Vault to get the missing pieces with the :approle_name and optionally :token.
+          unless config[:approle_id] && config[:approle_secret_id]
+            if config[:approle_name].nil?
+              raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the :approle_name in the configuration when :approle_id and :approle_secret_id are not both present with :auth_method set to :approle")
+            end
+
+            Vault.token = config[:token] unless config[:token].nil?
+          end
+
+          approle_id = config[:approle_id] || Vault.approle.role_id(config[:approle_name])
+          approle_secret_id = config[:approle_secret_id] || Vault.approle.create_secret_id(config[:approle_name]).data[:secret_id]
+
+          Vault.auth.approle(approle_id, approle_secret_id)
         when :token
           if config[:token].nil?
             raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the token in the configuration as :token")
