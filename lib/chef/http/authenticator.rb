@@ -152,29 +152,37 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-      # takes no parameters. Checks for the password in the registry and returns it if there, otherewise returns false
+      # takes no parameters. Checks for the password in the registry and returns it if there, otherwise returns false
       def self.get_cert_password
-        begin
-          @win32registry = Chef::Win32::Registry.new
-          path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
-          present = @win32registry.get_values(path)
-          if present.map { |h| h[:name] }[0] == "PfxPass"
-            present.map { |h| h[:data] }[0].to_s
-          end
-        rescue Chef::Exceptions::Win32RegKeyMissing
-          # if we don't have a password, log that and generate one
-          Chef::Log.warn "Authentication Hive and value not present in registry, creating it now"
-          new_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
-          some_chars = "~!@#$%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
-          password = some_chars.sample(1 + rand(some_chars.count)).join[0...14]
-          values = {:name=>"PfxPass", :type=>:string, :data=>password}
-          @win32registry.set_value(new_path, values)
+        @win32registry = Chef::Win32::Registry.new
+        path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        present = @win32registry.get_values(path)
+        if present.map { |h| h[:name] }[0] == "PfxPass"
+          present.map { |h| h[:data] }[0].to_s
+        elsif present.empty?
+          password = new_export_password
+          values = { name: "PfxPass", type: :string, data: password }
+          @win32registry.set_value(path, values)
           password
         end
+      rescue Chef::Exceptions::Win32RegKeyMissing
+        # if we don't have a password, log that and generate one
+        Chef::Log.warn "Authentication Hive and value not present in registry, creating it now"
+        new_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        password = new_export_password
+        values = { name: "PfxPass", type: :string, data: password }
+        @win32registry.create_key(new_path, true)
+        @win32registry.set_value(new_path, values)
+        password
+      end
+
+      def self.new_export_password
+        # cspell:disable-next-line
+        some_chars = "~!@#$%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
+        some_chars.sample(1 + rand(some_chars.count)).join[0...14]
       end
 
       def self.retrieve_certificate_key(client_name)
-
         require "openssl" unless defined?(OpenSSL)
 
         if ChefUtils.windows?
