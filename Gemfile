@@ -62,7 +62,6 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 # add these additional dependencies into Gemfile.local
 eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 
-
 # PowerShell assemblies have been moved to the chef-powershell-shim repo
 # require "chef-powershell"
 # include Chef_PowerShell::ChefPowerShell::PowerShellExec
