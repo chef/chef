@@ -217,25 +217,6 @@ class Chef
 
           private
 
-          # i couldn't figure out how to decompose an evr on the python side, it seems reasonably
-          # painless to do it in ruby (generally massaging nevras in the ruby side is HIGHLY
-          # discouraged -- this is an "every rule has an exception" exception -- any additional
-          # functionality should probably trigger moving this regexp logic into python)
-          def add_version(hash, version)
-            epoch = nil
-            if version =~ /(\S+):(\S+)/
-              epoch = $1
-              version = $2
-            end
-            if version =~ /(\S+)-(\S+)/
-              version = $1
-              release = $2
-            end
-            hash["epoch"] = epoch unless epoch.nil?
-            hash["release"] = release unless release.nil?
-            hash["version"] = version
-          end
-
           def query(action, parameters)
             with_helper do
               json = build_query(action, parameters)
@@ -253,11 +234,6 @@ class Chef
             parameters.each do |param_name, param_value|
               hash[param_name] = param_value unless param_value.nil?
             end
-
-            # Special handling for certain action / param combos
-            # if %i{whatinstalled whatavailable}.include?(action)
-            #  add_version(hash, parameters["version"]) unless parameters["version"].nil?
-            # end
 
             FFI_Yajl::Encoder.encode(hash)
           end
