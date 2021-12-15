@@ -92,6 +92,7 @@ class Chef
 
       property :cron_name, String,
         description: "An optional property to set the cron name if it differs from the resource block's name.",
+        regex: /^[a-zA-Z0-9_-]+$/,
         name_property: true
 
       property :cookbook, String, desired_state: false, skip_docs: true

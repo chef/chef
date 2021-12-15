@@ -34,6 +34,14 @@ describe Chef::Resource::CronD do
     expect(resource.cron_name).to eql("cronify")
   end
 
+  it "the cron_name property is valid" do
+    expect { resource.cron_name "cron-job" }.not_to raise_error
+    expect { resource.cron_name "cron_job_0" }.not_to raise_error
+    expect { resource.cron_name "CronJob" }.not_to raise_error
+    expect { resource.cron_name "cron!" }.to raise_error(ArgumentError)
+    expect { resource.cron_name "cron job" }.to raise_error(ArgumentError)
+  end
+
   it "the mode property defaults to '0600'" do
     expect(resource.mode).to eql("0600")
   end
