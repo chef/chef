@@ -6,6 +6,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+gem "chef-powershell"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
@@ -62,21 +63,7 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 # add these additional dependencies into Gemfile.local
 eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 
-# These lines added for Windows development only.
-# For FFI to call into PowerShell we need the binaries and assemblies located
-# in the Ruby bindir.
-# The Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
-# Every merge into that repo triggers a Habitat build and promotion. Running
-# the rake :update_chef_exec_dll task in this (chef/chef) repo will pull down
-# the built packages and copy the binaries to distro/ruby_bin_folder.
-#
-# We copy (and overwrite) these files every time "bundle <exec|install>" is
-# executed, just in case they have changed.
-if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-  instance_eval do
-    ruby_exe_dir = RbConfig::CONFIG["bindir"]
-    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
-    FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
-    ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
-  end
-end
+
+# PowerShell assemblies have been moved to the chef-powershell-shim repo
+# require "chef-powershell"
+# include Chef_PowerShell::ChefPowerShell::PowerShellExec
