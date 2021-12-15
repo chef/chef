@@ -667,14 +667,14 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "when there is no solution to the contraint" do
+      it "when there is no solution to the constraint" do
         flush_cache
         expect {
           yum_package "chef_rpm > 2.0"
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
-      it "when there is no solution to the contraint but an rpm is preinstalled" do
+      it "when there is no solution to the constraint but an rpm is preinstalled" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         expect {
           yum_package "chef_rpm > 2.0"
