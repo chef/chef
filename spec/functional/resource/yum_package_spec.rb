@@ -81,36 +81,40 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     context "vanilla use case" do
       it "installs if the package is not installed" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "does not install if the package is installed" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
-        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "does not install twice" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "does not install if the prior version package is installed" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
@@ -118,8 +122,9 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "does not install if the i686 package is installed", :intel_64bit do
         skip "FIXME: do nothing, or install the #{pkg_arch} version?"
         preinstall("chef_rpm-1.10-1.i686.rpm")
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.i686$")
       end
@@ -127,77 +132,234 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "does not install if the prior version i686 package is installed", :intel_64bit do
         skip "FIXME: do nothing, or install the #{pkg_arch} version?"
         preinstall("chef_rpm-1.2-1.i686.rpm")
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.i686$")
+      end
+    end
+
+    context "expanded idempotency checks with version variants" do
+      # 0:1.10, 0:1.10-1, 0:1*-1 don't work on yum/el6
+      %w{1.10 1* 1.10-1 1*-1 1.10-* 1*-* 0:1* *:1.10-* *:1*-*}.each do |vstring|
+        it "installs the rpm when #{vstring} is in the package_name" do
+          flush_cache
+          yum_package "chef_rpm-#{vstring}" do
+            options default_options
+            action :install
+          end.should_be_updated
+        end
+
+        it "is idempotent when #{vstring} is in the package_name" do
+          preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm-#{vstring}" do
+            options default_options
+            action :install
+          end.should_not_be_updated
+        end
+
+        it "installs the rpm when #{vstring} is in the version property" do
+          flush_cache
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :install
+          end.should_be_updated
+        end
+
+        it "is idempotent when #{vstring} is in the version property" do
+          preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :install
+          end.should_not_be_updated
+        end
+
+        it "upgrades the rpm when #{vstring} is in the package_name" do
+          flush_cache
+          yum_package "chef_rpm-#{vstring}" do
+            options default_options
+            action :upgrade
+          end.should_be_updated
+        end
+
+        it "is idempotent when #{vstring} is in the package_name" do
+          preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm-#{vstring}" do
+            options default_options
+            action :upgrade
+          end.should_not_be_updated
+        end
+
+        it "upgrades the rpm when #{vstring} is in the version property" do
+          flush_cache
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :upgrade
+          end.should_be_updated
+        end
+
+        it "is idempotent when #{vstring} is in the version property" do
+          preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :upgrade
+          end.should_not_be_updated
+        end
+      end
+
+      # 0:1.2 0:1.2-1 0:1*-1 don't work on yum/el6
+      %w{1.2 1* 1.2-1 1*-1 1.2-* 1*-* 0:1* *:1.2-* *:1*-*}.each do |vstring|
+        it "is idempotent when #{vstring} is in the version property and there is a candidate version" do
+          preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :install
+          end.should_not_be_updated
+          expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        end
+      end
+
+      # 0:1.2, 0:1.2-1, 0:1*-1 don't work on yum/el6
+      %w{1.2 1.2-1 1.2-* *:1.2-*}.each do |vstring|
+        it "is idempotent when #{vstring} is in the version property on upgrade and it doesn't match the candidate version" do
+          preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :upgrade
+          end.should_not_be_updated
+          expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        end
+      end
+
+      # 0:1.2, 0:1.2-1, 0:1*-1 don't work on yum/el6
+      %w{1* 1*-1 1*-* 0:1* *:1*-*}.each do |vstring|
+        it "upgrades when #{vstring} is in the version property on upgrade and it matches the candidate version" do
+          preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :upgrade
+          end.should_be_updated
+          expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+          yum_package "chef_rpm" do
+            options default_options
+            version vstring
+            action :upgrade
+          end.should_not_be_updated
+        end
       end
     end
 
     context "with versions or globs in the name" do
       it "works with a version" do
         flush_cache
-        yum_package("chef_rpm-1.10") do
+        yum_package "chef_rpm-1.10" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.10" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "works with an older version" do
         flush_cache
-        yum_package("chef_rpm-1.2") do
+        yum_package "chef_rpm-1.2" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.2" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "works with an evra" do
         flush_cache
-        yum_package("chef_rpm-0:1.2-1.#{pkg_arch}") do
+        yum_package "chef_rpm-0:1.2-1.#{pkg_arch}" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm-0:1.2-1.#{pkg_arch}" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "works with version and release" do
         flush_cache
-        yum_package("chef_rpm-1.2-1") do
+        yum_package "chef_rpm-1.2-1" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.2-1" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "works with a version glob" do
         flush_cache
-        yum_package("chef_rpm-1*") do
+        yum_package "chef_rpm-1*" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1*" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "works with a name glob + version glob" do
         flush_cache
-        yum_package("chef_rp*-1*") do
+        yum_package "chef_rp*-1*" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rp*-1*" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "upgrades when the installed version does not match the version string" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm-1.10") do
+        yum_package "chef_rpm-1.10" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}")
+        yum_package "chef_rpm-1.10" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "downgrades when the installed version is higher than the package_name version" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm-1.2") do
-          allow_downgrade true
+        yum_package "chef_rpm-1.2" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.2" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
     end
 
@@ -205,221 +367,349 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     context "with version property" do
       it "matches the full version" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          version("1.10")
+          version "1.10"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10"
+          action :install
+        end.should_not_be_updated
       end
 
       it "matches with a glob" do
-        # we are unlikely to ever fix this.  if you've found this comment you should use e.g. "tcpdump-4*" in
-        # the name field rather than trying to use a name of "tcpdump" and a version of "4*".
-        pending "this does not work, is not easily supported by the underlying yum libraries, but does work in the new dnf_package provider"
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          version("1*")
+          version "1*"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1*"
+          action :install
+        end.should_not_be_updated
       end
 
       it "matches the vr" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          version("1.10-1")
+          version "1.10-1"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10-1"
+          action :install
+        end.should_not_be_updated
       end
 
       it "matches the evr" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          version("0:1.10-1")
+          version "0:1.10-1"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "0:1.10-1"
+          action :install
+        end.should_not_be_updated
       end
 
       it "matches with a vr glob" do
-        pending "doesn't work on command line either"
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          version("1.10-1*")
+          version "1.10-1*"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10-1*"
+          action :install
+        end.should_not_be_updated
       end
 
       it "matches with an evr glob" do
-        pending "doesn't work on command line either"
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          version("0:1.10-1*")
+          version "0:1.10-1*"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "0:1.10-1*"
+          action :install
+        end.should_not_be_updated
       end
     end
 
     context "downgrades" do
-      it "downgrades the package when allow_downgrade" do
+      it "downgrades the package when allow_downgrade is true" do
         flush_cache
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          allow_downgrade true
-          version("1.2-1")
+          version "1.2-1"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.2-1"
+          action :install
+        end.should_not_be_updated
+      end
+
+      it "does not downgrade the package when allow_downgrade is false" do
+        flush_cache
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm" do
+          options default_options
+          allow_downgrade false
+          version "1.2-1"
+          action :install
+        end.should_not_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
     end
 
     context "with arches", :intel_64bit do
       it "installs with 64-bit arch in the name" do
         flush_cache
-        yum_package("chef_rpm.#{pkg_arch}") do
+        yum_package "chef_rpm.#{pkg_arch}" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm.#{pkg_arch}" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "installs with 32-bit arch in the name" do
         flush_cache
-        yum_package("chef_rpm.i686") do
+        yum_package "chef_rpm.i686" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.i686$")
+        yum_package "chef_rpm.i686" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "installs with 64-bit arch in the property" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          arch((pkg_arch).to_s)
+          arch pkg_arch
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          arch pkg_arch
+          action :install
+        end.should_not_be_updated
       end
 
       it "installs with 32-bit arch in the property" do
         flush_cache
-        yum_package("chef_rpm") do
+        yum_package "chef_rpm" do
           options default_options
-          arch("i686")
+          arch "i686"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.i686$")
+        yum_package "chef_rpm" do
+          options default_options
+          arch "i686"
+          action :install
+        end.should_not_be_updated
+      end
+
+      it "installs when the 32-bit arch is in the name and the version is in the property" do
+        flush_cache
+        yum_package "chef_rpm.i686" do
+          options default_options
+          version "1.10-1"
+          action :install
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.i686$")
+        yum_package "chef_rpm.i686" do
+          options default_options
+          version "1.10-1"
+          action :install
+        end.should_not_be_updated
+      end
+
+      it "installs when the 64-bit arch is in the name and the version is in the property" do
+        flush_cache
+        yum_package "chef_rpm.#{pkg_arch}" do
+          options default_options
+          version "1.10-1"
+          action :install
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm.#{pkg_arch}" do
+          options default_options
+          version "1.10-1"
+          action :install
+        end.should_not_be_updated
       end
     end
 
     context "with constraints" do
       it "with nothing installed, it installs the latest version" do
         flush_cache
-        yum_package("chef_rpm >= 1.2") do
+        yum_package "chef_rpm >= 1.2" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm >= 1.2" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "when it is met, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm >= 1.2") do
+        yum_package "chef_rpm >= 1.2" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
       it "when it is met, it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm >= 1.2") do
+        yum_package "chef_rpm >= 1.2" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with nothing intalled, it installs the latest version" do
+      it "with nothing installed, it installs the latest version" do
         flush_cache
-        yum_package("chef_rpm > 1.2") do
+        yum_package "chef_rpm > 1.2" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm > 1.2" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "when it is not met by an installed rpm, it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm > 1.2") do
+        yum_package "chef_rpm > 1.2" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm > 1.2" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "with an equality constraint, when it is not met by an installed rpm, it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm = 1.10") do
+        yum_package "chef_rpm = 1.10" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm = 1.10" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "with an equality constraint, when it is met by an installed rpm, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm = 1.2") do
+        yum_package "chef_rpm = 1.2" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
       it "when it is met by an installed rpm, it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm > 1.2") do
+        yum_package "chef_rpm > 1.2" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "when there is no solution to the constraint" do
+      it "when there is no solution to the contraint" do
         flush_cache
         expect {
-          yum_package("chef_rpm > 2.0") do
-            options default_options
-          end
+          yum_package "chef_rpm > 2.0"
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
-      it "when there is no solution to the constraint but an rpm is preinstalled" do
+      it "when there is no solution to the contraint but an rpm is preinstalled" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         expect {
-          yum_package("chef_rpm > 2.0") do
-            options default_options
-          end
+          yum_package "chef_rpm > 2.0"
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
       it "with a less than constraint, when nothing is installed, it installs" do
         flush_cache
-        yum_package("chef_rpm < 1.10") do
-          allow_downgrade true
+        yum_package "chef_rpm < 1.10" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm < 1.10" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "with a less than constraint, when the install version matches, it does nothing" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm < 1.10") do
-          allow_downgrade true
+        yum_package "chef_rpm < 1.10" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
       it "with a less than constraint, when the install version fails, it should downgrade" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm < 1.10") do
-          allow_downgrade true
+        yum_package "chef_rpm < 1.10" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm < 1.10" do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
     end
 
@@ -427,95 +717,110 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "raises an exception when the package does not exist" do
         flush_cache
         expect {
-          yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm") do
-            options default_options
-          end
+          yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm"
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
       it "does not raise a hard exception in why-run mode when the package does not exist" do
         Chef::Config[:why_run] = true
         flush_cache
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm" do
           options default_options
+          action :install
         end
       end
 
       it "installs the package when using the source argument" do
         flush_cache
         yum_package "something" do
-          package_name "somethingelse"
           source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
+          options default_options
+          package_name "somethingelse"
+          name "something"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "something" do
+          source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
+          options default_options
+          package_name "somethingelse"
+          name "something"
+          action :install
+        end.should_not_be_updated
       end
 
       it "installs the package when the name is a path to a file" do
         flush_cache
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
-      end
-
-      it "downgrade on a local file is ignored when allow_downgrade is false" do
-        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          allow_downgrade false
-          version "1.2-1"
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
-        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "downgrade on a local file with allow_downgrade true works" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          version "1.2-1"
-          allow_downgrade true
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
+          version "1.2-1"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options default_options
+          version "1.2-1"
+          action :install
+        end.should_not_be_updated
+      end
+
+      it "downgrade on a local file with allow_downgrade false does not downgrade" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options default_options
+          allow_downgrade false
+          version "1.2-1"
+          action :install
+        end.should_not_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "does not downgrade the package with :install" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "does not upgrade the package with :install" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.#{pkg_arch}.rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
       it "is idempotent when the package is already installed" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
 
       it "is idempotent when the package is already installed and there is a version string" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options default_options
           version "1.2-1"
-          options default_options
-        end.should_not_be_updated
-        expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
-      end
-
-      it "is idempotent when the package is already installed and there is a version string with arch" do
-        preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          version "1.2-1.#{pkg_arch}"
-          options default_options
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
@@ -527,6 +832,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         yum_package "chef_rpm" do
           options "--nogpgcheck"
+          action :install
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
       end
@@ -534,28 +840,39 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "works with a local source" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         flush_cache
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options "--nogpgcheck"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options "--nogpgcheck"
+          action :install
+        end.should_not_be_updated
       end
     end
 
     context "multipackage with arches", :intel_64bit do
       it "installs two rpms" do
         flush_cache
-        yum_package([ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] ) do
+        yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version(/^chef_rpm-1.10-1.#{pkg_arch}$/)
         expect_matching_installed_version(/^chef_rpm-1.10-1.i686$/)
+        yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "does nothing if both are installed" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm", "chef_rpm-1.10-1.i686.rpm")
         flush_cache
-        yum_package([ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] ) do
+        yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
           options default_options
+          action :install
         end.should_not_be_updated
       end
 
@@ -563,18 +880,28 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version(/^chef_rpm-1.10-1.#{pkg_arch}$/)
         expect_matching_installed_version(/^chef_rpm-1.10-1.i686$/)
+        yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       it "installs the first rpm if the second is installed" do
         preinstall("chef_rpm-1.10-1.i686.rpm")
         yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
           options default_options
+          action :install
         end.should_be_updated
         expect_matching_installed_version(/^chef_rpm-1.10-1.#{pkg_arch}$/)
         expect_matching_installed_version(/^chef_rpm-1.10-1.i686$/)
+        yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
@@ -583,9 +910,15 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         yum_package %w{chef_rpm chef_rpm} do
           options default_options
           arch [pkg_arch, "i686"]
+          action :install
         end.should_be_updated
         expect_matching_installed_version(/^chef_rpm-1.10-1.#{pkg_arch}$/)
         expect_matching_installed_version(/^chef_rpm-1.10-1.i686$/)
+        yum_package %w{chef_rpm chef_rpm} do
+          options default_options
+          arch [pkg_arch, "i686"]
+          action :install
+        end.should_not_be_updated
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
@@ -594,9 +927,14 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         yum_package %w{chef_rpm chef_rpm} do
           options default_options
           arch [pkg_arch, "i686"]
+          action :install
         end.should_be_updated
         expect_matching_installed_version(/^chef_rpm-1.10-1.#{pkg_arch}$/)
         expect_matching_installed_version(/^chef_rpm-1.10-1.i686$/)
+        yum_package %w{chef_rpm chef_rpm} do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
@@ -605,9 +943,14 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         yum_package %w{chef_rpm chef_rpm} do
           options default_options
           arch [pkg_arch, "i686"]
+          action :install
         end.should_be_updated
         expect_matching_installed_version(/^chef_rpm-1.10-1.#{pkg_arch}$/)
         expect_matching_installed_version(/^chef_rpm-1.10-1.i686$/)
+        yum_package %w{chef_rpm chef_rpm} do
+          options default_options
+          action :install
+        end.should_not_be_updated
       end
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
@@ -616,6 +959,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         yum_package %w{chef_rpm chef_rpm} do
           options default_options
           arch [pkg_arch, "i686"]
+          action :install
         end.should_not_be_updated
       end
     end
@@ -626,6 +970,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect {
           yum_package "chef_rpm" do
             options "--nogpgcheck --disablerepo=chef-yum-localtesting"
+            action :install
           end
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
@@ -633,9 +978,14 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "should work with disablerepo first" do
         flush_cache
         yum_package "chef_rpm" do
-          options "--nogpgcheck --disablerepo=* --enablerepo=chef-yum-localtesting"
+          options ["--nogpgcheck", "--disablerepo=*", "--enablerepo=chef-yum-localtesting"]
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options ["--nogpgcheck", "--disablerepo=*", "--enablerepo=chef-yum-localtesting"]
+          action :install
+        end.should_not_be_updated
       end
 
       it "should work to enable a disabled repo" do
@@ -644,13 +994,19 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect {
           yum_package "chef_rpm" do
             options "--nogpgcheck"
+            action :install
           end
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
         flush_cache
         yum_package "chef_rpm" do
           options "--nogpgcheck --enablerepo=chef-yum-localtesting"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options "--nogpgcheck --enablerepo=chef-yum-localtesting"
+          action :install
+        end.should_not_be_updated
       end
 
       it "when an idempotent install action is run, does not leave repos disabled" do
@@ -667,58 +1023,107 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
         # now we're still using the same cache in the yum_helper.py cache and we test to see if the
         # repo that we temporarily disabled is enabled on this pass.
-        yum_package("chef_rpm-1.10-1.#{pkg_arch}") do
+        yum_package "chef_rpm-1.10-1.#{pkg_arch}" do
           options "--nogpgcheck"
+          action :install
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.10-1.#{pkg_arch}" do
+          options "--nogpgcheck"
+          action :install
+        end.should_not_be_updated
       end
     end
   end
 
   describe ":upgrade" do
+    context "downgrades" do
+      it "just work with DNF" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.2"
+          action :install
+        end.should_be_updated
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.2"
+          action :install
+        end.should_not_be_updated
+      end
+    end
 
     context "with source arguments" do
       it "installs the package when using the source argument" do
         flush_cache
         yum_package "something" do
+          options default_options
           package_name "somethingelse"
           source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "something" do
+          options default_options
+          package_name "somethingelse"
+          source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "installs the package when the name is a path to a file" do
         flush_cache
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "downgrades the package when allow_downgrade is true" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
-          allow_downgrade true
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "does not downgrade the package when allow_downgrade is false" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options default_options
+          allow_downgrade false
+          action :upgrade
+        end.should_not_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
       it "upgrades the package" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.#{pkg_arch}.rpm" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.10-1.#{pkg_arch}.rpm" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "is idempotent when the package is already installed" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options default_options
           action :upgrade
         end.should_not_be_updated
@@ -730,7 +1135,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "works when a package is installed" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options "--nogpgcheck"
           action :upgrade
         end.should_not_be_updated
@@ -740,74 +1145,186 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       it "works with a local source" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         flush_cache
-        yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
           options "--nogpgcheck"
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm" do
+          options "--nogpgcheck"
+          action :upgrade
+        end.should_not_be_updated
       end
     end
 
     context "version pinning" do
-      it "with an equality pin in the name it upgrades a prior package" do
+      it "with a full version pin it installs a later package" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm-1.10") do
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10-1"
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10-1"
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a full version pin in the name it downgrades the package" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.2-1"
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.2-1"
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a partial (no release) version pin it installs a later package" do
+        preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10"
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version "1.10"
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a partial (no release) version pin in the name it downgrades the package" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm" do
+          options default_options
+          version("1.2")
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          options default_options
+          version("1.2")
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a full version pin it installs a later package" do
+        preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm-1.10-1" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.10-1" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a full version pin in the name it downgrades the package" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm-1.2-1" do
+          options default_options
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.2-1" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a partial (no release) version pin it installs a later package" do
+        preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm-1.10" do
+          options default_options
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.10" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
+      end
+
+      it "with a partial (no release) version pin in the name it downgrades the package" do
+        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
+        yum_package "chef_rpm-1.2" do
+          options default_options
+          action :upgrade
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm-1.2" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "with a prco equality pin in the name it upgrades a prior package" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm == 1.10") do
+        yum_package "chef_rpm = 1.10" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
-      end
-
-      it "with an equality pin in the name it downgrades a later package" do
-        preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm-1.2") do
-          allow_downgrade true
+        yum_package "chef_rpm = 1.10" do
           options default_options
           action :upgrade
-        end.should_be_updated
-        expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        end.should_not_be_updated
       end
 
       it "with a prco equality pin in the name it downgrades a later package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm == 1.2") do
-          allow_downgrade true
+        yum_package "chef_rpm = 1.2" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm = 1.2" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "with a > pin in the name and no rpm installed it installs" do
         flush_cache
-        yum_package("chef_rpm > 1.2") do
+        yum_package "chef_rpm > 1.2" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm > 1.2" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "with a < pin in the name and no rpm installed it installs" do
         flush_cache
-        yum_package("chef_rpm < 1.10") do
+        yum_package "chef_rpm < 1.10" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm < 1.10" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "with a > pin in the name and matching rpm installed it does nothing" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm > 1.2") do
+        yum_package "chef_rpm > 1.2" do
           options default_options
           action :upgrade
         end.should_not_be_updated
@@ -816,7 +1333,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a < pin in the name and no rpm installed it installs" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm < 1.10") do
+        yum_package "chef_rpm < 1.10" do
           options default_options
           action :upgrade
         end.should_not_be_updated
@@ -825,21 +1342,28 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "with a > pin in the name and non-matching rpm installed it upgrades" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm > 1.2") do
+        yum_package "chef_rpm > 1.2" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm > 1.2" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
 
       it "with a < pin in the name and non-matching rpm installed it downgrades" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        yum_package("chef_rpm < 1.10") do
-          allow_downgrade true
+        yum_package "chef_rpm < 1.10" do
           options default_options
           action :upgrade
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.#{pkg_arch}$")
+        yum_package "chef_rpm < 1.10" do
+          options default_options
+          action :upgrade
+        end.should_not_be_updated
       end
     end
   end
@@ -885,6 +1409,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")
+        yum_package "chef_rpm" do
+          options default_options
+          action :remove
+        end.should_not_be_updated
       end
 
       it "removes the package if the i686 package is installed", :intel_64bit do
@@ -895,6 +1423,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")
+        yum_package "chef_rpm" do
+          options default_options
+          action :remove
+        end.should_not_be_updated
       end
 
       it "removes the package if the prior version i686 package is installed", :intel_64bit do
@@ -905,6 +1437,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")
+        yum_package "chef_rpm" do
+          options default_options
+          action :remove
+        end.should_not_be_updated
       end
     end
 
@@ -925,6 +1461,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")
+        yum_package "chef_rpm.#{pkg_arch}" do
+          options default_options
+          action :remove
+        end.should_not_be_updated
       end
 
       it "removes the package if the prior version package is installed" do
@@ -934,6 +1474,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")
+        yum_package "chef_rpm.#{pkg_arch}" do
+          options default_options
+          action :remove
+        end.should_not_be_updated
       end
 
       it "does nothing if the i686 package is installed" do
@@ -963,6 +1507,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm.i686" do
+          options default_options
+          action :remove
+        end.should_not_be_updated
       end
     end
 
@@ -975,6 +1523,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :remove
         end.should_be_updated
         expect_matching_installed_version("^package chef_rpm is not installed$")
+        yum_package "chef_rpm" do
+          options "--nogpgcheck"
+          action :remove
+        end.should_not_be_updated
       end
     end
   end
@@ -990,17 +1542,21 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     it "locks an rpm" do
       flush_cache
-      yum_package("chef_rpm") do
+      yum_package "chef_rpm" do
         options default_options
         action :lock
       end.should_be_updated
       expect(shell_out("yum versionlock list").stdout.chomp).to match("^0:chef_rpm-")
+      yum_package "chef_rpm" do
+        options default_options
+        action :lock
+      end.should_not_be_updated
     end
 
     it "does not lock if its already locked" do
       flush_cache
       shell_out!("yum versionlock add chef_rpm")
-      yum_package("chef_rpm") do
+      yum_package "chef_rpm" do
         options default_options
         action :lock
       end.should_not_be_updated
@@ -1010,16 +1566,20 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     it "unlocks an rpm" do
       flush_cache
       shell_out!("yum versionlock add chef_rpm")
-      yum_package("chef_rpm") do
+      yum_package "chef_rpm" do
         options default_options
         action :unlock
       end.should_be_updated
       expect(shell_out("yum versionlock list").stdout.chomp).not_to match("^0:chef_rpm-")
+      yum_package "chef_rpm" do
+        options default_options
+        action :unlock
+      end.should_not_be_updated
     end
 
     it "does not unlock an already locked rpm" do
       flush_cache
-      yum_package("chef_rpm") do
+      yum_package "chef_rpm" do
         options default_options
         action :unlock
       end.should_not_be_updated
@@ -1028,21 +1588,29 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     it "check that we can lock based on provides" do
       flush_cache
-      yum_package("chef_rpm_provides") do
+      yum_package "chef_rpm_provides" do
         options default_options
         action :lock
       end.should_be_updated
       expect(shell_out("yum versionlock list").stdout.chomp).to match("^0:chef_rpm-")
+      yum_package "chef_rpm_provides" do
+        options default_options
+        action :lock
+      end.should_not_be_updated
     end
 
     it "check that we can unlock based on provides" do
       flush_cache
       shell_out!("yum versionlock add chef_rpm")
-      yum_package("chef_rpm_provides") do
+      yum_package "chef_rpm_provides" do
         options default_options
         action :unlock
       end.should_be_updated
       expect(shell_out("yum versionlock list").stdout.chomp).not_to match("^0:chef_rpm-")
+      yum_package "chef_rpm_provides" do
+        options default_options
+        action :unlock
+      end.should_not_be_updated
     end
   end
 end

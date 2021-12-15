@@ -115,17 +115,71 @@ class Chef
             end
           end
 
+          def is_arch?(arch)
+            # cspell:disable-next
+            arches = %w{alpha alphaev4 alphaev45 alphaev5 alphaev56 alphaev6 alphaev67 alphaev68 alphaev7 alphapca56 amd64 armv5tejl armv5tel armv6l armv7l athlon geode i386 i486 i586 i686 ia32e ia64 noarch ppc ppc64 ppc64iseries ppc64pseries s390 s390x sh3 sh4 sh4a sparc sparc64 sparc64v sparcv8 sparcv9 sparcv9v x86_64}
+            arches.include?(arch)
+          end
+
+          # We have a provides line with an epoch in it and yum cannot parse that, so we
+          # need to deconstruct the args.  This doesn't support splats which is why we
+          # only do it for this particularly narrow use case.
+          #
+          # name-epoch:version
+          # name-epoch:version.arch
+          # name-epoch:version-release
+          # name-epoch:version-release.arch
+          #
+          def deconstruct_args(provides)
+            raise "provides must have an epoch in the version to deconstruct" unless provides =~ /^(\S+)-(\d+):(\S+)/
+
+            name = $1
+            epoch = $2
+            other = $3
+            ret = { "provides" => name, "epoch" => epoch }
+            maybe_arch = other.rpartition(".").last
+            arch = if is_arch?(maybe_arch)
+                     other.delete_suffix!(".#{maybe_arch}")
+                     maybe_arch
+                   end
+            ret.merge!({ "arch" => arch }) if arch
+            (version, _, release) = other.rpartition("-")
+            if version.empty?
+              ret.merge!({ "version" => release }) # yeah, rpartition is just weird
+            else
+              ret.merge!({ "version" => version, "release" => release })
+            end
+          end
+
+          def combine_args(provides, version, arch)
+            provides = provides.dup
+            maybe_arch = provides.rpartition(".").last
+            if is_arch?(maybe_arch)
+              arch = maybe_arch
+              provides.delete_suffix!(".#{arch}")
+            end
+            provides = "#{provides}-#{version}" if version
+            provides = "#{provides}.#{arch}" if arch
+            # yum (on rhel7) can't handle an epoch in provides, but
+            # deconstructing the args can't handle dealing with globs
+            if provides =~ /-\d+:/ && provides !~ /[\*\?]/
+              deconstruct_args(provides)
+            else
+              { "provides" => provides }
+            end
+          end
+
           # @return Array<Version>
           # NB: "options" here is the yum_package options hash and is deliberately not **opts
           def package_query(action, provides, version: nil, arch: nil, options: {})
-            parameters = { "provides" => provides, "version" => version, "arch" => arch }
+            parameters = combine_args(provides, version, arch)
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
             # XXX: for now we close the rpmdb before and after every query with an enablerepo/disablerepo to clean the helpers internal state
             close_rpmdb unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
-            Chef::Log.trace "parsed #{version} from python helper"
+            puts "parsed #{version} from python helper"
             close_rpmdb unless repo_opts.empty?
             version
           end
@@ -159,11 +213,11 @@ class Chef
           def query(action, parameters)
             with_helper do
               json = build_query(action, parameters)
-              Chef::Log.trace "sending '#{json}' to python helper"
+              puts "sending '#{json}' to python helper"
               outpipe.puts json
               outpipe.flush
               output = inpipe.readline.chomp
-              Chef::Log.trace "got '#{output}' from python helper"
+              puts "got '#{output}' from python helper"
               output
             end
           end
@@ -175,9 +229,9 @@ class Chef
             end
 
             # Special handling for certain action / param combos
-            if %i{whatinstalled whatavailable}.include?(action)
-              add_version(hash, parameters["version"]) unless parameters["version"].nil?
-            end
+            # if %i{whatinstalled whatavailable}.include?(action)
+            #  add_version(hash, parameters["version"]) unless parameters["version"].nil?
+            # end
 
             FFI_Yajl::Encoder.encode(hash)
           end
