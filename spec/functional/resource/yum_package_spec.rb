@@ -1042,7 +1042,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
   describe ":upgrade" do
     context "downgrades" do
-      it "just work with DNF" do
+      it "just works by default" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package "chef_rpm" do
           options default_options
