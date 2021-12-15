@@ -130,6 +130,7 @@ class Chef
           # name-epoch:version-release
           # name-epoch:version-release.arch
           #
+          # @api private
           def deconstruct_args(provides)
             raise "provides must have an epoch in the version to deconstruct" unless provides =~ /^(\S+)-(\d+):(\S+)/
 
@@ -151,6 +152,31 @@ class Chef
             end
           end
 
+          # In the default case for the yum provider we now do terrible things with ruby
+          # to concatenate all the properties together to form a single string to feed to
+          # the python which favors using returnPackages/searchProvides over the
+          # searchNevra API.  That means that these two different ways of constructing the
+          # resource are now perfectly identical:
+          #
+          # yum_package "zabbix-agent-4.0.15-1.fc31.x86_64"
+          #
+          # yum_package "zabbix-agent" do
+          #   version "4.0.15-1.fc31"
+          #   arch "x86_64"
+          # end
+          #
+          # This function handles turning the second form into the first form.
+          #
+          # In the case where the epoch is given in the version and we do not have any glob
+          # patterns that is handled by going the other way and calling deconstruct_args due
+          # to the yum libraries not supporting that calling pattern other than by searchNevra.
+          #
+          # NOTE: This is an ugly hack and should NOT be considered an endorsement of this approach
+          # towards any kind of features or bugfixes in the DNF provider.  I'm doing this
+          # because YUM is sunsetting at this point and its very difficult to fight with the
+          # libraries on the python side of things.
+          #
+          # @api private
           def combine_args(provides, version, arch)
             provides = provides.dup
             maybe_arch = provides.rpartition(".").last
