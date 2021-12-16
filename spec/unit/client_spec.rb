@@ -23,6 +23,8 @@ require "chef/run_context"
 require "chef/server_api"
 require "rbconfig"
 
+require "pry"
+
 class FooError < RuntimeError
 end
 
@@ -106,8 +108,7 @@ shared_context "a client run" do
   let(:http_node_load)        { double("Chef::ServerAPI (node)") }
   let(:http_node_save)        { double("Chef::ServerAPI (node save)") }
   let(:reporting_rest_client) { double("Chef::ServerAPI (reporting client)") }
-
-  let(:runner) { instance_double("Chef::Runner") }
+  let(:runner)                { instance_double("Chef::Runner") }
 
   def stub_for_register
     # --Client.register
