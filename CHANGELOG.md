@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.5 -->
-## [v17.9.5](https://github.com/chef/chef/tree/v17.9.5) (2021-12-15)
+<!-- latest_release 17.9.6 -->
+## [v17.9.6](https://github.com/chef/chef/tree/v17.9.6) (2021-12-16)
 
 #### Merged Pull Requests
-- Adds approle support for Chef::SecretFetcher::HashiVault [#12300](https://github.com/chef/chef/pull/12300) ([collinmcneese](https://github.com/collinmcneese))
+- Bump chef-vault to 4.1.5 [#12380](https://github.com/chef/chef/pull/12380) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef-vault to 4.1.5 [#12380](https://github.com/chef/chef/pull/12380) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.6 -->
 - Adds approle support for Chef::SecretFetcher::HashiVault [#12300](https://github.com/chef/chef/pull/12300) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.9.5 -->
 - fix knife bootstrap issue when max wait is specified ref#12281 [#12338](https://github.com/chef/chef/pull/12338) ([kasif-adnan](https://github.com/kasif-adnan)) <!-- 17.9.4 -->
 - Add helpers to detect VMware desktop vs server platforms [#12358](https://github.com/chef/chef/pull/12358) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.9.3 -->
