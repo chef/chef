@@ -23,8 +23,6 @@ require "chef/run_context"
 require "chef/server_api"
 require "rbconfig"
 
-require "pry"
-
 class FooError < RuntimeError
 end
 
