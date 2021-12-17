@@ -25,7 +25,7 @@ describe Chef::Resource::CookbookFile do
   let(:source) { "java.response" }
   let(:cookbook_name) { "java" }
   let(:expected_content) do
-    content = File.open(File.join(CHEF_SPEC_DATA, "cookbooks", "java", "files", "default", "java.response"), "rb", &:read)
+    content = File.binread(File.join(CHEF_SPEC_DATA, "cookbooks", "java", "files", "default", "java.response"))
     content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
     content
   end

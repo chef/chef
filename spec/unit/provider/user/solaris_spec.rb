@@ -74,7 +74,7 @@ describe Chef::Provider::User::Solaris do
       allow(Tempfile).to receive(:new).with("shadow", "/etc").and_return(temp_file)
       new_resource.password "verysecurepassword"
       provider.manage_user
-      expect(::File.open(password_file.path, "r").read).to match(/adam:verysecurepassword:/)
+      expect(::File.read(password_file.path)).to match(/adam:verysecurepassword:/)
       password_file.unlink
     end
   end
