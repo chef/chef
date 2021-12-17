@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.7 -->
-## [v17.9.7](https://github.com/chef/chef/tree/v17.9.7) (2021-12-16)
+<!-- latest_release 17.9.8 -->
+## [v17.9.8](https://github.com/chef/chef/tree/v17.9.8) (2021-12-17)
 
 #### Merged Pull Requests
-- Update adhoc-canary.omnibus.yml [#12379](https://github.com/chef/chef/pull/12379) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- YUM package idempotency fixes [#10823](https://github.com/chef/chef/pull/10823) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- YUM package idempotency fixes [#10823](https://github.com/chef/chef/pull/10823) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.8 -->
 - Update adhoc-canary.omnibus.yml [#12379](https://github.com/chef/chef/pull/12379) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.9.7 -->
 - Bump chef-vault to 4.1.5 [#12380](https://github.com/chef/chef/pull/12380) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.6 -->
 - Adds approle support for Chef::SecretFetcher::HashiVault [#12300](https://github.com/chef/chef/pull/12300) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.9.5 -->
