@@ -2,18 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.23 -->
-## [v16.17.23](https://github.com/chef/chef/tree/v16.17.23) (2021-12-16)
+<!-- latest_release 16.17.24 -->
+## [v16.17.24](https://github.com/chef/chef/tree/v16.17.24) (2021-12-17)
 
 #### Merged Pull Requests
-- Bump chef-vault to 4.1.5 [#12381](https://github.com/chef/chef/pull/12381) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12371](https://github.com/chef/chef/pull/12371) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core to 3.8.6 [#12388](https://github.com/chef/chef/pull/12388) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core to 3.8.6 [#12388](https://github.com/chef/chef/pull/12388) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.24 -->
 - Bump chef-vault to 4.1.5 [#12381](https://github.com/chef/chef/pull/12381) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.23 -->
 - Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12371](https://github.com/chef/chef/pull/12371) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.22 -->
 - Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12365](https://github.com/chef/chef/pull/12365) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.22 -->
