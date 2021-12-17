@@ -117,7 +117,7 @@ class Chef
 
           def is_arch?(arch)
             # cspell:disable-next
-            arches = %w{alpha alphaev4 alphaev45 alphaev5 alphaev56 alphaev6 alphaev67 alphaev68 alphaev7 alphapca56 amd64 armv5tejl armv5tel armv6l armv7l athlon geode i386 i486 i586 i686 ia32e ia64 noarch ppc ppc64 ppc64iseries ppc64pseries s390 s390x sh3 sh4 sh4a sparc sparc64 sparc64v sparcv8 sparcv9 sparcv9v x86_64}
+            arches = %w{aarch64 alpha alphaev4 alphaev45 alphaev5 alphaev56 alphaev6 alphaev67 alphaev68 alphaev7 alphapca56 armv5tejl armv5tel armv5tl armv6l armv7l armv8l armv6hl armv7hl armv7hnl armv8hl i386 athlon geode i386 i486 i586 i686 ia64 mips mipsel mips64 mips64el noarch ppc ppc64 ppc64iseries ppc64p7 ppc64pseries ppc64le riscv32 riscv64 riscv128 s390 s390x sh3 sh4 sh4a sparc sparc64 sparc64v sparcv8 sparcv9 sparcv9v x86_64 amd64 ia32e}
             arches.include?(arch)
           end
 
