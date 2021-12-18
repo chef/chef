@@ -43,7 +43,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match(version)
   end
 
-  before(:suite) do
+  before(:all) do
     shell_out!("yum -y install yum-utils")
   end
 
