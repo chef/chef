@@ -43,8 +43,14 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match(version)
   end
 
-  before(:all) do
+  before(:suite) do
     shell_out!("yum -y install yum-utils")
+  end
+
+  # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+  # python helper periodically before every top level context to get more FDs.
+  before(:all) do
+    Chef::Provider::Package::Yum::PythonHelper.instance.restart
   end
 
   before(:each) do
