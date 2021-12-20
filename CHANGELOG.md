@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.9 -->
-## [v17.9.9](https://github.com/chef/chef/tree/v17.9.9) (2021-12-17)
+<!-- latest_release 17.9.13 -->
+## [v17.9.13](https://github.com/chef/chef/tree/v17.9.13) (2021-12-20)
 
 #### Merged Pull Requests
-- Bump train-core to 3.8.6 [#12387](https://github.com/chef/chef/pull/12387) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.52.9 [#12393](https://github.com/chef/chef/pull/12393) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.52.9 [#12393](https://github.com/chef/chef/pull/12393) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.13 -->
 - Bump train-core to 3.8.6 [#12387](https://github.com/chef/chef/pull/12387) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.9 -->
 - YUM package idempotency fixes [#10823](https://github.com/chef/chef/pull/10823) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.8 -->
 - Update adhoc-canary.omnibus.yml [#12379](https://github.com/chef/chef/pull/12379) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.9.7 -->
