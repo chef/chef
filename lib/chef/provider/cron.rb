@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Cron < Chef::Provider
 
-      provides :cron, os: ["!aix", "!solaris2", "!amazon"]
+      provides :cron, os: ["!aix", "!solaris2", "!amazon-2022"]
 
       SPECIAL_TIME_VALUES = %i{reboot yearly annually monthly weekly daily midnight hourly}.freeze
       CRON_ATTRIBUTES = %i{minute hour day month weekday time command mailto path shell home environment}.freeze

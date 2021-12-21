@@ -26,7 +26,7 @@ class Chef
   class Provider
     class Cron
       class Unix < Chef::Provider::Cron
-        provides :cron, os: "solaris2"
+        provides :cron, os: "solaris2", "amazon-2022"
 
         private
 
