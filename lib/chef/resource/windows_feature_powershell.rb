@@ -146,7 +146,7 @@ class Chef
           # the intersection of the features to install & disabled/removed features are what needs installing
           @features_to_install ||= begin
             features = node["powershell_features_cache"]["disabled"]
-            features |= node["powershell_features_cache"]["removed"] if new_resource.source
+            features |= node["powershell_features_cache"]["removed"]
             new_resource.feature_name & features
           end
         end
