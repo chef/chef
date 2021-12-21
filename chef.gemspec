@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ffi", ">= 1.5.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0" # remote_file resource
+  s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
   s.add_dependency "diff-lcs", ">= 1.2.4", "< 1.4.0" # 1.4 breaks output. Used in lib/chef/util/diff
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
