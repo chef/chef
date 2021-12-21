@@ -25,7 +25,9 @@ pipelines:
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
-  - omnibus/release
+  - omnibus/release:
+      env:
+        - IGNORE_CACHE: true # caching causes constant build failures
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
