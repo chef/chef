@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.14 -->
-## [v17.9.14](https://github.com/chef/chef/tree/v17.9.14) (2021-12-21)
+<!-- latest_release 17.9.15 -->
+## [v17.9.15](https://github.com/chef/chef/tree/v17.9.15) (2021-12-22)
 
 #### Merged Pull Requests
-- Unpin ohai in omnibus Gemfile [#12383](https://github.com/chef/chef/pull/12383) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Add missing require statements [#12405](https://github.com/chef/chef/pull/12405) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.8.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add missing require statements [#12405](https://github.com/chef/chef/pull/12405) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.9.15 -->
 - Unpin ohai in omnibus Gemfile [#12383](https://github.com/chef/chef/pull/12383) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.9.14 -->
 - Bump inspec-core-bin to 4.52.9 [#12393](https://github.com/chef/chef/pull/12393) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.13 -->
 - Bump train-core to 3.8.6 [#12387](https://github.com/chef/chef/pull/12387) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.9 -->
