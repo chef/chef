@@ -47,12 +47,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     shell_out!("yum -y install yum-utils")
   end
 
-  # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
-  # python helper periodically before every top level context to get more FDs.
-  before(:all) do
-    Chef::Provider::Package::Yum::PythonHelper.instance.restart
-  end
-
   before(:each) do
     # force errors to fail and not retry
     ENV["YUM_HELPER_NO_RETRIES"] = "true"
@@ -1044,6 +1038,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   end
 
   describe ":upgrade" do
+
+    # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+    # python helper periodically before every top level context to get more FDs.
+    before(:all) do
+      Chef::Provider::Package::Yum::PythonHelper.instance.restart
+    end
+
     context "downgrades" do
       it "just works by default" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
@@ -1376,6 +1377,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   end
 
   describe ":remove" do
+
+    # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+    # python helper periodically before every top level context to get more FDs.
+    before(:all) do
+      Chef::Provider::Package::Yum::PythonHelper.instance.restart
+    end
+
     context "vanilla use case" do
       it "does nothing if the package is not installed" do
         flush_cache
@@ -1539,6 +1547,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   end
 
   describe ":lock and :unlock" do
+
+    # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+    # python helper periodically before every top level context to get more FDs.
+    before(:all) do
+      Chef::Provider::Package::Yum::PythonHelper.instance.restart
+    end
+
     before(:all) do
       shell_out!("yum -y install yum-versionlock")
     end
