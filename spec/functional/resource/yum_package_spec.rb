@@ -141,6 +141,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "expanded idempotency checks with version variants" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       # 0:1*-1 doesn't work on yum/el6
       %w{1.10 1* 1.10-1 1*-1 1.10-* 1*-* 0:1* *:1.10-* *:1*-* 0:1.10 0:1.10-1}.each do |vstring|
         it "installs the rpm when #{vstring} is in the package_name" do
@@ -258,6 +265,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "with versions or globs in the name" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "works with a version" do
         flush_cache
         yum_package "chef_rpm-1.10" do
@@ -365,6 +379,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     # version only matches the actual yum version, does not work with epoch or release or combined evr
     context "with version property" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "matches the full version" do
         flush_cache
         yum_package "chef_rpm" do
@@ -457,6 +478,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "downgrades" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "downgrades the package when allow_downgrade is true" do
         flush_cache
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
@@ -487,6 +515,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "with arches", :intel_64bit do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "installs with 64-bit arch in the name" do
         flush_cache
         yum_package "chef_rpm.#{pkg_arch}" do
@@ -575,6 +610,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "with constraints" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "with nothing installed, it installs the latest version" do
         flush_cache
         yum_package "chef_rpm >= 1.2" do
@@ -700,7 +742,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       # literally no idea why this fails on our rhel6 tester and only that one box and only this one test
-      it "with a less than constraint, when the install version fails, it should downgrade", :not_rhel6 do
+      it "with a less than constraint, when the install version fails, it should downgrade" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package "chef_rpm < 1.10" do
           options default_options
@@ -715,6 +757,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "with source arguments" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "raises an exception when the package does not exist" do
         flush_cache
         expect {
@@ -828,6 +877,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "with no available version" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "works when a package is installed" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
@@ -854,6 +910,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "multipackage with arches", :intel_64bit do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "installs two rpms" do
         flush_cache
         yum_package [ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] do
@@ -966,6 +1029,13 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     context "repo controls" do
+
+      # XXX: this is necessary for RHEL6 due to a file descriptor leak so we need to bounce the
+      # python helper periodically before every top level context to get more FDs.
+      before(:all) do
+        Chef::Provider::Package::Yum::PythonHelper.instance.restart
+      end
+
       it "should fail with the repo disabled" do
         flush_cache
         expect {
