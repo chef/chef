@@ -24,7 +24,6 @@ Starting from the main branch create a PR which:
 
 - Edits the `VERSION` file in the root of the repository to the new major release
 - Updates the `chef-config` and `chef-utils` dependencies to allow for the new major release of Chef Infra in `ohai.gemspec`
-- Update the `chef-config` and `chef-utils` deps in the Gemfile to point the the yet to be created chef-XYZ stable branch in the `chef/chef` repo. Note: This is going to fail for now. We have to start somewhere.
 
 ## Update chef/chef
 
@@ -54,10 +53,15 @@ Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
 Note: Make sure you're making this PR against the new stable branch and not master!
 
-## Bump master for the new major release
+## Bump main for the new major release
 
 Create a PR that performs the following:
 
 - Update the version in the VERSION file
 - Update chef.gemspec to point to the new ohai major release
 - run `rake dependencies:update`
+
+## Update Ohai stable for the Chef stable branch
+
+- In the ohai repo checkout the stable branch
+- Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.
