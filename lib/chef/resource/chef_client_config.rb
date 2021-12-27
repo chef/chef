@@ -257,7 +257,7 @@ class Chef
           new_resource.file_cache_path,
           ::File.join(new_resource.config_directory, "client.d"),
           ::File.dirname(new_resource.pid_file),
-        ].each do |dir_path|
+        ]&.each do |dir_path|
           next if dir_path.nil?
           next if ::Dir.exist?(dir_path)
 
