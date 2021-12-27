@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 795c6f0bac2c47dd94ea1e7bf55b1a906d2a14dd
+  revision: e86d186661a599703fe929497b33c5f7a3257d49
   branch: main
   specs:
-    ohai (17.9.0)
+    ohai (17.9.1)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -338,7 +338,7 @@ GEM
       rubocop-ast (>= 1.12.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.15.0)
+    rubocop-ast (1.15.1)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
