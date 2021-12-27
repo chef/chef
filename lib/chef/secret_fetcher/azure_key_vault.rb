@@ -123,7 +123,7 @@ class Chef
           body["access_token"]
         when Net::HTTPBadRequest
           body = JSON.parse(response.body)
-          raise Chef::Exceptions::Secret::Azure::IdentityNotFound if body["error_description"] =~ /identity not found/i
+          raise Chef::Exceptions::Secret::Azure::IdentityNotFound if /identity not found/i.match?(body["error_description"])
         else
           body = JSON.parse(response.body)
           body["access_token"]

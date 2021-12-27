@@ -62,7 +62,7 @@ class Chef
 
             # Exclude knife/chef/version. It's not a knife command, and  force-loading
             # when we load all of these files will emit constant-already-defined warnings
-            next if rel_path =~ version_file_match
+            next if rel_path&.match?(version_file_match)
 
             subcommand_files[rel_path] = file
           end

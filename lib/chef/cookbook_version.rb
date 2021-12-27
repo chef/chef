@@ -598,7 +598,7 @@ class Chef
         filename = record[:name]
         base_dup_name = File.join(File.dirname(filename), File.basename(filename, File.extname(filename)))
         yml_files.each do |other|
-          if other[:name] =~ /#{(File.extname(filename) == ".yml") ? "#{base_dup_name}.yaml" : "#{base_dup_name}.yml"}$/
+          if /#{(File.extname(filename) == ".yml") ? "#{base_dup_name}.yaml" : "#{base_dup_name}.yml"}$/.match?(other[:name])
             raise Chef::Exceptions::AmbiguousYAMLFile.new("Cookbook #{name}@#{version} contains ambiguous files: #{filename} and #{other[:name]}. Please update the cookbook to remove the incorrect file.")
           end
         end

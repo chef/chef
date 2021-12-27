@@ -120,7 +120,7 @@ class Chef
           @status = shell_out("ifconfig")
           @status.stdout.each_line do |line|
             addr_regex = /^((\w|-)+):?(\d*):?\ .+$/
-            if line =~ addr_regex
+            if line&.match?(addr_regex)
               if line.match(addr_regex).nil?
                 @int_name = "nil"
               elsif line.match(addr_regex)[3] == ""
