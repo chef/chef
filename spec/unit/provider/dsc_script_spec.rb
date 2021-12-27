@@ -39,21 +39,21 @@ describe Chef::Provider::DscScript do
       it "describes the resource as converged if there were 0 DSC resources" do
         allow(provider).to receive(:run_configuration).with(:test).and_return([])
         provider.load_current_resource
-        expect(provider.instance_variable_get("@resource_converged")).to be_truthy
+        expect(provider.instance_variable_get(:@resource_converged)).to be_truthy
       end
 
       it "describes the resource as not converged if there is 1 DSC resources that is converged" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new("resource", false, ["nothing will change something"])
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info])
         provider.load_current_resource
-        expect(provider.instance_variable_get("@resource_converged")).to be_truthy
+        expect(provider.instance_variable_get(:@resource_converged)).to be_truthy
       end
 
       it "describes the resource as not converged if there is 1 DSC resources that is not converged" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new("resource", true, ["will change something"])
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info])
         provider.load_current_resource
-        expect(provider.instance_variable_get("@resource_converged")).to be_falsey
+        expect(provider.instance_variable_get(:@resource_converged)).to be_falsey
       end
 
       it "describes the resource as not converged if there are any DSC resources that are not converged" do
@@ -62,7 +62,7 @@ describe Chef::Provider::DscScript do
 
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info1, dsc_resource_info2])
         provider.load_current_resource
-        expect(provider.instance_variable_get("@resource_converged")).to be_falsey
+        expect(provider.instance_variable_get(:@resource_converged)).to be_falsey
       end
 
       it "describes the resource as converged if all DSC resources that are converged" do
@@ -71,7 +71,7 @@ describe Chef::Provider::DscScript do
 
         allow(provider).to receive(:run_configuration).with(:test).and_return([dsc_resource_info1, dsc_resource_info2])
         provider.load_current_resource
-        expect(provider.instance_variable_get("@resource_converged")).to be_truthy
+        expect(provider.instance_variable_get(:@resource_converged)).to be_truthy
       end
     end
 
@@ -126,19 +126,19 @@ describe Chef::Provider::DscScript do
     describe "#generate_description" do
       it "removes the resource name from the beginning of any log line from the LCM" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new("resourcename", true, ["resourcename doing something", "lastline"])
-        provider.instance_variable_set("@dsc_resources_info", [dsc_resource_info])
+        provider.instance_variable_set(:@dsc_resources_info, [dsc_resource_info])
         expect(provider.send(:generate_description)[1]).to match(/converge DSC resource resourcename by doing something/)
       end
 
       it "ignores the last line" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new("resourcename", true, ["resourcename doing something", "lastline"])
-        provider.instance_variable_set("@dsc_resources_info", [dsc_resource_info])
+        provider.instance_variable_set(:@dsc_resources_info, [dsc_resource_info])
         expect(provider.send(:generate_description)[1]).not_to match(/lastline/)
       end
 
       it "reports a dsc resource has not been changed if the LCM reported no change was required" do
         dsc_resource_info = Chef::Util::DSC::ResourceInfo.new("resourcename", false, ["resourcename does nothing", "lastline"])
-        provider.instance_variable_set("@dsc_resources_info", [dsc_resource_info])
+        provider.instance_variable_set(:@dsc_resources_info, [dsc_resource_info])
         expect(provider.send(:generate_description)[1]).to match(/converge DSC resource resourcename by doing nothing/)
       end
     end

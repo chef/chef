@@ -157,7 +157,7 @@ shared_examples_for "a file with the wrong content" do
 
         context "when running :create action" do
           let(:provider) { resource.provider_for_action(:create) }
-          let(:reporter_messages) { provider.instance_variable_get("@converge_actions").actions[0][0] }
+          let(:reporter_messages) { provider.instance_variable_get(:@converge_actions).actions[0][0] }
 
           before do
             provider.run_action

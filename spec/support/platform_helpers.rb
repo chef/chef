@@ -172,7 +172,7 @@ def wpar?
 end
 
 def supports_cloexec?
-  Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
+  Fcntl.const_defined?(:F_SETFD) && Fcntl.const_defined?(:FD_CLOEXEC)
 end
 
 def selinux_enabled?

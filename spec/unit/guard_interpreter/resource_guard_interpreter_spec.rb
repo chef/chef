@@ -94,7 +94,7 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
 
     describe "script command opts switch" do
       let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "exit 0", {}) }
-      let(:resource) { guard_interpreter.instance_variable_get("@resource") }
+      let(:resource) { guard_interpreter.instance_variable_get(:@resource) }
 
       context "resource is a Script" do
         context "and guard_interpreter is a :script" do

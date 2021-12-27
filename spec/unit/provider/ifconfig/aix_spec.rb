@@ -68,8 +68,8 @@ describe Chef::Provider::Ifconfig::Aix do
     it "should add an interface if it does not exist" do
       @new_resource.device "en10"
       allow(@provider).to receive(:load_current_resource) do
-        @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
-        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+        @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
+        @provider.instance_variable_set(:@current_resource, Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
       command = "chdev -l #{@new_resource.device} -a netaddr=#{@new_resource.name}"
       expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
@@ -82,8 +82,8 @@ describe Chef::Provider::Ifconfig::Aix do
       @new_resource.device "en0"
       @new_resource.metric "1"
       allow(@provider).to receive(:load_current_resource) do
-        @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
-        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+        @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
+        @provider.instance_variable_set(:@current_resource, Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
 
       expect { @provider.run_action(:add) }.to raise_error(Chef::Exceptions::Ifconfig, "interface metric property cannot be set for :add action")
@@ -94,8 +94,8 @@ describe Chef::Provider::Ifconfig::Aix do
     it "should enable an interface if it does not exist" do
       @new_resource.device "en10"
       allow(@provider).to receive(:load_current_resource) do
-        @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
-        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+        @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
+        @provider.instance_variable_set(:@current_resource, Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
       command = "ifconfig #{@new_resource.device} #{@new_resource.name}"
       expect(@provider).to receive(:shell_out_compacted!).with(*command.split(" "))
@@ -110,8 +110,8 @@ describe Chef::Provider::Ifconfig::Aix do
     it "should not disable an interface if it does not exist" do
       @new_resource.device "en10"
       allow(@provider).to receive(:load_current_resource) do
-        @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
-        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+        @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
+        @provider.instance_variable_set(:@current_resource, Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
 
       expect(@provider).not_to receive(:shell_out_compacted!)
@@ -124,10 +124,10 @@ describe Chef::Provider::Ifconfig::Aix do
       before do
         @new_resource.device "en10"
         allow(@provider).to receive(:load_current_resource) do
-          @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
+          @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
           current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
           current_resource.device @new_resource.device
-          @provider.instance_variable_set("@current_resource", current_resource)
+          @provider.instance_variable_set(:@current_resource, current_resource)
         end
       end
 
@@ -147,8 +147,8 @@ describe Chef::Provider::Ifconfig::Aix do
     it "should not delete an interface if it does not exist" do
       @new_resource.device "en10"
       allow(@provider).to receive(:load_current_resource) do
-        @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
-        @provider.instance_variable_set("@current_resource", Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
+        @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
+        @provider.instance_variable_set(:@current_resource, Chef::Resource::Ifconfig.new("10.0.0.1", @run_context))
       end
 
       expect(@provider).not_to receive(:shell_out_compacted!)
@@ -161,10 +161,10 @@ describe Chef::Provider::Ifconfig::Aix do
       before do
         @new_resource.device "en10"
         allow(@provider).to receive(:load_current_resource) do
-          @provider.instance_variable_set("@status", double("Status", exitstatus: 0))
+          @provider.instance_variable_set(:@status, double("Status", exitstatus: 0))
           current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
           current_resource.device @new_resource.device
-          @provider.instance_variable_set("@current_resource", current_resource)
+          @provider.instance_variable_set(:@current_resource, current_resource)
         end
       end
 

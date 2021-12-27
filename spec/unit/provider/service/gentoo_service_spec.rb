@@ -49,13 +49,13 @@ describe Chef::Provider::Service::Gentoo do
 
     it "should track when service file is not found in /etc/runlevels" do
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@found_script")).to be_falsey
+      expect(@provider.instance_variable_get(:@found_script)).to be_falsey
     end
 
     it "should track when service file is found in /etc/runlevels/**/" do
       allow(Dir).to receive(:glob).with("/etc/runlevels/**/chef").and_return(["/etc/runlevels/default/chef"])
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@found_script")).to be_truthy
+      expect(@provider.instance_variable_get(:@found_script)).to be_truthy
     end
 
     describe "when detecting the service enable state" do
