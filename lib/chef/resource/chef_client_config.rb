@@ -252,7 +252,7 @@ class Chef
       action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
         [
           new_resource.config_directory,
-          new_resource.log_location,
+          ::File.dirname(new_resource.log_location),
           new_resource.file_backup_path,
           new_resource.file_cache_path,
           ::File.join(new_resource.config_directory, "client.d"),
