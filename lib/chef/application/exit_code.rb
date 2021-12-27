@@ -90,45 +90,31 @@ class Chef
         end
 
         def reboot_scheduled?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::Reboot
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::Reboot)
         end
 
         def reboot_needed?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::RebootPending
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::RebootPending)
         end
 
         def reboot_failed?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::RebootFailed
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::RebootFailed)
         end
 
         def configuration_failure?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::ConfigurationError
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::ConfigurationError)
         end
 
         def client_upgraded?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::ClientUpgraded
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::ClientUpgraded)
         end
 
         def sigint_received?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::SigInt
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::SigInt)
         end
 
         def sigterm_received?(exception)
-          resolve_exception_array(exception).any? do |e|
-            e.is_a? Chef::Exceptions::SigTerm
-          end
+          resolve_exception_array(exception).any?(Chef::Exceptions::SigTerm)
         end
 
         def resolve_exception_array(exception)
