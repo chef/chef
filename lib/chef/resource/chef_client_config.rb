@@ -256,10 +256,11 @@ class Chef
           new_resource.file_backup_path,
           new_resource.file_cache_path,
           ::File.join(new_resource.config_directory, "client.d"),
-          ::File&.dirname(new_resource.pid_file)
+          ::File&.dirname(new_resource.pid_file),
         ].each do |dir_path|
           next if dir_path.nil?
           next if ::Dir.exist?(dir_path)
+
           directory dir_path do
             user new_resource.user unless new_resource.user.nil?
             group new_resource.group unless new_resource.group.nil?
