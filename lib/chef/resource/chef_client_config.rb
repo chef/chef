@@ -250,8 +250,10 @@ class Chef
         introduced: "17.8"
 
       action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
-        unless ::Dir.exist?(new_resource.config_directory)
-          directory new_resource.config_directory do
+        [new_resource.config_directory, new_resource.log_location, new_resource.file_backup_path, new_resource.file_cache_path].each do |dir_path|
+          next if ::Dir.exist?(new_resource.config_directory)
+          next if dir_path.nil?
+          directory dir_path do
             user new_resource.user unless new_resource.user.nil?
             group new_resource.group unless new_resource.group.nil?
             mode "0750"
