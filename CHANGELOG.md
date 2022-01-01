@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.19 -->
-## [v17.9.19](https://github.com/chef/chef/tree/v17.9.19) (2021-12-29)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- homebrew_tap: Fix failures due to missing `full` property [#12418](https://github.com/chef/chef/pull/12418) ([jweyer8](https://github.com/jweyer8))
+- Bump chef/chefstyle to c72bbc6a79ab0859755981f99d76635cd5bc275a [#12420](https://github.com/chef/chef/pull/12420) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/chefstyle to c72bbc6a79ab0859755981f99d76635cd5bc275a [#12420](https://github.com/chef/chef/pull/12420) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.19 -->
 - homebrew_tap: Fix failures due to missing `full` property [#12418](https://github.com/chef/chef/pull/12418) ([jweyer8](https://github.com/jweyer8)) <!-- 17.9.19 -->
 <!-- release_rollup -->
 
