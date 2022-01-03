@@ -1,42 +1,56 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.6 -->
-## [v17.9.6](https://github.com/chef/chef/tree/v17.9.6) (2021-12-16)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Bump chef-vault to 4.1.5 [#12380](https://github.com/chef/chef/pull/12380) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chef/chefstyle to c72bbc6a79ab0859755981f99d76635cd5bc275a [#12420](https://github.com/chef/chef/pull/12420) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
-<!-- release_rollup since=17.8.25 -->
+<!-- release_rollup since=17.9.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Bump chef-vault to 4.1.5 [#12380](https://github.com/chef/chef/pull/12380) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.6 -->
-- Adds approle support for Chef::SecretFetcher::HashiVault [#12300](https://github.com/chef/chef/pull/12300) ([collinmcneese](https://github.com/collinmcneese)) <!-- 17.9.5 -->
-- fix knife bootstrap issue when max wait is specified ref#12281 [#12338](https://github.com/chef/chef/pull/12338) ([kasif-adnan](https://github.com/kasif-adnan)) <!-- 17.9.4 -->
-- Add helpers to detect VMware desktop vs server platforms [#12358](https://github.com/chef/chef/pull/12358) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 17.9.3 -->
-- Update for the new downloads site [#12361](https://github.com/chef/chef/pull/12361) ([tas50](https://github.com/tas50)) <!-- 17.9.2 -->
-- Setup auto issue labeler for docs [#12370](https://github.com/chef/chef/pull/12370) ([tas50](https://github.com/tas50)) <!-- 17.9.1 -->
-- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
-- Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12366](https://github.com/chef/chef/pull/12366) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.1 -->
-- Update Ohai to 17.9 [#12362](https://github.com/chef/chef/pull/12362) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.0 -->
-- Properly fail on windows tests [#12352](https://github.com/chef/chef/pull/12352) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.8.38 -->
-- Fix reference to chef/chef_dictionary main branch [#12354](https://github.com/chef/chef/pull/12354) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.8.37 -->
-- Bump ohai to 17.8 [#12360](https://github.com/chef/chef/pull/12360) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.37 -->
-- remove unnecessary from_json call in windows_feature_powershell [#12355](https://github.com/chef/chef/pull/12355) ([rishichawda](https://github.com/rishichawda)) <!-- 17.8.36 -->
-- Add #recipe_name to Chef::Provider [#12207](https://github.com/chef/chef/pull/12207) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.8.35 -->
-- Move more documentation into the code [#12343](https://github.com/chef/chef/pull/12343) ([tas50](https://github.com/tas50)) <!-- 17.8.34 -->
-- Remove group provider for EOL SLES &lt; 12 [#12344](https://github.com/chef/chef/pull/12344) ([tas50](https://github.com/tas50)) <!-- 17.8.33 -->
-- Remove the full option from homebrew_tap [#12346](https://github.com/chef/chef/pull/12346) ([damacus](https://github.com/damacus)) <!-- 17.8.32 -->
-- Bump pedump from 0.6.2 to 0.6.3 in /omnibus [#12351](https://github.com/chef/chef/pull/12351) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.31 -->
-- Bump train-core to 3.8.5 [#12339](https://github.com/chef/chef/pull/12339) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.8.30 -->
-- Bump test-kitchen from 3.2.1 to 3.2.2 in /omnibus [#12334](https://github.com/chef/chef/pull/12334) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.8.29 -->
-- Replace Ubuntu 21.10 testing with 22.04 testing [#12331](https://github.com/chef/chef/pull/12331) ([tas50](https://github.com/tas50)) <!-- 17.8.26 -->
-- Remove the unused bundler override [#12330](https://github.com/chef/chef/pull/12330) ([tas50](https://github.com/tas50)) <!-- 17.8.27 -->
+- Bump chef/chefstyle to c72bbc6a79ab0859755981f99d76635cd5bc275a [#12420](https://github.com/chef/chef/pull/12420) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.19 -->
+- homebrew_tap: Fix failures due to missing `full` property [#12418](https://github.com/chef/chef/pull/12418) ([jweyer8](https://github.com/jweyer8)) <!-- 17.9.19 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.9.18](https://github.com/chef/chef/tree/v17.9.18) (2021-12-23)
+
+#### Merged Pull Requests
+- Remove the unused bundler override [#12330](https://github.com/chef/chef/pull/12330) ([tas50](https://github.com/tas50))
+- Replace Ubuntu 21.10 testing with 22.04 testing [#12331](https://github.com/chef/chef/pull/12331) ([tas50](https://github.com/tas50))
+- Bump test-kitchen from 3.2.1 to 3.2.2 in /omnibus [#12334](https://github.com/chef/chef/pull/12334) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core to 3.8.5 [#12339](https://github.com/chef/chef/pull/12339) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump pedump from 0.6.2 to 0.6.3 in /omnibus [#12351](https://github.com/chef/chef/pull/12351) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Remove the full option from homebrew_tap [#12346](https://github.com/chef/chef/pull/12346) ([damacus](https://github.com/damacus))
+- Remove group provider for EOL SLES &lt; 12 [#12344](https://github.com/chef/chef/pull/12344) ([tas50](https://github.com/tas50))
+- Move more documentation into the code [#12343](https://github.com/chef/chef/pull/12343) ([tas50](https://github.com/tas50))
+- Add #recipe_name to Chef::Provider [#12207](https://github.com/chef/chef/pull/12207) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- remove unnecessary from_json call in windows_feature_powershell [#12355](https://github.com/chef/chef/pull/12355) ([rishichawda](https://github.com/rishichawda))
+- Bump ohai to 17.8 [#12360](https://github.com/chef/chef/pull/12360) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix reference to chef/chef_dictionary main branch [#12354](https://github.com/chef/chef/pull/12354) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Properly fail on windows tests [#12352](https://github.com/chef/chef/pull/12352) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update Ohai to 17.9 [#12362](https://github.com/chef/chef/pull/12362) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12366](https://github.com/chef/chef/pull/12366) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12372](https://github.com/chef/chef/pull/12372) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Setup auto issue labeler for docs [#12370](https://github.com/chef/chef/pull/12370) ([tas50](https://github.com/tas50))
+- Update for the new downloads site [#12361](https://github.com/chef/chef/pull/12361) ([tas50](https://github.com/tas50))
+- Add helpers to detect VMware desktop vs server platforms [#12358](https://github.com/chef/chef/pull/12358) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- fix knife bootstrap issue when max wait is specified ref#12281 [#12338](https://github.com/chef/chef/pull/12338) ([kasif-adnan](https://github.com/kasif-adnan))
+- Adds approle support for Chef::SecretFetcher::HashiVault [#12300](https://github.com/chef/chef/pull/12300) ([collinmcneese](https://github.com/collinmcneese))
+- Bump chef-vault to 4.1.5 [#12380](https://github.com/chef/chef/pull/12380) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update adhoc-canary.omnibus.yml [#12379](https://github.com/chef/chef/pull/12379) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- YUM package idempotency fixes [#10823](https://github.com/chef/chef/pull/10823) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump train-core to 3.8.6 [#12387](https://github.com/chef/chef/pull/12387) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump inspec-core-bin to 4.52.9 [#12393](https://github.com/chef/chef/pull/12393) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Unpin ohai in omnibus Gemfile [#12383](https://github.com/chef/chef/pull/12383) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Add missing require statements [#12405](https://github.com/chef/chef/pull/12405) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Bump omnibus-software from `d2525ab` to `4707275` in /omnibus [#12404](https://github.com/chef/chef/pull/12404) ([dependabot[bot]](https://github.com/dependabot[bot]))
+<!-- latest_stable_release -->
+
 ## [v17.8.25](https://github.com/chef/chef/tree/v17.8.25) (2021-12-01)
 
 #### Merged Pull Requests
@@ -75,7 +89,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Update Nokogiri from 1.11.0 to 1.12.5 [#12327](https://github.com/chef/chef/pull/12327) ([tas50](https://github.com/tas50))
 - Fix failures finding validation key when relative path is provided [#12145](https://github.com/chef/chef/pull/12145) ([snehaldwivedi](https://github.com/snehaldwivedi))
 - use powershell_exec instead of powershell_out in windows_feature_powershell [#11983](https://github.com/chef/chef/pull/11983) ([rishichawda](https://github.com/rishichawda))
-<!-- latest_stable_release -->
 
 ## [v17.7.29](https://github.com/chef/chef/tree/v17.7.29) (2021-10-29)
 

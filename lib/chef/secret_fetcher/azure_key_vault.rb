@@ -1,5 +1,7 @@
 require_relative "base"
 require_relative "../exceptions"
+require "json" unless defined?(JSON)
+require "net/http" unless defined?(Net::HTTP)
 require "uri" unless defined?(URI)
 
 class Chef
