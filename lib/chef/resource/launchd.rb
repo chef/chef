@@ -84,7 +84,7 @@ class Chef
                   end
 
           # Check to make sure that our array only has hashes
-          unless array.all? { |obj| obj.is_a?(Hash) }
+          unless array.all?(Hash)
             error_msg = "start_calendar_interval must be a single hash or an array of hashes!"
             raise Chef::Exceptions::ValidationFailed, error_msg
           end
@@ -98,7 +98,7 @@ class Chef
               raise Chef::Exceptions::ValidationFailed, error_msg
             end
 
-            unless entry.values.all? { |val| val.is_a?(Integer) }
+            unless entry.values.all?(Integer)
               failed_values = entry.values.reject { |val| val.is_a?(Integer) }.join(", ")
               error_msg = "Invalid value(s) (#{failed_values}) for start_calendar_interval item.  Values must be integers!"
               raise Chef::Exceptions::ValidationFailed, error_msg
