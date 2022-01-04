@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.27 -->
-## [v16.17.27](https://github.com/chef/chef/tree/v16.17.27) (2021-12-22)
+<!-- latest_release 16.17.28 -->
+## [v16.17.28](https://github.com/chef/chef/tree/v16.17.28) (2022-01-04)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `d2525ab` to `4707275` in /omnibus [#12403](https://github.com/chef/chef/pull/12403) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `4707275` to `b6dd27a` in /omnibus [#12424](https://github.com/chef/chef/pull/12424) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `4707275` to `b6dd27a` in /omnibus [#12424](https://github.com/chef/chef/pull/12424) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.28 -->
 - Bump omnibus-software from `d2525ab` to `4707275` in /omnibus [#12403](https://github.com/chef/chef/pull/12403) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.27 -->
 - Bump inspec-core-bin to 4.52.9 [#12394](https://github.com/chef/chef/pull/12394) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.26 -->
 - Unpin ohai in omnibus Gemfile [#12384](https://github.com/chef/chef/pull/12384) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 16.17.25 -->
