@@ -100,7 +100,7 @@ class Chef
 
         def install_package(name, version)
           if source_files_exist?
-            sources = name.map { |n| "./{name_sources[n]}" }
+            sources = name.map { |n| name_sources[n] }
             logger.info("#{new_resource} installing package(s): #{name.join(" ")}")
             run_noninteractive("apt", "install", *options, *sources)
 
