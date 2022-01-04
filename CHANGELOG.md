@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.28 -->
-## [v17.9.28](https://github.com/chef/chef/tree/v17.9.28) (2022-01-04)
+<!-- latest_release 17.9.29 -->
+## [v17.9.29](https://github.com/chef/chef/tree/v17.9.29) (2022-01-04)
 
 #### Merged Pull Requests
-- Resolve Performance/Count warning [#12410](https://github.com/chef/chef/pull/12410) ([tas50](https://github.com/tas50))
+- Reduce 213 requires from each knife call [#12409](https://github.com/chef/chef/pull/12409) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Reduce 213 requires from each knife call [#12409](https://github.com/chef/chef/pull/12409) ([tas50](https://github.com/tas50)) <!-- 17.9.29 -->
 - Resolve Performance/Count warning [#12410](https://github.com/chef/chef/pull/12410) ([tas50](https://github.com/tas50)) <!-- 17.9.28 -->
 - Resolve Performance/RegexpMatch warnings [#12411](https://github.com/chef/chef/pull/12411) ([tas50](https://github.com/tas50)) <!-- 17.9.27 -->
 - Resolve all Performance/RedundantEqualityComparisonBlock warnings [#12412](https://github.com/chef/chef/pull/12412) ([tas50](https://github.com/tas50)) <!-- 17.9.26 -->
