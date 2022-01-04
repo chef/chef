@@ -229,7 +229,7 @@ class Chef
       start_profiling
 
       runlock = RunLock.new(Chef::Config.lockfile)
-      # TODO feels like acquire should have its own block arg for this
+      # TODO: feels like acquire should have its own block arg for this
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin
@@ -637,7 +637,11 @@ class Chef
     # @api private
     #
     def register(client_name = node_name, config = Chef::Config)
-      if !config[:client_key]
+      if Chef::HTTP::Authenticator.detect_certificate_key(client_name)
+        events.skipping_registration(client_name, config)
+        logger.trace("Client key #{client_name} is present in certificate repository - skipping registration")
+        config[:client_key] = "Cert:\\LocalMachine\\My\\chef-#{client_name}"
+      elsif !config[:client_key]
         events.skipping_registration(client_name, config)
         logger.trace("Client key is unspecified - skipping registration")
       elsif File.exists?(config[:client_key])

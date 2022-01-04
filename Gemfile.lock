@@ -164,6 +164,9 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
+    chef-powershell (1.0.6)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -438,7 +441,6 @@ GEM
     wmi-lite (1.0.5)
 
 PLATFORMS
-  arm64-darwin-20
   ruby
   x64-mingw32
   x86-mingw32
@@ -466,4 +468,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.2.32
+   2.2.29
