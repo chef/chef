@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.21 -->
-## [v17.9.21](https://github.com/chef/chef/tree/v17.9.21) (2022-01-04)
+<!-- latest_release 17.9.22 -->
+## [v17.9.22](https://github.com/chef/chef/tree/v17.9.22) (2022-01-04)
 
 #### Merged Pull Requests
-- Fix typo in subscribes method documentation [#12419](https://github.com/chef/chef/pull/12419) ([gravitystorm](https://github.com/gravitystorm))
+- Resolve Style/MapToHash chefstyle warning [#12421](https://github.com/chef/chef/pull/12421) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.18 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Resolve Style/MapToHash chefstyle warning [#12421](https://github.com/chef/chef/pull/12421) ([tas50](https://github.com/tas50)) <!-- 17.9.22 -->
 - Fix typo in subscribes method documentation [#12419](https://github.com/chef/chef/pull/12419) ([gravitystorm](https://github.com/gravitystorm)) <!-- 17.9.21 -->
 - Bump omnibus-software from `4707275` to `b6dd27a` in /omnibus [#12425](https://github.com/chef/chef/pull/12425) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.20 -->
 - Bump chef/chefstyle to c72bbc6a79ab0859755981f99d76635cd5bc275a [#12420](https://github.com/chef/chef/pull/12420) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.19 -->
