@@ -123,7 +123,7 @@ class Chef
             if is_ruby_file?
               data_handler.from_ruby(file_path).to_json
             else
-              File.open(file_path, "rb", &:read)
+              File.binread(file_path)
             end
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
