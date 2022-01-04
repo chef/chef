@@ -157,6 +157,9 @@ class Chef
         @win32registry = Chef::Win32::Registry.new
         path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
         present = @win32registry.get_values(path)
+        if present.nil? || present.empty?
+          raise Chef::Exceptions::Win32RegKeyMissing
+        end
         if present.map { |h| h[:name] }[0] == "PfxPass"
           present.map { |h| h[:data] }[0].to_s
         end
