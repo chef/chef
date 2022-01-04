@@ -18,46 +18,48 @@
 
 require "spec_helper"
 
-describe "Chef::Platform#supports_dsc_invoke_resource?" do
-  it "returns false if powershell is not present" do
-    node = Chef::Node.new
-    expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
-  end
-
-  ["1.0", "2.0", "3.0", "4.0", "5.0.10017.9"].each do |version|
-    it "returns false for PowerShell #{version}" do
+if ChefUtils.Windows?
+  describe "Chef::Platform#supports_dsc_invoke_resource?" do
+    it "returns false if powershell is not present" do
       node = Chef::Node.new
-      node.automatic[:languages][:powershell][:version] = version
       expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
+    end
+
+    ["1.0", "2.0", "3.0", "4.0", "5.0.10017.9"].each do |version|
+      it "returns false for PowerShell #{version}" do
+        node = Chef::Node.new
+        node.automatic[:languages][:powershell][:version] = version
+        expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
+      end
+    end
+
+    it "returns true for Powershell 5.0.10018.0" do
+      node = Chef::Node.new
+      node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
+      expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_truthy
     end
   end
 
-  it "returns true for Powershell 5.0.10018.0" do
-    node = Chef::Node.new
-    node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
-    expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_truthy
-  end
-end
+  describe "Chef::Platform#dsc_refresh_mode_disabled?" do
+    let(:node) { instance_double("Chef::Node") }
+    let(:powershell) { instance_double("Chef::PowerShell") }
 
-describe "Chef::Platform#dsc_refresh_mode_disabled?" do
-  let(:node) { instance_double("Chef::Node") }
-  let(:powershell) { instance_double("Chef::PowerShell") }
+    it "returns true when RefreshMode is Disabled" do
+      expect(Chef::PowerShell).to receive(:new)
+        .with("Get-DscLocalConfigurationManager")
+        .and_return(powershell)
+      expect(powershell).to receive(:error!)
+      expect(powershell).to receive(:result).and_return({ "RefreshMode" => "Disabled" })
+      expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be true
+    end
 
-  it "returns true when RefreshMode is Disabled" do
-    expect(Chef::PowerShell).to receive(:new)
-      .with("Get-DscLocalConfigurationManager")
-      .and_return(powershell)
-    expect(powershell).to receive(:error!)
-    expect(powershell).to receive(:result).and_return({ "RefreshMode" => "Disabled" })
-    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be true
-  end
-
-  it "returns false when RefreshMode is not Disabled" do
-    expect(Chef::PowerShell).to receive(:new)
-      .with("Get-DscLocalConfigurationManager")
-      .and_return(powershell)
-    expect(powershell).to receive(:error!)
-    expect(powershell).to receive(:result).and_return({ "RefreshMode" => "LaLaLa" })
-    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false
+    it "returns false when RefreshMode is not Disabled" do
+      expect(Chef::PowerShell).to receive(:new)
+        .with("Get-DscLocalConfigurationManager")
+        .and_return(powershell)
+      expect(powershell).to receive(:error!)
+      expect(powershell).to receive(:result).and_return({ "RefreshMode" => "LaLaLa" })
+      expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false
+    end
   end
 end
