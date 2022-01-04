@@ -184,7 +184,7 @@ class Chef
       # @return [Array<String>]
       #
       def positional_arguments(args)
-        args.select { |arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+        args.grep(/^(([[:alnum:]])[[:alnum:]\_\-]+)$/)
       end
 
       # Returns an Array of paths to knife commands located in

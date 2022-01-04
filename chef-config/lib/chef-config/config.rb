@@ -1223,7 +1223,7 @@ module ChefConfig
         "en.UTF-8"
       else
         # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-        guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+        guesses = locales.grep(/^en_.*UTF-?8$/i)
         unless guesses.empty?
           guessed_locale = guesses.first
           # Transform into the form en_ZZ.UTF-8

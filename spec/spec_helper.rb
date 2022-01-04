@@ -78,9 +78,9 @@ require "spec/support/recipe_dsl_helper"
 # Excludes support/platforms by default
 # Do not change the gsub.
 Dir["spec/support/**/*.rb"]
-  .reject { |f| f =~ %r{^spec/support/platforms} }
-  .reject { |f| f =~ %r{^spec/support/pedant} }
-  .reject { |f| f =~ %r{^spec/support/shared/integration/knife_support} }
+  .grep_v(%r{^spec/support/platforms})
+  .grep_v(%r{^spec/support/pedant})
+  .grep_v(%r{^spec/support/shared/integration/knife_support})
   .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
   .each { |f| require f }
