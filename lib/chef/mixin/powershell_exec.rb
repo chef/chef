@@ -98,7 +98,9 @@ end
 class Chef
   module Mixin
     module PowershellExec
-      include Chef_PowerShell::ChefPowerShell::PowerShellExec
+      if ChefUtils.windows?
+        include Chef_PowerShell::ChefPowerShell::PowerShellExec
+      end
     end
   end
 end
