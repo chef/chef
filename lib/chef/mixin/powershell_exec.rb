@@ -91,8 +91,9 @@
 # - It is not possible to impersonate another user running powershell, the
 #   credentials of the user running Chef Client are used.
 #
-
-require "chef-powershell"
+if ChefUtils.windows?
+  require "chef-powershell"
+end
 
 class Chef
   module Mixin
