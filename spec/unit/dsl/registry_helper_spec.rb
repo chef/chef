@@ -31,22 +31,22 @@ describe Chef::Resource::RegistryKey do
 
   context "tests registry dsl" do
     it "resource can access registry_helper method registry_key_exists" do
-      expect(@resource.respond_to?("registry_key_exists?")).to eq(true)
+      expect(@resource.respond_to?(:registry_key_exists?)).to eq(true)
     end
     it "resource can access registry_helper method registry_get_values" do
-      expect(@resource.respond_to?("registry_get_values")).to eq(true)
+      expect(@resource.respond_to?(:registry_get_values)).to eq(true)
     end
     it "resource can access registry_helper method registry_has_subkey" do
-      expect(@resource.respond_to?("registry_has_subkeys?")).to eq(true)
+      expect(@resource.respond_to?(:registry_has_subkeys?)).to eq(true)
     end
     it "resource can access registry_helper method registry_get_subkeys" do
-      expect(@resource.respond_to?("registry_get_subkeys")).to eq(true)
+      expect(@resource.respond_to?(:registry_get_subkeys)).to eq(true)
     end
     it "resource can access registry_helper method registry_value_exists" do
-      expect(@resource.respond_to?("registry_value_exists?")).to eq(true)
+      expect(@resource.respond_to?(:registry_value_exists?)).to eq(true)
     end
     it "resource can access registry_helper method data_value_exists" do
-      expect(@resource.respond_to?("registry_data_exists?")).to eq(true)
+      expect(@resource.respond_to?(:registry_data_exists?)).to eq(true)
     end
   end
 end

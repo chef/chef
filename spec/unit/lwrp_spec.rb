@@ -54,7 +54,7 @@ describe "LWRP" do
     end
 
     it "should not skip loading a resource when there's a top level symbol of the same name" do
-      Object.const_set("LwrpFoo", Class.new)
+      Object.const_set(:LwrpFoo, Class.new)
       file = File.expand_path( "lwrp/resources/foo.rb", CHEF_SPEC_DATA)
       expect(Chef::Log).not_to receive(:info).with(/Skipping/)
       expect(Chef::Log).not_to receive(:trace).with(/anymore/)
@@ -63,7 +63,7 @@ describe "LWRP" do
     end
 
     it "should not skip loading a provider when there's a top level symbol of the same name" do
-      Object.const_set("LwrpBuckPasser", Class.new)
+      Object.const_set(:LwrpBuckPasser, Class.new)
       file = File.expand_path( "lwrp/providers/buck_passer.rb", CHEF_SPEC_DATA)
       expect(Chef::Log).not_to receive(:info).with(/Skipping/)
       expect(Chef::Log).not_to receive(:trace).with(/anymore/)

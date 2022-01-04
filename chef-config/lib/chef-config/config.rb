@@ -1287,10 +1287,10 @@ module ChefConfig
       require "digest/md5" unless defined?(Digest::MD5)
       # Remove pre-existing constants if they do exist to reduce the
       # amount of log spam and warnings.
-      Digest.send(:remove_const, "SHA1") if Digest.const_defined?("SHA1")
-      Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
-      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?("MD5")
-      OpenSSL::Digest.const_set("MD5", Digest::MD5)
+      Digest.send(:remove_const, "SHA1") if Digest.const_defined?(:SHA1)
+      Digest.const_set(:SHA1, OpenSSL::Digest::SHA1)
+      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?(:MD5)
+      OpenSSL::Digest.const_set(:MD5, Digest::MD5)
       ChefConfig.logger.debug "FIPS mode is enabled."
     end
   end

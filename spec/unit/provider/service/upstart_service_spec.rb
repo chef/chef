@@ -160,7 +160,7 @@ describe Chef::Provider::Service::Upstart do
     it "should track state when the upstart configuration file fails to load" do
       expect(File).to receive(:exist?).and_return false
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@config_file_found")).to eq(false)
+      expect(@provider.instance_variable_get(:@config_file_found)).to eq(false)
     end
 
     describe "when a status command has been specified" do
@@ -177,7 +177,7 @@ describe Chef::Provider::Service::Upstart do
       it "should track state when the user-provided status command fails" do
         allow(@provider).to receive(:shell_out!).and_raise(Errno::ENOENT)
         @provider.load_current_resource
-        expect(@provider.instance_variable_get("@command_success")).to eq(false)
+        expect(@provider.instance_variable_get(:@command_success)).to eq(false)
       end
 
       it "should set running to false if it catches a Chef::Exceptions::Exec when using a status command" do
@@ -190,7 +190,7 @@ describe Chef::Provider::Service::Upstart do
     it "should track state when we fail to obtain service status via upstart_goal_state" do
       expect(@provider).to receive(:upstart_goal_state).and_raise Chef::Exceptions::Exec
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@command_success")).to eq(false)
+      expect(@provider.instance_variable_get(:@command_success)).to eq(false)
     end
 
     it "should return the current resource" do
