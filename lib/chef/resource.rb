@@ -311,7 +311,7 @@ class Chef
     #   file '/foo.txt' do
     #     content 'hi'
     #     action :nothing
-    #     subscribes :create, '/bar.txt'
+    #     subscribes :create, bar
     #   end
     # @example Multiple resources by string
     #   file '/foo.txt' do
