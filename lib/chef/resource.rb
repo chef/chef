@@ -1096,7 +1096,7 @@ class Chef
     rescue NameError => e
       # This can happen when attempting to load a provider in a platform-specific
       # environment where we have not required the necessary files yet
-      raise unless e.message =~ /uninitialized constant/
+      raise unless /uninitialized constant/.match?(e.message)
     end
 
     # Define a method to load up this resource's properties with the current

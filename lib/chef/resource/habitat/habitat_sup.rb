@@ -284,7 +284,7 @@ class Chef
           if new_resource.peer
             peer_list = []
             new_resource.peer.each do |p|
-              peer_list << if p !~ /.*:.*/
+              peer_list << if !/.*:.*/.match?(p)
                              p + ":9632"
                            else
                              p
