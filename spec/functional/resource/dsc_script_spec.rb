@@ -17,6 +17,7 @@
 #
 
 require "spec_helper"
+require "chef-powershell"
 require "chef/mixin/powershell_exec"
 require "chef/mixin/windows_architecture_helper"
 require "support/shared/integration/integration_helper"
