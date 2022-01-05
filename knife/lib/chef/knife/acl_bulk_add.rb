@@ -56,7 +56,7 @@ class Chef
 
         objects_to_modify = []
         all_objects = rest.get_rest(object_type)
-        objects_to_modify = all_objects.keys.select { |object_name| object_name =~ object_name_matcher }
+        objects_to_modify = all_objects.keys.grep(object_name_matcher)
 
         if objects_to_modify.empty?
           ui.info "No #{object_type} match the expression /#{regex}/"

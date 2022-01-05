@@ -29,7 +29,7 @@ group(:omnibus_package, :pry) do
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "= 0.13.0"
   # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM =~ /freebsd/i
+  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
   gem "pry-stack_explorer"
 end
 

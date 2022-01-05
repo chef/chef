@@ -113,7 +113,7 @@ class Chef
       end
 
       def remove_uninteresting_ruby_files(file_list)
-        file_list.reject { |f| f =~ %r{#{Regexp.quote(cookbook_path)}/(files|templates)/} }
+        file_list.grep_v(%r{#{Regexp.quote(cookbook_path)}/(files|templates)/})
       end
 
       def ruby_files

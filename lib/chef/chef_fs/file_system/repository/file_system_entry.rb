@@ -126,7 +126,7 @@ class Chef
           end
 
           def read
-            File.open(file_path, "rb", &:read)
+            File.binread(file_path)
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end

@@ -59,7 +59,7 @@ class Chef
       end
 
       def validate!
-        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :object_id, :client_id, or :mi_res_id" if [object_id, client_id, mi_res_id].select { |x| !x.nil? }.length > 1
+        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :object_id, :client_id, or :mi_res_id" if [object_id, client_id, mi_res_id].count { |x| !x.nil? } > 1
       end
 
       private
@@ -123,7 +123,7 @@ class Chef
           body["access_token"]
         when Net::HTTPBadRequest
           body = JSON.parse(response.body)
-          raise Chef::Exceptions::Secret::Azure::IdentityNotFound if body["error_description"] =~ /identity not found/i
+          raise Chef::Exceptions::Secret::Azure::IdentityNotFound if /identity not found/i.match?(body["error_description"])
         else
           body = JSON.parse(response.body)
           body["access_token"]

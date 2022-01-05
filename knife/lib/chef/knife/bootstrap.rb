@@ -20,6 +20,7 @@ require_relative "../knife"
 require_relative "data_bag_secret_options"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
+require "chef/json_compat" unless defined?(Chef::JSONCompat) # can't be lazy loaded since it's used in options
 
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
@@ -416,9 +417,6 @@ class Chef
       attr_reader :connection
 
       deps do
-        require "erubis" unless defined?(Erubis)
-        require "net/ssh" unless defined?(Net::SSH)
-        require "chef/json_compat" unless defined?(Chef::JSONCompat)
         require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
         require_relative "bootstrap/chef_vault_handler"
         require_relative "bootstrap/client_builder"
@@ -544,6 +542,7 @@ class Chef
       end
 
       def render_template
+        require "erubis" unless defined?(Erubis)
         @config[:first_boot_attributes] = first_boot_attributes
         template_file = find_template
         template = IO.read(template_file).chomp

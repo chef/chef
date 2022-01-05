@@ -1,13 +1,38 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 17.9.30 -->
+## [v17.9.30](https://github.com/chef/chef/tree/v17.9.30) (2022-01-04)
+
+#### Merged Pull Requests
+- Simplify file reads [#12386](https://github.com/chef/chef/pull/12386) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=17.9.26 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Resolve Performance/RegexpMatch warnings [#12411](https://github.com/chef/chef/pull/12411) ([tas50](https://github.com/tas50)) <!-- 17.9.27 -->
+- Resolve Performance/Count warning [#12410](https://github.com/chef/chef/pull/12410) ([tas50](https://github.com/tas50)) <!-- 17.9.28 -->
+- Reduce 213 requires from each knife call [#12409](https://github.com/chef/chef/pull/12409) ([tas50](https://github.com/tas50)) <!-- 17.9.29 -->
+- Simplify file reads [#12386](https://github.com/chef/chef/pull/12386) ([tas50](https://github.com/tas50)) <!-- 17.9.30 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.9.26](https://github.com/chef/chef/tree/v17.9.26) (2022-01-05)
+
+#### Merged Pull Requests
+- homebrew_tap: Fix failures due to missing `full` property [#12418](https://github.com/chef/chef/pull/12418) ([jweyer8](https://github.com/jweyer8))
+- Bump chef/chefstyle to c72bbc6a79ab0859755981f99d76635cd5bc275a [#12420](https://github.com/chef/chef/pull/12420) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `4707275` to `b6dd27a` in /omnibus [#12425](https://github.com/chef/chef/pull/12425) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix typo in subscribes method documentation [#12419](https://github.com/chef/chef/pull/12419) ([gravitystorm](https://github.com/gravitystorm))
+- Resolve Style/MapToHash chefstyle warning [#12421](https://github.com/chef/chef/pull/12421) ([tas50](https://github.com/tas50))
+- Resolve Style/SelectByRegexp warnings [#12422](https://github.com/chef/chef/pull/12422) ([tas50](https://github.com/tas50))
+- Resolve Performance/StringIdentifierArgument warnings [#12414](https://github.com/chef/chef/pull/12414) ([tas50](https://github.com/tas50))
+- Resolve Performance/RedundantSortBlock warnings [#12413](https://github.com/chef/chef/pull/12413) ([tas50](https://github.com/tas50))
+- Resolve all Performance/RedundantEqualityComparisonBlock warnings [#12412](https://github.com/chef/chef/pull/12412) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v17.9.18](https://github.com/chef/chef/tree/v17.9.18) (2021-12-23)
 
 #### Merged Pull Requests
@@ -40,7 +65,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Unpin ohai in omnibus Gemfile [#12383](https://github.com/chef/chef/pull/12383) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
 - Add missing require statements [#12405](https://github.com/chef/chef/pull/12405) ([jasonwbarnett](https://github.com/jasonwbarnett))
 - Bump omnibus-software from `d2525ab` to `4707275` in /omnibus [#12404](https://github.com/chef/chef/pull/12404) ([dependabot[bot]](https://github.com/dependabot[bot]))
-<!-- latest_stable_release -->
 
 ## [v17.8.25](https://github.com/chef/chef/tree/v17.8.25) (2021-12-01)
 

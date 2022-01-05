@@ -345,7 +345,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only d
     let(:config_param_section) { config_params }
     let(:config_flags) { { "#{dsc_user_prefix_param_name}": (dsc_user_prefix).to_s, "#{dsc_user_suffix_param_name}": (dsc_user_suffix).to_s } }
     it "does not directly contain the user name" do
-      configuration_script_content = ::File.open(dsc_test_resource.command, &:read)
+      configuration_script_content = ::File.read(dsc_test_resource.command)
       expect(configuration_script_content.include?(dsc_user)).to be(false)
     end
     it_behaves_like "a dsc_script with configuration data"
@@ -355,7 +355,7 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only d
     let(:dsc_user_code) { dsc_user_env_code }
 
     it "does not directly contain the user name" do
-      configuration_script_content = ::File.open(dsc_test_resource.command, &:read)
+      configuration_script_content = ::File.read(dsc_test_resource.command)
       expect(configuration_script_content.include?(dsc_user)).to be(false)
     end
     it_behaves_like "a dsc_script with configuration data"

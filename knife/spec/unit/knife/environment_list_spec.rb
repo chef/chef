@@ -39,7 +39,7 @@ describe Chef::Knife::EnvironmentList do
   end
 
   it "should print the environment names in a sorted list" do
-    names = @environments.keys.sort { |a, b| a <=> b }
+    names = @environments.keys.sort
     expect(@knife).to receive(:output).with(names)
     @knife.run
   end

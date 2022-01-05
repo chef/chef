@@ -339,7 +339,7 @@ class Chef
         end
 
         def locked?
-          user_plist[:auth_authority].any? { |tag| tag == ";DisabledUser;" }
+          user_plist[:auth_authority].any?(";DisabledUser;")
         rescue
           false
         end
@@ -411,7 +411,7 @@ class Chef
         end
 
         def secure_token_enabled?
-          user_plist[:auth_authority].any? { |tag| tag == ";SecureToken;" }
+          user_plist[:auth_authority].any?(";SecureToken;")
         rescue
           false
         end
@@ -505,7 +505,7 @@ class Chef
         end
 
         def admin_user?
-          admin_group_plist[:group_members].any? { |mem| mem == user_plist[:guid][0] }
+          admin_group_plist[:group_members].any?(user_plist[:guid][0])
         rescue
           false
         end

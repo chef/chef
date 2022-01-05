@@ -955,7 +955,7 @@ describe Chef::Resource do
         node.name("bumblebee")
         node.automatic[:platform] = "autobots"
         node.automatic[:platform_version] = "6.1"
-        Object.const_set("Soundwave", klz1)
+        Object.const_set(:Soundwave, klz1)
         klz1.provides :soundwave
       end
 
@@ -978,7 +978,7 @@ describe Chef::Resource do
         node.automatic[:platform] = "autobots"
         node.automatic[:platform_version] = "6.1"
         klz2.provides :dinobot, platform: ["autobots"]
-        Object.const_set("Grimlock", klz2)
+        Object.const_set(:Grimlock, klz2)
         klz2.provides :grimlock
       end
 

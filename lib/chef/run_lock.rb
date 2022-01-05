@@ -144,7 +144,7 @@ class Chef
         # If we support FD_CLOEXEC, then use it.
         # NB: ruby-2.0.0-p195 sets FD_CLOEXEC by default, but not
         # ruby-1.8.7/1.9.3
-        if Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
+        if Fcntl.const_defined?(:F_SETFD) && Fcntl.const_defined?(:FD_CLOEXEC)
           runlock.fcntl(Fcntl::F_SETFD, runlock.fcntl(Fcntl::F_GETFD, 0) | Fcntl::FD_CLOEXEC)
         end
         # Flock will return 0 if it can acquire the lock otherwise it

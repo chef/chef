@@ -35,7 +35,7 @@ describe Chef::Provider::Ifconfig do
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
     status = double("Status", exitstatus: 0)
-    @provider.instance_variable_set("@status", status)
+    @provider.instance_variable_set(:@status, status)
     @provider.current_resource = @current_resource
   end
 
@@ -58,7 +58,7 @@ describe Chef::Provider::Ifconfig do
         @provider.load_current_resource
       end
       it "should track state of ifconfig failure" do
-        expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
+        expect(@provider.instance_variable_get(:@status).exitstatus).not_to eq(0)
       end
       it "should thrown an exception when ifconfig fails" do
         @provider.action = :add
@@ -79,7 +79,7 @@ describe Chef::Provider::Ifconfig do
         @provider.load_current_resource
       end
       it "should track state of ifconfig failure" do
-        expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
+        expect(@provider.instance_variable_get(:@status).exitstatus).not_to eq(0)
       end
       it "should thrown an exception when ifconfig fails" do
         @provider.action = :add

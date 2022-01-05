@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "win32/service" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require "win32/service" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 require_relative "habitat_sup"
 
 class Chef

@@ -1223,7 +1223,7 @@ module ChefConfig
         "en.UTF-8"
       else
         # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-        guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+        guesses = locales.grep(/^en_.*UTF-?8$/i)
         unless guesses.empty?
           guessed_locale = guesses.first
           # Transform into the form en_ZZ.UTF-8
@@ -1287,10 +1287,10 @@ module ChefConfig
       require "digest/md5" unless defined?(Digest::MD5)
       # Remove pre-existing constants if they do exist to reduce the
       # amount of log spam and warnings.
-      Digest.send(:remove_const, "SHA1") if Digest.const_defined?("SHA1")
-      Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
-      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?("MD5")
-      OpenSSL::Digest.const_set("MD5", Digest::MD5)
+      Digest.send(:remove_const, "SHA1") if Digest.const_defined?(:SHA1)
+      Digest.const_set(:SHA1, OpenSSL::Digest::SHA1)
+      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?(:MD5)
+      OpenSSL::Digest.const_set(:MD5, Digest::MD5)
       ChefConfig.logger.debug "FIPS mode is enabled."
     end
   end
