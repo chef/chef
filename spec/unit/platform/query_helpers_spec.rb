@@ -45,7 +45,7 @@ if ChefUtils.windows?
     let(:powershell) { instance_double("Chef::PowerShell") }
 
     it "returns true when RefreshMode is Disabled" do
-      expect(Chef::PowerShell).to receive(:new)
+      expect(Chef_PowerShell::PowerShell).to receive(:new)
         .with("Get-DscLocalConfigurationManager")
         .and_return(powershell)
       expect(powershell).to receive(:error!)
@@ -54,7 +54,7 @@ if ChefUtils.windows?
     end
 
     it "returns false when RefreshMode is not Disabled" do
-      expect(Chef::PowerShell).to receive(:new)
+      expect(Chef_PowerShell::PowerShell).to receive(:new)
         .with("Get-DscLocalConfigurationManager")
         .and_return(powershell)
       expect(powershell).to receive(:error!)
