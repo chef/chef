@@ -185,7 +185,7 @@ describe Chef::Util::DSC::LocalConfigurationManager do
     context "when invalid dsc script is given" do
       it "raises exception" do
         configuration_document = "invalid-config"
-        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true) }.to raise_error(Chef::PowerShell::CommandFailed)
+        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true) }.to raise_error(Chef_PowerShell::PowerShellExceptions::PowerShellCommandFailed)
       end
     end
   end
