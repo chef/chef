@@ -160,6 +160,7 @@ class Chef
         if present.nil? || present.empty?
           raise Chef::Exceptions::Win32RegKeyMissing
         end
+
         if present.map { |h| h[:name] }[0] == "PfxPass"
           present.map { |h| h[:data] }[0].to_s
         end
