@@ -22,6 +22,10 @@ class Chef
   class Provider
     class Package
       module Deb
+        APT_DPKG_REMOVED   = /^Status: deinstall ok config-files/.freeze
+        APT_DPKG_INSTALLED = /^Status: install ok installed/.freeze
+        APT_DPKG_VERSION   = /^Version: (.+)$/.freeze
+
         def self.included(base)
           base.class_eval do
             use_multipackage_api
@@ -112,6 +116,25 @@ class Chef
             # interactive prompts.
             def run_noninteractive(*command)
               shell_out!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" })
+            end
+
+            def check_status_of_installed_package(status)
+              package_installed = false
+              status.stdout.each_line do |line|
+                case line
+                when APT_DPKG_REMOVED
+                  # if we are 'purging' then we consider 'removed' to be 'installed'
+                  package_installed = true if action == :purge
+                when APT_DPKG_INSTALLED
+                  package_installed = true
+                when APT_DPKG_VERSION
+                  if package_installed
+                    logger.trace("#{new_resource} current version is #{$1}")
+                    return $1
+                  end
+                end
+              end
+              nil
             end
 
             private

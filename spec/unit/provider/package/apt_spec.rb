@@ -399,7 +399,7 @@ describe Chef::Provider::Package::Apt do
           },
         })
         expect(@provider).to receive(:shell_out_compacted!).with(
-          "dpkg", "-i", "--force-yes", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb",
+          "apt", "install", "--force-yes", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb",
           { env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout }
         )

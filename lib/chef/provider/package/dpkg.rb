@@ -25,9 +25,6 @@ class Chef
     class Package
       class Dpkg < Chef::Provider::Package
         include Chef::Provider::Package::Deb
-        DPKG_REMOVED   = /^Status: deinstall ok config-files/.freeze
-        DPKG_INSTALLED = /^Status: install ok installed/.freeze
-        DPKG_VERSION   = /^Version: (.+)$/.freeze
 
         provides :dpkg_package
 
@@ -117,22 +114,7 @@ class Chef
         def read_current_version_of_package(package_name)
           logger.trace("#{new_resource} checking install state of #{package_name}")
           status = shell_out!("dpkg", "-s", package_name, returns: [0, 1])
-          package_installed = false
-          status.stdout.each_line do |line|
-            case line
-            when DPKG_REMOVED
-              # if we are 'purging' then we consider 'removed' to be 'installed'
-              package_installed = true if action == :purge
-            when DPKG_INSTALLED
-              package_installed = true
-            when DPKG_VERSION
-              if package_installed
-                logger.trace("#{new_resource} current version is #{$1}")
-                return $1
-              end
-            end
-          end
-          nil
+          check_status_of_installed_package(status)
         end
 
         def get_current_version_from(array)
