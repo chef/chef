@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "chef-powershell"
 
 if ChefUtils.windows?
   describe "Chef::Platform#supports_dsc_invoke_resource?" do
