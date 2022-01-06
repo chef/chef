@@ -173,7 +173,7 @@ class Chef
           @win32registry.create_key(new_path, true)
         end
         # cspell:disable-next-line
-        some_chars = "~!@#$%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
+        some_chars = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
         password = some_chars.sample(1 + rand(some_chars.count)).join[0...14]
         values = { name: "PfxPass", type: :string, data: password }
         @win32registry.set_value(new_path, values)
