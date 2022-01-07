@@ -973,7 +973,7 @@ class Chef
           # for this. We will also set keys_only to false only if there are keys
           # and no password.
           # If both are present, train(via net/ssh)  will prefer keys, falling back to password.
-          # Reference: https://github.com/chef/chef/blob/master/lib/chef/knife/ssh.rb#L272
+          # Reference: https://github.com/chef/chef/blob/main/lib/chef/knife/ssh.rb#L272
           opts[:keys_only] = config.key?(:connection_password) == false
         else
           opts[:key_files] = []

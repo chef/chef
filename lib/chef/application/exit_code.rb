@@ -19,8 +19,8 @@
 class Chef
   class Application
 
-    # These are the exit codes defined in Chef RFC 062
-    # https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md
+    # These are the exit codes defined in the exit codes design document
+    # https://github.com/chef/chef/blob/main/docs/dev/design_documents/client_exit_codes.md
     class ExitCode
       require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
@@ -140,7 +140,7 @@ class Chef
 
         def non_standard_exit_code_warning(exit_code)
           "#{ChefUtils::Dist::Infra::CLIENT} attempted to exit with a non-standard exit code of #{exit_code}." \
-          " The #{ChefUtils::Dist::Infra::PRODUCT} Exit Codes design document (https://github.com/chef/chef-rfc/blob/master/rfc062-exit-status.md)" \
+          " The #{ChefUtils::Dist::Infra::PRODUCT} Exit Codes design document (https://github.com/chef/chef/blob/main/docs/dev/design_documents/client_exit_codes.md)" \
           " defines the exit codes that should be used with #{ChefUtils::Dist::Infra::CLIENT}. Chef::Application::ExitCode defines"  \
           " valid exit codes Non-standard exit codes are redefined as GENERIC_FAILURE."
         end

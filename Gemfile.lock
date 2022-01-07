@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: bddccd3bb3b3ce79c48ee9a05d1bb4488938bfc5
+  revision: d3767223cc4c236967550c16d3e519bbfcb8ea4c
   branch: main
   specs:
-    ohai (17.9.2)
-      chef-config (>= 14.12, < 18)
-      chef-utils (>= 16.0, < 18)
+    ohai (18.0.1)
+      chef-config (>= 14.12, < 19)
+      chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
@@ -58,7 +58,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
+      ohai (~> 18.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
@@ -90,7 +90,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
+      ohai (~> 18.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)

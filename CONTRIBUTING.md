@@ -33,8 +33,8 @@ Code review takes place in GitHub pull requests. See [this article](https://help
 
 Once you open a pull request, project maintainers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
 
-1. Two or more members of the owners, approvers, or reviewers groups must approve your PR. See the [Chef Infra OSS Project](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md) for a list of all members.
-2. Your change will be merged into the project's `master` branch
+1. Two or more members of the owners, approvers, or reviewers groups must approve your PR. See the [Chef Infra OSS Project](https://github.com/chef/chef-oss-practices/blob/main/projects/chef-infra.md) for a list of all members.
+2. Your change will be merged into the project's `main` branch
 3. Our Expeditor bot will automatically increment the version and update the project's changelog with your contribution. For projects that ship as a package, Expeditor will kick off a build which will publish the package to the project's `current` channel.
 
 If you would like to learn about when your code will be available in a release of Chef, read more about [Chef Release Cycles](#release-cycles).
@@ -43,7 +43,7 @@ If you would like to learn about when your code will be available in a release o
 
 Licensing is very important to open source projects. It helps ensure the software continues to be available under the terms that the author desired.
 
-Chef uses [the Apache 2.0 license](https://github.com/chef/chef/blob/master/LICENSE) to strike a balance between open contribution and allowing you to use the software however you would like to.
+Chef uses [the Apache 2.0 license](https://github.com/chef/chef/blob/main/LICENSE) to strike a balance between open contribution and allowing you to use the software however you would like to.
 
 The license tells you what rights you have that are provided by the copyright holder. It is important that the contributor fully understands what rights they are licensing and agrees to them. Sometimes the copyright holder isn't the contributor, such as when the contributor is doing work on behalf of a company.
 
@@ -133,7 +133,7 @@ Our version numbering roughly follows [Semantic Versioning](http://semver.org/) 
 - Y is a minor release, which adds both new features and bug fixes
 - Z is a patch release, which adds just bug fixes
 
-After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor release. All merges to master trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shipping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
+After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor release. All merges to `main` trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shipping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
 
 Announcements of releases are made to the [chef mailing list](https://discourse.chef.io/c/chef-release) when they are available and are mirrored to the #announcements channel on the [Chef Community Slack](https://community-slack.chef.io/).
 
