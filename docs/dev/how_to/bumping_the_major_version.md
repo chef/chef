@@ -29,25 +29,27 @@ Starting from the main branch create a PR which:
 
 ### Prep main branch for forking
 
-- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch. Make sure to commit this before moving on.
+- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch.
 
 ### Fork Chef main to a stable branch
 
 Before bumping the major version of Chef Infra we want to fork off the current main to a new stable branch, which will be used to build hotfix releases. We support the N-1 version of Chef Infra Client for a year after the release of a new major version. For example Chef Infra Client 17 was released in April 2021, at which point Chef Infra Client 16 became the N-1 release. Chef Infra Client 16 will then be maintained with critical bug and security fixes until April 2022.
 
-On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b chef-16` and `git push --set-upstream origin chef-16`, which can then be pushed up to GitHub.
+On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b chef-17` and `git push --set-upstream origin chef-17`, which can then be pushed up to GitHub.
 
 ### Create a branch to fixup your new stable branch for release
 
-Once you've forked to a new stable branch such as `chef-15` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
+Once you've forked to a new stable branch such as `chef-17` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
 
-- In ./expeditor/config.yml remove all the update_dep.sh subscriptions which don't work against stable branches.
+- In ./expeditor/config.yml remove the update_dep.sh subscriptions which don't work against stable branches such as chefstyle and ohai.
 - In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to main.
 - In kitchen-tests/Gemfile update the Ohai branch to point to the new Ohai stable
 - In kitchen-tests/kitchen.yml update chef_version to be your new stable version and not current. Ex: 15
 - In tasks/bin/run_external_test update the ohai branch to point to your new stable ohai branch
 - In Gemfile set ohai to pull from the ohai stable branch
-- Run `rake dependencies:update`
+- In Gemfile set cheffish to match the stable release of chef
+- Update .github/dependabot.yml with the new branch
+- Run `rake dependencies:update` to generate a new gemfile.lock
 
 Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
