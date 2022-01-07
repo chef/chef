@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: bddccd3bb3b3ce79c48ee9a05d1bb4488938bfc5
-  branch: main
+  revision: 3d62c4c7e3d35969c7d99a4ea98dc3e4454fca50
+  branch: 17-stable
   specs:
-    ohai (17.9.2)
+    ohai (17.9.0)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -438,7 +438,7 @@ GEM
     wmi-lite (1.0.5)
 
 PLATFORMS
-  arm64-darwin-20
+  arm64-darwin-21
   ruby
   x64-mingw32
   x86-mingw32
@@ -450,7 +450,7 @@ DEPENDENCIES
   chef-config!
   chef-utils!
   chef-vault
-  cheffish (>= 17)
+  cheffish (~> 17.0)
   chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
