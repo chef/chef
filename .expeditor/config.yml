@@ -58,6 +58,8 @@ github:
 # for building.
 release_branches:
   - main:
+      version_constraint: 18*
+  - chef-17:
       version_constraint: 17*
   - chef-16:
       version_constraint: 16*

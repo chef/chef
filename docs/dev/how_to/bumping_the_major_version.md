@@ -14,7 +14,7 @@ Chef consumes Ohai from GitHub as both a runtime dependency and a testing depend
 
 2. Edit all the GitHub action workflows in .github/workflows/ to point to your new stable branch
 
-3. On your local machine fork the current master branch to a new stable branch. For example: `git checkout -b 16-stable`.
+3. On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b 16-stable`.
 
 4. Push the branch `git push --set-upstream origin 16-stable`
 
@@ -27,22 +27,22 @@ Starting from the main branch create a PR which:
 
 ## Update chef/chef
 
-### Prep master branch for forking
+### Prep main branch for forking
 
-- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for master to match the new planned major version and add a constraint for the new stable version / branch
+- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch. Make sure to commit this before moving on.
 
-### Fork Chef master to a stable branch
+### Fork Chef main to a stable branch
 
-Before bumping the major version of Chef Infra we want to fork off the current master to a new stable branch, which will be used to build hotfix releases. We support the N-1 version of Chef Infra Client for a year after the release of a new major version. For example Chef Infra Client 16 was released in April 2020, at which point Chef Infra Client 15 became the N-1 release. Chef Infra Client 15 will then be maintained with critical bug and security fixes until April 2021.
+Before bumping the major version of Chef Infra we want to fork off the current main to a new stable branch, which will be used to build hotfix releases. We support the N-1 version of Chef Infra Client for a year after the release of a new major version. For example Chef Infra Client 17 was released in April 2021, at which point Chef Infra Client 16 became the N-1 release. Chef Infra Client 16 will then be maintained with critical bug and security fixes until April 2022.
 
-On your local machine fork the current master branch to a new stable branch. For example: `git checkout -b chef-15` and `git push --set-upstream origin chef-15`, which can then be pushed up to GitHub.
+On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b chef-16` and `git push --set-upstream origin chef-16`, which can then be pushed up to GitHub.
 
 ### Create a branch to fixup your new stable branch for release
 
 Once you've forked to a new stable branch such as `chef-15` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
 
 - In ./expeditor/config.yml remove all the update_dep.sh subscriptions which don't work against stable branches.
-- In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to master.
+- In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to main.
 - In kitchen-tests/Gemfile update the Ohai branch to point to the new Ohai stable
 - In kitchen-tests/kitchen.yml update chef_version to be your new stable version and not current. Ex: 15
 - In tasks/bin/run_external_test update the ohai branch to point to your new stable ohai branch
@@ -51,7 +51,7 @@ Once you've forked to a new stable branch such as `chef-15` you'll want to creat
 
 Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
-Note: Make sure you're making this PR against the new stable branch and not master!
+Note: Make sure you're making this PR against the new stable branch and not main!
 
 ## Bump main for the new major release
 
