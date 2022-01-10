@@ -37,7 +37,7 @@ If there are any new or updated resources, the docs site will need to be updated
 
 Chef employees can promote a build to stable from Slack. This is done with expeditor using a chatops command in the following format:
 
-`/expeditor promote chef/chef:master 17.1.9`
+`/expeditor promote chef/chef:main 17.1.9`
 
 or for a previous release branch:
 
