@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: d3050865f4c7b4be668397007d9964ce2d54e6ee
+  revision: de278c0906b397de4b67bbb6d1cf19ab29f9c190
   branch: main
   specs:
     chefstyle (2.2.0)
@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e86d186661a599703fe929497b33c5f7a3257d49
+  revision: d3767223cc4c236967550c16d3e519bbfcb8ea4c
   branch: main
   specs:
-    ohai (17.9.1)
-      chef-config (>= 14.12, < 18)
-      chef-utils (>= 16.0, < 18)
+    ohai (18.0.1)
+      chef-config (>= 14.12, < 19)
+      chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
@@ -35,12 +35,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.9.30)
+    chef (18.0.1)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.9.30)
-      chef-utils (= 17.9.30)
+      chef-config (= 18.0.1)
+      chef-utils (= 18.0.1)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -58,7 +58,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
+      ohai (~> 18.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
@@ -66,12 +66,12 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.9.30-universal-mingw32)
+    chef (18.0.1-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.9.30)
-      chef-utils (= 17.9.30)
+      chef-config (= 18.0.1)
+      chef-utils (= 18.0.1)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -90,7 +90,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
+      ohai (~> 18.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
@@ -112,15 +112,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.9.30)
-      chef (= 17.9.30)
+    chef-bin (18.0.1)
+      chef (= 18.0.1)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.9.30)
+    chef-config (18.0.1)
       addressable
-      chef-utils (= 17.9.30)
+      chef-utils (= 18.0.1)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +129,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.9.30)
+    chef-utils (18.0.1)
       concurrent-ruby
 
 GEM
@@ -142,8 +142,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.544.0)
-    aws-sdk-core (3.125.1)
+    aws-partitions (1.547.0)
+    aws-sdk-core (3.125.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -151,7 +151,7 @@ GEM
     aws-sdk-kms (1.53.0)
       aws-sdk-core (~> 3, >= 3.125.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.111.0)
+    aws-sdk-s3 (1.111.1)
       aws-sdk-core (~> 3, >= 3.125.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
@@ -252,7 +252,7 @@ GEM
       inspec-core (= 4.52.9)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    jmespath (1.4.0)
+    jmespath (1.5.0)
     json (2.6.1)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -290,7 +290,7 @@ GEM
     net-ssh (6.1.0)
     nori (2.6.0)
     parallel (1.21.0)
-    parser (3.0.3.2)
+    parser (3.1.0.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
@@ -353,7 +353,7 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    thor (1.1.0)
+    thor (1.2.1)
     tomlrb (1.3.0)
     train-core (3.8.6)
       addressable (~> 2.5)

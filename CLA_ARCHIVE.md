@@ -657,7 +657,7 @@ Many organizations signed the CCLA again in Supermarket.
 The list of allowed contributors from 2009 through 3 October, 2016 prior to Chef
 projects [moving to a Developer Certificate of Origin
 process](https://blog.chef.io/2016/09/19/introducing-developer-certificate-of-origin/).
-See [CONTRIBUTING](https://github.com/chef/chef/blob/master/CONTRIBUTING.md) for
+See [CONTRIBUTING](https://github.com/chef/chef/blob/main/CONTRIBUTING.md) for
 how to contribute to Chef today.
 
 Persons listed as associated with a company may also be individual contributors
