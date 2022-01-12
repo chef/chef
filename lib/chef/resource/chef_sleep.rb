@@ -47,7 +47,7 @@ class Chef
         service 'Service that is slow to start and reports as started' do
           service_name 'my_database'
           action :start
-          notifies :sleep, chef_sleep['wait for service start']
+          notifies :sleep, 'chef_sleep[wait for service start]'
         end
 
         chef_sleep 'wait for service start' do
