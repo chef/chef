@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.1 -->
-## [v18.0.1](https://github.com/chef/chef/tree/v18.0.1) (2022-01-11)
+<!-- latest_release 18.0.2 -->
+## [v18.0.2](https://github.com/chef/chef/tree/v18.0.2) (2022-01-12)
 
 #### Merged Pull Requests
-- Add Amazon 2022 to our pipeline [#12437](https://github.com/chef/chef/pull/12437) ([tas50](https://github.com/tas50))
+- Fix ruby cleanup breaking builds [#12440](https://github.com/chef/chef/pull/12440) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix ruby cleanup breaking builds [#12440](https://github.com/chef/chef/pull/12440) ([tas50](https://github.com/tas50)) <!-- 18.0.2 -->
 - Add Amazon 2022 to our pipeline [#12437](https://github.com/chef/chef/pull/12437) ([tas50](https://github.com/tas50)) <!-- 18.0.1 -->
 - Bump version to 18.0 and fix master references [#12432](https://github.com/chef/chef/pull/12432) ([tas50](https://github.com/tas50)) <!-- 18.0.0 -->
 - Bump omnibus-software from `b6dd27a` to `94ef29b` in /omnibus [#12429](https://github.com/chef/chef/pull/12429) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.32 -->
