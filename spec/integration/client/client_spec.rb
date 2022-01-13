@@ -6,6 +6,9 @@ require "tmpdir"
 require "chef-utils/dist"
 require "chef/mixin/powershell_exec"
 
+# cspell:disable-next-line
+SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".freeze
+
 describe "chef-client" do
 
   def recipes_filename
@@ -41,7 +44,7 @@ describe "chef-client" do
   def create_registry_key
     powershell_exec! <<~EOH
       $pfx_password = New-Object -TypeName PSObject
-      $pfx_password | Add-Member -MemberType ScriptProperty -Name "Password" -Value { ("~!@#$%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".tochararray() | Sort-Object { Get-Random })[0..14] -join '' }
+      $pfx_password | Add-Member -MemberType ScriptProperty -Name "Password" -Value { (#{SOME_CHARS}.tochararray() | Sort-Object { Get-Random })[0..14] -join '' }
       if (-not (Test-Path HKLM:\\SOFTWARE\\Progress)){
         New-Item -Path "HKLM:\\SOFTWARE\\Progress\\Authentication" -Force
         New-ItemProperty  -path "HKLM:\\SOFTWARE\\Progress\\Authentication" -name "PfxPass" -value $pfx_password.Password -PropertyType String
@@ -203,7 +206,6 @@ describe "chef-client" do
         end
 
         it "should verify that the cert is loaded in the LocalMachine\\My" do
-          expect(Chef::HTTP::Authenticator).to receive(:check_certstore_for_key).and_call_original
           expect(Chef::HTTP::Authenticator.check_certstore_for_key(client_name)).to eq(true)
         end
 
@@ -212,7 +214,6 @@ describe "chef-client" do
         end
 
         it "should verify that a private key is returned to me" do
-          expect(Chef::HTTP::Authenticator).to receive(:retrieve_certificate_key).and_call_original
           expect(Chef::HTTP::Authenticator.retrieve_certificate_key(client_name)).not_to be_falsey
         end
       end

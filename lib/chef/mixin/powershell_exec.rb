@@ -99,7 +99,7 @@ class Chef
   module Mixin
     module PowershellExec
       if ChefUtils.windows?
-        include Chef_PowerShell::ChefPowerShell::PowerShellExec
+        include ChefPowerShell::ChefPowerShellModule::PowerShellExec
       end
     end
   end

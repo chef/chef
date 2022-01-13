@@ -638,6 +638,9 @@ class Chef
     #
     def register(client_name = node_name, config = Chef::Config)
       if Chef::HTTP::Authenticator.detect_certificate_key(client_name)
+        if File.exists?(config[:client_key])
+          logger.warn("WARNING - Client key #{client_name} is present on disk, ignoring that in favor of key stored in CertStore")
+        end
         events.skipping_registration(client_name, config)
         logger.trace("Client key #{client_name} is present in certificate repository - skipping registration")
         config[:client_key] = "Cert:\\LocalMachine\\My\\chef-#{client_name}"

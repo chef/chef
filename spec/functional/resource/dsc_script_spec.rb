@@ -260,11 +260,10 @@ describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only d
       end
 
       it "should raise an exception if the cwd is etc" do
-        # Chef_PowerShell::PowerShellExceptions::PowerShellCommandFailed
         dsc_test_resource.cwd(dsc_environment_fail_etc_directory)
         expect {
           dsc_test_resource.run_action(:run)
-        }.to raise_error(Chef_PowerShell::PowerShellExceptions::PowerShellCommandFailed, /#{exception_message_signature}/)
+        }.to raise_error(ChefPowerShell::PowerShellExceptions::PowerShellCommandFailed, /#{exception_message_signature}/)
       end
     end
   end

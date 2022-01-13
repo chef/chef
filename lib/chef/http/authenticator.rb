@@ -26,6 +26,8 @@ class Chef
   class HTTP
     class Authenticator
       DEFAULT_SERVER_API_VERSION = "2".freeze
+      # cspell:disable-next-line
+      SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
 
       extend Chef::Mixin::PowershellExec
 
@@ -129,7 +131,7 @@ class Chef
 
         if key_file == nil? && raw_key == nil?
           puts "\nNo key detected\n"
-        elsif results != false
+        elsif !!results
           # results variable can be 1 of 2 values - "False" or the contents of a key.
           @raw_key = results
         elsif !!key_file
@@ -162,9 +164,15 @@ class Chef
           raise Chef::Exceptions::Win32RegKeyMissing
         end
 
-        if present.map { |h| h[:name] }[0] == "PfxPass"
-          present.map { |h| h[:data] }[0].to_s
+        present.each do |secret|
+          if secret[:name] == "PfxPass"
+            return secret[:data]
+          end
         end
+
+        # if we make it this far, that means there is no valid password in the Registry. Fail out to correct that.
+        raise Chef::Exceptions::Win32RegKeyMissing
+
       rescue Chef::Exceptions::Win32RegKeyMissing
         # if we don't have a password, log that and generate one
         Chef::Log.warn "Authentication Hive and value not present in registry, creating it now"
@@ -172,12 +180,10 @@ class Chef
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
-        # cspell:disable-next-line
-        some_chars = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
-        password = some_chars.sample(1 + rand(some_chars.count)).join[0...14]
+        password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
         values = { name: "PfxPass", type: :string, data: password }
         @win32registry.set_value(new_path, values)
-        password
+        return password
       end
 
       def self.retrieve_certificate_key(client_name)
@@ -187,33 +193,31 @@ class Chef
 
           password = get_cert_password
 
-          unless password
-            return false
-          end
+          return false unless password
 
-          powershell_code = <<~CODE
-              Try {
-                $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
-                $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "#{client_name}" } -ErrorAction Stop;
-                $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
-                Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
-              }
-              Catch {
-                return $false
-              }
-          CODE
-          my_result = powershell_exec!(powershell_code).result
+          if check_certstore_for_key(client_name)
+            powershell_code = <<~CODE
+                Try {
+                  $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
+                  $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "#{client_name}" } -ErrorAction Stop;
+                  $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
+                  Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
+                }
+                Catch {
+                  return $false
+                }
+            CODE
+            my_result = powershell_exec!(powershell_code).result
 
-          if my_result != false
-            pkcs = OpenSSL::PKCS12.new(File.binread(my_result["PSPath"].split("::")[1]), password)
-            ::File.delete(my_result["PSPath"].split("::")[1])
-            OpenSSL::PKey::RSA.new(pkcs.key.to_pem)
-          else
-            false
+            if !!my_result
+              pkcs = OpenSSL::PKCS12.new(File.binread(my_result["PSPath"].split("::")[1]), password)
+              ::File.delete(my_result["PSPath"].split("::")[1])
+              return OpenSSL::PKey::RSA.new(pkcs.key.to_pem)
+            end
           end
-        else # doing nothing for the Mac and Linux clients for now
-          false
         end
+
+        return false
       end
 
       def authentication_headers(method, url, json_body = nil, headers = nil)
