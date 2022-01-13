@@ -42,7 +42,7 @@ end
 
 describe "Chef::Platform#dsc_refresh_mode_disabled?" do
   let(:node) { instance_double("Chef::Node") }
-  let(:powershell) { Class.new { include Chef_PowerShell::ChefPowerShell::PowerShellExec } }
+  let(:powershell) { Class.new { include ChefPowerShell::ChefPowerShellModule::PowerShellExec } }
   subject(:object) { powershell.new }
 
   it "returns true when RefreshMode is Disabled" do
