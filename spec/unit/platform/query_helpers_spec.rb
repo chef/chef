@@ -40,7 +40,7 @@ describe "Chef::Platform#supports_dsc_invoke_resource?", :windows_only do
   end
 end
 
-describe "Chef::Platform#dsc_refresh_mode_disabled?" do
+describe "Chef::Platform#dsc_refresh_mode_disabled?", :windows_only do
   let(:node) { instance_double("Chef::Node") }
   let(:powershell) { Class.new { include ChefPowerShell::ChefPowerShellModule::PowerShellExec } }
   subject(:object) { powershell.new }
