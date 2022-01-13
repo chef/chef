@@ -18,7 +18,6 @@
 
 require "spec_helper"
 
-
 describe "Chef::Platform#supports_dsc_invoke_resource?", :windows_only do
   it "returns false if powershell is not present" do
     node = Chef::Node.new

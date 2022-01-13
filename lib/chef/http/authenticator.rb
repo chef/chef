@@ -183,7 +183,7 @@ class Chef
         password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
         values = { name: "PfxPass", type: :string, data: password }
         @win32registry.set_value(new_path, values)
-        return password
+        password
       end
 
       def self.retrieve_certificate_key(client_name)
@@ -217,7 +217,7 @@ class Chef
           end
         end
 
-        return false
+        false
       end
 
       def authentication_headers(method, url, json_body = nil, headers = nil)
