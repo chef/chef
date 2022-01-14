@@ -42,14 +42,14 @@ describe "chef-client" do
   end
 
   def create_registry_key
-    powershell_exec! <<~EOH
-      $pfx_password = New-Object -TypeName PSObject
-      $pfx_password | Add-Member -MemberType ScriptProperty -Name "Password" -Value { (#{SOME_CHARS}.tochararray() | Sort-Object { Get-Random })[0..14] -join '' }
-      if (-not (Test-Path HKLM:\\SOFTWARE\\Progress)){
-        New-Item -Path "HKLM:\\SOFTWARE\\Progress\\Authentication" -Force
-        New-ItemProperty  -path "HKLM:\\SOFTWARE\\Progress\\Authentication" -name "PfxPass" -value $pfx_password.Password -PropertyType String
-      }
-    EOH
+    @win32registry = Chef::Win32::Registry.new
+    path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+    unless @win32registry.key_exists?(path)
+      @win32registry.create_key(path, true)
+    end
+    password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
+    values = { name: "PfxPass", type: :string, data: password }
+    @win32registry.set_value(path, values)
   end
 
   def remove_certificate_from_store
