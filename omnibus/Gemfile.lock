@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 94ef29b62a6d0a60480a910cddfc01d61b7205d4
+  revision: 2e637bf64a042df868d580fa9e23cfaff5503c10
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -33,8 +33,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.546.0)
-    aws-sdk-core (3.125.1)
+    aws-partitions (1.547.0)
+    aws-sdk-core (3.125.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -188,9 +188,9 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
-    ffi (1.15.4)
-    ffi (1.15.4-x64-mingw32)
-    ffi (1.15.4-x86-mingw32)
+    ffi (1.15.5)
+    ffi (1.15.5-x64-mingw32)
+    ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -231,7 +231,7 @@ GEM
     iostruct (0.0.4)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    jmespath (1.4.0)
+    jmespath (1.5.0)
     json (2.6.1)
     kitchen-vagrant (1.11.0)
       test-kitchen (>= 1.4, < 4)
@@ -316,7 +316,7 @@ GEM
       method_source (~> 1.0)
     public_suffix (4.0.6)
     rack (2.2.3)
-    rainbow (3.0.0)
+    rainbow (3.1.1)
     retryable (3.0.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
