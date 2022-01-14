@@ -48,7 +48,7 @@ class Chef
           if user_plist
             current_resource.uid(user_plist[:uid][0])
             current_resource.gid(user_plist[:gid][0])
-            current_resource.home(user_plist[:home][0])
+            current_resource.home(user_plist[:home]&.first) # use &.first since home can be nil
             current_resource.shell(user_plist[:shell]&.first) # use &.first since shell can be nil
             current_resource.comment(user_plist[:comment][0])
 
