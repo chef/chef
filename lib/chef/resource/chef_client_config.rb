@@ -249,21 +249,20 @@ class Chef
         description: "The data collector token to interact with the data collector server URL (Automate). Note: If possible, use Chef Infra Server to do all data collection reporting, as this removes the need to distribute tokens to individual nodes.",
         introduced: "17.8"
 
-      action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
-        unless ::Dir.exist?(new_resource.config_directory)
-          directory new_resource.config_directory do
-            user new_resource.user unless new_resource.user.nil?
-            group new_resource.group unless new_resource.group.nil?
-            mode "0750"
-            recursive true
-          end
-        end
+      action :create, description: "Create a client.rb config file and folders for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
+        [
+          new_resource.config_directory,
+          (::File.dirname(new_resource.log_location) unless new_resource.log_location.nil?),
+          new_resource.file_backup_path,
+          new_resource.file_cache_path,
+          ::File.join(new_resource.config_directory, "client.d"),
+          (::File.dirname(new_resource.pid_file) unless new_resource.pid_file.nil?),
+        ].compact.each do |dir_path|
 
-        unless ::Dir.exist?(::File.join(new_resource.config_directory, "client.d"))
-          directory ::File.join(new_resource.config_directory, "client.d") do
+          directory dir_path do
             user new_resource.user unless new_resource.user.nil?
             group new_resource.group unless new_resource.group.nil?
-            mode "0750"
+            mode dir_path == ::File.dirname(new_resource.log_location) ? "0755" : "0750"
             recursive true
           end
         end
