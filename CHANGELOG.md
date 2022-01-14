@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.3 -->
-## [v18.0.3](https://github.com/chef/chef/tree/v18.0.3) (2022-01-12)
+<!-- latest_release 18.0.4 -->
+## [v18.0.4](https://github.com/chef/chef/tree/v18.0.4) (2022-01-14)
 
 #### Merged Pull Requests
-- fix typo in chef-sleep resource documentation example block [#12441](https://github.com/chef/chef/pull/12441) ([JHBoricua](https://github.com/JHBoricua))
+- Bump omnibus-software from `94ef29b` to `2e637bf` in /omnibus [#12439](https://github.com/chef/chef/pull/12439) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `94ef29b` to `2e637bf` in /omnibus [#12439](https://github.com/chef/chef/pull/12439) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.4 -->
 - fix typo in chef-sleep resource documentation example block [#12441](https://github.com/chef/chef/pull/12441) ([JHBoricua](https://github.com/JHBoricua)) <!-- 18.0.3 -->
 - Fix ruby cleanup breaking builds [#12440](https://github.com/chef/chef/pull/12440) ([tas50](https://github.com/tas50)) <!-- 18.0.2 -->
 - Add Amazon 2022 to our pipeline [#12437](https://github.com/chef/chef/pull/12437) ([tas50](https://github.com/tas50)) <!-- 18.0.1 -->
