@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.5 -->
-## [v18.0.5](https://github.com/chef/chef/tree/v18.0.5) (2022-01-14)
+<!-- latest_release 18.0.6 -->
+## [v18.0.6](https://github.com/chef/chef/tree/v18.0.6) (2022-01-14)
 
 #### Merged Pull Requests
-- chef_client_config: ensure config property directories exist [#12416](https://github.com/chef/chef/pull/12416) ([Stromweld](https://github.com/Stromweld))
+- user: handle nil home dirs on macOS [#12443](https://github.com/chef/chef/pull/12443) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- user: handle nil home dirs on macOS [#12443](https://github.com/chef/chef/pull/12443) ([tas50](https://github.com/tas50)) <!-- 18.0.6 -->
 - chef_client_config: ensure config property directories exist [#12416](https://github.com/chef/chef/pull/12416) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.5 -->
 - Bump omnibus-software from `94ef29b` to `2e637bf` in /omnibus [#12439](https://github.com/chef/chef/pull/12439) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.4 -->
 - fix typo in chef-sleep resource documentation example block [#12441](https://github.com/chef/chef/pull/12441) ([JHBoricua](https://github.com/JHBoricua)) <!-- 18.0.3 -->
