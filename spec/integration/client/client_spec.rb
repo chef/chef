@@ -7,7 +7,7 @@ require "chef-utils/dist"
 require "chef/mixin/powershell_exec"
 
 # cspell:disable-next-line
-SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".freeze
+SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a.freeze
 
 describe "chef-client" do
 
