@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.7 -->
-## [v18.0.7](https://github.com/chef/chef/tree/v18.0.7) (2022-01-18)
+<!-- latest_release 18.0.8 -->
+## [v18.0.8](https://github.com/chef/chef/tree/v18.0.8) (2022-01-18)
 
 #### Merged Pull Requests
-- Bump chef/chefstyle to d2ab8682d167351e5c5d864700a6bc4dac4ddf46 [#12452](https://github.com/chef/chef/pull/12452) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `2e637bf` to `16e5ae5` in /omnibus [#12451](https://github.com/chef/chef/pull/12451) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `2e637bf` to `16e5ae5` in /omnibus [#12451](https://github.com/chef/chef/pull/12451) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.8 -->
 - Bump chef/chefstyle to d2ab8682d167351e5c5d864700a6bc4dac4ddf46 [#12452](https://github.com/chef/chef/pull/12452) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.7 -->
 - user: handle nil home dirs on macOS [#12443](https://github.com/chef/chef/pull/12443) ([tas50](https://github.com/tas50)) <!-- 18.0.6 -->
 - chef_client_config: ensure config property directories exist [#12416](https://github.com/chef/chef/pull/12416) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.5 -->
