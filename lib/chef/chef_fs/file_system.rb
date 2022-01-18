@@ -288,6 +288,8 @@ class Chef
                   else
                     begin
                       dest_entry.delete(true)
+                      # if this is a node or client, delete associated ACLs (user ACLs handled elsewhere)
+                      ::File.delete "#{dest_entry.parent.file_path}/../acls#{dest_path}" if ['/nodes', '/clients'].include? Pathname.new(dest_path).parent.to_s
                       ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
                     rescue Chef::ChefFS::FileSystem::NotFoundError
                       ui.output "Entry #{dest_path} does not exist. Nothing to do. (purge is on)" if ui
