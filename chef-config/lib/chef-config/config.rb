@@ -84,7 +84,8 @@ module ChefConfig
     # @return [String] the platform-specific path
     #
     def self.etc_chef_dir(windows: ChefUtils.windows?)
-      @etc_chef_dir ||= begin
+      @etc_chef_dir ||= {}
+      @etc_chef_dir[windows] ||= begin
         path = windows ? c_chef_dir : PathHelper.join("/etc", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
         PathHelper.cleanpath(path, windows: windows)
       end
