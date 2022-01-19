@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.9 -->
-## [v18.0.9](https://github.com/chef/chef/tree/v18.0.9) (2022-01-18)
+<!-- latest_release 18.0.10 -->
+## [v18.0.10](https://github.com/chef/chef/tree/v18.0.10) (2022-01-19)
 
 #### Merged Pull Requests
-- Bump chef/ohai to ad16192e00b4fa686756a72f081d3496d33a1698 [#12449](https://github.com/chef/chef/pull/12449) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump package gems and omnibus gems [#12457](https://github.com/chef/chef/pull/12457) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump package gems and omnibus gems [#12457](https://github.com/chef/chef/pull/12457) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.10 -->
 - Bump chef/ohai to ad16192e00b4fa686756a72f081d3496d33a1698 [#12449](https://github.com/chef/chef/pull/12449) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.9 -->
 - Bump omnibus-software from `2e637bf` to `16e5ae5` in /omnibus [#12451](https://github.com/chef/chef/pull/12451) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.8 -->
 - Bump chef/chefstyle to d2ab8682d167351e5c5d864700a6bc4dac4ddf46 [#12452](https://github.com/chef/chef/pull/12452) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.7 -->
