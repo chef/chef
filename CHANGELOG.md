@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.12 -->
-## [v18.0.12](https://github.com/chef/chef/tree/v18.0.12) (2022-01-20)
+<!-- latest_release 18.0.13 -->
+## [v18.0.13](https://github.com/chef/chef/tree/v18.0.13) (2022-01-20)
 
 #### Merged Pull Requests
-- Bump omnibus from `7c5db7e` to `9c83f73` in /omnibus [#12485](https://github.com/chef/chef/pull/12485) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `dd555fa` to `c2fb9a4` in /omnibus [#12484](https://github.com/chef/chef/pull/12484) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `dd555fa` to `c2fb9a4` in /omnibus [#12484](https://github.com/chef/chef/pull/12484) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.13 -->
 - Bump omnibus from `7c5db7e` to `9c83f73` in /omnibus [#12485](https://github.com/chef/chef/pull/12485) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.12 -->
 - Bump omnibus from `2bf77bb` to `7c5db7e` in /omnibus [#12481](https://github.com/chef/chef/pull/12481) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.11 -->
 - Bump package gems and omnibus gems [#12457](https://github.com/chef/chef/pull/12457) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.10 -->
