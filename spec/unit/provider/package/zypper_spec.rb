@@ -32,7 +32,7 @@ describe Chef::Provider::Package::Zypper do
 
   let(:status) { double(stdout: "\n", exitstatus: 0) }
 
-  let(:source) { "/tmp/wget_1.11.4-1ubuntu1_amd64.deb" }
+  let(:source) { "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm" }
 
   before(:each) do
     allow(Chef::Resource::Package).to receive(:new).and_return(current_resource)
@@ -167,10 +167,10 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should run zypper install with source option" do
-      new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
-      allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_return(true)
+      new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.rpm").and_return(true)
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
       )
       provider.install_package(["emacs"], ["1.0"])
     end
@@ -213,10 +213,10 @@ describe Chef::Provider::Package::Zypper do
     end
 
     it "should run zypper upgrade with source option" do
-      new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
-      allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_return(true)
+      new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.rpm").and_return(true)
       shell_out_expectation!(
-        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
     end

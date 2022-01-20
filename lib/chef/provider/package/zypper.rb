@@ -72,11 +72,6 @@ class Chef
 
         def candidate_version
           if source_files_exist?
-            unless uri_scheme?(new_resource.source) || ::File.exist?(new_resource.source)
-              @package_source_exists = false
-              return
-            end
-
             logger.trace("#{new_resource} checking rpm status")
             shell_out!("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", new_resource.source).stdout.each_line do |line|
               case line
@@ -90,15 +85,6 @@ class Chef
           else
             @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
           end
-        end
-
-        def uri_scheme?(str)
-          scheme = URI.split(str).first
-          return false unless scheme
-
-          %w{http https ftp file}.include?(scheme.downcase)
-        rescue URI::InvalidURIError
-          false
         end
 
         def resolve_current_version(package_name)
