@@ -120,6 +120,9 @@ subscriptions:
       - trigger_pipeline:habitat/test
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
+  - workload: ruby_gem_published:corefoundation-*
+    actions:
+      - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:mixlib-archive-*
     actions:
       - bash:.expeditor/update_dep.sh
