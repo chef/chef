@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 17ab17aa53d263f6a1dbffb5344465b905946d54
+  revision: b34be4c1577fe14b4323232d938ab2c55182d3f0
   branch: lcg/better-healthcheck-correctness-checking
   specs:
     omnibus (8.2.7)
