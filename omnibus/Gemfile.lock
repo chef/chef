@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: dd555fa115830b1b60c5449e5ae5e294d825fec2
+  revision: b646beda0dfb54efc14b0348cebd5de830cf2127
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: f88efa9c6635c09dc8d4461a8e1cdd6a66c09c16
+  revision: b3814d491e4800ecdf6cbc2793c37a692c671a1f
   branch: lcg/better-healthcheck-correctness-checking
   specs:
     omnibus (8.2.7)
@@ -34,7 +34,7 @@ GEM
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.549.0)
-    aws-sdk-core (3.125.4)
+    aws-sdk-core (3.125.5)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -42,7 +42,7 @@ GEM
     aws-sdk-kms (1.53.0)
       aws-sdk-core (~> 3, >= 3.125.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.111.1)
+    aws-sdk-s3 (1.111.2)
       aws-sdk-core (~> 3, >= 3.125.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
@@ -167,7 +167,7 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.1.9)
     contracts (0.16.1)
-    corefoundation (0.3.4)
+    corefoundation (0.3.10)
       ffi (>= 1.15.0)
     diff-lcs (1.3)
     ed25519 (1.3.0)
@@ -368,7 +368,7 @@ GEM
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
     thor (1.2.1)
-    toml-rb (2.1.0)
+    toml-rb (2.1.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
     train-core (3.8.6)
