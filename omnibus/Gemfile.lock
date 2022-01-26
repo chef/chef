@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 201afa9895d1063190b8fe60799b471c711644e5
-  branch: main
+  revision: 52d7c0cfb2e80662555881ebad4acb011fe36f39
+  branch: lcg/health-check-server-fixing
   specs:
     omnibus (8.3.0)
       aws-sdk-s3 (~> 1)
