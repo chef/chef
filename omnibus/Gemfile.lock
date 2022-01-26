@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 52d7c0cfb2e80662555881ebad4acb011fe36f39
+  revision: 21e3af1341c44c8768f1e55744103bfaec30a646
   branch: lcg/health-check-server-fixing
   specs:
     omnibus (8.3.0)
