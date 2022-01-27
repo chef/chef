@@ -300,6 +300,14 @@ describe Chef::Resource do
   end
 
   describe "subscribes" do
+    context "with syntax error in resources parameter" do
+      it "raises an exception immediately" do
+        expect do
+          resource.subscribes(:run, "typo[missing-closing-bracket")
+        end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+      end
+    end
+
     it "should make resources appear in the actions hash of subscribed nodes" do
       run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
       zr = run_context.resource_collection.find(zen_master: "coffee")
