@@ -110,6 +110,9 @@ module ChefUtils
 
       # The server's configuration utility
       SERVER_CTL = "chef-server-ctl"
+
+      # OS user for server
+      SYSTEM_USER = "opscode" 
     end
 
     class Solo
