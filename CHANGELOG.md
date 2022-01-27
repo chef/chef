@@ -9,36 +9,41 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump fauxhai-ng to 9.3.0 [#12517](https://github.com/chef/chef/pull/12517) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
-<!-- release_rollup since=16.17.18 -->
+<!-- release_rollup since=16.17.39 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
 - Bump fauxhai-ng to 9.3.0 [#12517](https://github.com/chef/chef/pull/12517) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.40 -->
-- Add constant for ChefServer system user [#12520](https://github.com/chef/chef/pull/12520) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 16.17.39 -->
-- Bump omnibus from `9c83f73` to `201afa9` in /omnibus [#12506](https://github.com/chef/chef/pull/12506) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.38 -->
-- Bump omnibus-software from `c2fb9a4` to `aa02d49` in /omnibus [#12503](https://github.com/chef/chef/pull/12503) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.37 -->
-- Bump omnibus-software from `16e5ae5` to `c2fb9a4` in /omnibus [#12483](https://github.com/chef/chef/pull/12483) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.36 -->
-- Bump omnibus from `7c5db7e` to `9c83f73` in /omnibus [#12486](https://github.com/chef/chef/pull/12486) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.35 -->
-- Bump omnibus from `2bf77bb` to `7c5db7e` in /omnibus [#12480](https://github.com/chef/chef/pull/12480) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.34 -->
-- Bump ed25519 to 1.3.0 [#12447](https://github.com/chef/chef/pull/12447) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.33 -->
-- Bump omnibus-software from `2e637bf` to `16e5ae5` in /omnibus [#12450](https://github.com/chef/chef/pull/12450) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.32 -->
-- Bump ffi to 1.15.5 [#12435](https://github.com/chef/chef/pull/12435) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.31 -->
-- Bump omnibus-software from `94ef29b` to `2e637bf` in /omnibus [#12438](https://github.com/chef/chef/pull/12438) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.30 -->
-- Bump omnibus-software from `b6dd27a` to `94ef29b` in /omnibus [#12428](https://github.com/chef/chef/pull/12428) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.29 -->
-- Bump omnibus-software from `4707275` to `b6dd27a` in /omnibus [#12424](https://github.com/chef/chef/pull/12424) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.28 -->
-- Bump omnibus-software from `d2525ab` to `4707275` in /omnibus [#12403](https://github.com/chef/chef/pull/12403) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.27 -->
-- Bump inspec-core-bin to 4.52.9 [#12394](https://github.com/chef/chef/pull/12394) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.26 -->
-- Unpin ohai in omnibus Gemfile [#12384](https://github.com/chef/chef/pull/12384) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 16.17.25 -->
-- Bump train-core to 3.8.6 [#12388](https://github.com/chef/chef/pull/12388) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.24 -->
-- Bump chef-vault to 4.1.5 [#12381](https://github.com/chef/chef/pull/12381) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.23 -->
-- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12371](https://github.com/chef/chef/pull/12371) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.22 -->
-- Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12365](https://github.com/chef/chef/pull/12365) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.22 -->
-- Bump pedump from 0.6.2 to 0.6.3 in /omnibus [#12350](https://github.com/chef/chef/pull/12350) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.21 -->
-- Bump train-core to 3.8.5 [#12340](https://github.com/chef/chef/pull/12340) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.17.20 -->
-- Bump test-kitchen from 3.2.1 to 3.2.2 in /omnibus [#12335](https://github.com/chef/chef/pull/12335) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.19 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.17.39](https://github.com/chef/chef/tree/v16.17.39) (2022-01-27)
+
+#### Merged Pull Requests
+- Bump test-kitchen from 3.2.1 to 3.2.2 in /omnibus [#12335](https://github.com/chef/chef/pull/12335) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core to 3.8.5 [#12340](https://github.com/chef/chef/pull/12340) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump pedump from 0.6.2 to 0.6.3 in /omnibus [#12350](https://github.com/chef/chef/pull/12350) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `2c309fa` to `2bf77bb` in /omnibus [#12365](https://github.com/chef/chef/pull/12365) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `8560231` to `d2525ab` in /omnibus [#12371](https://github.com/chef/chef/pull/12371) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump chef-vault to 4.1.5 [#12381](https://github.com/chef/chef/pull/12381) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump train-core to 3.8.6 [#12388](https://github.com/chef/chef/pull/12388) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Unpin ohai in omnibus Gemfile [#12384](https://github.com/chef/chef/pull/12384) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Bump inspec-core-bin to 4.52.9 [#12394](https://github.com/chef/chef/pull/12394) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `d2525ab` to `4707275` in /omnibus [#12403](https://github.com/chef/chef/pull/12403) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `4707275` to `b6dd27a` in /omnibus [#12424](https://github.com/chef/chef/pull/12424) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `b6dd27a` to `94ef29b` in /omnibus [#12428](https://github.com/chef/chef/pull/12428) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `94ef29b` to `2e637bf` in /omnibus [#12438](https://github.com/chef/chef/pull/12438) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ffi to 1.15.5 [#12435](https://github.com/chef/chef/pull/12435) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `2e637bf` to `16e5ae5` in /omnibus [#12450](https://github.com/chef/chef/pull/12450) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ed25519 to 1.3.0 [#12447](https://github.com/chef/chef/pull/12447) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `2bf77bb` to `7c5db7e` in /omnibus [#12480](https://github.com/chef/chef/pull/12480) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `7c5db7e` to `9c83f73` in /omnibus [#12486](https://github.com/chef/chef/pull/12486) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `16e5ae5` to `c2fb9a4` in /omnibus [#12483](https://github.com/chef/chef/pull/12483) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `c2fb9a4` to `aa02d49` in /omnibus [#12503](https://github.com/chef/chef/pull/12503) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `9c83f73` to `201afa9` in /omnibus [#12506](https://github.com/chef/chef/pull/12506) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add constant for ChefServer system user [#12520](https://github.com/chef/chef/pull/12520) ([aleksey-hariton](https://github.com/aleksey-hariton))
+<!-- latest_stable_release -->
+
 ## [v16.17.18](https://github.com/chef/chef/tree/v16.17.18) (2021-12-01)
 
 #### Merged Pull Requests
@@ -57,7 +62,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Update Ruby to 2.7.5 [#12325](https://github.com/chef/chef/pull/12325) ([tas50](https://github.com/tas50))
 - Update nokogiri from 1.11.0 to 1.12.5 [#12326](https://github.com/chef/chef/pull/12326) ([tas50](https://github.com/tas50))
 - Pin Chef to a Ruby 2.6 version to fix Solaris builds [#12328](https://github.com/chef/chef/pull/12328) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.17.4](https://github.com/chef/chef/tree/v16.17.4) (2021-11-11)
 
