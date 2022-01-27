@@ -10,7 +10,7 @@ pushd ./chef.wiki
   aws s3 cp Pending-Release-Notes.md "s3://chef-automate-artifacts/${EXPEDITOR_CHANNEL}/latest/${EXPEDITOR_PRODUCT_KEY}/release-notes.md" --acl public-read --content-type "text/plain" --profile chef-cd
 
   # Reset "Stable Release Notes" wiki page
-  cat >./Pending-Release-Notes.md <<EOH
+  cat >./Pending-Release-Notes-17.md <<EOH
 ## Compliance Phase Improvements
 
 ## New Resources
