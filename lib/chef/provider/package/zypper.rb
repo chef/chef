@@ -71,7 +71,7 @@ class Chef
         end
 
         def candidate_version
-          if source_files_exist?
+          if new_resource.source
             logger.trace("#{new_resource} checking rpm status")
             shell_out!("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", new_resource.source).stdout.each_line do |line|
               case line
@@ -143,10 +143,6 @@ class Chef
           @installed_version[index]
         end
 
-        def source_files_exist?
-          resolved_source_array.all? { |s| s && ::File.exist?(s) }
-        end
-
         def zip(names, versions)
           names.zip(versions).map do |n, v|
             (v.nil? || v.empty?) ? n : "#{n}=#{v}"
@@ -159,7 +155,7 @@ class Chef
         end
 
         def zypper_package(command, global_options, *options, names, versions)
-          zipped_names = source_files_exist? ? [new_resource.source] : zip(names, versions)
+          zipped_names = new_resource.source ? new_resource.source : zip(names, versions)
           if zypper_version < 1.0
             shell_out!("zypper", global_options, gpg_checks, command, *options, "-y", names)
           else
