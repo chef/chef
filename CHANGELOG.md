@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.40 -->
-## [v17.9.40](https://github.com/chef/chef/tree/v17.9.40) (2022-01-28)
+<!-- latest_release 17.9.41 -->
+## [v17.9.41](https://github.com/chef/chef/tree/v17.9.41) (2022-01-28)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12530](https://github.com/chef/chef/pull/12530) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `201afa9` to `55e74ac` in /omnibus [#12531](https://github.com/chef/chef/pull/12531) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `201afa9` to `55e74ac` in /omnibus [#12531](https://github.com/chef/chef/pull/12531) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.41 -->
 - Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12530](https://github.com/chef/chef/pull/12530) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.40 -->
 - Fix ruby cleanup breaking builds [#12524](https://github.com/chef/chef/pull/12524) ([tas50](https://github.com/tas50)) <!-- 17.9.39 -->
 - Suppress deprecation warning for chef-client-updater cookbook [#12521](https://github.com/chef/chef/pull/12521) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.38 -->
