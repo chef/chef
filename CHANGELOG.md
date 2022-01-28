@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.20 -->
-## [v18.0.20](https://github.com/chef/chef/tree/v18.0.20) (2022-01-27)
+<!-- latest_release 18.0.21 -->
+## [v18.0.21](https://github.com/chef/chef/tree/v18.0.21) (2022-01-28)
 
 #### Merged Pull Requests
-- Bump fauxhai-ng to 9.3.0 [#12516](https://github.com/chef/chef/pull/12516) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12528](https://github.com/chef/chef/pull/12528) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12528](https://github.com/chef/chef/pull/12528) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.21 -->
 - Bump fauxhai-ng to 9.3.0 [#12516](https://github.com/chef/chef/pull/12516) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.20 -->
 - Suppress deprecation warning for chef-client-updater cookbook [#12502](https://github.com/chef/chef/pull/12502) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.18 -->
 - Bump omnibus from `9c83f73` to `201afa9` in /omnibus [#12508](https://github.com/chef/chef/pull/12508) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.17 -->
