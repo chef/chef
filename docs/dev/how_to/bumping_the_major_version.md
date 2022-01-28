@@ -53,7 +53,7 @@ Once you've forked to a new stable branch such as `chef-17` you'll want to creat
 - In tasks/bin/run_external_test set ohai to pull from the ohai stable branch
 - Update .github/dependabot.yml with the new branch
 - Create a new release notes wiki page for the stable version. See https://github.com/chef/chef/wiki/Pending-Release-Notes-17
-- Update release notes publishing script to us the new stable branch. See https://github.com/chef/chef/blob/chef-17/.expeditor/publish-release-notes.sh#L13
+- Update release notes publishing script to us the new stable branch. See branch names here: https://github.com/chef/chef/blob/e0ccaa0f5c7fc05f8ad8ce05295f48e5c48a6695/.expeditor/publish-release-notes.sh
 - Run `rake dependencies:update` to generate a new gemfile.lock
 
 Example PR for Chef 15: https://github.com/chef/chef/pull/9236
