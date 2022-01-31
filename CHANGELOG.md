@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.23 -->
-## [v18.0.23](https://github.com/chef/chef/tree/v18.0.23) (2022-01-28)
+<!-- latest_release 18.0.24 -->
+## [v18.0.24](https://github.com/chef/chef/tree/v18.0.24) (2022-01-31)
 
 #### Merged Pull Requests
-- Fix inspec waivers in compliance mode [#12523](https://github.com/chef/chef/pull/12523) ([lamont-granquist](https://github.com/lamont-granquist))
+- Chef 18 - Added constant with Server`s docs url [#12539](https://github.com/chef/chef/pull/12539) ([aleksey-hariton](https://github.com/aleksey-hariton))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef 18 - Added constant with Server`s docs url [#12539](https://github.com/chef/chef/pull/12539) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 18.0.24 -->
 - Fix inspec waivers in compliance mode [#12523](https://github.com/chef/chef/pull/12523) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.23 -->
 - Bump omnibus from `201afa9` to `55e74ac` in /omnibus [#12529](https://github.com/chef/chef/pull/12529) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.22 -->
 - Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12528](https://github.com/chef/chef/pull/12528) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.21 -->
