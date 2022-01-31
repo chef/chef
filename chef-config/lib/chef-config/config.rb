@@ -770,6 +770,11 @@ module ChefConfig
     # We'll use this preferentially.
     default :client_key_contents, nil
 
+    # We want to get all certificates OFF disk and into secure storage. This flag
+    # removes the client.pem from disk and a replacement is put into Keychain or the Certstore
+    # Then the public key from the new cert is pushed to Chef Server for authentication
+    default :migrate_key_to_keystore, false
+
     # When registering the client, should we allow the client key location to
     # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem
     # If the path of the key goes through a directory like /tmp this should
