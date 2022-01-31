@@ -1,30 +1,34 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.36 -->
-## [v17.9.36](https://github.com/chef/chef/tree/v17.9.36) (2022-01-25)
-
-#### Merged Pull Requests
-- Bump omnibus from `9c83f73` to `201afa9` in /omnibus [#12507](https://github.com/chef/chef/pull/12507) ([dependabot[bot]](https://github.com/dependabot[bot]))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.9.26 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump omnibus from `9c83f73` to `201afa9` in /omnibus [#12507](https://github.com/chef/chef/pull/12507) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.36 -->
-- Bump omnibus-software from `c2fb9a4` to `aa02d49` in /omnibus [#12505](https://github.com/chef/chef/pull/12505) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.35 -->
-- Bump omnibus from `2bf77bb` to `9c83f73` in /omnibus [#12487](https://github.com/chef/chef/pull/12487) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.34 -->
-- Bump omnibus-software from `94ef29b` to `c2fb9a4` in /omnibus [#12488](https://github.com/chef/chef/pull/12488) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.33 -->
-- Bump omnibus-software from `b6dd27a` to `94ef29b` in /omnibus [#12429](https://github.com/chef/chef/pull/12429) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.32 -->
-- Bump chef/ohai to fc48360746fa102f1c46ed1aee82896d94a3d4a3 [#12427](https://github.com/chef/chef/pull/12427) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.9.31 -->
-- Resolve Performance/RegexpMatch warnings [#12411](https://github.com/chef/chef/pull/12411) ([tas50](https://github.com/tas50)) <!-- 17.9.27 -->
-- Resolve Performance/Count warning [#12410](https://github.com/chef/chef/pull/12410) ([tas50](https://github.com/tas50)) <!-- 17.9.28 -->
-- Reduce 213 requires from each knife call [#12409](https://github.com/chef/chef/pull/12409) ([tas50](https://github.com/tas50)) <!-- 17.9.29 -->
-- Simplify file reads [#12386](https://github.com/chef/chef/pull/12386) ([tas50](https://github.com/tas50)) <!-- 17.9.30 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.9.42](https://github.com/chef/chef/tree/v17.9.42) (2022-01-28)
+
+#### Merged Pull Requests
+- Simplify file reads [#12386](https://github.com/chef/chef/pull/12386) ([tas50](https://github.com/tas50))
+- Reduce 213 requires from each knife call [#12409](https://github.com/chef/chef/pull/12409) ([tas50](https://github.com/tas50))
+- Resolve Performance/Count warning [#12410](https://github.com/chef/chef/pull/12410) ([tas50](https://github.com/tas50))
+- Resolve Performance/RegexpMatch warnings [#12411](https://github.com/chef/chef/pull/12411) ([tas50](https://github.com/tas50))
+- Bump chef/ohai to fc48360746fa102f1c46ed1aee82896d94a3d4a3 [#12427](https://github.com/chef/chef/pull/12427) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `b6dd27a` to `94ef29b` in /omnibus [#12429](https://github.com/chef/chef/pull/12429) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `94ef29b` to `c2fb9a4` in /omnibus [#12488](https://github.com/chef/chef/pull/12488) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `2bf77bb` to `9c83f73` in /omnibus [#12487](https://github.com/chef/chef/pull/12487) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `c2fb9a4` to `aa02d49` in /omnibus [#12505](https://github.com/chef/chef/pull/12505) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `9c83f73` to `201afa9` in /omnibus [#12507](https://github.com/chef/chef/pull/12507) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add constant for ChefServer system user [#12519](https://github.com/chef/chef/pull/12519) ([aleksey-hariton](https://github.com/aleksey-hariton))
+- Suppress deprecation warning for chef-client-updater cookbook [#12521](https://github.com/chef/chef/pull/12521) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix ruby cleanup breaking builds [#12524](https://github.com/chef/chef/pull/12524) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12530](https://github.com/chef/chef/pull/12530) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `201afa9` to `55e74ac` in /omnibus [#12531](https://github.com/chef/chef/pull/12531) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix inspec waivers in compliance mode (Chef 17 backport) [#12532](https://github.com/chef/chef/pull/12532) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v17.9.26](https://github.com/chef/chef/tree/v17.9.26) (2022-01-05)
 
 #### Merged Pull Requests
@@ -37,7 +41,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Resolve Performance/StringIdentifierArgument warnings [#12414](https://github.com/chef/chef/pull/12414) ([tas50](https://github.com/tas50))
 - Resolve Performance/RedundantSortBlock warnings [#12413](https://github.com/chef/chef/pull/12413) ([tas50](https://github.com/tas50))
 - Resolve all Performance/RedundantEqualityComparisonBlock warnings [#12412](https://github.com/chef/chef/pull/12412) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v17.9.18](https://github.com/chef/chef/tree/v17.9.18) (2021-12-23)
 

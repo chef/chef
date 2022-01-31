@@ -6,11 +6,11 @@ git clone https://x-access-token:${GITHUB_TOKEN}@github.com/chef/chef.wiki.git
 
 pushd ./chef.wiki
   # Publish release notes to S3
-  aws s3 cp Pending-Release-Notes.md "s3://chef-automate-artifacts/release-notes/${EXPEDITOR_PRODUCT_KEY}/${EXPEDITOR_VERSION}.md" --acl public-read --content-type "text/plain" --profile chef-cd
-  aws s3 cp Pending-Release-Notes.md "s3://chef-automate-artifacts/${EXPEDITOR_CHANNEL}/latest/${EXPEDITOR_PRODUCT_KEY}/release-notes.md" --acl public-read --content-type "text/plain" --profile chef-cd
+  aws s3 cp Pending-Release-Notes.md-17 "s3://chef-automate-artifacts/release-notes/${EXPEDITOR_PRODUCT_KEY}/${EXPEDITOR_VERSION}.md" --acl public-read --content-type "text/plain" --profile chef-cd
+  aws s3 cp Pending-Release-Notes.md-17 "s3://chef-automate-artifacts/${EXPEDITOR_CHANNEL}/latest/${EXPEDITOR_PRODUCT_KEY}/release-notes.md" --acl public-read --content-type "text/plain" --profile chef-cd
 
   # Reset "Stable Release Notes" wiki page
-  cat >./Pending-Release-Notes.md <<EOH
+  cat >./Pending-Release-Notes-17.md <<EOH
 ## Compliance Phase Improvements
 
 ## New Resources

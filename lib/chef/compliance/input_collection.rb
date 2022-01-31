@@ -57,7 +57,7 @@ class Chef
       # @return [Array<Input>] inspec inputs which are enabled in a form suitable to pass to inspec
       #
       def inspec_data
-        select(&:enabled?).each_with_object({}) { |input, hash| hash.merge(input.inspec_data) }
+        select(&:enabled?).each_with_object({}) { |input, hash| hash.merge!(input.inspec_data) }
       end
 
       # DSL method to enable input files.  This matches on the filename of the input file.
