@@ -110,6 +110,9 @@ module ChefUtils
 
       # The server's configuration utility
       SERVER_CTL = "chef-server-ctl"
+
+      # The server`s docs URL
+      SERVER_DOCS = "https://docs.chef.io/server/"
     end
 
     class Solo
