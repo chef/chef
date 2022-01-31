@@ -115,7 +115,7 @@ module ChefUtils
       SERVER_DOCS = "https://docs.chef.io/server/"
 
       # OS user for server
-      SYSTEM_USER = "opscode" 
+      SYSTEM_USER = "opscode"
     end
 
     class Solo
