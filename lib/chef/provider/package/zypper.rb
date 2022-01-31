@@ -73,17 +73,19 @@ class Chef
         def candidate_version
           if new_resource.source
             logger.trace("#{new_resource} checking rpm status")
-            shell_out!("rpm", "-qp", "--queryformat", "%{NAME} %{VERSION}-%{RELEASE}\n", new_resource.source).stdout.each_line do |line|
-              case line
-              when /^(\S+)\s(\S+)$/
-                current_resource.package_name($1)
-                new_resource.version($2)
-                @candidate_version = $2
-              end
-            end
+            resolve_source_to_version
 
           else
             @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
+          end
+        end
+
+        def resolve_source_to_version
+          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+            case line
+              when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
+            end
           end
         end
 
@@ -155,7 +157,7 @@ class Chef
         end
 
         def zypper_package(command, global_options, *options, names, versions)
-          zipped_names = new_resource.source ? new_resource.source : zip(names, versions)
+          zipped_names = new_resource.source || zip(names, versions)
           if zypper_version < 1.0
             shell_out!("zypper", global_options, gpg_checks, command, *options, "-y", names)
           else
