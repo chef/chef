@@ -86,9 +86,9 @@ platforms:
       - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: centos-8
+- name: almalinux-8
   driver:
-    image: dokken/centos-8
+    image: dokken/almalinux-8
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN dnf -y install e2fsprogs

@@ -101,7 +101,7 @@ jobs:
           - 'amazonlinux-2'
           - 'centos-6'
           - 'centos-7'
-          - 'centos-8'
+          - 'almalinux-8'
           - 'debian-9'
           - 'debian-10'
           - 'debian-11'
