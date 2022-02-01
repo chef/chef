@@ -113,6 +113,7 @@ shared_context "a client run" do
     # --Client.register
     #   Make sure Client#register thinks the client key doesn't
     #   exist, so it tries to register and create one.
+    allow(Chef::HTTP::Authenticator).to receive(:detect_certificate_key).with(fqdn).and_return(false)
     allow(File).to receive(:exists?).and_call_original
     expect(File).to receive(:exists?)
       .with(Chef::Config[:client_key])
@@ -201,7 +202,6 @@ shared_context "a client run" do
 
     # Post conditions: check that node has been filled in correctly
     expect(client).to receive(:run_started)
-
     stub_for_run
   end
 end
@@ -262,7 +262,7 @@ end
 
 # requires platform and platform_version be defined
 shared_examples "a completed run" do
-  include_context "run completed"
+  include_context "run completed" # should receive run_completed_successfully
 
   it "runs ohai, sets up authentication, loads node state, synchronizes policy, converges" do
     # This is what we're testing.
