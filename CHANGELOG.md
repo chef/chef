@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.26 -->
-## [v18.0.26](https://github.com/chef/chef/tree/v18.0.26) (2022-02-01)
+<!-- latest_release 18.0.27 -->
+## [v18.0.27](https://github.com/chef/chef/tree/v18.0.27) (2022-02-02)
 
 #### Merged Pull Requests
-- Updated the chef client to retrieve certs from the Windows Cert store.  [#12426](https://github.com/chef/chef/pull/12426) ([johnmccrae](https://github.com/johnmccrae))
+- Add constant for ChefServer system user [#12513](https://github.com/chef/chef/pull/12513) ([aleksey-hariton](https://github.com/aleksey-hariton))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add constant for ChefServer system user [#12513](https://github.com/chef/chef/pull/12513) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 18.0.27 -->
 - Updated the chef client to retrieve certs from the Windows Cert store.  [#12426](https://github.com/chef/chef/pull/12426) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.26 -->
 - Adding support to move the client.pem to secure storage [#12518](https://github.com/chef/chef/pull/12518) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.25 -->
 - Chef 18 - Added constant with Server`s docs url [#12539](https://github.com/chef/chef/pull/12539) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 18.0.24 -->
