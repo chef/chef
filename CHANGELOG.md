@@ -1,10 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 17.9.43 -->
+## [v17.9.43](https://github.com/chef/chef/tree/v17.9.43) (2022-02-02)
+
+#### Merged Pull Requests
+- Chef 17 - Add constant for ChefServer`s docs url [#12540](https://github.com/chef/chef/pull/12540) ([aleksey-hariton](https://github.com/aleksey-hariton))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=17.9.42 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Chef 17 - Add constant for ChefServer`s docs url [#12540](https://github.com/chef/chef/pull/12540) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 17.9.43 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
