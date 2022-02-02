@@ -20,6 +20,7 @@
 
 require_relative "../package"
 require_relative "../../resource/zypper_package"
+require_relative "zypper/version"
 
 class Chef
   class Provider
