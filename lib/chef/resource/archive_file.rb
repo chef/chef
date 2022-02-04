@@ -20,6 +20,7 @@
 
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
+require "ffi-libarchive"
 
 class Chef
   class Resource
@@ -91,9 +92,6 @@ class Chef
       alias_method :extract_to, :destination
 
       action :extract, description: "Extract and archive file." do
-
-        require_libarchive
-
         unless ::File.exist?(new_resource.path)
           raise Errno::ENOENT, "No archive found at #{new_resource.path}! Cannot continue."
         end
@@ -131,10 +129,6 @@ class Chef
       end
 
       action_class do
-        def require_libarchive
-          require "ffi-libarchive"
-        end
-
         def define_resource_requirements
           if new_resource.mode.is_a?(Integer)
             Chef.deprecated(:archive_file_integer_file_mode, "The mode property should be passed to archive_file resources as a String and not an Integer to ensure the value is properly interpreted.")
