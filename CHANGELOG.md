@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.28 -->
-## [v18.0.28](https://github.com/chef/chef/tree/v18.0.28) (2022-02-04)
+<!-- latest_release 18.0.29 -->
+## [v18.0.29](https://github.com/chef/chef/tree/v18.0.29) (2022-02-04)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12550](https://github.com/chef/chef/pull/12550) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump pedump from 0.6.3 to 0.6.4 in /omnibus [#12536](https://github.com/chef/chef/pull/12536) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump pedump from 0.6.3 to 0.6.4 in /omnibus [#12536](https://github.com/chef/chef/pull/12536) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.29 -->
 - Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12550](https://github.com/chef/chef/pull/12550) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.28 -->
 - Add constant for ChefServer system user [#12513](https://github.com/chef/chef/pull/12513) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 18.0.27 -->
 - Updated the chef client to retrieve certs from the Windows Cert store.  [#12426](https://github.com/chef/chef/pull/12426) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.26 -->
