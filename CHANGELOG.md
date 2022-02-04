@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.43 -->
-## [v16.17.43](https://github.com/chef/chef/tree/v16.17.43) (2022-01-31)
+<!-- latest_release 16.17.44 -->
+## [v16.17.44](https://github.com/chef/chef/tree/v16.17.44) (2022-02-04)
 
 #### Merged Pull Requests
-- Chef 16 - Add constant for ChefServer`s docs url [#12541](https://github.com/chef/chef/pull/12541) ([aleksey-hariton](https://github.com/aleksey-hariton))
+- Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12549](https://github.com/chef/chef/pull/12549) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.39 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12549](https://github.com/chef/chef/pull/12549) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.44 -->
 - Chef 16 - Add constant for ChefServer`s docs url [#12541](https://github.com/chef/chef/pull/12541) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 16.17.43 -->
 - Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12527](https://github.com/chef/chef/pull/12527) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.42 -->
 - Bump omnibus from `201afa9` to `55e74ac` in /omnibus [#12526](https://github.com/chef/chef/pull/12526) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.41 -->
