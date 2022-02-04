@@ -20,8 +20,12 @@
 
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
-# ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
-require "ffi-libarchive" unless defined?(Archive::Reader)
+begin
+  # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
+  require "ffi-libarchive" unless defined?(Archive::Reader)
+rescue LoadError
+  STDERR.puts "ffi-libarchive could not be loaded, libarchive is probably not installed on system, archive_file will not be available"
+end
 
 class Chef
   class Resource
