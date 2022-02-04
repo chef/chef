@@ -18,8 +18,7 @@
 require "spec_helper"
 require "tmpdir"
 
-# Exclude this test on platforms where ffi-libarchive loading is broken
-describe Chef::Resource::ArchiveFile, :libarchive_loading_broken do
+describe Chef::Resource::ArchiveFile, :not_supported_on_aix do
   include RecipeDSLHelper
 
   let(:tmp_path) { Dir.mktmpdir }
