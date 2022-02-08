@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.30 -->
-## [v18.0.30](https://github.com/chef/chef/tree/v18.0.30) (2022-02-04)
+<!-- latest_release 18.0.31 -->
+## [v18.0.31](https://github.com/chef/chef/tree/v18.0.31) (2022-02-08)
 
 #### Merged Pull Requests
-- Relax dep on diff-lcs now that 1.4.0 regression is fixed [#12534](https://github.com/chef/chef/pull/12534) ([tas50](https://github.com/tas50))
+- Eager load ffi-libarchive to resolve centos-7 failures [#12552](https://github.com/chef/chef/pull/12552) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Eager load ffi-libarchive to resolve centos-7 failures [#12552](https://github.com/chef/chef/pull/12552) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.31 -->
 - Relax dep on diff-lcs now that 1.4.0 regression is fixed [#12534](https://github.com/chef/chef/pull/12534) ([tas50](https://github.com/tas50)) <!-- 18.0.30 -->
 - Bump pedump from 0.6.3 to 0.6.4 in /omnibus [#12536](https://github.com/chef/chef/pull/12536) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.29 -->
 - Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12550](https://github.com/chef/chef/pull/12550) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.28 -->
