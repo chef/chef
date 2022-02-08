@@ -1,24 +1,22 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.46 -->
-## [v17.9.46](https://github.com/chef/chef/tree/v17.9.46) (2022-02-08)
-
-#### Merged Pull Requests
-- (Backport) Eager load ffi-libarchive to resolve centos-7 failures [#12559](https://github.com/chef/chef/pull/12559) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.9.42 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- (Backport) Eager load ffi-libarchive to resolve centos-7 failures [#12559](https://github.com/chef/chef/pull/12559) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.46 -->
-- Bump pedump from 0.6.3 to 0.6.4 in /omnibus [#12537](https://github.com/chef/chef/pull/12537) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.45 -->
-- Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12551](https://github.com/chef/chef/pull/12551) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.44 -->
-- Chef 17 - Add constant for ChefServer`s docs url [#12540](https://github.com/chef/chef/pull/12540) ([aleksey-hariton](https://github.com/aleksey-hariton)) <!-- 17.9.43 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.9.46](https://github.com/chef/chef/tree/v17.9.46) (2022-02-08)
+
+#### Merged Pull Requests
+- Chef 17 - Add constant for ChefServer`s docs url [#12540](https://github.com/chef/chef/pull/12540) ([aleksey-hariton](https://github.com/aleksey-hariton))
+- Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12551](https://github.com/chef/chef/pull/12551) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump pedump from 0.6.3 to 0.6.4 in /omnibus [#12537](https://github.com/chef/chef/pull/12537) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- (Backport) Eager load ffi-libarchive to resolve centos-7 failures [#12559](https://github.com/chef/chef/pull/12559) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v17.9.42](https://github.com/chef/chef/tree/v17.9.42) (2022-01-28)
 
 #### Merged Pull Requests
@@ -38,7 +36,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump omnibus-software from `aa02d49` to `1c00b6d` in /omnibus [#12530](https://github.com/chef/chef/pull/12530) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Bump omnibus from `201afa9` to `55e74ac` in /omnibus [#12531](https://github.com/chef/chef/pull/12531) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Fix inspec waivers in compliance mode (Chef 17 backport) [#12532](https://github.com/chef/chef/pull/12532) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v17.9.26](https://github.com/chef/chef/tree/v17.9.26) (2022-01-05)
 
