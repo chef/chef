@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 18.0.32 -->
+## [v18.0.32](https://github.com/chef/chef/tree/v18.0.32) (2022-02-08)
 
 #### Merged Pull Requests
+- net-ftp isn&#39;t bundled in Ruby 3.1 anymore so dep on it [#12399](https://github.com/chef/chef/pull/12399) ([tas50](https://github.com/tas50))
 - Switch from centos-8 to almalinux-8 [#12544](https://github.com/chef/chef/pull/12544) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- net-ftp isn&#39;t bundled in Ruby 3.1 anymore so dep on it [#12399](https://github.com/chef/chef/pull/12399) ([tas50](https://github.com/tas50)) <!-- 18.0.32 -->
 - Switch from centos-8 to almalinux-8 [#12544](https://github.com/chef/chef/pull/12544) ([tas50](https://github.com/tas50)) <!-- 18.0.31 -->
 - Eager load ffi-libarchive to resolve centos-7 failures [#12552](https://github.com/chef/chef/pull/12552) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.31 -->
 - Relax dep on diff-lcs now that 1.4.0 regression is fixed [#12534](https://github.com/chef/chef/pull/12534) ([tas50](https://github.com/tas50)) <!-- 18.0.30 -->
