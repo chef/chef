@@ -309,26 +309,26 @@ describe Chef::Resource do
     end
 
     it "should make resources appear in the actions hash of subscribed nodes" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee", run_context)
       zr = run_context.resource_collection.find(zen_master: "coffee")
       resource.subscribes :reload, zr
-      expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
+      expect(zr.delayed_notifications.detect { |e| e.resource.name == "funk" && e.action == :reload }).not_to be_nil
     end
 
     it "should make resources appear in the actions hash of subscribed nodes" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee", run_context)
       zr = run_context.resource_collection.find(zen_master: "coffee")
       resource.subscribes :reload, zr
       expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
 
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("bean")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("bean", run_context)
       zrb = run_context.resource_collection.find(zen_master: "bean")
-      resource.subscribes :reload, zrb
-      expect(zrb.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
+      zrb.subscribes :reload, zr
+      expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
     end
 
     it "should make subscribed resources be capable of acting immediately" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee", run_context)
       zr = run_context.resource_collection.find(zen_master: "coffee")
       resource.subscribes :reload, zr, :immediately
       expect(zr.immediate_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
