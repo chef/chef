@@ -108,3 +108,5 @@ begin
 rescue LoadError
   puts "chefstyle/rubocop is not available. bundle install first to make sure all dependencies are installed."
 end
+
+# end
