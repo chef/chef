@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.35 -->
-## [v18.0.35](https://github.com/chef/chef/tree/v18.0.35) (2022-02-14)
+<!-- latest_release 18.0.37 -->
+## [v18.0.37](https://github.com/chef/chef/tree/v18.0.37) (2022-02-14)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `c7a43ec` to `91c1297` in /omnibus [#12576](https://github.com/chef/chef/pull/12576) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix windows hab builds with rake install:local [#12579](https://github.com/chef/chef/pull/12579) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix windows hab builds with rake install:local [#12579](https://github.com/chef/chef/pull/12579) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.37 -->
 - Bump omnibus-software from `c7a43ec` to `91c1297` in /omnibus [#12576](https://github.com/chef/chef/pull/12576) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.35 -->
 - Bump corefoundation to 0.3.13 [#12574](https://github.com/chef/chef/pull/12574) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.34 -->
 - Make sure network scripts dir exists on alma [#12565](https://github.com/chef/chef/pull/12565) ([tas50](https://github.com/tas50)) <!-- 18.0.33 -->
