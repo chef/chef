@@ -282,6 +282,14 @@ RSpec.describe ChefConfig::Config do
         expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("C:\\#{dirname}")
       end
     end
+
+    context "when calling etc_chef_dir multiple times" do
+      it "should not recalculate path for every call" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: false)).to eql("/etc/#{dirname}")
+        expect(ChefConfig::PathHelper).not_to receive(:cleanpath)
+        expect(ChefConfig::Config.etc_chef_dir(windows: false)).to eql("/etc/#{dirname}")
+      end
+    end
   end
 
   [ false, true ].each do |is_windows|
