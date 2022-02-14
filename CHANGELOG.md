@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.33 -->
-## [v18.0.33](https://github.com/chef/chef/tree/v18.0.33) (2022-02-09)
+<!-- latest_release 18.0.34 -->
+## [v18.0.34](https://github.com/chef/chef/tree/v18.0.34) (2022-02-14)
 
 #### Merged Pull Requests
-- Make sure network scripts dir exists on alma [#12565](https://github.com/chef/chef/pull/12565) ([tas50](https://github.com/tas50))
+- Bump corefoundation to 0.3.13 [#12574](https://github.com/chef/chef/pull/12574) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump corefoundation to 0.3.13 [#12574](https://github.com/chef/chef/pull/12574) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.34 -->
 - Make sure network scripts dir exists on alma [#12565](https://github.com/chef/chef/pull/12565) ([tas50](https://github.com/tas50)) <!-- 18.0.33 -->
 - net-ftp isn&#39;t bundled in Ruby 3.1 anymore so dep on it [#12399](https://github.com/chef/chef/pull/12399) ([tas50](https://github.com/tas50)) <!-- 18.0.32 -->
 - Switch from centos-8 to almalinux-8 [#12544](https://github.com/chef/chef/pull/12544) ([tas50](https://github.com/tas50)) <!-- 18.0.31 -->
