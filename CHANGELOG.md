@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.38 -->
-## [v18.0.38](https://github.com/chef/chef/tree/v18.0.38) (2022-02-15)
+<!-- latest_release 18.0.39 -->
+## [v18.0.39](https://github.com/chef/chef/tree/v18.0.39) (2022-02-15)
 
 #### Merged Pull Requests
-- Bump omnibus from `55e74ac` to `cf9ef0a` in /omnibus [#12584](https://github.com/chef/chef/pull/12584) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12585](https://github.com/chef/chef/pull/12585) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12585](https://github.com/chef/chef/pull/12585) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.39 -->
 - Bump omnibus from `55e74ac` to `cf9ef0a` in /omnibus [#12584](https://github.com/chef/chef/pull/12584) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.38 -->
 - Fix windows hab builds with rake install:local [#12579](https://github.com/chef/chef/pull/12579) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.37 -->
 - Bump omnibus-software from `c7a43ec` to `91c1297` in /omnibus [#12576](https://github.com/chef/chef/pull/12576) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.35 -->
