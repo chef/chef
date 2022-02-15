@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.48 -->
-## [v16.17.48](https://github.com/chef/chef/tree/v16.17.48) (2022-02-15)
+<!-- latest_release 16.17.49 -->
+## [v16.17.49](https://github.com/chef/chef/tree/v16.17.49) (2022-02-15)
 
 #### Merged Pull Requests
-- Bump omnibus from `55e74ac` to `cf9ef0a` in /omnibus [#12583](https://github.com/chef/chef/pull/12583) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12582](https://github.com/chef/chef/pull/12582) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.39 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12582](https://github.com/chef/chef/pull/12582) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.49 -->
 - Bump omnibus from `55e74ac` to `cf9ef0a` in /omnibus [#12583](https://github.com/chef/chef/pull/12583) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.48 -->
 - Bump omnibus-software from `791cc46` to `91c1297` in /omnibus [#12575](https://github.com/chef/chef/pull/12575) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.47 -->
 - (Backport) Eager load ffi-libarchive to resolve centos-7 failures [#12560](https://github.com/chef/chef/pull/12560) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.17.46 -->
