@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.42 -->
-## [v18.0.42](https://github.com/chef/chef/tree/v18.0.42) (2022-02-16)
+<!-- latest_release 18.0.43 -->
+## [v18.0.43](https://github.com/chef/chef/tree/v18.0.43) (2022-02-16)
 
 #### Merged Pull Requests
-- Pin openssl to 1.1.1m [#12598](https://github.com/chef/chef/pull/12598) ([jayashrig158](https://github.com/jayashrig158))
+- Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12592](https://github.com/chef/chef/pull/12592) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12592](https://github.com/chef/chef/pull/12592) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.43 -->
 - Pin openssl to 1.1.1m [#12598](https://github.com/chef/chef/pull/12598) ([jayashrig158](https://github.com/jayashrig158)) <!-- 18.0.42 -->
 - Validate resource spec passed to subscribes [#12525](https://github.com/chef/chef/pull/12525) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.41 -->
 - Avoid calculating etc_chef_dir multiple times on startup [#12581](https://github.com/chef/chef/pull/12581) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.40 -->
