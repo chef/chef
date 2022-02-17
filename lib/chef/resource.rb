@@ -341,6 +341,7 @@ class Chef
     def subscribes(action, resources, timing = :delayed)
       resources = [resources].flatten
       resources.each do |resource|
+        validate_resource_spec!(resource)
         if resource.is_a?(String)
           resource = UnresolvedSubscribes.new(resource, run_context)
         end
