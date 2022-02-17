@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.44 -->
-## [v18.0.44](https://github.com/chef/chef/tree/v18.0.44) (2022-02-16)
+<!-- latest_release 18.0.45 -->
+## [v18.0.45](https://github.com/chef/chef/tree/v18.0.45) (2022-02-17)
 
 #### Merged Pull Requests
-- fixes for #12589 for compliance audit-enforcer reporter [#12595](https://github.com/chef/chef/pull/12595) ([collinmcneese](https://github.com/collinmcneese))
+- Bump chef/chefstyle to 8459a2f943dcef42a27518563eaf0b2dad3b4972 [#12611](https://github.com/chef/chef/pull/12611) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/chefstyle to 8459a2f943dcef42a27518563eaf0b2dad3b4972 [#12611](https://github.com/chef/chef/pull/12611) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.45 -->
 - fixes for #12589 for compliance audit-enforcer reporter [#12595](https://github.com/chef/chef/pull/12595) ([collinmcneese](https://github.com/collinmcneese)) <!-- 18.0.44 -->
 - Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12592](https://github.com/chef/chef/pull/12592) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.43 -->
 - Pin openssl to 1.1.1m [#12598](https://github.com/chef/chef/pull/12598) ([jayashrig158](https://github.com/jayashrig158)) <!-- 18.0.42 -->
