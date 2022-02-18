@@ -23,7 +23,7 @@ describe "notifying_block" do
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.expand_path("../../..", __dir__) }
-  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
+  let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
 
   when_the_repository "has a cookbook with partial resources" do
     before do

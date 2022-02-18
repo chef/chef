@@ -18,7 +18,7 @@ describe ChefUtils::Dist::Solo::EXEC do
 
   let(:cookbook_ancient_100_metadata_rb) { cb_metadata("ancient", "1.0.0") }
 
-  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
+  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai --always-dump-stacktrace" }
 
   when_the_repository "creates nodes" do
     let(:nodes_dir) { File.join(@repository_dir, "nodes") }
@@ -28,7 +28,7 @@ describe ChefUtils::Dist::Solo::EXEC do
       file "config/solo.rb", <<~EOM
         chef_repo_path "#{@repository_dir}"
       EOM
-      result = shell_out("bundle exec chef-solo -c \"#{path_to("config/solo.rb")}\" -l debug", cwd: chef_dir)
+      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -l debug", cwd: chef_dir)
       result.error!
     end
 
