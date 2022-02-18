@@ -1,26 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.52 -->
-## [v17.9.52](https://github.com/chef/chef/tree/v17.9.52) (2022-02-18)
-
-#### Merged Pull Requests
-- fixes for #12589 for compliance audit-enforcer reporter [#12613](https://github.com/chef/chef/pull/12613) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.9.46 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- fixes for #12589 for compliance audit-enforcer reporter [#12613](https://github.com/chef/chef/pull/12613) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.9.52 -->
-- Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12596](https://github.com/chef/chef/pull/12596) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.51 -->
-- IPACK-49-update-openssl-to-1.1.1m [#12600](https://github.com/chef/chef/pull/12600) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.9.50 -->
-- Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12587](https://github.com/chef/chef/pull/12587) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.49 -->
-- Bump omnibus from `55e74ac` to `cf9ef0a` in /omnibus [#12586](https://github.com/chef/chef/pull/12586) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.48 -->
-- Bump omnibus-software from `791cc46` to `91c1297` in /omnibus [#12577](https://github.com/chef/chef/pull/12577) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.47 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.9.52](https://github.com/chef/chef/tree/v17.9.52) (2022-02-18)
+
+#### Merged Pull Requests
+- Bump omnibus-software from `791cc46` to `91c1297` in /omnibus [#12577](https://github.com/chef/chef/pull/12577) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `55e74ac` to `cf9ef0a` in /omnibus [#12586](https://github.com/chef/chef/pull/12586) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12587](https://github.com/chef/chef/pull/12587) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- IPACK-49-update-openssl-to-1.1.1m [#12600](https://github.com/chef/chef/pull/12600) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12596](https://github.com/chef/chef/pull/12596) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- fixes for #12589 for compliance audit-enforcer reporter [#12613](https://github.com/chef/chef/pull/12613) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v17.9.46](https://github.com/chef/chef/tree/v17.9.46) (2022-02-08)
 
 #### Merged Pull Requests
@@ -28,7 +26,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump omnibus-software from `1c00b6d` to `791cc46` in /omnibus [#12551](https://github.com/chef/chef/pull/12551) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Bump pedump from 0.6.3 to 0.6.4 in /omnibus [#12537](https://github.com/chef/chef/pull/12537) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - (Backport) Eager load ffi-libarchive to resolve centos-7 failures [#12559](https://github.com/chef/chef/pull/12559) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v17.9.42](https://github.com/chef/chef/tree/v17.9.42) (2022-01-28)
 
