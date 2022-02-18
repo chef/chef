@@ -7,7 +7,7 @@ class Chef
     class Runner < EventDispatch::Base
       extend Forwardable
 
-      SUPPORTED_REPORTERS = %w{chef-automate chef-server-automate json-file audit-enforcer cli}.freeze
+      SUPPORTED_REPORTERS = %w{chef-automate chef-server-automate json-file audit-enforcer compliance-enforcer cli}.freeze
       SUPPORTED_FETCHERS = %w{chef-automate chef-server}.freeze
 
       attr_accessor :run_id
@@ -300,7 +300,7 @@ class Chef
           require_relative "reporter/json_file"
           path = node.dig("audit", "json_file", "location")
           Chef::Compliance::Reporter::JsonFile.new(file: path)
-        when "audit-enforcer"
+        when "audit-enforcer", "compliance-enforcer"
           require_relative "reporter/compliance_enforcer"
           Chef::Compliance::Reporter::ComplianceEnforcer.new
         when "cli"

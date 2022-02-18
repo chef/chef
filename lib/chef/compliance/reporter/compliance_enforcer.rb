@@ -1,7 +1,7 @@
 class Chef
   module Compliance
     module Reporter
-      class AuditEnforcer
+      class ComplianceEnforcer
         class ControlFailure < StandardError; end
 
         def send_report(report)
