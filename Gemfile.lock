@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: d5d71523de4c037c9106562303a3c4b392ebb149
+  revision: 71ae97744713ffd91ac8277d7a1385dabb6d570b
   branch: main
   specs:
     chefstyle (2.2.2)
@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: dbcf8aa71b7e82b93597c48b5e06f0a001ff5048
+  revision: d6662b7f4a4705535f065b974f0f5c222738c448
   branch: main
   specs:
-    ohai (18.0.5)
+    ohai (18.0.6)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
