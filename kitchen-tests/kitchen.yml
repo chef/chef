@@ -3,7 +3,7 @@ driver:
   name: dokken
   privileged: true
   chef_image: chef/chef
-  chef_version: current
+  chef_version: 18.0.43
 
 transport:
   name: dokken
@@ -23,16 +23,17 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: echo "Installing devtoolset-8:"
+    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
         - centos-6
-    - remote: scl enable devtoolset-8 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - centos-6
+        - centos-7
+        - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
       excludes:
         - centos-6
+        - centos-7
+        - oraclelinux-7
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
@@ -80,8 +81,8 @@ platforms:
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
       - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
-      - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=http://vault.centos.org/centos/6/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-      - RUN yum install -y devtoolset-8
+      - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=https://mirror.rackspace.com/centos-vault/6.10/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
+      - RUN yum install -y devtoolset-7.x86_64
 
 - name: centos-7
   driver:
@@ -90,6 +91,8 @@ platforms:
     intermediate_instructions:
       - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y centos-release-scl
+      - RUN yum install -y devtoolset-7
 
 - name: almalinux-8
   driver:
@@ -107,6 +110,10 @@ platforms:
     intermediate_instructions:
       - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
+      - RUN printf "[centos-sclo-rh]\nname=CentOS-7 - SCLo rh\nbaseurl=https://archive.kernel.org/centos-vault/7.8.2003/sclo/x86_64/rh/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
+      - RUN yum install -y devtoolset-7
+
 
 - name: oraclelinux-8
   driver:
