@@ -214,7 +214,7 @@ class Chef
           def install(gem_dependency, options = {})
             with_gem_sources(*options.delete(:sources)) do
               with_correct_verbosity do
-                dependency_installer(options).install(gem_dependency)
+                dependency_installer(**options).install(gem_dependency)
               end
             end
           end
@@ -228,7 +228,7 @@ class Chef
           def uninstall(gem_name, gem_version = nil, opts = {})
             gem_version ? opts[:version] = gem_version : opts[:all] = true
             with_correct_verbosity do
-              uninstaller(gem_name, opts).uninstall
+              uninstaller(gem_name, **opts).uninstall
             end
           end
 
@@ -240,12 +240,12 @@ class Chef
             yield
           end
 
-          def dependency_installer(opts = {})
-            Gem::DependencyInstaller.new(opts)
+          def dependency_installer(**opts)
+            Gem::DependencyInstaller.new(**opts)
           end
 
-          def uninstaller(gem_name, opts = {})
-            Gem::Uninstaller.new(gem_name, DEFAULT_UNINSTALLER_OPTS.merge(opts))
+          def uninstaller(gem_name, **opts)
+            Gem::Uninstaller.new(gem_name, **DEFAULT_UNINSTALLER_OPTS.merge(opts))
           end
 
           private
