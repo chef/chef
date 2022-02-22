@@ -101,7 +101,7 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-      win32-api (~> 1.5.3)
+      win32-api (~> 1.5)
       win32-certstore (~> 0.6.2)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
@@ -411,7 +411,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.5.3-universal-mingw32)
+    win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.2)
       ffi
       mixlib-shellout

@@ -2,7 +2,7 @@ gemspec = eval(IO.read(File.expand_path("chef.gemspec", __dir__)))
 
 gemspec.platform = Gem::Platform.new(%w{universal mingw32})
 
-gemspec.add_dependency "win32-api", "~> 1.5.3"
+gemspec.add_dependency "win32-api", "~> 1.5"
 gemspec.add_dependency "win32-event", "~> 0.6.1"
 # TODO: Relax this pin and make the necessary updaets. The issue originally
 # leading to this pin has been fixed in 0.6.5.
