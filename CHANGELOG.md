@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.50 -->
-## [v18.0.50](https://github.com/chef/chef/tree/v18.0.50) (2022-02-22)
+<!-- latest_release 18.0.51 -->
+## [v18.0.51](https://github.com/chef/chef/tree/v18.0.51) (2022-02-22)
 
 #### Merged Pull Requests
-- Bump chef/ohai to 594372d3a48ccea6d2eddd173bc1281f314f0f09 [#12616](https://github.com/chef/chef/pull/12616) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Loosen the win32-api dep to allow for the latest releases [#12614](https://github.com/chef/chef/pull/12614) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Loosen the win32-api dep to allow for the latest releases [#12614](https://github.com/chef/chef/pull/12614) ([tas50](https://github.com/tas50)) <!-- 18.0.51 -->
 - Bump chef/ohai to 594372d3a48ccea6d2eddd173bc1281f314f0f09 [#12616](https://github.com/chef/chef/pull/12616) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.50 -->
 - More ruby 3.0 fixes [#12621](https://github.com/chef/chef/pull/12621) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.49 -->
 - Disable knife gem install in kitchen tests [#12618](https://github.com/chef/chef/pull/12618) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.46 -->
