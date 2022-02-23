@@ -72,12 +72,8 @@ class Chef
         end
 
         def candidate_version
-          if new_resource.source
-            logger.trace("#{new_resource} checking rpm status")
-            resolve_source_to_version
-
-          else
-            @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
+          package_name_array.each_with_index.map do |pkg, i|
+            available_version(i).version_with_arch
           end
         end
 
@@ -136,7 +132,12 @@ class Chef
 
         def available_version(index)
           @available_version ||= []
-          @available_version[index] ||= resolve_available_version(package_name_array[index], safe_version_array[index])
+
+          @available_version[index] ||= if new_resource.source
+                                          resolve_source_to_version
+                                        else
+                                          resolve_available_version(package_name_array[index], safe_version_array[index])
+                                        end
           @available_version[index]
         end
 

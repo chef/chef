@@ -74,6 +74,13 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
       expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
     end
 
+    it "install package with source argument" do
+      source("#{CHEF_SPEC_ASSETS}/zypprepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
+      zypper_package.run_action(:install)
+      expect(zypper_package.updated_by_last_action?).to be true
+      expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
+    end
+
     it "does not install if the package is installed" do
       preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
       zypper_package.run_action(:install)
