@@ -28,7 +28,7 @@ describe ChefUtils::Dist::Solo::EXEC do
       file "config/solo.rb", <<~EOM
         chef_repo_path "#{@repository_dir}"
       EOM
-      result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -l debug", cwd: chef_dir)
+      result = shell_out("bundle exec #{ChefUtils::Dist::Solo::EXEC} --minimal-ohai --always-dump-stacktrace -c \"#{path_to("config/solo.rb")}\" -l debug", cwd: chef_dir)
       result.error!
     end
 
