@@ -73,7 +73,7 @@ class Chef
 
         def candidate_version
           package_name_array.each_with_index.map do |pkg, i|
-            available_version(i).version_with_arch
+            available_version(i)
           end
         end
 
