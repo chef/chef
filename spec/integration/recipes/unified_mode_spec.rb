@@ -8,7 +8,7 @@ describe "Unified Mode" do
 
   let(:chef_dir) { File.expand_path("../../..", __dir__) }
 
-  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
+  let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
 
   when_the_repository "has a cookbook with a unified_mode resource with a delayed notification from the second block to the first block" do
     before do

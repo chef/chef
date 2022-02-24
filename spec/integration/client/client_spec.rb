@@ -89,8 +89,8 @@ describe "chef-client" do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai" }
-  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
+  let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
+  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai --always-dump-stacktrace" }
   let(:client_name) { "chef-973334" }
 
   context "when validation.pem in current Directory" do
