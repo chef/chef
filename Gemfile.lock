@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: d6662b7f4a4705535f065b974f0f5c222738c448
+  revision: 6c6d3eda5dcec623bfe8080a491eaaa48b501fe4
   branch: main
   specs:
-    ohai (18.0.6)
+    ohai (18.0.7)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -148,20 +148,20 @@ GEM
     ast (2.4.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.558.0)
-    aws-sdk-core (3.126.2)
+    aws-sdk-core (3.127.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.54.0)
-      aws-sdk-core (~> 3, >= 3.126.0)
+    aws-sdk-kms (1.55.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.112.0)
-      aws-sdk-core (~> 3, >= 3.126.0)
+    aws-sdk-s3 (1.113.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.57.0)
-      aws-sdk-core (~> 3, >= 3.126.0)
+    aws-sdk-secretsmanager (1.58.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -410,7 +410,7 @@ GEM
     train-rest (0.4.1)
       rest-client (~> 2.1)
       train-core (~> 3.0)
-    train-winrm (0.2.12)
+    train-winrm (0.2.13)
       winrm (>= 2.3.6, < 3.0)
       winrm-elevated (~> 1.2.2)
       winrm-fs (~> 1.0)
