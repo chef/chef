@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.56 -->
-## [v18.0.56](https://github.com/chef/chef/tree/v18.0.56) (2022-02-25)
+<!-- latest_release 18.0.57 -->
+## [v18.0.57](https://github.com/chef/chef/tree/v18.0.57) (2022-02-26)
 
 #### Merged Pull Requests
-- Bump chef/ohai to 58462789693e00c45c422f347c64d612862c104e [#12637](https://github.com/chef/chef/pull/12637) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chef/ohai to 77929155a6f82b7e65db624b37766bf9fb5f81fb [#12638](https://github.com/chef/chef/pull/12638) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to 77929155a6f82b7e65db624b37766bf9fb5f81fb [#12638](https://github.com/chef/chef/pull/12638) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.57 -->
 - Bump chef/ohai to 58462789693e00c45c422f347c64d612862c104e [#12637](https://github.com/chef/chef/pull/12637) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.56 -->
 - Add train-rest as a dep for target mode [#12633](https://github.com/chef/chef/pull/12633) ([tas50](https://github.com/tas50)) <!-- 18.0.55 -->
 - Add --always-dump-stacktrace to integration tests that use chef-client [#12615](https://github.com/chef/chef/pull/12615) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.54 -->
