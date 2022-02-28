@@ -108,8 +108,6 @@ jobs:
           - 'debian-11'
           - 'fedora-latest'
           - 'opensuse-leap-15'
-          - 'oraclelinux-7'
-          - 'oraclelinux-8'
           - 'ubuntu-1804'
           - 'ubuntu-2004'
           - 'ubuntu-2204'
