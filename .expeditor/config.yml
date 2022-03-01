@@ -251,3 +251,9 @@ subscriptions:
   - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh
+  - workload: ruby_gem_published:train-rest-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:train-winrm-*
+    actions:
+      - bash:.expeditor/update_dep.sh
