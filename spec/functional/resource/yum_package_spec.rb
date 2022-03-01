@@ -754,6 +754,21 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
           action :install
         end.should_not_be_updated
       end
+
+      it "works with constraints in the version property" do
+        flush_cache
+        yum_package "chef_rpm" do
+          version ">= 1.10"
+          options default_options
+          action :install
+        end.should_be_updated
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+        yum_package "chef_rpm" do
+          version ">= 1.10"
+          options default_options
+          action :install
+        end.should_not_be_updated
+      end
     end
 
     context "with source arguments" do
