@@ -15,6 +15,7 @@ provisioner:
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
   slow_resource_report: true
+  clean_dokken_sandbox: false
 
 lifecycle:
   pre_converge:
