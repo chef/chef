@@ -4,7 +4,7 @@
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
 override "libarchive", version: "3.5.2"
-override "libffi", version: "3.3"
+override "libffi", version: "3.4.2"
 override "libiconv", version: "1.16"
 override "liblzma", version: "5.2.5"
 override "libtool", version: "2.4.2"
