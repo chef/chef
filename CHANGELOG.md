@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.60 -->
-## [v18.0.60](https://github.com/chef/chef/tree/v18.0.60) (2022-03-01)
+<!-- latest_release 18.0.61 -->
+## [v18.0.61](https://github.com/chef/chef/tree/v18.0.61) (2022-03-02)
 
 #### Merged Pull Requests
-- Stop cleaning the dokken sandbox [#12656](https://github.com/chef/chef/pull/12656) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix multiple regressions in yum_package provider [#12657](https://github.com/chef/chef/pull/12657) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix multiple regressions in yum_package provider [#12657](https://github.com/chef/chef/pull/12657) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.61 -->
 - Stop cleaning the dokken sandbox [#12656](https://github.com/chef/chef/pull/12656) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.60 -->
 - Bump train-rest to 0.4.2 [#12653](https://github.com/chef/chef/pull/12653) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.59 -->
 - Bump chef/ohai to 77929155a6f82b7e65db624b37766bf9fb5f81fb [#12638](https://github.com/chef/chef/pull/12638) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.57 -->
