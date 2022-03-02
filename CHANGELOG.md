@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.53 -->
-## [v16.17.53](https://github.com/chef/chef/tree/v16.17.53) (2022-03-02)
+<!-- latest_release 16.17.54 -->
+## [v16.17.54](https://github.com/chef/chef/tree/v16.17.54) (2022-03-02)
 
 #### Merged Pull Requests
-- Update nokogiri to 1.13.1 [#12651](https://github.com/chef/chef/pull/12651) ([tas50](https://github.com/tas50))
+- Unpin libarchive and update to 3.6.0 [#12647](https://github.com/chef/chef/pull/12647) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.51 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Unpin libarchive and update to 3.6.0 [#12647](https://github.com/chef/chef/pull/12647) ([tas50](https://github.com/tas50)) <!-- 16.17.54 -->
 - Update nokogiri to 1.13.1 [#12651](https://github.com/chef/chef/pull/12651) ([tas50](https://github.com/tas50)) <!-- 16.17.53 -->
 - Bump omnibus-software from `d602268` to `d5ff796` in /omnibus [#12627](https://github.com/chef/chef/pull/12627) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.52 -->
 <!-- release_rollup -->
