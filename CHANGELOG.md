@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.56 -->
-## [v17.9.56](https://github.com/chef/chef/tree/v17.9.56) (2022-03-02)
+<!-- latest_release 17.9.57 -->
+## [v17.9.57](https://github.com/chef/chef/tree/v17.9.57) (2022-03-02)
 
 #### Merged Pull Requests
-- Update nokogiri to 1.13.1 [#12650](https://github.com/chef/chef/pull/12650) ([tas50](https://github.com/tas50))
+- Unpin libarchive and bump to 3.6.0 [#12646](https://github.com/chef/chef/pull/12646) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.52 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Unpin libarchive and bump to 3.6.0 [#12646](https://github.com/chef/chef/pull/12646) ([tas50](https://github.com/tas50)) <!-- 17.9.57 -->
 - Update nokogiri to 1.13.1 [#12650](https://github.com/chef/chef/pull/12650) ([tas50](https://github.com/tas50)) <!-- 17.9.56 -->
 - Bump omnibus-software from `d5ff796` to `f64a223` in /omnibus [#12632](https://github.com/chef/chef/pull/12632) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.55 -->
 - Bump omnibus-software from `ab23925` to `d5ff796` in /omnibus [#12629](https://github.com/chef/chef/pull/12629) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.54 -->
