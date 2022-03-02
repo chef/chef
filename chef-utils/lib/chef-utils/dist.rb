@@ -96,6 +96,9 @@ module ChefUtils
 
       # the name of the overall infra product
       PRODUCT = "Chef Infra"
+
+      # Omnitruck URL
+      OMNITRUCK_URL = "https://omnitruck.chef.io/install.sh"
     end
 
     class Server
