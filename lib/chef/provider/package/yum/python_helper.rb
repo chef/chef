@@ -178,7 +178,20 @@ class Chef
           #
           # @api private
           def combine_args(provides, version, arch)
-            provides = provides.dup
+            provides = provides.to_s.strip
+            version = if !version.nil? && !version.empty?
+                        version.to_s.strip
+                      end
+            arch = if !arch.nil? && !arch.empty?
+                     arch.to_s.strip
+                   end
+            if version =~ /^[><=]/
+              if arch
+                return { "provides" => "#{provides}.#{arch} #{version}" }
+              else
+                return { "provides" => "#{provides} #{version}" }
+              end
+            end
             maybe_arch = provides.rpartition(".").last
             if is_arch?(maybe_arch)
               arch = maybe_arch
