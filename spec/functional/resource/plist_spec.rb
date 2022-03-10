@@ -19,7 +19,7 @@ describe Chef::Resource::PlistResource, :macos_only, requires_root: true do
         value(gregorian: 4)
       end
       expect(File.exist?(global_prefs))
-      expect(shell_out!("/usr/libexec/PlistBuddy -c 'Print :\"AppleFirstWeekday\":gregorian' \"#{global_prefs}\"").stdout.strip.to_i).to eq(4)
+      expect(shell_out!("/usr/libexec/PlistBuddy -c 'Print :\"AppleFirstWeekday\":gregorian' \"#{global_prefs}\"").stdout.to_i).to eq(4)
     end
   end
 end
