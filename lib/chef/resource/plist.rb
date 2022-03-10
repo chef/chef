@@ -189,7 +189,12 @@ class Chef
         sep = " "
         arg = case subcommand.to_s
               when "add"
-                type_to_commandline_string(value)
+                if value.is_a?(Hash)
+                  sep = ":"
+                  value.map { |k, v| "#{k} #{type_to_commandline_string(v)}" }.join(sep)
+                else
+                  type_to_commandline_string(value)
+                end
               when "set"
                 if value.is_a?(Hash)
                   sep = ":"
