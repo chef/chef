@@ -82,8 +82,8 @@ build do
   block "Removing VERSION files from installed gems" do
     # find the embedded ruby gems dir and clean it up for globbing
     Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/VERSION".tr("\\", "/")).each do |f|
-      # we need to not delete the aws SDK VERSION file
-      next if File.basename(File.expand_path("..", f)).start_with?("aws")
+      # we need to not delete the aws SDK VERSION file or jmespath's VERSION file
+      next if File.basename(File.expand_path("..", f)).start_with?("aws", "jmespath")
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)

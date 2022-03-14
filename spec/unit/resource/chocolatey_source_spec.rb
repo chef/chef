@@ -54,7 +54,7 @@ describe Chef::Resource::ChocolateySource do
     allow(resource).to receive(:provider_for_action).and_return(enable_provider)
     allow(resource.class).to receive(:new).and_return(current_resource)
     @original_env = ENV.to_hash
-    ENV["ALLUSERSPROFILE"] = 'C:\ProgramData'
+    ENV["ALLUSERSPROFILE"] = "C:\\ProgramData"
   end
 
   after(:each) do

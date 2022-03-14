@@ -25,7 +25,7 @@ class Chef
 
       provides :chocolatey_package
 
-      description "Use the **chocolatey_package** resource to manage packages using Chocolatey on the Microsoft Windows platform. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [Chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list."
+      description "Use the **chocolatey_package** resource to manage packages using the Chocolatey package manager on the Microsoft Windows platform. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list. Warning: The **chocolatey_package** resource must be specified as `chocolatey_package` and cannot be shortened to `package` in a recipe."
       introduced "12.7"
       examples <<~DOC
         **Install a Chocolatey package**:
@@ -73,9 +73,9 @@ class Chef
         coerce: proc { |x| [x].flatten }
 
       # In the choco if we have the feature useEnhancedExitCodes turned on, then choco will provide enhanced exit codes(2: no results).
-      # Choco exit codes https://chocolatey.org/docs/commandsinfo#exit-codes
+      # Choco exit codes https://docs.chocolatey.org/en-us/choco/commands/info#exit-codes
       property :returns, [Integer, Array],
-        description: "The exit code(s) returned a chocolatey package that indicate success.",
+        description: "The exit code(s) returned by the `choco` command that indicate a successful action. See [Chocolatey Exit Codes](https://docs.chocolatey.org/en-us/choco/commands/info#exit-codes) for a complete list of exit codes used by Chocolatey.",
         default: [ 0, 2 ], desired_state: false,
         introduced: "12.18"
     end

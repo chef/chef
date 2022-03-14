@@ -20,7 +20,7 @@ class Chef
       unified_mode true
       provides :chocolatey_feature
 
-      description "Use the **chocolatey_feature** resource to enable and disable Chocolatey features."
+      description "Use the **chocolatey_feature** resource to enable and disable Chocolatey features. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [Chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list."
       introduced "15.1"
       examples <<~DOC
         **Enable the checksumFiles Chocolatey feature**

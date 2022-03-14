@@ -169,6 +169,7 @@ describe Chef::Provider::Group::Groupadd do
 
     before do
       allow(File).to receive(:exist?).and_return(false)
+      provider.action = :modify
       provider.define_resource_requirements
     end
 

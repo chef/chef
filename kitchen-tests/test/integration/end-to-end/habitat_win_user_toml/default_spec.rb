@@ -1,4 +1,4 @@
-describe file('C:\habitat\hab.exe') do
+describe file("C:\\habitat\\hab.exe") do
   it { should exist }
 end
 

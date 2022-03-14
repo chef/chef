@@ -15,14 +15,14 @@ We can't just merge any old change, so we run various checks against your submit
     - Unit, functional, and integration tests on all supported Ruby releases. These run on Ubuntu, CentOS and openSUSE so we can make sure our functional / integration tests run on the platforms where users consume Chef Infra.
     - Chefstyle Ruby linting
     - Unit tests from chef-sugar, chef-zero, cheffish, chefspec, and knife-windows against the chef code in your PR
-    - Full Test Kitchen integration tests that covers common Chef usage on various different Linux Distros. Those integration tests run using the kitchen-dokken plugin and the dokken-images Docker containers, which do their best to replicate a real Linux system. You can see exactly what we test here: https://github.com/chef/chef/blob/master/kitchen-tests/cookbooks/end_to_end/recipes/default.rb
+    - Full Test Kitchen integration tests that covers common Chef usage on various different Linux Distros. Those integration tests run using the kitchen-dokken plugin and the dokken-images Docker containers, which do their best to replicate a real Linux system. You can see exactly what we test here: https://github.com/chef/chef/blob/main/kitchen-tests/cookbooks/end_to_end/recipes/default.rb
   - **Appveyor**: Buildkite does a great job of testing PRs against Linux hosts, but many rspec tests require a Windows system to run, and for this, we test in Appveyor. In Appveyor, we run our unit, integration, and functional specs against our supported Ruby releases, but this time, we do it on Windows.
 
 ## PR is Reviewed and Merged
 
-Once your pull request passes the above tests, it will need to be reviewed by at least two members of the Chef Infra project owners, approvers, or reviewers groups. For a list of owners, approvers, and reviewers, see https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md. GitHub will automatically assign these groups as reviewers. Reviews will happen ad hoc as members in those groups have time, or during our weekly issue triage. Check the above team doc link for information on when that review takes place.
+Once your pull request passes the above tests, it will need to be reviewed by at least two members of the Chef Infra project owners, approvers, or reviewers groups. For a list of owners, approvers, and reviewers, see https://github.com/chef/chef-oss-practices/blob/main/projects/chef-infra.md. GitHub will automatically assign these groups as reviewers. Reviews will happen ad hoc as members in those groups have time, or during our weekly issue triage. Check the above team doc link for information on when that review takes place.
 
-Your PR will be reviewed for Chef and Ruby correctness, overall design, and likelihood of impact on the community. We do our best to make sure all the changes made to Chef are high quality and easy to maintain going forward, while also having the lowest chance of negatively impacting our end users. If your PR meets that criteria, we'll merge the change into our master branch.
+Your PR will be reviewed for Chef and Ruby correctness, overall design, and likelihood of impact on the community. We do our best to make sure all the changes made to Chef are high quality and easy to maintain going forward, while also having the lowest chance of negatively impacting our end users. If your PR meets that criteria, we'll merge the change into our main branch.
 
 ## Version Bump and Changelog Update
 

@@ -79,7 +79,7 @@ module ChefUtils
       WEBSITE = "https://chef.io"
 
       # The downloads site
-      DOWNLOADS_URL = "downloads.chef.io"
+      DOWNLOADS_URL = "chef.io/downloads"
 
       # The legacy conf folder: C:/opscode/chef. Specifically the "opscode" part
       # DIR_SUFFIX is appended to it in code where relevant
@@ -96,6 +96,9 @@ module ChefUtils
 
       # the name of the overall infra product
       PRODUCT = "Chef Infra"
+
+      # Omnitruck URL
+      OMNITRUCK_URL = "https://omnitruck.chef.io/install.sh"
     end
 
     class Server
@@ -110,6 +113,12 @@ module ChefUtils
 
       # The server's configuration utility
       SERVER_CTL = "chef-server-ctl"
+
+      # The server`s docs URL
+      SERVER_DOCS = "https://docs.chef.io/server/"
+
+      # OS user for server
+      SYSTEM_USER = "opscode"
     end
 
     class Solo

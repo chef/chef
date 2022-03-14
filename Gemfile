@@ -29,7 +29,7 @@ group(:omnibus_package, :pry) do
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "= 0.13.0"
   # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM =~ /freebsd/i
+  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
   gem "pry-stack_explorer"
 end
 
@@ -37,6 +37,11 @@ end
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed
   gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
+end
+
+# deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
+group(:knife_windows_deps) do
+  gem "ed25519", "~> 1.2" # ed25519 ssh key support
 end
 
 group(:development, :test) do

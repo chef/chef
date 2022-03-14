@@ -23,12 +23,11 @@ Gem::Specification.new do |s|
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
-  s.add_dependency "ohai", "~> 17.0"
+  s.add_dependency "ohai", ">= 17.0", "< 19"
   s.add_dependency "ffi", ">= 1.15" # 1.14 versions are broken on i386 windows
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", ">= 5.1", "< 7"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
-  s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
   s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
   # disabling this until we get get it to compile on RHEL 7
   # s.add_dependency "x25519", ">= 1.0.9" # ed25519 KEX module. 1.0.9+ required to resolve sigill failures

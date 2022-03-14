@@ -76,7 +76,7 @@ describe "chef-client" do
 
   let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
-  let(:chef_client_cmd) { %Q{bundle exec chef-client --minimal-ohai -c "#{path_to("config/client.rb")}" -lwarn} }
+  let(:chef_client_cmd) { %Q{bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai -c "#{path_to("config/client.rb")}" -lwarn --always-dump-stacktrace} }
 
   after do
     FileUtils.rm_rf(cache_path)

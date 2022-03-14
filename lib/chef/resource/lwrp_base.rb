@@ -54,7 +54,7 @@ class Chef
           resource_class.run_context = run_context
           resource_class.class_from_file(filename)
 
-          if !resource_class.unified_mode && !deprecated_class(resource_class)
+          if !resource_class.unified_mode && !deprecated_class(resource_class) && cookbook_name.to_s != "chef_client_updater"
             Chef.deprecated :unified_mode, "The #{resource_class.resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true`", filename
           end
 

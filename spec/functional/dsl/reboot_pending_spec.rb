@@ -39,8 +39,8 @@ describe Chef::DSL::RebootPending, :windows_only do
     let(:reg_key) { nil }
     let(:original_set) { false }
 
-    describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
-      let(:reg_key) { 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager' }
+    describe "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\PendingFileRenameOperations" do
+      let(:reg_key) { "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager" }
       let(:original_set) { registry.value_exists?(reg_key, { name: "PendingFileRenameOperations" }) }
 
       it "returns true if the registry value exists" do
@@ -78,7 +78,7 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        skip "reboot pending" if registry_value_exists?('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: "PendingFileRenameOperations" }) ||
+        skip "reboot pending" if registry_value_exists?("HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager", { name: "PendingFileRenameOperations" }) ||
           registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired') ||
           registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
         expect(recipe.reboot_pending?).to be_falsey

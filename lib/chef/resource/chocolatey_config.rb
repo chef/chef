@@ -21,7 +21,7 @@ class Chef
 
       provides :chocolatey_config
 
-      description "Use the **chocolatey_config** resource to add or remove Chocolatey configuration keys."
+      description "Use the **chocolatey_config** resource to add or remove Chocolatey configuration keys. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [Chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list."
       introduced "14.3"
       examples <<~DOC
       **Set the Chocolatey cacheLocation config**:

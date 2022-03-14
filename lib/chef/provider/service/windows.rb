@@ -183,7 +183,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     end
 
     converge_by("create service #{new_resource.service_name}") do
-      Win32::Service.new(windows_service_config)
+      Win32::Service.new(**windows_service_config)
     end
 
     converge_delayed_start
@@ -209,7 +209,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     converge_if_changed :service_type, :startup_type, :error_control,
       :binary_path_name, :load_order_group, :dependencies,
       :run_as_user, :display_name, :description do
-        Win32::Service.configure(windows_service_config(:configure))
+        Win32::Service.configure(**windows_service_config(:configure))
       end
 
     converge_delayed_start
@@ -268,7 +268,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       password: new_resource.run_as_password,
     }.reject { |k, v| v.nil? || v.length == 0 }
 
-    Win32::Service.configure(new_config)
+    Win32::Service.configure(**new_config)
     logger.info "#{new_resource} configured."
 
     grant_service_logon(new_resource.run_as_user) if new_resource.run_as_user != "localsystem"
@@ -395,7 +395,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       config[:service_name]  = new_resource.service_name
       config[:delayed_start] = new_resource.delayed_start ? 1 : 0
 
-      Win32::Service.configure(config)
+      Win32::Service.configure(**config)
     end
   end
 

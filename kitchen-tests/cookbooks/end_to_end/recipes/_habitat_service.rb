@@ -39,7 +39,7 @@ ruby_block "wait-for-nginx-load" do
 end
 ruby_block "wait-for-nginx-up" do
   block do
-    raise "nginx not loaded" unless `hab svc status core/nginx`.match(/standalone\s+up\s+up/)
+    raise "nginx not loaded" unless `hab svc status core/nginx`.match?(/standalone\s+up\s+up/)
   end
   retries 8
   retry_delay 10
@@ -78,7 +78,7 @@ end
 ruby_block "wait-for-redis-started" do
   block do
     sleep 10
-    raise "redis not started" unless `hab svc status core/redis`.match(/standalone\s+up\s+up/)
+    raise "redis not started" unless `hab svc status core/redis`.match?(/standalone\s+up\s+up/)
   end
   retries 8
   retry_delay 10
@@ -96,7 +96,7 @@ end
 ruby_block "wait-for-redis-stopped" do
   block do
     sleep 10
-    raise "redis not stopped" unless `hab svc status core/redis`.match(/standalone\s+down\s+down/)
+    raise "redis not stopped" unless `hab svc status core/redis`.match?(/standalone\s+down\s+down/)
   end
   retries 8
   retry_delay 10
@@ -251,7 +251,7 @@ ruby_block "wait-for-consul-load" do
 end
 ruby_block "wait-for-consul-startup" do
   block do
-    raise "consul not started" unless `hab svc status core/consul`.match(/standalone\s+up\s+up/)
+    raise "consul not started" unless `hab svc status core/consul`.match?(/standalone\s+up\s+up/)
   end
   retries 8
   retry_delay 10

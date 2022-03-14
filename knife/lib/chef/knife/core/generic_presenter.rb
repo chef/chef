@@ -140,7 +140,7 @@ class Chef
         end
 
         def format_list_for_display(list)
-          config[:with_uri] ? list : list.keys.sort { |a, b| a <=> b }
+          config[:with_uri] ? list : list.keys.sort
         end
 
         def format_for_display(data)

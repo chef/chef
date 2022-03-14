@@ -74,7 +74,7 @@ class Chef
         description: "The expiration date of the given waiver - provided in YYYY-MM-DD format",
         callbacks: {
           "Expiration date should be a valid calendar date and match the following format: YYYY-MM-DD" => proc { |e|
-            re = Regexp.new('\d{4}-\d{2}-\d{2}$').freeze
+            re = Regexp.new("\\d{4}-\\d{2}-\\d{2}$").freeze
             if re.match?(e)
               Date.valid_date?(*e.split("-").map(&:to_i))
             else
@@ -135,7 +135,7 @@ class Chef
 
       action_class do
         def load_waiver_file_to_hash(file_name)
-          if file_name =~ %r{(/|C:\\).*(.yaml|.yml)}i
+          if %r{(/|C:\\).*(.yaml|.yml)}i.match?(file_name)
             if ::File.exist?(file_name)
               hash = ::YAML.load_file(file_name)
               if hash == false || hash.nil? || hash == ""

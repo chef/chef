@@ -169,7 +169,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       before do
         provider.new_resource.system true
         # there is no public API to set attribute's value to nil
-        provider.new_resource.instance_variable_set("@home", nil)
+        provider.new_resource.instance_variable_set(:@home, nil)
       end
 
       it "should not include -m or -d in the command options" do

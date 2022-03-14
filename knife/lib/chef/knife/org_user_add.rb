@@ -44,7 +44,7 @@ class Chef
         org = Chef::Org.new(@org_name)
         begin
           org.associate_user(@username)
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           if e.response.code == "409"
             ui.msg "User #{username} already associated with organization #{org_name}"
           else

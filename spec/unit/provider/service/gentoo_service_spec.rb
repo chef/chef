@@ -42,19 +42,20 @@ describe Chef::Provider::Service::Gentoo do
   describe "load_current_resource" do
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
       expect(File).to receive(:exist?).with("/sbin/rc-update").and_return(false)
+      @provider.action = :start
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
 
     it "should track when service file is not found in /etc/runlevels" do
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@found_script")).to be_falsey
+      expect(@provider.instance_variable_get(:@found_script)).to be_falsey
     end
 
     it "should track when service file is found in /etc/runlevels/**/" do
       allow(Dir).to receive(:glob).with("/etc/runlevels/**/chef").and_return(["/etc/runlevels/default/chef"])
       @provider.load_current_resource
-      expect(@provider.instance_variable_get("@found_script")).to be_truthy
+      expect(@provider.instance_variable_get(:@found_script)).to be_truthy
     end
 
     describe "when detecting the service enable state" do

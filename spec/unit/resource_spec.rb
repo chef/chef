@@ -300,27 +300,35 @@ describe Chef::Resource do
   end
 
   describe "subscribes" do
+    context "with syntax error in resources parameter" do
+      it "raises an exception immediately" do
+        expect do
+          resource.subscribes(:run, "typo[missing-closing-bracket")
+        end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
+      end
+    end
+
     it "should make resources appear in the actions hash of subscribed nodes" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee", run_context)
       zr = run_context.resource_collection.find(zen_master: "coffee")
       resource.subscribes :reload, zr
       expect(zr.delayed_notifications.detect { |e| e.resource.name == "funk" && e.action == :reload }).not_to be_nil
     end
 
     it "should make resources appear in the actions hash of subscribed nodes" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee", run_context)
       zr = run_context.resource_collection.find(zen_master: "coffee")
       resource.subscribes :reload, zr
       expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
 
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("bean")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("bean", run_context)
       zrb = run_context.resource_collection.find(zen_master: "bean")
       zrb.subscribes :reload, zr
       expect(zr.delayed_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
     end
 
     it "should make subscribed resources be capable of acting immediately" do
-      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee")
+      run_context.resource_collection << Chef::Resource::ZenMaster.new("coffee", run_context)
       zr = run_context.resource_collection.find(zen_master: "coffee")
       resource.subscribes :reload, zr, :immediately
       expect(zr.immediate_notifications.detect { |e| e.resource.name == resource.name && e.action == :reload }).not_to be_nil
@@ -347,6 +355,11 @@ describe Chef::Resource do
 
     it "should recognize dynamically defined resources" do
       expect(resource.defined_at).to eq("dynamically defined")
+    end
+
+    it "should return nil for the cookbook_version when the cookbook_name is @recipe_files" do
+      resource.cookbook_name = "@recipe_files"
+      expect(resource.cookbook_version).to be nil
     end
   end
 
@@ -950,7 +963,7 @@ describe Chef::Resource do
         node.name("bumblebee")
         node.automatic[:platform] = "autobots"
         node.automatic[:platform_version] = "6.1"
-        Object.const_set("Soundwave", klz1)
+        Object.const_set(:Soundwave, klz1)
         klz1.provides :soundwave
       end
 
@@ -973,7 +986,7 @@ describe Chef::Resource do
         node.automatic[:platform] = "autobots"
         node.automatic[:platform_version] = "6.1"
         klz2.provides :dinobot, platform: ["autobots"]
-        Object.const_set("Grimlock", klz2)
+        Object.const_set(:Grimlock, klz2)
         klz2.provides :grimlock
       end
 

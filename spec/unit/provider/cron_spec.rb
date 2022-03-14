@@ -392,6 +392,27 @@ describe Chef::Provider::Cron do
         expect(cron.command).to eq("/bin/true")
       end
     end
+
+    context "with a matching entry with a commented crontab line" do
+      it "should set cron_exists" do
+        allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+          0 2 * * * /some/other/command
+
+          # Chef Name: cronhole some stuff
+          #* * * * * /bin/true
+        CRONTAB
+        cron = @provider.load_current_resource
+        expect(@provider.cron_exists).to eq(true)
+        expect(@provider.cron_empty).to eq(false)
+        expect(cron.minute).to eq("*")
+        expect(cron.hour).to eq("*")
+        expect(cron.day).to eq("*")
+        expect(cron.month).to eq("*")
+        expect(cron.weekday).to eq("*")
+        expect(cron.time).to eq(nil)
+        expect(cron.property_is_set?(:command)).to eq(false)
+      end
+    end
   end
 
   describe "cron_different?" do
@@ -687,6 +708,30 @@ describe Chef::Provider::Cron do
 
           # Another comment
         ENDCRON
+        @provider.run_action(:create)
+      end
+    end
+
+    context "when there is a crontab with a matching section with a commented crontab line in it" do
+      before :each do
+        @provider.cron_exists = true
+      end
+
+      it "should add the crontab to the entry" do
+        allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+          0 2 * * * /some/other/command
+
+          # Chef Name: cronhole some stuff
+          # * * * * * /bin/true
+        CRONTAB
+        expect(@provider).to receive(:write_crontab).with(<<~ENDCRON)
+          0 2 * * * /some/other/command
+
+          # Chef Name: cronhole some stuff
+          * * * * * /bin/true
+          # * * * * * /bin/true
+        ENDCRON
+        @new_resource.minute "*"
         @provider.run_action(:create)
       end
     end

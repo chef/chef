@@ -184,6 +184,22 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.run_action(action)
       expect(dpkg_package).to be_updated_by_last_action
     end
+
+    it "should not allow downgrade a package" do
+      dpkg_package.allow_downgrade false
+      shell_out!("dpkg -i #{test1_1}")
+      set_dpkg_package_name test1_0
+      dpkg_package.run_action(action)
+      expect(dpkg_package).not_to be_updated_by_last_action
+    end
+
+    it "should allow downgrade a package" do
+      dpkg_package.allow_downgrade true
+      shell_out!("dpkg -i #{test1_1}")
+      set_dpkg_package_name test1_0
+      dpkg_package.run_action(action)
+      expect(dpkg_package).to be_updated_by_last_action
+    end
   end
 
   shared_examples_for "common behavior for remove or purge" do

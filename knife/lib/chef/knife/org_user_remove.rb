@@ -60,7 +60,7 @@ class Chef
 
         begin
           org.dissociate_user(@username)
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           if e.response.code == "404"
             ui.msg "User #{username} is not associated with organization #{org_name}"
             exit 1
@@ -88,7 +88,7 @@ class Chef
 
       def remove_user_from_admin_group(org, org_name, username, admin_group_string)
         org.remove_user_from_group(admin_group_string, username)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.response.code == "404"
           ui.warn <<~EOF
             User #{username} is not in the #{admin_group_string} group for organization #{org_name}.

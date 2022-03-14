@@ -34,14 +34,14 @@ class Chef
       as_hash["after"]    = new_resource.state_for_resource_reporter
       as_hash["before"]   = current_resource ? current_resource.state_for_resource_reporter : {}
       as_hash["duration"] = ( action_record.elapsed_time * 1000 ).to_i.to_s
-      as_hash["delta"]    = new_resource.diff if new_resource.respond_to?("diff")
+      as_hash["delta"]    = new_resource.diff if new_resource.respond_to?(:diff)
       as_hash["delta"]    = "" if as_hash["delta"].nil?
 
       # TODO: rename as "action"
       as_hash["result"] = action_record.action.to_s
       if new_resource.cookbook_name
         as_hash["cookbook_name"] = new_resource.cookbook_name
-        as_hash["cookbook_version"] = new_resource.cookbook_version.version
+        as_hash["cookbook_version"] = new_resource.cookbook_version&.version
       end
 
       as_hash

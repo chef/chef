@@ -92,7 +92,7 @@ class Chef
         end
       end
 
-      action :create do
+      action :create, description: "Create an entry in a cron table file (crontab). If an entry already exists (but does not match), update that entry to match." do
         crontab = ""
         newcron = ""
         cron_found = false
@@ -100,7 +100,10 @@ class Chef
         newcron = get_crontab_entry
 
         if @cron_exists
-          unless cron_different?
+          # Only compare the crontab if the current resource has a set command.
+          # This may not be set in cases where the Chef comment exists but the
+          # crontab command was commented out.
+          if current_resource.property_is_set?(:command) && !cron_different?
             logger.debug("#{new_resource}: Skipping existing cron entry")
             return
           end
@@ -146,7 +149,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an entry from a cron table file (crontab)." do
         if @cron_exists
           crontab = ""
           cron_found = false

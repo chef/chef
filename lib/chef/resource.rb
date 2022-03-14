@@ -311,7 +311,7 @@ class Chef
     #   file '/foo.txt' do
     #     content 'hi'
     #     action :nothing
-    #     subscribes :create, '/bar.txt'
+    #     subscribes :create, bar
     #   end
     # @example Multiple resources by string
     #   file '/foo.txt' do
@@ -341,6 +341,7 @@ class Chef
     def subscribes(action, resources, timing = :delayed)
       resources = [resources].flatten
       resources.each do |resource|
+        validate_resource_spec!(resource)
         if resource.is_a?(String)
           resource = UnresolvedSubscribes.new(resource, run_context)
         end
@@ -454,7 +455,7 @@ class Chef
     # @param arg [String] The umask to apply while converging the resource.
     # @return [Boolean] The umask to apply while converging the resource.
     #
-    property :umask, String,
+    property :umask, [String, Integer],
       desired_state: false,
       introduced: "16.2",
       description: "Set a umask to be used for the duration of converging the resource. Defaults to `nil`, which means to use the system umask. Unsupported on Windows because Windows lacks a direct equivalent to UNIX's umask."
@@ -1096,7 +1097,7 @@ class Chef
     rescue NameError => e
       # This can happen when attempting to load a provider in a platform-specific
       # environment where we have not required the necessary files yet
-      raise unless e.message =~ /uninitialized constant/
+      raise unless /uninitialized constant/.match?(e.message)
     end
 
     # Define a method to load up this resource's properties with the current
@@ -1508,7 +1509,7 @@ class Chef
     # @return Chef::CookbookVersion The cookbook in which this Resource was defined.
     #
     def cookbook_version
-      if cookbook_name
+      if cookbook_name && cookbook_name != "@recipe_files"
         run_context.cookbook_collection[cookbook_name]
       end
     end

@@ -16,15 +16,20 @@
 # limitations under the License.
 #
 
+require "chef/mixin/powershell_exec"
 require_relative "auth_credentials"
 require_relative "../exceptions"
+require_relative "../win32/registry"
 autoload :OpenSSL, "openssl"
 
 class Chef
   class HTTP
     class Authenticator
-
       DEFAULT_SERVER_API_VERSION = "2".freeze
+      # cspell:disable-next-line
+      SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
+
+      extend Chef::Mixin::PowershellExec
 
       attr_reader :signing_key_filename
       attr_reader :raw_key
@@ -83,8 +88,53 @@ class Chef
         @auth_credentials.client_name
       end
 
+      def detect_certificate_key(client_name)
+        self.class.detect_certificate_key(client_name)
+      end
+
+      def check_certstore_for_key(client_name)
+        self.class.check_certstore_for_key(client_name)
+      end
+
+      def retrieve_certificate_key(client_name)
+        self.class.retrieve_certificate_key(client_name)
+      end
+
+      # Detects if a private key exists in a certificate repository like Keychain (macOS) or Certificate Store (Windows)
+      #
+      # @param client_name - we're using the node name to store and retrieve any keys
+      # Returns true if a key is found, false if not. False will trigger a registration event which will lead to a certificate based key being created
+      #
+      def self.detect_certificate_key(client_name)
+        if ChefUtils.windows?
+          check_certstore_for_key(client_name)
+        else # generic return for Mac and LInux clients
+          false
+        end
+      end
+
+      def self.check_certstore_for_key(client_name)
+        powershell_code = <<~CODE
+          $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "#{client_name}" } -ErrorAction Stop
+          if (($cert.HasPrivateKey -eq $true) -and ($cert.PrivateKey.Key.ExportPolicy -ne "NonExportable")) {
+            return $true
+          }
+          else{
+            return $false
+          }
+        CODE
+        powershell_exec!(powershell_code).result
+      end
+
       def load_signing_key(key_file, raw_key = nil)
-        if !!key_file
+        results = retrieve_certificate_key(Chef::Config[:node_name])
+
+        if key_file == nil? && raw_key == nil?
+          puts "\nNo key detected\n"
+        elsif !!results
+          # results variable can be 1 of 2 values - "False" or the contents of a key.
+          @raw_key = results
+        elsif !!key_file
           @raw_key = IO.read(key_file).strip
         elsif !!raw_key
           @raw_key = raw_key.strip
@@ -102,6 +152,72 @@ class Chef
         msg = "The file #{key_file} or :raw_key option does not contain a correctly formatted private key or the key is encrypted.\n"
         msg << "The key file should begin with '-----BEGIN RSA PRIVATE KEY-----' and end with '-----END RSA PRIVATE KEY-----'"
         raise Chef::Exceptions::InvalidPrivateKey, msg
+      end
+
+      # takes no parameters. Checks for the password in the registry and returns it if there, otherwise returns false
+      def self.get_cert_password
+        @win32registry = Chef::Win32::Registry.new
+        path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        # does the registry key even exist?
+        present = @win32registry.get_values(path)
+        if present.nil? || present.empty?
+          raise Chef::Exceptions::Win32RegKeyMissing
+        end
+
+        present.each do |secret|
+          if secret[:name] == "PfxPass"
+            return secret[:data]
+          end
+        end
+
+        # if we make it this far, that means there is no valid password in the Registry. Fail out to correct that.
+        raise Chef::Exceptions::Win32RegKeyMissing
+
+      rescue Chef::Exceptions::Win32RegKeyMissing
+        # if we don't have a password, log that and generate one
+        Chef::Log.warn "Authentication Hive and value not present in registry, creating it now"
+        new_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        unless @win32registry.key_exists?(new_path)
+          @win32registry.create_key(new_path, true)
+        end
+        password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
+        values = { name: "PfxPass", type: :string, data: password }
+        @win32registry.set_value(new_path, values)
+        password
+      end
+
+      def self.retrieve_certificate_key(client_name)
+        require "openssl" unless defined?(OpenSSL)
+
+        if ChefUtils.windows?
+
+          password = get_cert_password
+
+          return false unless password
+
+          if check_certstore_for_key(client_name)
+            powershell_code = <<~CODE
+                Try {
+                  $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
+                  $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "#{client_name}" } -ErrorAction Stop;
+                  $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
+                  Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
+                }
+                Catch {
+                  return $false
+                }
+            CODE
+            my_result = powershell_exec!(powershell_code).result
+
+            if !!my_result
+              pkcs = OpenSSL::PKCS12.new(File.binread(my_result["PSPath"].split("::")[1]), password)
+              ::File.delete(my_result["PSPath"].split("::")[1])
+              return OpenSSL::PKey::RSA.new(pkcs.key.to_pem)
+            end
+          end
+        end
+
+        false
       end
 
       def authentication_headers(method, url, json_body = nil, headers = nil)

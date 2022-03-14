@@ -20,6 +20,6 @@ end
 
 windows_defender_exclusion "Exclude PNG files" do
   extensions "png"
-  process_paths 'c:\\windows\\system32'
+  process_paths "c:\\windows\\system32"
   action :add
 end

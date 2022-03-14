@@ -29,8 +29,7 @@ rescue LoadError
   end
 end
 
-# Exclude this test on platforms where ffi-libarchive loading is broken
-describe Chef::Resource::ArchiveFile, :libarchive_loading_broken do
+describe Chef::Resource::ArchiveFile, :not_supported_on_aix do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }

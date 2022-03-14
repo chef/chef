@@ -38,7 +38,7 @@ class Chef
 
       property :full_users, Array,
         description: "Determines which users should have full access to the share.",
-        default: ['BUILTIN\\administrators']
+        default: ["BUILTIN\\administrators"]
 
       property :change_users, Array,
         description: "Determines which users should have change access to the share.",
@@ -50,7 +50,7 @@ class Chef
 
       property :root, String,
         description: "The root from which to create the DFS tree. Defaults to C:\\DFSRoots.",
-        default: 'C:\\DFSRoots'
+        default: "C:\\DFSRoots"
 
       action :create, description: "Creates the dfs namespace on the server." do
         directory file_path do
