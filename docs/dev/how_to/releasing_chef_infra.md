@@ -14,6 +14,11 @@
 
 The importance of our release notes cannot be understated. As developers, we understand changes between releases and we are accustomed to reading git history. Users are not, and if we don't call out new functionality, they will not find it on their own. We need to take the time and effort to write quality release notes that give a compelling reason to upgrade and also properly warn of any potential breaking changes. Make sure to involve the docs team so we can make sure our English is legible.
 
+### Actually Updating the Release Notes
+1. You will need to go to https://github.com/chef/chef/wiki/Pending-Release-Notes
+2. Edit the 3 sections online as appropriate.
+3. Check with #docs-support channel in Slack for a review
+
 #### Overall Release Notes Structure
 
 1. `New features`: Document *important* / *major* new features. This is a great opportunity to show off our work and sell users on new workflows.
