@@ -36,6 +36,7 @@ class Chef
   		          description: 'The type of the file being labeled'
 
   		action_class do
+  			include Chef::SELinux::CommonHelpers
   		  def current_file_context
   		    file_hash = {
   		      'a' => 'all files',
@@ -91,7 +92,7 @@ class Chef
 
   		# Create if doesn't exist, do not touch if fcontext is already registered
   		action :add do
-  		  if Chef::SELinux::CommonHelpers.selinux_disabled?
+  		  if selinux_disabled?
   		    Chef::Log.warn("Unable to add SELinux fcontext #{new_resource.name} as SELinux is disabled")
   		    return
   		  end
@@ -106,7 +107,7 @@ class Chef
 
   		# Only modify if fcontext exists & doesn't have the correct label already
   		action :modify do
-  		  if Chef::SELinux::CommonHelpers.selinux_disabled?
+  		  if selinux_disabled?
   		    Chef::Log.warn("Unable to modify SELinux fcontext #{new_resource.name} as SELinux is disabled")
   		    return
   		  end
@@ -121,7 +122,7 @@ class Chef
 
   		# Delete if exists
   		action :delete do
-  		  if Chef::SELinux::CommonHelpers.selinux_disabled?
+  		  if selinux_disabled?
   		    Chef::Log.warn("Unable to delete SELinux fcontext #{new_resource.name} as SELinux is disabled")
   		    return
   		  end

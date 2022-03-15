@@ -42,25 +42,25 @@ class Chef
       deprecated_property_alias 'temporary', 'persistent', 'The temporary property was renamed persistent in the 4.0 release of this cookbook. Please update your cookbooks to use the new property name.'
 
       action_class do
+        include Chef::SELinux::CommonHelpers
         def render_selinux_template(action)
           Chef::Log.warn(
             'It is advised to set the configuration first to permissive to relabel the filesystem prior to enforcing.'
-          ) if Chef::SELinux::CommonHelpers.selinux_disabled? && action == :enforcing
+          ) if selinux_disabled? && action == :enforcing
 
           unless new_resource.automatic_reboot
-            Chef::Log.warn('Changes from disabled require a reboot.') if Chef::SELinux::CommonHelpers.selinux_disabled? && %i(enforcing permissive).include?(action)
-            Chef::Log.warn('Disabling selinux requires a reboot.') if (Chef::SELinux::CommonHelpers.selinux_enforcing? || Chef::SELinux::CommonHelpers.selinux_permissive?) && action == :disabled
+            Chef::Log.warn('Changes from disabled require a reboot.') if selinux_disabled? && %i(enforcing permissive).include?(action)
+            Chef::Log.warn('Disabling selinux requires a reboot.') if (selinux_enforcing? || selinux_permissive?) && action == :disabled
           end
 
-          # template "#{action} selinux config" do
-          #   path new_resource.config_file
-          #   source 'selinux.erb'
-          #   cookbook 'selinux'
-          #   variables(
-          #     selinux: action.to_s,
-          #     selinuxtype: new_resource.policy
-          #   )
-          # end
+          template "#{action} selinux config" do
+            path new_resource.config_file
+            source debian? ? ::File.expand_path("selinux/selinux_debian.erb", __dir__) :  ::File.expand_path("selinux/selinux_default.erb", __dir__)
+            variables(
+              selinux: action.to_s,
+              selinuxtype: new_resource.policy
+            )
+          end
         end
 
         def node_selinux_restart
@@ -82,34 +82,34 @@ class Chef
       action :enforcing do
         execute 'selinux-setenforce-enforcing' do
           command '/usr/sbin/setenforce 1'
-        end unless Chef::SELinux::CommonHelpers.selinux_disabled? || Chef::SELinux::CommonHelpers.selinux_enforcing?
+        end unless selinux_disabled? || selinux_enforcing?
 
         execute 'debian-selinux-activate' do
           command '/usr/sbin/selinux-activate'
-        end if Chef::SELinux::CommonHelpers.selinux_activate_required?
+        end if selinux_activate_required?
 
         render_selinux_template(action) if new_resource.persistent
-        node_selinux_restart if Chef::SELinux::CommonHelpers.state_change_reboot_required?
+        node_selinux_restart if state_change_reboot_required?
       end
 
       action :permissive do
         execute 'selinux-setenforce-permissive' do
           command '/usr/sbin/setenforce 0'
-        end unless Chef::SELinux::CommonHelpers.selinux_disabled? || Chef::SELinux::CommonHelpers.selinux_permissive?
+        end unless selinux_disabled? || selinux_permissive?
 
         execute 'debian-selinux-activate' do
           command '/usr/sbin/selinux-activate'
-        end if Chef::SELinux::CommonHelpers.selinux_activate_required?
+        end if selinux_activate_required?
 
         render_selinux_template(action) if new_resource.persistent
-        node_selinux_restart if Chef::SELinux::CommonHelpers.state_change_reboot_required?
+        node_selinux_restart if state_change_reboot_required?
       end
 
       action :disabled do
         raise 'A non-persistent change to the disabled SELinux status is not possible.' unless new_resource.persistent
 
         render_selinux_template(action)
-        node_selinux_restart if Chef::SELinux::CommonHelpers.state_change_reboot_required?
+        node_selinux_restart if state_change_reboot_required?
       end
 
       private

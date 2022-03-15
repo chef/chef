@@ -41,8 +41,12 @@ class Chef
         value shell_out!("getsebool #{new_resource.boolean}").stdout.split('-->').map(&:strip).last
       end
 
+      action_class do
+        include Chef::SELinux::CommonHelpers
+      end
+
       action :set do
-        if Chef::SELinux::CommonHelpers.selinux_disabled?
+        if selinux_disabled?
           Chef::Log.warn("Unable to set SELinux boolean #{new_resource.name} as SELinux is disabled")
           return
         end

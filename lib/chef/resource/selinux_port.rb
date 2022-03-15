@@ -36,6 +36,7 @@ class Chef
                 description: 'SELinux context to assign to the port'
 
       action_class do
+        include Chef::SELinux::CommonHelpers
         def current_port_context
           # use awk to see if the given port is within a reported port range
           shell_out!(
@@ -59,7 +60,7 @@ class Chef
 
       # Create if doesn't exist, do not touch if port is already registered (even under different type)
       action :add do
-        if Chef::SELinux::CommonHelpers.selinux_disabled?
+        if selinux_disabled?
           Chef::Log.warn("Unable to add SELinux port #{new_resource.name} as SELinux is disabled")
           return
         end
@@ -73,7 +74,7 @@ class Chef
 
       # Only modify port if it exists & doesn't have the correct context already
       action :modify do
-        if Chef::SELinux::CommonHelpers.selinux_disabled?
+        if selinux_disabled?
           Chef::Log.warn("Unable to modify SELinux port #{new_resource.name} as SELinux is disabled")
           return
         end
@@ -87,7 +88,7 @@ class Chef
 
       # Delete if exists
       action :delete do
-        if Chef::SELinux::CommonHelpers.selinux_disabled?
+        if selinux_disabled?
           Chef::Log.warn("Unable to delete SELinux port #{new_resource.name} as SELinux is disabled")
           return
         end
