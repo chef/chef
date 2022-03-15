@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.55 -->
-## [v16.17.55](https://github.com/chef/chef/tree/v16.17.55) (2022-03-02)
+<!-- latest_release 16.17.56 -->
+## [v16.17.56](https://github.com/chef/chef/tree/v16.17.56) (2022-03-15)
 
 #### Merged Pull Requests
-- Update to libffi 3.4.2 [#12660](https://github.com/chef/chef/pull/12660) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12669](https://github.com/chef/chef/pull/12669) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.51 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12669](https://github.com/chef/chef/pull/12669) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.56 -->
 - Update to libffi 3.4.2 [#12660](https://github.com/chef/chef/pull/12660) ([tas50](https://github.com/tas50)) <!-- 16.17.55 -->
 - Unpin libarchive and update to 3.6.0 [#12647](https://github.com/chef/chef/pull/12647) ([tas50](https://github.com/tas50)) <!-- 16.17.54 -->
 - Update nokogiri to 1.13.1 [#12651](https://github.com/chef/chef/pull/12651) ([tas50](https://github.com/tas50)) <!-- 16.17.53 -->
