@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.66 -->
-## [v18.0.66](https://github.com/chef/chef/tree/v18.0.66) (2022-03-15)
+<!-- latest_release 18.0.67 -->
+## [v18.0.67](https://github.com/chef/chef/tree/v18.0.67) (2022-03-15)
 
 #### Merged Pull Requests
-- Updated Rspec to add verbose logging  [#12683](https://github.com/chef/chef/pull/12683) ([johnmccrae](https://github.com/johnmccrae))
+- Modernize the http_request resource code and specs [#12682](https://github.com/chef/chef/pull/12682) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Modernize the http_request resource code and specs [#12682](https://github.com/chef/chef/pull/12682) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.67 -->
 - Updated Rspec to add verbose logging  [#12683](https://github.com/chef/chef/pull/12683) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.66 -->
 - turn off caching for adhoc pipelines [#12661](https://github.com/chef/chef/pull/12661) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.65 -->
 - Add OMNITRUCK_URL dist constant [#12654](https://github.com/chef/chef/pull/12654) ([ramereth](https://github.com/ramereth)) <!-- 18.0.64 -->
