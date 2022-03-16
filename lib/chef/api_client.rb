@@ -196,7 +196,7 @@ class Chef
     end
 
     def reregister
-      reregistered_self = http_api.put("clients/#{name}", { name: name, admin: admin, validator: validator, private_key: true })
+      reregistered_self = http_api.put("clients/#{name}", name: name, admin: admin, validator: validator, private_key: true )
       if reregistered_self.respond_to?(:[])
         private_key(reregistered_self["private_key"])
       else
