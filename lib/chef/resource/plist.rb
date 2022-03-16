@@ -191,7 +191,7 @@ class Chef
               when "add"
                 if value.is_a?(Hash)
                   sep = ":"
-                  value.map { |k, v| "#{k} #{type_to_commandline_string(v)}" }.join(sep)
+                  value.map { |k, v| "#{k} #{type_to_commandline_string(v)}" }
                 else
                   type_to_commandline_string(value)
                 end
