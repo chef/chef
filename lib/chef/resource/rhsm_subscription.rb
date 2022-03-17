@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmSubscription < Chef::Resource
-      unified_mode true
 
       provides(:rhsm_subscription) { true }
 

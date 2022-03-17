@@ -17,7 +17,6 @@
 class Chef
   class Resource
     class ChocolateySource < Chef::Resource
-      unified_mode true
       provides :chocolatey_source
 
       description "Use the **chocolatey_source** resource to add, remove, enable, or disable Chocolatey sources. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [Chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list."

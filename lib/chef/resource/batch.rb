@@ -21,7 +21,6 @@ require_relative "windows_script"
 class Chef
   class Resource
     class Batch < Chef::Resource::WindowsScript
-      unified_mode true
 
       provides :batch
 

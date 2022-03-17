@@ -25,7 +25,6 @@ class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
-      unified_mode true
 
       provides :remote_directory
 

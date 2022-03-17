@@ -11,7 +11,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class KernelModule < Chef::Resource
-      unified_mode true
 
       provides :kernel_module
 

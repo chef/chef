@@ -22,7 +22,6 @@ require "shellwords" unless defined?(Shellwords)
 class Chef
   class Resource
     class RhsmRegister < Chef::Resource
-      unified_mode true
       provides(:rhsm_register) { true }
 
       description "Use the **rhsm_register** resource to register a node with the Red Hat Subscription Manager or a local Red Hat Satellite server."

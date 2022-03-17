@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsUac < Chef::Resource
-      unified_mode true
 
       provides :windows_uac
 

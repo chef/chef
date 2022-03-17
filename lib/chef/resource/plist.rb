@@ -22,7 +22,6 @@ class Chef
   class Resource
 
     class PlistResource < Chef::Resource # we name this PlistResource to avoid confusion with Plist from the plist gem
-      unified_mode true
 
       provides :plist
 

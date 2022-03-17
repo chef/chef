@@ -21,7 +21,6 @@ require_relative "package"
 class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :dpkg_package
 

@@ -23,7 +23,6 @@ require_relative "../mixin/homebrew_user"
 class Chef
   class Resource
     class HomebrewCask < Chef::Resource
-      unified_mode true
 
       provides(:homebrew_cask) { true }
 

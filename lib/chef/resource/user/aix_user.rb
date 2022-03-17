@@ -21,7 +21,6 @@ class Chef
   class Resource
     class User
       class AixUser < Chef::Resource::User
-        unified_mode true
 
         provides :aix_user
         provides :user, os: "aix"

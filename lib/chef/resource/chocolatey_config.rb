@@ -17,7 +17,6 @@
 class Chef
   class Resource
     class ChocolateyConfig < Chef::Resource
-      unified_mode true
 
       provides :chocolatey_config
 

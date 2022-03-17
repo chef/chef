@@ -23,7 +23,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class CronD < Chef::Resource
-      unified_mode true
 
       use "cron_shared"
 

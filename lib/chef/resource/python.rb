@@ -20,7 +20,6 @@ require_relative "script"
 class Chef
   class Resource
     class Python < Chef::Resource::Script
-      unified_mode true
 
       provides :python
 

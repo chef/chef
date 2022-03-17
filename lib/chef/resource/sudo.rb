@@ -24,7 +24,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class Sudo < Chef::Resource
-      unified_mode true
 
       provides(:sudo) { true }
 

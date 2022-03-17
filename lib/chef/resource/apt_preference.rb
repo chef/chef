@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class AptPreference < Chef::Resource
-      unified_mode true
 
       provides(:apt_preference) { true }
 

@@ -34,7 +34,6 @@ class Chef
     # chef-client. This resource includes actions and properties from the file resource. Template files managed by the
     # template resource follow the same file specificity rules as the remote_file and file resources.
     class Template < Chef::Resource::File
-      unified_mode true
 
       provides :template
 

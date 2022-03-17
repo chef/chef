@@ -25,7 +25,6 @@ require "ohai" unless defined?(Ohai::System)
 class Chef
   class Resource
     class Ohai < Chef::Resource
-      unified_mode true
 
       provides :ohai
 

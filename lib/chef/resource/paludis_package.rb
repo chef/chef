@@ -22,7 +22,6 @@ require_relative "../provider/package/paludis"
 class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :paludis_package
 
