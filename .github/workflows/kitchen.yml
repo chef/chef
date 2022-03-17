@@ -44,12 +44,28 @@ jobs:
       run: |
         cd kitchen-tests
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
+        # we remove thenm here.
+        if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
+        {
+            Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
+            Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
+        }
+        # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
+        # This leads to failures during testing. Moving that file to its correct position here.
+        # Another example of 'bad' that needs to be corrected
+        $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+        $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+        Move-Item -Path $output.FullName -Destination $target_path
+
         bundle install --jobs=3 --retry=3
         # If ($lastexitcode -ne 0) { Exit $lastexitcode }
         # The bundle install command above fails because our build on windows on ruby-3.0 is
         # completely broken when it comes to installing native gems.  Until that is fixed we
         # need to ignore that error code and to manually install berkshelf below.  This is a
         # very bad hack.
+
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         gem install berkshelf --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         berks vendor cookbooks
@@ -89,6 +105,7 @@ jobs:
         sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
         sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
         sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
+        sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
         sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
         sudo /opt/chef/embedded/bin/berks vendor cookbooks
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
