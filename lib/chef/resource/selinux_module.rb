@@ -31,8 +31,8 @@ class Chef
   		          description: 'Module source as String'
 
   		property :cookbook, String,
-  		          default: lazy { cookbook_name },
-  		          description: 'Cookbook to source from module source file from'
+  		          description: 'Cookbook to source from module source file from(if it is not located in the current cookbook). The default value is the current cookbook.',
+                desired_state: false
 
   		property :base_dir, String,
   		          default: '/etc/selinux/local',

@@ -44,9 +44,7 @@ class Chef
       action_class do
         include Chef::SELinux::CommonHelpers
         def render_selinux_template(action)
-          Chef::Log.warn(
-            'It is advised to set the configuration first to permissive to relabel the filesystem prior to enforcing.'
-          ) if selinux_disabled? && action == :enforcing
+          Chef::Log.warn('It is advised to set the configuration first to permissive to relabel the filesystem prior to enforcing.') if selinux_disabled? && action == :enforcing
 
           unless new_resource.automatic_reboot
             Chef::Log.warn('Changes from disabled require a reboot.') if selinux_disabled? && %i(enforcing permissive).include?(action)
@@ -56,6 +54,7 @@ class Chef
           template "#{action} selinux config" do
             path new_resource.config_file
             source debian? ? ::File.expand_path("selinux/selinux_debian.erb", __dir__) :  ::File.expand_path("selinux/selinux_default.erb", __dir__)
+            local true
             variables(
               selinux: action.to_s,
               selinuxtype: new_resource.policy
