@@ -50,6 +50,21 @@ jobs:
         # completely broken when it comes to installing native gems.  Until that is fixed we
         # need to ignore that error code and to manually install berkshelf below.  This is a
         # very bad hack.
+
+        # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
+        # we remove thenm here.
+        if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
+        {
+            Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
+            Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
+        }
+        # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
+        # This leads to failures during testing. Moving that file to its correct position here.
+        # Another example of 'bad' that needs to be corrected
+        $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+        $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+        Move-Item -Path $output.FullName -Destination $target_path
+
         gem install berkshelf --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         berks vendor cookbooks
