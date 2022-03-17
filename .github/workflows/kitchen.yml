@@ -64,7 +64,7 @@ jobs:
         $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
         Move-Item -Path $output.FullName -Destination $target_path
-
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
         gem install berkshelf --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         berks vendor cookbooks
