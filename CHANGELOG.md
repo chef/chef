@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.9.61 -->
-## [v17.9.61](https://github.com/chef/chef/tree/v17.9.61) (2022-03-15)
+<!-- latest_release 17.10.0 -->
+## [v17.10.0](https://github.com/chef/chef/tree/v17.10.0) (2022-03-17)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12671](https://github.com/chef/chef/pull/12671) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Updating win32.gemspec and releasing a new build [#12688](https://github.com/chef/chef/pull/12688) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.52 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating win32.gemspec and releasing a new build [#12688](https://github.com/chef/chef/pull/12688) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.0 -->
 - Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12671](https://github.com/chef/chef/pull/12671) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.61 -->
 - Chef-17 backport: Fix multiple regressions in yum_package provider [#12662](https://github.com/chef/chef/pull/12662) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.60 -->
 - Chef 17: Add OMNITRUCK_URL dist constant [#12655](https://github.com/chef/chef/pull/12655) ([ramereth](https://github.com/ramereth)) <!-- 17.9.59 -->
