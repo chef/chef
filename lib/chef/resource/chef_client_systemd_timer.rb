@@ -20,7 +20,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class ChefClientSystemdTimer < Chef::Resource
-      unified_mode true
 
       provides :chef_client_systemd_timer
 

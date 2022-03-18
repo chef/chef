@@ -22,7 +22,6 @@ require_relative "execute"
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-      unified_mode true
 
       provides :script
 

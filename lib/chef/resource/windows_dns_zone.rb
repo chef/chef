@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDnsZone < Chef::Resource
-      unified_mode true
 
       provides :windows_dns_zone
 

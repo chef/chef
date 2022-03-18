@@ -23,7 +23,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
-      unified_mode true
 
       provides(:registry_key) { true }
 

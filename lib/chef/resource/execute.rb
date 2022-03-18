@@ -23,7 +23,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class Execute < Chef::Resource
-      unified_mode true
 
       provides :execute, target_mode: true
 

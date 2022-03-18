@@ -19,7 +19,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatInstall < Chef::Resource
-      unified_mode true
       provides :habitat_install
 
       description "Use the **habitat_install** resource to install Chef Habitat."

@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmRepo < Chef::Resource
-      unified_mode true
 
       provides(:rhsm_repo) { true }
 

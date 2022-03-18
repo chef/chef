@@ -21,7 +21,6 @@ autoload :ChefVault, "chef-vault"
 class Chef
   class Resource
     class ChefVaultSecret < Chef::Resource
-      unified_mode true
 
       provides :chef_vault_secret
 

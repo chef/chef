@@ -21,7 +21,6 @@ require_relative "script"
 class Chef
   class Resource
     class Bash < Chef::Resource::Script
-      unified_mode true
 
       provides :bash
 

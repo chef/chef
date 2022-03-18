@@ -26,7 +26,6 @@ class Chef
     class DscScript < Chef::Resource
       include Chef::DSL::Powershell
 
-      unified_mode true
       provides :dsc_script
 
       description <<~DESC

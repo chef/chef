@@ -23,7 +23,6 @@ require "iniparse"
 class Chef
   class Resource
     class SystemdUnit < Chef::Resource
-      unified_mode true
 
       provides(:systemd_unit) { true }
 

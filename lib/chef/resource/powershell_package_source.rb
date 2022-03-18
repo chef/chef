@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class PowershellPackageSource < Chef::Resource
-      unified_mode true
 
       provides :powershell_package_source
 

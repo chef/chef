@@ -23,7 +23,6 @@ require_relative "../platform/query_helpers"
 class Chef
   class Resource
     class WindowsFeaturePowershell < Chef::Resource
-      unified_mode true
 
       provides(:windows_feature_powershell) { true }
 

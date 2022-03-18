@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class SwapFile < Chef::Resource
-      unified_mode true
 
       provides(:swap_file) { true }
 

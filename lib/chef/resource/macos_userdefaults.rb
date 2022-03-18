@@ -23,7 +23,6 @@ autoload :Plist, "plist"
 class Chef
   class Resource
     class MacosUserDefaults < Chef::Resource
-      unified_mode true
 
       # align with apple's marketing department
       provides(:macos_userdefaults) { true }

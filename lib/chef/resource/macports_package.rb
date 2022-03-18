@@ -21,7 +21,6 @@ require_relative "package"
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
-      unified_mode true
       provides :macports_package
 
       description "Use the **macports_package** resource to manage packages for the macOS platform using the MacPorts package management system."

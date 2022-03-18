@@ -22,7 +22,6 @@
 class Chef
   class Resource
     class WindowsFirewallRule < Chef::Resource
-      unified_mode true
 
       provides :windows_firewall_rule
 

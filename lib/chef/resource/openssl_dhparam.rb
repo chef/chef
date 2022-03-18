@@ -23,8 +23,6 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      unified_mode true
-
       provides(:openssl_dhparam) { true }
 
       description "Use the **openssl_dhparam** resource to generate `dhparam.pem` files. If a valid `dhparam.pem` file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid `dhparam.pem` file, it will be overwritten."

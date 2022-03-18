@@ -21,7 +21,6 @@ require_relative "script"
 class Chef
   class Resource
     class Perl < Chef::Resource::Script
-      unified_mode true
 
       provides :perl
 

@@ -24,7 +24,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class RubyBlock < Chef::Resource
-      unified_mode true
 
       provides :ruby_block, target_mode: true
 

@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmErrataLevel < Chef::Resource
-      unified_mode true
       provides(:rhsm_errata_level) { true }
 
       description "Use the **rhsm_errata_level** resource to install all packages of a specified errata level from the Red Hat Subscription Manager. For example, you can ensure that all packages associated with errata marked at a 'Critical' security level are installed."

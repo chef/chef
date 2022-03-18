@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatConfig < Chef::Resource
-      unified_mode true
 
       provides :habitat_config
 
