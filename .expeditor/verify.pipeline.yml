@@ -216,7 +216,7 @@ steps:
       docker:
         image: rubydistros/opensuse-15:3.1
 
-- label: "Integration Fedora :ruby: 3.1"
+- label: "Integration AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
@@ -226,10 +226,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:3.1
+        image: rubydistros/almalinux-8:3.1
         privileged: true
 
-- label: "Functional Fedora :ruby: 3.1"
+- label: "Functional AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
@@ -240,13 +240,13 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:3.1
+        image: rubydistros/almalinux-8:3.1
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Fedora :ruby: 3.1"
+- label: "Unit AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y libarchive-devel
@@ -258,7 +258,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:3.1
+        image: rubydistros/almalinux-8:3.1
 
 - label: "Functional Windows :ruby: 3.1"
   commands:
