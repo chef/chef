@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.71 -->
-## [v18.0.71](https://github.com/chef/chef/tree/v18.0.71) (2022-03-18)
+<!-- latest_release 18.0.72 -->
+## [v18.0.72](https://github.com/chef/chef/tree/v18.0.72) (2022-03-21)
 
 #### Merged Pull Requests
-- Chef-18: Enable unifed_mode by default [#12692](https://github.com/chef/chef/pull/12692) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ruby 3.1 fixes [#12696](https://github.com/chef/chef/pull/12696) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 3.1 fixes [#12696](https://github.com/chef/chef/pull/12696) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.72 -->
 - Chef-18: Enable unifed_mode by default [#12692](https://github.com/chef/chef/pull/12692) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.71 -->
 - Fix windows kitchen tests [#12693](https://github.com/chef/chef/pull/12693) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.70 -->
 - Fix PEM file generation when user is created [#12619](https://github.com/chef/chef/pull/12619) ([sanjain-progress](https://github.com/sanjain-progress)) <!-- 18.0.69 -->
