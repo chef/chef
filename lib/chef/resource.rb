@@ -1501,7 +1501,7 @@ class Chef
       dirname = ::File.dirname(partial)
       basename = ::File.basename(partial, ".rb")
       basename = basename[1..] if basename.start_with?("_")
-      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.absolute_path)))
+      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
     end
 
     # The cookbook in which this Resource was defined (if any).
