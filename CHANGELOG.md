@@ -1,30 +1,28 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.0 -->
-## [v17.10.0](https://github.com/chef/chef/tree/v17.10.0) (2022-03-17)
-
-#### Merged Pull Requests
-- Updating win32.gemspec and releasing a new build [#12688](https://github.com/chef/chef/pull/12688) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.9.52 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Updating win32.gemspec and releasing a new build [#12688](https://github.com/chef/chef/pull/12688) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.0 -->
-- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12671](https://github.com/chef/chef/pull/12671) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.61 -->
-- Chef-17 backport: Fix multiple regressions in yum_package provider [#12662](https://github.com/chef/chef/pull/12662) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.60 -->
-- Chef 17: Add OMNITRUCK_URL dist constant [#12655](https://github.com/chef/chef/pull/12655) ([ramereth](https://github.com/ramereth)) <!-- 17.9.59 -->
-- Update to libffi 3.4.2 [#12659](https://github.com/chef/chef/pull/12659) ([tas50](https://github.com/tas50)) <!-- 17.9.58 -->
-- Unpin libarchive and bump to 3.6.0 [#12646](https://github.com/chef/chef/pull/12646) ([tas50](https://github.com/tas50)) <!-- 17.9.57 -->
-- Update nokogiri to 1.13.1 [#12650](https://github.com/chef/chef/pull/12650) ([tas50](https://github.com/tas50)) <!-- 17.9.56 -->
-- Bump omnibus-software from `d5ff796` to `f64a223` in /omnibus [#12632](https://github.com/chef/chef/pull/12632) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.55 -->
-- Bump omnibus-software from `ab23925` to `d5ff796` in /omnibus [#12629](https://github.com/chef/chef/pull/12629) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.9.54 -->
-- Chef-17 backport of diff-lcs pin update [#12617](https://github.com/chef/chef/pull/12617) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.9.53 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.10.0](https://github.com/chef/chef/tree/v17.10.0) (2022-03-22)
+
+#### Merged Pull Requests
+- Chef-17 backport of diff-lcs pin update [#12617](https://github.com/chef/chef/pull/12617) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump omnibus-software from `ab23925` to `d5ff796` in /omnibus [#12629](https://github.com/chef/chef/pull/12629) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `d5ff796` to `f64a223` in /omnibus [#12632](https://github.com/chef/chef/pull/12632) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update nokogiri to 1.13.1 [#12650](https://github.com/chef/chef/pull/12650) ([tas50](https://github.com/tas50))
+- Unpin libarchive and bump to 3.6.0 [#12646](https://github.com/chef/chef/pull/12646) ([tas50](https://github.com/tas50))
+- Update to libffi 3.4.2 [#12659](https://github.com/chef/chef/pull/12659) ([tas50](https://github.com/tas50))
+- Chef 17: Add OMNITRUCK_URL dist constant [#12655](https://github.com/chef/chef/pull/12655) ([ramereth](https://github.com/ramereth))
+- Chef-17 backport: Fix multiple regressions in yum_package provider [#12662](https://github.com/chef/chef/pull/12662) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12671](https://github.com/chef/chef/pull/12671) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Updating win32.gemspec and releasing a new build [#12688](https://github.com/chef/chef/pull/12688) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v17.9.52](https://github.com/chef/chef/tree/v17.9.52) (2022-02-18)
 
 #### Merged Pull Requests
@@ -34,7 +32,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - IPACK-49-update-openssl-to-1.1.1m [#12600](https://github.com/chef/chef/pull/12600) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
 - Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12596](https://github.com/chef/chef/pull/12596) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - fixes for #12589 for compliance audit-enforcer reporter [#12613](https://github.com/chef/chef/pull/12613) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v17.9.46](https://github.com/chef/chef/tree/v17.9.46) (2022-02-08)
 
