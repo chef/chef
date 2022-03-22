@@ -27,7 +27,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ruby-proxifier
-  revision: 41ead73b21956a39fca3376c9ff6f74096dc3c9b
+  revision: 4232ddc1174ca638eead55cddbe1b8f5be5f5813
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
@@ -441,8 +441,6 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.1)
-    unf_ext (0.0.8.1-x64-mingw32)
-    unf_ext (0.0.8.1-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
