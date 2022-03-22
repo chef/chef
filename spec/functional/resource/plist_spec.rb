@@ -1,11 +1,11 @@
-require 'spec_helper'
-require 'plist'
+require "spec_helper"
+require "plist"
 
 describe Chef::Resource::PlistResource, :macos_only, requires_root: true do
   include RecipeDSLHelper
-  
+
   let(:global_prefs) do
-    File.join(Dir.mktmpdir, '.GlobalPreferences.plist')
+    File.join(Dir.mktmpdir, ".GlobalPreferences.plist")
   end
 
   before(:each) do
@@ -15,7 +15,7 @@ describe Chef::Resource::PlistResource, :macos_only, requires_root: true do
   context "make Monday the first DOW" do
     it "creates a new plist with a hash value" do
       plist global_prefs do
-        entry 'AppleFirstWeekday'
+        entry "AppleFirstWeekday"
         value(gregorian: 4)
       end
       expect(File.exist?(global_prefs))
