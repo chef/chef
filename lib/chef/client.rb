@@ -52,10 +52,12 @@ Chef.autoload :PolicyBuilder, File.expand_path("policy_builder", __dir__)
 require_relative "request_id"
 require_relative "platform/rebooter"
 require_relative "mixin/deprecation"
+# require_relative "mixin/powershell_exec"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
+require "singleton"
 
 require_relative "compliance/runner"
 
@@ -64,7 +66,21 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+    class KeyMigration
+      include Singleton
+      attr_accessor :key_migrated
+      attr_accessor :old_priv_key
+      def initialize
+        @key_migrated = false
+        @old_priv_key = nil
+      end
+    end
+
+    attr_reader :local_context
+
     extend Chef::Mixin::Deprecation
+    # extend Chef::Mixin::PowershellExec
+    # include Chef::Mixin::PowershellExec
 
     extend Forwardable
     #
@@ -229,7 +245,7 @@ class Chef
       start_profiling
 
       runlock = RunLock.new(Chef::Config.lockfile)
-      # TODO: feels like acquire should have its own block arg for this
+      # TODO feels like acquire should have its own block arg for this
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin
@@ -637,16 +653,20 @@ class Chef
     # @api private
     #
     def register(client_name = node_name, config = Chef::Config)
-      if Chef::HTTP::Authenticator.detect_certificate_key(client_name)
-        if File.exists?(config[:client_key])
-          logger.warn("WARNING - Client key #{client_name} is present on disk, ignoring that in favor of key stored in CertStore")
-        end
-        events.skipping_registration(client_name, config)
-        logger.trace("Client key #{client_name} is present in certificate repository - skipping registration")
-        config[:client_key] = "Cert:\\LocalMachine\\My\\chef-#{client_name}"
-      elsif !config[:client_key]
+      if !config[:client_key]
         events.skipping_registration(client_name, config)
         logger.trace("Client key is unspecified - skipping registration")
+      elsif ::Chef::Config[:migrate_key_to_keystore] == true && ChefUtils.windows?
+        cert_name = "chef-#{client_name}"
+        result = check_certstore_for_key(cert_name)
+        if result.rassoc("#{cert_name}")
+          logger.trace("Client key #{config[:client_key]} is present in Certificate Store - skipping registration")
+        else
+          move_key_and_register(cert_name)
+          KeyMigration.instance.key_migrated = false
+          logger.trace("Client key #{config[:client_key]} moved to the Certificate Store - skipping registration")
+        end
+        events.skipping_registration(client_name, config)
       elsif File.exists?(config[:client_key])
         events.skipping_registration(client_name, config)
         logger.trace("Client key #{config[:client_key]} is present - skipping registration")
@@ -663,6 +683,92 @@ class Chef
       # user
       events.registration_failed(client_name, e, config)
       raise
+    end
+
+    #
+    # In the brave new world of No Certs On Disk, we want to put the pem file into Keychain or the Certstore
+    # But is it already there?
+    def check_certstore_for_key(cert_name)
+      require "win32-certstore"
+      win32certstore = ::Win32::Certstore.open("MY")
+      win32certstore.search("#{cert_name}")
+    end
+
+    # def generate_pfx_package(cert_name)
+    #   self.generate_pfx_package(cert_name)
+    # end
+
+    def generate_pfx_package(cert_name, date = nil)
+      require_relative "mixin/powershell_exec"
+      extend Chef::Mixin::PowershellExec
+      ::Chef::HTTP::Authenticator.get_cert_password
+      powershell_code = <<~EOH
+
+        $date = "#{date}"
+
+        $certSplat = @{
+            Subject = "#{cert_name}"
+            KeyExportPolicy = 'Exportable'
+            KeyUsage = @('KeyEncipherment','DigitalSignature')
+            CertStoreLocation = 'Cert:\\LocalMachine\\My'
+            TextExtension = @("2.5.29.37={text}1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.1")
+        };
+        if ([string]$date -as [DateTime]){
+          $certSplat.add('NotAfter', $date)
+        }
+
+        New-SelfSignedCertificate @certSplat;
+      EOH
+      powershell_exec!(powershell_code)
+    end
+
+    def move_key_and_register(cert_name)
+      require 'time'
+      autoload :URI, "uri"
+
+      base_url = "https://" +  URI.parse(Chef::Config[:chef_server_url]).host
+      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key])
+
+      KeyMigration.instance.key_migrated = true
+
+      node = Chef::Config[:node_name]
+      d = Time.now
+      end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+      public_key = get_public_key(cert_name)
+
+      payload = {
+        name: node,
+        clientname: node,
+        public_key: public_key,
+        expiration_date: end_date
+      }
+
+      generate_pfx_package(cert_name,end_date)
+
+      body = { "name": "#{node}" }
+      client.post("/organizations/cheftest2/nodes", body)
+      client.post("/organizations/cheftest2/clients", payload)
+
+      Chef::Log.trace("Updated client data: #{client.inspect}")
+    end
+
+    def get_public_key(cert_name)
+      binding.pry
+      password = ::Chef::HTTP::Authenticator.get_cert_password
+      require_relative "mixin/powershell_exec"
+      extend Chef::Mixin::PowershellExec
+      powershell_code = <<~EOH
+        $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
+        $tempfile = $([System.IO.Path]::GetTempPath()) + $([System.IO.Path]::GetRandomFileName());
+        $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "#{cert_name}$" } -ErrorAction Stop;
+        Export-PFXCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
+        return $tempfile;
+      EOH
+      cert_file = powershell_exec!(powershell_code).result
+      path = cert_file[1]
+      p12 = OpenSSL::PKCS12.new(File.binread(path), password)
+      File.delete(path)
+      return p12.key.public_to_pem
     end
 
     #

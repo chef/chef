@@ -68,6 +68,23 @@ describe Chef::HTTP::Authenticator do
       end
     end
 
+    context "when retrieving a certificate from the certificate store" :windows_only do
+      before each do
+      end
+      after each do
+      end
+      it "retrieves a certificate password from the registry" do
+        expect(class_instance.get_cert_password).not_to raise_error
+      end
+      # get a password when it does not already exist in the registry
+      # get a password that DOES already exist in the registry
+      # does retrieving a cert work
+      # does the password decrypt correctly
+      # does it encrypt correctly.
+      # is the decrypted password at least 14 characters
+      # does delete old pfx actually delete shit?
+    end
+
     context "when !sign_requests?" do
       before do
         allow(class_instance).to receive(:sign_requests?).and_return(false)
