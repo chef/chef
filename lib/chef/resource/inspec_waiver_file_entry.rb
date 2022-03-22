@@ -136,7 +136,7 @@ class Chef
         def load_waiver_file_to_hash(file_name)
           if %r{(/|C:\\).*(.yaml|.yml)}i.match?(file_name)
             if ::File.exist?(file_name)
-              hash = ::YAML.safe.load_file(file_name, permitted_classes: [Date])
+              hash = ::YAML.safe_load_file(file_name, permitted_classes: [Date])
               if hash == false || hash.nil? || hash == ""
                 {}
               else
