@@ -27,7 +27,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ruby-proxifier
-  revision: 4232ddc1174ca638eead55cddbe1b8f5be5f5813
+  revision: 27322fad22538f67cfd6f8535d707cfe6c6cfe76
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
