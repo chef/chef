@@ -27,7 +27,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ruby-proxifier
-  revision: 8438e2e924b8eb575c50adf144df9932028078e6
+  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
@@ -525,4 +525,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.3.6
