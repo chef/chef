@@ -16,7 +16,7 @@
 
 autoload :TOML, "tomlrb"
 require_relative "../json_compat"
-autoload :Psych, "psych"
+autoload :YAML, "yaml"
 
 class Chef
   module DSL
@@ -42,7 +42,7 @@ class Chef
       end
 
       def parse_yaml(filename)
-        Psych.safe_load_file(filename, permitted_classes: [Date])
+        YAML.safe_load_file(filename, permitted_classes: [Date])
       end
 
       extend self
