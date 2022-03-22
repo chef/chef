@@ -52,12 +52,11 @@ Chef.autoload :PolicyBuilder, File.expand_path("policy_builder", __dir__)
 require_relative "request_id"
 require_relative "platform/rebooter"
 require_relative "mixin/deprecation"
-# require_relative "mixin/powershell_exec"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
-require "singleton"
+require "singleton" unless defined?(Singleton)
 
 require_relative "compliance/runner"
 
@@ -663,7 +662,6 @@ class Chef
           logger.trace("Client key #{config[:client_key]} is present in Certificate Store - skipping registration")
         else
           move_key_and_register(cert_name)
-          KeyMigration.instance.key_migrated = false
           logger.trace("Client key #{config[:client_key]} moved to the Certificate Store - skipping registration")
         end
         events.skipping_registration(client_name, config)
@@ -694,10 +692,6 @@ class Chef
       win32certstore.search("#{cert_name}")
     end
 
-    # def generate_pfx_package(cert_name)
-    #   self.generate_pfx_package(cert_name)
-    # end
-
     def generate_pfx_package(cert_name, date = nil)
       require_relative "mixin/powershell_exec"
       extend Chef::Mixin::PowershellExec
@@ -723,37 +717,32 @@ class Chef
     end
 
     def move_key_and_register(cert_name)
-      require 'time'
+      require "time" unless defined?(Time)
       autoload :URI, "uri"
-
-      base_url = "https://" +  URI.parse(Chef::Config[:chef_server_url]).host
-      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key])
 
       KeyMigration.instance.key_migrated = true
 
       node = Chef::Config[:node_name]
       d = Time.now
       end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
-      public_key = get_public_key(cert_name)
 
       payload = {
         name: node,
         clientname: node,
-        public_key: public_key,
-        expiration_date: end_date
+        public_key: "",
+        expiration_date: end_date,
       }
 
-      generate_pfx_package(cert_name,end_date)
-
-      body = { "name": "#{node}" }
-      client.post("/organizations/cheftest2/nodes", body)
-      client.post("/organizations/cheftest2/clients", payload)
-
+      generate_pfx_package(cert_name, end_date)
+      payload[:public_key] = get_public_key(cert_name)
+      base_url = "#{Chef::Config[:chef_server_url]}"
+      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key])
+      client.post(base_url + "/clients", payload)
+      KeyMigration.instance.key_migrated = false
       Chef::Log.trace("Updated client data: #{client.inspect}")
     end
 
     def get_public_key(cert_name)
-      binding.pry
       password = ::Chef::HTTP::Authenticator.get_cert_password
       require_relative "mixin/powershell_exec"
       extend Chef::Mixin::PowershellExec
@@ -768,7 +757,7 @@ class Chef
       path = cert_file[1]
       p12 = OpenSSL::PKCS12.new(File.binread(path), password)
       File.delete(path)
-      return p12.key.public_to_pem
+      p12.key.public_to_pem
     end
 
     #

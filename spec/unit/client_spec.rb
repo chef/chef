@@ -23,6 +23,11 @@ require "chef/run_context"
 require "chef/server_api"
 require "rbconfig"
 
+begin
+  require "chef-powershell"
+rescue LoadError
+end
+
 class FooError < RuntimeError
 end
 
@@ -279,6 +284,52 @@ shared_examples "a failed run" do
 
   it "skips node save and raises the error in a wrapping error" do
     expect { client.run }.to raise_error(converge_error)
+  end
+end
+
+describe Chef::Client, :windows_only do
+  let(:hostname) { "test" }
+  let(:my_client) { Chef::Client.new }
+  let(:cert_name) { "chef-#{hostname}" }
+  let(:end_date) do
+    d = Time.now
+    end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+  end
+  # include_context "client"
+  before(:each) do
+    Chef::Config[:migrate_key_to_keystore] = true
+  end
+
+  after(:each) do
+    delete_certificate(cert_name)
+  end
+
+  context "when the client intially boots the first time" do
+    it "created a new pfx object" do
+      expect(my_client.generate_pfx_package(cert_name, end_date)).to be_truthy
+    end
+
+    it "verfies that a certificate correctly exists in the Cert Store" do
+      my_client.generate_pfx_package(cert_name, end_date)
+      expect(my_client.check_certstore_for_key(cert_name)).not_to be false
+    end
+
+    it "correctly returns a new Publc Key" do
+      my_client.generate_pfx_package(cert_name, end_date)
+      public_key = my_client.get_public_key(cert_name)
+      cert_object = OpenSSL::PKey::RSA.new(public_key)
+      expect(cert_object.to_s).to match(/PUBLIC KEY/)
+    end
+
+  end
+
+  def delete_certificate(cert_name)
+    require "chef/mixin/powershell_exec"
+    extend Chef::Mixin::PowershellExec
+    powershell_code = <<~CODE
+      Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "#{cert_name}" } | Remove-item
+    CODE
+    powershell_exec!(powershell_code)
   end
 end
 

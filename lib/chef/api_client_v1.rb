@@ -299,10 +299,10 @@ class Chef
 
         # the new method only gets called when migrating keys to the certificate store.
         new_client = if Chef::Config[:migrate_key_to_keystore] == true
-                chef_rest_v1_with_validator.post("clients", payload)
-              else
-                chef_rest_v1.post("clients", payload)
-              end
+                       chef_rest_v1_with_validator.post("clients", payload)
+                     else
+                       chef_rest_v1.post("clients", payload)
+                     end
 
         # get the private_key out of the chef_key hash if it exists
         if new_client["chef_key"]

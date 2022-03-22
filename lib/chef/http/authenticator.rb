@@ -22,8 +22,6 @@ require_relative "../exceptions"
 require_relative "../win32/registry"
 autoload :OpenSSL, "openssl"
 
-require "pry"
-
 class Chef
   class HTTP
     class Authenticator
@@ -50,7 +48,6 @@ class Chef
         @auth_credentials = AuthCredentials.new(opts[:client_name], @key, use_ssh_agent: opts[:ssh_agent_signing])
         @version_class = opts[:version_class]
         @api_version = opts[:api_version]
-        @old_priv_key = nil
       end
 
       def handle_request(method, url, headers = {}, data = false)
@@ -103,6 +100,18 @@ class Chef
         self.class.retrieve_certificate_key(client_name)
       end
 
+      def get_cert_password
+        self.class.get_cert_password
+      end
+
+      def encrypt_pfx_pass
+        self.class.encrypt_pfx_pass
+      end
+
+      def decrypt_pfx_pass
+        self.class.decrypt_pfx_pass
+      end
+
       # Detects if a private key exists in a certificate repository like Keychain (macOS) or Certificate Store (Windows)
       #
       # @param client_name - we're using the node name to store and retrieve any keys
@@ -130,17 +139,14 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
-        results = if !!Chef::Client::KeyMigration.instance.old_priv_key
-                    Chef::Client::KeyMigration.instance.old_priv_key
-                  else
-                    retrieve_certificate_key(Chef::Config[:node_name])
-                  end
-        if key_file == nil? && raw_key == nil?
-          puts "\nNo key detected\n"
+        results = retrieve_certificate_key(Chef::Config[:node_name])
+
+        if ::Chef::Config[:migrate_key_to_keystore] == true && ::Chef::Client::KeyMigration.instance.key_migrated == true
+          @raw_key = IO.read(Chef::Config[:validation_key]).strip
         elsif !!results
           @raw_key = results
-        elsif ::Chef::Config[:migrate_key_to_keystore] == true && Chef::Client::KeyMigration.instance.key_migrated == true
-          @raw_key = IO.read(Chef::Config[:validation_key]).strip
+        elsif key_file == nil? && raw_key == nil?
+          puts "\nNo key detected\n"
         elsif !!key_file
           @raw_key = IO.read(key_file).strip
         elsif !!raw_key
@@ -191,14 +197,6 @@ class Chef
         values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
         password
-      end
-
-      def get_cert_password
-        self.get_cert_password
-      end
-
-      def encrypt_pfx_pass
-        self.ncrypt_pfx_pass
       end
 
       def self.encrypt_pfx_pass(password)
@@ -257,49 +255,6 @@ class Chef
               return $false
             }
         CODE
-      end
-
-      def self.is_certificate_expiring(pkcs)
-        require 'time'
-        cert_date = DateTime.parse(pkcs.certificate.not_after.iso8601)
-        today = DateTime.parse(Time.now.iso8601)
-        client_name = "chef-#{Chef::Config[:node_name]}"
-        if cert_date.mjd - today.mjd <= 7
-          Chef::Client::KeyMigration.instance.old_priv_key = pkcs.key.private_to_pem
-          create_new_pfx_in_keystore(client_name)
-        end
-      end
-
-      def self.create_new_pfx_in_keystore(client_name)
-        require 'time'
-        node = Chef::Config[:node_name]
-        delete_old_pfx(client_name)
-        new_client = Chef::Client.new
-        d = Time.now
-        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
-        new_client.generate_pfx_package(client_name, end_date)
-        new_public_key = new_client.get_public_key(client_name)
-        base_url = "https://" +  URI.parse(Chef::Config[:chef_server_url]).host
-        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:client_name], signing_key_filename: "cert://#{client_name}")
-
-        payload = {
-          name: "default",
-          public_key: new_public_key,
-          expiration_date: end_date
-        }
-        client.put("/organizations/cheftest2/clients/#{node}/keys/default", payload)
-      end
-
-      def self.delete_old_pfx(cert_name)
-        powershell_code = <<~CODE
-          Try{
-            Get-ChildItem Cert:\\LocalMachine\\My | Where-Object { $_.Subject -match "#{cert_name}$" } -ErrorAction Stop | Remove-Item;
-          }
-          Catch{
-            return $false
-          }
-        CODE
-        powershell_exec!(powershell_code).result
       end
 
       def authentication_headers(method, url, json_body = nil, headers = nil)
