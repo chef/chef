@@ -140,7 +140,7 @@ class Chef
               if hash == false || hash.nil? || hash == ""
                 {}
               else
-                ::YAML.safe.load_file(file_name, permitted_classes: [Date])
+                ::YAML.safe_load_file(file_name, permitted_classes: [Date])
               end
             else
               {}
