@@ -249,6 +249,7 @@ steps:
 - label: "Unit AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - dnf install dnf-plugins-core
     - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
     - dnf config-manager --enable epel
     - dnf config-manager --set-enabled powertools
