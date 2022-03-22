@@ -13,10 +13,12 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next unless matches
 
   gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
+  # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
   next unless gem_name
 
-  next if gem_name == "chef" || gem_name == "chef-universal-mingw32"
+  # FIXME: should omit the gem which is in the current directory and not hardcode chef
+  next if %w{chef chef-universal-mingw32}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
