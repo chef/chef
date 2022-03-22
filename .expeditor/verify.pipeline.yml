@@ -260,7 +260,7 @@ steps:
       docker:
         image: rubydistros/almalinux-8:3.1
 
-- label: "Functional Windows :ruby: 3.1"
+- label: "Functional Windows :ruby: 3.0"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
@@ -270,27 +270,27 @@ steps:
         single-use: true
         shell: ["powershell", "-Command"]
 
-- label: "Integration Windows :ruby: 3.1"
+- label: "Integration Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:3.1
+        image: rubydistros/windows-2019:3.0
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 3.1"
+- label: "Unit Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:3.1
+        image: rubydistros/windows-2019:3.0
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
