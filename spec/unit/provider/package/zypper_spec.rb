@@ -172,7 +172,7 @@ describe Chef::Provider::Package::Zypper do
       shell_out_expectation!(
         "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
       )
-      provider.install_package(["emacs"], ["1.0"])
+      provider.install_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
     end
   end
 
@@ -218,7 +218,7 @@ describe Chef::Provider::Package::Zypper do
       shell_out_expectation!(
         "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
       )
-      provider.upgrade_package(["emacs"], ["1.0"])
+      provider.install_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
     end
 
   end
