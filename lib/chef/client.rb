@@ -712,7 +712,7 @@ class Chef
       ]
       cert.add_extension(ef.create_ext_from_string("extendedKeyUsage=critical,serverAuth,clientAuth"))
 
-      cert.sign key, OpenSSL::Digest.new('SHA256')
+      cert.sign key, OpenSSL::Digest.new("SHA256")
       password = ::Chef::HTTP::Authenticator.get_cert_password
       pfx = OpenSSL::PKCS12.create(password, subject, key, cert)
       pfx
