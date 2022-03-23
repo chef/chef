@@ -291,6 +291,7 @@ describe Chef::Client, :windows_only do
   let(:hostname) { "test" }
   let(:my_client) { Chef::Client.new }
   let(:cert_name) { "chef-#{hostname}" }
+  let(:node_name) { "#{hostname}" }
   let(:end_date) do
     d = Time.now
     end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
@@ -298,6 +299,7 @@ describe Chef::Client, :windows_only do
   # include_context "client"
   before(:each) do
     Chef::Config[:migrate_key_to_keystore] = true
+    Chef::Config[:node_name] = node_name
   end
 
   after(:each) do
@@ -305,19 +307,14 @@ describe Chef::Client, :windows_only do
   end
 
   context "when the client intially boots the first time" do
-    it "created a new pfx object" do
-      expect(my_client.generate_pfx_package(cert_name, end_date)).to be_truthy
-    end
-
-    it "verfies that a certificate correctly exists in the Cert Store" do
+    it "verfies that a certificate was correctly created and exists in the Cert Store" do
       my_client.generate_pfx_package(cert_name, end_date)
       expect(my_client.check_certstore_for_key(cert_name)).not_to be false
     end
 
     it "correctly returns a new Publc Key" do
-      my_client.generate_pfx_package(cert_name, end_date)
-      public_key = my_client.get_public_key(cert_name)
-      cert_object = OpenSSL::PKey::RSA.new(public_key)
+      new_pfx = my_client.generate_pfx_package(cert_name, end_date)
+      cert_object = new_pfx.certificate.public_key.to_pem
       expect(cert_object.to_s).to match(/PUBLIC KEY/)
     end
 

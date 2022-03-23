@@ -28,14 +28,15 @@ describe Chef::HTTP::Authenticator, :windows_only do
   let(:node_name) { "test" }
   let(:passwrd) { "some_insecure_password" }
 
-  before(:each) do
-    ::Chef::Config[:node_name] = "test"
+  before do
+    Chef::Config[:node_name] = node_name
     cert_name = "chef-#{node_name}"
     d = Time.now
     end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
 
     my_client = Chef::Client.new
-    my_client.generate_pfx_package(cert_name, end_date)
+    pfx = my_client.generate_pfx_package(cert_name, end_date)
+    my_client.import_pfx_to_store(pfx)
   end
 
   after(:each) do
@@ -57,13 +58,8 @@ describe Chef::HTTP::Authenticator, :windows_only do
     end
 
     it "retrieves a certificate password from the registry when the hive exists" do
-      set_registry_hive
+      class_instance.get_cert_password
       expect { class_instance.get_cert_password }.not_to raise_error
-    end
-
-    it "correctly retrieves a private key from the certstore" do
-      cert_name = "chef-#{node_name}"
-      expect { class_instance.retrieve_certificate_key(cert_name) }.not_to raise_error
     end
 
     it "correctly retrieves a valid certificate in pem format from the certstore" do
@@ -72,10 +68,6 @@ describe Chef::HTTP::Authenticator, :windows_only do
       cert_object = OpenSSL::PKey::RSA.new(certificate)
       expect(cert_object.to_s).to match(/BEGIN RSA PRIVATE KEY/)
     end
-
-    # does retrieving a cert work
-    # is the password at least 14 characters
-    # is the pem a proper cert object
   end
 
   def delete_certificate(cert_name)
@@ -92,10 +84,6 @@ describe Chef::HTTP::Authenticator, :windows_only do
     unless present.nil? || present.empty?
       @win32registry.delete_key(path, true)
     end
-  end
-
-  def set_registry_hive
-    class_instance.get_cert_password
   end
 end
 

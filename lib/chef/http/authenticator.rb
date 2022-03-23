@@ -119,6 +119,7 @@ class Chef
       #
       def self.detect_certificate_key(client_name)
         if ChefUtils.windows?
+          require "pry"
           check_certstore_for_key(client_name)
         else # generic return for Mac and LInux clients
           false
@@ -141,9 +142,7 @@ class Chef
       def load_signing_key(key_file, raw_key = nil)
         results = retrieve_certificate_key(Chef::Config[:node_name])
 
-        if ::Chef::Config[:migrate_key_to_keystore] == true && ::Chef::Client::KeyMigration.instance.key_migrated == true
-          @raw_key = IO.read(Chef::Config[:validation_key]).strip
-        elsif !!results
+        if !!results
           @raw_key = results
         elsif key_file == nil? && raw_key == nil?
           puts "\nNo key detected\n"
@@ -192,7 +191,8 @@ class Chef
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
-        password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
+        size = 14
+        password = SOME_CHARS.sample(size).join
         encrypted_pass = encrypt_pfx_pass(password)
         values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
@@ -247,7 +247,7 @@ class Chef
         powershell_code = <<~CODE
             Try {
               $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
-              $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "#{client_name}$" } -ErrorAction Stop;
+              $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
               $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
               Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
             }
