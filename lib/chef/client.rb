@@ -688,7 +688,7 @@ class Chef
     end
 
     def self.generate_pfx_package(cert_name, date)
-      require "openssl"
+      require "openssl" unless defined?(OpenSSL)
 
       key = OpenSSL::PKey::RSA.new(2048)
       public_key = key.public_key
@@ -712,7 +712,7 @@ class Chef
       ]
       cert.add_extension(ef.create_ext_from_string("extendedKeyUsage=critical,serverAuth,clientAuth"))
 
-      cert.sign key, OpenSSL::Digest::SHA256.new
+      cert.sign key, OpenSSL::Digest.new('SHA256')
       password = ::Chef::HTTP::Authenticator.get_cert_password
       pfx = OpenSSL::PKCS12.create(password, subject, key, cert)
       pfx
