@@ -1,17 +1,31 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.57 -->
-## [v18.0.57](https://github.com/chef/chef/tree/v18.0.57) (2022-02-26)
+<!-- latest_release 18.0.72 -->
+## [v18.0.72](https://github.com/chef/chef/tree/v18.0.72) (2022-03-21)
 
 #### Merged Pull Requests
-- Bump chef/ohai to 77929155a6f82b7e65db624b37766bf9fb5f81fb [#12638](https://github.com/chef/chef/pull/12638) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Ruby 3.1 fixes [#12696](https://github.com/chef/chef/pull/12696) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 3.1 fixes [#12696](https://github.com/chef/chef/pull/12696) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.72 -->
+- Chef-18: Enable unifed_mode by default [#12692](https://github.com/chef/chef/pull/12692) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.71 -->
+- Fix windows kitchen tests [#12693](https://github.com/chef/chef/pull/12693) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.70 -->
+- Fix PEM file generation when user is created [#12619](https://github.com/chef/chef/pull/12619) ([sanjain-progress](https://github.com/sanjain-progress)) <!-- 18.0.69 -->
+- Bump omnibus-software from `f64a223` to `5947560` in /omnibus [#12670](https://github.com/chef/chef/pull/12670) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.68 -->
+- Modernize the http_request resource code and specs [#12682](https://github.com/chef/chef/pull/12682) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.67 -->
+- Updated Rspec to add verbose logging  [#12683](https://github.com/chef/chef/pull/12683) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.66 -->
+- turn off caching for adhoc pipelines [#12661](https://github.com/chef/chef/pull/12661) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.65 -->
+- Add OMNITRUCK_URL dist constant [#12654](https://github.com/chef/chef/pull/12654) ([ramereth](https://github.com/ramereth)) <!-- 18.0.64 -->
+- Update to libffi 3.4.2 [#12658](https://github.com/chef/chef/pull/12658) ([tas50](https://github.com/tas50)) <!-- 18.0.63 -->
+- Update nokogiri to 1.13.1 [#12649](https://github.com/chef/chef/pull/12649) ([tas50](https://github.com/tas50)) <!-- 18.0.62 -->
+- Fix multiple regressions in yum_package provider [#12657](https://github.com/chef/chef/pull/12657) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.61 -->
+- Stop cleaning the dokken sandbox [#12656](https://github.com/chef/chef/pull/12656) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.60 -->
+- Bump train-rest to 0.4.2 [#12653](https://github.com/chef/chef/pull/12653) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.59 -->
 - Bump chef/ohai to 77929155a6f82b7e65db624b37766bf9fb5f81fb [#12638](https://github.com/chef/chef/pull/12638) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.57 -->
 - Bump chef/ohai to 58462789693e00c45c422f347c64d612862c104e [#12637](https://github.com/chef/chef/pull/12637) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.56 -->
 - Add train-rest as a dep for target mode [#12633](https://github.com/chef/chef/pull/12633) ([tas50](https://github.com/tas50)) <!-- 18.0.55 -->

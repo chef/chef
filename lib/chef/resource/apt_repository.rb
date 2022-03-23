@@ -26,7 +26,6 @@ end
 class Chef
   class Resource
     class AptRepository < Chef::Resource
-      unified_mode true
 
       provides(:apt_repository) { true }
 

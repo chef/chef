@@ -3,7 +3,7 @@ driver:
   name: dokken
   privileged: true
   chef_image: chef/chef
-  chef_version: 18.0.43
+  chef_version: current
 
 transport:
   name: dokken
@@ -15,6 +15,7 @@ provisioner:
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
   slow_resource_report: true
+  clean_dokken_sandbox: false
 
 lifecycle:
   pre_converge:

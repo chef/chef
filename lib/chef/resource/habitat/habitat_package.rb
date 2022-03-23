@@ -21,7 +21,6 @@ require_relative "../package"
 class Chef
   class Resource
     class HabitatPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :habitat_package
       use "habitat_shared"

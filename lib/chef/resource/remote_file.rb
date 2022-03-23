@@ -28,7 +28,6 @@ class Chef
   class Resource
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
-      unified_mode true
 
       provides :remote_file
 

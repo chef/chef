@@ -30,7 +30,6 @@ end
 class Chef
   class Resource
     class ArchiveFile < Chef::Resource
-      unified_mode true
 
       provides :archive_file
       provides :libarchive_file # legacy cookbook name

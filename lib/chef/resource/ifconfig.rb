@@ -22,7 +22,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
-      unified_mode true
 
       provides :ifconfig
 

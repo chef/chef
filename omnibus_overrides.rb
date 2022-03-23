@@ -3,7 +3,7 @@
 #
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
-override "libffi", version: "3.3"
+override "libffi", version: "3.4.2"
 override "libiconv", version: "1.16"
 override "liblzma", version: "5.2.5"
 override "libtool", version: "2.4.2"
@@ -12,7 +12,7 @@ override "libxslt", version: "1.1.34"
 override "libyaml", version: "0.1.7"
 override "makedepend", version: "1.0.5"
 override "ncurses", version: "5.9"
-override "nokogiri", version: "1.12.5"
+override "nokogiri", version: "1.13.1"
 override "openssl", version: mac_os_x? ? "1.1.1m" : "1.0.2zb"
 override "pkg-config-lite", version: "0.28-1"
 override "ruby", version: "3.0.3"

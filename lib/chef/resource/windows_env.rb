@@ -24,7 +24,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class WindowsEnv < Chef::Resource
-      unified_mode true
 
       provides :windows_env
       provides :env # backwards compat with the pre-Chef 14 resource name

@@ -22,7 +22,6 @@ require "digest/md5" unless defined?(Digest::MD5)
 class Chef
   class Resource
     class ChefClientCron < Chef::Resource
-      unified_mode true
 
       provides :chef_client_cron
 

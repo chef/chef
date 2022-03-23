@@ -21,7 +21,6 @@ require_relative "package"
 class Chef
   class Resource
     class PortagePackage < Chef::Resource::Package
-      unified_mode true
 
       provides :portage_package
 

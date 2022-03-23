@@ -58,8 +58,6 @@ class Chef
       ```
       DOC
 
-      unified_mode true
-
       property :profile, String,
         name_property: true,
         equal_to: %w{ Domain Public Private },

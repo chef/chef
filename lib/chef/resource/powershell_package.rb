@@ -20,7 +20,6 @@ require_relative "package"
 class Chef
   class Resource
     class PowershellPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :powershell_package
 

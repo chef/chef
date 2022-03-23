@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsUserPrivilege < Chef::Resource
-      unified_mode true
 
       provides :windows_user_privilege
       description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"

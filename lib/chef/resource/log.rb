@@ -29,7 +29,6 @@ class Chef
     #     level :debug
     #   end
     class Log < Chef::Resource
-      unified_mode true
 
       provides :log, target_mode: true
 

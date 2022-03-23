@@ -22,7 +22,6 @@ require_relative "package"
 class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :solaris_package
 

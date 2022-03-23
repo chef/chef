@@ -45,7 +45,6 @@ class Chef
       end
       ```
       DOC
-      unified_mode true
 
       property :paths, [String, Array], default: [],
         coerce: proc { |x| to_consistent_path_array(x) },

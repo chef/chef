@@ -23,7 +23,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class SshKnownHostsEntry < Chef::Resource
-      unified_mode true
 
       provides :ssh_known_hosts_entry
 

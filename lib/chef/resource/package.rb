@@ -22,7 +22,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class Package < Chef::Resource
-      unified_mode true
       provides :package
 
       description "Use the **package** resource to manage packages. When the package is"\

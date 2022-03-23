@@ -21,7 +21,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class WindowsWorkgroup < Chef::Resource
-      unified_mode true
 
       provides :windows_workgroup
 

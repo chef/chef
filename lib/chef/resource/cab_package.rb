@@ -23,7 +23,6 @@ class Chef
   class Resource
     class CabPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
-      unified_mode true
 
       provides :cab_package
 

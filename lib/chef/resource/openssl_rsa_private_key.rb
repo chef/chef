@@ -23,8 +23,6 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      unified_mode true
-
       provides(:openssl_rsa_private_key) { true }
       provides(:openssl_rsa_key) { true } # legacy cookbook resource name
 

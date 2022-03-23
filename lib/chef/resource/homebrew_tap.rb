@@ -23,7 +23,6 @@ require_relative "../mixin/homebrew_user"
 class Chef
   class Resource
     class HomebrewTap < Chef::Resource
-      unified_mode true
 
       provides(:homebrew_tap) { true }
 

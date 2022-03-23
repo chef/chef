@@ -21,7 +21,6 @@ require_relative "script"
 class Chef
   class Resource
     class Csh < Chef::Resource::Script
-      unified_mode true
 
       provides :csh
 

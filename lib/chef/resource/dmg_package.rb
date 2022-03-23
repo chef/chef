@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class DmgPackage < Chef::Resource
-      unified_mode true
 
       provides(:dmg_package) { true }
 
