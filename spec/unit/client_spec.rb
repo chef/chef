@@ -294,12 +294,15 @@ describe Chef::Client, :windows_only do
   let(:node_name) { "#{hostname}" }
   let(:end_date) do
     d = Time.now
-    end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+    if d.month == 10 || d.month == 11 || d.month == 12
+      end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
+    else
+      end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+    end
   end
   # include_context "client"
   before(:each) do
     Chef::Config[:migrate_key_to_keystore] = true
-    Chef::Config[:node_name] = node_name
   end
 
   after(:each) do
@@ -308,7 +311,8 @@ describe Chef::Client, :windows_only do
 
   context "when the client intially boots the first time" do
     it "verfies that a certificate was correctly created and exists in the Cert Store" do
-      my_client.generate_pfx_package(cert_name, end_date)
+      new_pfx = my_client.generate_pfx_package(cert_name, end_date)
+      my_client.import_pfx_to_store(new_pfx)
       expect(my_client.check_certstore_for_key(cert_name)).not_to be false
     end
 

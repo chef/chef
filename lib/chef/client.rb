@@ -717,7 +717,6 @@ class Chef
     end
 
     def create_new_key_and_register(cert_name)
-      require "pry"
       require "time" unless defined?(Time)
       autoload :URI, "uri"
 
@@ -743,7 +742,6 @@ class Chef
       base_url = "#{Chef::Config[:chef_server_url]}"
       client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key])
       client.post(base_url + "/clients", payload)
-      # KeyMigration.instance.key_migrated = false
       Chef::Log.trace("Updated client data: #{client.inspect}")
       import_pfx_to_store(new_pfx)
     end

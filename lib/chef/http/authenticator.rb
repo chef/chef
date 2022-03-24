@@ -119,7 +119,6 @@ class Chef
       #
       def self.detect_certificate_key(client_name)
         if ChefUtils.windows?
-          require "pry"
           check_certstore_for_key(client_name)
         else # generic return for Mac and LInux clients
           false

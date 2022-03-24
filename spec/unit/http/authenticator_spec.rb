@@ -57,11 +57,6 @@ describe Chef::HTTP::Authenticator, :windows_only do
       expect(password.length).to eql(14)
     end
 
-    it "retrieves a certificate password from the registry when the hive exists" do
-      class_instance.get_cert_password
-      expect { class_instance.get_cert_password }.not_to raise_error
-    end
-
     it "correctly retrieves a valid certificate in pem format from the certstore" do
       require "openssl"
       certificate = class_instance.retrieve_certificate_key(node_name)
