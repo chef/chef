@@ -248,6 +248,10 @@ class Chef
         description: "The data collector token to interact with the data collector server URL (Automate). Note: If possible, use Chef Infra Server to do all data collection reporting, as this removes the need to distribute tokens to individual nodes.",
         introduced: "17.8"
 
+      property :rubygems_url, String,
+        description: "The url used to pull ruby gems from when using the chef_gem resource to install new gems via cookbook",
+        introduced: "17.11"
+
       action :create, description: "Create a client.rb config file and folders for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
         [
           new_resource.config_directory,
@@ -299,6 +303,7 @@ class Chef
             start_handlers: format_handler(new_resource.start_handlers),
             additional_config: new_resource.additional_config,
             policy_persist_run_list: new_resource.policy_persist_run_list,
+            rubygems_url: new_resource.rubygems_url,
             data_collector_server_url: new_resource.data_collector_server_url,
             data_collector_token: new_resource.data_collector_token
           )
