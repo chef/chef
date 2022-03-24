@@ -301,7 +301,7 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    pedump (0.6.4)
+    pedump (0.6.5)
       awesome_print
       iostruct (>= 0.0.4)
       multipart-post (>= 2.0.0)
@@ -464,4 +464,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.2.32
+   2.3.7

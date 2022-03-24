@@ -73,6 +73,7 @@ class Chef
           include?
           index
           inject
+          intersect?
           intersection
           join
           last

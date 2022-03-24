@@ -42,7 +42,7 @@ latest_major_version_in_omnibus_stable="$(mixlib-install download chef --version
 
 if [[ "$channel" == "current" ]]; then
   # Add major and major.minor version tags unless this major version has been promoted to the omnibus STABLE channel
-  if [[ "$major_version_is_in_omnibus_stable" = "false" ]] ; then
+  if [[ "$major_version_is_in_omnibus_stable" == "false" ]] ; then
     create_and_push_manifest "$major_version"
     create_and_push_manifest "${major_version}.${minor_version}"
   fi

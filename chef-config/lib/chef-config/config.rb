@@ -174,7 +174,7 @@ module ChefConfig
 
           # Call to_sym because Chef::Config expects only symbol keys. Also
           # runs a simple parse on the string for some common types.
-          memo[key.to_sym] = YAML.safe_load(value)
+          memo[key.to_sym] = YAML.safe_load(value, permitted_classes: [Date])
           memo
         end
         set_extra_config_options(extra_parsed_options)

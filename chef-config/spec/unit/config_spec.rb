@@ -19,6 +19,7 @@
 
 require "spec_helper"
 require "chef-config/config"
+require "date" unless defined?(Date)
 
 RSpec.describe ChefConfig::Config do
   before(:each) do
