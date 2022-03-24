@@ -22,7 +22,6 @@ require "tempfile" unless defined?(Tempfile)
 class Chef
   class Resource
     class WindowsSecurityPolicy < Chef::Resource
-      unified_mode true
 
       provides :windows_security_policy
 

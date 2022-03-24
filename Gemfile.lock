@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 996b52b8017f1378e4c29b4faeb9ed90db1e9579
+  revision: db6480f47f37954b9d3ac1fbb7837fbdb474646a
   branch: main
   specs:
-    ohai (18.0.8)
+    ohai (18.0.9)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -26,6 +26,13 @@ GIT
       wmi-lite (~> 1.0)
 
 GIT
+  remote: https://github.com/chef/ruby-proxifier
+  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
+  branch: lcg/ruby-3
+  specs:
+    proxifier (1.0.3)
+
+GIT
   remote: https://github.com/chef/ruby-shadow
   revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
   branch: lcg/ruby-3.0
@@ -35,12 +42,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.0.65)
+    chef (18.0.75)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.65)
-      chef-utils (= 18.0.65)
+      chef-config (= 18.0.75)
+      chef-utils (= 18.0.75)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -68,13 +75,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.0.65-universal-mingw32)
+    chef (18.0.75-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.65)
+      chef-config (= 18.0.75)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 18.0.65)
+      chef-utils (= 18.0.75)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -117,15 +124,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.0.65)
-      chef (= 18.0.65)
+    chef-bin (18.0.75)
+      chef (= 18.0.75)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.0.65)
+    chef-config (18.0.75)
       addressable
-      chef-utils (= 18.0.65)
+      chef-utils (= 18.0.75)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -134,7 +141,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.0.65)
+    chef-utils (18.0.75)
       concurrent-ruby
 
 GEM
@@ -147,8 +154,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.561.0)
-    aws-sdk-core (3.127.0)
+    aws-partitions (1.569.0)
+    aws-sdk-core (3.130.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -160,7 +167,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.58.0)
+    aws-sdk-secretsmanager (1.59.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.4.0)
@@ -188,7 +195,7 @@ GEM
       chef-zero (>= 14.0)
       net-ssh
     coderay (1.1.3)
-    concurrent-ruby (1.1.9)
+    concurrent-ruby (1.1.10)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (0.4.5)
@@ -239,7 +246,7 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.52.9)
+    inspec-core (4.56.17)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -252,7 +259,7 @@ GEM
       parallel (~> 1.9)
       parslet (>= 1.5, < 2.0)
       pry (~> 0.13)
-      rspec (>= 3.9, < 3.11)
+      rspec (>= 3.9, <= 3.11)
       rspec-its (~> 1.2)
       rubyzip (>= 1.2.2, < 3.0)
       semverse (~> 3.0)
@@ -262,12 +269,12 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.52.9)
-      inspec-core (= 4.52.9)
+    inspec-core-bin (4.56.17)
+      inspec-core (= 4.56.17)
     io-wait (0.2.1)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    jmespath (1.6.0)
+    jmespath (1.6.1)
     json (2.6.1)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -314,14 +321,13 @@ GEM
     net-ssh (6.1.0)
     netrc (0.11.0)
     nori (2.6.0)
-    parallel (1.21.0)
+    parallel (1.22.0)
     parser (3.1.1.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.6.0)
-    proxifier (1.0.3)
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -355,22 +361,22 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     rexml (3.2.5)
-    rspec (3.10.0)
-      rspec-core (~> 3.10.0)
-      rspec-expectations (~> 3.10.0)
-      rspec-mocks (~> 3.10.0)
-    rspec-core (3.10.2)
-      rspec-support (~> 3.10.0)
-    rspec-expectations (3.10.2)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.10.0)
+      rspec-support (~> 3.11.0)
     rspec-its (1.3.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.10.3)
+    rspec-mocks (3.11.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.10.0)
-    rspec-support (3.10.3)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.0)
     rubocop (1.25.1)
       parallel (~> 1.10)
       parser (>= 3.1.0.0)
@@ -400,7 +406,7 @@ GEM
       date
     timeout (0.2.0)
     tomlrb (1.3.0)
-    train-core (3.8.7)
+    train-core (3.8.9)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -434,9 +440,9 @@ GEM
       tty-screen (~> 0.8)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8)
-    unf_ext (0.0.8-x64-mingw32)
-    unf_ext (0.0.8-x86-mingw32)
+    unf_ext (0.0.8.1)
+    unf_ext (0.0.8.1-x64-mingw32)
+    unf_ext (0.0.8.1-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -508,6 +514,7 @@ DEPENDENCIES
   fauxhai-ng
   inspec-core-bin (~> 4.24)
   ohai!
+  proxifier!
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -518,4 +525,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.3.6

@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsFeature < Chef::Resource
-      unified_mode true
 
       provides(:windows_feature) { true }
 

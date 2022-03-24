@@ -26,7 +26,6 @@ class Chef
   class Resource
     class WindowsPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
-      unified_mode true
 
       provides(:windows_package) { true }
       provides :package, os: "windows"

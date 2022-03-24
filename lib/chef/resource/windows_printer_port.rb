@@ -23,7 +23,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsPrinterPort < Chef::Resource
-      unified_mode true
 
       autoload :Resolv, "resolv"
 

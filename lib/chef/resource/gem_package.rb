@@ -22,7 +22,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
-      unified_mode true
       provides :gem_package
 
       description <<~DESC

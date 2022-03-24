@@ -128,6 +128,7 @@ class Chef
             display_name: "#{user.first_name} #{user.last_name}",
             email: user.email,
             password: password,
+            create_key: user.create_key,
           }
         else
           user_hash = {
@@ -137,6 +138,7 @@ class Chef
             display_name: user.display_name,
             email: user.email,
             password: password,
+            create_key: user.create_key,
           }
         end
 
@@ -159,13 +161,13 @@ class Chef
         end
 
         ui.info("Created #{user.username}")
-        if final_user["private_key"]
+        if final_user["chef_key"] && final_user["chef_key"]["private_key"]
           if config[:file]
             File.open(config[:file], "w") do |f|
-              f.print(final_user["private_key"])
+              f.print(final_user["chef_key"]["private_key"])
             end
           else
-            ui.msg final_user["private_key"]
+            ui.msg final_user["chef_key"]["private_key"]
           end
         end
       end

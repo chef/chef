@@ -25,7 +25,6 @@ require_relative "../util/path_helper"
 class Chef
   class Resource
     class WindowsShare < Chef::Resource
-      unified_mode true
 
       provides :windows_share
 

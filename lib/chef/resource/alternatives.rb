@@ -22,7 +22,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class Alternatives < Chef::Resource
-      unified_mode true
 
       provides(:alternatives) { true }
 

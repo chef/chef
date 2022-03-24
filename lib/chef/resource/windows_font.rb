@@ -21,7 +21,6 @@ class Chef
   class Resource
     class WindowsFont < Chef::Resource
       require_relative "../util/path_helper"
-      unified_mode true
 
       provides(:windows_font) { true }
 

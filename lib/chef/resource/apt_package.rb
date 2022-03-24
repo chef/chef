@@ -21,7 +21,6 @@ require_relative "package"
 class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :apt_package, target_mode: true
       provides :package, platform_family: "debian", target_mode: true

@@ -20,7 +20,6 @@ class Chef
   class Resource
     class InspecInput < Chef::Resource
       provides :inspec_input
-      unified_mode true
 
       description "Use the **inspec_input** resource to add an input to the Compliance Phase."
       introduced "17.5"

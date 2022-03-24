@@ -23,7 +23,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsUpdateSettings < Chef::Resource
-      unified_mode true
 
       provides :windows_update_settings
 

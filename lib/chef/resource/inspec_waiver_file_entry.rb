@@ -24,7 +24,6 @@ class Chef
   class Resource
     class InspecWaiverFileEntry < Chef::Resource
       provides :inspec_waiver_file_entry
-      unified_mode true
 
       description "Use the **inspec_waiver_file_entry** resource to add or remove entries from an InSpec waiver file. This can be used in conjunction with the Compliance Phase."
       introduced "17.1"
@@ -137,11 +136,11 @@ class Chef
         def load_waiver_file_to_hash(file_name)
           if %r{(/|C:\\).*(.yaml|.yml)}i.match?(file_name)
             if ::File.exist?(file_name)
-              hash = ::YAML.load_file(file_name)
+              hash = ::YAML.safe_load_file(file_name, permitted_classes: [Date])
               if hash == false || hash.nil? || hash == ""
                 {}
               else
-                ::YAML.load_file(file_name)
+                ::YAML.safe_load_file(file_name, permitted_classes: [Date])
               end
             else
               {}

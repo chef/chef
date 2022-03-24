@@ -1,4 +1,3 @@
-unified_mode true
 
 TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
 TIMEOUT_REGEX = /\A\S+/.freeze

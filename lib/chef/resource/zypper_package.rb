@@ -21,7 +21,6 @@ require_relative "package"
 class Chef
   class Resource
     class ZypperPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :zypper_package
       provides :package, platform_family: "suse"

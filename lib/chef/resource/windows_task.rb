@@ -27,7 +27,6 @@ require "win32/taskscheduler" if ChefUtils.windows_ruby?
 class Chef
   class Resource
     class WindowsTask < Chef::Resource
-      unified_mode true
 
       provides(:windows_task) { true }
 

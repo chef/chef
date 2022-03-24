@@ -20,7 +20,6 @@ require_relative "../dsl/powershell"
 class Chef
   class Resource
     class DscResource < Chef::Resource
-      unified_mode true
 
       provides :dsc_resource
 

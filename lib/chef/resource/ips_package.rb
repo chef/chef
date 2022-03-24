@@ -22,7 +22,6 @@ require_relative "../provider/package/ips"
 class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
-      unified_mode true
 
       provides :ips_package
       provides :package, os: "solaris2"

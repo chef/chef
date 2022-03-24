@@ -174,7 +174,7 @@ module ChefConfig
 
           # Call to_sym because Chef::Config expects only symbol keys. Also
           # runs a simple parse on the string for some common types.
-          memo[key.to_sym] = YAML.safe_load(value)
+          memo[key.to_sym] = YAML.safe_load(value, permitted_classes: [Date])
           memo
         end
         set_extra_config_options(extra_parsed_options)
@@ -994,7 +994,7 @@ module ChefConfig
     # applying in "compile" mode, with no "converge" mode. False is backwards compatible
     # setting for Chef 11-15 behavior.  This will break forward notifications.
     #
-    default :resource_unified_mode_default, false
+    default :resource_unified_mode_default, true
 
     # At the beginning of the Chef Client run, the cookbook manifests are downloaded which
     # contain URLs for every file in every relevant cookbook.  Most of the files

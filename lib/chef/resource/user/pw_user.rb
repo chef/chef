@@ -21,7 +21,6 @@ class Chef
   class Resource
     class User
       class PwUser < Chef::Resource::User
-        unified_mode true
 
         provides :pw_user
         provides :user, os: "freebsd"

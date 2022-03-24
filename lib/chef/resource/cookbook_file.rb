@@ -27,7 +27,6 @@ class Chef
   class Resource
     class CookbookFile < Chef::Resource::File
       include Chef::Mixin::Securable
-      unified_mode true
 
       provides :cookbook_file
 

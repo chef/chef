@@ -27,8 +27,6 @@ class Chef
     class HomebrewUpdate < Chef::Resource
       include Chef::Mixin::HomebrewUser
 
-      unified_mode true
-
       provides(:homebrew_update) { true }
 
       description "Use the **homebrew_update** resource to manage Homebrew repository updates on macOS."
