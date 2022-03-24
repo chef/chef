@@ -35,12 +35,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.0.72)
+    chef (18.0.73)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.72)
-      chef-utils (= 18.0.72)
+      chef-config (= 18.0.73)
+      chef-utils (= 18.0.73)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -68,13 +68,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.0.72-universal-mingw32)
+    chef (18.0.73-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.72)
+      chef-config (= 18.0.73)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 18.0.72)
+      chef-utils (= 18.0.73)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -117,15 +117,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.0.72)
-      chef (= 18.0.72)
+    chef-bin (18.0.73)
+      chef (= 18.0.73)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.0.72)
+    chef-config (18.0.73)
       addressable
-      chef-utils (= 18.0.72)
+      chef-utils (= 18.0.73)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -134,7 +134,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.0.72)
+    chef-utils (18.0.73)
       concurrent-ruby
 
 GEM
@@ -147,7 +147,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.568.0)
+    aws-partitions (1.569.0)
     aws-sdk-core (3.130.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)

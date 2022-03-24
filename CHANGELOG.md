@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.72 -->
-## [v18.0.72](https://github.com/chef/chef/tree/v18.0.72) (2022-03-21)
+<!-- latest_release 18.0.73 -->
+## [v18.0.73](https://github.com/chef/chef/tree/v18.0.73) (2022-03-24)
 
 #### Merged Pull Requests
-- Ruby 3.1 fixes [#12696](https://github.com/chef/chef/pull/12696) ([lamont-granquist](https://github.com/lamont-granquist))
+- Use the latest libarchive (3.6.0) [#12648](https://github.com/chef/chef/pull/12648) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use the latest libarchive (3.6.0) [#12648](https://github.com/chef/chef/pull/12648) ([tas50](https://github.com/tas50)) <!-- 18.0.73 -->
 - Ruby 3.1 fixes [#12696](https://github.com/chef/chef/pull/12696) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.72 -->
 - Chef-18: Enable unifed_mode by default [#12692](https://github.com/chef/chef/pull/12692) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.71 -->
 - Fix windows kitchen tests [#12693](https://github.com/chef/chef/pull/12693) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.70 -->
