@@ -70,8 +70,6 @@ class Chef
     attr_reader :local_context
 
     extend Chef::Mixin::Deprecation
-    # extend Chef::Mixin::PowershellExec
-    # include Chef::Mixin::PowershellExec
 
     extend Forwardable
     #
@@ -727,7 +725,11 @@ class Chef
 
       node = Chef::Config[:node_name]
       d = Time.now
-      end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+      if d.month == 10 || d.month == 11 || d.month == 12
+        end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
+      else
+        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+      end
 
       payload = {
         name: node,

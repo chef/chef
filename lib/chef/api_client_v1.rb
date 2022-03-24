@@ -297,7 +297,6 @@ class Chef
         payload[:public_key] = public_key unless public_key.nil?
         payload[:create_key] = create_key unless create_key.nil?
 
-        # the new method only gets called when migrating keys to the certificate store.
         new_client = if Chef::Config[:migrate_key_to_keystore] == true
                        chef_rest_v1_with_validator.post("clients", payload)
                      else
