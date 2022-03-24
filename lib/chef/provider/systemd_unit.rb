@@ -59,14 +59,10 @@ class Chef
       def systemd_unit_status
         @systemd_unit_status ||= begin
           status = {}
-
+          
           # Collect all the status information for a unit and return it at once
-          # This will fail if we are managing a template unit (e.g. with '@'), which is why
-          # we capture 'is-enabled' below
-          # This fails because '--system show' returns 'enabled' for *all* templated units
-          # if *any* of the templated units are enabled
-          # e.g. if daemon@env1 is enabled daemon@env2 will also show enabled,
-          # whether or not daemon@env2 is actually enabled
+          # This may fail if we are managing a template unit (e.g. with '@'), in which case
+          # we just ignore the error because unit status is irrelevant in that case
           s = shell_out(*systemctl_cmd, "show", "-p", "UnitFileState", "-p", "ActiveState", new_resource.unit_name, **systemctl_opts)
           # e.g. /bin/systemctl --system show -p UnitFileState -p ActiveState syslog.socket
           # Returns something like:
