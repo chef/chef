@@ -56,7 +56,7 @@ class Chef
           names.each_with_index do |name, index|
             cmd = powershell_exec(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
             next if cmd.nil?
-            raise Chef::Exceptions::PowershellCmdletException, "Failed to install package due to catalog signing error, use skip_publisher_check to force install" if /SkipPublisherCheck/.match?(cmd.error)
+            raise Chef::Exceptions::PowershellCmdletException, "Failed to install package due to catalog signing error, use skip_publisher_check to force install" if /SkipPublisherCheck/.match?(cmd.error!)
           end
         end
 
