@@ -20,6 +20,17 @@ class Chef
 
       provides :selinux_permissive
 
+      description "Allows some types to misbehave without stopping them. Not as good as specific policies, but better than disabling SELinux entirely."
+      examples <<~DOC
+      **Disable enforcement on Apache**:
+
+      ```ruby
+      selinux_permissive 'httpd_t' do
+        notifies :restart, 'service[httpd]'
+      end
+      ```
+      DOC
+
       property :context, String,
                 name_property: true,
                 description: 'The SELinux context to permit'

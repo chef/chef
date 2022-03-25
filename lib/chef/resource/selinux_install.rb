@@ -20,6 +20,23 @@ class Chef
 
       provides :selinux_install
 
+      description "Encapsulates the set of selinux packages to install in order to manage selinux. It also ensures the directory /etc/selinux is created."
+      examples <<~DOC
+      **Default installation**:
+
+      ```ruby
+      selinux_install 'example'
+      ```
+
+      **Install with custom packages**:
+
+      ```ruby
+      selinux_install 'example' do
+        packages %w(policycoreutils selinux-policy selinux-policy-targeted)
+      end
+      ```
+      DOC
+
       property :packages, [String, Array],
                 default: lazy { default_install_packages },
                 description: 'SELinux packages for system'

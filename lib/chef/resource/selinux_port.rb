@@ -21,6 +21,18 @@ class Chef
 
       provides :selinux_port
 
+      description "Allows assigning a network port to a certain SELinux context, e.g. for running a webserver on a non-standard port."
+      examples <<~DOC
+      **Allow nginx/apache to bind to port 5678 by giving it the http_port_t context**:
+
+      ```ruby
+      selinux_port '5678' do
+       protocol 'tcp'
+       secontext 'http_port_t'
+      end
+      ```
+      DOC
+
       property :port, [Integer, String],
                 name_property: true,
                 regex: /^\d+$/,

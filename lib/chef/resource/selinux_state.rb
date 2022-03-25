@@ -21,6 +21,17 @@ class Chef
 
       provides :selinux_state
 
+      description "Manages the SELinux state on the system. It does this by using the setenforce command and rendering the /etc/selinux/config file from a template."
+      examples <<~DOC
+      **Set SELinux state to permissive**:
+
+      ```ruby
+      selinux_state 'permissive' do
+        action :permissive
+      end
+      ```
+      DOC
+
       default_action :nothing
 
       property :config_file, String,

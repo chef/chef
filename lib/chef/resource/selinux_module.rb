@@ -20,6 +20,18 @@ class Chef
 
   		provides :selinux_module
 
+      description "Create an SELinux policy module from a cookbook file or content provided as a string."
+      examples <<~DOC
+      **Creating SElinux module from .te file**:
+
+      ```ruby
+      selinux_module 'my_policy_module' do
+        source 'my_policy_module.te'
+        action :create
+      end
+      ```
+      DOC
+
   		property :module_name, String,
   		          name_property: true,
   		          description: 'Override the module name'

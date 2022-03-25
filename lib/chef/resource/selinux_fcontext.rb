@@ -22,6 +22,26 @@ class Chef
 
   		provides :selinux_fcontext
 
+      description "Set the SELinux context of files with semanage fcontext."
+      examples <<~DOC
+      **Allow http servers (e.g. nginx/apache) to modify moodle files**:
+
+      ```ruby
+      selinux_fcontext '/var/www/moodle(/.*)?' do
+        secontext 'httpd_sys_rw_content_t'
+      end
+      ```
+
+      **Adapt a symbolic link**:
+
+      ```ruby
+      selinux_fcontext '/var/www/symlink_to_webroot' do
+        secontext 'httpd_sys_rw_content_t'
+        file_type 'l'
+      end
+      ```
+      DOC
+
   		property :file_spec, String,
   		          name_property: true,
   		          description: 'Path to or regex matching the files or directoriesto label'

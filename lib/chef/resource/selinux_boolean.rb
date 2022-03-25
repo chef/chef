@@ -22,6 +22,25 @@ class Chef
 
       provides :selinux_boolean
 
+      description "Set SELinux boolean values."
+      examples <<~DOC
+      **Set ssh_keysign to true**:
+
+      ```ruby
+      selinux_boolean 'ssh_keysign' do
+        value true
+      end
+      ```
+
+      **Set ssh_sysadm_login to 'on'**:
+
+      ```ruby
+      selinux_boolean 'ssh_sysadm_login' do
+        value 'on'
+      end
+      ```
+      DOC
+
       property :boolean, String,
         name_property: true,
         description: 'SELinux boolean to set'
