@@ -28,9 +28,9 @@ timezone "America/Los_Angeles"
 include_recipe "::_yum" if platform_family?("rhel")
 
 if platform_family?("rhel", "fedora", "amazon")
-  selinux_install 'selinux'
+  selinux_install "selinux"
 
-  selinux_state 'disabled' do
+  selinux_state "disabled" do
     automatic_reboot true
     action :disabled
   end

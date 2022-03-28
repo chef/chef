@@ -27,18 +27,20 @@ class Chef
       end
 
       def state_change_reboot_required?
-        (selinux_disabled? && %i(enforcing permissive).include?(action)) || ((selinux_enforcing? || selinux_permissive?) && action == :disabled)
+        (selinux_disabled? && %i{enforcing permissive}.include?(action)) || ((selinux_enforcing? || selinux_permissive?) && action == :disabled)
       end
 
       def selinux_state
-        state = shell_out!('getenforce').stdout.strip.downcase.to_sym
-        raise "Got unknown SELinux state #{state}" unless %i(disabled enforcing permissive).include?(state)
+        state = shell_out!("getenforce").stdout.strip.downcase.to_sym
+        raise "Got unknown SELinux state #{state}" unless %i{disabled enforcing permissive}.include?(state)
+
         state
       end
 
       def selinux_activate_required?
-        return false unless platform_family?('debian')
-        !File.read('/etc/default/grub').match?('security=selinux')
+        return false unless platform_family?("debian")
+
+        !File.read("/etc/default/grub").match?("security=selinux")
       end
     end
   end
