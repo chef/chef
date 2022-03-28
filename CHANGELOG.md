@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.76 -->
-## [v18.0.76](https://github.com/chef/chef/tree/v18.0.76) (2022-03-25)
+<!-- latest_release 18.0.77 -->
+## [v18.0.77](https://github.com/chef/chef/tree/v18.0.77) (2022-03-28)
 
 #### Merged Pull Requests
-- Package resource was calling a non-existent error method [#12722](https://github.com/chef/chef/pull/12722) ([johnmccrae](https://github.com/johnmccrae))
+- update libxml2 to 2.9.12 [#12730](https://github.com/chef/chef/pull/12730) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update libxml2 to 2.9.12 [#12730](https://github.com/chef/chef/pull/12730) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.77 -->
 - Package resource was calling a non-existent error method [#12722](https://github.com/chef/chef/pull/12722) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.76 -->
 - update chef client launchd to run at load [#12706](https://github.com/chef/chef/pull/12706) ([rishichawda](https://github.com/rishichawda)) <!-- 18.0.75 -->
 - Enable ruby 3.1 testing on verify pipeline for unix, fix breakage [#12695](https://github.com/chef/chef/pull/12695) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.74 -->
