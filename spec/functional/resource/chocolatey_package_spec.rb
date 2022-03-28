@@ -41,6 +41,10 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     provider
   end
 
+  before(:all) do
+    ENV["Path"] = ENV.delete("Path")
+  end
+
   context "installing a package" do
     after { remove_package }
 
