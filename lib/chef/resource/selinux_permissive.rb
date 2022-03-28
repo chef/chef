@@ -33,11 +33,11 @@ class Chef
 
       property :context, String,
                 name_property: true,
-                description: 'The SELinux context to permit'
+                description: "The SELinux context to permit"
 
       action_class do
         def current_permissives
-          shell_out!('semanage permissive -ln').stdout.split("\n")
+          shell_out!("semanage permissive -ln").stdout.split("\n")
         end
       end
 

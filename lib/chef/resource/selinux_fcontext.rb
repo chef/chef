@@ -44,16 +44,16 @@ class Chef
 
   		property :file_spec, String,
   		          name_property: true,
-  		          description: 'Path to or regex matching the files or directoriesto label'
+  		          description: "Path to or regex matching the files or directoriesto label"
 
   		property :secontext, String,
-  		          required: %i(add modify manage),
-  		          description: 'SELinux context to assign'
+  		          required: %i{add modify manage},
+  		          description: "SELinux context to assign"
 
   		property :file_type, String,
   		          default: 'a',
-  		          equal_to: %w(a f d c b s l p),
-  		          description: 'The type of the file being labeled'
+  		          equal_to: %w{a f d c b s l p},
+  		          description: "The type of the file being labeled"
 
   		action_class do
   			include Chef::SELinux::CommonHelpers
@@ -69,7 +69,7 @@ class Chef
   		      'p' => 'named pipe',
   		    }
 
-  		    contexts = shell_out!('semanage fcontext -l').stdout.split("\n")
+  		    contexts = shell_out!("semanage fcontext -l").stdout.split("\n")
   		    # pull out file label from user:role:type:level context string
   		    contexts.grep(/^#{Regexp.escape(new_resource.file_spec)}\s+#{file_hash[new_resource.file_type]}/) do |c|
   		      c.match(/.+ (?<user>.+):(?<role>.+):(?<type>.+):(?<level>.+)$/)[:type]
@@ -106,7 +106,7 @@ class Chef
   		end
 
   		action :addormodify do
-  		  Chef::Log.warn('The :addormodify action for selinux_fcontext is deprecated and will be removed in a future release. Use the :manage action instead.')
+  		  Chef::Log.warn("The :addormodify action for selinux_fcontext is deprecated and will be removed in a future release. Use the :manage action instead.")
   		  run_action(:manage)
   		end
 

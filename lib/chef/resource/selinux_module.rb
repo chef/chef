@@ -34,21 +34,21 @@ class Chef
 
   		property :module_name, String,
   		          name_property: true,
-  		          description: 'Override the module name'
+  		          description: "Override the module name"
 
   		property :source, String,
-  		          description: 'Module source file name'
+  		          description: "Module source file name"
 
   		property :content, String,
-  		          description: 'Module source as String'
+  		          description: "Module source as String"
 
   		property :cookbook, String,
-  		          description: 'Cookbook to source from module source file from(if it is not located in the current cookbook). The default value is the current cookbook.',
+  		          description: "Cookbook to source from module source file from(if it is not located in the current cookbook). The default value is the current cookbook.",
                 desired_state: false
 
   		property :base_dir, String,
-  		          default: '/etc/selinux/local',
-  		          description: 'Directory to create module source file in'
+  		          default: "/etc/selinux/local",
+  		          description: "Directory to create module source file in"
 
   		action_class do
   		  def selinux_module_filepath(type)
@@ -57,7 +57,7 @@ class Chef
   		  end
 
   		  def list_installed_modules
-  		    shell_out!('semodule --list-modules').stdout.split("\n").map { |x| x.split(/\s/).first }
+  		    shell_out!("semodule --list-modules").stdout.split("\n").map { |x| x.split(/\s/).first }
   		  end
   		end
 
@@ -65,7 +65,7 @@ class Chef
   		  directory new_resource.base_dir
 
   		  if property_is_set?(:content)
-  		    file selinux_module_filepath('te') do
+  		    file selinux_module_filepath("te") do
   		      content new_resource.content
 
   		      mode '0600'
@@ -77,7 +77,7 @@ class Chef
   		      notifies :run, "execute[Compiling SELinux modules at '#{new_resource.base_dir}']", :immediately
   		    end
   		  else
-  		    cookbook_file selinux_module_filepath('te') do
+  		    cookbook_file selinux_module_filepath("te") do
   		      cookbook new_resource.cookbook
   		      source new_resource.source
 
@@ -111,7 +111,7 @@ class Chef
   		end
 
   		action :delete do
-  		  %w(fc if pp te).each do |type|
+  		  %w{fc if pp te}.each do |type|
   		    next unless ::File.exist?(selinux_module_filepath(type))
 
   		    file selinux_module_filepath(type) do

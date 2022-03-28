@@ -43,21 +43,21 @@ class Chef
 
       property :boolean, String,
         name_property: true,
-        description: 'SELinux boolean to set'
+        description: "SELinux boolean to set"
 
       property :value, [Integer, String, true, false],
         required: true,
-        equal_to: %w(on off),
+        equal_to: %w{on off},
         coerce: proc { |p| selinux_bool(p) },
-        description: 'SELinux boolean value'
+        description: "SELinux boolean value"
 
       property :persistent, [true, false],
         default: true,
         desired_state: false,
-        description: 'Set to true for value setting to survive reboot'
+        description: "Set to true for value setting to survive reboot"
 
       load_current_value do |new_resource|
-        value shell_out!("getsebool #{new_resource.boolean}").stdout.split('-->').map(&:strip).last
+        value shell_out!("getsebool #{new_resource.boolean}").stdout.split("-->").map(&:strip).last
       end
 
       action_class do
@@ -71,8 +71,8 @@ class Chef
         end
 
         converge_if_changed do
-          cmd = 'setsebool'
-          cmd += ' -P' if new_resource.persistent
+          cmd = "setsebool"
+          cmd += " -P" if new_resource.persistent
           cmd += " #{new_resource.boolean} #{new_resource.value}"
 
           shell_out!(cmd)
@@ -80,11 +80,12 @@ class Chef
       end
 
       private
+
       # 
       # Validate and return input boolean value in required format
       # @param bool [String, Integer, Boolean] Input boolean value in allowed formats
       # 
-      # @return [String] [description] Boolean value in required format   
+      # @return [String] [description] Boolean value in required format
       def selinux_bool(bool)
         if ['on', 'true', '1', true, 1].include?(bool)
           'on'

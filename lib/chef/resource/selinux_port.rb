@@ -36,16 +36,16 @@ class Chef
       property :port, [Integer, String],
                 name_property: true,
                 regex: /^\d+$/,
-                description: 'Port to modify'
+                description: "Port to modify"
 
       property :protocol, String,
-                equal_to: %w(tcp udp),
-                required: %i(manage add modify),
-                description: 'Protocol to modify'
+                equal_to: %w{tcp udp},
+                required: %i{manage add modify},
+                description: "Protocol to modify"
 
       property :secontext, String,
-                required: %i(manage add modify),
-                description: 'SELinux context to assign to the port'
+                required: %i{manage add modify},
+                description: "SELinux context to assign to the port"
 
       action_class do
         include Chef::SELinux::CommonHelpers
@@ -66,7 +66,7 @@ class Chef
       end
 
       action :addormodify do
-        Chef::Log.warn('The :addormodify action for selinux_port is deprecated and will be removed in a future release. Use the :manage action instead.')
+        Chef::Log.warn("The :addormodify action for selinux_port is deprecated and will be removed in a future release. Use the :manage action instead.")
         run_action(:manage)
       end
 

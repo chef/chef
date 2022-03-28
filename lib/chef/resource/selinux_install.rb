@@ -39,7 +39,7 @@ class Chef
 
       property :packages, [String, Array],
                 default: lazy { default_install_packages },
-                description: 'SELinux packages for system'
+                description: "SELinux packages for system"
 
       action_class do
         def do_package_action(action)
@@ -64,7 +64,7 @@ class Chef
         end
       end
 
-      %i(upgrade remove).each do |a|
+      %i{upgrade remove}.each do |a|
         action a do
           do_package_action(a)
         end
@@ -79,16 +79,16 @@ class Chef
       def default_install_packages
         case node['platform_family']
         when 'rhel', 'fedora', 'amazon'
-          %w(make policycoreutils selinux-policy selinux-policy-targeted selinux-policy-devel libselinux-utils setools-console)
+          %w{make policycoreutils selinux-policy selinux-policy-targeted selinux-policy-devel libselinux-utils setools-console}
         when 'debian'
           if node['platform'] == 'ubuntu'
             if node['platform_version'].to_f == 18.04
-              %w(make policycoreutils selinux selinux-basics selinux-policy-default selinux-policy-dev auditd setools)
+              %w{make policycoreutils selinux selinux-basics selinux-policy-default selinux-policy-dev auditd setools}
             else
-              %w(make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools)
+              %w{make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools}
             end
           else
-            %w(make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools)
+            %w{make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools}
           end
         end
       end  
