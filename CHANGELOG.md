@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.3 -->
-## [v17.10.3](https://github.com/chef/chef/tree/v17.10.3) (2022-03-26)
+<!-- latest_release 17.10.4 -->
+## [v17.10.4](https://github.com/chef/chef/tree/v17.10.4) (2022-03-28)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `5947560` to `769445f` in /omnibus [#12720](https://github.com/chef/chef/pull/12720) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- update libxml2 to 2.9.12 - CHEF17 [#12731](https://github.com/chef/chef/pull/12731) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update libxml2 to 2.9.12 - CHEF17 [#12731](https://github.com/chef/chef/pull/12731) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.4 -->
 - Bump omnibus-software from `5947560` to `769445f` in /omnibus [#12720](https://github.com/chef/chef/pull/12720) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.3 -->
 - Package resource was calling a non-existent error method [#12721](https://github.com/chef/chef/pull/12721) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.2 -->
 - Minor fix to conditional in promote-docker-images.sh [#12701](https://github.com/chef/chef/pull/12701) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.10.1 -->
