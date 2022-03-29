@@ -64,6 +64,10 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+    CRYPT_EXPORTABLE = 0x00000001
+
+    attr_reader :local_context
+
     extend Chef::Mixin::Deprecation
 
     extend Forwardable
@@ -229,7 +233,7 @@ class Chef
       start_profiling
 
       runlock = RunLock.new(Chef::Config.lockfile)
-      # TODO: feels like acquire should have its own block arg for this
+      # TODO feels like acquire should have its own block arg for this
       runlock.acquire
       # don't add code that may fail before entering this section to be sure to release lock
       begin
@@ -637,16 +641,19 @@ class Chef
     # @api private
     #
     def register(client_name = node_name, config = Chef::Config)
-      if Chef::HTTP::Authenticator.detect_certificate_key(client_name)
-        if File.exists?(config[:client_key])
-          logger.warn("WARNING - Client key #{client_name} is present on disk, ignoring that in favor of key stored in CertStore")
-        end
-        events.skipping_registration(client_name, config)
-        logger.trace("Client key #{client_name} is present in certificate repository - skipping registration")
-        config[:client_key] = "Cert:\\LocalMachine\\My\\chef-#{client_name}"
-      elsif !config[:client_key]
+      if !config[:client_key]
         events.skipping_registration(client_name, config)
         logger.trace("Client key is unspecified - skipping registration")
+      elsif ::Chef::Config[:migrate_key_to_keystore] == true && ChefUtils.windows?
+        cert_name = "chef-#{client_name}"
+        result = check_certstore_for_key(cert_name)
+        if result.rassoc("#{cert_name}")
+          logger.trace("Client key #{config[:client_key]} is present in Certificate Store - skipping registration")
+        else
+          create_new_key_and_register(cert_name)
+          logger.trace("New client keys created in the Certificate Store - skipping registration")
+        end
+        events.skipping_registration(client_name, config)
       elsif File.exists?(config[:client_key])
         events.skipping_registration(client_name, config)
         logger.trace("Client key #{config[:client_key]} is present - skipping registration")
@@ -663,6 +670,94 @@ class Chef
       # user
       events.registration_failed(client_name, e, config)
       raise
+    end
+
+    # In the brave new world of No Certs On Disk, we want to put the pem file into Keychain or the Certstore
+    # But is it already there?
+    def check_certstore_for_key(cert_name)
+      require "win32-certstore"
+      win32certstore = ::Win32::Certstore.open("MY")
+      win32certstore.search("#{cert_name}")
+    end
+
+    def generate_pfx_package(cert_name, date)
+      self.class.generate_pfx_package(cert_name, date)
+    end
+
+    def self.generate_pfx_package(cert_name, date)
+      require "openssl" unless defined?(OpenSSL)
+
+      key = OpenSSL::PKey::RSA.new(2048)
+      public_key = key.public_key
+
+      subject = "CN=#{cert_name}"
+
+      cert = OpenSSL::X509::Certificate.new
+      cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
+      cert.not_before = Time.now
+      cert.not_after = Time.parse(date)
+      cert.public_key = public_key
+      cert.serial = 0x0
+      cert.version = 2
+
+      ef = OpenSSL::X509::ExtensionFactory.new
+      ef.subject_certificate = cert
+      ef.issuer_certificate = cert
+      cert.extensions = [
+        ef.create_extension("subjectKeyIdentifier", "hash"),
+        ef.create_extension("keyUsage", "digitalSignature,keyEncipherment", true),
+      ]
+      cert.add_extension(ef.create_ext_from_string("extendedKeyUsage=critical,serverAuth,clientAuth"))
+
+      cert.sign key, OpenSSL::Digest.new("SHA256")
+      password = ::Chef::HTTP::Authenticator.get_cert_password
+      pfx = OpenSSL::PKCS12.create(password, subject, key, cert)
+      pfx
+    end
+
+    def create_new_key_and_register(cert_name)
+      require "time" unless defined?(Time)
+      autoload :URI, "uri"
+
+      # KeyMigration.instance.key_migrated = true
+
+      node = Chef::Config[:node_name]
+      d = Time.now
+      if d.month == 10 || d.month == 11 || d.month == 12
+        end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
+      else
+        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+      end
+
+      payload = {
+        name: node,
+        clientname: node,
+        public_key: "",
+        expiration_date: end_date,
+      }
+
+      new_pfx = generate_pfx_package(cert_name, end_date)
+      payload[:public_key] = new_pfx.certificate.public_key.to_pem
+      base_url = "#{Chef::Config[:chef_server_url]}"
+      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key])
+      client.post(base_url + "/clients", payload)
+      Chef::Log.trace("Updated client data: #{client.inspect}")
+      import_pfx_to_store(new_pfx)
+    end
+
+    def import_pfx_to_store(new_pfx)
+      self.class.import_pfx_to_store(new_pfx)
+    end
+
+    def self.import_pfx_to_store(new_pfx)
+      password = ::Chef::HTTP::Authenticator.get_cert_password
+      require "win32-certstore"
+      tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
+      File.open(tempfile, "wb") { |f| f.print new_pfx.to_der }
+
+      store = ::Win32::Certstore.open("MY")
+      store.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
+      tempfile.unlink
     end
 
     #
@@ -929,3 +1024,4 @@ end
 require_relative "cookbook_loader"
 require_relative "cookbook_version"
 require_relative "cookbook/synchronizer"
+

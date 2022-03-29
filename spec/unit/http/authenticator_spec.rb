@@ -19,12 +19,79 @@
 require "spec_helper"
 require "chef/http/authenticator"
 
+describe Chef::HTTP::Authenticator, :windows_only do
+  let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test") }
+  let(:method) { "GET" }
+  let(:url) { URI("https://chef.example.com/organizations/test") }
+  let(:headers) { {} }
+  let(:data) { "" }
+  let(:node_name) { "test" }
+  let(:passwrd) { "some_insecure_password" }
+
+  before do
+    Chef::Config[:node_name] = node_name
+    cert_name = "chef-#{node_name}"
+    d = Time.now
+    end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+
+    my_client = Chef::Client.new
+    pfx = my_client.generate_pfx_package(cert_name, end_date)
+    my_client.import_pfx_to_store(pfx)
+  end
+
+  after(:each) do
+    require "chef/mixin/powershell_exec"
+    extend Chef::Mixin::PowershellExec
+    cert_name = "chef-#{node_name}"
+    delete_certificate(cert_name)
+  end
+
+  context "when retrieving a certificate from the certificate store" do
+    it "retrieves a certificate password from the registry when the hive does not already exist" do
+      delete_registry_hive
+      expect { class_instance.get_cert_password }.not_to raise_error
+    end
+
+    it "should return a password of at least 14 characters in length" do
+      password = class_instance.get_cert_password
+      expect(password.length).to eql(14)
+    end
+
+    it "correctly retrieves a valid certificate in pem format from the certstore" do
+      require "openssl"
+      certificate = class_instance.retrieve_certificate_key(node_name)
+      cert_object = OpenSSL::PKey::RSA.new(certificate)
+      expect(cert_object.to_s).to match(/BEGIN RSA PRIVATE KEY/)
+    end
+  end
+
+  def delete_certificate(cert_name)
+    powershell_code = <<~CODE
+      Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "#{cert_name}" } | Remove-item
+    CODE
+    powershell_exec!(powershell_code)
+  end
+
+  def delete_registry_hive
+    @win32registry = Chef::Win32::Registry.new
+    path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+    present = @win32registry.get_values(path)
+    unless present.nil? || present.empty?
+      @win32registry.delete_key(path, true)
+    end
+  end
+end
+
 describe Chef::HTTP::Authenticator do
   let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test") }
   let(:method) { "GET" }
   let(:url) { URI("https://chef.example.com/organizations/test") }
   let(:headers) { {} }
   let(:data) { "" }
+
+  before do
+    ::Chef::Config[:node_name] = "foo"
+  end
 
   context "when handle_request is called" do
     shared_examples_for "merging the server API version into the headers" do

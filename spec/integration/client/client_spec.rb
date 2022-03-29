@@ -35,21 +35,22 @@ describe "chef-client" do
     @server = @api = nil
   end
 
-  def install_certificate_in_store
+  def install_certificate_in_store(client_name)
     if ChefUtils.windows?
       powershell_exec!("New-SelfSignedCertificate -certstorelocation cert:\\localmachine\\my -Subject #{client_name} -FriendlyName #{client_name} -KeyExportPolicy Exportable")
     end
   end
 
   def create_registry_key
-    @win32registry = Chef::Win32::Registry.new
-    path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
-    unless @win32registry.key_exists?(path)
-      @win32registry.create_key(path, true)
-    end
-    password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
-    values = { name: "PfxPass", type: :string, data: password }
-    @win32registry.set_value(path, values)
+    ::Chef::HTTP::Authenticator.get_cert_password
+    # @win32registry = Chef::Win32::Registry.new
+    # path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+    # unless @win32registry.key_exists?(path)
+    #   @win32registry.create_key(path, true)
+    # end
+    # password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
+    # values = { name: "PfxPass", type: :string, data: password }
+    # @win32registry.set_value(path, values)
   end
 
   def remove_certificate_from_store
@@ -59,7 +60,7 @@ describe "chef-client" do
   end
 
   def remove_registry_key
-    powershell_exec!("Remove-Item -Path HKLM:\\SOFTWARE\\Progress -Recurse")
+    powershell_exec!("Remove-ItemProperty -Path HKLM:\\SOFTWARE\\Progress\\Authentication -Name 'PfxPass' ")
   end
 
   def verify_export_password_exists
@@ -92,6 +93,7 @@ describe "chef-client" do
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
   let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai --always-dump-stacktrace" }
   let(:client_name) { "chef-973334" }
+  let(:hostname) { "973334" }
 
   context "when validation.pem in current Directory" do
     let(:validation_path) { "" }
@@ -178,7 +180,6 @@ describe "chef-client" do
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
         expect(result.stdout).to include("xxx")
       end
-
     end
 
     it "should complete with success" do
@@ -194,19 +195,17 @@ describe "chef-client" do
     if ChefUtils.windows?
       context "and the private key is in the Windows CertStore" do
         before do
-          # install the p12/pfx and make sure the key and password are stored in the registry
-          install_certificate_in_store
+          install_certificate_in_store(client_name)
           create_registry_key
         end
 
         after do
-          # remove the p12/pfx and remove the registry key
           remove_certificate_from_store
           remove_registry_key
         end
 
         it "should verify that the cert is loaded in the LocalMachine\\My" do
-          expect(Chef::HTTP::Authenticator.check_certstore_for_key(client_name)).to eq(true)
+          expect(Chef::HTTP::Authenticator.check_certstore_for_key(hostname)).to eq(true)
         end
 
         it "should verify that the export password for the pfx is loaded in the Registry" do
@@ -214,7 +213,7 @@ describe "chef-client" do
         end
 
         it "should verify that a private key is returned to me" do
-          expect(Chef::HTTP::Authenticator.retrieve_certificate_key(client_name)).not_to be_falsey
+          expect(Chef::HTTP::Authenticator.retrieve_certificate_key(client_name)).not_to be nil
         end
       end
     end

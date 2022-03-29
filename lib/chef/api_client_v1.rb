@@ -64,6 +64,10 @@ class Chef
       @chef_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "1", inflate_json_class: false })
     end
 
+    def chef_rest_v1_with_validator
+      @chef_rest_v1_with_validator ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key], api_version: "1", inflate_json_class: false })
+    end
+
     def self.http_api
       Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "1", inflate_json_class: false })
     end
@@ -293,7 +297,11 @@ class Chef
         payload[:public_key] = public_key unless public_key.nil?
         payload[:create_key] = create_key unless create_key.nil?
 
-        new_client = chef_rest_v1.post("clients", payload)
+        new_client = if Chef::Config[:migrate_key_to_keystore] == true
+                       chef_rest_v1_with_validator.post("clients", payload)
+                     else
+                       chef_rest_v1.post("clients", payload)
+                     end
 
         # get the private_key out of the chef_key hash if it exists
         if new_client["chef_key"]
