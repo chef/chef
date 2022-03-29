@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.78 -->
-## [v18.0.78](https://github.com/chef/chef/tree/v18.0.78) (2022-03-29)
+<!-- latest_release 18.0.79 -->
+## [v18.0.79](https://github.com/chef/chef/tree/v18.0.79) (2022-03-29)
 
 #### Merged Pull Requests
-- Client code to put a certificate into the certstore and then retrieve it later during a chef-run. Unit tests included [#12640](https://github.com/chef/chef/pull/12640) ([johnmccrae](https://github.com/johnmccrae))
+- Add support for default secret service and config [#12140](https://github.com/chef/chef/pull/12140) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add support for default secret service and config [#12140](https://github.com/chef/chef/pull/12140) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.79 -->
 - Client code to put a certificate into the certstore and then retrieve it later during a chef-run. Unit tests included [#12640](https://github.com/chef/chef/pull/12640) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.78 -->
 - update libxml2 to 2.9.12 [#12730](https://github.com/chef/chef/pull/12730) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.77 -->
 - Package resource was calling a non-existent error method [#12722](https://github.com/chef/chef/pull/12722) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.76 -->
