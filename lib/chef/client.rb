@@ -56,7 +56,6 @@ require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
-require "singleton" unless defined?(Singleton)
 
 require_relative "compliance/runner"
 
