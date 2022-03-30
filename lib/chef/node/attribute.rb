@@ -38,7 +38,7 @@ class Chef
 
       include Immutablize
       # FIXME:  what is include Enumerable doing up here, when down below we delegate
-      # most of the Enumerable/Hash things to the underlying merged ImmutableMash.  That
+      # most of the Enumerable/Hash things to the underlying merged ImmutableHash.  That
       # is, in fact, the correct, thing to do, while including Enumerable to try to create
       # a hash-like API gets lots of things wrong because of the difference between the
       # Hash `each do |key, value|` vs the Array-like `each do |value|` API that Enumerable
@@ -452,59 +452,33 @@ class Chef
       # method-style access to attributes (has to come after the prepended ImmutablizeHash)
 
       def read(*path)
-        rest = path.dup
-        first = rest.shift
-
-        # this will have terrible performance, but it is the only way to get at the entire
-        # merged ImmutableMash top level object.
-        return merged_attributes if first.nil?
-
-        obj = self[first]
-        if obj.is_a?(ImmutableMash) || obj.is_a?(ImmutableArray)
-          obj.read(*rest)
+        if path[0].nil?
+          Chef::Log.warn "Calling node.read() without any path argument is very slow, probably a bug, and should be avoided"
+          merged_attributes.read(*path) # re-merges everything, slow edge case
         else
-          obj
+          self[path[0]] unless path[0].nil? # force deep_merge_cache key construction if necessary
+          deep_merge_cache.read(*path)
         end
       end
 
       alias :dig :read
 
       def read!(*path)
-        rest = path.dup
-        first = rest.shift
-
-        # this will have terrible performance, but it is the only way to get at the entire
-        # merged ImmutableMash top level object.
-        return merged_attributes if first.nil?
-
-        raise Chef::Exceptions::NoSuchAttribute.new(path.join ".") unless key?(first)
-
-        obj = self[first]
-
-        return obj if rest.empty?
-
-        if obj.is_a?(ImmutableMash) || obj.is_a?(ImmutableArray)
-          obj.read!(*rest)
+        if path[0].nil?
+          Chef::Log.warn "Calling node.read!() without any path argument is very slow, probably a bug, and should be avoided"
+          merged_attributes.read!(*path) # re-merges everything, slow edge case
         else
-          raise Chef::Exceptions::NoSuchAttribute.new(path.join ".")
+          self[path[0]] unless path[0].nil? # force deep_merge_cache key construction if necessary
+          deep_merge_cache.read!(*path)
         end
       end
 
       def exist?(*path)
-        rest = path.dup
-        first = rest.shift
-
-        return true if first.nil?
-
-        return false unless key?(first)
-
-        return true if rest.empty?
-
-        obj = self[first]
-        if obj.is_a?(ImmutableMash) || obj.is_a?(ImmutableArray)
-          obj.exist?(*rest)
+        if path[0].nil?
+          true
         else
-          false
+          self[path[0]] unless path[0].nil? # force deep_merge_cache key construction if necessary
+          deep_merge_cache.exist?(*path)
         end
       end
 
