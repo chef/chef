@@ -36,7 +36,7 @@ end
 
 # forwards-vs-reverse slashes on windows sucks
 def windows_path
-  windows? ? normalized_path.tr('\\', "/") : normalized_path
+  windows? ? normalized_path.tr("\\", "/") : normalized_path
 end
 
 # this is all getting a bit stupid, CHEF-4802 cut to remove all this
@@ -139,6 +139,7 @@ shared_examples_for Chef::Provider::File do
     allow(content).to receive(:tempfile).and_return(tempfile)
     allow(File).to receive(:exist?).with(tempfile.path).and_call_original
     allow(File).to receive(:exists?).with(tempfile.path).and_call_original
+    allow(resource).to receive(:docker?).and_return(false)
   end
 
   after do
