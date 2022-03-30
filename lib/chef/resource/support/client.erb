@@ -18,6 +18,7 @@
       @pid_file
       @policy_group
       @policy_name
+      @rubygems_url
       @ssl_verify_mode
       @policy_persist_run_list).each do |prop| -%>
 <% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? -%>

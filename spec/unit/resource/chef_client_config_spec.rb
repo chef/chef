@@ -134,4 +134,12 @@ describe Chef::Resource::ChefClientConfig do
       expect(provider.format_handler([{ "class" => "Foo", "arguments" => ["'one'", "two", "three"] }])).to eql(["Foo.new('one',two,three)"])
     end
   end
+
+  describe "rubygems_url property" do
+    it "accepts nil, a single URL, or an array of URLs" do
+      expect { resource.rubygems_url(nil) }.not_to raise_error
+      expect { resource.rubygems_url("https://rubygems.internal.example.com") }.not_to raise_error
+      expect { resource.rubygems_url(["https://rubygems.east.example.com", "https://rubygems.west.example.com"]) }.not_to raise_error
+    end
+  end
 end
