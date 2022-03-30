@@ -84,6 +84,7 @@ describe "Chef::Provider::AptUpdate" do
 
     it "should run if the time stamp is old" do
       expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 86_500)
+      allow_any_instance_of(Chef::Resource::File).to receive(:docker?).and_return(false)
       expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
       provider.run_action(:periodic)
       expect(new_resource).to be_updated_by_last_action
@@ -103,6 +104,7 @@ describe "Chef::Provider::AptUpdate" do
 
       it "should run if the time stamp is old" do
         expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 500)
+        allow_any_instance_of(Chef::Resource::File).to receive(:docker?).and_return(false)
         expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
         provider.run_action(:periodic)
         expect(new_resource).to be_updated_by_last_action

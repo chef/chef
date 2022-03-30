@@ -48,9 +48,7 @@ module ChefUtils
       # @return [Boolean]
       #
       def docker?(node = __getnode)
-        # Using "File.exist?('/.dockerinit') || File.exist?('/.dockerenv')" makes Travis sad,
-        # and that makes us sad too.
-        !!(node && node.read("virtualization", "systems", "docker") == "guest")
+        File.exist?("/.dockerinit") || File.exist?("/.dockerenv")
       end
 
       # Determine if the node uses the systemd init system.

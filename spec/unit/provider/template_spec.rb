@@ -57,6 +57,9 @@ describe Chef::Provider::Template do
   it_behaves_like Chef::Provider::File
 
   context "when creating the template" do
+    before(:each) do
+      allow(resource).to receive(:docker?).and_return(false)
+    end
 
     let(:enclosing_directory) do
       canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))

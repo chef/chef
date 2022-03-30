@@ -45,18 +45,20 @@ RSpec.describe ChefUtils::DSL::Introspection do
   end
 
   context "#docker?" do
-    # FIXME: use a real VividMash for these tests instead of stubbing
     it "is false by default" do
-      expect(node).to receive(:read).with("virtualization", "systems", "docker").and_return(nil)
+      allow(File).to receive(:exist?).with("/.dockerinit").and_return(false)
+      allow(File).to receive(:exist?).with("/.dockerenv").and_return(false)
       expect(ChefUtils.docker?(node)).to be false
     end
-    it "is true when ohai reports a docker guest" do
-      expect(node).to receive(:read).with("virtualization", "systems", "docker").and_return("guest")
+    it "is true when /.dockerinit exists" do
+      allow(File).to receive(:exist?).with("/.dockerinit").and_return(true)
+      allow(File).to receive(:exist?).with("/.dockerenv").and_return(false)
       expect(ChefUtils.docker?(node)).to be true
     end
-    it "is false for any other value other than guest" do
-      expect(node).to receive(:read).with("virtualization", "systems", "docker").and_return("some nonsense")
-      expect(ChefUtils.docker?(node)).to be false
+    it "is true when /.dockerenv exists" do
+      allow(File).to receive(:exist?).with("/.dockerinit").and_return(false)
+      allow(File).to receive(:exist?).with("/.dockerenv").and_return(true)
+      expect(ChefUtils.docker?(node)).to be true
     end
   end
 
