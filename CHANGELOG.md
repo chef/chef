@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.80 -->
-## [v18.0.80](https://github.com/chef/chef/tree/v18.0.80) (2022-03-30)
+<!-- latest_release 18.0.81 -->
+## [v18.0.81](https://github.com/chef/chef/tree/v18.0.81) (2022-03-30)
 
 #### Merged Pull Requests
-- avoid coercion to block for new plist file content, fix adding a new dictionary  [#12680](https://github.com/chef/chef/pull/12680) ([jazaval](https://github.com/jazaval))
+- Bump libxml2 to 2.9.13 [#12739](https://github.com/chef/chef/pull/12739) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump libxml2 to 2.9.13 [#12739](https://github.com/chef/chef/pull/12739) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.81 -->
 - avoid coercion to block for new plist file content, fix adding a new dictionary  [#12680](https://github.com/chef/chef/pull/12680) ([jazaval](https://github.com/jazaval)) <!-- 18.0.80 -->
 - Add support for default secret service and config [#12140](https://github.com/chef/chef/pull/12140) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.79 -->
 - Client code to put a certificate into the certstore and then retrieve it later during a chef-run. Unit tests included [#12640](https://github.com/chef/chef/pull/12640) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.78 -->
