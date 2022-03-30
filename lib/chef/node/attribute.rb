@@ -38,7 +38,7 @@ class Chef
 
       include Immutablize
       # FIXME:  what is include Enumerable doing up here, when down below we delegate
-      # most of the Enumerable/Hash things to the underlying merged ImmutableHash.  That
+      # most of the Enumerable/Hash things to the underlying merged ImmutableMash.  That
       # is, in fact, the correct, thing to do, while including Enumerable to try to create
       # a hash-like API gets lots of things wrong because of the difference between the
       # Hash `each do |key, value|` vs the Array-like `each do |value|` API that Enumerable
@@ -452,17 +452,60 @@ class Chef
       # method-style access to attributes (has to come after the prepended ImmutablizeHash)
 
       def read(*path)
-        merged_attributes.read(*path)
+        rest = path.dup
+        first = rest.shift
+
+        # this will have terrible performance, but it is the only way to get at the entire
+        # merged ImmutableMash top level object.
+        return merged_attributes if first.nil?
+
+        obj = self[first]
+        if obj.is_a?(ImmutableMash) || obj.is_a?(ImmutableArray)
+          obj.read(*rest)
+        else
+          obj
+        end
       end
 
       alias :dig :read
 
       def read!(*path)
-        merged_attributes.read!(*path)
+        rest = path.dup
+        first = rest.shift
+
+        # this will have terrible performance, but it is the only way to get at the entire
+        # merged ImmutableMash top level object.
+        return merged_attributes if first.nil?
+
+        raise Chef::Exceptions::NoSuchAttribute.new(path.join ".") unless key?(first)
+
+        obj = self[first]
+
+        return obj if rest.empty?
+
+        if obj.is_a?(ImmutableMash) || obj.is_a?(ImmutableArray)
+          obj.read!(*rest)
+        else
+          raise Chef::Exceptions::NoSuchAttribute.new(path.join ".")
+        end
       end
 
       def exist?(*path)
-        merged_attributes.exist?(*path)
+        rest = path.dup
+        first = rest.shift
+
+        return true if first.nil?
+
+        return false unless key?(first)
+
+        return true if rest.empty?
+
+        obj = self[first]
+        if obj.is_a?(ImmutableMash) || obj.is_a?(ImmutableArray)
+          obj.exist?(*rest)
+        else
+          false
+        end
       end
 
       def write(level, *args, &block)
