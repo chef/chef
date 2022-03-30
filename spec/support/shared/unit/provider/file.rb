@@ -133,6 +133,7 @@ shared_examples_for Chef::Provider::File do
   before(:each) do
     allow(content).to receive(:tempfile).and_return(tempfile)
     allow(File).to receive(:exist?).with(tempfile.path).and_call_original
+    allow(resource).to receive(:docker?).and_return(false)
   end
 
   after do
