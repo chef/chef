@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.83 -->
-## [v18.0.83](https://github.com/chef/chef/tree/v18.0.83) (2022-03-30)
+<!-- latest_release 18.0.84 -->
+## [v18.0.84](https://github.com/chef/chef/tree/v18.0.84) (2022-03-31)
 
 #### Merged Pull Requests
-- Fix attribute performance issues in node.read [#12742](https://github.com/chef/chef/pull/12742) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump libxslt to 1.1.35 [#12752](https://github.com/chef/chef/pull/12752) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump libxslt to 1.1.35 [#12752](https://github.com/chef/chef/pull/12752) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 18.0.84 -->
 - Fix attribute performance issues in node.read [#12742](https://github.com/chef/chef/pull/12742) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.83 -->
 - Add rubygems_url property to chef_client_config resource [#12724](https://github.com/chef/chef/pull/12724) ([DecoyJoe](https://github.com/DecoyJoe)) <!-- 18.0.82 -->
 - Bump libxml2 to 2.9.13 [#12739](https://github.com/chef/chef/pull/12739) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.81 -->
