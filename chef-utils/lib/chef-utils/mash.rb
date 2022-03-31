@@ -102,6 +102,14 @@ module ChefUtils
       alias_method :regular_update, :update
     end
 
+    unless method_defined?(:regular_clear)
+      alias_method :regular_clear, :clear
+    end
+
+    unless method_defined?(:regular_delete)
+      alias_method :regular_delete, :delete
+    end
+
     # @param key<Object> The key to set.
     # @param value<Object>
     #   The value to set the key to.
