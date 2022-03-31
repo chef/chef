@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.17.57 -->
-## [v16.17.57](https://github.com/chef/chef/tree/v16.17.57) (2022-03-28)
+<!-- latest_release 16.17.58 -->
+## [v16.17.58](https://github.com/chef/chef/tree/v16.17.58) (2022-03-31)
 
 #### Merged Pull Requests
-- updated choco tests to get past pathing bug [#12728](https://github.com/chef/chef/pull/12728) ([johnmccrae](https://github.com/johnmccrae))
+- Fix attribute performance issues in node.read (Chef-16) [#12744](https://github.com/chef/chef/pull/12744) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.17.51 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix attribute performance issues in node.read (Chef-16) [#12744](https://github.com/chef/chef/pull/12744) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.17.58 -->
 - updated choco tests to get past pathing bug [#12728](https://github.com/chef/chef/pull/12728) ([johnmccrae](https://github.com/johnmccrae)) <!-- 16.17.57 -->
 - Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12669](https://github.com/chef/chef/pull/12669) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.56 -->
 - Update to libffi 3.4.2 [#12660](https://github.com/chef/chef/pull/12660) ([tas50](https://github.com/tas50)) <!-- 16.17.55 -->
