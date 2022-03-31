@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.6 -->
-## [v17.10.6](https://github.com/chef/chef/tree/v17.10.6) (2022-03-30)
+<!-- latest_release 17.10.7 -->
+## [v17.10.7](https://github.com/chef/chef/tree/v17.10.7) (2022-03-31)
 
 #### Merged Pull Requests
-- Updating Gemfile.locks to corroborate the libxml2 version update [#12741](https://github.com/chef/chef/pull/12741) ([johnmccrae](https://github.com/johnmccrae))
+- Fix attribute performance issues in node.read (Chef-17) [#12743](https://github.com/chef/chef/pull/12743) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix attribute performance issues in node.read (Chef-17) [#12743](https://github.com/chef/chef/pull/12743) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.10.7 -->
 - Updating Gemfile.locks to corroborate the libxml2 version update [#12741](https://github.com/chef/chef/pull/12741) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.6 -->
 - Removed Windows Server 2016 from testing per Github [#12740](https://github.com/chef/chef/pull/12740) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.5 -->
 - update libxml2 to 2.9.12 - CHEF17 [#12731](https://github.com/chef/chef/pull/12731) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.4 -->
