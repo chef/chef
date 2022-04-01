@@ -23,7 +23,13 @@ class RestProviderByQuery < Chef::Provider::RestResource
 end
 
 class RestResourceByPath < RestResourceByQuery
+  provides :rest_resource_by_path
+
   rest_api_document "/api/v1/address/{address}"
+end
+
+class RestProviderByQuery < Chef::Provider::RestResource
+  provides :rest_resource_by_path
 end
 
 describe "rest_resource using query-based addressing" do
@@ -278,48 +284,70 @@ describe "rest_resource using query-based addressing" do
 end
 
 describe "rest_resource using path-based addressing" do
+  let(:train) {
+    Train.create(
+    "rest", {
+      endpoint:   "https://api.example.com/api/v1/",
+      debug_rest: true,
+      logger:     Chef::Log,
+    }
+  ).connection
+  }
+
+  let(:run_context) do
+    cookbook_collection = Chef::CookbookCollection.new([])
+    node = Chef::Node.new
+    node.name "node1"
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:resource) do
+    RestResourceByPath.new("set_address", run_context).tap do |resource|
+      resource.address = "192.0.2.1"
+      resource.prefix = 24
+      resource.action :configure
+    end
+  end
+
+  let(:provider) do
+    RestProviderByQuery.new(resource, run_context).tap do |provider|
+      provider.current_resource = resource # for some stubby tests that don't call LCR
+      allow(provider).to receive(:api_connection).and_return(train)
+    end
+  end
+
   before(:each) do
-    @cookbook_collection = Chef::CookbookCollection.new([])
-    @node = Chef::Node.new
-    @node.name "node1"
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-
-    @resource = RestResourceByPath.new("set_address", @run_context)
-    @resource.address = "192.0.2.1"
-    @resource.prefix = 24
-
-    @provider = Chef::Provider::RestResource.new(@resource, @run_context)
-    @provider.current_resource = @resource
+    allow(Chef::Provider::RestResource).to receive(:new).and_return(provider)
   end
 
   describe "#rest_url_document" do
     before do
-      @provider.singleton_class.send(:public, :rest_url_document)
+      provider.singleton_class.send(:public, :rest_url_document)
     end
 
     it "should apply URI templates to document URLs using path syntax properly" do
-      expect(@provider.rest_url_document).to eq("/api/v1/address/192.0.2.1")
+      expect(provider.rest_url_document).to eq("/api/v1/address/192.0.2.1")
     end
   end
 
   describe "#rest_identity_implicit" do
     before do
-      @provider.singleton_class.send(:public, :rest_identity_implicit)
+      provider.singleton_class.send(:public, :rest_identity_implicit)
     end
 
     it "should return implicit identity properties properly" do
-      expect(@provider.rest_identity_implicit).to eq({ "address" => :address })
+      expect(provider.rest_identity_implicit).to eq({ "address" => :address })
     end
   end
 
   describe "#rest_identity_values" do
     before do
-      @provider.singleton_class.send(:public, :rest_identity_values)
+      provider.singleton_class.send(:public, :rest_identity_values)
     end
 
     it "should return implicit identity properties and values properly" do
-      expect(@provider.rest_identity_values).to eq({ "address" => "192.0.2.1" })
+      expect(provider.rest_identity_values).to eq({ "address" => "192.0.2.1" })
     end
   end
 
