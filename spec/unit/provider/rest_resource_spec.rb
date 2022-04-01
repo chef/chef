@@ -3,7 +3,7 @@ require "train"
 require "train-rest"
 
 class RestResourceByQuery < Chef::Resource
-  rest_resource
+  use "core::rest_resource"
 
   provides :rest_resource_by_query, target_mode: true
 

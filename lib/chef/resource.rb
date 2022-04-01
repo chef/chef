@@ -24,7 +24,6 @@ require_relative "dsl/resources"
 require_relative "dsl/declare_resource"
 require_relative "json_compat"
 require_relative "mixin/convert_to_class_name"
-require_relative "mixin/rest_resource"
 require_relative "guard_interpreter/resource_guard_interpreter"
 require_relative "resource/conditional"
 require_relative "resource/conditional_action_not_nothing"
@@ -1214,11 +1213,6 @@ class Chef
       @preview_resource
     end
 
-    # Turn this resource into a target-mode rest-resource
-    def self.rest_resource
-      include Chef::Mixin::RestResource
-    end
-
     #
     # Internal Resource Interface (for Chef)
     #
@@ -1504,10 +1498,14 @@ class Chef
     # @param partial [String] the code fragment to eval against the class
     #
     def self.use(partial)
-      dirname = ::File.dirname(partial)
-      basename = ::File.basename(partial, ".rb")
-      basename = basename[1..] if basename.start_with?("_")
-      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
+      if partial =~ /^core::(.*)/
+        class_eval IO.read(::File.expand_path("resource/core_partials/#{$1}.rb", __dir__))
+      else
+        dirname = ::File.dirname(partial)
+        basename = ::File.basename(partial, ".rb")
+        basename = basename[1..] if basename.start_with?("_")
+        class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
+      end
     end
 
     # The cookbook in which this Resource was defined (if any).
