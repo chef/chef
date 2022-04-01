@@ -72,9 +72,18 @@ action :delete do
   end
 end
 
-private
-
 action_class do
+  # Override this for postprocessing device-specifics (paging, data conversion)
+  def rest_postprocess(response)
+    response
+  end
+
+  # Override this for error handling of device-specifics (readable error messages)
+  def rest_errorhandler(error_obj)
+    error_obj
+  end
+
+  private
 
   def resource_exists?
     @resource_exists
@@ -320,16 +329,6 @@ action_class do
 
   def api_connection
     Chef.run_context.transport.connection
-  end
-
-  # Override this for postprocessing device-specifics (paging, data conversion)
-  def rest_postprocess(response)
-    response
-  end
-
-  # Override this for error handling of device-specifics (readable error messages)
-  def rest_errorhandler(error_obj)
-    error_obj
   end
 
   # Remove all empty keys (recusively) from Hash.

@@ -76,6 +76,22 @@ describe "rest_resource using query-based addressing" do
     expect(provider).to respond_to(:action_nothing)
   end
 
+  it "sets the default action as :configure" do
+    expect(resource.action).to eql([:configure])
+  end
+
+  it "supports :configure action" do
+    expect { resource.action :configure }.not_to raise_error
+  end
+
+  it "supports :delete action" do
+    expect { resource.action :delete }.not_to raise_error
+  end
+
+  it "should mixin RestResourceDSL" do
+    expect(resource.class.included_modules).to include(Chef::DSL::RestResource)
+  end
+
   describe "#rest_postprocess" do
     before do
       provider.singleton_class.send(:public, :rest_postprocess)
