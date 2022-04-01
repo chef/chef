@@ -24,6 +24,7 @@ require_relative "dsl/resources"
 require_relative "dsl/declare_resource"
 require_relative "json_compat"
 require_relative "mixin/convert_to_class_name"
+require_relative "mixin/rest_resource"
 require_relative "guard_interpreter/resource_guard_interpreter"
 require_relative "resource/conditional"
 require_relative "resource/conditional_action_not_nothing"
@@ -1211,6 +1212,11 @@ class Chef
       @preview_resource = false unless defined?(@preview_resource)
       @preview_resource = value unless value.nil?
       @preview_resource
+    end
+
+    # Turn this resource into a target-mode rest-resource
+    def self.rest_resource
+      include Chef::Mixin::RestResource
     end
 
     #

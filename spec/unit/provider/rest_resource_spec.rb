@@ -2,8 +2,10 @@ require "spec_helper"
 require "train"
 require "train-rest"
 
-class RestResourceByQuery < Chef::Resource::RestResource
-  provides :rest_resource_by_query
+class RestResourceByQuery < Chef::Resource
+  rest_resource
+
+  provides :rest_resource_by_query, target_mode: true
 
   property :address, String, required: true
   property :prefix, Integer, required: true
@@ -18,18 +20,10 @@ class RestResourceByQuery < Chef::Resource::RestResource
   })
 end
 
-class RestProviderByQuery < Chef::Provider::RestResource
-  provides :rest_resource_by_query
-end
-
 class RestResourceByPath < RestResourceByQuery
-  provides :rest_resource_by_path
+  provides :rest_resource_by_path, target_mode: true
 
   rest_api_document "/api/v1/address/{address}"
-end
-
-class RestProviderByQuery < Chef::Provider::RestResource
-  provides :rest_resource_by_path
 end
 
 describe "rest_resource using query-based addressing" do
@@ -60,14 +54,14 @@ describe "rest_resource using query-based addressing" do
   end
 
   let(:provider) do
-    Chef::Provider::RestResource.new(resource, run_context).tap do |provider|
+    resource.provider_for_action(:configure).tap do |provider|
       provider.current_resource = resource # for some stubby tests that don't call LCR
       allow(provider).to receive(:api_connection).and_return(train)
     end
   end
 
   before(:each) do
-    allow(Chef::Provider::RestResource).to receive(:new).and_return(provider)
+    allow(Chef::Provider).to receive(:new).and_return(provider)
   end
 
   it "should include :configure action" do
@@ -311,14 +305,14 @@ describe "rest_resource using path-based addressing" do
   end
 
   let(:provider) do
-    RestProviderByQuery.new(resource, run_context).tap do |provider|
+    resource.provider_for_action(:configure).tap do |provider|
       provider.current_resource = resource # for some stubby tests that don't call LCR
       allow(provider).to receive(:api_connection).and_return(train)
     end
   end
 
   before(:each) do
-    allow(Chef::Provider::RestResource).to receive(:new).and_return(provider)
+    allow(Chef::Provider).to receive(:new).and_return(provider)
   end
 
   describe "#rest_url_document" do
