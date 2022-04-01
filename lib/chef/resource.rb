@@ -1499,7 +1499,11 @@ class Chef
     #
     def self.use(partial)
       if partial =~ /^core::(.*)/
-        class_eval IO.read(::File.expand_path("resource/core_partials/#{$1}.rb", __dir__))
+        partial = $1
+        dirname = ::File.dirname(partial)
+        basename = ::File.basename(partial, ".rb")
+        basename = basename[1..] if basename.start_with?("_")
+        class_eval IO.read(::File.expand_path("resource/#{dirname}/_#{basename}.rb", __dir__))
       else
         dirname = ::File.dirname(partial)
         basename = ::File.basename(partial, ".rb")
