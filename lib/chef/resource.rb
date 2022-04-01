@@ -1498,10 +1498,18 @@ class Chef
     # @param partial [String] the code fragment to eval against the class
     #
     def self.use(partial)
-      dirname = ::File.dirname(partial)
-      basename = ::File.basename(partial, ".rb")
-      basename = basename[1..] if basename.start_with?("_")
-      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
+      if partial =~ /^core::(.*)/
+        partial = $1
+        dirname = ::File.dirname(partial)
+        basename = ::File.basename(partial, ".rb")
+        basename = basename[1..] if basename.start_with?("_")
+        class_eval IO.read(::File.expand_path("resource/#{dirname}/_#{basename}.rb", __dir__))
+      else
+        dirname = ::File.dirname(partial)
+        basename = ::File.basename(partial, ".rb")
+        basename = basename[1..] if basename.start_with?("_")
+        class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
+      end
     end
 
     # The cookbook in which this Resource was defined (if any).

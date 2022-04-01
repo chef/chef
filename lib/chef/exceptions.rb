@@ -561,5 +561,13 @@ class Chef
         super "before subscription from #{notification.resource} resource cannot be setup to #{notification.notifying_resource} resource, which has already fired while in unified mode"
       end
     end
+
+    class RestError < RuntimeError; end
+
+    class RestTargetError < RestError; end
+
+    class RestTimeout < RestError; end
+
+    class RestOperationFailed < RestError; end
   end
 end
