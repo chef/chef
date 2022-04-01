@@ -81,16 +81,16 @@ class Chef
 
       private
 
-      # 
+      #
       # Validate and return input boolean value in required format
       # @param bool [String, Integer, Boolean] Input boolean value in allowed formats
-      # 
+      #
       # @return [String] [description] Boolean value in required format
       def selinux_bool(bool)
-        if ['on', 'true', '1', true, 1].include?(bool)
-          'on'
-        elsif ['off', 'false', '0', false, 0].include?(bool)
-          'off'
+        if ["on", "true", "1", true, 1].include?(bool)
+          "on"
+        elsif ["off", "false", "0", false, 0].include?(bool)
+          "off"
         else
           raise ArgumentError, "selinux_bool: Invalid selinux boolean value #{bool}"
         end

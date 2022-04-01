@@ -18,13 +18,13 @@
 require "spec_helper"
 
 describe Chef::Resource::SelinuxFcontext do
-	let(:node) { Chef::Node.new }
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::SelinuxFcontext.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:manage) }
   let(:restoreconf) { double("shellout", stdout: "restorecon reset /var/www/html/index.html context unconfined_u:object_r:user_home_t:s0->unconfined_u:object_r:httpd_sys_content_t:s0") }
-  
+
   it "sets file_spec proprty as name_property" do
     expect(resource.file_spec).to eql("fakey_fakerton")
   end
@@ -42,14 +42,14 @@ describe Chef::Resource::SelinuxFcontext do
   end
 
   it "checks 'a', 'f', 'd', 'c', 'b', 's', 'l', 'p' as valid file_type property values" do
-    expect { resource.file_type 'a' }.not_to raise_error
-    expect { resource.file_type 'f' }.not_to raise_error
-    expect { resource.file_type 'd' }.not_to raise_error
-    expect { resource.file_type 'c' }.not_to raise_error
-    expect { resource.file_type 'b' }.not_to raise_error
-    expect { resource.file_type 's' }.not_to raise_error
-    expect { resource.file_type 'l' }.not_to raise_error
-    expect { resource.file_type 'p' }.not_to raise_error
+    expect { resource.file_type "a" }.not_to raise_error
+    expect { resource.file_type "f" }.not_to raise_error
+    expect { resource.file_type "d" }.not_to raise_error
+    expect { resource.file_type "c" }.not_to raise_error
+    expect { resource.file_type "b" }.not_to raise_error
+    expect { resource.file_type "s" }.not_to raise_error
+    expect { resource.file_type "l" }.not_to raise_error
+    expect { resource.file_type "p" }.not_to raise_error
   end
 
   it "sets default value for file_type property to 'a'" do

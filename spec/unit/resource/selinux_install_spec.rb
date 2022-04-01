@@ -18,7 +18,7 @@
 require "spec_helper"
 
 describe Chef::Resource::SelinuxInstall do
-	let(:node) { Chef::Node.new }
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::SelinuxInstall.new("fakey_fakerton", run_context) }
@@ -36,25 +36,25 @@ describe Chef::Resource::SelinuxInstall do
 
   it "sets default packages on 'rhel', 'fedora', 'amazon' platforms" do
     node.automatic_attrs[:platform_family] = "rhel"
-    expect(resource.packages).to eql(%w(make policycoreutils selinux-policy selinux-policy-targeted selinux-policy-devel libselinux-utils setools-console))
+    expect(resource.packages).to eql(%w{make policycoreutils selinux-policy selinux-policy-targeted selinux-policy-devel libselinux-utils setools-console})
   end
 
   it "sets default packages on debian irrespective of platform_version" do
     node.automatic_attrs[:platform_family] = "debian"
-    expect(resource.packages).to eql(%w(make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools))
+    expect(resource.packages).to eql(%w{make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools})
   end
 
   it "sets default packages on ubuntu 18.04 platforms" do
     node.automatic_attrs[:platform_family] = "debian"
     node.automatic_attrs[:platform] = "ubuntu"
     node.automatic_attrs[:platform_version] = 18.04
-    expect(resource.packages).to eql(%w(make policycoreutils selinux selinux-basics selinux-policy-default selinux-policy-dev auditd setools))
+    expect(resource.packages).to eql(%w{make policycoreutils selinux selinux-basics selinux-policy-default selinux-policy-dev auditd setools})
   end
 
   it "sets default packages on ubuntu platforms and versions other than 18.04" do
     node.automatic_attrs[:platform_family] = "debian"
     node.automatic_attrs[:platform] = "ubuntu"
     node.automatic_attrs[:platform_version] = 20.04
-    expect(resource.packages).to eql(%w(make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools))
+    expect(resource.packages).to eql(%w{make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools})
   end
 end

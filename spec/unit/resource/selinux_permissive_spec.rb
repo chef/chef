@@ -18,7 +18,7 @@
 require "spec_helper"
 
 describe Chef::Resource::SelinuxPermissive do
-	let(:node) { Chef::Node.new }
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::SelinuxPermissive.new("fakey_fakerton", run_context) }
@@ -27,7 +27,7 @@ describe Chef::Resource::SelinuxPermissive do
   it "sets context property as name_property" do
     expect(resource.context).to eql("fakey_fakerton")
   end
-  
+
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
   end

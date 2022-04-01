@@ -44,9 +44,9 @@ class Chef
       action_class do
         def do_package_action(action)
           # friendly message for unsupported platforms
-          raise "The platform #{node['platform']} is not currently supported by the `selinux_install` resource. Please file an issue at https://github.com/sous-chefs/selinux/issues/new with details on the platform this cookbook is running on." if new_resource.packages.nil?
+          raise "The platform #{node["platform"]} is not currently supported by the `selinux_install` resource. Please file an issue at https://github.com/sous-chefs/selinux/issues/new with details on the platform this cookbook is running on." if new_resource.packages.nil?
 
-          package 'selinux' do
+          package "selinux" do
             package_name new_resource.packages
             action action
           end
@@ -56,10 +56,10 @@ class Chef
       action :install do
         do_package_action(action)
 
-        directory '/etc/selinux' do
-          owner 'root'
-          group 'root'
-          mode '0755'
+        directory "/etc/selinux" do
+          owner "root"
+          group "root"
+          mode "0755"
           action :create
         end
       end
@@ -68,21 +68,21 @@ class Chef
         action a do
           do_package_action(a)
         end
-      end  
+      end
 
       private
 
-      # 
+      #
       # Get an array of packages to be installed based upon node platform_family
-      # 
-      # @return [Array] Array of string of package names     
+      #
+      # @return [Array] Array of string of package names
       def default_install_packages
-        case node['platform_family']
-        when 'rhel', 'fedora', 'amazon'
+        case node["platform_family"]
+        when "rhel", "fedora", "amazon"
           %w{make policycoreutils selinux-policy selinux-policy-targeted selinux-policy-devel libselinux-utils setools-console}
-        when 'debian'
-          if node['platform'] == 'ubuntu'
-            if node['platform_version'].to_f == 18.04
+        when "debian"
+          if node["platform"] == "ubuntu"
+            if node["platform_version"].to_f == 18.04
               %w{make policycoreutils selinux selinux-basics selinux-policy-default selinux-policy-dev auditd setools}
             else
               %w{make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools}
@@ -91,7 +91,7 @@ class Chef
             %w{make policycoreutils selinux-basics selinux-policy-default selinux-policy-dev auditd setools}
           end
         end
-      end  
+      end
     end
   end
 end

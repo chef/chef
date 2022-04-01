@@ -18,7 +18,7 @@
 require "spec_helper"
 
 describe Chef::Resource::SelinuxPort do
-	let(:node) { Chef::Node.new }
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::SelinuxPort.new("5678", run_context) }
@@ -27,7 +27,7 @@ describe Chef::Resource::SelinuxPort do
   it "sets port property as name_property" do
     expect(resource.port).to eql("5678")
   end
-  
+
   it "sets the default action as :manage" do
     expect(resource.action).to eql([:manage])
   end

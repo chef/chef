@@ -18,7 +18,7 @@
 require "spec_helper"
 
 describe Chef::Resource::SelinuxBoolean do
-	let(:node) { Chef::Node.new }
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::SelinuxBoolean.new("fakey_fakerton", run_context) }
@@ -26,7 +26,7 @@ describe Chef::Resource::SelinuxBoolean do
   let(:selinux_state) { double("shellout!", stdout: "permissive") }
 
   it "sets boolean proprty as name_property" do
-  	expect(resource.boolean).to eql("fakey_fakerton")
+    expect(resource.boolean).to eql("fakey_fakerton")
   end
 
   it "sets the default action as :set" do
@@ -38,55 +38,55 @@ describe Chef::Resource::SelinuxBoolean do
   end
 
   context "coercing value property" do
-  	it "should set value properly to 'on' when valid parameter is sent and is literal positive" do
-  		resource.value = 1
-  		expect(resource.value).to eql("on")
+    it "should set value properly to 'on' when valid parameter is sent and is literal positive" do
+      resource.value = 1
+      expect(resource.value).to eql("on")
 
-  		resource.value = "true"
-  		expect(resource.value).to eql("on")
+      resource.value = "true"
+      expect(resource.value).to eql("on")
 
-  		resource.value = true
-  		expect(resource.value).to eql("on")
-  	end
+      resource.value = true
+      expect(resource.value).to eql("on")
+    end
 
-  	it "should set value properly to 'off' when valid parameter is sent and is literal negative" do
-  		resource.value = 0
-  		expect(resource.value).to eql("off")
+    it "should set value properly to 'off' when valid parameter is sent and is literal negative" do
+      resource.value = 0
+      expect(resource.value).to eql("off")
 
-  		resource.value = "false"
-  		expect(resource.value).to eql("off")
+      resource.value = "false"
+      expect(resource.value).to eql("off")
 
-  		resource.value = false
-  		expect(resource.value).to eql("off")
-  	end
+      resource.value = false
+      expect(resource.value).to eql("off")
+    end
 
-  	it "should raise an exception if invalid parameter is sent" do
-  		expect do
-  			resource.value = "ON"
-  		end.to raise_error(ArgumentError)
-  	end
+    it "should raise an exception if invalid parameter is sent" do
+      expect do
+        resource.value = "ON"
+      end.to raise_error(ArgumentError)
+    end
   end
 
   describe "#Chef::SELinux::CommonHelpers" do
-  	context "#selinux_permissive?" do
-	  	it "should return true if selinux_state is :permissive" do
-	  		allow(provider).to receive(:shell_out!).and_return(selinux_state)
-	  		expect(provider.selinux_permissive?).to eql(true)
-	  	end
-	  end
+    context "#selinux_permissive?" do
+      it "should return true if selinux_state is :permissive" do
+        allow(provider).to receive(:shell_out!).and_return(selinux_state)
+        expect(provider.selinux_permissive?).to eql(true)
+      end
+    end
 
-  	context "#selinux_disabled?" do
-  		it "should return false if selinux_state is :permissive" do
-  			allow(provider).to receive(:shell_out!).and_return(selinux_state)
-	  		expect(provider.selinux_disabled?).to eql(false)
-  		end
-  	end
+    context "#selinux_disabled?" do
+      it "should return false if selinux_state is :permissive" do
+        allow(provider).to receive(:shell_out!).and_return(selinux_state)
+        expect(provider.selinux_disabled?).to eql(false)
+      end
+    end
 
-  	context "#selinux_enforcing?" do
-  		it "should return false if selinux_state is :permissive" do
-  			allow(provider).to receive(:shell_out!).and_return(selinux_state)
-	  		expect(provider.selinux_enforcing?).to eql(false)
-  		end
-  	end
+    context "#selinux_enforcing?" do
+      it "should return false if selinux_state is :permissive" do
+        allow(provider).to receive(:shell_out!).and_return(selinux_state)
+        expect(provider.selinux_enforcing?).to eql(false)
+      end
+    end
   end
 end

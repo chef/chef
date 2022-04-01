@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::Resource::SelinuxModule do
-	let(:node) { Chef::Node.new }
+  let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::SelinuxModule.new("fakey_fakerton", run_context) }

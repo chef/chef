@@ -58,13 +58,13 @@ class Chef
           Chef::Log.warn("It is advised to set the configuration first to permissive to relabel the filesystem prior to enforcing.") if selinux_disabled? && action == :enforcing
 
           unless new_resource.automatic_reboot
-            Chef::Log.warn("Changes from disabled require a reboot.") if selinux_disabled? && %i(enforcing permissive).include?(action)
+            Chef::Log.warn("Changes from disabled require a reboot.") if selinux_disabled? && %i{enforcing permissive}.include?(action)
             Chef::Log.warn("Disabling selinux requires a reboot.") if (selinux_enforcing? || selinux_permissive?) && action == :disabled
           end
 
           template "#{action} selinux config" do
             path new_resource.config_file
-            source debian? ? ::File.expand_path("selinux/selinux_debian.erb", __dir__) :  ::File.expand_path("selinux/selinux_default.erb", __dir__)
+            source debian? ? ::File.expand_path("selinux/selinux_debian.erb", __dir__) : ::File.expand_path("selinux/selinux_default.erb", __dir__)
             local true
             variables(
               selinux: action.to_s,
@@ -90,26 +90,34 @@ class Chef
       end
 
       action :enforcing do
-        execute "selinux-setenforce-enforcing" do
-          command "/usr/sbin/setenforce 1"
-        end unless selinux_disabled? || selinux_enforcing?
+        unless selinux_disabled? || selinux_enforcing?
+          execute "selinux-setenforce-enforcing" do
+            command "/usr/sbin/setenforce 1"
+          end
+        end
 
-        execute "debian-selinux-activate" do
-          command "/usr/sbin/selinux-activate"
-        end if selinux_activate_required?
+        if selinux_activate_required?
+          execute "debian-selinux-activate" do
+            command "/usr/sbin/selinux-activate"
+          end
+        end
 
         render_selinux_template(action) if new_resource.persistent
         node_selinux_restart if state_change_reboot_required?
       end
 
       action :permissive do
-        execute "selinux-setenforce-permissive" do
-          command "/usr/sbin/setenforce 0"
-        end unless selinux_disabled? || selinux_permissive?
+        unless selinux_disabled? || selinux_permissive?
+          execute "selinux-setenforce-permissive" do
+            command "/usr/sbin/setenforce 0"
+          end
+        end
 
-        execute "debian-selinux-activate" do
-          command "/usr/sbin/selinux-activate"
-        end if selinux_activate_required?
+        if selinux_activate_required?
+          execute "debian-selinux-activate" do
+            command "/usr/sbin/selinux-activate"
+          end
+        end
 
         render_selinux_template(action) if new_resource.persistent
         node_selinux_restart if state_change_reboot_required?
@@ -123,16 +131,17 @@ class Chef
       end
 
       private
-      # 
+
+      #
       # Decide default policy platform based upon platform_family
-      # 
-      # @return [String] Policy platform name     
+      #
+      # @return [String] Policy platform name
       def default_policy_platform
-        case node['platform_family']
-        when 'rhel', 'fedora', 'amazon'
-          'targeted'
-        when 'debian'
-          'default'
+        case node["platform_family"]
+        when "rhel", "fedora", "amazon"
+          "targeted"
+        when "debian"
+          "default"
         end
       end
     end
