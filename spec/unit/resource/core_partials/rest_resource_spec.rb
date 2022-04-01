@@ -89,7 +89,7 @@ describe "rest_resource using query-based addressing" do
   end
 
   it "should mixin RestResourceDSL" do
-    expect(resource.class.included_modules).to include(Chef::DSL::RestResource)
+    expect(resource.class.ancestors).to include(Chef::DSL::RestResource)
   end
 
   describe "#rest_postprocess" do

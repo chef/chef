@@ -2,7 +2,7 @@ require "rest-client" unless defined?(RestClient)
 require "jmespath" unless defined?(JMESPath)
 require "chef/dsl/rest_resource" unless defined?(Chef::DSL::RestResource)
 
-include Chef::DSL::RestResource
+extend Chef::DSL::RestResource
 
 action_class do
   def load_current_resource
