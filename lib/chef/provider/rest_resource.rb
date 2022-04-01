@@ -1,4 +1,6 @@
 require_relative "../provider"
+require "rest-client" unless defined?(RestClient)
+require "jmespath" unless defined?(JMESPath)
 
 class Chef
   class Provider
@@ -13,9 +15,9 @@ class Chef
           current_resource.send(name, requested)
         end
 
-        return @current_resource if rest_get_all.empty?
+        return @current_resource if rest_get_all.data.empty?
 
-        resource_data = rest_get
+        resource_data = rest_get.data rescue nil
         return @current_resource if resource_data.nil? || resource_data.empty?
 
         @resource_exists = true
@@ -23,33 +25,48 @@ class Chef
         # Map JSON contents to defined properties
         current_resource.class.rest_property_map.each do |property, match_instruction|
           property_value = json_to_property(match_instruction, property, resource_data)
-
           current_resource.send(property, property_value) unless property_value.nil?
         end
 
         current_resource
       end
 
-      def action_configure
-        converge_if_changed do
-          data = {}
+      action :configure do
+        if resource_exists?
+          converge_if_changed do
+            data = {}
 
-          new_resource.class.rest_property_map.each do |property, match_instruction|
-            # Skip "creation-only" properties on modifications
-            next if resource_exists? && new_resource.class.rest_post_only_properties.include?(property)
+            new_resource.class.rest_property_map.each do |property, match_instruction|
+              # Skip "creation-only" properties on modifications
+              next if new_resource.class.rest_post_only_properties.include?(property)
 
-            deep_merge! data, property_to_json(property, match_instruction)
+              deep_merge! data, property_to_json(property, match_instruction)
+            end
+
+            deep_compact!(data)
+
+            rest_patch(data)
           end
+        else
+          converge_by "creating resource" do
+            data = {}
 
-          deep_compact!(data)
+            new_resource.class.rest_property_map.each do |property, match_instruction|
+              deep_merge! data, property_to_json(property, match_instruction)
+            end
 
-          @resource_exists ? rest_patch(data) : rest_post(data)
+            deep_compact!(data)
+
+            rest_post(data)
+          end
         end
       end
 
-      def action_delete
+      action :delete do
         if resource_exists?
-          rest_delete
+          converge_by "deleting resource" do
+            rest_delete
+          end
         else
           logger.debug format("REST resource %<name>s of type %<type>s does not exist. Skipping.",
                               type: new_resource.name, name: id_property)
