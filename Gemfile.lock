@@ -226,8 +226,8 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
+    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x64-unknown)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
@@ -300,9 +300,9 @@ GEM
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.5)
+    mixlib-shellout (3.2.6)
       chef-utils
-    mixlib-shellout (3.2.5-universal-mingw32)
+    mixlib-shellout (3.2.6-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
