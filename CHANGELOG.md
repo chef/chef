@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.86 -->
-## [v18.0.86](https://github.com/chef/chef/tree/v18.0.86) (2022-04-01)
+<!-- latest_release 18.0.87 -->
+## [v18.0.87](https://github.com/chef/chef/tree/v18.0.87) (2022-04-05)
 
 #### Merged Pull Requests
-- Rest Resource Support [#12755](https://github.com/chef/chef/pull/12755) ([lamont-granquist](https://github.com/lamont-granquist))
+- Updating gemfile.locks [#12751](https://github.com/chef/chef/pull/12751) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating gemfile.locks [#12751](https://github.com/chef/chef/pull/12751) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.87 -->
 - Rest Resource Support [#12755](https://github.com/chef/chef/pull/12755) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.86 -->
 - Bump omnibus-software in Gemfile.lock [#12754](https://github.com/chef/chef/pull/12754) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 18.0.85 -->
 - Bump libxslt to 1.1.35 [#12752](https://github.com/chef/chef/pull/12752) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 18.0.84 -->
