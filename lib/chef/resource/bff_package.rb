@@ -22,7 +22,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :bff_package
 

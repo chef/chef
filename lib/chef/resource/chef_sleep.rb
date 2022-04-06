@@ -22,8 +22,6 @@ class Chef
     class ChefSleep < Chef::Resource
       provides :chef_sleep
 
-      unified_mode true
-
       description "Use the **chef_sleep** resource to pause (sleep) for a number of seconds during a #{ChefUtils::Dist::Infra::PRODUCT} run. Only use this resource when a command or service exits successfully but is not ready for the next step in a recipe."
       introduced "15.5"
       examples <<~DOC
@@ -47,7 +45,7 @@ class Chef
         service 'Service that is slow to start and reports as started' do
           service_name 'my_database'
           action :start
-          notifies :sleep, chef_sleep['wait for service start']
+          notifies :sleep, 'chef_sleep[wait for service start]'
         end
 
         chef_sleep 'wait for service start' do

@@ -19,7 +19,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDefender < Chef::Resource
-      unified_mode true
       provides :windows_defender
 
       description "Use the **windows_defender** resource to enable or disable the Microsoft Windows Defender service."

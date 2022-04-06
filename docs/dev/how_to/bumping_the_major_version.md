@@ -12,50 +12,63 @@ Chef consumes Ohai from GitHub as both a runtime dependency and a testing depend
 
     - Example config change commit: https://github.com/chef/ohai/commit/1ad8c5946606a7f08ffb841e3682ae2d4991077f
 
-2. On your local machine fork the current master branch to a new stable branch. For example: `git checkout -b 16-stable`.
+2. Edit all the GitHub action workflows in .github/workflows/ to point to your new stable branch
 
-3. Push the branch `git push --set-upstream origin 16-stable`
+3. On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b 16-stable`.
 
-### Bump Ohai master to the new major version
+4. Push the branch `git push --set-upstream origin 16-stable`
 
-Starting from the master branch create a PR which:
+### Bump Ohai main to the new major version
+
+Starting from the main branch create a PR which:
 
 - Edits the `VERSION` file in the root of the repository to the new major release
 - Updates the `chef-config` and `chef-utils` dependencies to allow for the new major release of Chef Infra in `ohai.gemspec`
-- Update the `chef-config` and `chef-utils` deps in the Gemfile to point the the yet to be created chef-XYZ stable branch in the `chef/chef` repo. Note: This is going to fail for now. We have to start somewhere.
 
 ## Update chef/chef
 
-### Prep master branch for forking
+### Prep main branch for forking
 
-- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for master to match the new planned major version and add a constraint for the new stable version / branch
+- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch.
+- In .github/dependabot.yml add an entry for your new stable branch
 
-### Fork Chef master to a stable branch
+### Fork Chef main to a stable branch
 
-Before bumping the major version of Chef Infra we want to fork off the current master to a new stable branch, which will be used to build hotfix releases. We support the N-1 version of Chef Infra Client for a year after the release of a new major version. For example Chef Infra Client 16 was released in April 2020, at which point Chef Infra Client 15 became the N-1 release. Chef Infra Client 15 will then be maintained with critical bug and security fixes until April 2021.
+Before bumping the major version of Chef Infra we want to fork off the current main to a new stable branch, which will be used to build hotfix releases. We support the N-1 version of Chef Infra Client for a year after the release of a new major version. For example Chef Infra Client 17 was released in April 2021, at which point Chef Infra Client 16 became the N-1 release. Chef Infra Client 16 will then be maintained with critical bug and security fixes until April 2022.
 
-On your local machine fork the current master branch to a new stable branch. For example: `git checkout -b chef-15` and `git push --set-upstream origin chef-15`, which can then be pushed up to GitHub.
+On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b chef-17` and `git push --set-upstream origin chef-17`, which can then be pushed up to GitHub.
 
 ### Create a branch to fixup your new stable branch for release
 
-Once you've forked to a new stable branch such as `chef-15` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
+Once you've forked to a new stable branch such as `chef-17` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
 
-- In ./expeditor/config.yml remove all the update_dep.sh subscriptions which don't work against stable branches.
-- In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to master.
+- In ./expeditor/config.yml remove the update_dep.sh subscriptions which don't work against stable branches such as chefstyle and ohai.
+- In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to main.
 - In kitchen-tests/Gemfile update the Ohai branch to point to the new Ohai stable
 - In kitchen-tests/kitchen.yml update chef_version to be your new stable version and not current. Ex: 15
 - In tasks/bin/run_external_test update the ohai branch to point to your new stable ohai branch
 - In Gemfile set ohai to pull from the ohai stable branch
-- Run `rake dependencies:update`
+- In Gemfile set cheffish to match the stable release of chef
+- In knife/Gemfile set ohai to pull from the ohai stable branch
+- In tasks/bin/run_external_test set ohai to pull from the ohai stable branch
+- Update .github/dependabot.yml with the new branch
+- Create a new release notes wiki page for the stable version. See https://github.com/chef/chef/wiki/Pending-Release-Notes-17
+- Update release notes publishing script to us the new stable branch. See branch names here: https://github.com/chef/chef/blob/e0ccaa0f5c7fc05f8ad8ce05295f48e5c48a6695/.expeditor/publish-release-notes.sh
+- Run `rake dependencies:update` to generate a new gemfile.lock
 
 Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
-Note: Make sure you're making this PR against the new stable branch and not master!
+Note: Make sure you're making this PR against the new stable branch and not main!
 
-## Bump master for the new major release
+## Bump main for the new major release
 
 Create a PR that performs the following:
 
 - Update the version in the VERSION file
-- Update chef.gemspec to point to the new ohai major release
+- Update `chef.gemspec` and `knife.gemspec` to point to the new ohai major release
 - run `rake dependencies:update`
+
+## Update Ohai stable for the Chef stable branch
+
+- In the ohai repo checkout the stable branch
+- Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.

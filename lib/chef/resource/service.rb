@@ -27,7 +27,6 @@ class Chef
     class Service < Chef::Resource
       include Chef::Platform::ServiceHelpers
       extend Chef::Platform::ServiceHelpers
-      unified_mode true
 
       provides :service, target_mode: true
 

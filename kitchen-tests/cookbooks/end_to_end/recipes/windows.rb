@@ -180,7 +180,6 @@ end
 include_recipe "::_habitat_win_config"
 include_recipe "::_habitat_win_package"
 include_recipe "::_habitat_win_service"
-include_recipe "::_habitat_win_sup_toml_config"
 include_recipe "::_habitat_win_sup"
 include_recipe "::_habitat_win_user_toml"
 include_recipe "::_windows_printer"
@@ -189,6 +188,10 @@ include_recipe "::_windows_defender"
 windows_update_settings "Disable Windows Update" do
   block_windows_update_website true
   disable_automatic_updates true
+end
+
+windows_feature_powershell "RSAT-AD-PowerShell" do
+  action :install
 end
 
 include_recipe "::_chef_gem"

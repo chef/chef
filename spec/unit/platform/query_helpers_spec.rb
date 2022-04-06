@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe "Chef::Platform#supports_dsc_invoke_resource?" do
+describe "Chef::Platform#supports_dsc_invoke_resource?", :windows_only do
   it "returns false if powershell is not present" do
     node = Chef::Node.new
     expect(Chef::Platform.supports_dsc_invoke_resource?(node)).to be_falsey
@@ -39,25 +39,14 @@ describe "Chef::Platform#supports_dsc_invoke_resource?" do
   end
 end
 
-describe "Chef::Platform#dsc_refresh_mode_disabled?" do
+describe "Chef::Platform#dsc_refresh_mode_disabled?", :windows_only do
   let(:node) { instance_double("Chef::Node") }
-  let(:powershell) { instance_double("Chef::PowerShell") }
+  let(:powershell) { Class.new { include ChefPowerShell::ChefPowerShellModule::PowerShellExec } }
+  subject(:object) { powershell.new }
 
   it "returns true when RefreshMode is Disabled" do
-    expect(Chef::PowerShell).to receive(:new)
-      .with("Get-DscLocalConfigurationManager")
-      .and_return(powershell)
-    expect(powershell).to receive(:error!)
-    expect(powershell).to receive(:result).and_return({ "RefreshMode" => "Disabled" })
-    expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be true
-  end
-
-  it "returns false when RefreshMode is not Disabled" do
-    expect(Chef::PowerShell).to receive(:new)
-      .with("Get-DscLocalConfigurationManager")
-      .and_return(powershell)
-    expect(powershell).to receive(:error!)
-    expect(powershell).to receive(:result).and_return({ "RefreshMode" => "LaLaLa" })
+    execution = object.powershell_exec("Get-DscLocalConfigurationManager", :powershell, timeout: -1)
+    expect(execution.result["RefreshMode"]).to eq "PUSH"
     expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false
   end
 end

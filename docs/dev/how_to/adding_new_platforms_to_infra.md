@@ -16,13 +16,13 @@ For major new Linux or Windows distribution releases, you'll want to add these t
 
 Note: Windows builds can't be built on DockerHub and have to be pushed manually from your workstation instead.
 
-Once you've added the distro to RubyDistros and the image is pushed to DockerHub, you can add that new distro to the `chef/chef` [verify.pipeline.yml](https://github.com/chef/chef/blob/master/.expeditor/verify.pipeline.yml).
+Once you've added the distro to RubyDistros and the image is pushed to DockerHub, you can add that new distro to the `chef/chef` [verify.pipeline.yml](https://github.com/chef/chef/blob/main/.expeditor/verify.pipeline.yml).
 
 #### Kitchen Dokken Images
 
 We utilize the kitchen-dokken Test Kitchen plugin to test the contents of `chef/chef` against various Linux distributions. This works best when run against containers that look more like VMs and less like slim containers. The [dokken-images](https://github.com/test-kitchen/dokken-images) repository defines many Docker images for common Linux distributions. These are all based on the official distro Docker images but contain additional packages to make them behave more like full systems.
 
-Similar to the RubyDistros setup, these are defined in GitHub and built-in DockerHub. You'll need to be a member of the [dokken DockerHub organization](https://hub.docker.com/orgs/dokken). If you don't have access to that please ask #releng-support to add you. Once you've added a distro to the GitHub repo you can add a new repository to that DockerHub Organization. Make sure to copy the automated builds settings and specify the correct path to the Dockerfile. Once that is complete and the image is pushed to DockerHub you can add the new test to `chef/chef`. You'll need to edit the [kitchen-test/kitchen.yml](https://github.com/chef/chef/blob/master/kitchen-tests/kitchen.yml) file and then add that new platform to the [verify.pipeline.yml](https://github.com/chef/chef/blob/master/.expeditor/verify.pipeline.yml) config.
+Similar to the RubyDistros setup, these are defined in GitHub and built-in DockerHub. You'll need to be a member of the [dokken DockerHub organization](https://hub.docker.com/orgs/dokken). If you don't have access to that please ask #releng-support to add you. Once you've added a distro to the GitHub repo you can add a new repository to that DockerHub Organization. Make sure to copy the automated builds settings and specify the correct path to the Dockerfile. Once that is complete and the image is pushed to DockerHub you can add the new test to `chef/chef`. You'll need to edit the [kitchen-test/kitchen.yml](https://github.com/chef/chef/blob/main/kitchen-tests/kitchen.yml) file and then add that new platform to the [verify.pipeline.yml](https://github.com/chef/chef/blob/main/.expeditor/verify.pipeline.yml) config.
 
 #### Azure Pipelines tests
 
@@ -40,17 +40,17 @@ With builds in place, we also want to make sure we support this new platform wit
 
 #### chef-utils
 
-chef-utils provides a large number of helpers for making cookbook authoring simpler. One of the most useful sets of helpers is helpers for platforms and platform families, which will need to be updated if we added new distros. Make sure new platform are supported in `platform.rb` / `platform_family.rb` files in [chef-utils/lib/chef-utils/dsl](https://github.com/chef/chef/tree/master/chef-utils/lib/chef-utils/dsl). In order to test these changes you'll most likely need to update the Fauxhai data. See the section below for instructions on updating that data.
+chef-utils provides a large number of helpers for making cookbook authoring simpler. One of the most useful sets of helpers is helpers for platforms and platform families, which will need to be updated if we added new distros. Make sure new platform are supported in `platform.rb` / `platform_family.rb` files in [chef-utils/lib/chef-utils/dsl](https://github.com/chef/chef/tree/main/chef-utils/lib/chef-utils/dsl). In order to test these changes you'll most likely need to update the Fauxhai data. See the section below for instructions on updating that data.
 
 #### Ohai
 
-Ohai powers all system configuration detection for Chef Infra Client. New distributions have pretty far-reaching impacts on Ohai and should be evaluated carefully. The most basic task when adding a new distro is to make sure that the platform is properly mapped to the appropriate platform_family value. On Linux systems this is performed in the [Linux Platform Plugin](https://github.com/chef/ohai/blob/master/lib/ohai/plugins/linux/platform.rb).
+Ohai powers all system configuration detection for Chef Infra Client. New distributions have pretty far-reaching impacts on Ohai and should be evaluated carefully. The most basic task when adding a new distro is to make sure that the platform is properly mapped to the appropriate platform_family value. On Linux systems this is performed in the [Linux Platform Plugin](https://github.com/chef/ohai/blob/main/lib/ohai/plugins/linux/platform.rb).
 
 ## Additional Ecosystem Updates
 
 ### Bento Boxes
 
-Bento boxes are used by the kitchen-vagrant driver by customers for cookbook testing. When we add a new platform we need to make sure that customers can use it in their testing processes. The [bento repository](https://github.com/chef/bento/) contains packer templates for each platform / platform version, a [builds.yml](https://github.com/chef/bento/blob/master/builds.yml) file which defines the systems to build, and a ruby application which helps with building systems. Bento boxes are generally build for VirtualBox, VMware Fusion, Parallels Desktop, and Hyper-V so you will need both a macOS and Windows system to build all the systems. Once this is complete you can use the `bento upload` command to push these to Vagrant Cloud. You'll need to be added to the Bento Vagrant Cloud org, which #releng-support can assist you with.
+Bento boxes are used by the kitchen-vagrant driver by customers for cookbook testing. When we add a new platform we need to make sure that customers can use it in their testing processes. The [bento repository](https://github.com/chef/bento/) contains packer templates for each platform / platform version, a [builds.yml](https://github.com/chef/bento/blob/main/builds.yml) file which defines the systems to build, and a ruby application which helps with building systems. Bento boxes are generally build for VirtualBox, VMware Fusion, Parallels Desktop, and Hyper-V so you will need both a macOS and Windows system to build all the systems. Once this is complete you can use the `bento upload` command to push these to Vagrant Cloud. You'll need to be added to the Bento Vagrant Cloud org, which #releng-support can assist you with.
 
 ### Fauxhai Dumps
 

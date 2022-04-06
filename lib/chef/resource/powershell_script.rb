@@ -20,7 +20,6 @@ require_relative "windows_script"
 class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
-      unified_mode true
 
       set_guard_inherited_attributes(:interpreter)
 

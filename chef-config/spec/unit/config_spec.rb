@@ -19,6 +19,7 @@
 
 require "spec_helper"
 require "chef-config/config"
+require "date" unless defined?(Date)
 
 RSpec.describe ChefConfig::Config do
   before(:each) do
@@ -280,6 +281,14 @@ RSpec.describe ChefConfig::Config do
 
       it "etc_chef_dir is C:\\chef" do
         expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      end
+    end
+
+    context "when calling etc_chef_dir multiple times" do
+      it "should not recalculate path for every call" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: false)).to eql("/etc/#{dirname}")
+        expect(ChefConfig::PathHelper).not_to receive(:cleanpath)
+        expect(ChefConfig::Config.etc_chef_dir(windows: false)).to eql("/etc/#{dirname}")
       end
     end
   end

@@ -101,7 +101,7 @@ class Chef
       # and cookbook_name are required this is probably not externally useful.
       #
       def self.from_yaml(events, string, path = nil, cookbook_name = nil)
-        from_hash(events, YAML.load(string), path, cookbook_name)
+        from_hash(events, YAML.safe_load(string, permitted_classes: [Date]), path, cookbook_name)
       end
 
       # @param filename [String] full path to the yml file in the cookbook

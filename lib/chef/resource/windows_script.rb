@@ -24,8 +24,6 @@ class Chef
     class WindowsScript < Chef::Resource::Script
       include Chef::Mixin::WindowsArchitectureHelper
 
-      unified_mode true
-
       # This is an abstract resource meant to be subclasses; thus no 'provides'
 
       set_guard_inherited_attributes(:architecture)

@@ -48,7 +48,7 @@ class Chef
           if user_plist
             current_resource.uid(user_plist[:uid][0])
             current_resource.gid(user_plist[:gid][0])
-            current_resource.home(user_plist[:home][0])
+            current_resource.home(user_plist[:home]&.first) # use &.first since home can be nil
             current_resource.shell(user_plist[:shell]&.first) # use &.first since shell can be nil
             current_resource.comment(user_plist[:comment][0])
 
@@ -339,7 +339,7 @@ class Chef
         end
 
         def locked?
-          user_plist[:auth_authority].any? { |tag| tag == ";DisabledUser;" }
+          user_plist[:auth_authority].any?(";DisabledUser;")
         rescue
           false
         end
@@ -411,7 +411,7 @@ class Chef
         end
 
         def secure_token_enabled?
-          user_plist[:auth_authority].any? { |tag| tag == ";SecureToken;" }
+          user_plist[:auth_authority].any?(";SecureToken;")
         rescue
           false
         end
@@ -505,7 +505,7 @@ class Chef
         end
 
         def admin_user?
-          admin_group_plist[:group_members].any? { |mem| mem == user_plist[:guid][0] }
+          admin_group_plist[:group_members].any?(user_plist[:guid][0])
         rescue
           false
         end

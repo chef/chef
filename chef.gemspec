@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
+  s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
@@ -35,14 +36,15 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
-  s.add_dependency "ohai", "~> 17.0"
+  s.add_dependency "ohai", "~> 18.0"
   s.add_dependency "inspec-core", "~> 4.23"
 
   s.add_dependency "ffi", ">= 1.5.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0" # remote_file resource
+  s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
-  s.add_dependency "diff-lcs", ">= 1.2.4", "< 1.4.0" # 1.4 breaks output. Used in lib/chef/util/diff
+  s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
   s.add_dependency "chef-zero", ">= 14.0.11"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
@@ -70,7 +72,7 @@ Gem::Specification.new do |s|
 
   s.metadata = {
     "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
-    "changelog_uri"     => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
+    "changelog_uri"     => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
     "documentation_uri" => "https://docs.chef.io/",
     "homepage_uri"      => "https://www.chef.io",
     "mailing_list_uri"  => "https://discourse.chef.io/",

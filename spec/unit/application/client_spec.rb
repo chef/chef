@@ -564,16 +564,6 @@ describe Chef::Application::Client, "run_application", :unix_only do
         expect(IO.select([@pipe[0]], nil, nil, 0)).not_to be_nil
         expect(@pipe[0].gets).to eq("finished\n")
       end
-
-      it "should exit hard when sent before converge" do
-        pid = fork do
-          sleep 3
-          @app.run_application
-        end
-        Process.kill("TERM", pid)
-        _pid, result = Process.waitpid2(pid)
-        expect(result.exitstatus).to eq(3)
-      end
     end
   end
 

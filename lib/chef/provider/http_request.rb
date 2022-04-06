@@ -25,18 +25,20 @@ class Chef
 
       provides :http_request
 
-      attr_accessor :http
+      attr_writer :http
 
-      def load_current_resource
-        @http = Chef::HTTP::Simple.new(new_resource.url)
+      def http
+        @http ||= Chef::HTTP::Simple.new(new_resource.url)
       end
+
+      def load_current_resource; end
 
       # Send a HEAD request to new_resource.url
       action :head do
         message = check_message(new_resource.message)
         # CHEF-4762: we expect a nil return value from Chef::HTTP for a "200 Success" response
         # and false for a "304 Not Modified" response
-        modified = @http.head(
+        modified = http.head(
           (new_resource.url).to_s,
           new_resource.headers
         )
@@ -53,7 +55,7 @@ class Chef
         converge_by("#{new_resource} GET to #{new_resource.url}") do
 
           message = check_message(new_resource.message)
-          body = @http.get(
+          body = http.get(
             (new_resource.url).to_s,
             new_resource.headers
           )
@@ -66,7 +68,7 @@ class Chef
       action :patch do
         converge_by("#{new_resource} PATCH to #{new_resource.url}") do
           message = check_message(new_resource.message)
-          body = @http.patch(
+          body = http.patch(
             (new_resource.url).to_s,
             message,
             new_resource.headers
@@ -80,7 +82,7 @@ class Chef
       action :put do
         converge_by("#{new_resource} PUT to #{new_resource.url}") do
           message = check_message(new_resource.message)
-          body = @http.put(
+          body = http.put(
             (new_resource.url).to_s,
             message,
             new_resource.headers
@@ -94,7 +96,7 @@ class Chef
       action :post do
         converge_by("#{new_resource} POST to #{new_resource.url}") do
           message = check_message(new_resource.message)
-          body = @http.post(
+          body = http.post(
             (new_resource.url).to_s,
             message,
             new_resource.headers
@@ -107,7 +109,7 @@ class Chef
       # Send a DELETE request to new_resource.url
       action :delete do
         converge_by("#{new_resource} DELETE to #{new_resource.url}") do
-          body = @http.delete(
+          body = http.delete(
             (new_resource.url).to_s,
             new_resource.headers
           )

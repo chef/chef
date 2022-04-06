@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-unified_mode true
-
 default_action :sync
 allowed_actions :checkout, :export, :sync, :diff, :log
 

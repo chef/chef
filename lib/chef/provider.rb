@@ -35,7 +35,6 @@ class Chef
     attr_accessor :after_resource
     attr_accessor :run_context
 
-    attr_reader :recipe_name
     attr_reader :logger
 
     include Chef::Mixin::WhyRun
@@ -114,7 +113,7 @@ class Chef
       dirname = ::File.dirname(partial)
       basename = ::File.basename(partial, ".rb")
       basename = basename[1..] if basename.start_with?("_")
-      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.absolute_path)))
+      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
     end
 
     # delegate to the resource
@@ -172,6 +171,10 @@ class Chef
 
     def cookbook_name
       new_resource.cookbook_name
+    end
+
+    def recipe_name
+      new_resource.recipe_name
     end
 
     # hook that subclasses can use to do lazy validation for where properties aren't flexible enough
@@ -269,7 +272,7 @@ class Chef
     end
 
     def requirements
-      @requirements ||= ResourceRequirements.new(@new_resource, run_context)
+      @requirements ||= ResourceRequirements.new(@new_resource, run_context, action || new_resource.action)
     end
 
     def description(description = "NOT_PASSED")

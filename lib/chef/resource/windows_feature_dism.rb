@@ -22,7 +22,6 @@ require_relative "../platform/query_helpers"
 class Chef
   class Resource
     class WindowsFeatureDism < Chef::Resource
-      unified_mode true
 
       provides(:windows_feature_dism) { true }
 

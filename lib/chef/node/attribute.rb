@@ -452,17 +452,34 @@ class Chef
       # method-style access to attributes (has to come after the prepended ImmutablizeHash)
 
       def read(*path)
-        merged_attributes.read(*path)
+        if path[0].nil?
+          Chef::Log.warn "Calling node.read() without any path argument is very slow, probably a bug, and should be avoided"
+          merged_attributes.read(*path) # re-merges everything, slow edge case
+        else
+          self[path[0]] unless path[0].nil? # force deep_merge_cache key construction if necessary
+          deep_merge_cache.read(*path)
+        end
       end
 
       alias :dig :read
 
       def read!(*path)
-        merged_attributes.read!(*path)
+        if path[0].nil?
+          Chef::Log.warn "Calling node.read!() without any path argument is very slow, probably a bug, and should be avoided"
+          merged_attributes.read!(*path) # re-merges everything, slow edge case
+        else
+          self[path[0]] unless path[0].nil? # force deep_merge_cache key construction if necessary
+          deep_merge_cache.read!(*path)
+        end
       end
 
       def exist?(*path)
-        merged_attributes.exist?(*path)
+        if path[0].nil?
+          true
+        else
+          self[path[0]] unless path[0].nil? # force deep_merge_cache key construction if necessary
+          deep_merge_cache.exist?(*path)
+        end
       end
 
       def write(level, *args, &block)

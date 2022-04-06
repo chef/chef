@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class Launchd < Chef::Resource
-      unified_mode true
       provides :launchd
 
       description "Use the **launchd** resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
@@ -84,7 +83,7 @@ class Chef
                   end
 
           # Check to make sure that our array only has hashes
-          unless array.all? { |obj| obj.is_a?(Hash) }
+          unless array.all?(Hash)
             error_msg = "start_calendar_interval must be a single hash or an array of hashes!"
             raise Chef::Exceptions::ValidationFailed, error_msg
           end
@@ -98,7 +97,7 @@ class Chef
               raise Chef::Exceptions::ValidationFailed, error_msg
             end
 
-            unless entry.values.all? { |val| val.is_a?(Integer) }
+            unless entry.values.all?(Integer)
               failed_values = entry.values.reject { |val| val.is_a?(Integer) }.join(", ")
               error_msg = "Invalid value(s) (#{failed_values}) for start_calendar_interval item.  Values must be integers!"
               raise Chef::Exceptions::ValidationFailed, error_msg
@@ -237,9 +236,6 @@ class Chef
 
       property :time_out, Integer,
         description: "The amount of time (in seconds) a job may be idle before it times out. If no value is specified, the default timeout value for launchd will be used."
-
-      property :umask, Integer,
-        description: "A decimal value to pass to `umask` before running a job."
 
       property :username, String,
         description: "When launchd is run as the root user, the user to run the job as."

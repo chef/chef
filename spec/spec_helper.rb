@@ -78,9 +78,9 @@ require "spec/support/recipe_dsl_helper"
 # Excludes support/platforms by default
 # Do not change the gsub.
 Dir["spec/support/**/*.rb"]
-  .reject { |f| f =~ %r{^spec/support/platforms} }
-  .reject { |f| f =~ %r{^spec/support/pedant} }
-  .reject { |f| f =~ %r{^spec/support/shared/integration/knife_support} }
+  .grep_v(%r{^spec/support/platforms})
+  .grep_v(%r{^spec/support/pedant})
+  .grep_v(%r{^spec/support/shared/integration/knife_support})
   .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
   .each { |f| require f }
@@ -186,8 +186,6 @@ RSpec.configure do |config|
   config.filter_run_excluding not_rhel6: true if rhel6?
   config.filter_run_excluding not_rhel7: true if rhel7?
   config.filter_run_excluding not_intel_64bit: true if intel_64bit?
-
-  config.filter_run_excluding libarchive_loading_broken: true if aix? || amazon_linux? || rhel7?
 
   # these let us use chef: ">= 13" or ruby: "~> 2.0.0" or any other Gem::Dependency-style constraint
   config.filter_run_excluding chef: DependencyProc.with(Chef::VERSION)

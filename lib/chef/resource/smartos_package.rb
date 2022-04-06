@@ -21,7 +21,6 @@ require_relative "package"
 class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :smartos_package
       provides :package, platform_family: "smartos"

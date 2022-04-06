@@ -410,6 +410,9 @@ describe Chef::Provider::Package::Rubygems do
     # Rubygems uses these two interally
     allow(RbConfig::CONFIG).to receive(:[]).with("arch").and_call_original
     allow(RbConfig::CONFIG).to receive(:[]).with("ruby_install_name").and_call_original
+    allow(RbConfig::CONFIG).to receive(:[]).with("ruby_version").and_call_original
+    allow(RbConfig::CONFIG).to receive(:[]).with("rubylibprefix").and_call_original
+    allow(RbConfig::CONFIG).to receive(:[]).with("vendordir").and_call_original
     allow(File).to receive(:executable?).and_return false
     allow(File).to receive(:executable?).with("#{bindir}/gem").and_return true
     # XXX: we can't stub the provider object directly here because referencing it will create it and that

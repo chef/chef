@@ -1,4 +1,5 @@
 require "spec_helper"
+require "tmpdir"
 
 describe Chef::Compliance::Runner do
   let(:logger) { double(:logger).as_null_object }
@@ -216,6 +217,7 @@ describe Chef::Compliance::Runner do
       node.normal["audit"]["reporter"] = [ "chef-automate" ]
       reporter_double = double("reporter", validate_config!: nil)
       expect(runner).to receive(:reporter).with("chef-automate").and_return(reporter_double)
+      expect(runner).to receive(:reporter).with("cli").and_return(reporter_double)
       runner.load_and_validate!
     end
 
@@ -278,8 +280,67 @@ describe Chef::Compliance::Runner do
       inputs = runner.inspec_opts[:inputs]
 
       expect(inputs["tacos"]).to eq("lunch")
-      expect(inputs["chef_node"]["audit"]["reporter"]).to eq("cli")
+      expect(inputs["chef_node"]["audit"]["reporter"]).to eq(nil)
       expect(inputs["chef_node"]["chef_environment"]).to eq("_default")
+    end
+  end
+
+  describe "interval running" do
+    let(:tempdir) { Dir.mktmpdir("chef-compliance-tests") }
+
+    before do
+      allow(runner).to receive(:report_timing_file).and_return("#{tempdir}/report_timing.json")
+    end
+
+    it "is disabled by default" do
+      expect(runner.node["audit"]["interval"]["enabled"]).to be false
+    end
+
+    it "defaults to 24 hours / 1440 minutes" do
+      expect(runner.node["audit"]["interval"]["time"]).to be 1440
+    end
+
+    it "runs when the timing file does not exist" do
+      expect(runner).to receive(:report)
+      runner.report_with_interval
+    end
+
+    it "runs when the timing file does not exist and intervals are enabled" do
+      node.normal["audit"]["interval"]["enabled"] = true
+      expect(runner).to receive(:report)
+      runner.report_with_interval
+    end
+
+    it "runs when the timing file exists and has a recent timestamp" do
+      FileUtils.touch runner.report_timing_file
+      expect(runner).to receive(:report)
+      runner.report_with_interval
+    end
+
+    it "does not runs when the timing file exists and has a recent timestamp and intervals are enabled" do
+      node.normal["audit"]["interval"]["enabled"] = true
+      FileUtils.touch runner.report_timing_file
+      expect(runner).not_to receive(:report)
+      runner.report_with_interval
+    end
+
+    it "does not runs when the timing file exists and has a recent timestamp and intervals are enabled" do
+      node.normal["audit"]["interval"]["enabled"] = true
+      FileUtils.touch runner.report_timing_file
+      ten_minutes_ago = Time.now - 600
+      File.utime ten_minutes_ago, ten_minutes_ago, runner.report_timing_file
+      expect(runner).not_to receive(:report)
+      runner.report_with_interval
+    end
+
+    it "runs when the timing file exists and has a recent timestamp and intervals are enabled and the time is short" do
+      node.normal["audit"]["interval"]["enabled"] = true
+      node.normal["audit"]["interval"]["time"] = 9
+      FileUtils.touch runner.report_timing_file
+      ten_minutes_ago = Time.now - 600
+      File.utime ten_minutes_ago, ten_minutes_ago, runner.report_timing_file
+      expect(runner).to receive(:report)
+      runner.report_with_interval
     end
   end
 end

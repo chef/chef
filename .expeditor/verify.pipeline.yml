@@ -42,10 +42,10 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
-  # Tests Ruby 3.0
+  # Tests Ruby 3.1
 #########################################################################
 
-- label: "Integration Ubuntu 18.04 :ruby: 3.0"
+- label: "Integration Ubuntu 18.04 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
@@ -55,10 +55,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
         privileged: true
 
-- label: "Functional Ubuntu 18.04 :ruby: 3.0"
+- label: "Functional Ubuntu 18.04 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -70,10 +70,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
         privileged: true
 
-- label: "Unit Ubuntu 18.04 :ruby: 3.0"
+- label: "Unit Ubuntu 18.04 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -86,9 +86,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
 
-- label: "Integration Ubuntu 20.04 :ruby: 3.0"
+- label: "Integration Ubuntu 20.04 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
@@ -98,10 +98,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-20.04:3.0
+        image: rubydistros/ubuntu-20.04:3.1
         privileged: true
 
-- label: "Functional Ubuntu 20.04 :ruby: 3.0"
+- label: "Functional Ubuntu 20.04 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -113,10 +113,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-20.04:3.0
+        image: rubydistros/ubuntu-20.04:3.1
         privileged: true
 
-- label: "Unit Ubuntu 20.04 :ruby: 3.0"
+- label: "Unit Ubuntu 20.04 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -129,9 +129,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-20.04:3.0
+        image: rubydistros/ubuntu-20.04:3.1
 
-- label: "Integration CentOS 7 :ruby: 3.0"
+- label: "Integration CentOS 7 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
@@ -141,10 +141,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7:3.0
+        image: rubydistros/centos-7:3.1
         privileged: true
 
-- label: "Functional CentOS 7 :ruby: 3.0"
+- label: "Functional CentOS 7 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
@@ -156,10 +156,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7:3.0
+        image: rubydistros/centos-7:3.1
         privileged: true
 
-- label: "Unit CentOS 7 :ruby: 3.0"
+- label: "Unit CentOS 7 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y libarchive-devel
@@ -171,9 +171,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7:3.0
+        image: rubydistros/centos-7:3.1
 
-- label: "Integration openSUSE 15 :ruby: 3.0"
+- label: "Integration openSUSE 15 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -184,10 +184,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15:3.0
+        image: rubydistros/opensuse-15:3.1
         privileged: true
 
-- label: "Functional openSUSE 15 :ruby: 3.0"
+- label: "Functional openSUSE 15 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
@@ -199,10 +199,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15:3.0
+        image: rubydistros/opensuse-15:3.1
         privileged: true
 
-- label: "Unit openSUSE 15 :ruby: 3.0"
+- label: "Unit openSUSE 15 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat libarchive-devel
@@ -214,9 +214,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15:3.0
+        image: rubydistros/opensuse-15:3.1
 
-- label: "Integration Fedora :ruby: 3.0"
+- label: "Integration AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
@@ -226,10 +226,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:3.0
+        image: rubydistros/almalinux-8:3.1
         privileged: true
 
-- label: "Functional Fedora :ruby: 3.0"
+- label: "Functional AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
@@ -240,15 +240,19 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:3.0
+        image: rubydistros/almalinux-8:3.1
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Fedora :ruby: 3.0"
+- label: "Unit AlmaLinux 8 :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - dnf install dnf-plugins-core -y
+    - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+    - dnf config-manager --enable epel
+    - dnf config-manager --set-enabled powertools
     - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -258,9 +262,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:3.0
+        image: rubydistros/almalinux-8:3.1
 
-- label: "Functional Windows :ruby: 3.0"
+- label: "Functional Windows :ruby: 2.7"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
@@ -300,7 +304,7 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "chef-zero gem :ruby: 3.0"
+- label: "chef-zero gem :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
@@ -310,12 +314,12 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
-- label: "cheffish gem :ruby: 3.0"
+- label: "cheffish gem :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
@@ -325,9 +329,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
 
-- label: "chefspec gem :ruby: 3.0"
+- label: "chefspec gem :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
@@ -337,9 +341,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
 
-- label: "knife-windows gem :ruby: 3.0"
+- label: "knife-windows gem :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
@@ -349,9 +353,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
 
-- label: "berkshelf gem :ruby: 3.0"
+- label: "berkshelf gem :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -362,7 +366,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:3.1
 
 - label: ":habicat: Linux plan"
   commands:

@@ -26,7 +26,6 @@ class Chef
       extend Chef::Mixin::Which
       extend Chef::Mixin::ShellOut
 
-      unified_mode true
       provides :dnf_package
 
       # all rhel variants >= 8 will use DNF
@@ -68,12 +67,10 @@ class Chef
           end
         }
 
-      def allow_downgrade(arg = nil)
-        unless arg.nil?
-          Chef.deprecated(:dnf_package_allow_downgrade, "the allow_downgrade property on the dnf_package provider is not used, DNF supports downgrades by default.")
-        end
-        true
-      end
+      property :allow_downgrade, [ TrueClass, FalseClass ],
+        description: "Allow downgrading a package to satisfy requested version requirements.",
+        default: true,
+        desired_state: false
     end
   end
 end

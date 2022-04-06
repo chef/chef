@@ -1,19 +1,19 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 2f92bd6c5a23845acc9a0991815a232c842c8ff8
+  revision: 71ae97744713ffd91ac8277d7a1385dabb6d570b
   branch: main
   specs:
-    chefstyle (2.1.2)
-      rubocop (= 1.22.3)
+    chefstyle (2.2.2)
+      rubocop (= 1.25.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 3ca514fead560d35e71c8b7a494697d00bf388be
+  revision: db6480f47f37954b9d3ac1fbb7837fbdb474646a
   branch: main
   specs:
-    ohai (17.7.8)
-      chef-config (>= 14.12, < 18)
-      chef-utils (>= 16.0, < 18)
+    ohai (18.0.9)
+      chef-config (>= 14.12, < 19)
+      chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
@@ -26,6 +26,13 @@ GIT
       wmi-lite (~> 1.0)
 
 GIT
+  remote: https://github.com/chef/ruby-proxifier
+  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
+  branch: lcg/ruby-3
+  specs:
+    proxifier (1.0.3)
+
+GIT
   remote: https://github.com/chef/ruby-shadow
   revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
   branch: lcg/ruby-3.0
@@ -35,16 +42,16 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.7.29)
+    chef (18.0.87)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.7.29)
-      chef-utils (= 17.7.29)
+      chef-config (= 18.0.87)
+      chef-utils (= 18.0.87)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.4.0)
+      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.5.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
@@ -57,25 +64,28 @@ PATH
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
+      net-ftp
       net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
+      ohai (~> 18.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
+      train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.7.29-universal-mingw32)
+    chef (18.0.87-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.7.29)
-      chef-utils (= 17.7.29)
+      chef-config (= 18.0.87)
+      chef-powershell (~> 1.0.12)
+      chef-utils (= 18.0.87)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.4.0)
+      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.5.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
@@ -89,16 +99,18 @@ PATH
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
+      net-ftp
       net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
+      ohai (~> 18.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
+      train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-      win32-api (~> 1.5.3)
+      win32-api (~> 1.5)
       win32-certstore (~> 0.6.2)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
@@ -112,15 +124,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.7.29)
-      chef (= 17.7.29)
+    chef-bin (18.0.87)
+      chef (= 18.0.87)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.7.29)
+    chef-config (18.0.87)
       addressable
-      chef-utils (= 17.7.29)
+      chef-utils (= 18.0.87)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +141,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.7.29)
+    chef-utils (18.0.87)
       concurrent-ruby
 
 GEM
@@ -142,21 +154,21 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.520.1)
-    aws-sdk-core (3.121.3)
+    aws-partitions (1.573.0)
+    aws-sdk-core (3.130.0)
       aws-eventstream (~> 1, >= 1.0.2)
-      aws-partitions (~> 1, >= 1.239.0)
+      aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.50.0)
-      aws-sdk-core (~> 3, >= 3.121.2)
+    aws-sdk-kms (1.55.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.104.0)
-      aws-sdk-core (~> 3, >= 3.121.2)
+    aws-sdk-s3 (1.113.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.51.0)
-      aws-sdk-core (~> 3, >= 3.121.2)
+    aws-sdk-secretsmanager (1.59.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -164,10 +176,13 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
+    chef-powershell (1.0.13)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-vault (4.1.4)
+    chef-vault (4.1.5)
     chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
@@ -180,14 +195,17 @@ GEM
       chef-zero (>= 14.0)
       net-ssh
     coderay (1.1.3)
-    concurrent-ruby (1.1.9)
-    corefoundation (0.3.4)
+    concurrent-ruby (1.1.10)
+    corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
+    date (3.2.2)
     debug_inspector (1.1.0)
-    diff-lcs (1.3)
-    ed25519 (1.2.4)
+    diff-lcs (1.5.0)
+    domain_name (0.5.20190701)
+      unf (>= 0.0.5, < 1.0.0)
+    ed25519 (1.3.0)
     erubi (1.10.0)
     erubis (2.7.0)
     faraday (1.4.3)
@@ -205,11 +223,12 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
-    fauxhai-ng (9.0.0)
+    fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.15.4)
-    ffi (1.15.4-x64-mingw32)
-    ffi (1.15.4-x86-mingw32)
+    ffi (1.15.5)
+    ffi (1.15.5-x64-mingw32)
+    ffi (1.15.5-x64-unknown)
+    ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -219,13 +238,17 @@ GEM
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
-    gyoku (1.3.1)
+    gyoku (1.4.0)
       builder (>= 2.1.2)
+      rexml (~> 3.0)
     hashdiff (1.0.1)
     hashie (4.1.0)
+    http-accept (1.7.0)
+    http-cookie (1.0.4)
+      domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.49.0)
+    inspec-core (4.56.19)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -238,7 +261,7 @@ GEM
       parallel (~> 1.9)
       parslet (>= 1.5, < 2.0)
       pry (~> 0.13)
-      rspec (>= 3.9, < 3.11)
+      rspec (>= 3.9, <= 3.11)
       rspec-its (~> 1.2)
       rubyzip (>= 1.2.2, < 3.0)
       semverse (~> 3.0)
@@ -248,11 +271,11 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.49.0)
-      inspec-core (= 4.49.0)
+    inspec-core-bin (4.56.19)
+      inspec-core (= 4.56.19)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    jmespath (1.4.0)
+    jmespath (1.6.1)
     json (2.6.1)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -265,6 +288,9 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
+    mime-types (3.4.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2022.0105)
     mixlib-archive (1.1.7)
       mixlib-log
     mixlib-archive (1.1.7-universal-mingw32)
@@ -274,29 +300,34 @@ GEM
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.5)
+    mixlib-shellout (3.2.6)
       chef-utils
-    mixlib-shellout (3.2.5-universal-mingw32)
+    mixlib-shellout (3.2.6-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    net-ftp (0.1.3)
+      net-protocol
+      time
+    net-protocol (0.1.3)
+      timeout
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
     net-sftp (3.0.0)
       net-ssh (>= 5.0.0, < 7.0.0)
     net-ssh (6.1.0)
+    netrc (0.11.0)
     nori (2.6.0)
-    parallel (1.21.0)
-    parser (3.0.2.0)
+    parallel (1.22.1)
+    parser (3.1.1.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.6.0)
-    proxifier (1.0.3)
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -308,38 +339,55 @@ GEM
       pry (~> 0.13)
     public_suffix (4.0.6)
     rack (2.2.3)
-    rainbow (3.0.0)
+    rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.1.1)
+    regexp_parser (2.2.1)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw32)
+      ffi (~> 1.9)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x86-mingw32)
+      ffi (~> 1.9)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rexml (3.2.5)
-    rspec (3.10.0)
-      rspec-core (~> 3.10.0)
-      rspec-expectations (~> 3.10.0)
-      rspec-mocks (~> 3.10.0)
-    rspec-core (3.10.1)
-      rspec-support (~> 3.10.0)
-    rspec-expectations (3.10.1)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.10.0)
+      rspec-support (~> 3.11.0)
     rspec-its (1.3.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.10.2)
+    rspec-mocks (3.11.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.10.0)
-    rspec-support (3.10.2)
-    rubocop (1.22.3)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.0)
+    rubocop (1.25.1)
       parallel (~> 1.10)
-      parser (>= 3.0.0.0)
+      parser (>= 3.1.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.12.0, < 2.0)
+      rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.12.0)
-      parser (>= 3.0.1.1)
+    rubocop-ast (1.16.0)
+      parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
@@ -353,16 +401,22 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    thor (1.1.0)
+    thor (1.2.1)
+    time (0.2.0)
+      date
+    timeout (0.2.0)
     tomlrb (1.3.0)
-    train-core (3.8.1)
+    train-core (3.8.9)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 4.0)
       net-ssh (>= 2.9, < 7.0)
-    train-winrm (0.2.12)
+    train-rest (0.4.2)
+      rest-client (~> 2.1)
+      train-core (~> 3.0)
+    train-winrm (0.2.13)
       winrm (>= 2.3.6, < 3.0)
       winrm-elevated (~> 1.2.2)
       winrm-fs (~> 1.0)
@@ -384,6 +438,11 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.8.1)
+    unf_ext (0.0.8.1-x64-mingw32)
+    unf_ext (0.0.8.1-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -394,7 +453,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.5.3-universal-mingw32)
+    win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.2)
       ffi
       mixlib-shellout
@@ -410,7 +469,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.9.0)
       ffi (>= 1.0.0)
-    win32-service (2.2.0)
+    win32-service (2.3.2)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
@@ -438,9 +497,9 @@ GEM
     wmi-lite (1.0.5)
 
 PLATFORMS
-  arm64-darwin-20
   ruby
   x64-mingw32
+  x64-unknown
   x86-mingw32
 
 DEPENDENCIES
@@ -456,6 +515,7 @@ DEPENDENCIES
   fauxhai-ng
   inspec-core-bin (~> 4.24)
   ohai!
+  proxifier!
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -466,4 +526,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.2.22
+   2.3.7

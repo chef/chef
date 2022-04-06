@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsPagefile < Chef::Resource
-      unified_mode true
 
       provides(:windows_pagefile) { true }
 

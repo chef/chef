@@ -22,7 +22,6 @@ class Chef
   class Resource
 
     class PlistResource < Chef::Resource # we name this PlistResource to avoid confusion with Plist from the plist gem
-      unified_mode true
 
       provides :plist
 
@@ -85,7 +84,7 @@ class Chef
         converge_if_changed :path do
           converge_by "create new plist: '#{new_resource.path}'" do
             file new_resource.path do
-              content {}.to_plist
+              content({}.to_plist)
               owner new_resource.owner
               group new_resource.group
               mode new_resource.mode if property_is_set?(:mode)
@@ -189,7 +188,12 @@ class Chef
         sep = " "
         arg = case subcommand.to_s
               when "add"
-                type_to_commandline_string(value)
+                if value.is_a?(Hash)
+                  sep = ":"
+                  value.map { |k, v| "#{k} #{type_to_commandline_string(v)}" }
+                else
+                  type_to_commandline_string(value)
+                end
               when "set"
                 if value.is_a?(Hash)
                   sep = ":"

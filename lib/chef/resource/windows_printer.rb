@@ -27,7 +27,6 @@ class Chef
     # 2. Fail with a warning if the port can't be found and create_port is false
     # 3. Fail with helpful messaging if the printer driver can't be installed
     class WindowsPrinter < Chef::Resource
-      unified_mode true
 
       autoload :Resolv, "resolv"
 

@@ -42,7 +42,7 @@ describe Chef::Provider::Ifconfig::Debian do
   let(:provider) do
     status = double("Status", exitstatus: 0)
     provider = Chef::Provider::Ifconfig::Debian.new(new_resource, run_context)
-    provider.instance_variable_set("@status", status)
+    provider.instance_variable_set(:@status, status)
     provider.current_resource = current_resource
     allow(provider).to receive(:load_current_resource)
     allow(provider).to receive(:shell_out!)

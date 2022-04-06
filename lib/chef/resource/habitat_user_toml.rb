@@ -16,7 +16,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatUserToml < Chef::Resource
-      unified_mode true
       provides :habitat_user_toml
 
       description "Use the **habitat_user_toml** to template a `user.toml` for Chef Habitat services. Configurations set in the  `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration."

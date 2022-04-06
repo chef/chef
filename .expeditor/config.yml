@@ -27,11 +27,14 @@ pipelines:
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
-  - omnibus/release
+  - omnibus/release:
+      env:
+        - IGNORE_CACHE: true # caching causes constant build failures
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
@@ -56,6 +59,8 @@ github:
 # for building.
 release_branches:
   - main:
+      version_constraint: 18*
+  - chef-17:
       version_constraint: 17*
   - chef-16:
       version_constraint: 16*
@@ -116,6 +121,9 @@ subscriptions:
       - trigger_pipeline:habitat/test
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
+  - workload: ruby_gem_published:corefoundation-*
+    actions:
+      - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:mixlib-archive-*
     actions:
       - bash:.expeditor/update_dep.sh
@@ -244,3 +252,9 @@ subscriptions:
   - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh
+  - workload: ruby_gem_published:train-rest-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:train-winrm-*
+    actions:
+      - bash:.expeditor/update_dep.sh

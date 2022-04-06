@@ -78,11 +78,11 @@ class Chef
         end
 
         def create_user
-          @net_user.add(set_options)
+          @net_user.add(**set_options)
         end
 
         def manage_user
-          @net_user.update(set_options)
+          @net_user.update(**set_options)
         end
 
         def remove_user

@@ -151,7 +151,7 @@ class Chef
           rel_path = knife_file[/#{KNIFE_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
           # Exclude version.rb file for the gem. It's not a knife command, and  force-loading it later
           # because loaded via in subcommand files generates CLI warnings about its consts already having been defined
-          next if knife_file =~ version_file_match
+          next if knife_file&.match?(version_file_match)
 
           subcommand_files[rel_path] = knife_file
         end
@@ -184,7 +184,7 @@ class Chef
       # @return [Array<String>]
       #
       def positional_arguments(args)
-        args.select { |arg| arg =~ /^(([[:alnum:]])[[:alnum:]\_\-]+)$/ }
+        args.grep(/^(([[:alnum:]])[[:alnum:]\_\-]+)$/)
       end
 
       # Returns an Array of paths to knife commands located in

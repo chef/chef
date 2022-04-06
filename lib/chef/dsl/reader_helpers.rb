@@ -42,7 +42,7 @@ class Chef
       end
 
       def parse_yaml(filename)
-        YAML.load(IO.read(filename))
+        YAML.safe_load_file(filename, permitted_classes: [Date])
       end
 
       extend self

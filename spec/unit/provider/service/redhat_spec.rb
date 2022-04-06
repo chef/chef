@@ -34,6 +34,7 @@ shared_examples_for "define_resource_requirements_common" do
     expect(@provider).to receive(:shell_out).with("/sbin/service chef status").and_return(status)
     chkconfig = double("Chkconfig", exitstatus: 0, stdout: "", stderr: "service chef supports chkconfig, but is not referenced in any runlevel (run 'chkconfig --add chef')")
     expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", returns: [0, 1]).and_return(chkconfig)
+    @provider.action = :start
     @provider.load_current_resource
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.not_to raise_error
@@ -147,12 +148,12 @@ describe "Chef::Provider::Service::Redhat" do
           chkconfig = double("Chkconfig", existatus: 1, stdout: "", stderr: "error reading information on service chef: No such file or directory")
           expect(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", returns: [0, 1]).and_return(chkconfig)
           @provider.load_current_resource
-          @provider.define_resource_requirements
         end
 
         %w{start reload restart enable}.each do |action|
           it "should raise an error when the action is #{action}" do
             @provider.action = action
+            @provider.define_resource_requirements
             expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
           end
         end
@@ -161,12 +162,14 @@ describe "Chef::Provider::Service::Redhat" do
           it "should not raise an error when the action is #{action} and init_command is set" do
             @new_resource.init_command("/etc/init.d/chef")
             @provider.action = action
+            @provider.define_resource_requirements
             expect { @provider.process_resource_requirements }.not_to raise_error
           end
 
           it "should not raise an error when the action is #{action} and #{action}_command is set" do
             @new_resource.send("#{action}_command", "/etc/init.d/chef #{action}")
             @provider.action = action
+            @provider.define_resource_requirements
             expect { @provider.process_resource_requirements }.not_to raise_error
           end
         end

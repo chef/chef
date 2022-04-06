@@ -16,8 +16,8 @@ The importance of our release notes cannot be understated. As developers, we und
 
 #### Overall Release Notes Structure
 
-1. `Major new features`: Document new features with a high level bullet. This is a great opportunity to show off our work and sell users on new workflows.
-2. `Updated InSpec Releases`: We should always call out the updated Chef InSpec release and include a description of new functionality.
+1. `New features`: Document *important* / *major* new features. This is a great opportunity to show off our work and sell users on new workflows.
+2. `Compliance Phase Improvements`: We should always call out the updated Chef InSpec release and include a description of new functionality. If we've improved how compliance phase operates overall also call that out.
 3. `New Resources`: If we ship new resources, we want to make sure to brag about those resources. Use this section to give the elevator pitch for the new resource, including an example of how it might be used if available.
 4. `Updated Resources`: It's important to let users know about new functionality in resources they may already be using. Cover any important bug fixes or new properties/actions here.
 5. `Security Updates`: Call out any updated components we are shipping and include links to the CVEs if available.
@@ -37,15 +37,13 @@ If there are any new or updated resources, the docs site will need to be updated
 
 Chef employees can promote a build to stable from Slack. This is done with expeditor using a chatops command in the following format:
 
-`/expeditor promote chef/chef:master 17.1.9`
+`/expeditor promote chef/chef:main 17.1.9`
 
 or for a previous release branch:
 
 `/expeditor promote chef/chef:chef-16 16.13.9`
 
 ### Announce the Build
-
-We want to make sure to announce the build on Discourse. It is helpful that these announcements come from real people because people like people and not machines. You can copy a previous release announcement, and change the version numbers and release notes content.
 
 Also, make sure to announce the build on any social media platforms that you occupy if you feel comfortable doing so. It's great to make an announcement in `#sous-chefs` and `#general` in Community Slack, as well as on Twitter, where we tend to get a good response.
 

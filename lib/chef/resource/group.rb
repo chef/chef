@@ -20,10 +20,33 @@
 class Chef
   class Resource
     class Group < Chef::Resource
-      unified_mode true
       state_attrs :members
 
       description "Use the **group** resource to manage a local group."
+
+      examples <<~EXAMPLES
+      The following examples demonstrate various approaches for using the **group** resource in recipes:
+
+      Append users to groups:
+
+      ```ruby
+      group 'www-data' do
+        action :modify
+        members 'maintenance'
+        append true
+      end
+      ```
+
+      Add a user to group on the Windows platform:
+
+      ```ruby
+      group 'Administrators' do
+        members ['domain\\foo']
+        append true
+        action :modify
+      end
+      ```
+      EXAMPLES
 
       provides :group
 
@@ -39,7 +62,7 @@ class Chef
 
       property :members, [String, Array], default: [],
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
-               description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: members ['user1', 'user2']."
+               description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: `members ['user1', 'user2']`."
 
       property :excluded_members, [String, Array], default: [],
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },

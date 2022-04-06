@@ -22,7 +22,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class Reboot < Chef::Resource
-      unified_mode true
 
       provides :reboot
 

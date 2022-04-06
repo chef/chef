@@ -18,18 +18,18 @@
 require_relative "../../resource"
 require_relative "../helpers/cron_validations"
 require "shellwords" unless defined?(Shellwords)
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class CronD < Chef::Resource
-      unified_mode true
 
       use "cron_shared"
 
       provides :cron_d
 
       introduced "14.4"
-      description "Use the **cron_d** resource to manage cron job files in the `/etc/cron.d` directory. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
+      description "Use the **cron_d** resource to manage cron job files in the `/etc/cron.d` directory. Warning: #{ChefUtils::Dist::Infra::PRODUCT} also ships with the **cron** resource for managing the monolithic `/etc/crontab` file on platforms that lack cron.d support. See the [cron resource](/resources/cron/) for information on using that resource."
       examples <<~DOC
         **Run a program on the fifth hour of the day**
 

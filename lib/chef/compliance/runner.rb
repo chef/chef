@@ -7,7 +7,7 @@ class Chef
     class Runner < EventDispatch::Base
       extend Forwardable
 
-      SUPPORTED_REPORTERS = %w{chef-automate chef-server-automate json-file audit-enforcer cli}.freeze
+      SUPPORTED_REPORTERS = %w{chef-automate chef-server-automate json-file audit-enforcer compliance-enforcer cli}.freeze
       SUPPORTED_FETCHERS = %w{chef-automate chef-server}.freeze
 
       attr_accessor :run_id
@@ -71,7 +71,7 @@ class Chef
 
         logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
-        report
+        report_with_interval
       end
 
       def run_failed(_exception, _run_status)
@@ -82,7 +82,7 @@ class Chef
 
         logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
-        report
+        report_with_interval
       end
 
       ### Below code adapted from audit cookbook's files/default/handler/audit_report.rb
@@ -92,7 +92,6 @@ class Chef
         fail_if_not_present
         inspec_gem_source
         inspec_version
-        interval
         owner
         raise_if_unreachable
       }.freeze
@@ -103,6 +102,15 @@ class Chef
         if deprecated_config_values.any?
           values = deprecated_config_values.sort.map { |v| "'#{v}'" }.join(", ")
           logger.warn "audit cookbook config values #{values} are not supported in #{ChefUtils::Dist::Infra::PRODUCT}'s Compliance Phase."
+        end
+      end
+
+      def report_with_interval
+        if interval_seconds_left <= 0
+          create_timestamp_file if interval_enabled
+          report
+        else
+          logger.info "Skipping Chef Infra Compliance Phase due to interval settings (next run in #{interval_seconds_left / 60.0} mins)"
         end
       end
 
@@ -118,7 +126,7 @@ class Chef
           return
         end
 
-        Array(node["audit"]["reporter"]).each do |reporter_type|
+        requested_reporters.each do |reporter_type|
           logger.info "Reporting to #{reporter_type}"
           @reporters[reporter_type].send_report(report)
         end
@@ -292,7 +300,7 @@ class Chef
           require_relative "reporter/json_file"
           path = node.dig("audit", "json_file", "location")
           Chef::Compliance::Reporter::JsonFile.new(file: path)
-        when "audit-enforcer"
+        when "audit-enforcer", "compliance-enforcer"
           require_relative "reporter/compliance_enforcer"
           Chef::Compliance::Reporter::ComplianceEnforcer.new
         when "cli"
@@ -325,7 +333,7 @@ class Chef
         @reporters = {}
         # Note that the docs don't say you can use an array, but our implementation
         # supports it.
-        Array(node["audit"]["reporter"]).each do |type|
+        requested_reporters.each do |type|
           unless SUPPORTED_REPORTERS.include? type
             raise "CMPL003: '#{type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(", ")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#reporters"
           end
@@ -357,6 +365,44 @@ class Chef
 
       def safe_input_collection
         run_context&.input_collection
+      end
+
+      def requested_reporters
+        (Array(node["audit"]["reporter"]) + ["cli"]).uniq
+      end
+
+      def create_timestamp_file
+        FileUtils.touch report_timing_file
+      end
+
+      def report_timing_file
+        ::File.join(Chef::FileCache.create_cache_path("compliance"), "report_timing.json")
+      end
+
+      def interval_time
+        @interval_time ||= node.read("audit", "interval", "time")
+      end
+
+      def interval_enabled
+        @interval_enabled ||= node.read("audit", "interval", "enabled")
+      end
+
+      def interval_seconds
+        @interval_seconds ||=
+          if interval_enabled
+            logger.debug "Running Chef Infra Compliance Phase every #{interval_time} minutes"
+            interval_time * 60
+          else
+            logger.debug "Running Chef Infra Compliance Phase on every run"
+            0
+          end
+      end
+
+      def interval_seconds_left
+        return 0 unless ::File.exist?(report_timing_file)
+
+        seconds_since_last_run = Time.now - ::File.mtime(report_timing_file)
+        interval_seconds - seconds_since_last_run
       end
     end
   end

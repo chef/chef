@@ -54,10 +54,6 @@ class Chef
           resource_class.run_context = run_context
           resource_class.class_from_file(filename)
 
-          if !resource_class.unified_mode && !deprecated_class(resource_class)
-            Chef.deprecated :unified_mode, "The #{resource_class.resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true`", filename
-          end
-
           # Make a useful string for the class (rather than <Class:312894723894>)
           resource_class.instance_eval do
             define_singleton_method(:to_s) do

@@ -48,4 +48,4 @@ rescue LoadError
   $stderr.puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
 end
 
-add_libarchive_dll_directory if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+add_libarchive_dll_directory if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)

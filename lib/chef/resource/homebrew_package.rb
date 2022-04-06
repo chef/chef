@@ -24,7 +24,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :homebrew_package
       provides :package, os: "darwin"

@@ -20,7 +20,6 @@ require_relative "../../resource"
 class Chef
   class Resource
     class HabitatSup < Chef::Resource
-      unified_mode true
 
       provides :habitat_sup do |_node|
         false
@@ -49,7 +48,7 @@ class Chef
 
       ```ruby
       habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
+        bldr_url 'https://bldr.example.com'
       end
       ```
 
@@ -57,13 +56,13 @@ class Chef
 
       ```ruby
       habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
+        bldr_url 'https://bldr.example.com'
         habitat_channel 'dev'
         update_condition 'track-channel'
       end
       ```
 
-      **Provide event_stream_* information**
+      **Provide event stream information**
 
       ```ruby
       habitat_sup 'default' do
@@ -71,7 +70,7 @@ class Chef
         event_stream_application 'myapp'
         event_stream_environment 'production'
         event_stream_site 'MySite'
-        event_stream_url 'automate.private.net:4222'
+        event_stream_url 'automate.example.com:4222'
         event_stream_token 'myawesomea2clitoken='
         event_stream_cert '/hab/cache/ssl/mycert.crt'
       end
@@ -81,7 +80,7 @@ class Chef
 
       ```ruby
       habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
+        bldr_url 'https://bldr.example.com'
         sup_version '1.5.50'
         launcher_version '13458'
         service_version '0.6.0' # WINDOWS ONLY
@@ -91,7 +90,7 @@ class Chef
       **Set latest version of packages to retain**
 
       habitat_sup 'default' do
-        bldr_url 'https://bldr.private.net'
+        bldr_url 'https://bldr.example.com'
         sup_version '1.5.86'
         launcher_version '13458'
         service_version '0.6.0' # WINDOWS ONLY
@@ -284,7 +283,7 @@ class Chef
           if new_resource.peer
             peer_list = []
             new_resource.peer.each do |p|
-              peer_list << if p !~ /.*:.*/
+              peer_list << if !/.*:.*/.match?(p)
                              p + ":9632"
                            else
                              p

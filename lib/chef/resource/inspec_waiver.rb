@@ -20,7 +20,6 @@ class Chef
   class Resource
     class InspecWaiver < Chef::Resource
       provides :inspec_waiver
-      unified_mode true
 
       description "Use the **inspec_waiver** resource to add a waiver to the Compliance Phase."
       introduced "17.5"

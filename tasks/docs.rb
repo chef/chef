@@ -133,7 +133,7 @@ namespace :docs_site do
     # @return [Hash]
     #
     def action_list(actions, default_action)
-      actions = actions.map { |k, v| [k.to_sym, { "markdown" => k == default_action.first ? "#{v} (default)" : v } ] }.to_h
+      actions = actions.to_h { |k, v| [k.to_sym, { "markdown" => k == default_action.first ? "#{v} (default)" : v } ] }
       actions[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
       actions
     end

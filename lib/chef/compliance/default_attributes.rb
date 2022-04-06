@@ -27,8 +27,8 @@ class Chef
 
       # Controls what is done with the resulting report after the Chef InSpec run.
       # Accepts a single string value or an array of multiple values.
-      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer', 'cli'
-      "reporter" => "cli",
+      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer', 'compliance-enforcer', 'cli'
+      "reporter" => nil,
 
       # Controls if Chef InSpec profiles should be fetched from Chef Automate or Chef Infra Server
       # in addition to the default fetch locations provided by Chef Inspec.
@@ -94,7 +94,17 @@ class Chef
 
       # Should the built-in compliance phase run. True and false force the behavior. Nil does magic based on if you have
       # profiles defined but do not have the audit cookbook enabled.
-      "compliance_phase" => false
+      "compliance_phase" => false,
+
+      "interval" => {
+        # control how often inspec scans are run, if not on every node converge
+        # notes: false value will result in running inspec scan every converge
+        "enabled" => false,
+
+        # controls how often inspec scans are run (in minutes)
+        # notes: only used if interval is enabled above
+        "time" => 1440,
+      }
     )
   end
 end

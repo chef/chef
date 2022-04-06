@@ -25,7 +25,6 @@ require_relative "../provider/package/freebsd/pkgng"
 class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
-      unified_mode true
       provides :freebsd_package
       provides :package, platform: "freebsd"
 

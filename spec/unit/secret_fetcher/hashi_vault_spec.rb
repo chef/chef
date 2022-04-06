@@ -65,6 +65,52 @@ describe Chef::SecretFetcher::HashiVault do
         fetcher.validate!
       end
     end
+
+    context "and using auth_method: :approle" do
+      it "raises ConfigurationInvalid message when :approle_name or :approle_id are not specified" do
+        fetcher = Chef::SecretFetcher::HashiVault.new( { auth_method: :approle, vault_addr: "https://vault.example.com:8200" }, run_context)
+        expect { fetcher.validate! }.to raise_error(Chef::Exceptions::Secret::ConfigurationInvalid)
+      end
+
+      it "authenticates using the approle_id and approle_secret_id during validation when all configuration is correct" do
+        fetcher = Chef::SecretFetcher::HashiVault.new({
+          auth_method: :approle,
+          approle_id: "idguid",
+          approle_secret_id: "secretguid",
+          vault_addr: "https://vault.example.com:8200" },
+          run_context)
+        auth = instance_double(Vault::Authenticate)
+        allow(auth).to receive(:approle)
+        allow(Vault).to receive(:auth).and_return(auth)
+        expect(auth).to receive(:approle).with("idguid", "secretguid")
+        fetcher.validate!
+      end
+
+      it "looks up the :role_id and :secret_id when all configuration is correct" do
+        fetcher = Chef::SecretFetcher::HashiVault.new({
+          auth_method: :approle,
+          approle_name: "myapprole",
+          token: "t.1234abcd",
+          vault_addr: "https://vault.example.com:8200" },
+          run_context)
+        approle = instance_double(Vault::AppRole)
+        auth = instance_double(Vault::Authenticate)
+        allow(Vault).to receive(:approle).and_return(approle)
+        allow(approle).to receive(:role_id).with("myapprole").and_return("idguid")
+        allow(approle).to receive(:create_secret_id).with("myapprole").and_return(Vault::Secret.new({
+          data: {
+            secret_id: "secretguid",
+            secret_id_accessor: "accessor_guid",
+            secret_id_ttl: 0,
+          },
+          lease_duration: 0,
+          lease_id: "",
+        }))
+        allow(Vault).to receive(:auth).and_return(auth)
+        expect(auth).to receive(:approle).with("idguid", "secretguid")
+        fetcher.validate!
+      end
+    end
   end
 
   context "when fetching a secret from Hashi Vault" do

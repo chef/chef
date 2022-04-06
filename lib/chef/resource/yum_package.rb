@@ -22,7 +22,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
-      unified_mode true
 
       provides :yum_package
       provides :package, platform_family: "fedora_derived"

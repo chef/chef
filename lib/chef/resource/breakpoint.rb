@@ -22,7 +22,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
-      unified_mode true
 
       provides :breakpoint, target_mode: true
 

@@ -113,6 +113,8 @@ class Chef
             end
           end
           nil
+        rescue
+          nil
         end
 
         def available_version(index)

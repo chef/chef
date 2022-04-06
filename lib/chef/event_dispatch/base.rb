@@ -273,6 +273,9 @@ class Chef
       # Called if the converge phase fails
       def converge_failed(exception); end
 
+      # Called when migrating from a pem on disk to a pem stored in Keychain or Windows Certstore
+      def key_migration_status(key_migrated = false); end
+
       # TODO: need events for notification resolve?
       # def notifications_resolved
       # end

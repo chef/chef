@@ -21,7 +21,6 @@ class Chef
   class Resource
     class User
       class SolarisUser < Chef::Resource::User
-        unified_mode true
 
         provides :solaris_user
         provides :user, os: %w{omnios solaris2}

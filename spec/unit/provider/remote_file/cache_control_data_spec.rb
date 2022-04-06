@@ -219,11 +219,11 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       let(:truncated_remote_uri) { URI.parse(long_remote_path[0...CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH]) }
       let(:truncated_file_cache_path) do
         cache_control_data_truncated = Chef::Provider::RemoteFile::CacheControlData.load_and_validate(truncated_remote_uri, current_file_checksum)
-        cache_control_data_truncated.send("sanitized_cache_file_basename")[0...CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH]
+        cache_control_data_truncated.send(:sanitized_cache_file_basename)[0...CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH]
       end
 
       it "truncates the file cache path to 102 characters" do
-        normalized_cache_path = cache_control_data.send("sanitized_cache_file_basename")
+        normalized_cache_path = cache_control_data.send(:sanitized_cache_file_basename)
 
         expect(Chef::FileCache).to receive(:store).with("remote_file/" + normalized_cache_path, cache_control_data.json_data)
 
@@ -233,7 +233,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       end
 
       it "uses a file cache path that starts with the first #{CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH} characters of the URI" do
-        normalized_cache_path = cache_control_data.send("sanitized_cache_file_basename")
+        normalized_cache_path = cache_control_data.send(:sanitized_cache_file_basename)
 
         expect(truncated_file_cache_path.length).to eq(CACHE_FILE_TRUNCATED_FRIENDLY_FILE_NAME_LENGTH)
         expect(normalized_cache_path.start_with?(truncated_file_cache_path)).to eq(true)

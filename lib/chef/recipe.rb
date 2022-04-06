@@ -101,7 +101,7 @@ class Chef
     end
 
     def from_yaml(string)
-      res = ::YAML.safe_load(string)
+      res = ::YAML.safe_load(string, permitted_classes: [Date])
       unless res.is_a?(Hash) && res.key?("resources")
         raise ArgumentError, "YAML recipe '#{source_file}' must contain a top-level 'resources' hash (YAML sequence), i.e. 'resources:'"
       end

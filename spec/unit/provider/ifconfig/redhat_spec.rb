@@ -40,7 +40,7 @@ describe Chef::Provider::Ifconfig::Redhat do
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
     status = double("Status", exitstatus: 0)
-    @provider.instance_variable_set("@status", status)
+    @provider.instance_variable_set(:@status, status)
     @provider.current_resource = @current_resource
 
     config_filename = "/etc/sysconfig/network-scripts/ifcfg-#{@new_resource.device}"

@@ -24,7 +24,6 @@ require_relative "../mixin/securable"
 class Chef
   class Resource
     class Directory < Chef::Resource
-      unified_mode true
 
       provides :directory
 

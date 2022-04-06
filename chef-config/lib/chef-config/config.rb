@@ -84,8 +84,11 @@ module ChefConfig
     # @return [String] the platform-specific path
     #
     def self.etc_chef_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : PathHelper.join("/etc", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
-      PathHelper.cleanpath(path, windows: windows)
+      @etc_chef_dir ||= {}
+      @etc_chef_dir[windows] ||= begin
+        path = windows ? c_chef_dir : PathHelper.join("/etc", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
+        PathHelper.cleanpath(path, windows: windows)
+      end
     end
 
     # On *nix, /var/chef, on Windows C:\chef
@@ -171,7 +174,7 @@ module ChefConfig
 
           # Call to_sym because Chef::Config expects only symbol keys. Also
           # runs a simple parse on the string for some common types.
-          memo[key.to_sym] = YAML.safe_load(value)
+          memo[key.to_sym] = YAML.safe_load(value, permitted_classes: [Date])
           memo
         end
         set_extra_config_options(extra_parsed_options)
@@ -770,6 +773,11 @@ module ChefConfig
     # We'll use this preferentially.
     default :client_key_contents, nil
 
+    # We want to get all certificates OFF disk and into secure storage. This flag
+    # removes the client.pem from disk and a replacement is put into Keychain or the Certstore
+    # Then the public key from the new cert is pushed to Chef Server for authentication
+    default :migrate_key_to_keystore, false
+
     # When registering the client, should we allow the client key location to
     # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem
     # If the path of the key goes through a directory like /tmp this should
@@ -986,7 +994,7 @@ module ChefConfig
     # applying in "compile" mode, with no "converge" mode. False is backwards compatible
     # setting for Chef 11-15 behavior.  This will break forward notifications.
     #
-    default :resource_unified_mode_default, false
+    default :resource_unified_mode_default, true
 
     # At the beginning of the Chef Client run, the cookbook manifests are downloaded which
     # contain URLs for every file in every relevant cookbook.  Most of the files
@@ -1223,7 +1231,7 @@ module ChefConfig
         "en.UTF-8"
       else
         # Will match en_ZZ.UTF-8, en_ZZ.utf-8, en_ZZ.UTF8, en_ZZ.utf8
-        guesses = locales.select { |l| l =~ /^en_.*UTF-?8$/i }
+        guesses = locales.grep(/^en_.*UTF-?8$/i)
         unless guesses.empty?
           guessed_locale = guesses.first
           # Transform into the form en_ZZ.UTF-8
@@ -1287,10 +1295,10 @@ module ChefConfig
       require "digest/md5" unless defined?(Digest::MD5)
       # Remove pre-existing constants if they do exist to reduce the
       # amount of log spam and warnings.
-      Digest.send(:remove_const, "SHA1") if Digest.const_defined?("SHA1")
-      Digest.const_set("SHA1", OpenSSL::Digest::SHA1)
-      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?("MD5")
-      OpenSSL::Digest.const_set("MD5", Digest::MD5)
+      Digest.send(:remove_const, "SHA1") if Digest.const_defined?(:SHA1)
+      Digest.const_set(:SHA1, OpenSSL::Digest::SHA1)
+      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?(:MD5)
+      OpenSSL::Digest.const_set(:MD5, Digest::MD5)
       ChefConfig.logger.debug "FIPS mode is enabled."
     end
   end

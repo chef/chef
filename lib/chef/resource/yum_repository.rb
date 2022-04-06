@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class YumRepository < Chef::Resource
-      unified_mode true
 
       provides(:yum_repository) { true }
 

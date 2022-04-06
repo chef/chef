@@ -20,7 +20,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class ChefClientConfig < Chef::Resource
-      unified_mode true
 
       provides :chef_client_config
 
@@ -85,6 +84,16 @@ class Chef
            'arguments' => ["'FirstArgument'", "'SecondArgument'"],
           },
         ]
+      end
+      ```
+
+      **Report directly to the [Chef Automate data collector endpoint](/automate/data_collection/#configure-chef-infra-client-to-use-the-data-collector-endpoint-in-chef-automate).**
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        data_collector_server_url 'https://automate.example.dmz'
+        data_collector_token 'TEST_TOKEN_TEST'
       end
       ```
       DOC
@@ -199,6 +208,10 @@ class Chef
         description: %q(An array of hashes that contain a report handler class and the arguments to pass to that class on initialization. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
 
+      property :rubygems_url, [String, Array],
+        description: "The location to source rubygems. It can be set to a string or array of strings for URIs to set as rubygems sources. This allows individuals to setup an internal mirror of rubygems for “airgapped” environments.",
+        introduced: "17.11"
+
       property :exception_handlers, Array,
         description: %q(An array of hashes that contain a exception handler class and the arguments to pass to that class on initialization. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
@@ -231,21 +244,28 @@ class Chef
       property :additional_config, String,
         description: "Additional text to add at the bottom of the client.rb config. This can be used to run custom Ruby or to add less common config options"
 
-      action :create, description: "Create a client.rb config file for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
-        unless ::Dir.exist?(new_resource.config_directory)
-          directory new_resource.config_directory do
-            user new_resource.user unless new_resource.user.nil?
-            group new_resource.group unless new_resource.group.nil?
-            mode "0750"
-            recursive true
-          end
-        end
+      property :data_collector_server_url, String,
+        description: "The data collector URL (typically automate) to send node, converge, and compliance data. Note: If possible, use Chef Infra Server to do all data collection reporting, as this removes the need to distribute tokens to individual nodes.",
+        introduced: "17.8"
 
-        unless ::Dir.exist?(::File.join(new_resource.config_directory, "client.d"))
-          directory ::File.join(new_resource.config_directory, "client.d") do
+      property :data_collector_token, String,
+        description: "The data collector token to interact with the data collector server URL (Automate). Note: If possible, use Chef Infra Server to do all data collection reporting, as this removes the need to distribute tokens to individual nodes.",
+        introduced: "17.8"
+
+      action :create, description: "Create a client.rb config file and folders for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
+        [
+          new_resource.config_directory,
+          (::File.dirname(new_resource.log_location) unless new_resource.log_location.nil?),
+          new_resource.file_backup_path,
+          new_resource.file_cache_path,
+          ::File.join(new_resource.config_directory, "client.d"),
+          (::File.dirname(new_resource.pid_file) unless new_resource.pid_file.nil?),
+        ].compact.each do |dir_path|
+
+          directory dir_path do
             user new_resource.user unless new_resource.user.nil?
             group new_resource.group unless new_resource.group.nil?
-            mode "0750"
+            mode dir_path == ::File.dirname(new_resource.log_location) ? "0755" : "0750"
             recursive true
           end
         end
@@ -279,10 +299,13 @@ class Chef
             policy_group: new_resource.policy_group,
             policy_name: new_resource.policy_name,
             report_handlers: format_handler(new_resource.report_handlers),
+            rubygems_url: new_resource.rubygems_url,
             ssl_verify_mode: new_resource.ssl_verify_mode,
             start_handlers: format_handler(new_resource.start_handlers),
             additional_config: new_resource.additional_config,
-            policy_persist_run_list: new_resource.policy_persist_run_list
+            policy_persist_run_list: new_resource.policy_persist_run_list,
+            data_collector_server_url: new_resource.data_collector_server_url,
+            data_collector_token: new_resource.data_collector_token
           )
           mode "0640"
           action :create

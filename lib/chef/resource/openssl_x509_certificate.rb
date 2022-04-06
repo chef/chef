@@ -24,8 +24,6 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      unified_mode true
-
       provides :openssl_x509_certificate
       provides(:openssl_x509) { true } # legacy cookbook name.
 

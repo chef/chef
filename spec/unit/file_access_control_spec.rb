@@ -35,7 +35,7 @@ describe Chef::FileAccessControl do
         @events = Chef::EventDispatch::Dispatcher.new
         @run_context = Chef::RunContext.new(@node, {}, @events)
         @current_resource = Chef::Resource::File.new("/tmp/different_file.txt")
-        @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context)
+        @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context, :create)
         @provider = double("File provider", requirements: @provider_requirements, manage_symlink_access?: false)
 
         @fac = Chef::FileAccessControl.new(@current_resource, @resource, @provider)
