@@ -219,9 +219,9 @@ class Chef
 
         def device_with_space_escape
           # For CIFS (and perhaps other remote network mounts) when a space is in the "device name"
-          # it will appear with the space substituted with a special character. However, when mounting,
-          # the mount needs to be done with an actual space. This function provides the device name with
-          # the special character to determine if the device is mounted.
+          # It will appear with the space substituted with a special character. However, when mounting,
+          # The mount needs to be done with an actual space. This function provides the device name with
+          # The special character to determine if the device is mounted.
           device_mount_regex.gsub(" ", "\\x20")
         end
 
