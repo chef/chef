@@ -154,7 +154,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.570.0)
+    aws-partitions (1.574.0)
     aws-sdk-core (3.130.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -237,8 +237,9 @@ GEM
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
-    gyoku (1.3.1)
+    gyoku (1.4.0)
       builder (>= 2.1.2)
+      rexml (~> 3.0)
     hashdiff (1.0.1)
     hashie (4.1.0)
     http-accept (1.7.0)
@@ -271,7 +272,6 @@ GEM
       tty-table (~> 0.10)
     inspec-core-bin (4.56.19)
       inspec-core (= 4.56.19)
-    io-wait (0.2.1)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
@@ -299,9 +299,9 @@ GEM
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.5)
+    mixlib-shellout (3.2.7)
       chef-utils
-    mixlib-shellout (3.2.5-universal-mingw32)
+    mixlib-shellout (3.2.7-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
@@ -311,8 +311,7 @@ GEM
     net-ftp (0.1.3)
       net-protocol
       time
-    net-protocol (0.1.2)
-      io-wait
+    net-protocol (0.1.3)
       timeout
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
@@ -321,7 +320,7 @@ GEM
     net-ssh (6.1.0)
     netrc (0.11.0)
     nori (2.6.0)
-    parallel (1.22.0)
+    parallel (1.22.1)
     parser (3.1.1.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
@@ -373,7 +372,7 @@ GEM
     rspec-its (1.3.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.11.0)
+    rspec-mocks (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
@@ -494,7 +493,7 @@ GEM
       rubyzip (~> 2.0)
       winrm (~> 2.0)
     wisper (2.0.1)
-    wmi-lite (1.0.5)
+    wmi-lite (1.0.7)
 
 PLATFORMS
   ruby
@@ -525,4 +524,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.5
+   2.3.7
