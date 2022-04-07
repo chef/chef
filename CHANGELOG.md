@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.7 -->
-## [v17.10.7](https://github.com/chef/chef/tree/v17.10.7) (2022-03-31)
+<!-- latest_release 17.10.8 -->
+## [v17.10.8](https://github.com/chef/chef/tree/v17.10.8) (2022-04-07)
 
 #### Merged Pull Requests
-- Fix attribute performance issues in node.read (Chef-17) [#12743](https://github.com/chef/chef/pull/12743) ([lamont-granquist](https://github.com/lamont-granquist))
+-  pin libxml2 to 2.9.13 and libxslt to 1.1.34 on windows [#12768](https://github.com/chef/chef/pull/12768) ([jayashrig158](https://github.com/jayashrig158))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+-  pin libxml2 to 2.9.13 and libxslt to 1.1.34 on windows [#12768](https://github.com/chef/chef/pull/12768) ([jayashrig158](https://github.com/jayashrig158)) <!-- 17.10.8 -->
 - Fix attribute performance issues in node.read (Chef-17) [#12743](https://github.com/chef/chef/pull/12743) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.10.7 -->
 - Updating Gemfile.locks to corroborate the libxml2 version update [#12741](https://github.com/chef/chef/pull/12741) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.6 -->
 - Removed Windows Server 2016 from testing per Github [#12740](https://github.com/chef/chef/pull/12740) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.5 -->
