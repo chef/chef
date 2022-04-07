@@ -30,7 +30,7 @@ class Chef
           @merged_attributes = nil
           @combined_override = nil
           @combined_default = nil
-          @deep_merge_cache = {}
+          @deep_merge_cache = Chef::Node::ImmutableMash.new
         end
 
         # Invalidate a key in the deep_merge_cache.  If called with nil, or no arg, this will invalidate
@@ -39,9 +39,9 @@ class Chef
         # must invalidate the entire cache and re-deep-merge the entire node object.
         def reset_cache(path = nil)
           if path.nil?
-            deep_merge_cache.clear
+            deep_merge_cache.regular_clear
           else
-            deep_merge_cache.delete(path.to_s)
+            deep_merge_cache.regular_delete(path.to_s)
           end
         end
 
@@ -53,7 +53,7 @@ class Chef
                   deep_merge_cache[key.to_s]
                 else
                   # save all the work of computing node[key]
-                  deep_merge_cache[key.to_s] = merged_attributes(key)
+                  deep_merge_cache.internal_set(key.to_s, merged_attributes(key))
                 end
           ret = ret.call while ret.is_a?(::Chef::DelayedEvaluator)
           ret

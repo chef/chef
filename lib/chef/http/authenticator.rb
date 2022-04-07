@@ -100,6 +100,18 @@ class Chef
         self.class.retrieve_certificate_key(client_name)
       end
 
+      def get_cert_password
+        self.class.get_cert_password
+      end
+
+      def encrypt_pfx_pass
+        self.class.encrypt_pfx_pass
+      end
+
+      def decrypt_pfx_pass
+        self.class.decrypt_pfx_pass
+      end
+
       # Detects if a private key exists in a certificate repository like Keychain (macOS) or Certificate Store (Windows)
       #
       # @param client_name - we're using the node name to store and retrieve any keys
@@ -115,7 +127,7 @@ class Chef
 
       def self.check_certstore_for_key(client_name)
         powershell_code = <<~CODE
-          $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "#{client_name}" } -ErrorAction Stop
+          $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "chef-#{client_name}" } -ErrorAction Stop
           if (($cert.HasPrivateKey -eq $true) -and ($cert.PrivateKey.Key.ExportPolicy -ne "NonExportable")) {
             return $true
           }
@@ -129,17 +141,16 @@ class Chef
       def load_signing_key(key_file, raw_key = nil)
         results = retrieve_certificate_key(Chef::Config[:node_name])
 
-        if key_file == nil? && raw_key == nil?
-          puts "\nNo key detected\n"
-        elsif !!results
-          # results variable can be 1 of 2 values - "False" or the contents of a key.
+        if !!results
           @raw_key = results
+        elsif key_file == nil? && raw_key == nil?
+          puts "\nNo key detected\n"
         elsif !!key_file
           @raw_key = IO.read(key_file).strip
         elsif !!raw_key
           @raw_key = raw_key.strip
         else
-          return nil
+          return
         end
         # Pass in '' as the passphrase to avoid OpenSSL prompting on the TTY if
         # given an encrypted key. This also helps if using a single file for
@@ -154,7 +165,6 @@ class Chef
         raise Chef::Exceptions::InvalidPrivateKey, msg
       end
 
-      # takes no parameters. Checks for the password in the registry and returns it if there, otherwise returns false
       def self.get_cert_password
         @win32registry = Chef::Win32::Registry.new
         path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
@@ -166,58 +176,84 @@ class Chef
 
         present.each do |secret|
           if secret[:name] == "PfxPass"
-            return secret[:data]
+            password = decrypt_pfx_pass(secret[:data])
+            return password
           end
         end
 
-        # if we make it this far, that means there is no valid password in the Registry. Fail out to correct that.
         raise Chef::Exceptions::Win32RegKeyMissing
 
       rescue Chef::Exceptions::Win32RegKeyMissing
         # if we don't have a password, log that and generate one
-        Chef::Log.warn "Authentication Hive and value not present in registry, creating it now"
+        Chef::Log.warn "Authentication Hive and values not present in registry, creating them now"
         new_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
-        password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
-        values = { name: "PfxPass", type: :string, data: password }
+        size = 14
+        password = SOME_CHARS.sample(size).join
+        encrypted_pass = encrypt_pfx_pass(password)
+        values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
         password
+      end
+
+      def self.encrypt_pfx_pass(password)
+        powershell_code = <<~CODE
+          $encrypted_string = ConvertTo-SecureString "#{password}" -AsPlainText -Force
+          $secure_string = ConvertFrom-SecureString $encrypted_string
+          return $secure_string
+        CODE
+        powershell_exec!(powershell_code).result
+      end
+
+      def self.decrypt_pfx_pass(password)
+        powershell_code = <<~CODE
+          $secure_string = "#{password}" | ConvertTo-SecureString
+          $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
+          return $string
+        CODE
+        powershell_exec!(powershell_code).result
       end
 
       def self.retrieve_certificate_key(client_name)
         require "openssl" unless defined?(OpenSSL)
 
         if ChefUtils.windows?
-
           password = get_cert_password
-
           return false unless password
 
           if check_certstore_for_key(client_name)
-            powershell_code = <<~CODE
-                Try {
-                  $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
-                  $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "#{client_name}" } -ErrorAction Stop;
-                  $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
-                  Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
-                }
-                Catch {
-                  return $false
-                }
-            CODE
-            my_result = powershell_exec!(powershell_code).result
+            ps_blob = powershell_exec!(get_the_key_ps(client_name, password)).result
+            file_path = ps_blob["PSPath"].split("::")[1]
+            pkcs = OpenSSL::PKCS12.new(File.binread(file_path), password)
 
-            if !!my_result
-              pkcs = OpenSSL::PKCS12.new(File.binread(my_result["PSPath"].split("::")[1]), password)
-              ::File.delete(my_result["PSPath"].split("::")[1])
-              return OpenSSL::PKey::RSA.new(pkcs.key.to_pem)
-            end
+            # We test the pfx we just extracted the private key from
+            # if that cert is expiring in 7 days or less we generate a new pfx/p12 object
+            # then we post the new public key from that to the client endpoint on
+            # chef server.
+            # is_certificate_expiring(pkcs)
+            File.delete(file_path)
+
+            return pkcs.key.private_to_pem
           end
         end
 
         false
+      end
+
+      def self.get_the_key_ps(client_name, password)
+        powershell_code = <<~CODE
+            Try {
+              $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
+              $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
+              $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
+              Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
+            }
+            Catch {
+              return $false
+            }
+        CODE
       end
 
       def authentication_headers(method, url, json_body = nil, headers = nil)

@@ -53,6 +53,22 @@ describe Chef::RunContext do
     expect(run_context.node).to eq(node)
   end
 
+  it "responds to #default_secret_service" do
+    expect(run_context).to respond_to(:default_secret_service)
+  end
+
+  it "responds to #default_secret_config" do
+    expect(run_context).to respond_to(:default_secret_config)
+  end
+
+  it "#default_secret_service defaults to nil" do
+    expect(run_context.default_secret_service).to eq(nil)
+  end
+
+  it "#default_secret_config defaults to {}" do
+    expect(run_context.default_secret_config).to eq({})
+  end
+
   it "loads up node[:cookbooks]" do
     expect(run_context.node[:cookbooks]).to eql(
       {

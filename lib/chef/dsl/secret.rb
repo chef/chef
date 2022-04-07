@@ -21,6 +21,118 @@ class Chef
   module DSL
     module Secret
 
+      #
+      # This allows you to set the default secret service that is used when
+      # fetching secrets.
+      #
+      # @example
+      #
+      #   default_secret_service :hashi_vault
+      #   val1 = secret(name: "test1", config: { region: "us-west-1" })
+      #
+      # @example
+      #
+      #   default_secret_service #=> nil
+      #   default_secret_service :hashi_vault
+      #   default_secret_service #=> :hashi_vault
+      #
+      # @param [Symbol] service default secret service to use when fetching secrets
+      # @return [Symbol, nil] default secret service to use when fetching secrets
+      #
+      def default_secret_service(service = nil)
+        return run_context.default_secret_service if service.nil?
+        raise Chef::Exceptions::Secret::InvalidFetcherService.new("Unsupported secret service: #{service.inspect}", Chef::SecretFetcher::SECRET_FETCHERS) unless Chef::SecretFetcher::SECRET_FETCHERS.include?(service)
+
+        run_context.default_secret_service = service
+      end
+
+      #
+      # This allows you to set the secret service for the scope of the block
+      # passed into this method.
+      #
+      # @example
+      #
+      #   with_secret_service :hashi_vault do
+      #     val1 = secret(name: "test1", config: { region: "us-west-1" })
+      #     val2 = secret(name: "test2", config: { region: "us-west-1" })
+      #   end
+      #
+      # @example Combine with #with_secret_config
+      #
+      #   with_secret_service :hashi_vault do
+      #     with_secret_config region: "us-west-1" do
+      #       val1 = secret(name: "test1")
+      #       val2 = secret(name: "test2")
+      #     end
+      #   end
+      #
+      # @param [Symbol] service The default secret service to use when fetching secrets
+      #
+      def with_secret_service(service)
+        raise ArgumentError, "You must pass a block to #with_secret_service" unless block_given?
+
+        begin
+          old_service = default_secret_service
+          # Use "public" API for input validation
+          default_secret_service(service)
+          yield
+        ensure
+          # Use "private" API so we can set back to nil
+          run_context.default_secret_service = old_service
+        end
+      end
+
+      #
+      # This allows you to set the default secret config that is used when
+      # fetching secrets.
+      #
+      # @example
+      #
+      #   default_secret_config region: "us-west-1"
+      #   val1 = secret(name: "test1", service: :hashi_vault)
+      #
+      # @example
+      #
+      #   default_secret_config #=> {}
+      #   default_secret_service region: "us-west-1"
+      #   default_secret_service #=> { region: "us-west-1" }
+      #
+      # @param [Hash<Symbol,Object>] config The default configuration options to apply when fetching secrets
+      # @return [Hash<Symbol,Object>]
+      #
+      def default_secret_config(**config)
+        return run_context.default_secret_config if config.empty?
+
+        run_context.default_secret_config = config
+      end
+
+      #
+      # This allows you to set the secret config for the scope of the block
+      # passed into this method.
+      #
+      # @example
+      #
+      #   with_secret_config region: "us-west-1" do
+      #     val1 = secret(name: "test1", service: :hashi_vault)
+      #     val2 = secret(name: "test2", service: :hashi_vault)
+      #   end
+      #
+      # @param [Hash<Symbol,Object>] config The default configuration options to use when fetching secrets
+      #
+      def with_secret_config(**config)
+        raise ArgumentError, "You must pass a block to #with_secret_config" unless block_given?
+
+        begin
+          old_config = default_secret_config
+          # Use "public" API for input validation
+          default_secret_config(**config)
+          yield
+        ensure
+          # Use "private" API so we can set back to nil
+          run_context.default_secret_config = old_config
+        end
+      end
+
       # Helper method which looks up a secret using the given service and configuration,
       # and returns the retrieved secret value.
       # This DSL providers a wrapper around [Chef::SecretFetcher]
@@ -49,7 +161,7 @@ class Chef
       #
       #   value = secret(name: "test1", service: :aws_secrets_manager, version: "v1", config: { region: "us-west-1" })
       #   log "My secret is #{value}"
-      def secret(name: nil, version: nil, service: nil, config: {})
+      def secret(name: nil, version: nil, service: default_secret_service, config: default_secret_config)
         Chef::Log.warn <<~EOM.gsub("\n", " ")
           The secrets Chef Infra language helper is currently in beta. If you have feedback or you would
           like to be part of the future design of this helper e-mail us at secrets_management_beta@progress.com"

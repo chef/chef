@@ -42,12 +42,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.0.76)
+    chef (18.0.87)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.76)
-      chef-utils (= 18.0.76)
+      chef-config (= 18.0.87)
+      chef-utils (= 18.0.87)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -75,13 +75,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.0.76-universal-mingw32)
+    chef (18.0.87-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.76)
+      chef-config (= 18.0.87)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 18.0.76)
+      chef-utils (= 18.0.87)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -124,15 +124,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.0.76)
-      chef (= 18.0.76)
+    chef-bin (18.0.87)
+      chef (= 18.0.87)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.0.76)
+    chef-config (18.0.87)
       addressable
-      chef-utils (= 18.0.76)
+      chef-utils (= 18.0.87)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -141,7 +141,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.0.76)
+    chef-utils (18.0.87)
       concurrent-ruby
 
 GEM
@@ -227,6 +227,7 @@ GEM
       net-ssh
     ffi (1.15.5)
     ffi (1.15.5-x64-mingw32)
+    ffi (1.15.5-x64-unknown)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
@@ -498,6 +499,7 @@ GEM
 PLATFORMS
   ruby
   x64-mingw32
+  x64-unknown
   x86-mingw32
 
 DEPENDENCIES

@@ -1,17 +1,28 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.76 -->
-## [v18.0.76](https://github.com/chef/chef/tree/v18.0.76) (2022-03-25)
+<!-- latest_release 18.0.87 -->
+## [v18.0.87](https://github.com/chef/chef/tree/v18.0.87) (2022-04-05)
 
 #### Merged Pull Requests
-- Package resource was calling a non-existent error method [#12722](https://github.com/chef/chef/pull/12722) ([johnmccrae](https://github.com/johnmccrae))
+- Updating gemfile.locks [#12751](https://github.com/chef/chef/pull/12751) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating gemfile.locks [#12751](https://github.com/chef/chef/pull/12751) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.87 -->
+- Rest Resource Support [#12755](https://github.com/chef/chef/pull/12755) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.86 -->
+- Bump omnibus-software in Gemfile.lock [#12754](https://github.com/chef/chef/pull/12754) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 18.0.85 -->
+- Bump libxslt to 1.1.35 [#12752](https://github.com/chef/chef/pull/12752) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 18.0.84 -->
+- Fix attribute performance issues in node.read [#12742](https://github.com/chef/chef/pull/12742) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.83 -->
+- Add rubygems_url property to chef_client_config resource [#12724](https://github.com/chef/chef/pull/12724) ([DecoyJoe](https://github.com/DecoyJoe)) <!-- 18.0.82 -->
+- Bump libxml2 to 2.9.13 [#12739](https://github.com/chef/chef/pull/12739) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.81 -->
+- avoid coercion to block for new plist file content, fix adding a new dictionary  [#12680](https://github.com/chef/chef/pull/12680) ([jazaval](https://github.com/jazaval)) <!-- 18.0.80 -->
+- Add support for default secret service and config [#12140](https://github.com/chef/chef/pull/12140) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.79 -->
+- Client code to put a certificate into the certstore and then retrieve it later during a chef-run. Unit tests included [#12640](https://github.com/chef/chef/pull/12640) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.78 -->
+- update libxml2 to 2.9.12 [#12730](https://github.com/chef/chef/pull/12730) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.77 -->
 - Package resource was calling a non-existent error method [#12722](https://github.com/chef/chef/pull/12722) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.76 -->
 - update chef client launchd to run at load [#12706](https://github.com/chef/chef/pull/12706) ([rishichawda](https://github.com/rishichawda)) <!-- 18.0.75 -->
 - Enable ruby 3.1 testing on verify pipeline for unix, fix breakage [#12695](https://github.com/chef/chef/pull/12695) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.74 -->

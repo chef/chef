@@ -208,6 +208,10 @@ class Chef
         description: %q(An array of hashes that contain a report handler class and the arguments to pass to that class on initialization. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
 
+      property :rubygems_url, [String, Array],
+        description: "The location to source rubygems. It can be set to a string or array of strings for URIs to set as rubygems sources. This allows individuals to setup an internal mirror of rubygems for “airgapped” environments.",
+        introduced: "17.11"
+
       property :exception_handlers, Array,
         description: %q(An array of hashes that contain a exception handler class and the arguments to pass to that class on initialization. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
@@ -295,6 +299,7 @@ class Chef
             policy_group: new_resource.policy_group,
             policy_name: new_resource.policy_name,
             report_handlers: format_handler(new_resource.report_handlers),
+            rubygems_url: new_resource.rubygems_url,
             ssl_verify_mode: new_resource.ssl_verify_mode,
             start_handlers: format_handler(new_resource.start_handlers),
             additional_config: new_resource.additional_config,
