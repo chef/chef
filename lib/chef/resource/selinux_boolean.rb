@@ -22,7 +22,8 @@ class Chef
 
       provides :selinux_boolean
 
-      description "Set SELinux boolean values."
+      description "Use **selinux_boolean** resource to set SELinux boolean values."
+      introduced "18.0"
       examples <<~DOC
       **Set ssh_keysign to true**:
 
@@ -43,18 +44,18 @@ class Chef
 
       property :boolean, String,
         name_property: true,
-        description: "SELinux boolean to set"
+        description: "SELinux boolean to set."
 
       property :value, [Integer, String, true, false],
         required: true,
         equal_to: %w{on off},
         coerce: proc { |p| selinux_bool(p) },
-        description: "SELinux boolean value"
+        description: "SELinux boolean value."
 
       property :persistent, [true, false],
         default: true,
         desired_state: false,
-        description: "Set to true for value setting to survive reboot"
+        description: "Set to true for value setting to survive reboot."
 
       load_current_value do |new_resource|
         value shell_out!("getsebool #{new_resource.boolean}").stdout.split("-->").map(&:strip).last
@@ -64,7 +65,7 @@ class Chef
         include Chef::SELinux::CommonHelpers
       end
 
-      action :set do
+      action :set , description: "Set the state of the boolean." do
         if selinux_disabled?
           Chef::Log.warn("Unable to set SELinux boolean #{new_resource.name} as SELinux is disabled")
           return

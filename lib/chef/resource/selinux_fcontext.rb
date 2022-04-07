@@ -22,7 +22,8 @@ class Chef
 
       provides :selinux_fcontext
 
-      description "Set the SELinux context of files with semanage fcontext."
+      description "Use **selinux_fcontext** resource to set the SELinux context of files with semanage fcontext."
+      introduced "18.0"
       examples <<~DOC
       **Allow http servers (e.g. nginx/apache) to modify moodle files**:
 
@@ -44,16 +45,16 @@ class Chef
 
       property :file_spec, String,
                 name_property: true,
-                description: "Path to or regex matching the files or directories to label"
+                description: "Path to or regex matching the files or directories to label."
 
       property :secontext, String,
                 required: %i{add modify manage},
-                description: "SELinux context to assign"
+                description: "SELinux context to assign."
 
       property :file_type, String,
                 default: "a",
                 equal_to: %w{a f d c b s l p},
-                description: "The type of the file being labeled"
+                description: "The type of the file being labeled."
 
       action_class do
         include Chef::SELinux::CommonHelpers
@@ -100,18 +101,18 @@ class Chef
         end
       end
 
-      action :manage do
+      action :manage, description: "Assign the file to the right context regardless of previous state." do
         run_action(:add)
         run_action(:modify)
       end
 
-      action :addormodify do
+      action :addormodify, description: "Assign the file context if not set. Update the file context if previously set." do
         Chef::Log.warn("The :addormodify action for selinux_fcontext is deprecated and will be removed in a future release. Use the :manage action instead.")
         run_action(:manage)
       end
 
       # Create if doesn't exist, do not touch if fcontext is already registered
-      action :add do
+      action :add, description: "Assign the file context if not set." do
         if selinux_disabled?
           Chef::Log.warn("Unable to add SELinux fcontext #{new_resource.name} as SELinux is disabled")
           return
@@ -126,7 +127,7 @@ class Chef
       end
 
       # Only modify if fcontext exists & doesn't have the correct label already
-      action :modify do
+      action :modify, description: "Update the file context if previously set." do
         if selinux_disabled?
           Chef::Log.warn("Unable to modify SELinux fcontext #{new_resource.name} as SELinux is disabled")
           return
@@ -141,7 +142,7 @@ class Chef
       end
 
       # Delete if exists
-      action :delete do
+      action :delete, description: "Removes the file context if set. " do
         if selinux_disabled?
           Chef::Log.warn("Unable to delete SELinux fcontext #{new_resource.name} as SELinux is disabled")
           return

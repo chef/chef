@@ -20,7 +20,8 @@ class Chef
 
       provides :selinux_install
 
-      description "Encapsulates the set of selinux packages to install in order to manage selinux. It also ensures the directory /etc/selinux is created."
+      description "Use **selinux_install** resource to encapsulates the set of selinux packages to install in order to manage selinux. It also ensures the directory `/etc/selinux` is created."
+      introduced "18.0"
       examples <<~DOC
       **Default installation**:
 
@@ -35,16 +36,23 @@ class Chef
         packages %w(policycoreutils selinux-policy selinux-policy-targeted)
       end
       ```
+
+      **Uninstall**
+      ```ruby
+      selinux_install 'example' do
+        action :remove
+      end
+      ```
       DOC
 
       property :packages, [String, Array],
                 default: lazy { default_install_packages },
-                description: "SELinux packages for system"
+                description: "SELinux packages for system."
 
       action_class do
         def do_package_action(action)
           # friendly message for unsupported platforms
-          raise "The platform #{node["platform"]} is not currently supported by the `selinux_install` resource. Please file an issue at https://github.com/sous-chefs/selinux/issues/new with details on the platform this cookbook is running on." if new_resource.packages.nil?
+          raise "The platform #{node["platform"]} is not currently supported by the `selinux_install` resource. Please file an issue at https://github.com/chef/chef/issues with details on the platform this cookbook is running on." if new_resource.packages.nil?
 
           package "selinux" do
             package_name new_resource.packages
@@ -53,7 +61,7 @@ class Chef
         end
       end
 
-      action :install do
+      action :install, description: "Install required packages." do
         do_package_action(action)
 
         directory "/etc/selinux" do
@@ -64,10 +72,12 @@ class Chef
         end
       end
 
-      %i{upgrade remove}.each do |a|
-        action a do
-          do_package_action(a)
-        end
+      action :upgrade, description: "Upgrade required packages." do
+        do_package_action(a)
+      end
+
+      action :remove, description: "Remove any SELinux-related packages." do
+        do_package_action(a)
       end
 
       private

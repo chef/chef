@@ -21,7 +21,8 @@ class Chef
 
       provides :selinux_state
 
-      description "Manages the SELinux state on the system. It does this by using the setenforce command and rendering the /etc/selinux/config file from a template."
+      description "Use **selinux_state** resource to manages the SELinux state on the system. It does this by using the `setenforce` command and rendering the `/etc/selinux/config` file from a template."
+      introduced "18.0"
       examples <<~DOC
       **Set SELinux state to permissive**:
 
@@ -30,25 +31,41 @@ class Chef
         action :permissive
       end
       ```
+
+      **Set SELinux state to enforcing**:
+
+      ```ruby
+      selinux_state 'enforcing' do
+        action :enforcing
+      end
+      ```
+
+      **Set SELinux state to disabled**:
+      ```ruby
+      selinux_state 'disabled' do
+        action :disabled
+      end
+      ```
       DOC
 
       default_action :nothing
 
       property :config_file, String,
-                default: "/etc/selinux/config"
+                default: "/etc/selinux/config",
+                description: "Path to SELinux config file on disk."
 
       property :persistent, [true, false],
                 default: true,
-                description: "Persist status update to the selinux configuration file"
+                description: "Persist status update to the selinux configuration file."
 
       property :policy, String,
                 default: lazy { default_policy_platform },
                 equal_to: %w{default minimum mls src strict targeted},
-                description: "SELinux policy type"
+                description: "SELinux policy type."
 
       property :automatic_reboot, [true, false, Symbol],
                 default: false,
-                description: "Perform an automatic node reboot if required for state change"
+                description: "Perform an automatic node reboot if required for state change."
 
       deprecated_property_alias "temporary", "persistent", "The temporary property was renamed persistent in the 4.0 release of this cookbook. Please update your cookbooks to use the new property name."
 
@@ -89,7 +106,7 @@ class Chef
         end
       end
 
-      action :enforcing do
+      action :enforcing, description: "Set the SELinux state to enforcing." do
         unless selinux_disabled? || selinux_enforcing?
           execute "selinux-setenforce-enforcing" do
             command "/usr/sbin/setenforce 1"
@@ -106,7 +123,7 @@ class Chef
         node_selinux_restart if state_change_reboot_required?
       end
 
-      action :permissive do
+      action :permissive, description: "Set the SELinux state to permissive." do
         unless selinux_disabled? || selinux_permissive?
           execute "selinux-setenforce-permissive" do
             command "/usr/sbin/setenforce 0"
@@ -123,7 +140,7 @@ class Chef
         node_selinux_restart if state_change_reboot_required?
       end
 
-      action :disabled do
+      action :disabled, description: "Set the SELinux state to disabled. **NOTE**: Switching to or from disabled requires a reboot!" do
         raise "A non-persistent change to the disabled SELinux status is not possible." unless new_resource.persistent
 
         render_selinux_template(action)

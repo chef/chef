@@ -30,9 +30,8 @@ include_recipe "::_yum" if platform_family?("rhel")
 if platform_family?("rhel", "fedora", "amazon")
   selinux_install "selinux"
 
-  selinux_state "disabled" do
-    automatic_reboot true
-    action :disabled
+  selinux_state 'permissive' do
+    action :permissive
   end
 end
 

@@ -21,7 +21,8 @@ class Chef
 
       provides :selinux_port
 
-      description "Allows assigning a network port to a certain SELinux context, e.g. for running a webserver on a non-standard port."
+      description "Use **selinux_port** resource to allows assigning a network port to a certain SELinux context, e.g. for running a webserver on a non-standard port."
+      introduced "18.0"
       examples <<~DOC
       **Allow nginx/apache to bind to port 5678 by giving it the http_port_t context**:
 
@@ -36,16 +37,16 @@ class Chef
       property :port, [Integer, String],
                 name_property: true,
                 regex: /^\d+$/,
-                description: "Port to modify"
+                description: "Port to modify."
 
       property :protocol, String,
                 equal_to: %w{tcp udp},
                 required: %i{manage add modify},
-                description: "Protocol to modify"
+                description: "Protocol to modify."
 
       property :secontext, String,
                 required: %i{manage add modify},
-                description: "SELinux context to assign to the port"
+                description: "SELinux context to assign to the port."
 
       action_class do
         include Chef::SELinux::CommonHelpers
@@ -60,18 +61,18 @@ class Chef
         end
       end
 
-      action :manage do
+      action :manage, description: "Assign the port to the right context regardless of previous state." do
         run_action(:add)
         run_action(:modify)
       end
 
-      action :addormodify do
+      action :addormodify, description: "Assigns the port context if not set. Updates the port context if previously set." do
         Chef::Log.warn("The :addormodify action for selinux_port is deprecated and will be removed in a future release. Use the :manage action instead.")
         run_action(:manage)
       end
 
       # Create if doesn't exist, do not touch if port is already registered (even under different type)
-      action :add do
+      action :add, description: "Assign the port context if not set." do
         if selinux_disabled?
           Chef::Log.warn("Unable to add SELinux port #{new_resource.name} as SELinux is disabled")
           return
@@ -85,7 +86,7 @@ class Chef
       end
 
       # Only modify port if it exists & doesn't have the correct context already
-      action :modify do
+      action :modify, description: "Update the port context if previously set." do
         if selinux_disabled?
           Chef::Log.warn("Unable to modify SELinux port #{new_resource.name} as SELinux is disabled")
           return
@@ -99,7 +100,7 @@ class Chef
       end
 
       # Delete if exists
-      action :delete do
+      action :delete, description: "Removes the port context if set." do
         if selinux_disabled?
           Chef::Log.warn("Unable to delete SELinux port #{new_resource.name} as SELinux is disabled")
           return

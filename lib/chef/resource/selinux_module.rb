@@ -20,9 +20,10 @@ class Chef
 
       provides :selinux_module
 
-      description "Create an SELinux policy module from a cookbook file or content provided as a string."
+      description "Use **selinux_module** module resource to create an SELinux policy module from a cookbook file or content provided as a string."
+      introduced "18.0"
       examples <<~DOC
-      **Creating SElinux module from .te file**:
+      **Creating SElinux module from .te file located at `files` directory of your cookbook.**:
 
       ```ruby
       selinux_module 'my_policy_module' do
@@ -34,13 +35,13 @@ class Chef
 
       property :module_name, String,
                 name_property: true,
-                description: "Override the module name"
+                description: "Override the module name."
 
       property :source, String,
-                description: "Module source file name"
+                description: "Module source file name."
 
       property :content, String,
-                description: "Module source as String"
+                description: "Module source as String."
 
       property :cookbook, String,
                 description: "Cookbook to source from module source file from(if it is not located in the current cookbook). The default value is the current cookbook.",
@@ -48,7 +49,7 @@ class Chef
 
       property :base_dir, String,
                 default: "/etc/selinux/local",
-                description: "Directory to create module source file in"
+                description: "Directory to create module source file in."
 
       action_class do
         def selinux_module_filepath(type)
@@ -61,7 +62,7 @@ class Chef
         end
       end
 
-      action :create do
+      action :create, description: "Compile a module and install it." do
         directory new_resource.base_dir
 
         if property_is_set?(:content)
@@ -110,7 +111,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Remove module source files from `/etc/selinux/local`." do
         %w{fc if pp te}.each do |type|
           next unless ::File.exist?(selinux_module_filepath(type))
 
@@ -120,7 +121,7 @@ class Chef
         end
       end
 
-      action :install do
+      action :install, description: "Install a compiled module into the system." do
         raise "Module must be compiled before it can be installed, no 'pp' file found at: '#{selinux_module_filepath("pp")}'" unless ::File.exist?(selinux_module_filepath("pp"))
 
         unless list_installed_modules.include? new_resource.module_name
@@ -130,7 +131,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a module from the system." do
         if list_installed_modules.include? new_resource.module_name
           converge_by "Remove SELinux module #{new_resource.module_name}" do
             shell_out!("semodule --remove '#{new_resource.module_name}'")

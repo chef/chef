@@ -20,7 +20,8 @@ class Chef
 
       provides :selinux_permissive
 
-      description "Allows some types to misbehave without stopping them. Not as good as specific policies, but better than disabling SELinux entirely."
+      description "Use **selinux_permissive** resource to allows some types to misbehave without stopping them. Not as good as specific policies, but better than disabling SELinux entirely."
+      introduced "18.0"
       examples <<~DOC
       **Disable enforcement on Apache**:
 
@@ -33,7 +34,7 @@ class Chef
 
       property :context, String,
                 name_property: true,
-                description: "The SELinux context to permit"
+                description: "The SELinux context to permit."
 
       action_class do
         def current_permissives
@@ -42,7 +43,7 @@ class Chef
       end
 
       # Create if doesn't exist, do not touch if permissive is already registered (even under different type)
-      action :add do
+      action :add, description: "Add a permissive, unless already set." do
         unless current_permissives.include? new_resource.context
           converge_by "adding permissive context #{new_resource.context}" do
             shell_out!("semanage permissive -a '#{new_resource.context}'")
@@ -51,7 +52,7 @@ class Chef
       end
 
       # Delete if exists
-      action :delete do
+      action :delete, description: "Remove a permissive, if set." do
         if current_permissives.include? new_resource.context
           converge_by "deleting permissive context #{new_resource.context}" do
             shell_out!("semanage permissive -d '#{new_resource.context}'")
