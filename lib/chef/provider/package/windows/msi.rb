@@ -18,7 +18,7 @@
 
 # TODO: Allow new_resource.source to be a Product Code as a GUID for uninstall / network install
 
-require_relative "../../../win32/api/installer" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+require_relative "../../../win32/api/installer" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
 require_relative "../../../mixin/shell_out"
 
 class Chef
@@ -26,7 +26,7 @@ class Chef
     class Package
       class Windows
         class MSI
-          include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+          include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           include Chef::Mixin::ShellOut
 
           def initialize(resource, uninstall_entries)
