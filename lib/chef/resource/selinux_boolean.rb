@@ -58,7 +58,7 @@ class Chef
         description: "Set to true for value setting to survive reboot."
 
       load_current_value do |new_resource|
-        value shell_out!("getsebool #{new_resource.boolean}").stdout.split("-->").map(&:strip).last
+        value shell_out!("getsebool", new_resource.boolean).stdout.split("-->").map(&:strip).last
       end
 
       action_class do
