@@ -274,27 +274,27 @@ steps:
         single-use: true
         shell: ["powershell", "-Command"]
 
-- label: "Integration Windows :ruby: 3.0"
+- label: "Integration Windows :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:3.0
+        image: rubydistros/windows-2019:3.1
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 3.0"
+- label: "Unit Windows :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:3.0
+        image: rubydistros/windows-2019:3.1
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
