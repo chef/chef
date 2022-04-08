@@ -11,7 +11,7 @@ bundle --version
 if (-not $?) { throw "Can't run Bundler. Is it installed?" }
 
 echo "--- bundle install"
-bundle config set --local without omnibus_package
+bundle config set --local without omnibus_package without ruby_shadow
 bundle config set --local path 'vendor/bundle'
 bundle install --jobs=3 --retry=3
 if (-not $?) { throw "Unable to install gem dependencies" }

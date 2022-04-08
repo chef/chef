@@ -21,6 +21,7 @@ winrm quickconfig -q
 
 Write-Output "--- bundle install"
 bundle config set --local without 'omnibus_package'
+bundle config set --local without 'ruby_shadow'
 bundle install --jobs=3 --retry=3
 if (-not $?) { throw "Unable to install gem dependencies" }
 
