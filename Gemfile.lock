@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: db6480f47f37954b9d3ac1fbb7837fbdb474646a
+  revision: ecac9bc41e7aff16786af373029d685ac7f558d4
   branch: main
   specs:
-    ohai (18.0.9)
+    ohai (18.0.10)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -226,8 +226,8 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
+    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x64-unknown)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
@@ -411,7 +411,7 @@ GEM
       date
     timeout (0.2.0)
     tomlrb (1.3.0)
-    train-core (3.8.9)
+    train-core (3.9.2)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
