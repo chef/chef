@@ -58,7 +58,7 @@ class Chef
         description: "Icon to use for the shortcut. Accepts the format of `path, index`, where index is the icon file to use. See Microsoft's [documentation](https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx) for details"
 
       load_current_value do |new_resource|
-        require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+        require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
 
         link = WIN32OLE.new("WScript.Shell").CreateShortcut(new_resource.shortcut_name)
         name new_resource.shortcut_name

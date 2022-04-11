@@ -275,7 +275,7 @@ module ChefUtils
       # @return [Boolean]
       #
       def windows_ruby?
-        !!(RUBY_PLATFORM =~ /mswin|mingw32|windows/)
+        !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
       end
 
       #
