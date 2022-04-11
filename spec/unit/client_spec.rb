@@ -300,6 +300,7 @@ describe Chef::Client, :windows_only do
       end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
     end
   end
+
   # include_context "client"
   before(:each) do
     Chef::Config[:migrate_key_to_keystore] = true
@@ -321,7 +322,6 @@ describe Chef::Client, :windows_only do
       cert_object = new_pfx.certificate.public_key.to_pem
       expect(cert_object.to_s).to match(/PUBLIC KEY/)
     end
-
   end
 
   def delete_certificate(cert_name)

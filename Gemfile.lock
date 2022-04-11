@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: db6480f47f37954b9d3ac1fbb7837fbdb474646a
+  revision: ecac9bc41e7aff16786af373029d685ac7f558d4
   branch: main
   specs:
-    ohai (18.0.9)
+    ohai (18.0.10)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -347,7 +347,7 @@ GEM
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.2.1)
+    regexp_parser (2.3.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -391,7 +391,7 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.16.0)
+    rubocop-ast (1.17.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
@@ -411,7 +411,7 @@ GEM
       date
     timeout (0.2.0)
     tomlrb (1.3.0)
-    train-core (3.8.9)
+    train-core (3.9.2)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
