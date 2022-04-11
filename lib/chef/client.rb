@@ -756,7 +756,7 @@ class Chef
         cert_hash = cert_list.reduce({}, :merge!)
         old_cert_name = cert_hash["name"]
         new_key = new_pfx.key.to_pem
-        file_path = File.join(Chef::Config['file_cache_path'], "temp.pem")
+        file_path = File.join(Chef::Config["file_cache_path"], "temp.pem")
         File.open(file_path, "w") { |f| f.write new_key }
         client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: file_path)
         client.delete(base_url + "/clients/#{node}/keys/#{old_cert_name}")
