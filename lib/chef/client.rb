@@ -649,6 +649,9 @@ class Chef
         result = check_certstore_for_key(cert_name)
         if result.rassoc("#{cert_name}")
           logger.trace("Client key #{config[:client_key]} is present in Certificate Store - skipping registration")
+        elsif File.exists?(config[:client_key]) # client.pem is on disk, client is already registered, moving the
+          update_key_and_register(cert_name)
+          logger.trace("Existing client keys migrated to the Certificate Store - skipping registration")
         else
           create_new_key_and_register(cert_name)
           logger.trace("New client keys created in the Certificate Store - skipping registration")
@@ -715,11 +718,57 @@ class Chef
       pfx
     end
 
-    def create_new_key_and_register(cert_name)
+    def update_key_and_register(cert_name)
+      # Chef client and node objects exist on Chef Server already
+      # Create a new public/private keypair in secure storage
+      # and register the new public cert with Chef Server
       require "time" unless defined?(Time)
       autoload :URI, "uri"
 
-      # KeyMigration.instance.key_migrated = true
+      node = Chef::Config[:node_name]
+      d = Time.now
+      if d.month == 10 || d.month == 11 || d.month == 12
+        end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
+      else
+        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+      end
+
+      new_cert_name = Time.now.iso8601
+      payload = {
+        name: new_cert_name,
+        clientname: node,
+        public_key: "",
+        expiration_date: end_date,
+      }
+
+      new_pfx = generate_pfx_package(cert_name, end_date)
+      payload[:public_key] = new_pfx.certificate.public_key.to_pem
+      base_url = "#{Chef::Config[:chef_server_url]}"
+      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: Chef::Config[:client_key])
+      cert_list = client.get(base_url + "/clients/#{node}/keys")
+      client.post(base_url + "/clients/#{node_name}/keys", payload)
+
+      # We want to remove the old key for various reasons
+      # In the case where more than 1 certificate is returned we assume
+      # there is some special condition applied to the client so we won't delete the old
+      # certificates
+      if cert_list.count < 2
+        cert_hash = cert_list.reduce({}, :merge!)
+        old_cert_name = cert_hash["name"]
+        new_key = new_pfx.key.to_pem
+        file_path = File.join(Chef::Config['file_cache_path'], "temp.pem")
+        File.open(file_path, "w") { |f| f.write new_key }
+        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: file_path)
+        client.delete(base_url + "/clients/#{node}/keys/#{old_cert_name}")
+        File.delete(file_path)
+      end
+
+      import_pfx_to_store(new_pfx)
+    end
+
+    def create_new_key_and_register(cert_name)
+      require "time" unless defined?(Time)
+      autoload :URI, "uri"
 
       node = Chef::Config[:node_name]
       d = Time.now
