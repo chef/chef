@@ -17,6 +17,12 @@ end
 
 gem "cheffish", ">= 17"
 
+# Pre-compiled unf_ext gem in rubygems.org has broken ruby version constraints which prevent it
+# from installing in ruby 3.1.1 on 64 bit Windows so we need to install it from source until the
+# issue is resolved.
+# reference: https://github.com/knu/ruby-unf_ext/issues/66
+gem "unf_ext", git: "https://github.com/knu/ruby-unf_ext", tag: "v0.0.8.1"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
