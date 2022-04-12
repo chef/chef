@@ -39,6 +39,13 @@ GIT
   specs:
     ruby-shadow (2.5.0)
 
+GIT
+  remote: https://github.com/knu/ruby-unf_ext
+  revision: 269d6719d30fb59e1167d305d770a400e7b5115f
+  tag: v0.0.8.1
+  specs:
+    unf_ext (0.0.8.1)
+
 PATH
   remote: .
   specs:
@@ -441,9 +448,6 @@ GEM
       tty-screen (~> 0.8)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8)
-    unf_ext (0.0.8-x64-mingw32)
-    unf_ext (0.0.8-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -523,6 +527,7 @@ DEPENDENCIES
   rb-readline
   rspec
   ruby-shadow!
+  unf_ext!
   webmock
 
 BUNDLED WITH
