@@ -719,6 +719,10 @@ class Chef
     end
 
     def update_key_and_register(cert_name)
+      self.class.update_key_and_register(cert_name)
+    end
+
+    def self.update_key_and_register(cert_name, expiring_cert = nil)
       # Chef client and node objects exist on Chef Server already
       # Create a new public/private keypair in secure storage
       # and register the new public cert with Chef Server
@@ -726,12 +730,8 @@ class Chef
       autoload :URI, "uri"
 
       node = Chef::Config[:node_name]
-      d = Time.now
-      if d.month == 10 || d.month == 11 || d.month == 12
-        end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
-      else
-        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
-      end
+      end_date = Time.new() + (3600 * 24 * 90)
+      end_date = end_date.utc.iso8601
 
       new_cert_name = Time.now.iso8601
       payload = {
@@ -744,7 +744,25 @@ class Chef
       new_pfx = generate_pfx_package(cert_name, end_date)
       payload[:public_key] = new_pfx.certificate.public_key.to_pem
       base_url = "#{Chef::Config[:chef_server_url]}"
-      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: Chef::Config[:client_key])
+
+      @tmpdir = Dir.mktmpdir
+      file_path = File.join(@tmpdir, "#{node}.pem")
+
+      # The pfx files expire every 90 days.
+      # We check them in /http/authenticator to see if they are expiring when we extract the private key
+      # If they are, we come here to update Chef Server with a new public key
+      if expiring_cert
+        File.open(file_path, "w") { |f| f.write expiring_cert.key.to_pem }
+        signing_cert = file_path
+        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: signing_cert )
+        File.delete(file_path)
+      else
+        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: Chef::Config[:client_key] )
+      end
+
+      # Get the list of keys for this client
+      # Then add the new key we just created
+      # Then we delete the old one.
       cert_list = client.get(base_url + "/clients/#{node}/keys")
       client.post(base_url + "/clients/#{node_name}/keys", payload)
 
@@ -756,7 +774,6 @@ class Chef
         cert_hash = cert_list.reduce({}, :merge!)
         old_cert_name = cert_hash["name"]
         new_key = new_pfx.key.to_pem
-        file_path = File.join(Chef::Config["file_cache_path"], "temp.pem")
         File.open(file_path, "w") { |f| f.write new_key }
         client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: file_path)
         client.delete(base_url + "/clients/#{node}/keys/#{old_cert_name}")
@@ -771,12 +788,8 @@ class Chef
       autoload :URI, "uri"
 
       node = Chef::Config[:node_name]
-      d = Time.now
-      if d.month == 10 || d.month == 11 || d.month == 12
-        end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
-      else
-        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
-      end
+      end_date = Time.new() + (3600 * 24 * 90)
+      end_date = end_date.utc.iso8601
 
       payload = {
         name: node,
