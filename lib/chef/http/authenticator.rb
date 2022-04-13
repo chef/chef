@@ -247,7 +247,7 @@ class Chef
       end
 
       def self.is_certificate_expiring?(pkcs)
-        today = Date.parse(Time.now().utc.iso8601)
+        today = Date.parse(Time.now.utc.iso8601)
         future = Date.parse(pkcs.certificate.not_after.iso8601)
         future.mjd - today.mjd <= 7
       end

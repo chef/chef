@@ -730,7 +730,7 @@ class Chef
       autoload :URI, "uri"
 
       node = Chef::Config[:node_name]
-      end_date = Time.new() + (3600 * 24 * 90)
+      end_date = Time.new + (3600 * 24 * 90)
       end_date = end_date.utc.iso8601
 
       new_cert_name = Time.now.iso8601
@@ -788,7 +788,7 @@ class Chef
       autoload :URI, "uri"
 
       node = Chef::Config[:node_name]
-      end_date = Time.new() + (3600 * 24 * 90)
+      end_date = Time.new + (3600 * 24 * 90)
       end_date = end_date.utc.iso8601
 
       payload = {
