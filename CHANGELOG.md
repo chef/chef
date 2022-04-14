@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.89 -->
-## [v18.0.89](https://github.com/chef/chef/tree/v18.0.89) (2022-04-11)
+<!-- latest_release 18.0.90 -->
+## [v18.0.90](https://github.com/chef/chef/tree/v18.0.90) (2022-04-12)
 
 #### Merged Pull Requests
-- SELinux integration to infra client [#12694](https://github.com/chef/chef/pull/12694) ([neha-p6](https://github.com/neha-p6))
+- Updates for the chef_client_config resource [#12732](https://github.com/chef/chef/pull/12732) ([chef-davin](https://github.com/chef-davin))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updates for the chef_client_config resource [#12732](https://github.com/chef/chef/pull/12732) ([chef-davin](https://github.com/chef-davin)) <!-- 18.0.90 -->
 - SELinux integration to infra client [#12694](https://github.com/chef/chef/pull/12694) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.89 -->
 - Updating For Ruby 3.1 [#12769](https://github.com/chef/chef/pull/12769) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.88 -->
 - Updating gemfile.locks [#12751](https://github.com/chef/chef/pull/12751) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.87 -->
