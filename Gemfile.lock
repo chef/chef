@@ -41,10 +41,10 @@ GIT
 
 GIT
   remote: https://github.com/knu/ruby-unf_ext
-  revision: 269d6719d30fb59e1167d305d770a400e7b5115f
-  tag: v0.0.8.1
+  revision: 533a29df68d510b12ef4413742fd5038670d98ca
+  tag: v0.0.8.2.beta
   specs:
-    unf_ext (0.0.8.1)
+    unf_ext (0.0.8.2.beta)
 
 PATH
   remote: .
