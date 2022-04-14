@@ -83,7 +83,7 @@ class Chef
 
         # install the font into the appropriate fonts directory
         def install_font
-          require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+          require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           fonts_dir = Chef::Util::PathHelper.join(ENV["windir"], "fonts")
           folder = WIN32OLE.new("Shell.Application").Namespace(fonts_dir)
           converge_by("install font #{new_resource.font_name} to #{fonts_dir}") do
@@ -95,7 +95,7 @@ class Chef
         #
         # @return [Boolean] Is the font is installed?
         def font_exists?
-          require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+          require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           fonts_dir = WIN32OLE.new("WScript.Shell").SpecialFolders("Fonts")
           fonts_dir_local = Chef::Util::PathHelper.join(ENV["home"], "AppData/Local/Microsoft/Windows/fonts")
           logger.trace("Seeing if the font at #{Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)} exists")
