@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require "knife_spec_helper"
 
 Chef::Knife::UserCreate.load_deps
@@ -80,7 +79,7 @@ describe Chef::Knife::UserCreate do
     before :each do
       @user = double("Chef::User")
       @key = "You don't come into cooking to get rich - Ramsay"
-      allow(@user).to receive(:[]).with("private_key").and_return(@key)
+      allow(@user).to receive(:[]).with("chef_key").and_return(@key)
       knife.config[:passwordprompt] = true
       knife.name_args = name_args
     end
@@ -97,7 +96,7 @@ describe Chef::Knife::UserCreate do
     before do
       @user = double("Chef::User")
       @key = "You don't come into cooking to get rich - Ramsay"
-      allow(@user).to receive(:[]).with("private_key").and_return(@key)
+      allow(@user).to receive(:[]).with("chef_key").and_return(@key)
       knife.name_args = %w{some_user some_display_name some_first_name some_last_name some_email some_password}
     end
 
@@ -177,17 +176,39 @@ describe Chef::Knife::UserCreate do
 
     describe "with user_name, first_name, last_name, email and password" do
       let(:name_args) { %w{some_user some_display_name some_first_name some_last_name test@email.com some_password} }
-
       before :each do
         @user = double("Chef::User")
         expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
         expect(root_rest).to receive(:post).and_return(@user)
-        @key = "You don't come into cooking to get rich - Ramsay"
-        allow(@user).to receive(:[]).with("private_key").and_return(@key)
+        @key = IO.read(File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"))
+        allow(@user).to receive(:[]).with("chef_key").and_return(nil)
+        knife.name_args = name_args
+      end
+
+      it "creates an user without private key" do
+        expect(knife.ui).to_not receive(:msg).with(@key)
+        knife.run
+      end
+    end
+
+    describe "with user_name, first_name, last_name, email and password" do
+      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name test@email.com some_password} }
+      before :each do
+        @user = double("Chef::User")
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
+        @username = "Created #{name_args.first}"
+        @key = IO.read(File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"))
+        allow(@user).to receive(:[]).with("chef_key").and_return("private_key" => @key)
         knife.name_args = name_args
       end
 
       it "creates an user" do
+        expect(knife.ui).to receive(:info).with(@username)
+        knife.run
+      end
+
+      it "creates an user private key" do
         expect(knife.ui).to receive(:msg).with(@key)
         knife.run
       end
@@ -204,7 +225,6 @@ describe Chef::Knife::UserCreate do
         }
 
         it "creates an user, associates a user, and adds it to the admins group" do
-
           expect(root_rest).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
           expect(root_rest).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
           knife.run
@@ -219,14 +239,20 @@ describe Chef::Knife::UserCreate do
         @user = double("Chef::User")
         expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
         expect(root_rest).to receive(:post).and_return(@user)
-        @key = "You don't come into cooking to get rich - Ramsay"
-        allow(@user).to receive(:[]).with("private_key").and_return(@key)
+        @username = "Created #{name_args.first}"
+        @key = IO.read(File.join(CHEF_SPEC_DATA, "ssl", "private_key.pem"))
+        allow(@user).to receive(:[]).with("chef_key").and_return("private_key" => @key)
         knife.name_args = name_args
         knife.config[:email] = "test@email.com"
         knife.config[:password] = "some_password"
       end
 
       it "creates an user" do
+        expect(knife.ui).to receive(:info).with(@username)
+        knife.run
+      end
+
+      it "creates an user private key" do
         expect(knife.ui).to receive(:msg).with(@key)
         knife.run
       end
