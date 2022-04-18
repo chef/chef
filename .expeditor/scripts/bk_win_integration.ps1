@@ -6,6 +6,6 @@ Set-Item -Path Env:Path -Value ("C:\Program Files\Git\mingw64\bin;C:\Program Fil
 
 winrm quickconfig -q
 
-echo "+++ bundle exec rake spec:integration"
-bundle exec rake spec:integration
+Write-Output "+++ bundle exec rake spec:integration"
+bundle exec rake spec:integration --trace
 if (-not $?) { throw "Chef integration specs failing." }
