@@ -38,6 +38,9 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 17.0"
   s.add_dependency "inspec-core", "~> 4.23"
 
+  # Added to resolve Ruby 3.1 testing failures
+  s.add_dependency "win32-api", "~> 1.10"
+
   s.add_dependency "ffi", ">= 1.5.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0" # remote_file resource
