@@ -79,6 +79,7 @@ class Chef
 
       property :host, [String, Symbol],
         description: "Set either :current, :all or a hostname to set the user default at the host level.",
+        default: :all,
         desired_state: false,
         introduced: "16.3"
 
@@ -94,6 +95,7 @@ class Chef
 
       property :user, [String, Symbol],
         description: "The system user that the default will be applied to. Set :current for current user, :all for all users or pass a valid username",
+        default: :current,
         desired_state: false
 
       property :sudo, [TrueClass, FalseClass],
