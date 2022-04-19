@@ -46,6 +46,10 @@ describe Chef::Provider::User::Linux do
   end
 
   describe "manage_home behavior" do
+    before(:each) do
+      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+    end
 
     it "throws an error when trying to set supports manage_home: true" do
       expect { @new_resource.supports( manage_home: true ) }.to raise_error(NoMethodError)
@@ -75,6 +79,10 @@ describe Chef::Provider::User::Linux do
   end
 
   describe "expire_date behavior" do
+    before(:each) do
+      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+    end
 
     it "defaults expire_date to nil" do
       expect( @new_resource.expire_date ).to be nil
@@ -96,6 +104,10 @@ describe Chef::Provider::User::Linux do
   end
 
   describe "inactive behavior" do
+    before(:each) do
+      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+    end
 
     it "defaults inactive to nil" do
       expect( @new_resource.inactive ).to be nil
