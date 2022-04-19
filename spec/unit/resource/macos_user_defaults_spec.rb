@@ -40,11 +40,11 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
     end
 
     it ":all for the host property" do
-      expect(resource.host).to :all
+      expect(resource.host).to eq(:all)
     end
 
     it ":current for the user property" do
-      expect(resource.user).to :current
+      expect(resource.user).to eq(:current)
     end
 
     it ":write for resource action" do
