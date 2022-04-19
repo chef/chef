@@ -406,7 +406,7 @@ GEM
       ffi
     win32-mutex (0.4.3)
       win32-ipc (>= 0.6.0)
-    win32-process (0.9.0)
+    win32-process (0.10.0)
       ffi (>= 1.0.0)
     win32-service (2.3.2)
       ffi
