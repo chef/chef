@@ -176,6 +176,7 @@ steps:
 - label: "Integration openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - zypper clean --all
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
