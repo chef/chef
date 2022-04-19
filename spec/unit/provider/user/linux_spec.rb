@@ -40,11 +40,6 @@ describe Chef::Provider::User::Linux do
 
   include_examples "a useradd-based user provider", supported_useradd_options
 
-  before(:each) do
-    @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-    @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-  end
-
   describe "manage_home behavior" do
     before(:each) do
       @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
