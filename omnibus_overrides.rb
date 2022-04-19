@@ -7,8 +7,8 @@ override "libffi", version: "3.4.2"
 override "libiconv", version: "1.16"
 override "liblzma", version: "5.2.5"
 override "libtool", version: "2.4.2"
-override "libxml2", version: "2.9.10" if windows?
-override "libxslt", version: "1.1.34" if windows?
+override "libxml2", version: "2.9.13"
+override "libxslt", version: "1.1.35"
 override "libyaml", version: "0.1.7"
 override "makedepend", version: "1.0.5"
 override "ncurses", version: "5.9"
