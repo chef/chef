@@ -18,7 +18,7 @@
 #
 
 module Win32
-  autoload :Registry, File.expand_path("../../../monkey_patches/win32/registry", __dir__) if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+  autoload :Registry, File.expand_path("../../../monkey_patches/win32/registry", __dir__) if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
 end
 
 class Chef

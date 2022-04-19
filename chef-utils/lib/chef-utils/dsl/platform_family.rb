@@ -270,12 +270,17 @@ module ChefUtils
       # Determine if the Ruby VM is currently running on a Windows node (ChefSpec can never stub
       # this behavior, so this is useful for code which can never be parsed on a non-Windows box).
       #
+      # April 2022 - Note that we changed the platform identifier from 'mingw32' to 'mingw'
+      # We did this because Ruby 3.1 introduces the new universal windows platform of 'x64-mingw-ucrt'
+      # We updated the existing regex snippet to capture both the 32-bit platform and the new x64
+      # universal platform
+      #
       # @since 15.5
       #
       # @return [Boolean]
       #
       def windows_ruby?
-        !!(RUBY_PLATFORM =~ /mswin|mingw32|windows/)
+        !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
       end
 
       #
