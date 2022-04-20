@@ -38,13 +38,14 @@ describe Chef::Provider::User::Linux do
     "inactive" => "-f",
   }
 
+  before(:each) do
+    @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+    @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
+  end
+
   include_examples "a useradd-based user provider", supported_useradd_options
 
   describe "manage_home behavior" do
-    before(:each) do
-      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-    end
 
     it "throws an error when trying to set supports manage_home: true" do
       expect { @new_resource.supports( manage_home: true ) }.to raise_error(NoMethodError)
@@ -74,52 +75,44 @@ describe Chef::Provider::User::Linux do
   end
 
   describe "expire_date behavior" do
-    before(:each) do
-      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-    end
 
     it "defaults expire_date to nil" do
       expect( @new_resource.expire_date ).to be nil
     end
 
     it "by default expire_date is nil and we use ''" do
-      expect( provider.useradd_options ).to eql([""])
+      expect( provider.universal_options ).to eql([])
     end
 
     it "setting expire_date to nil includes ''" do
       @new_resource.expire_date nil
-      expect( provider.useradd_options ).to eql([""])
+      expect( provider.universal_options ).to eql([])
     end
 
     it "setting expire_date to 1982-04-16 includes -e" do
       @new_resource.expire_date "1982-04-16"
-      expect( provider.useradd_options ).to eql(["-e"])
+      expect( provider.universal_options ).to eql(["-e", "1982-04-16"])
     end
   end
 
   describe "inactive behavior" do
-    before(:each) do
-      @new_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-      @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
-    end
 
     it "defaults inactive to nil" do
       expect( @new_resource.inactive ).to be nil
     end
 
     it "by default inactive is nil and we use ''" do
-      expect( provider.useradd_options ).to eql([""])
+      expect( provider.universal_options ).to eql([""])
     end
 
     it "setting inactive to nil includes ''" do
       @new_resource.inactive nil
-      expect( provider.useradd_options ).to eql([""])
+      expect( provider.universal_options ).to eql([""])
     end
 
     it "setting inactive to 90 includes -f" do
       @new_resource.inactive 90
-      expect( provider.useradd_options ).to eql(["-f"])
+      expect( provider.universal_options ).to eql(["-f", 90])
     end
   end
 end
