@@ -1,6 +1,6 @@
 gemspec = eval(IO.read(File.expand_path("chef.gemspec", __dir__)))
 
-gemspec.platform = Gem::Platform.new(%w{universal x64-mingw-ucrt})
+gemspec.platform = Gem::Platform.new(%w{universal ucrt})
 
 gemspec.add_dependency "win32-api", "~> 1.10.0"
 gemspec.add_dependency "win32-event", "~> 0.6.1"
