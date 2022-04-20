@@ -293,7 +293,11 @@ class Chef
       end
 
       def machine_architecture
-        node[:kernel][:machine].to_sym
+        if node.nil?
+          ::RbConfig::CONFIG["target_cpu"] == "x64" ? :x86_64 : :i386
+        else
+          node[:kernel][:machine].to_sym
+        end
       end
 
       def assert_architecture!
