@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 518f3f84fcd1ce2f4ca2e4ed0c332ab22f2da44b
+  revision: dbed34590e04371b4f004b9144e7d871a7978a41
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -33,13 +33,13 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.575.0)
-    aws-sdk-core (3.130.0)
+    aws-partitions (1.578.0)
+    aws-sdk-core (3.130.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.55.0)
+    aws-sdk-kms (1.56.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.113.0)
@@ -318,7 +318,7 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (4.0.6)
+    public_suffix (4.0.7)
     rack (2.2.3)
     rainbow (3.1.1)
     retryable (3.0.5)
@@ -424,7 +424,7 @@ GEM
       ffi
     win32-mutex (0.4.3)
       win32-ipc (>= 0.6.0)
-    win32-process (0.9.0)
+    win32-process (0.10.0)
       ffi (>= 1.0.0)
     win32-service (2.3.2)
       ffi
