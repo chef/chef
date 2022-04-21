@@ -37,7 +37,7 @@ end
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed
   # gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
-  gem "ruby-shadow", ">= 2.5.0" unless RUBY_PLATFORM.match?(/mingw|aix/i)
+  gem "ruby-shadow", ">= 2.5.0" unless RUBY_PLATFORM.match?(/mingw|aix|darwin/i)
 end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
