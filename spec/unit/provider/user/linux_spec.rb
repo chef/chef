@@ -109,12 +109,12 @@ describe Chef::Provider::User::Linux do
     end
 
     it "by default inactive is nil and we use ''" do
-      expect( provider.universal_options ).to eql([""])
+      expect( provider.universal_options ).to eql([])
     end
 
     it "setting inactive to nil includes ''" do
       @new_resource.inactive nil
-      expect( provider.universal_options ).to eql([""])
+      expect( provider.universal_options ).to eql([])
     end
 
     it "setting inactive to 90 includes -f" do
