@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 6c95d0c3073cd6bc2d2d9ac2b4091ebe6bbf8825
+  revision: b2bc35b1381ad0913b34c48cb1f48b30442f745a
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -33,7 +33,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.578.0)
+    aws-partitions (1.579.0)
     aws-sdk-core (3.130.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -49,7 +49,7 @@ GEM
     aws-sdk-secretsmanager (1.59.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.4.0)
+    aws-sigv4 (1.5.0)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
