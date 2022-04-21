@@ -92,7 +92,6 @@ class Chef
 
       property :cron_name, String,
         description: "An optional property to set the cron name if it differs from the resource block's name.",
-        regex: /^[a-zA-Z0-9_-]+$/,
         name_property: true
 
       property :cookbook, String, desired_state: false, skip_docs: true
@@ -144,6 +143,21 @@ class Chef
         # @return [String] cron_name property with . replaced with -
         def sanitized_name
           new_resource.cron_name.tr(".", "-")
+        end
+
+        def define_resource_requirements
+          requirements.assert(:create, :create_if_missing) do |a|
+            a.assertion do
+              # ensure valid cron job names for linux, otherwise the jobs won't be executed
+              if linux?
+                new_resource.cron_name =~ /^[a-zA-Z0-9_-]+$/
+              else
+                true
+              end
+            end
+            a.failure_message("The cron job name should contain letters, numbers, hyphens and underscores only.")
+            a.block_action!
+          end
         end
 
         def create_template(create_action)
