@@ -84,7 +84,7 @@ jobs:
       id: install_chef
       run: |
         brew install coreutils
-        gem install ruby-shadow
+        gem install ruby-shadow --verbose
         curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
@@ -93,10 +93,9 @@ jobs:
     - name: 'Upgrade Chef/Ohai via Appbundler'
       id: upgrade
       run: |
-        sudo xcode-select --install
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-        sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-        sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
+        sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc --verbose
+        sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY --verbose
         echo "Installed Chef / Ohai release:"
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
@@ -104,13 +103,13 @@ jobs:
       id: run
       run: |
         cd kitchen-tests
-        sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
-        sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
-        sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
+        sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package' --verbose
+        sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle' --verbose
+        sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3 --verbose
         sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-        sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
+        sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc --verbose
         sudo /opt/chef/embedded/bin/berks vendor cookbooks
-        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist -l debug
 
   linux:
     strategy:
