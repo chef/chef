@@ -339,6 +339,7 @@ GEM
     rubocop-ast (1.17.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
+    ruby-shadow (2.5.1)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
@@ -459,6 +460,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
+  ruby-shadow (>= 2.5.0)
   webmock
 
 BUNDLED WITH
