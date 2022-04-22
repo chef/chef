@@ -66,6 +66,11 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+# Ruby 3.0/3.1 testing led to the git recipe throwing errors because of a symlink version mismatch
+execute "unlink git" do
+  command "brew unlink git"
+end
+
 include_recipe "git"
 
 # test various archive formats in the archive_file resource
