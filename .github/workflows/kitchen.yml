@@ -93,6 +93,7 @@ jobs:
     - name: 'Upgrade Chef/Ohai via Appbundler'
       id: upgrade
       run: |
+        sudo xcode-select --install
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
         sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
         sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
