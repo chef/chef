@@ -331,8 +331,8 @@ class Chef
       # the year it goes EOL
       eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
 
-      if Time.now > Time.new(eol_year, 5, 01)
-        logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      if Time.now > Time.new(eol_year, 12, 31)
+        logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on December 31st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
       end
     end
 
