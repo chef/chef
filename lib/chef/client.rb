@@ -326,8 +326,6 @@ class Chef
     # @api private
     def warn_if_eol
       require_relative "version"
-      require "pry"
-      binding.pry
 
       # We make a release every year so take the version you're on + 2007 and you get
       # the year it goes EOL
