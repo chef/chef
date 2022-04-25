@@ -54,6 +54,13 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+# Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
+if platform?("macos")
+  execute "unlink old git version" do
+    command "brew unlink git"
+  end
+end
+
 include_recipe "git"
 
 # test various archive formats in the archive_file resource
