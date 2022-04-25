@@ -940,7 +940,7 @@ describe Chef::Resource do
       expect(Chef.resource_handler_map).to receive(:set).with(
         :tape_deck, Chef::Resource::Klz
       )
-      klz.provides :tape_deck, {}
+      klz.provides :tape_deck
     end
 
   end
