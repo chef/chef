@@ -54,28 +54,25 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
-user "new temp admin user" do
-  username "tmpadmin"
-  password "my_special_password"
-  action :create
+user "new_user" do
+  supports :manage_home => true
+  home "/home/new_user"
+  shell "/bin/zsh"
+  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
+  not_if "getent passwd new_user"
 end
 
 # Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
 execute "unlink old git version" do
   command "brew unlink git"
-  user "tmpadmin"
-  password "my_special_password"
+  user "new_user"
+  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
 end
 
 execute "unlink old git version" do
   command "brew uninstall git"
-  user "tmpadmin"
-  password "my_special_password"
-end
-
-user "remove temp admin user" do
-  username "tmpadmin"
-  action :remove
+  user "new_user"
+  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
 end
 
 include_recipe "git"
