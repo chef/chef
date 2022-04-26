@@ -57,7 +57,7 @@ end
 # Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
 if platform?("macos")
   execute "unlink old git version" do
-    command "brew unlink git"
+    command "brew uninstall git"
   end
 end
 
