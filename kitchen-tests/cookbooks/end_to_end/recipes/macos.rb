@@ -57,10 +57,12 @@ end
 # Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
 execute "unlink old git version" do
   command "brew unlink git"
+  user "sysadmin"
 end
 
 execute "unlink old git version" do
   command "brew uninstall git"
+  user "sysadmin"
 end
 
 include_recipe "git"
