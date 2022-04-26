@@ -55,10 +55,12 @@ chef_client_launchd "Every 30 mins Infra Client run" do
 end
 
 # Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
-if platform?("macos")
-  execute "unlink old git version" do
-    command "brew uninstall git"
-  end
+execute "unlink old git version" do
+  command "brew unlink git"
+end
+
+execute "unlink old git version" do
+  command "brew uninstall git"
 end
 
 include_recipe "git"
