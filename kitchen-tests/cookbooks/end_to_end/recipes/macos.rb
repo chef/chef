@@ -66,13 +66,13 @@ end
 execute "unlink old git version" do
   command "brew unlink git"
   user "new_user"
-  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
+  password "theplaintextpassword"
 end
 
 execute "unlink old git version" do
   command "brew uninstall git"
   user "new_user"
-  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
+  password "theplaintextpassword"
 end
 
 include_recipe "git"
