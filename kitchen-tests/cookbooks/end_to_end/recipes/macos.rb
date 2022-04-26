@@ -55,7 +55,6 @@ chef_client_launchd "Every 30 mins Infra Client run" do
 end
 
 user "new_user" do
-  supports :manage_home => true
   home "/home/new_user"
   shell "/bin/zsh"
   password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
