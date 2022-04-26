@@ -54,15 +54,28 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+user "new temp admin user" do
+  username "tmpadmin"
+  password "my_special_password"
+  action :create
+end
+
 # Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
 execute "unlink old git version" do
   command "brew unlink git"
-  user "sysadmin"
+  user "tmpadmin"
+  password "my_special_password"
 end
 
 execute "unlink old git version" do
   command "brew uninstall git"
-  user "sysadmin"
+  user "tmpadmin"
+  password "my_special_password"
+end
+
+user "remove temp admin user" do
+  username "tmpadmin"
+  action :remove
 end
 
 include_recipe "git"
