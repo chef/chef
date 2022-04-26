@@ -57,6 +57,7 @@ end
 user "new_user" do
   home "/home/new_user"
   shell "/bin/zsh"
+  # cspell:disable-next-line
   password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
   not_if "getent passwd new_user"
 end
