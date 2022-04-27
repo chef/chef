@@ -16,7 +16,6 @@
 #
 
 require "spec_helper"
-require "chef/mixin/shell_out"
 require "chef/mixin/powershell_out"
 
 describe Chef::Mixin::PowershellOut, :windows_only do
@@ -31,7 +30,7 @@ describe Chef::Mixin::PowershellOut, :windows_only do
     it "runs a command and returns the shell_out object" do
       ret = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
-        "powershell.exe #{flags} -Command \"Get-Process\""
+        "powershell.exe #{flags} -Command \"Get-Process\"", {}
       ).and_return(ret)
       expect(object.powershell_out("Get-Process")).to eql(ret)
     end
@@ -76,7 +75,7 @@ describe Chef::Mixin::PowershellOut, :windows_only do
     it "runs a command and returns the shell_out object" do
       mixlib_shellout = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
-        "powershell.exe #{flags} -Command \"Get-Process\""
+        "powershell.exe #{flags} -Command \"Get-Process\"", {}
       ).and_return(mixlib_shellout)
       expect(mixlib_shellout).to receive(:error!)
       expect(object.powershell_out!("Get-Process")).to eql(mixlib_shellout)
