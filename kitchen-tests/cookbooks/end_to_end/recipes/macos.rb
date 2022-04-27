@@ -54,8 +54,8 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
-package "git" do
-  action :remove
+execute "override git link" do
+  command "brew link --overwrite git"
 end
 
 include_recipe "git"
