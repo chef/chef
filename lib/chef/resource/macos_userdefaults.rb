@@ -51,15 +51,17 @@ class Chef
         end
         ```
 
-        **Specifying the type of a key to skip automatic type detection**
+        **Setting a value for specific user and hosts**
 
         ```ruby
-        macos_userdefaults 'Finder expanded save dialogs' do
-          key 'NSNavPanelExpandedStateForSaveMode'
-          value 'TRUE'
-          type 'bool'
+        macos_userdefaults 'Enable macOS firewall' do
+          key 'globalstate'
+          value 1
+          user 'jane'
+          host :current
         end
         ```
+
       DOC
 
       property :domain, String,
