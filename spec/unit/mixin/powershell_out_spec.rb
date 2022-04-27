@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "chef/mixin/shell_out"
 require "chef/mixin/powershell_out"
 
 describe Chef::Mixin::PowershellOut, :windows_only do

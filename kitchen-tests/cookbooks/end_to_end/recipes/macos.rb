@@ -54,27 +54,6 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
-user "new_user" do
-  home "/home/new_user"
-  shell "/bin/zsh"
-  # cspell:disable-next-line
-  password "$1$JJsvHslV$szsCjVEroftprNn4JHtDi."
-  not_if "getent passwd new_user"
-end
-
-# Below is added to get past Test errors with brew where it halts execution because of a symlink condition with git files
-execute "unlink old git version" do
-  command "brew unlink git"
-  user "new_user"
-  password "theplaintextpassword"
-end
-
-execute "unlink old git version" do
-  command "brew uninstall git"
-  user "new_user"
-  password "theplaintextpassword"
-end
-
 include_recipe "git"
 
 # test various archive formats in the archive_file resource
