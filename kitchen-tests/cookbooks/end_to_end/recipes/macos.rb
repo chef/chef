@@ -44,10 +44,6 @@ users_manage "create sysadmin" do
   action [:create]
 end
 
-sudo 'Grant sudo permissions' do
-  users 'adam'
-end
-
 ssh_known_hosts_entry "github.com"
 
 include_recipe "::_chef_client_config"
@@ -60,11 +56,6 @@ end
 
 homebrew_update "update" do
   action :update
-end
-
-execute "Remove default git installation" do
-  command "brew unlink git@2.35.1"
-  user "adam"
 end
 
 include_recipe "git"
