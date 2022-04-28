@@ -49,18 +49,10 @@ ssh_known_hosts_entry "github.com"
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
-execute "Uninstall git" do
-  command "brew list --full-name | grep '^git' | xargs -r brew uninstall --ignore-dependencies"
-  user "adam"
-  live_stream true
-end
-
 chef_client_launchd "Every 30 mins Infra Client run" do
   interval 30
   action :enable
 end
-
-include_recipe "git"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
