@@ -108,7 +108,7 @@ class Chef
             "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:all_actions) do |a|
-          a.assertion { !((new_resource.expire_date || new_resource.inactive) && platform_family?(%w(aix freebsd mac_os_x netbsd openbsd openindiana solaris2 windows))) }
+          a.assertion { !((new_resource.expire_date || new_resource.inactive) && platform_family?(%w{aix freebsd mac_os_x netbsd openbsd openindiana solaris2 windows})) }
           a.warning_message Chef::Exceptions::User, "Properties expire_date and inactive are not supported by this OS or have not been implemented for this OS yet."
           a.whyrun "Properties expire_date and inactive are ignored as they are not supported by this OS or have not been implemented yet for this OS"
         end
