@@ -54,6 +54,10 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+homebrew_update "update" do
+  action :update
+end
+
 execute "override git symlink" do
   command "brew link --overwrite git"
   user "adam"
@@ -83,10 +87,6 @@ build_essential
 launchd "io.chef.testing.fake" do
   source "io.chef.testing.fake.plist"
   action "enable"
-end
-
-homebrew_update "update" do
-  action :update
 end
 
 homebrew_package "nethack"
