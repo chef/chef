@@ -59,7 +59,7 @@ homebrew_update "update" do
 end
 
 execute "Remove default git installation" do
-  command "brew link --overwrite git"
+  command "brew unlink git@2.35.1"
   user "adam"
 end
 
