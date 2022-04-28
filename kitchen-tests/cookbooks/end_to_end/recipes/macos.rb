@@ -58,7 +58,11 @@ homebrew_update "update" do
   action :update
 end
 
-package "git"
+execute "Uninstall git" do
+  command "brew list --full-name | grep '^git' | xargs -r brew uninstall --ignore-dependencies"
+end
+
+include_recipe "git"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
