@@ -151,7 +151,7 @@ platforms:
 - name: opensuse-leap-15
   driver:
     image: dokken/opensuse-leap-15
-    pid_one_command: /bin/systemd
+    pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
       - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing

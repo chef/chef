@@ -54,8 +54,6 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
-include_recipe "git"
-
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
   cookbook_file File.join(Chef::Config[:file_cache_path], archive) do
