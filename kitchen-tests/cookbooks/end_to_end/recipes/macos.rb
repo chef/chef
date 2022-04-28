@@ -58,7 +58,7 @@ homebrew_update "update" do
   action :update
 end
 
-include_recipe "git"
+package "git"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
