@@ -2,29 +2,27 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.0 -->
-## [v16.18.0](https://github.com/chef/chef/tree/v16.18.0) (2022-04-28)
-
-#### Merged Pull Requests
-- Updated EOL for Chef 16 [#12821](https://github.com/chef/chef/pull/12821) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.17.51 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Updated EOL for Chef 16 [#12821](https://github.com/chef/chef/pull/12821) ([johnmccrae](https://github.com/johnmccrae)) <!-- 16.18.0 -->
-- Fix chef_client_config template rendering [#12827](https://github.com/chef/chef/pull/12827) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.17.59 -->
-- Fix attribute performance issues in node.read (Chef-16) [#12744](https://github.com/chef/chef/pull/12744) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.17.58 -->
-- updated choco tests to get past pathing bug [#12728](https://github.com/chef/chef/pull/12728) ([johnmccrae](https://github.com/johnmccrae)) <!-- 16.17.57 -->
-- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12669](https://github.com/chef/chef/pull/12669) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.56 -->
-- Update to libffi 3.4.2 [#12660](https://github.com/chef/chef/pull/12660) ([tas50](https://github.com/tas50)) <!-- 16.17.55 -->
-- Unpin libarchive and update to 3.6.0 [#12647](https://github.com/chef/chef/pull/12647) ([tas50](https://github.com/tas50)) <!-- 16.17.54 -->
-- Update nokogiri to 1.13.1 [#12651](https://github.com/chef/chef/pull/12651) ([tas50](https://github.com/tas50)) <!-- 16.17.53 -->
-- Bump omnibus-software from `d602268` to `d5ff796` in /omnibus [#12627](https://github.com/chef/chef/pull/12627) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.17.52 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.18.0](https://github.com/chef/chef/tree/v16.18.0) (2022-04-28)
+
+#### Merged Pull Requests
+- Bump omnibus-software from `d602268` to `d5ff796` in /omnibus [#12627](https://github.com/chef/chef/pull/12627) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update nokogiri to 1.13.1 [#12651](https://github.com/chef/chef/pull/12651) ([tas50](https://github.com/tas50))
+- Unpin libarchive and update to 3.6.0 [#12647](https://github.com/chef/chef/pull/12647) ([tas50](https://github.com/tas50))
+- Update to libffi 3.4.2 [#12660](https://github.com/chef/chef/pull/12660) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12669](https://github.com/chef/chef/pull/12669) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- updated choco tests to get past pathing bug [#12728](https://github.com/chef/chef/pull/12728) ([johnmccrae](https://github.com/johnmccrae))
+- Fix attribute performance issues in node.read (Chef-16) [#12744](https://github.com/chef/chef/pull/12744) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix chef_client_config template rendering [#12827](https://github.com/chef/chef/pull/12827) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Updated EOL for Chef 16 [#12821](https://github.com/chef/chef/pull/12821) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v16.17.51](https://github.com/chef/chef/tree/v16.17.51) (2022-02-17)
 
 #### Merged Pull Requests
@@ -40,7 +38,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump omnibus-software from `91c1297` to `a4f4849` in /omnibus [#12582](https://github.com/chef/chef/pull/12582) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Pin openssl to 1.1.1m [#12599](https://github.com/chef/chef/pull/12599) ([jayashrig158](https://github.com/jayashrig158))
 - Bump omnibus-software from `a4f4849` to `d602268` in /omnibus [#12590](https://github.com/chef/chef/pull/12590) ([dependabot[bot]](https://github.com/dependabot[bot]))
-<!-- latest_stable_release -->
 
 ## [v16.17.39](https://github.com/chef/chef/tree/v16.17.39) (2022-01-27)
 
