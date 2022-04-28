@@ -58,13 +58,14 @@ homebrew_update "update" do
   action :update
 end
 
-script 'Remove Apple installed Git' do
+script "Remove default git installation" do
   interpreter "bash"
   code <<-EOH
     brew uninstall --force git
     brew cleanup --force -s git
     brew cleanup --prune-prefix
   EOH
+  user "adam"
 end
 
 include_recipe "git"
