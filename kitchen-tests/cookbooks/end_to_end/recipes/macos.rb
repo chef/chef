@@ -44,6 +44,10 @@ users_manage "create sysadmin" do
   action [:create]
 end
 
+sudo 'Grant sudo permissions' do
+  users 'adam'
+end
+
 ssh_known_hosts_entry "github.com"
 
 include_recipe "::_chef_client_config"
