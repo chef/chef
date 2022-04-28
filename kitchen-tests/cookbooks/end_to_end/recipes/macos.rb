@@ -58,9 +58,8 @@ homebrew_update "update" do
   action :update
 end
 
-execute "override git symlink" do
-  command "brew link --overwrite git"
-  user "adam"
+execute "Rename Apple installed git" do
+  command "mv /usr/bin/git /usr/bin/git-original"
 end
 
 include_recipe "git"
