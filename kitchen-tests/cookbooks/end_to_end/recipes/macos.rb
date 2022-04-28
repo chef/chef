@@ -51,6 +51,7 @@ include_recipe "::_chef_client_trusted_certificate"
 
 execute "Uninstall git" do
   command "brew list --full-name | grep '^git' | xargs -r brew uninstall --ignore-dependencies"
+  user "adam"
   live_stream true
 end
 
