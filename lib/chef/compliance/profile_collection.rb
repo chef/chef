@@ -45,7 +45,6 @@ class Chef
       end
 
       # @return [Boolean] if any of the profiles are enabled
-      
       def using_profiles?
         any?(&:enabled?)
       end
