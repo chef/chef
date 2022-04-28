@@ -58,8 +58,13 @@ homebrew_update "update" do
   action :update
 end
 
-execute "Rename Apple installed git" do
-  command "mv /usr/bin/git /usr/bin/git-original"
+script 'Remove Apple installed Git' do
+  interpreter "bash"
+  code <<-EOH
+    brew uninstall --force git
+    brew cleanup --force -s git
+    brew cleanup --prune-prefix
+  EOH
 end
 
 include_recipe "git"
