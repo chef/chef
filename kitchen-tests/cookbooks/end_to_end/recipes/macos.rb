@@ -49,17 +49,14 @@ ssh_known_hosts_entry "github.com"
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
+execute "Uninstall git" do
+  command "brew list --full-name | grep '^git' | xargs -r brew uninstall --ignore-dependencies"
+  live_stream true
+end
+
 chef_client_launchd "Every 30 mins Infra Client run" do
   interval 30
   action :enable
-end
-
-homebrew_update "update" do
-  action :update
-end
-
-execute "Uninstall git" do
-  command "brew list --full-name | grep '^git' | xargs -r brew uninstall --ignore-dependencies"
 end
 
 include_recipe "git"
@@ -86,6 +83,10 @@ build_essential
 launchd "io.chef.testing.fake" do
   source "io.chef.testing.fake.plist"
   action "enable"
+end
+
+homebrew_update "update" do
+  action :update
 end
 
 homebrew_package "nethack"
