@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-11]
+        os: [macos-12]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
