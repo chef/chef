@@ -23,6 +23,22 @@ class Chef
         provides :linux_user
         provides :user, os: "linux"
 
+        def load_current_resource
+          super
+          load_shadow_options
+        end
+
+        def compare_user
+          super
+          %i{expire_date inactive}.each do |user_attrib|
+            new_val = new_resource.send(user_attrib)
+            cur_val = current_resource.send(user_attrib)
+            if !new_val.nil? && new_val.to_s != cur_val.to_s
+              @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
+            end
+          end
+        end
+
         def create_user
           shell_out!("useradd", universal_options, useradd_options, new_resource.username)
         end
@@ -52,7 +68,9 @@ class Chef
         def universal_options
           opts = []
           opts << "-c" << new_resource.comment if should_set?(:comment)
+          opts << "-e" << new_resource.expire_date if prop_is_set?(:expire_date)
           opts << "-g" << new_resource.gid if should_set?(:gid)
+          opts << "-f" << new_resource.inactive if prop_is_set?(:inactive)
           opts << "-p" << new_resource.password if should_set?(:password)
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
@@ -115,6 +133,12 @@ class Chef
 
           # FIXME: should probably go on the current_resource
           @locked
+        end
+
+        def prop_is_set?(prop)
+          v = new_resource.send(prop.to_sym)
+
+          !v.nil? && v != ""
         end
       end
     end
