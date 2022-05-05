@@ -68,7 +68,7 @@ end
 
 # We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
 # We remove git completely to allow homebrew to update Git.
-execute 'Remove native Git client' do
+execute "Remove native Git client" do
   "brew list --full-name | grep '^git@' | xargs -r brew uninstall --ignore-dependencies"
 end
 
