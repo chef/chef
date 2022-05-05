@@ -66,6 +66,12 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+execute "find the user" do
+  command "whoami"
+  live_stream true
+  action :run
+end
+
 # We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
 # We remove git completely to allow homebrew to update it.
 execute "remove git" do
