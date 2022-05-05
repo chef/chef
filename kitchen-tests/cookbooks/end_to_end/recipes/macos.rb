@@ -69,8 +69,7 @@ end
 # We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
 # We remove git completely to allow homebrew to update it.
 execute "remove git" do
-  # command "brew list --full-name | grep '^git@' | xargs -r brew uninstall --ignore-dependencies"
-  command "brew uninstall git@2.35.1 --ignore-dependencies"
+  command "rm -rf /usr/local/Cellar/git"
 end
 
 include_recipe "git"
