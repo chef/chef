@@ -77,7 +77,7 @@ end
 bash "remove git" do
   code <<~EOH
     # chown -R $(whoami) $(brew --prefix)/*
-    brew unlink git@2.35.1 --force
+    brew unlink git@2.35.1
   EOH
   user "tempadmin"
 end
