@@ -76,7 +76,7 @@ end
 # We remove git completely to allow homebrew to update it.
 bash "remove git" do
   code <<~EOH
-    chown -R $(whoami) $(brew --prefix)/*
+    # chown -R $(whoami) $(brew --prefix)/*
     brew unlink git@2.35.1 --force
   EOH
   user "tempadmin"
