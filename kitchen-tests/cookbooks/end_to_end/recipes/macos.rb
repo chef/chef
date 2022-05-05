@@ -73,7 +73,7 @@ user "tempadmin" do
 end
 
 sudo 'passwordless-access to change git ownership' do
-  commands ['chown -R $(whoami) $(brew --prefix)/*']
+  commands ['ALL']
   nopasswd true
   users "tempadmin"
 end
