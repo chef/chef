@@ -66,6 +66,12 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+# We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
+# We remove git completely to allow homebrew to update Git.
+execute 'Remove native Git client' do
+  "brew list --full-name | grep '^git@' | xargs -r brew uninstall --ignore-dependencies"
+end
+
 include_recipe "git"
 
 # test various archive formats in the archive_file resource
