@@ -77,7 +77,8 @@ end
 bash "remove git" do
   code <<~EOH
     sudo chown -R $(whoami) $(brew --prefix)/*
-    brew uninstall git@2.35.1
+    brew unlink git@2.35.1 --force
+    brew uninstall git@2.35.1 --force
   EOH
   user "tempadmin"
 end
