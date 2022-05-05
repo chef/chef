@@ -1310,6 +1310,7 @@
     "TBYTE",
     "TCBS",
     "TCHAR",
+    "tempadmin",
     "tempcron",
     "tempdir",
     "Tempfile",
