@@ -95,8 +95,13 @@ end
 
 # /usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d/git-completion.bash
 
-execute "changing ownership of the git cask" do
-  command "chmod -R 777 /usr/local/Cellar/git"
+# execute "changing ownership of the git cask" do
+#   command "chmod -R 777 /usr/local/Cellar/git"
+#   live_stream true
+# end
+
+execute "where or where is the git cask" do
+  command "cat/usr/local/Cellar"
   live_stream true
 end
 
