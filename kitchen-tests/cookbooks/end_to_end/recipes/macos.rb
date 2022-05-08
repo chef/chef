@@ -69,26 +69,9 @@ end
 ### Begin MacOS nonsense
 # What you see below here is a pile of crazy.
 # The End-To-End recipe wants to update git on MacOS to the latest version.
-# MacOS doesn't like this. We get back symlink update errors et al
-# We then have to use this crazy to take control of enough of the OS
-# to update git without actually hurting anything. UGH
-
-user "tempadmin" do
-  gid 80
-  shell "/bin/zsh"
-  password "password"
-end
-
-sudo "passwordless-access to change git ownership" do
-  commands ["ALL"]
-  nopasswd true
-  users "tempadmin"
-end
-
-execute "which fucking git" do
-  command "which git"
-  live_stream true
-end
+# MacOS doesn't like this. We get back symlink update errors, et al
+# We then have to use this to take control of enough of the OS
+# to update git without actually hurting anything else. UGH
 
 file "/usr/local/var/homebrew/locks/git@2.35.1.formula.lock" do
   mode "0777"
@@ -100,46 +83,18 @@ file "/usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d/git-completion.b
   owner "root"
 end
 
-# /usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d/git-completion.bash
-
 execute "changing ownership of the git cask" do
   command "chmod -R 777 /usr/local/Cellar/git@2.35.1"
   live_stream true
 end
 
-execute "show the list of offending folders" do
-  command "ls -al /usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d"
-  live_stream true
-end
-
-execute "show the list of offending folders" do
+execute "Sledge Hammer removal of the offending Git version" do
   command "rm -rf /usr/local/Cellar/git@2.35.1"
   live_stream true
 end
 
-# execute "where or where is the git cask" do
-#   command "ls -al /usr/local/Cellar"
-#   live_stream true
-# end
-
-# We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
-# We remove git completely to allow homebrew to update it.
-# bash "remove git" do
-#   code <<~EOH
-#     # echo "password" | sudo chown -R $(whoami) $(brew --prefix)/*
-#     # brew list --full-name | grep '^git@' | xargs brew uninstall --ignore-dependencies
-#     brew uninstall git@2.35.1 --ignore-dependencies
-#     # which git
-#     # echo $PATH
-#   EOH
-#   user "tempadmin"
-# end
-
-user "tempadmin" do
-  action :remove
-end
-
 ### End MacOS nonsense
+# Now back to your regularly scheduled build, now in progress.
 
 include_recipe "git"
 
