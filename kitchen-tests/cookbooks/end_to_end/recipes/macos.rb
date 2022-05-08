@@ -107,6 +107,16 @@ execute "changing ownership of the git cask" do
   live_stream true
 end
 
+execute "show the list of offending folders" do
+  command "ls -al /usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d"
+  live_stream true
+end
+
+execute "show the list of offending folders" do
+  command "rm -rf /usr/local/Cellar/git@2.35.1"
+  live_stream true
+end
+
 # execute "where or where is the git cask" do
 #   command "ls -al /usr/local/Cellar"
 #   live_stream true
