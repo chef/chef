@@ -95,7 +95,7 @@ file "/usr/local/var/homebrew/locks/git@2.35.1.formula.lock" do
   owner "root"
 end
 
-file "/usr/local/etc/bash_completion.d/git-completion.bash" do
+file "/usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d/git-completion.bash" do
   mode "0777"
   owner "root"
 end
