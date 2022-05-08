@@ -66,6 +66,13 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
+### Begin MacOS nonsense
+# What you see below here is a pile of crazy.
+# The End-To-End recipe wants to update git on MacOS to the latest version.
+# MacOS doesn't like this. We get back symlink update errors et al
+# We then have to use this crazy to take control of enough of the OS
+# to update git without actually hurting anything. UGH
+
 user "tempadmin" do
   gid 80
   shell "/bin/zsh"
@@ -121,6 +128,8 @@ end
 user "tempadmin" do
   action :remove
 end
+
+### End MacOS nonsense
 
 include_recipe "git"
 
