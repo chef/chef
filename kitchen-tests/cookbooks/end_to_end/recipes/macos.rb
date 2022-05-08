@@ -72,8 +72,8 @@ user "tempadmin" do
   password "password"
 end
 
-sudo 'passwordless-access to change git ownership' do
-  commands ['ALL']
+sudo "passwordless-access to change git ownership" do
+  commands ["ALL"]
   nopasswd true
   users "tempadmin"
 end
