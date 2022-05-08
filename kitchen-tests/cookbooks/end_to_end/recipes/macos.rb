@@ -89,7 +89,7 @@ bash "remove git" do
   code <<~EOH
     # echo "password" | sudo chown -R $(whoami) $(brew --prefix)/*
     # brew list --full-name | grep '^git@' | xargs brew uninstall --ignore-dependencies
-    brew uninstall git@2.35.1 --ignore dependencies
+    brew uninstall git@2.35.1 --ignore-dependencies
   EOH
   user "tempadmin"
 end
