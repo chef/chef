@@ -83,18 +83,27 @@ execute "which fucking git" do
   live_stream true
 end
 
+file '/usr/local/var/homebrew/locks/git@2.35.1.formula.lock' do
+  mode '0777'
+  owner 'root'
+end
+
+# execute "changing ownership of the git cask" do
+#   command "chown $USER /usr/local/var/homebrew/locks/git@2.35.1.formula.lock"
+#   live_stream true
+# end
+
 # We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
 # We remove git completely to allow homebrew to update it.
 bash "remove git" do
   code <<~EOH
     # echo "password" | sudo chown -R $(whoami) $(brew --prefix)/*
     # brew list --full-name | grep '^git@' | xargs brew uninstall --ignore-dependencies
-    # brew uninstall git@2.35.1 --ignore-dependencies
-    which git
-    echo $PATH
+    brew uninstall git@2.35.1 --ignore-dependencies
+    # which git
+    # echo $PATH
   EOH
   user "tempadmin"
-  live_stream true
 end
 
 user "tempadmin" do
