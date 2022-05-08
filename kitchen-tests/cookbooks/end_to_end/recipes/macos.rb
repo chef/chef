@@ -83,9 +83,14 @@ execute "which fucking git" do
   live_stream true
 end
 
-file '/usr/local/var/homebrew/locks/git@2.35.1.formula.lock' do
-  mode '0777'
-  owner 'root'
+file "/usr/local/var/homebrew/locks/git@2.35.1.formula.lock" do
+  mode "0777"
+  owner "root"
+end
+
+file "/usr/local/etc/bash_completion.d/git-completion.bash" do
+  mode "0777"
+  owner "root"
 end
 
 # execute "changing ownership of the git cask" do
