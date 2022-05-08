@@ -95,15 +95,15 @@ end
 
 # /usr/local/Cellar/git@2.35.1/2.35.1/etc/bash_completion.d/git-completion.bash
 
-# execute "changing ownership of the git cask" do
-#   command "chmod -R 777 /usr/local/Cellar/git"
-#   live_stream true
-# end
-
-execute "where or where is the git cask" do
-  command "ls -al /usr/local/Cellar"
+execute "changing ownership of the git cask" do
+  command "chmod -R 777 /usr/local/Cellar/git@2.35.1"
   live_stream true
 end
+
+# execute "where or where is the git cask" do
+#   command "ls -al /usr/local/Cellar"
+#   live_stream true
+# end
 
 # We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
 # We remove git completely to allow homebrew to update it.
