@@ -101,7 +101,7 @@ end
 # end
 
 execute "where or where is the git cask" do
-  command "cat /usr/local/Cellar"
+  command "ls -al /usr/local/Cellar"
   live_stream true
 end
 
