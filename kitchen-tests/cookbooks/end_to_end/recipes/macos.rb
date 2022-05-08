@@ -78,12 +78,18 @@ sudo 'passwordless-access to change git ownership' do
   users "tempadmin"
 end
 
+execute "which fucking git" do
+  command "which git"
+  live_stream true
+end
+
 # We're overcoming a problem where Homebrew updating Git on MacOS throws a symlink error
 # We remove git completely to allow homebrew to update it.
 bash "remove git" do
   code <<~EOH
     # echo "password" | sudo chown -R $(whoami) $(brew --prefix)/*
-    brew list --full-name | grep '^git@' | brew uninstall --ignore-dependencies
+    # brew list --full-name | grep '^git@' | xargs brew uninstall --ignore-dependencies
+    brew uninstall git@2.35.1 --ignore dependencies
   EOH
   user "tempadmin"
 end
