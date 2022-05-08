@@ -247,7 +247,7 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.56.19)
+    inspec-core (4.56.20)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -270,8 +270,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.56.19)
-      inspec-core (= 4.56.19)
+    inspec-core-bin (4.56.20)
+      inspec-core (= 4.56.20)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
@@ -341,7 +341,7 @@ GEM
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.3.0)
+    regexp_parser (2.3.1)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -525,4 +525,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.3.5
