@@ -275,11 +275,12 @@ class Chef
 
         def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
-          if new_resource.pfx_password.nil?
-            store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name )
-          else
-            store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name)
-          end
+          store.cert_lookup_by_token(resolve_thumbprint(thumbprint))
+          # if new_resource.pfx_password.nil?
+          #   store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name )
+          # else
+          #   store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name)
+          # end
         end
 
         # this array structure is solving 2 problems. The first is that we need to have support for both the CurrentUser AND LocalMachine stores
