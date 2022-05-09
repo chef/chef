@@ -191,7 +191,7 @@ class Chef
           @win32registry.create_key(new_path, true)
         end
         size = 14
-        password = SOME_CHARS.sample(size).join
+        password = (0...size).map { SOME_CHARS.sample(1) }.join
         encrypted_pass = encrypt_pfx_pass(password)
         values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
