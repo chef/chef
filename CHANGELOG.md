@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.11 -->
-## [v17.10.11](https://github.com/chef/chef/tree/v17.10.11) (2022-04-29)
+<!-- latest_release 17.10.12 -->
+## [v17.10.12](https://github.com/chef/chef/tree/v17.10.12) (2022-05-10)
 
 #### Merged Pull Requests
-- Fix chef_client_config template rendering [#12826](https://github.com/chef/chef/pull/12826) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Backport #12140 to chef-17 [#12856](https://github.com/chef/chef/pull/12856) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport #12140 to chef-17 [#12856](https://github.com/chef/chef/pull/12856) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.12 -->
 - Fix chef_client_config template rendering [#12826](https://github.com/chef/chef/pull/12826) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.11 -->
 - Chef 17: Update all dependencies with bundle update [#12799](https://github.com/chef/chef/pull/12799) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.10 -->
 - Fix pem generation when user created [#12772](https://github.com/chef/chef/pull/12772) ([sanjain-progress](https://github.com/sanjain-progress)) <!-- 17.10.9 -->
