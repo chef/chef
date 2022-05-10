@@ -174,6 +174,12 @@ describe Chef::Provider::Package::Zypper do
       )
       provider.install_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
     end
+
+    it "should raise an exception if a source is supplied but not found when :install" do
+      new_resource.source "/tmp/blah/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with(new_resource.source).and_return(false)
+      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
   end
 
   describe "upgrade_package" do
@@ -218,9 +224,14 @@ describe Chef::Provider::Package::Zypper do
       shell_out_expectation!(
         "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
       )
-      provider.install_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
+      provider.upgrade_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
     end
 
+    it "should raise an exception if a source is supplied but not found when :upgrade" do
+      new_resource.source "/tmp/blah/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with(new_resource.source).and_return(false)
+      expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
+    end
   end
 
   describe "remove_package" do

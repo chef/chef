@@ -81,6 +81,11 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
       expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
     end
 
+    it "raises an error when passed a source that does not exist" do
+      zypper_package.source = "#{CHEF_SPEC_ASSETS}/false/zypprepo/chef_rpm-1.10-1.#{pkg_arch}.rpm"
+      expect { zypper_package.run_action(:install) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
+    end
+
     it "does not install if the package is installed" do
       preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
       zypper_package.run_action(:install)

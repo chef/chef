@@ -33,6 +33,15 @@ class Chef
         provides :package, platform_family: "suse"
         provides :zypper_package
 
+        def define_resource_requirements
+          super
+          requirements.assert(:install, :upgrade) do |a|
+            a.assertion { source_files_exist? }
+            a.failure_message Chef::Exceptions::Package, "#{new_resource} source file(s) do not exist: #{missing_sources}"
+            a.whyrun "Assuming they would have been previously created."
+          end
+        end
+
         def load_current_resource
           @current_resource = Chef::Resource::ZypperPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
@@ -75,6 +84,23 @@ class Chef
           package_name_array.each_with_index.map do |pkg, i|
             available_version(i)
           end
+        end
+
+        # returns true if all sources exist.  Returns false if any do not, or if no
+        # sources were specified.
+        # @return [Boolean] True if all sources exist
+        def source_files_exist?
+          if !new_resource.source.nil?
+            resolved_source_array.all? { |s| s && ::File.exist?(s) }
+          else
+            true
+          end
+        end
+
+        # Helper to return all the names of the missing sources for error messages.
+        # @return [Array<String>] Array of missing sources
+        def missing_sources
+          resolved_source_array.select { |s| s.nil? || !::File.exist?(s) }
         end
 
         def resolve_source_to_version
