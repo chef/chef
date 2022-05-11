@@ -162,6 +162,7 @@ cookbook_file "c:\\mordor\\steveb.pfx" do
 end
 
 windows_certificate "c:/mordor/steveb.pfx" do
+  sensitive false # For debugging
   pfx_password "1234"
   action :create
   user_store true
