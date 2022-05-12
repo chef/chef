@@ -40,7 +40,7 @@ class Chef
       def from_file(filename, cookbook_name)
         new_input = Input.from_file(events, filename, cookbook_name)
         self << new_input
-        events.compliance_input_loaded(new_input)
+        events&.compliance_input_loaded(new_input)
       end
 
       # Add a input from a raw hash.  This input will be enabled by default.
