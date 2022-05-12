@@ -71,6 +71,7 @@ jobs:
         berks vendor cookbooks
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         chef-client -z -o end_to_end --chef-license accept-no-persist
+        type C:/Users/runneradmin/.chef/local-mode-cache/cache/chef-stacktrace.out
 
   macos:
     strategy:
