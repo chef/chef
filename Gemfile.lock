@@ -42,12 +42,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.0.94)
+    chef (18.0.95)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.94)
-      chef-utils (= 18.0.94)
+      chef-config (= 18.0.95)
+      chef-utils (= 18.0.95)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -75,13 +75,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.0.94-universal-mingw32)
+    chef (18.0.95-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.94)
+      chef-config (= 18.0.95)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 18.0.94)
+      chef-utils (= 18.0.95)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -124,15 +124,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.0.94)
-      chef (= 18.0.94)
+    chef-bin (18.0.95)
+      chef (= 18.0.95)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.0.94)
+    chef-config (18.0.95)
       addressable
-      chef-utils (= 18.0.94)
+      chef-utils (= 18.0.95)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -141,7 +141,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.0.94)
+    chef-utils (18.0.95)
       concurrent-ruby
 
 GEM
@@ -154,8 +154,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.586.0)
-    aws-sdk-core (3.130.2)
+    aws-partitions (1.587.0)
+    aws-sdk-core (3.131.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -167,7 +167,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.60.0)
+    aws-sdk-secretsmanager (1.61.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.0)
@@ -445,7 +445,7 @@ GEM
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    vault (0.16.0)
+    vault (0.17.0)
       aws-sigv4
     webmock (3.14.0)
       addressable (>= 2.8.0)
@@ -453,7 +453,7 @@ GEM
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
     win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.10)
+    win32-certstore (0.6.13)
       chef-powershell (>= 1.0.12)
       ffi
     win32-event (0.6.3)
