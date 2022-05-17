@@ -41,7 +41,7 @@ class Chef
       def from_file(path, cookbook_name)
         new_profile = Profile.from_file(events, path, cookbook_name)
         self << new_profile
-        events.compliance_profile_loaded(new_profile)
+        events&.compliance_profile_loaded(new_profile)
       end
 
       # @return [Boolean] if any of the profiles are enabled
