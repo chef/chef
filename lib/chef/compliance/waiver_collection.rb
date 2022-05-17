@@ -40,7 +40,7 @@ class Chef
       def from_file(filename, cookbook_name)
         new_waiver = Waiver.from_file(events, filename, cookbook_name)
         self << new_waiver
-        events.compliance_waiver_loaded(new_waiver)
+        events&.compliance_waiver_loaded(new_waiver)
       end
 
       # Add a waiver from a raw hash.  This waiver will be enabled by default.
