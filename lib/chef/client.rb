@@ -641,8 +641,6 @@ class Chef
     # @api private
     #
     def register(client_name = node_name, config = Chef::Config)
-      require "pry"
-      binding.pry
       if !config[:client_key]
         events.skipping_registration(client_name, config)
         logger.trace("Client key is unspecified - skipping registration")
@@ -728,7 +726,6 @@ class Chef
       # Chef client and node objects exist on Chef Server already
       # Create a new public/private keypair in secure storage
       # and register the new public cert with Chef Server
-      binding.pry
       require "time" unless defined?(Time)
       autoload :URI, "uri"
 
@@ -814,7 +811,6 @@ class Chef
     end
 
     def self.import_pfx_to_store(new_pfx)
-      binding.pry
       password = ::Chef::HTTP::Authenticator.get_cert_password
       require "win32-certstore"
       tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
