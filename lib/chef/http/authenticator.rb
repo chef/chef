@@ -139,6 +139,8 @@ class Chef
       end
 
       def load_signing_key(key_file, raw_key = nil)
+        require "pry"
+        binding.pry
         results = retrieve_certificate_key(Chef::Config[:node_name])
 
         if !!results
@@ -166,6 +168,7 @@ class Chef
       end
 
       def self.get_cert_password
+        binding.pry
         @win32registry = Chef::Win32::Registry.new
         path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
         # does the registry key even exist?
@@ -191,7 +194,7 @@ class Chef
           @win32registry.create_key(new_path, true)
         end
         size = 14
-        password = SOME_CHARS.sample(size).join
+        password = (0...size).map { SOME_CHARS.sample(1) }.join
         encrypted_pass = encrypt_pfx_pass(password)
         values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
@@ -213,6 +216,7 @@ class Chef
           $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
           return $string
         CODE
+        # binding.pry
         powershell_exec!(powershell_code).result
       end
 

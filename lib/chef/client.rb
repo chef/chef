@@ -641,6 +641,8 @@ class Chef
     # @api private
     #
     def register(client_name = node_name, config = Chef::Config)
+      require "pry"
+      binding.pry
       if !config[:client_key]
         events.skipping_registration(client_name, config)
         logger.trace("Client key is unspecified - skipping registration")
@@ -726,6 +728,7 @@ class Chef
       # Chef client and node objects exist on Chef Server already
       # Create a new public/private keypair in secure storage
       # and register the new public cert with Chef Server
+      binding.pry
       require "time" unless defined?(Time)
       autoload :URI, "uri"
 
@@ -733,7 +736,7 @@ class Chef
       end_date = Time.new + (3600 * 24 * 90)
       end_date = end_date.utc.iso8601
 
-      new_cert_name = Time.now.iso8601
+      new_cert_name = Time.now.utc.iso8601
       payload = {
         name: new_cert_name,
         clientname: node,
@@ -764,7 +767,7 @@ class Chef
       # Then add the new key we just created
       # Then we delete the old one.
       cert_list = client.get(base_url + "/clients/#{node}/keys")
-      client.post(base_url + "/clients/#{node_name}/keys", payload)
+      client.post(base_url + "/clients/#{node}/keys", payload)
 
       # We want to remove the old key for various reasons
       # In the case where more than 1 certificate is returned we assume
@@ -779,7 +782,6 @@ class Chef
         client.delete(base_url + "/clients/#{node}/keys/#{old_cert_name}")
         File.delete(file_path)
       end
-
       import_pfx_to_store(new_pfx)
     end
 
@@ -812,6 +814,7 @@ class Chef
     end
 
     def self.import_pfx_to_store(new_pfx)
+      binding.pry
       password = ::Chef::HTTP::Authenticator.get_cert_password
       require "win32-certstore"
       tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
