@@ -114,6 +114,10 @@ class Chef
         description: "Determines whether package files downloaded by Yum stay in cache directories. By using cached data, you can carry out certain operations without a network connection.",
         default: true
 
+      property :makecache_fast, [TrueClass, FalseClass],
+        description: "if make_cache is true, uses `yum makecache fast`, which downloads only the minimum amount of data required. Useful over slower connections and when diskspace is at a premium.",
+        default: false
+
       property :max_retries, [String, Integer],
         description: "Number of times any attempt to retrieve a file should retry before returning an error. Setting this to `0` makes Yum try forever."
 

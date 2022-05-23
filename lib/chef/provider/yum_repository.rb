@@ -44,7 +44,11 @@ class Chef
           mode new_resource.mode
           if new_resource.make_cache
             notifies :run, "execute[yum clean metadata #{new_resource.repositoryid}]", :immediately if new_resource.clean_metadata || new_resource.clean_headers
-            notifies :run, "execute[yum-makecache-#{new_resource.repositoryid}]", :immediately
+            if new_resource.makecache_fast 
+              notifies :run, "execute[yum-makecache-#{new_resource.repositoryid}]", :immediately
+            else
+              notifies :run, "execute[yum-makecache-fast-#{new_resource.repositoryid}]", :immediately
+            end
             notifies :flush_cache, "package[package-cache-reload-#{new_resource.repositoryid}]", :immediately
           end
         end
@@ -62,6 +66,14 @@ class Chef
             action :nothing
             only_if { new_resource.enabled }
           end
+
+          # download only the minimum required metadata
+          execute "yum-makecache-fast-#{new_resource.repositoryid}" do
+            command "yum -q -y makecache fast --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
+            action :nothing
+            only_if { new_resource.enabled }
+          end
+
 
           package "package-cache-reload-#{new_resource.repositoryid}" do
             action :nothing
