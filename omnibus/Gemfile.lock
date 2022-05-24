@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 8a0e391d4232ab3fc5fb7a03b15932335a0214c4
+  revision: 36f49ec7dff16c5bf5d60e106ae709dcf1f824b1
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -33,20 +33,20 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.581.0)
-    aws-sdk-core (3.130.2)
+    aws-partitions (1.590.0)
+    aws-sdk-core (3.131.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
-      jmespath (~> 1.0)
-    aws-sdk-kms (1.56.0)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-kms (1.57.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.113.2)
+    aws-sdk-s3 (1.114.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.60.0)
+    aws-sdk-secretsmanager (1.61.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.0)
@@ -54,7 +54,7 @@ GEM
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
-    berkshelf (8.0.0)
+    berkshelf (8.0.1)
       chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
@@ -237,7 +237,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
-    json (2.6.1)
+    json (2.6.2)
     kitchen-vagrant (1.11.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
@@ -347,7 +347,7 @@ GEM
     sawyer (0.8.2)
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
-    semverse (3.0.0)
+    semverse (3.0.2)
     solve (4.0.4)
       molinillo (~> 0.6)
       semverse (>= 1.1, < 4.0)
@@ -409,13 +409,13 @@ GEM
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    vault (0.16.0)
+    vault (0.17.0)
       aws-sigv4
     webrick (1.7.0)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.6.2)
+    win32-certstore (0.6.15)
+      chef-powershell (>= 1.0.12)
       ffi
-      mixlib-shellout
     win32-event (0.6.3)
       win32-ipc (>= 0.6.0)
     win32-eventlog (0.6.3)
@@ -472,4 +472,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.7
+   2.3.5
