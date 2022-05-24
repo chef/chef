@@ -122,7 +122,8 @@ class Chef
 
       property :config_directory, String,
         description: "The path of the config directory.",
-        default: ChefConfig::Config.etc_chef_dir
+        default: ChefConfig::Config.etc_chef_dir,
+        default_description: "`C:\\chef\\`"
 
       property :log_directory, String,
         description: "The path of the directory to create the log file in.",
