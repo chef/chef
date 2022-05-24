@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.97 -->
-## [v18.0.97](https://github.com/chef/chef/tree/v18.0.97) (2022-05-17)
+<!-- latest_release 18.0.98 -->
+## [v18.0.98](https://github.com/chef/chef/tree/v18.0.98) (2022-05-24)
 
 #### Merged Pull Requests
-- flush package cache after registering via rhsm_register [#12828](https://github.com/chef/chef/pull/12828) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Refactoring Windows certificate code and tests to reflect updates in the win32-certstore gem [#12859](https://github.com/chef/chef/pull/12859) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Refactoring Windows certificate code and tests to reflect updates in the win32-certstore gem [#12859](https://github.com/chef/chef/pull/12859) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.98 -->
 - flush package cache after registering via rhsm_register [#12828](https://github.com/chef/chef/pull/12828) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.97 -->
 - handling exception for compliance phase error during chef spec run [#12830](https://github.com/chef/chef/pull/12830) ([i5pranay93](https://github.com/i5pranay93)) <!-- 18.0.96 -->
 - Renamed private method as conflicting to inbuilt method and getting warning [#12849](https://github.com/chef/chef/pull/12849) ([sanga1794](https://github.com/sanga1794)) <!-- 18.0.95 -->
