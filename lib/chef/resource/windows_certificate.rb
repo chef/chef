@@ -29,7 +29,6 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class WindowsCertificate < Chef::Resource
-      unified_mode true
 
       provides :windows_certificate
 
@@ -129,14 +128,14 @@ class Chef
       end
 
       action :delete, description: "Deletes a certificate." do
-        cert_obj = fetch_cert
+        cert_is_valid = verify_cert
 
-        if cert_obj
+        if cert_is_valid == true
           converge_by("Deleting certificate #{new_resource.source} from Store #{new_resource.store_name}") do
             delete_cert
           end
         else
-          Chef::Log.debug("Certificate not found")
+          Chef::Log.debug("Certificate Not Found")
         end
       end
 
@@ -146,17 +145,25 @@ class Chef
         end
 
         if ::File.extname(new_resource.output_path) == ".pfx"
-          powershell_exec!(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_resource.output_path, password: new_resource.pfx_password ))
+
+          validated_thumbprint = validate_thumbprint(new_resource.source)
+          if validated_thumbprint != false # is the thumbprint valid
+            cert_obj = powershell_exec!(pfx_ps_cmd(validate_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_resource.output_path, password: new_resource.pfx_password ))
+          else
+            message = "While fetching the certificate, was passed the following invalid certificate thumbprint : #{new_resource.source}\n"
+            raise Chef::Exceptions::InvalidKeyAttribute, message
+          end
+
         else
           cert_obj = fetch_cert
         end
 
-        if cert_obj
+        if cert_obj != false && cert_obj != "Certificate Not Found"
           converge_by("Fetching certificate #{new_resource.source} from Store \\#{ps_cert_location}\\#{new_resource.store_name}") do
             export_cert(cert_obj, output_path: new_resource.output_path, store_name: new_resource.store_name , store_location: ps_cert_location, pfx_password: new_resource.pfx_password)
           end
         else
-          Chef::Log.debug("Certificate not found")
+          Chef::Log.debug("Certificate Not Found")
         end
       end
 
@@ -187,7 +194,7 @@ class Chef
 
         def delete_cert
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
-          store.delete(resolve_thumbprint(new_resource.source))
+          store.delete(validate_thumbprint(new_resource.source))
         end
 
         def fetch_cert
@@ -196,17 +203,16 @@ class Chef
             fetch_key
 
           else
-            store.get(resolve_thumbprint(new_resource.source), store_name: new_resource.store_name, store_location: native_cert_location)
+            store.get(validate_thumbprint(new_resource.source))
           end
         end
 
         def fetch_key
           require "openssl" unless defined?(OpenSSL)
           file_name = ::File.basename(new_resource.output_path, ::File.extname(new_resource.output_path))
-          directory = ::File.dirname(new_resource.output_path)
           pfx_file = file_name + ".pfx"
           new_pfx_output_path = ::File.join(Chef::FileCache.create_cache_path("pfx_files"), pfx_file)
-          powershell_exec(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_pfx_output_path, password: new_resource.pfx_password ))
+          powershell_exec(pfx_ps_cmd(validate_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_pfx_output_path, password: new_resource.pfx_password ))
           pkcs12 = OpenSSL::PKCS12.new(::File.binread(new_pfx_output_path), new_resource.pfx_password)
           f = ::File.open(new_resource.output_path, "w")
           f.write(pkcs12.key.to_s)
@@ -245,10 +251,6 @@ class Chef
           ::File.file?(source)
         end
 
-        def is_file?(source)
-          ::File.file?(source)
-        end
-
         # Thumbprints should be exactly 40 Hex characters
         def valid_thumbprint?(string)
           string.match?(/[0-9A-Fa-f]/) && string.length == 40
@@ -261,29 +263,29 @@ class Chef
           GETTHUMBPRINTCODE
         end
 
-        def resolve_thumbprint(thumbprint)
-          return thumbprint if valid_thumbprint?(thumbprint)
-
-          powershell_exec!(get_thumbprint(new_resource.store_name, ps_cert_location, new_resource.source)).result
+        def validate_thumbprint(thumbprint)
+          # valid_thumbprint can return false under at least 2 conditions:
+          # one is that the thumbprint is in fact busted
+          # the second is that the thumbprint is valid but belongs to an expired certificate already installed
+          results = valid_thumbprint?(thumbprint)
+          results == true ? thumbprint : false
         end
 
-        # Checks whether a certificate with the given thumbprint
-        # is already present and valid in certificate store
-        # If the certificate is not present, verify_cert returns a String: "Certificate not found"
-        # But if it is present but expired, it returns a Boolean: false
-        # Otherwise, it returns a Boolean: true
-        # updated this method to accept either a subject name or a thumbprint - 1/29/2021
-
+        # Checks to make sure whether the cert is found or not
+        # if it IS found, is it still valid - has it expired?
         def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
-          if new_resource.pfx_password.nil?
-            store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name )
+          validated_thumbprint = validate_thumbprint(thumbprint)
+          if validated_thumbprint != false
+            result = store.valid?(thumbprint)
+            result == ( "Certificate Not Found" || "Certificate Has Expired" ) ? false : true
           else
-            store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name)
+            message = "While verifying the certificate, was passed the following invalid certificate thumbprint : #{thumbprint}\n"
+            raise Chef::Exceptions::InvalidKeyAttribute, message
           end
         end
 
-        # this array structure is solving 2 problems. The first is that we need to have support for both the CurrentUser AND LocalMachine stores
+        # this structure is solving 2 problems. The first is that we need to have support for both the CurrentUser AND LocalMachine stores
         # Secondly, we need to pass the proper constant name for each store to win32-certstore but also pass the short name to powershell scripts used here
         def ps_cert_location
           new_resource.user_store ? "CurrentUser" : "LocalMachine"
@@ -436,7 +438,7 @@ class Chef
         end
 
         def export_cert(cert_obj, output_path:, store_name:, store_location:, pfx_password:)
-          # Delete the cert if it exists. This is non-destructive in that it only removes the file and not the entire path.
+          # Delete the cert if it exists on disk already.
           # We want to ensure we're not randomly loading an old stinky cert.
           if ::File.exists?(output_path)
             ::File.delete(output_path)
@@ -460,7 +462,20 @@ class Chef
             cert_out = shell_out("openssl x509 -text -inform DER -in #{cert_obj} -outform CRT").stdout
             out_file.puts(cert_out)
           when ".pfx"
-            pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: store_location, store_name: store_name, output_path: output_path, password: pfx_password )
+            validated_thumbprint = validate_thumbprint(new_resource.source)
+            if validated_thumbprint != false # is the thumbprint valid
+              store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
+              result = store.valid?(new_resource.source) # is there a cert in the store matching that thumbprint
+              temp = result == ( "Certificate Not Found" || "Certificate Has Expired" ) ? false : true
+              if temp == true
+                pfx_ps_cmd(validate_thumbprint(new_resource.source), store_location: store_location, store_name: store_name, output_path: output_path, password: pfx_password )
+              else
+                Chef::Log.debug("The requested certificate is not found or has expired")
+              end
+            else
+              message = "While exporting the pfx, was passed the following invalid certificate thumbprint : #{new_resource.source}\n"
+              raise Chef::Exceptions::InvalidKeyAttribute, message
+            end
           when ".p7b"
             cert_out = shell_out("openssl pkcs7 -export -nokeys -in #{cert_obj.to_pem} -outform P7B").stdout
             out_file.puts(cert_out)
@@ -481,14 +496,11 @@ class Chef
         #
         def import_certificates(cert_objs, is_pfx, store_name: new_resource.store_name, store_location: native_cert_location)
           [cert_objs].flatten.each do |cert_obj|
-            # thumbprint = OpenSSL::Digest.new("SHA1", cert_obj.to_der).to_s
-            # pkcs = OpenSSL::PKCS12.new(cert_obj, new_resource.pfx_password)
-            # cert = OpenSSL::X509::Certificate.new(pkcs.certificate.to_pem)
             thumbprint = OpenSSL::Digest.new("SHA1", cert_obj.to_der).to_s
-            if is_pfx
-              if verify_cert(thumbprint) == true
-                Chef::Log.debug("Certificate is already present")
-              else
+            if verify_cert(thumbprint) == true
+              Chef::Log.debug("Certificate is already present")
+            elsif verify_cert(thumbprint) == false # Not found already in the CertStore
+              if is_pfx
                 if is_file?(new_resource.source)
                   converge_by("Creating a PFX #{new_resource.source} for Store #{new_resource.store_name}") do
                     add_pfx_cert(new_resource.source)
@@ -502,15 +514,14 @@ class Chef
                   message << exception.message
                   raise Chef::Exceptions::ArgumentError, message
                 end
-              end
-            else
-              if verify_cert(thumbprint) == true
-                Chef::Log.debug("Certificate is already present")
               else
                 converge_by("Creating a certificate #{new_resource.source} for Store #{new_resource.store_name}") do
                   add_cert(cert_obj)
                 end
               end
+            else
+              message = "Certificate could not be imported"
+              raise Chef::Exceptions::CertificateNotImportable, message
             end
           end
         end
