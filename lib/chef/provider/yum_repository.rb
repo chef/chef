@@ -44,10 +44,11 @@ class Chef
           mode new_resource.mode
           if new_resource.make_cache
             notifies :run, "execute[yum clean metadata #{new_resource.repositoryid}]", :immediately if new_resource.clean_metadata || new_resource.clean_headers
-            if new_resource.makecache_fast
-              notifies :run, "execute[yum-makecache-#{new_resource.repositoryid}]", :immediately
-            else
+            # makecache fast only works on non-dnf systems.
+            if !which "dnf" && new_resource.makecache_fast
               notifies :run, "execute[yum-makecache-fast-#{new_resource.repositoryid}]", :immediately
+            else
+              notifies :run, "execute[yum-makecache-#{new_resource.repositoryid}]", :immediately
             end
             notifies :flush_cache, "package[package-cache-reload-#{new_resource.repositoryid}]", :immediately
           end
