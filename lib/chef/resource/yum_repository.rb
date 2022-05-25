@@ -115,7 +115,7 @@ class Chef
         default: true
 
       property :makecache_fast, [TrueClass, FalseClass],
-        description: "if make_cache is true, uses `yum makecache fast`, which downloads only the minimum amount of data required. Useful over slower connections and when diskspace is at a premium.",
+        description: "if make_cache is true, uses `yum makecache fast`, which downloads only the minimum amount of data required. Useful over slower connections and when disk space is at a premium.",
         default: false
 
       property :max_retries, [String, Integer],
