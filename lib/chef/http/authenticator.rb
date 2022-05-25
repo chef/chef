@@ -239,7 +239,6 @@ class Chef
               ::Chef::Client.update_key_and_register(Chef::Config[:client_name], pkcs)
             end
 
-            File.delete(file_path)
             return pkcs.key.private_to_pem
           end
         end
