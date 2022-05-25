@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.13 -->
-## [v17.10.13](https://github.com/chef/chef/tree/v17.10.13) (2022-05-17)
+<!-- latest_release 17.10.14 -->
+## [v17.10.14](https://github.com/chef/chef/tree/v17.10.14) (2022-05-25)
 
 #### Merged Pull Requests
-- Handling compliance phase error [#12872](https://github.com/chef/chef/pull/12872) ([i5pranay93](https://github.com/i5pranay93))
+- backport Windows Certificate fixes to Chef-17 [#12912](https://github.com/chef/chef/pull/12912) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- backport Windows Certificate fixes to Chef-17 [#12912](https://github.com/chef/chef/pull/12912) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.14 -->
 - Handling compliance phase error [#12872](https://github.com/chef/chef/pull/12872) ([i5pranay93](https://github.com/i5pranay93)) <!-- 17.10.13 -->
 - Backport #12140 to chef-17 [#12856](https://github.com/chef/chef/pull/12856) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.12 -->
 - Fix chef_client_config template rendering [#12826](https://github.com/chef/chef/pull/12826) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.11 -->
