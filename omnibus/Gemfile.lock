@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 63be4f1663fe28c35e762697500dab7dd88c4dbf
+  revision: 78ad41dcb79f0153c7f8efb963ea4d80fe055340
   branch: main
   specs:
-    omnibus (9.0.0)
+    omnibus (9.0.2)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -20,6 +20,7 @@ GIT
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
+      nokogiri (~> 1)
       ohai (>= 15, < 18)
       pedump
       ruby-progressbar (~> 1.7)
@@ -33,13 +34,13 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.586.0)
-    aws-sdk-core (3.130.2)
+    aws-partitions (1.591.0)
+    aws-sdk-core (3.131.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
-      jmespath (~> 1.0)
-    aws-sdk-kms (1.56.0)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-kms (1.57.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.114.0)
@@ -237,7 +238,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
-    json (2.6.1)
+    json (2.6.2)
     kitchen-vagrant (1.11.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
@@ -255,6 +256,7 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
+    mini_portile2 (2.8.0)
     minitar (0.9)
     mixlib-archive (1.1.7)
       mixlib-log
@@ -287,6 +289,13 @@ GEM
     net-ssh (6.1.0)
     net-ssh-gateway (2.0.0)
       net-ssh (>= 4.0.0)
+    nokogiri (1.13.6)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.6-x64-mingw32)
+      racc (~> 1.4)
+    nokogiri (1.13.6-x86-mingw32)
+      racc (~> 1.4)
     nori (2.6.0)
     octokit (4.22.0)
       faraday (>= 0.9)
@@ -320,6 +329,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.7)
+    racc (1.6.0)
     rack (2.2.3)
     rainbow (3.1.1)
     retryable (3.0.5)
