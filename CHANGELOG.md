@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.99 -->
-## [v18.0.99](https://github.com/chef/chef/tree/v18.0.99) (2022-05-25)
+<!-- latest_release 18.0.100 -->
+## [v18.0.100](https://github.com/chef/chef/tree/v18.0.100) (2022-05-25)
 
 #### Merged Pull Requests
-- updating throw statement to only execute on non-zero exit codes [#12918](https://github.com/chef/chef/pull/12918) ([johnmccrae](https://github.com/johnmccrae))
+- Knife upload: bad error message when a recipe has a syntax error [#11678](https://github.com/chef/chef/pull/11678) ([snehaldwivedi](https://github.com/snehaldwivedi))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Knife upload: bad error message when a recipe has a syntax error [#11678](https://github.com/chef/chef/pull/11678) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 18.0.100 -->
 - updating throw statement to only execute on non-zero exit codes [#12918](https://github.com/chef/chef/pull/12918) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.99 -->
 - Refactoring Windows certificate code and tests to reflect updates in the win32-certstore gem [#12859](https://github.com/chef/chef/pull/12859) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.98 -->
 - flush package cache after registering via rhsm_register [#12828](https://github.com/chef/chef/pull/12828) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.97 -->
