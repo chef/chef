@@ -57,22 +57,22 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
   end
 
   context "Win32 version object" do
-    # it "should have have one method for each marketing version" do
-    #   versions = 0
-    #   for_each_windows_version { versions += 1 }
-    #   expect(versions).to be > 0
-    #   expect(versions).to eq(Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length)
-    # end
+    it "should have have one method for each marketing version" do
+      versions = 0
+      for_each_windows_version { versions += 1 }
+      expect(versions).to be > 0
+      expect(versions).to eq(Chef::ReservedNames::Win32::Version::WIN_VERSIONS.length)
+    end
 
-    # it "should only contain version methods with legal method names" do
-    #   method_name_pattern = /[a-z]+([a-z]|[0-9]|_)*\?{0,1}/
+    it "should only contain version methods with legal method names" do
+      method_name_pattern = /[a-z]+([a-z]|[0-9]|_)*\?{0,1}/
 
-    #   for_each_windows_version do |method_name|
-    #     method_match = method_name_pattern.match(method_name.to_s)
-    #     expect(method_match).not_to be_nil
-    #     expect(method_name.to_s).to eq(method_match[0])
-    #   end
-    # end
+      for_each_windows_version do |method_name|
+        method_match = method_name_pattern.match(method_name.to_s)
+        expect(method_match).not_to be_nil
+        expect(method_name.to_s).to eq(method_match[0])
+      end
+    end
 
     it "should have exactly one method that returns true" do
       true_versions = 0
@@ -82,16 +82,16 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       expect(true_versions).to eq(1)
     end
 
-    # it "should successfully execute all version methods" do
-    #   for_each_windows_version { |method_name| @version.send(method_name.to_sym) }
-    # end
+    it "should successfully execute all version methods" do
+      for_each_windows_version { |method_name| @version.send(method_name.to_sym) }
+    end
   end
 
-  # context "Windows Operating System version" do
-  #   it "should match the version from WMI" do
-  #     expect(@current_os_version).to include(@version.marketing_name)
-  #   end
-  # end
+  context "Windows Operating System version" do
+    it "should match the version from WMI" do
+      expect(@current_os_version).to include(@version.marketing_name)
+    end
+  end
 
   def is_windows_server_2008?(wmi_host)
     is_win2k8 = false
