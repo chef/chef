@@ -73,6 +73,7 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
+      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
     chef (18.0.100-universal-mingw32)
@@ -108,9 +109,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
+      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-      win32-api (~> 1.5)
+      win32-api (~> 1.5.3)
       win32-certstore (~> 0.6.10)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
@@ -154,7 +156,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.591.0)
+    aws-partitions (1.592.0)
     aws-sdk-core (3.131.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -167,7 +169,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.61.0)
+    aws-sdk-secretsmanager (1.62.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.0)
@@ -243,7 +245,7 @@ GEM
     hashdiff (1.0.1)
     hashie (4.1.0)
     http-accept (1.7.0)
-    http-cookie (1.0.4)
+    http-cookie (1.0.5)
       domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
@@ -403,7 +405,7 @@ GEM
     thor (1.2.1)
     time (0.2.0)
       date
-    timeout (0.2.0)
+    timeout (0.3.0)
     tomlrb (1.3.0)
     train-core (3.9.2)
       addressable (~> 2.5)
@@ -439,9 +441,9 @@ GEM
       tty-screen (~> 0.8)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8.1)
-    unf_ext (0.0.8.1-x64-mingw32)
-    unf_ext (0.0.8.1-x86-mingw32)
+    unf_ext (0.0.8)
+    unf_ext (0.0.8-x64-mingw32)
+    unf_ext (0.0.8-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -452,7 +454,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.10.1-universal-mingw32)
+    win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
       ffi
@@ -499,7 +501,6 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
-  x86_64-darwin-19
 
 DEPENDENCIES
   appbundler
@@ -525,4 +526,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.5
+   2.3.14

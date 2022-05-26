@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 36f49ec7dff16c5bf5d60e106ae709dcf1f824b1
+  revision: 29ebd6cc3f9c3e4e96b9cfbdc426514d60c10aaf
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 63be4f1663fe28c35e762697500dab7dd88c4dbf
+  revision: 78ad41dcb79f0153c7f8efb963ea4d80fe055340
   branch: main
   specs:
-    omnibus (9.0.0)
+    omnibus (9.0.2)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -20,6 +20,7 @@ GIT
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
+      nokogiri (~> 1)
       ohai (>= 15, < 18)
       pedump
       ruby-progressbar (~> 1.7)
@@ -33,7 +34,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.590.0)
+    aws-partitions (1.592.0)
     aws-sdk-core (3.131.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -46,7 +47,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.61.0)
+    aws-sdk-secretsmanager (1.62.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.0)
@@ -142,7 +143,7 @@ GEM
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
-    chef-cleanroom (1.0.4)
+    chef-cleanroom (1.0.5)
     chef-config (17.10.0)
       addressable
       chef-utils (= 17.10.0)
@@ -246,15 +247,16 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.2.16)
+    license_scout (1.3.0)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
     little-plugger (1.1.4)
-    logging (2.3.0)
+    logging (2.3.1)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
+    mini_portile2 (2.8.0)
     minitar (0.9)
     mixlib-archive (1.1.7)
       mixlib-log
@@ -287,6 +289,13 @@ GEM
     net-ssh (6.1.0)
     net-ssh-gateway (2.0.0)
       net-ssh (>= 4.0.0)
+    nokogiri (1.13.6)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.6-x64-mingw32)
+      racc (~> 1.4)
+    nokogiri (1.13.6-x86-mingw32)
+      racc (~> 1.4)
     nori (2.6.0)
     octokit (4.22.0)
       faraday (>= 0.9)
@@ -320,6 +329,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.7)
+    racc (1.6.0)
     rack (2.2.3)
     rainbow (3.1.1)
     retryable (3.0.5)
@@ -472,4 +482,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.5
+   2.3.14
