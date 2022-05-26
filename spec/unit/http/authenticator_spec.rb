@@ -32,7 +32,8 @@ describe Chef::HTTP::Authenticator, :windows_only do
     Chef::Config[:node_name] = node_name
     cert_name = "chef-#{node_name}"
     d = Time.now
-    end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+    end_date = Time.new + (3600 * 24 * 90)
+    end_date = end_date.utc.iso8601
 
     my_client = Chef::Client.new
     pfx = my_client.generate_pfx_package(cert_name, end_date)
