@@ -138,7 +138,7 @@ class Chef
 
       # @return [String] the path to the user's .chef directory
       def chef_config_path
-        @chef_config_path ||= ChefConfig::PathHelper.home(".chef")
+        @chef_config_path ||= ChefConfig::PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR)
       end
 
       # @return [String] the full path to the config file (credential file)
