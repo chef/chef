@@ -64,6 +64,7 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
+      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
     chef (17.10.19-universal-mingw32)
@@ -97,6 +98,7 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
+      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
       win32-api (~> 1.5.3)
@@ -258,7 +260,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
-    json (2.6.0)
+    json (2.6.2)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -389,6 +391,9 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
+    unf_ext (0.0.8)
+    unf_ext (0.0.8-x64-mingw32)
+    unf_ext (0.0.8-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -446,7 +451,6 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
-  x86_64-darwin-19
 
 DEPENDENCIES
   appbundler
@@ -471,4 +475,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.5
+   2.3.14
