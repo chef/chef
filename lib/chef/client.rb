@@ -669,6 +669,7 @@ class Chef
       events.registration_failed(client_name, e, config)
       raise
     end
+
     # In the brave new world of No Certs On Disk, we want to put the pem file into Keychain or the Certstore
     # But is it already there?
     def check_certstore_for_key(cert_name)

@@ -171,6 +171,7 @@ class Chef
         if present.nil? || present.empty?
           raise Chef::Exceptions::Win32RegKeyMissing
         end
+
         present.each do |secret|
           if secret[:name] == "PfxPass"
             password = decrypt_pfx_pass(secret[:data])
