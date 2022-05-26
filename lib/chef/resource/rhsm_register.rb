@@ -118,12 +118,17 @@ class Chef
           end
         end
 
+        package flush_package_cache_name do
+          action :nothing
+        end
+
         execute "Register to RHSM" do
           sensitive new_resource.sensitive
           command register_command
           default_env true
           action :run
           not_if { registered_with_rhsm? } unless new_resource.force
+          notifies :flush_cache, "package[#{flush_package_cache_name}]", :immediately
         end
 
         if new_resource.install_katello_agent && !new_resource.satellite_host.nil?
@@ -132,11 +137,18 @@ class Chef
       end
 
       action :unregister, description: "Unregister the node from RHSM." do
+        description "Unregister the node from RHSM."
+
+        package flush_package_cache_name do
+          action :nothing
+        end
+
         execute "Unregister from RHSM" do
           command "subscription-manager unregister"
           default_env true
           action :run
           only_if { registered_with_rhsm? }
+          notifies :flush_cache, "package[#{flush_package_cache_name}]", :immediately
           notifies :run, "execute[Clean RHSM Config]", :immediately
         end
 
@@ -148,6 +160,13 @@ class Chef
       end
 
       action_class do
+        #
+        # @return [String]
+        #
+        def flush_package_cache_name
+          "rhsm_register-#{new_resource.name}-flush_cache"
+        end
+
         #
         # @return [Symbol] dnf_package or yum_package depending on OS release
         #
