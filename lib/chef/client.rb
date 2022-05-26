@@ -64,6 +64,8 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
+    CRYPT_EXPORTABLE = 0x00000001
+    attr_reader :local_context
     extend Chef::Mixin::Deprecation
 
     extend Forwardable
@@ -640,6 +642,16 @@ class Chef
       if !config[:client_key]
         events.skipping_registration(client_name, config)
         logger.trace("Client key is unspecified - skipping registration")
+      elsif ::Chef::Config[:migrate_key_to_keystore] == true && ChefUtils.windows?
+        cert_name = "chef-#{client_name}"
+        result = check_certstore_for_key(cert_name)
+        if result.rassoc("#{cert_name}")
+          logger.trace("Client key #{config[:client_key]} is present in Certificate Store - skipping registration")
+        else
+          create_new_key_and_register(cert_name)
+          logger.trace("New client keys created in the Certificate Store - skipping registration")
+        end
+        events.skipping_registration(client_name, config)
       elsif File.exists?(config[:client_key])
         events.skipping_registration(client_name, config)
         logger.trace("Client key #{config[:client_key]} is present - skipping registration")
@@ -656,6 +668,147 @@ class Chef
       # user
       events.registration_failed(client_name, e, config)
       raise
+    end
+    # In the brave new world of No Certs On Disk, we want to put the pem file into Keychain or the Certstore
+    # But is it already there?
+    def check_certstore_for_key(cert_name)
+      require "win32-certstore"
+      win32certstore = ::Win32::Certstore.open("MY")
+      win32certstore.search("#{cert_name}")
+    end
+
+    def generate_pfx_package(cert_name, date)
+      self.class.generate_pfx_package(cert_name, date)
+    end
+
+    def self.generate_pfx_package(cert_name, date)
+      require "openssl" unless defined?(OpenSSL)
+      key = OpenSSL::PKey::RSA.new(2048)
+      public_key = key.public_key
+      subject = "CN=#{cert_name}"
+      cert = OpenSSL::X509::Certificate.new
+      cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
+      cert.not_before = Time.now
+      cert.not_after = Time.parse(date)
+      cert.public_key = public_key
+      cert.serial = 0x0
+      cert.version = 2
+      ef = OpenSSL::X509::ExtensionFactory.new
+      ef.subject_certificate = cert
+      ef.issuer_certificate = cert
+      cert.extensions = [
+        ef.create_extension("subjectKeyIdentifier", "hash"),
+        ef.create_extension("keyUsage", "digitalSignature,keyEncipherment", true),
+      ]
+      cert.add_extension(ef.create_ext_from_string("extendedKeyUsage=critical,serverAuth,clientAuth"))
+      cert.sign key, OpenSSL::Digest.new("SHA256")
+      password = ::Chef::HTTP::Authenticator.get_cert_password
+      pfx = OpenSSL::PKCS12.create(password, subject, key, cert)
+      pfx
+    end
+
+    def update_key_and_register(cert_name)
+      self.class.update_key_and_register(cert_name)
+    end
+
+    def self.update_key_and_register(cert_name, expiring_cert = nil)
+      # Chef client and node objects exist on Chef Server already
+      # Create a new public/private keypair in secure storage
+      # and register the new public cert with Chef Server
+      require "time" unless defined?(Time)
+      autoload :URI, "uri"
+
+      node = Chef::Config[:node_name]
+      end_date = Time.new + (3600 * 24 * 90)
+      end_date = end_date.utc.iso8601
+
+      new_cert_name = Time.now.utc.iso8601
+      payload = {
+        name: new_cert_name,
+        clientname: node,
+        public_key: "",
+        expiration_date: end_date,
+      }
+
+      new_pfx = generate_pfx_package(cert_name, end_date)
+      payload[:public_key] = new_pfx.certificate.public_key.to_pem
+      base_url = "#{Chef::Config[:chef_server_url]}"
+
+      @tmpdir = Dir.mktmpdir
+      file_path = File.join(@tmpdir, "#{node}.pem")
+
+      # The pfx files expire every 90 days.
+      # We check them in /http/authenticator to see if they are expiring when we extract the private key
+      # If they are, we come here to update Chef Server with a new public key
+      if expiring_cert
+        File.open(file_path, "w") { |f| f.write expiring_cert.key.to_pem }
+        signing_cert = file_path
+        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: signing_cert )
+        File.delete(file_path)
+      else
+        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: Chef::Config[:client_key] )
+      end
+
+      # Get the list of keys for this client
+      # Then add the new key we just created
+      # Then we delete the old one.
+      cert_list = client.get(base_url + "/clients/#{node}/keys")
+      client.post(base_url + "/clients/#{node}/keys", payload)
+
+      # We want to remove the old key for various reasons
+      # In the case where more than 1 certificate is returned we assume
+      # there is some special condition applied to the client so we won't delete the old
+      # certificates
+      if cert_list.count < 2
+        cert_hash = cert_list.reduce({}, :merge!)
+        old_cert_name = cert_hash["name"]
+        new_key = new_pfx.key.to_pem
+        File.open(file_path, "w") { |f| f.write new_key }
+        client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:node_name], signing_key_filename: file_path)
+        client.delete(base_url + "/clients/#{node}/keys/#{old_cert_name}")
+        File.delete(file_path)
+      end
+      import_pfx_to_store(new_pfx)
+    end
+
+    def create_new_key_and_register(cert_name)
+      require "time" unless defined?(Time)
+      autoload :URI, "uri"
+      # KeyMigration.instance.key_migrated = true
+      node = Chef::Config[:node_name]
+      d = Time.now
+      if d.month == 10 || d.month == 11 || d.month == 12
+        end_date = Time.new(d.year + 1, d.month - 9, d.day, d.hour, d.min, d.sec).utc.iso8601
+      else
+        end_date = Time.new(d.year, d.month + 3, d.day, d.hour, d.min, d.sec).utc.iso8601
+      end
+      payload = {
+        name: node,
+        clientname: node,
+        public_key: "",
+        expiration_date: end_date,
+      }
+      new_pfx = generate_pfx_package(cert_name, end_date)
+      payload[:public_key] = new_pfx.certificate.public_key.to_pem
+      base_url = "#{Chef::Config[:chef_server_url]}"
+      client = Chef::ServerAPI.new(base_url, client_name: Chef::Config[:validation_client_name], signing_key_filename: Chef::Config[:validation_key])
+      client.post(base_url + "/clients", payload)
+      Chef::Log.trace("Updated client data: #{client.inspect}")
+      import_pfx_to_store(new_pfx)
+    end
+
+    def import_pfx_to_store(new_pfx)
+      self.class.import_pfx_to_store(new_pfx)
+    end
+
+    def self.import_pfx_to_store(new_pfx)
+      password = ::Chef::HTTP::Authenticator.get_cert_password
+      require "win32-certstore"
+      tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
+      File.open(tempfile, "wb") { |f| f.print new_pfx.to_der }
+      store = ::Win32::Certstore.open("MY")
+      store.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
+      tempfile.unlink
     end
 
     #
