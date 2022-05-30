@@ -177,7 +177,7 @@ class Chef
           current_version = nil
           candidate_version = nil
           all_versions = []
-          run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
+          run_noninteractive("apt-cache", default_release_options, "policy", "^#{pkg}$").stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
               current_version = ( $1 != "(none)" ) ? $1 : nil
@@ -216,7 +216,7 @@ class Chef
         end
 
         def resolve_virtual_package_name(pkg)
-          showpkg = run_noninteractive("apt-cache", "showpkg", pkg).stdout
+          showpkg = run_noninteractive("apt-cache", "showpkg", "^#{pkg}$").stdout
           partitions = showpkg.rpartition(/Reverse Provides: ?#{$/}/)
           return nil if partitions[0] == "" && partitions[1] == "" # not found in output
 

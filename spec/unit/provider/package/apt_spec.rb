@@ -67,7 +67,7 @@ describe Chef::Provider::Package::Apt do
 
     it "should create a current resource with the name of the new_resource" do
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", @new_resource.package_name,
+        "apt-cache", "policy", "^#{@new_resource.package_name}$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(@shell_out)
@@ -107,7 +107,7 @@ describe Chef::Provider::Package::Apt do
       POLICY_STDOUT
       policy = double(stdout: policy_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", "conic-smarms",
+        "apt-cache", "policy", "^conic-smarms$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(policy)
@@ -116,7 +116,7 @@ describe Chef::Provider::Package::Apt do
       SHOWPKG_STDOUT
       showpkg = double(stdout: showpkg_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "showpkg", "conic-smarms",
+        "apt-cache", "showpkg", "^conic-smarms$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(showpkg)
@@ -135,7 +135,7 @@ describe Chef::Provider::Package::Apt do
       VPKG_STDOUT
       virtual_package = double(stdout: virtual_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", "libmysqlclient15-dev",
+        "apt-cache", "policy", "^libmysqlclient15-dev$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(virtual_package)
@@ -159,7 +159,7 @@ describe Chef::Provider::Package::Apt do
       SHOWPKG_STDOUT
       showpkg = double(stdout: showpkg_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "showpkg", "libmysqlclient15-dev",
+        "apt-cache", "showpkg", "^libmysqlclient15-dev$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(showpkg)
@@ -178,7 +178,7 @@ describe Chef::Provider::Package::Apt do
       RPKG_STDOUT
       real_package = double(stdout: real_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", "libmysqlclient-dev",
+        "apt-cache", "policy", "^libmysqlclient-dev$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(real_package)
@@ -195,7 +195,7 @@ describe Chef::Provider::Package::Apt do
       VPKG_STDOUT
       virtual_package = double(stdout: virtual_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", "mp3-decoder",
+        "apt-cache", "policy", "^mp3-decoder$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(virtual_package)
@@ -222,7 +222,7 @@ describe Chef::Provider::Package::Apt do
       SHOWPKG_STDOUT
       showpkg = double(stdout: showpkg_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "showpkg", "mp3-decoder",
+        "apt-cache", "showpkg", "^mp3-decoder$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(showpkg)
@@ -236,7 +236,7 @@ describe Chef::Provider::Package::Apt do
       @new_resource.default_release("lenny-backports")
       @new_resource.provider(nil)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "-o", "APT::Default-Release=lenny-backports", "policy", "irssi",
+        "apt-cache", "-o", "APT::Default-Release=lenny-backports", "policy", "^irssi$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(@shell_out)
@@ -246,7 +246,7 @@ describe Chef::Provider::Package::Apt do
     it "raises an exception if a source is specified (CHEF-5113)" do
       @new_resource.source "pluto"
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", @new_resource.package_name,
+        "apt-cache", "policy", "^#{@new_resource.package_name}$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
         timeout: @timeout
       ).and_return(@shell_out)
@@ -277,7 +277,7 @@ describe Chef::Provider::Package::Apt do
       RPKG_STDOUT
       real_package = double(stdout: real_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", "libmysqlclient-dev",
+        "apt-cache", "policy", "^libmysqlclient-dev$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" },
         timeout: @timeout
       ).and_return(real_package)
@@ -307,12 +307,12 @@ describe Chef::Provider::Package::Apt do
       RPKG_STDOUT
       real_package = double(stdout: real_package_out, exitstatus: 0)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "policy", @new_resource.package_name,
+        "apt-cache", "policy", "^#{@new_resource.package_name}$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
         timeout: @timeout
       ).and_return(real_package)
       expect(@provider).to receive(:shell_out_compacted!).with(
-        "apt-cache", "showpkg", @new_resource.package_name,
+        "apt-cache", "showpkg", "^#{@new_resource.package_name}$",
         env: { "DEBIAN_FRONTEND" => "noninteractive" } ,
         timeout: @timeout
       ).and_return(real_package)
