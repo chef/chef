@@ -236,7 +236,8 @@ class Chef
       def masked?
         # Note: masked-runtime is excluded, because runtime is volatile, and
         # because masked-runtime is not masked.
-        systemd_unit_status["UnitFileState"] == "masked"
+        # Unit status of a masked resource is "bad"
+        %w{masked bad}.include?(systemd_unit_status["UnitFileState"])
       end
 
       def static?
