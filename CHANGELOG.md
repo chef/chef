@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.102 -->
-## [v18.0.102](https://github.com/chef/chef/tree/v18.0.102) (2022-05-26)
+<!-- latest_release 18.0.103 -->
+## [v18.0.103](https://github.com/chef/chef/tree/v18.0.103) (2022-05-31)
 
 #### Merged Pull Requests
-- Updated files to account for pem storage in the Certificate Store [#12910](https://github.com/chef/chef/pull/12910) ([johnmccrae](https://github.com/johnmccrae))
+- Updated ncurses and gems [#12953](https://github.com/chef/chef/pull/12953) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updated ncurses and gems [#12953](https://github.com/chef/chef/pull/12953) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.103 -->
 - Updated files to account for pem storage in the Certificate Store [#12910](https://github.com/chef/chef/pull/12910) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.102 -->
 - updated version data to properly account for Windows 11 and its assoc… [#12919](https://github.com/chef/chef/pull/12919) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.101 -->
 - Knife upload: bad error message when a recipe has a syntax error [#11678](https://github.com/chef/chef/pull/11678) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 18.0.100 -->
