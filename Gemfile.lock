@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 062d2b42bc3c235335956ee2ff62d1f520714637
+  revision: 621d432f0ed0f8e0eed1911f3901c937e1111447
   branch: main
   specs:
-    ohai (18.0.12)
+    ohai (18.0.13)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -80,7 +80,6 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
     chef (18.0.103-universal-mingw32)
@@ -116,7 +115,6 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
       win32-api (~> 1.5.3)
@@ -531,4 +529,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.12
+   2.3.14
