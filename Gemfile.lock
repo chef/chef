@@ -156,7 +156,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.592.0)
+    aws-partitions (1.594.0)
     aws-sdk-core (3.131.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -339,11 +339,11 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.7)
-    rack (2.2.3)
+    rack (2.2.3.1)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.4.0)
+    regexp_parser (2.5.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -526,4 +526,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.14
+   2.3.12

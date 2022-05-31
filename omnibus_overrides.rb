@@ -16,7 +16,7 @@ override "libxslt", version: windows? ? "1.1.34" : "1.1.35"
 
 override "libyaml", version: "0.1.7"
 override "makedepend", version: "1.0.5"
-override "ncurses", version: "5.9"
+override "ncurses", version: "6.3"
 override "nokogiri", version: "1.13.1"
 override "openssl", version: mac_os_x? ? "1.1.1m" : "1.0.2zb"
 override "pkg-config-lite", version: "0.28-1"
