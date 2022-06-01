@@ -112,7 +112,7 @@ class Chef
             raise Chef::Exceptions::Secret::ConfigurationInvalid.new("You must provide the authenticating Vault role name in the configuration as :role_name")
           end
 
-          Vault.auth.aws_iam(config[:role_name], Aws::InstanceProfileCredentials.new)
+          Vault.auth.aws_iam(config[:role_name], Aws::InstanceProfileCredentials.new, Vault.address)
         else
           raise Chef::Exceptions::Secret::ConfigurationInvalid.new("Invalid :auth_method provided.  You gave #{config[:auth_method]}, expected one of :#{SUPPORTED_AUTH_TYPES.join(", :")} ")
         end
