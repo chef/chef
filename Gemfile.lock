@@ -32,6 +32,13 @@ GIT
   specs:
     ruby-shadow (2.5.0)
 
+GIT
+  remote: https://github.com/knu/ruby-unf_ext
+  revision: 533a29df68d510b12ef4413742fd5038670d98ca
+  tag: v0.0.8.2.beta
+  specs:
+    unf_ext (0.0.8.2.beta)
+
 PATH
   remote: .
   specs:
@@ -64,7 +71,6 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
     chef (17.10.19-universal-mingw32)
@@ -98,7 +104,6 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
       win32-api (~> 1.5.3)
@@ -314,11 +319,11 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.7)
-    rack (2.2.3)
+    rack (2.2.3.1)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.4.0)
+    regexp_parser (2.5.0)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -391,9 +396,6 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unf_ext (0.0.8)
-    unf_ext (0.0.8-x64-mingw32)
-    unf_ext (0.0.8-x86-mingw32)
     unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -472,6 +474,7 @@ DEPENDENCIES
   rb-readline
   rspec
   ruby-shadow!
+  unf_ext!
   webmock
 
 BUNDLED WITH
