@@ -40,15 +40,18 @@ jobs:
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
         Move-Item -Path $output.FullName -Destination $target_path
 
+        Write-Output "Here is my github sha : $env:GITHUB_SHA"
+        Write-Output "Here is my github repository : $env:GITHUB_REPOSITORY"
+
         gem install appbundler appbundle-updater --no-doc
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        If ($lastexitcode -ne 0) { Throw $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        If ($lastexitcode -ne 0) { Throw $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
         chef-client -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        If ($lastexitcode -ne 0) { Throw $lastexitcode }
         ohai -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        If ($lastexitcode -ne 0) { Throw $lastexitcode }
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
