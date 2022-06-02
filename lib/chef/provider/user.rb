@@ -66,13 +66,15 @@ class Chef
           end
           current_resource.comment(user_info.gecos)
 
-          begin
-            require "shadow"
-          rescue LoadError
-            @shadow_lib_ok = false
-          else
-            @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
-            current_resource.password(@shadow_info.sp_pwdp) if new_resource.password && current_resource.password == "x"
+          if new_resource.password && current_resource.password == "x"
+            begin
+              require "shadow"
+            rescue LoadError
+              @shadow_lib_ok = false
+            else
+              @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+              current_resource.password(shadow_info.sp_pwdp)
+            end
           end
 
           convert_group_name if new_resource.gid
