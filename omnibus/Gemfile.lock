@@ -55,7 +55,7 @@ GEM
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
-    berkshelf (8.0.1)
+    berkshelf (8.0.2)
       chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
@@ -266,7 +266,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-install (3.12.16)
+    mixlib-install (3.12.19)
       mixlib-shellout
       mixlib-versioning
       thor

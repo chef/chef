@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 621d432f0ed0f8e0eed1911f3901c937e1111447
+  revision: 1f09e5c6437fef5c3c5a56f37ca0912dfaf22320
   branch: main
   specs:
-    ohai (18.0.13)
+    ohai (18.0.14)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -31,6 +31,13 @@ GIT
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
+
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
 
 GIT
   remote: https://github.com/knu/ruby-unf_ext
@@ -517,6 +524,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
+  ruby-shadow!
   unf_ext!
   webmock
 
