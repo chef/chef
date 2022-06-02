@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.104 -->
-## [v18.0.104](https://github.com/chef/chef/tree/v18.0.104) (2022-06-01)
+<!-- latest_release 18.0.105 -->
+## [v18.0.105](https://github.com/chef/chef/tree/v18.0.105) (2022-06-02)
 
 #### Merged Pull Requests
-- adding UCRT support to the build pipelines [#12959](https://github.com/chef/chef/pull/12959) ([johnmccrae](https://github.com/johnmccrae))
+- Remove the beta feature warning which shows up when using Secret Manager [#12925](https://github.com/chef/chef/pull/12925) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the beta feature warning which shows up when using Secret Manager [#12925](https://github.com/chef/chef/pull/12925) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.105 -->
 - adding UCRT support to the build pipelines [#12959](https://github.com/chef/chef/pull/12959) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.104 -->
 - Updated ncurses and gems [#12953](https://github.com/chef/chef/pull/12953) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.103 -->
 - Updated files to account for pem storage in the Certificate Store [#12910](https://github.com/chef/chef/pull/12910) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.102 -->
