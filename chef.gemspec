@@ -39,6 +39,9 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 18.0"
   s.add_dependency "inspec-core", "~> 5.17"
 
+  # temporary, v2.2.0 was released broken
+  s.add_dependency "multipart-post", "2.1.1"
+
   s.add_dependency "ffi", ">= 1.5.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0" # remote_file resource
