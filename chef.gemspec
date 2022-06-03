@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
-  s.add_dependency "inspec-core", "~> 5.17"
+  s.add_dependency "inspec-core", "~> 4.23"
 
   # temporary, v2.2.0 was released broken
   s.add_dependency "multipart-post", "2.1.1"
