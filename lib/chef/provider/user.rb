@@ -109,12 +109,12 @@ class Chef
           a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." \
             "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
-        requirements.assert(:all_actions) do |a|
-          # either neither linux-only value is set, or we need to be on Linux.
-          a.assertion { (!new_resource.expire_date && !new_resource.inactive) || linux? }
-          a.failure_message Chef::Exceptions::User, "Properties expire_date and inactive are not supported by this OS or have not been implemented for this OS yet."
-          a.whyrun "Properties expire_date and inactive are ignored as they are not supported by this OS or have not been implemented yet for this OS"
-        end
+        # requirements.assert(:all_actions) do |a|
+        #   # either neither linux-only value is set, or we need to be on Linux.
+        #   a.assertion { (!new_resource.expire_date && !new_resource.inactive) || linux? }
+        #   a.failure_message Chef::Exceptions::User, "Properties expire_date and inactive are not supported by this OS or have not been implemented for this OS yet."
+        #   a.whyrun "Properties expire_date and inactive are ignored as they are not supported by this OS or have not been implemented yet for this OS"
+        # end
         requirements.assert(:modify, :lock, :unlock) do |a|
           a.assertion { @user_exists }
           a.failure_message(Chef::Exceptions::User, "Cannot modify user #{new_resource.username} - does not exist!")
