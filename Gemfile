@@ -22,7 +22,7 @@ gem "cheffish", ">= 17"
 # issue is resolved.
 # reference: https://github.com/knu/ruby-unf_ext/issues/66
 # gem "unf_ext", git: "https://github.com/knu/ruby-unf_ext", tag: "v0.0.8.1"
-gem "unf_ext", git: "https://github.com/knu/ruby-unf_ext", tag: "v0.0.8.2.beta"
+# gem "unf_ext", git: "https://github.com/knu/ruby-unf_ext", tag: "v0.0.8.2.beta"
 
 group(:omnibus_package) do
   gem "appbundler"
