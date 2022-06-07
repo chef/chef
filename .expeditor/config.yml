@@ -265,6 +265,6 @@ subscriptions:
   - workload: ruby_gem_published:train-winrm-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:main:nightly_build:*
+  - workload: schedule_triggered:chef/chef-server:main:nightly_build:*
     actions:
-      - built_in:trigger_omnibus_expcache_build
+      - trigger_pipeline:omnibus/adhoc
