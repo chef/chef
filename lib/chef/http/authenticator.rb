@@ -26,8 +26,6 @@ class Chef
   class HTTP
     class Authenticator
       DEFAULT_SERVER_API_VERSION = "2".freeze
-      # cspell:disable-next-line
-      SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
 
       extend Chef::Mixin::PowershellExec
 
@@ -190,8 +188,9 @@ class Chef
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
+        require "securerandom"
         size = 14
-        password = (0...size).map { SOME_CHARS[rand(SOME_CHARS.size)] }.join
+        password = SecureRandom.alphanumeric(size)
         encrypted_pass = encrypt_pfx_pass(password)
         values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
