@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.107 -->
-## [v18.0.107](https://github.com/chef/chef/tree/v18.0.107) (2022-06-07)
+<!-- latest_release 18.0.108 -->
+## [v18.0.108](https://github.com/chef/chef/tree/v18.0.108) (2022-06-07)
 
 #### Merged Pull Requests
-- Fix error &#39;error validating X-Vault-AWS-IAM-Server-ID header: missing header X-Vault-AWS-IAM-Server-ID&#39; in Hashi Vault secret manager for AWS IAM auth method [#12956](https://github.com/chef/chef/pull/12956) ([neha-p6](https://github.com/neha-p6))
+- Update the command to enable adhoc jobs for chef/chef main pipeline [#12979](https://github.com/chef/chef/pull/12979) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update the command to enable adhoc jobs for chef/chef main pipeline [#12979](https://github.com/chef/chef/pull/12979) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.108 -->
 - Fix error &#39;error validating X-Vault-AWS-IAM-Server-ID header: missing header X-Vault-AWS-IAM-Server-ID&#39; in Hashi Vault secret manager for AWS IAM auth method [#12956](https://github.com/chef/chef/pull/12956) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.107 -->
 - Add nightly builds for chef/chef:main [#12971](https://github.com/chef/chef/pull/12971) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.106 -->
 - Remove the beta feature warning which shows up when using Secret Manager [#12925](https://github.com/chef/chef/pull/12925) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.105 -->
