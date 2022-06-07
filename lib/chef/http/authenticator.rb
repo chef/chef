@@ -188,7 +188,7 @@ class Chef
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
-        require "securerandom"
+        require "securerandom" unless defined?(SecureRandom)
         size = 14
         password = SecureRandom.alphanumeric(size)
         encrypted_pass = encrypt_pfx_pass(password)
