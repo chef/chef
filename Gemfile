@@ -17,7 +17,9 @@ end
 
 gem "cheffish", ">= 17"
 
-gem "unf_ext", git: "https://github.com/knu/ruby-unf_ext", tag: "v0.0.8.2.beta"
+# gem "unf_ext", git: "https://github.com/knu/ruby-unf_ext", tag: "v0.0.8.2.beta"
+gem "unf_ext", "0.0.8.2.beta"
+
 
 group(:omnibus_package) do
   gem "appbundler"
