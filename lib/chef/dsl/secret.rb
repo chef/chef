@@ -162,10 +162,6 @@ class Chef
       #   value = secret(name: "test1", service: :aws_secrets_manager, version: "v1", config: { region: "us-west-1" })
       #   log "My secret is #{value}"
       def secret(name: nil, version: nil, service: default_secret_service, config: default_secret_config)
-        Chef::Log.warn <<~EOM.gsub("\n", " ")
-          The secrets Chef Infra language helper is currently in beta. If you have feedback or you would
-          like to be part of the future design of this helper e-mail us at secrets_management_beta@progress.com"
-        EOM
         sensitive(true) if is_a?(Chef::Resource)
         Chef::SecretFetcher.for_service(service, config, run_context).fetch(name, version)
       end
