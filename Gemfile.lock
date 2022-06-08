@@ -298,7 +298,7 @@ GEM
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
-    mixlib-config (3.0.9)
+    mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
     mixlib-shellout (3.2.7)
