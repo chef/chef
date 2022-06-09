@@ -135,6 +135,8 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     end
 
     it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
+      # require "pry"
+      # binding.pry
       stub_request(:head, "https://rubygems2.org/")
         .to_return(status: 200, body: "", headers: {})
       stub_request(:get, "https://rubygems2.org/info/sexp_processor")
