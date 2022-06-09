@@ -134,17 +134,17 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
       expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
     end
 
-    # it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
-    #   stub_request(:head, "https://rubygems2.org/")
-    #     .to_return(status: 200, body: "", headers: {})
-    #   stub_request(:get, "https://rubygems2.org/info/sexp_processor")
-    #     .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-info")))
-    #   stub_request(:get, "https://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
-    #     .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
+    it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
+      stub_request(:head, "https://rubygems2.org/")
+        .to_return(status: 200, body: "", headers: {})
+      stub_request(:get, "https://rubygems2.org/info/sexp_processor")
+        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-info")))
+      stub_request(:get, "https://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
+        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
-    #   dep = Gem::Dependency.new("sexp_processor", ">= 0")
-    #   expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems2.org")).to be_kind_of(Gem::Version)
-    # end
+      dep = Gem::Dependency.new("sexp_processor", ">= 0")
+      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems2.org")).to be_kind_of(Gem::Version)
+    end
   end
 
   context "old rubygems caching behavior" do
