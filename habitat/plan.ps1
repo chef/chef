@@ -80,7 +80,7 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
-        $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
+        $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
