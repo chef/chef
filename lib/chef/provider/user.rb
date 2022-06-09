@@ -66,6 +66,9 @@ class Chef
           end
           current_resource.comment(user_info.gecos)
 
+          #We need to keep this if condition to prevent 'ruby-shadow' LoadError failure in unit specs for this resource on AIX platforms.
+          #Ruby's Etc.getpwnam(username) module returns masked password "x" on Unix systems, so if we remove this if condition, on AIX it goes into rescue 
+          #and raises LoadError resulting in test failures.
           if new_resource.password && current_resource.password == "x"
             begin
               require "shadow"
