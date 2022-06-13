@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.110 -->
-## [v18.0.110](https://github.com/chef/chef/tree/v18.0.110) (2022-06-07)
+<!-- latest_release 18.0.111 -->
+## [v18.0.111](https://github.com/chef/chef/tree/v18.0.111) (2022-06-13)
 
 #### Merged Pull Requests
-- Adjusting cert creation for older Windows platforms [#12965](https://github.com/chef/chef/pull/12965) ([johnmccrae](https://github.com/johnmccrae))
+- Bumping license_scout version [#12992](https://github.com/chef/chef/pull/12992) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bumping license_scout version [#12992](https://github.com/chef/chef/pull/12992) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.111 -->
 - Adjusting cert creation for older Windows platforms [#12965](https://github.com/chef/chef/pull/12965) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.110 -->
 - Bump ohai to 18.0.14 [#12973](https://github.com/chef/chef/pull/12973) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.109 -->
 - Update the command to enable adhoc jobs for chef/chef main pipeline [#12979](https://github.com/chef/chef/pull/12979) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.108 -->
