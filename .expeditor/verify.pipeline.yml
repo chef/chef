@@ -45,33 +45,33 @@ steps:
 #   # Tests Ruby 3.1
 # #########################################################################
 
-- label: "Integration Ubuntu 18.04 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:integration
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:3.1
-        privileged: true
+# - label: "Integration Ubuntu 18.04 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - cd /workdir; bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:integration
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-18.04:3.1
+#         privileged: true
 
-- label: "Functional Ubuntu 18.04 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - apt-get update -y
-    - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:functional
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:3.1
-        privileged: true
+# - label: "Functional Ubuntu 18.04 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - apt-get update -y
+#     - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
+#     - cd /workdir; bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:functional
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-18.04:3.1
+#         privileged: true
 
 - label: "Unit Ubuntu 18.04 :ruby: 3.1"
   commands:
@@ -88,33 +88,33 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:3.1
 
-- label: "Integration Ubuntu 20.04 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:integration
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-20.04:3.1
-        privileged: true
+# - label: "Integration Ubuntu 20.04 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - cd /workdir; bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:integration
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-20.04:3.1
+#         privileged: true
 
-- label: "Functional Ubuntu 20.04 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - apt-get update -y
-    - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:functional
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-20.04:3.1
-        privileged: true
+# - label: "Functional Ubuntu 20.04 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - apt-get update -y
+#     - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
+#     - cd /workdir; bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:functional
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-20.04:3.1
+#         privileged: true
 
 - label: "Unit Ubuntu 20.04 :ruby: 3.1"
   commands:
@@ -202,19 +202,19 @@ steps:
 #         image: rubydistros/opensuse-15:3.1
 #         privileged: true
 
-# - label: "Unit openSUSE 15 :ruby: 3.1"
-#   commands:
-#     - /workdir/.expeditor/scripts/bk_container_prep.sh
-#     - zypper install -y cron insserv-compat libarchive-devel
-#     - bundle config set --local without omnibus_package
-#     - bundle config set --local path 'vendor/bundle'
-#     - bundle install --jobs=3 --retry=3
-#     - bundle exec rake spec:unit
-#     - bundle exec rake component_specs
-#   expeditor:
-#     executor:
-#       docker:
-#         image: rubydistros/opensuse-15:3.1
+- label: "Unit openSUSE 15 :ruby: 3.1"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - zypper install -y cron insserv-compat libarchive-devel
+    - bundle config set --local without omnibus_package
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15:3.1
 
 # - label: "Integration AlmaLinux 8 :ruby: 3.1"
 #   commands:
@@ -246,23 +246,23 @@ steps:
 #           - FORCE_FFI_YAJL=ext
 #           - CHEF_LICENSE=accept-no-persist
 
-# - label: "Unit AlmaLinux 8 :ruby: 3.1"
-#   commands:
-#     - /workdir/.expeditor/scripts/bk_container_prep.sh
-#     - dnf install dnf-plugins-core -y
-#     - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-#     - dnf config-manager --enable epel
-#     - dnf config-manager --set-enabled powertools
-#     - dnf install -y libarchive-devel
-#     - bundle config set --local without omnibus_package
-#     - bundle config set --local path 'vendor/bundle'
-#     - bundle install --jobs=3 --retry=3
-#     - bundle exec rake spec:unit
-#     - bundle exec rake component_specs
-#   expeditor:
-#     executor:
-#       docker:
-#         image: rubydistros/almalinux-8:3.1
+- label: "Unit AlmaLinux 8 :ruby: 3.1"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - dnf install dnf-plugins-core -y
+    - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+    - dnf config-manager --enable epel
+    - dnf config-manager --set-enabled powertools
+    - dnf install -y libarchive-devel
+    - bundle config set --local without omnibus_package
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 --retry=3
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/almalinux-8:3.1
 
 # - label: "Functional Windows :ruby: 2.7"
 #   commands:
