@@ -81,7 +81,7 @@ class Chef
             f.sync = true
             f.puts output
             f.close
-            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup/ for details." unless system("#{config[:editor]} #{f.path}")
+            raise "Please set EDITOR environment variable. See https://docs.chef.io/workstation/knife_setup/#setting-your-text-editor for details." unless system("#{config[:editor]} #{f.path}")
 
             edited_user = JSON.parse(IO.read(f.path))
           end
