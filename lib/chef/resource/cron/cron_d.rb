@@ -145,6 +145,21 @@ class Chef
           new_resource.cron_name.tr(".", "-")
         end
 
+        def define_resource_requirements
+          requirements.assert(:create, :create_if_missing) do |a|
+            a.assertion do
+              # ensure valid cron job names for linux, otherwise the jobs won't be executed
+              if linux?
+                new_resource.cron_name =~ /^[a-zA-Z0-9_-]+$/
+              else
+                true
+              end
+            end
+            a.failure_message("The cron job name should contain letters, numbers, hyphens and underscores only.")
+            a.block_action!
+          end
+        end
+
         def create_template(create_action)
           # cleanup the legacy named job if it exists
           file "#{new_resource.cron_name} legacy named cron.d file" do
