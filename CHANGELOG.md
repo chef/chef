@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.119 -->
-## [v18.0.119](https://github.com/chef/chef/tree/v18.0.119) (2022-06-14)
+<!-- latest_release 18.0.120 -->
+## [v18.0.120](https://github.com/chef/chef/tree/v18.0.120) (2022-06-14)
 
 #### Merged Pull Requests
-- Fix documentation for chef_client_scheduled_task [#12917](https://github.com/chef/chef/pull/12917) ([williamtheaker](https://github.com/williamtheaker))
+- Updated Ruby version in omnibus_overrides [#12995](https://github.com/chef/chef/pull/12995) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updated Ruby version in omnibus_overrides [#12995](https://github.com/chef/chef/pull/12995) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.120 -->
 - Fix documentation for chef_client_scheduled_task [#12917](https://github.com/chef/chef/pull/12917) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.0.119 -->
 - Zypper package source property addition [#12182](https://github.com/chef/chef/pull/12182) ([manick-vel-11](https://github.com/manick-vel-11)) <!-- 18.0.118 -->
 - Smriti/3884 mounting cifs shares with spaces [#11626](https://github.com/chef/chef/pull/11626) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 18.0.117 -->
