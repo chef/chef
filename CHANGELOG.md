@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.3 -->
-## [v16.18.3](https://github.com/chef/chef/tree/v16.18.3) (2022-05-08)
+<!-- latest_release 16.18.4 -->
+## [v16.18.4](https://github.com/chef/chef/tree/v16.18.4) (2022-06-14)
 
 #### Merged Pull Requests
-- Bump berkshelf from 7.2.2 to 8.0.0 in /omnibus [#12835](https://github.com/chef/chef/pull/12835) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Backport to 16: Stop executing locale-gen on every chef run [#12904](https://github.com/chef/chef/pull/12904) ([hrak](https://github.com/hrak))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport to 16: Stop executing locale-gen on every chef run [#12904](https://github.com/chef/chef/pull/12904) ([hrak](https://github.com/hrak)) <!-- 16.18.4 -->
 - Bump berkshelf from 7.2.2 to 8.0.0 in /omnibus [#12835](https://github.com/chef/chef/pull/12835) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.3 -->
 - Bump omnibus-software from `88438e8` to `ff4c902` in /omnibus [#12853](https://github.com/chef/chef/pull/12853) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.2 -->
 - Bump omnibus-software from `50d05bc` to `88438e8` in /omnibus [#12845](https://github.com/chef/chef/pull/12845) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.1 -->
