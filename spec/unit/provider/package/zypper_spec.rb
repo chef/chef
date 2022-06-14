@@ -32,6 +32,8 @@ describe Chef::Provider::Package::Zypper do
 
   let(:status) { double(stdout: "\n", exitstatus: 0) }
 
+  let(:source) { "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm" }
+
   before(:each) do
     allow(Chef::Resource::Package).to receive(:new).and_return(current_resource)
     allow(provider).to receive(:shell_out_compacted!).and_return(status)
@@ -163,6 +165,21 @@ describe Chef::Provider::Package::Zypper do
       )
       provider.install_package(["emacs"], ["1.0"])
     end
+
+    it "should run zypper install with source option" do
+      new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.rpm").and_return(true)
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
+      )
+      provider.install_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
+    end
+
+    it "should raise an exception if a source is supplied but not found when :install" do
+      new_resource.source "/tmp/blah/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with(new_resource.source).and_return(false)
+      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
+    end
   end
 
   describe "upgrade_package" do
@@ -199,6 +216,21 @@ describe Chef::Provider::Package::Zypper do
         "zypper", "--user-provided", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "emacs=1.0"
       )
       provider.upgrade_package(["emacs"], ["1.0"])
+    end
+
+    it "should run zypper upgrade with source option" do
+      new_resource.source "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with("/tmp/wget_1.11.4-1ubuntu1_amd64.rpm").and_return(true)
+      shell_out_expectation!(
+        "zypper", "--non-interactive", "install", "--auto-agree-with-licenses", "--oldpackage", "/tmp/wget_1.11.4-1ubuntu1_amd64.rpm"
+      )
+      provider.upgrade_package(["wget"], ["1.11.4-1ubuntu1_amd64"])
+    end
+
+    it "should raise an exception if a source is supplied but not found when :upgrade" do
+      new_resource.source "/tmp/blah/wget_1.11.4-1ubuntu1_amd64.rpm"
+      allow(::File).to receive(:exist?).with(new_resource.source).and_return(false)
+      expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
     end
   end
 
