@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.115 -->
-## [v18.0.115](https://github.com/chef/chef/tree/v18.0.115) (2022-06-14)
+<!-- latest_release 18.0.116 -->
+## [v18.0.116](https://github.com/chef/chef/tree/v18.0.116) (2022-06-14)
 
 #### Merged Pull Requests
-- Add CONTAINER_IMAGE dist constant [#12806](https://github.com/chef/chef/pull/12806) ([jakauppila](https://github.com/jakauppila))
+- Fix cron_d job name character set [#12377](https://github.com/chef/chef/pull/12377) ([hamarituc](https://github.com/hamarituc))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix cron_d job name character set [#12377](https://github.com/chef/chef/pull/12377) ([hamarituc](https://github.com/hamarituc)) <!-- 18.0.116 -->
 - Add CONTAINER_IMAGE dist constant [#12806](https://github.com/chef/chef/pull/12806) ([jakauppila](https://github.com/jakauppila)) <!-- 18.0.115 -->
 - Stop executing locale-gen on every chef run by adding -h flag [#12833](https://github.com/chef/chef/pull/12833) ([hrak](https://github.com/hrak)) <!-- 18.0.114 -->
 - KTLO - Updating authenticator.rb to correct for random password creation failures [#12980](https://github.com/chef/chef/pull/12980) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.113 -->
