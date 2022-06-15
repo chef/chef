@@ -40,6 +40,7 @@ require_relative "../../data_handler/user_data_handler"
 require_relative "../../data_handler/group_data_handler"
 require_relative "../../data_handler/container_data_handler"
 require_relative "../../data_handler/policy_group_data_handler"
+require_relative "../../../log"
 
 class Chef
   module ChefFS
@@ -103,6 +104,7 @@ class Chef
           end
 
           def get_json(path)
+            Chef::Log.info("Invoking chef_rest.get: #{path}")
             chef_rest.get(path)
           end
 

@@ -277,6 +277,7 @@ class Chef
           begin
             dest_path = format_path.call(dest_entry) if ui
             src_path = format_path.call(src_entry) if ui
+            ui.output "copy_entries: processing #{src_path} -> #{dest_path}"
             if !src_entry.exists?
               if options[:purge]
                 # If we would not have uploaded it, we will not purge it.
