@@ -77,7 +77,7 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
-        $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
+        $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
@@ -94,10 +94,10 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        bundle exec rake install:local --verbose # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            bundle exec rake install:local --verbose # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
