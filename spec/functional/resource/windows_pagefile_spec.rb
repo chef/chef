@@ -42,11 +42,11 @@ describe Chef::Resource::WindowsPagefile, :windows_only do
 
   describe "Setting Up Pagefile Management" do
     context "Disable Automatic Management" do
-      it "Disables Automatic Management" do
+      it "Verifies Automatic Management is Disabled" do
         subject.path c_path
         subject.automatic_managed false
         subject.run_action(:set)
-        expect(subject).to be_updated_by_last_action
+        expect(subject).not_to be_updated_by_last_action
       end
 
       it "Enable Automatic Management " do

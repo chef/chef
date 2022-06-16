@@ -148,10 +148,12 @@ class Chef
         def exists?(pagefile)
           @exists ||= begin
             logger.trace("Checking if #{pagefile} exists by running: Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($pagefile)} ")
-            cmd =  "$page_file_name = '#{pagefile}';"
-            cmd << "$pagefile = Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($page_file_name)};"
-            cmd << "if ([string]::IsNullOrEmpty($pagefile)) { return $false } else { return $true }"
-            powershell_exec!(cmd).result
+            powershell_code = <<~CODE
+              $page_file_name = '#{pagefile}';
+              $pagefile = Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($page_file_name)}
+              if ([string]::IsNullOrEmpty($pagefile)) { return $false } else { return $true }
+            CODE
+            powershell_exec!(powershell_code).result
           end
         end
 
