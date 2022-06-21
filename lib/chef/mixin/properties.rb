@@ -275,7 +275,7 @@ class Chef
         end
 
         # This method returns list of sensitive properties
-        # @return [Array<Property>] All identity properties.
+        # @return [Array<Property>] All sensitive properties.
         def sensitive_properties
           properties.values.empty? ? [] : properties.values.select(&:sensitive?)
         end
