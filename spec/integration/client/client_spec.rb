@@ -38,7 +38,7 @@ describe "chef-client" do
   def install_certificate_in_store(client_name)
     if ChefUtils.windows?
       powershell_exec! <<~EOH
-        if (-not ($PSVersionTable.PSVersion.Major -ge 5)) {
+        if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
           New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}"
         }
         else {
