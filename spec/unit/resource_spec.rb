@@ -385,13 +385,23 @@ describe Chef::Resource do
         resource.foo = "some value"
         expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
       end
-    end
 
-    context "when property is required" do
-      it "does not propagate validation errors" do
-        resource_class = Class.new(Chef::Resource) { property :foo, String, required: true }
-        resource = resource_class.new("required_property_tests")
-        expect { resource.to_text }.to_not raise_error
+      it "suppresses that properties value for irrespective of desired state (false) " do
+        resource_class = Class.new(Chef::Resource) { 
+          property :foo, String, sensitive: true, desired_state: false 
+        }
+        resource = resource_class.new("desired_state_property_tests")
+        resource.foo = "some value"
+        expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
+      end
+
+      it "suppresses that properties value for irrespective of desired state (true) " do
+        resource_class = Class.new(Chef::Resource) {
+          property :foo, String, sensitive: true, desired_state: true 
+        }
+        resource = resource_class.new("desired_state_property_tests")
+        resource.foo = "some value"
+        expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
       end
     end
   end
