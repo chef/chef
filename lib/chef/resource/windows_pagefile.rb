@@ -87,7 +87,7 @@ class Chef
         if automatic_managed
           set_automatic_managed unless automatic_managed?
         elsif automatic_managed == false
-          unset_automatic_managed if automatic_managed?
+          unset_automatic_managed
         else
           pagefile = clarify_pagefile_name
           initial_size = new_resource.initial_size
@@ -165,13 +165,16 @@ class Chef
         # @return [Boolean]
         def max_and_min_set?(pagefile, min, max)
           logger.trace("Checking if #{pagefile} has max and initial disk size values set")
-          cmd =  "$page_file = '#{pagefile}';"
-          cmd << "$driveLetter = $page_file.split(':')[0];"
-          cmd << "$page_file_settings = Get-CimInstance -ClassName Win32_PageFileSetting -Filter \"SettingID='pagefile.sys @ $($driveLetter):'\" -Property * -ErrorAction Stop;"
-          cmd << "if ($page_file_settings.InitialSize -eq #{min} -and $page_file_settings.MaximumSize -eq #{max})"
-          cmd << "{ return $true }"
-          cmd << "else { return $false }"
-          powershell_exec!(cmd).result
+          powershell_code = <<-CODE
+            $page_file = '#{pagefile}';
+            $driveLetter = $page_file.split(':')[0];
+            $page_file_settings = Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -Property * -ErrorAction Stop;
+            if ($page_file_settings.InitialSize -eq #{min} -and $page_file_settings.MaximumSize -eq #{max})
+              { return $true }
+            else
+              { return $false }
+          CODE
+          powershell_exec!(powershell_code).result
         end
 
         # create a pagefile
@@ -226,12 +229,14 @@ class Chef
 
         # turn off automatic management of all pagefiles by Windows
         def unset_automatic_managed
-          converge_by("Turn off Automatically Managed on pagefiles") do
-            logger.trace("Running Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru")
-            powershell_exec! <<~EOH
-              $sys = Get-CimInstance Win32_ComputerSystem -Property *
-              Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru
-            EOH
+          if automatic_managed?
+            converge_by("Turn off Automatically Managed on pagefiles") do
+              logger.trace("Running Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru")
+              powershell_exec! <<~EOH
+                $sys = Get-CimInstance Win32_ComputerSystem -Property *
+                Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru
+              EOH
+            end
           end
         end
 

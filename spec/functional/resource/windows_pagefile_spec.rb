@@ -40,9 +40,19 @@ describe Chef::Resource::WindowsPagefile, :windows_only do
     new_resource
   end
 
+  def set_automatic_managed_to_false
+    powershell_code = <<~EOH
+      $computersys = Get-WmiObject Win32_ComputerSystem -EnableAllPrivileges;
+      $computersys.AutomaticManagedPagefile = $False;
+      $computersys.Put();
+    EOH
+    powershell_exec!(powershell_code)
+  end
+
   describe "Setting Up Pagefile Management" do
     context "Disable Automatic Management" do
       it "Verifies Automatic Management is Disabled" do
+        set_automatic_managed_to_false
         subject.path c_path
         subject.automatic_managed false
         subject.run_action(:set)
