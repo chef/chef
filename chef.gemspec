@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
+  s.add_dependency "train-rest", ">= 0.4.1"
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
@@ -55,6 +56,7 @@ Gem::Specification.new do |s|
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier", "~> 1.0"
+  s.add_dependency "unf_ext", "< 0.0.8.1" # temporary until it loads properly on Windows
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
