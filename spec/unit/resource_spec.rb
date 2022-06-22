@@ -371,6 +371,9 @@ describe Chef::Resource do
   end
 
   describe "to_text" do
+
+    let(:sensitive_property_masked_value) { "sensitive value suppressed" }
+
     it "prints nice message" do
       resource_class = Class.new(Chef::Resource) { property :foo, String }
       resource = resource_class.new("sensitive_property_tests")
@@ -383,7 +386,7 @@ describe Chef::Resource do
         resource_class = Class.new(Chef::Resource) { property :foo, String, sensitive: true }
         resource = resource_class.new("sensitive_property_tests")
         resource.foo = "some value"
-        expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
+        expect(resource.to_text).to match(/foo "\*#{sensitive_property_masked_value}\*"/)
       end
       it "suppresses that properties value irrespective of desired state (false) " do
         resource_class = Class.new(Chef::Resource) {
@@ -391,7 +394,7 @@ describe Chef::Resource do
         }
         resource = resource_class.new("desired_state_property_tests")
         resource.foo = "some value"
-        expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
+        expect(resource.to_text).to match(/foo "\*#{sensitive_property_masked_value}\*"/)
       end
 
       it "suppresses that properties value irrespective of desired state (true) " do
@@ -400,7 +403,7 @@ describe Chef::Resource do
         }
         resource = resource_class.new("desired_state_property_tests")
         resource.foo = "some value"
-        expect(resource.to_text).to match(/foo "\*sensitive value suppressed\*"/)
+        expect(resource.to_text).to match(/foo "\*#{sensitive_property_masked_value}\*"/)
       end
     end
 
