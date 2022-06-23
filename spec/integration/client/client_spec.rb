@@ -72,13 +72,18 @@ describe "chef-client" do
 
   def verify_export_password_exists
     powershell_exec! <<~EOH
-      Try {
-          $response = Get-ItemPropertyValue -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
-          if ($response) {return $true}
+    Try {
+      if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
+        $response = Get-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
+        }
+      else {
+        $response = Get-ItemPropertyValue -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
+        }
+      if ($response) {return $true}
       }
-      Catch {
-          return $false
-      }
+    Catch {
+        return $false
+    }
     EOH
   end
 
