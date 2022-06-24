@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.121 -->
-## [v18.0.121](https://github.com/chef/chef/tree/v18.0.121) (2022-06-21)
+<!-- latest_release 18.0.122 -->
+## [v18.0.122](https://github.com/chef/chef/tree/v18.0.122) (2022-06-24)
 
 #### Merged Pull Requests
-- Correcting Cert creation for rspec tests [#13010](https://github.com/chef/chef/pull/13010) ([johnmccrae](https://github.com/johnmccrae))
+- Refactored tests for older Windows versions [#13019](https://github.com/chef/chef/pull/13019) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Refactored tests for older Windows versions [#13019](https://github.com/chef/chef/pull/13019) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.122 -->
 - Correcting Cert creation for rspec tests [#13010](https://github.com/chef/chef/pull/13010) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.121 -->
 - Updated Ruby version in omnibus_overrides [#12995](https://github.com/chef/chef/pull/12995) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.120 -->
 - Fix documentation for chef_client_scheduled_task [#12917](https://github.com/chef/chef/pull/12917) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.0.119 -->
