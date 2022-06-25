@@ -246,14 +246,13 @@ class Chef
         # @param [String] min the minimum size of the pagefile
         # @param [String] max the minimum size of the pagefile
         def set_custom_size(pagefile, min, max)
+          unset_automatic_managed
           converge_by("set #{pagefile} to InitialSize=#{min} & MaximumSize=#{max}") do
             logger.trace("Set-CimInstance -Property @{InitialSize = #{min} MaximumSize = #{max}")
             powershell_exec! <<~EOD
               $page_file = "#{pagefile}"
               $driveLetter = $page_file.split(':')[0]
-              Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop | Set-CimInstance -Property @{
-              InitialSize = #{min}
-              MaximumSize = #{max}}
+              Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop | Set-CimInstance -Property @{InitialSize = #{min}; MaximumSize = #{max};}
             EOD
           end
         end
