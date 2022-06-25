@@ -129,6 +129,11 @@ function Invoke-Install {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
 
+        # jfm
+        Write-BuildLine " -- Updating Bundler"
+        gem update bundler
+        # jfm end
+
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
