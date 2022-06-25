@@ -49,7 +49,7 @@ describe Chef::Resource::WindowsPagefile, :windows_only do
     powershell_exec!(powershell_code)
   end
 
-   def set_automatic_managed_to_true
+  def set_automatic_managed_to_true
     powershell_code = <<~EOH
       $computersys = Get-WmiObject Win32_ComputerSystem -EnableAllPrivileges;
       $computersys.AutomaticManagedPagefile = $True;
