@@ -97,7 +97,7 @@ function Invoke-Build {
         bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            bundle exec rake install:local --trace # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
