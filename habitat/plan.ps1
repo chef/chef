@@ -79,6 +79,10 @@ function Invoke-Build {
 
         $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
 
+        # jfm
+        $gem_array = @()
+        # end jfm
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
@@ -87,10 +91,15 @@ function Invoke-Build {
             try {
 
                 Push-Location $git_gem
+                $gem_array += $git_gem # jfm remove this
                 Write-BuildLine " -- installing $git_gem"
                 rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+
                 # jfm line below added for debugging
-                gem install $git_gem
+                Write-BuildLine " -- Location: $PWD"
+
+                Write-BuildLine " -- Gems: $gem_array"
+
                 # jfm end
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
