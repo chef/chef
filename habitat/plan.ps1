@@ -81,6 +81,7 @@ function Invoke-Build {
 
         # jfm
         $gem_array = @()
+                        Write-BuildLine " -- Location: $PWD"
         # end jfm
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
@@ -96,7 +97,6 @@ function Invoke-Build {
                 rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
 
                 # jfm line below added for debugging
-                Write-BuildLine " -- Location: $PWD"
 
                 Write-BuildLine " -- Gems: $gem_array"
 
@@ -136,6 +136,11 @@ function Invoke-Install {
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
+            # jfm
+            Write-Buildline "** But first, where the hell is chef-bin?"
+            $locations = Get-Childitem -path c:\ -filter { *chef-bin* } -Recurse
+            Write-Host "Here's my locations : $locations"
+            #nd jfm
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }
