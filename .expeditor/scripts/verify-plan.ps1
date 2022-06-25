@@ -12,6 +12,10 @@ $Plan = 'chef-infra-client'
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 
+Write-Hist "--- Adding Debugging Support for Hab"
+[Environment]::SetEnvironmentVariable('RUST_LOG', debug, 'Machine')
+[Environment]::SetEnvironmentVariable('RUST_BACKTRACE', 1, 'Machine')
+
 powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
 if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 

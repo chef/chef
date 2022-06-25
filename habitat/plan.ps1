@@ -85,9 +85,13 @@ function Invoke-Build {
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
+
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
                 rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                # jfm line below added for debugging
+                gem install $git_gem
+                # jfm end
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
@@ -97,7 +101,13 @@ function Invoke-Build {
         bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install:local --trace # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            # jfm code below is for debugging
+            $debug_gems = Get-ChildItem -Path . -Include *.gem
+            foreach($debug_gem in $debug_gems){
+                gem install $debug_gem
+            }
+            # jfm end
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
