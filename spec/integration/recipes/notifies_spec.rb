@@ -25,8 +25,17 @@ describe "notifications" do
   let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
 
+  def create_registry_key
+    ::Chef::HTTP::Authenticator.get_cert_password
+  end
+
+  def remove_registry_key
+    powershell_exec!("Remove-ItemProperty -Path HKLM:\\SOFTWARE\\Progress\\Authentication -Name 'PfxPass' ")
+  end
+
   when_the_repository "notifies a nameless resource" do
     before do
+      create_registry_key
       directory "cookbooks/x" do
         file "recipes/default.rb", <<-EOM
           apt_update do
@@ -420,6 +429,10 @@ describe "notifications" do
           end
         EOM
       end
+    end
+
+    after do
+      remove_registry_key
     end
 
     it "notifying the resource should work" do
