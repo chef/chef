@@ -18,9 +18,16 @@ require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 
+begin
+  require "chef-powershell"
+rescue LoadError
+  puts "Not loading powershell_exec during testing"
+end
+
 describe "notifications" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
+  include ChefPowerShell::ChefPowerShellModule::PowerShellExec
 
   let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
@@ -35,7 +42,7 @@ describe "notifications" do
 
   when_the_repository "notifies a nameless resource" do
     before do
-      create_registry_key
+      create_registry_key if windows?
       directory "cookbooks/x" do
         file "recipes/default.rb", <<-EOM
           apt_update do
@@ -432,7 +439,7 @@ describe "notifications" do
     end
 
     after do
-      remove_registry_key
+      remove_registry_key if windows?
     end
 
     it "notifying the resource should work" do
