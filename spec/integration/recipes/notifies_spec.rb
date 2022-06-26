@@ -27,7 +27,7 @@ end
 describe "notifications" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
-  include ChefPowerShell::ChefPowerShellModule::PowerShellExec
+  include ChefPowerShell::ChefPowerShellModule::PowerShellExec if windows?
 
   let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
