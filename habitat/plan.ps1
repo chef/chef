@@ -137,8 +137,8 @@ function Invoke-Install {
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             # jfm
-            Write-Buildline "** But first, where the hell is chef-bin?"
-            $locations = Get-Childitem -path c:\ -filter { *chef-bin* } -Recurse
+            Write-BuildLine "** But first, where the hell is chef-bin?"
+            $locations = Get-ChildItem -path c:\ -filter { *chef-bin* } -Recurse
             Write-Host "Here's my locations : $locations"
             #nd jfm
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
