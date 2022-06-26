@@ -175,7 +175,7 @@ class Chef
         present.each do |secret|
           if secret[:name] == "PfxPass"
             password = decrypt_pfx_pass(secret[:data])
-            return password
+            return password.to_s
           end
         end
 
