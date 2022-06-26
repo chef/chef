@@ -830,7 +830,8 @@ describe "Unified Mode" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # this fires first normally before the error
-      expect(result.stdout).to include("notifying: foo")
+      expect(result.stdout.to_s).to match(/notifying: foo/)
+      # expect(result.stdout).to include("notifying: foo")
       # everything else does not run
       expect(result.stdout).not_to include("notified: foo")
       expect(result.stdout).not_to include("notified: bar")
