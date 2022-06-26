@@ -112,7 +112,7 @@ function Invoke-Build {
             Write-Warning " -- That didn't work. Let's try again."
             bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
             # jfm code below is for debugging
-            $debug_gems = Get-ChildItem -Path . -Include *.gem
+            $debug_gems = Get-ChildItem -Path . -Include *.gem -ErrorAction SilentlyContinue
             foreach($debug_gem in $debug_gems){
                 gem install $debug_gem
             }
