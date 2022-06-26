@@ -158,16 +158,16 @@ describe "LWRPs with inline resources" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       actual = result.stdout.lines.map(&:chomp).join("\n")
-      expected = <<EOM
-  * x_my_machine[me] action create
-    * x_do_nothing[a] action create (up to date)
-    * x_do_nothing[b] action create (up to date)
-     (up to date)
-  * x_my_machine[you] action create
-    * x_do_nothing[a] action create (up to date)
-    * x_do_nothing[b] action create (up to date)
-     (up to date)
-EOM
+      expected = <<~EOM
+        * x_my_machine[me] action create
+          * x_do_nothing[a] action create (up to date)
+          * x_do_nothing[b] action create (up to date)
+          (up to date)
+        * x_my_machine[you] action create
+          * x_do_nothing[a] action create (up to date)
+          * x_do_nothing[b] action create (up to date)
+          (up to date)
+      EOM
       expected = expected.lines.map(&:chomp).join("\n")
       expect(actual).to include(expected)
       result.error!
