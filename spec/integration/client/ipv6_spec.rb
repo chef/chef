@@ -125,8 +125,7 @@ describe "chef-client" do
       end
 
       it "should complete with success" do
-        result = shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", cwd: chef_dir)
-        result.error!
+        expect { shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", cwd: chef_dir) }.not_to raise_error
       end
 
     end
