@@ -348,6 +348,8 @@ class Chef
                     dest_entry.copy_from(src_entry, options)
                     ui.output "Updated #{dest_path}" if ui
                   end
+                else
+                  ui.output "Skipping #{dest_entry}" if ui
                 end
                 return
               end
@@ -391,6 +393,8 @@ class Chef
                       dest_entry.write(src_value)
                       ui.output "Updated #{dest_path}" if ui
                     end
+                  else
+                    ui.output "Skipping[2] #{dest_path}" if ui
                   end
                 end
               end
