@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.124 -->
-## [v18.0.124](https://github.com/chef/chef/tree/v18.0.124) (2022-06-25)
+<!-- latest_release 18.0.125 -->
+## [v18.0.125](https://github.com/chef/chef/tree/v18.0.125) (2022-06-27)
 
 #### Merged Pull Requests
-- AdHoc Pipeline Windows PageFile Test errors [#13009](https://github.com/chef/chef/pull/13009) ([johnmccrae](https://github.com/johnmccrae))
+- Add nightlies for chef-17 to run every Tue, Thu  and chef-16 to run every Tue [#13018](https://github.com/chef/chef/pull/13018) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add nightlies for chef-17 to run every Tue, Thu  and chef-16 to run every Tue [#13018](https://github.com/chef/chef/pull/13018) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.125 -->
 - AdHoc Pipeline Windows PageFile Test errors [#13009](https://github.com/chef/chef/pull/13009) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.124 -->
 - Fix fedora kitchen test failure [#13020](https://github.com/chef/chef/pull/13020) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.123 -->
 - Refactored tests for older Windows versions [#13019](https://github.com/chef/chef/pull/13019) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.122 -->
