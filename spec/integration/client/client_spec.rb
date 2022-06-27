@@ -594,7 +594,7 @@ describe "chef-client" do
             cookbook_path "#{path_to("cookbooks")}"
           EOM
           result = shell_out("#{chef_client} -l debug -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
-          result.error!
+          expect(result.exitstatus).to eq(0)
 
           expect(IO.read(path_to("tempfile.txt")).strip).to eq("this is my file")
         end

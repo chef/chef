@@ -872,7 +872,7 @@ describe "Unified Mode" do
       # in recipe mode we should still run normally with a compile/converge mode
       expect(result.stdout).to include("first: bar")
       expect(result.stdout).not_to include("first: foo")
-      result.error!
+      expect(result.exitstatus).to eq(0)
     end
   end
 
