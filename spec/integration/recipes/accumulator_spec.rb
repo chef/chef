@@ -126,8 +126,7 @@ describe "Accumulators" do
         log_level :warn
       EOM
 
-      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
-      result.error!
+      expect { shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir) }.not_to raise_error
       # runs only a single template resource (in the outer run context, as a delayed resource)
       expect(result.stdout.scan(/template\S+ action create/).size).to eql(1)
       # hash order is insertion order in ruby >= 1.9, so this next line does test that all calls were in the correct order
