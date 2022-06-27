@@ -94,7 +94,8 @@ describe "chef-client" do
       end
 
       it "should complete with success" do
-        expect { shell_out("#{chef_client_cmd} -o 'noop::default'", cwd: chef_dir) }.not_to raise_error
+        command = shell_out("#{chef_client_cmd} -o 'noop::default'", cwd: chef_dir)
+        expect(command.exitstatus).to eq(0)
       end
 
     end
@@ -125,7 +126,8 @@ describe "chef-client" do
       end
 
       it "should complete with success" do
-        expect { shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", cwd: chef_dir) }.not_to raise_error
+        command = shell_out("#{chef_client_cmd} -o 'api-smoke-test::default'", cwd: chef_dir)
+        expect(command.exitstatus).to eq(0)
       end
 
     end
