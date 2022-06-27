@@ -66,7 +66,7 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            install_snaps(names)
+            install_snaps(names, versions)
           end
         end
 
