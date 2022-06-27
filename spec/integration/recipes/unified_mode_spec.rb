@@ -566,7 +566,7 @@ describe "Unified Mode" do
       expect(result.stdout).not_to include("first: baz")
       expect(result.stdout).not_to include("second: foo")
       expect(result.stdout).not_to include("second: bar")
-      result.error!
+      expect(result.exitstatus).to eq(0)
     end
   end
 
@@ -622,7 +622,7 @@ describe "Unified Mode" do
       expect(result.stdout).not_to include("first: bar")
       expect(result.stdout).not_to include("second: foo")
       expect(result.stdout).not_to include("second: baz")
-      result.error!
+      expect(result.exitstatus).to eq(0)
     end
   end
 
