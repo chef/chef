@@ -72,13 +72,13 @@ describe "chef-client" do
 
   def verify_export_password_exists
     powershell_exec! <<~EOH
-    Try {
-      $response = Get-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
-      if ($response) {return $true}
+      Try {
+          $response = Get-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
+          if ($response) {return $true}
       }
-    Catch {
-        return $false
-    }
+      Catch {
+          return $false
+      }
     EOH
   end
 
@@ -628,8 +628,9 @@ describe "chef-client" do
     end
 
     it "should run the ohai plugin" do
-      result = shell_out("#{chef_client} -l debug -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
-      result.error!
+      # result = shell_out("#{chef_client} -l debug -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      # result.error!
+      expect{ shell_out("#{chef_client} -l debug -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir) }.not_to raise_error
 
       expect(IO.read(path_to("tempfile.txt"))).to eq("2014")
     end
@@ -650,8 +651,9 @@ describe "chef-client" do
       file "config/client.rb", <<~EOM
         chef_repo_path "#{tmp_dir}"
       EOM
-      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir)
-      result.error!
+      # result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir)
+      # result.error!
+      expect{ shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --recipe-url=http://localhost:9000/recipes.tgz -o 'x::default' -z", cwd: tmp_dir) }.not_to raise_error
     end
 
     it "should fail when passed --recipe-url and not passed -z" do
