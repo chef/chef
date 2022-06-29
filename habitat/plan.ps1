@@ -80,7 +80,7 @@ function Invoke-Build {
         $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
-        bundle install --jobs=3 --retry=3
+        bundle install
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
@@ -94,10 +94,10 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        rake install:local
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            rake install:local
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
