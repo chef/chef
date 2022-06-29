@@ -37,10 +37,10 @@ end
 gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/ruby-3"
 
 # Everything except AIX and Windows
-group(:ruby_shadow) do
-  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
-end
+# group(:ruby_shadow) do
+#   # if ruby-shadow does a release that supports ruby-3.0 this can be removed
+#   gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby unless RUBY_PLATFORM == "x64-mingw-ucrt"
+# end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
 group(:knife_windows_deps) do
