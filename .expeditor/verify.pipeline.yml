@@ -392,7 +392,8 @@ steps:
 
 - label: ":habicat: Windows plan"
   commands:
-    - move ./chef /
+    - cd ..
+    - move chef /
     - cd /chef
     - ./.expeditor/scripts/verify-plan.ps1
   timeout_in_minutes: 60
