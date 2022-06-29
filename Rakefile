@@ -40,7 +40,7 @@ namespace :pre_install do
     %w{chef-utils chef-config}.each do |gem|
       path = ::File.join(::File.dirname(__FILE__), gem)
       Dir.chdir(path) do
-        sh("rake install")
+        system "rake install"
       end
     end
   end
@@ -63,14 +63,16 @@ end
 task install: "pre_install:all"
 
 # make sure we build the correct gemspec on windows
-gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
+gemspec = Gem.win_platform? ? "chef-universal-mingw-ucrt" : "chef"
+# require "pry"
+# binding.pry
 Bundler::GemHelper.install_tasks name: gemspec
 
 # this gets appended to the normal bundler install helper
 task :install do
   chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
   Dir.chdir(chef_bin_path) do
-    sh("rake install:force")
+    system "rake install:force"
   end
 end
 
@@ -80,7 +82,7 @@ namespace :install do
   task :local do
     chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
     Dir.chdir(chef_bin_path) do
-      sh("rake install:local")
+      system "rake install:local"
     end
   end
 end

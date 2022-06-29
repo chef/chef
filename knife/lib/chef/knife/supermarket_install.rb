@@ -156,7 +156,7 @@ class Chef
 
       def convert_path(upstream_file)
         # converts a Windows path (C:\foo) to a mingw path (/c/foo)
-        if ENV["MSYSTEM"] == "MINGW32"
+        if ENV["MSYSTEM"] == ( "MINGW32" || "UCRT64" )
           upstream_file.sub(/^([[:alpha:]]):/, '/\1')
         else
           Shellwords.escape upstream_file

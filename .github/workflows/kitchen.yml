@@ -13,9 +13,53 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2019]
+        ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+    - name: 'Upgrade Ruby Devkit on Windows'
+      id: upgrade_ruby
+      run: |
+        $pkg_version="3.1.2"
+        $pkg_revision="1"
+        $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
+
+        $old_version = Ruby --version
+        if($old_version -match "3.0"){
+          $ErrorActionPreference = 'Stop';
+          Write-Output 'Downloading Ruby + DevKit';
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+          (New-Object System.Net.WebClient).DownloadFile($pkg_source, 'c:\rubyinstaller-devkit-3.1.2-1-x64.exe');
+          Write-Output 'Installing Ruby + DevKit';
+          Start-Process c:\rubyinstaller-devkit-3.1.2-1-x64.exe -ArgumentList '/verysilent /dir=C:\ruby31' -Wait ;
+          Write-Output 'Cleaning up installation';
+          Remove-Item c:\rubyinstaller-devkit-3.1.2-1-x64.exe -Force;
+          Write-Output "Installing URU to manage Ruby Versions"
+          choco install 7zip -y
+          Write-Output "Downloading Uru Installer..."
+          New-Item -Path c:\uru_temp -Type Directory
+          # Use TLS 1.2 for Windows 2016 Server and older
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest -OutFile "c:\uru_temp\uru-0.8.5-windows-x86.7z" -Uri "https://bitbucket.org/jonforums/uru/downloads/uru-0.8.5-windows-x86.7z"
+          Write-Output "Installing Uru Ruby Switcher"
+          7z x "c:\uru_temp\uru-0.8.5-windows-x86.7z" -o"C:\Program Files (x86)\Uru"
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -WorkingDirectory "C:\Program Files (x86)\Uru\" -ArgumentList 'admin install' -Wait
+
+          Write-Output 'Updating PATH'
+          $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
+          [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
+
+          Write-Output "Register Installed Ruby Version 3.1 With Uru"
+          Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
+          uru 312
+          if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
+          ruby -v
+          if (-not $?) { throw "Can't run Ruby. Is it installed?" }
+        }
+        $old_ruby = Get-Command -Name Ruby
+        Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
+
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
@@ -25,40 +69,43 @@ jobs:
         ohai -v
         rake --version
         bundle -v
-    - name: 'Upgrade Chef/Ohai via Appbundler'
-      id: upgrade
-      run: |
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
+    # - name: 'Upgrade Chef/Ohai via Appbundler'
+    #   id: upgrade
+    #   run: |
+    #     $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+    #     $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
 
-        # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
-        # This leads to failures during testing. Moving that file to its correct position here.
-        # Another example of 'bad' that needs to be corrected
-        $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
-        $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
-        Move-Item -Path $output.FullName -Destination $target_path
+    #     # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
+    #     # This leads to failures during testing. Moving that file to its correct position here.
+    #     # Another example of 'bad' that needs to be corrected
+    #     $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+    #     $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+    #     Move-Item -Path $output.FullName -Destination $target_path
 
-        gem install appbundler appbundle-updater --no-doc
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        Write-Output "Installed Chef / Ohai release:"
-        chef-client -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        ohai -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    #     gem install appbundler appbundle-updater --no-doc
+    #     If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    #     appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+    #     If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    #     Write-Output "Installed Chef / Ohai release:"
+    #     chef-client -v
+    #     If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    #     ohai -v
+    #     If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
         cd kitchen-tests
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
-        # we remove thenm here.
-        if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
-        {
-            Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
-            Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
-        }
+        # $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        # # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
+        # # we remove thenm here.
+        # if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
+        # {
+        #     Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
+        #     Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
+        # }
+        $old_ruby = Get-Command -Name Ruby
+        Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
+
 
         bundle install --jobs=3 --retry=3
         # If ($lastexitcode -ne 0) { Exit $lastexitcode }
@@ -78,10 +125,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15] # macos-11.0 is not public for now
+        os: [macos-10.15]
+        ruby: ['3.1'] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+    - name: 'Upgrade Ruby Devkit on Macos'
+      id: upgrade_ruby
+      run: |
+        echo "This is the installed version of Ruby:"
+        brew info ruby
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
@@ -129,6 +182,7 @@ jobs:
           - 'ubuntu-1804'
           - 'ubuntu-2004'
           - 'ubuntu-2204'
+        ruby: ['3.1']
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -139,7 +193,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0"
+          ruby-version: "3.1"
           bundler-cache: true
           working-directory: kitchen-tests
       - name: Run Test Kitchen
