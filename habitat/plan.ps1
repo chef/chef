@@ -12,7 +12,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "chef/ruby30-plus-devkit"
+  "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
 )
 
@@ -42,9 +42,12 @@ function Invoke-Download() {
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
+    $git_path += "c:\\Program Files\\Git\\bin"
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        git archive --format=zip --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
+        [System.Diagnostics.Process]::Start("$git_path\\git", "archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
+        Start-Sleep -Seconds 30
+        # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
         if (-not $?) { throw "unable to create archive of source" }
     } finally {
         Pop-Location
@@ -61,11 +64,17 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-
+        Write-BuildLine " ** Where the hell is 'Gem'?"
+        $gem_file = @"
+@ECHO OFF
+@"%~dp0ruby.exe" "%~dpn0" %*
+"@
+        $gem_file | Set-Content "$PWD\\gem.bat"
+        $env:Path += ";c:\\Program Files\\Git\\bin"
+        gem install bundler:2.3.17
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
-        bundle config --local jobs 4
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
     } finally {
@@ -77,7 +86,7 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
-        $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
+        $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
@@ -87,19 +96,21 @@ function Invoke-Build {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-                rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
-                if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
+                rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
             } finally {
                 Pop-Location
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        if (-not $?) {
-            Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-            if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
-        }
+        $install_attempt = 0
+        do {
+            Start-Sleep -Seconds 5
+            $install_attempt++
+            Write-BuildLine "Install attempt $install_attempt"
+            bundle exec rake install:local --trace=stdout
+        } while ((-not $?) -and ($install_attempt -lt 5))
+
     } finally {
         Pop-Location
     }

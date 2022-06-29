@@ -7,11 +7,11 @@ Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyC
 
 $ErrorActionPreference = 'Stop'
 
-Write-Output "--- Enable Ruby 2.7"
+Write-Output "--- Enable Ruby 3.1"
 
-Write-Output "Register Installed Ruby Version 2.7 With Uru"
-Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby27\bin' -Wait
-uru 271
+Write-Output "Register Installed Ruby Version 3.1 With Uru"
+Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
+uru 312
 if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
 ruby -v
 if (-not $?) { throw "Can't run Ruby. Is it installed?" }

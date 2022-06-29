@@ -92,7 +92,7 @@ class Chef
           #
           def installed_versions(gem_dep)
             rubygems_version = Gem::Version.new(Gem::VERSION)
-            if rubygems_version >= Gem::Version.new("2.7")
+            if rubygems_version >= Gem::Version.new("3.1")
               # In newer Rubygems, bundler is now a "default gem" which means
               # even with AlternateGemEnvironment when you try to get the
               # installed versions, you get the one from Chef's Ruby's default
