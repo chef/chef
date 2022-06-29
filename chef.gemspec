@@ -22,11 +22,27 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.6.0"
+  s.required_ruby_version = ">= 3.1.0"
+
+  if RUBY_PLATFORM == "x64-mingw-ucrt"
+    s.add_dependency "win32-mmap", "~> 0.4.1"
+    s.add_dependency "win32-mutex", "~> 0.4.2"
+    s.add_dependency "chef-powershell", "~> 1.0.12"
+    s.add_dependency "win32-api", "~> 1.10.0"
+    s.add_dependency "win32-service", ">= 2.1.5", "< 3.0"
+    s.add_dependency "win32-event", "~> 0.6.1"
+    s.add_dependency "win32-taskscheduler", "~> 2.0"
+    s.add_dependency "win32-eventlog", "0.6.3"
+    s.add_dependency "win32-process", "~> 0.9"
+    s.add_dependency "wmi-lite", "~> 1.0"
+    s.add_dependency "iso8601", ">= 0.12.1", "< 0.14"
+    s.add_dependency "win32-certstore", "~> 0.6.15"
+    s.extensions << "ext/win32-eventlog/Rakefile"
+  end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
+  s.add_dependency "train-core", "~> 3.10", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
@@ -37,9 +53,9 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
-  s.add_dependency "inspec-core", "~> 4.23"
+  s.add_dependency "inspec-core", "~> 5"
 
-  s.add_dependency "ffi", ">= 1.5.0"
+  s.add_dependency "ffi", ">= 1.15.5"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
