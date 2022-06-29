@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 88ddc94275c7618cb92a67c277993c89fc9c2109
+  revision: 2cd91848d807d7a37342b964c6c5e204570469f9
   branch: main
   specs:
-    ohai (18.0.14)
+    ohai (18.0.16)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -298,7 +298,7 @@ GEM
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
-    mixlib-config (3.0.9)
+    mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
     mixlib-shellout (3.2.7)
@@ -309,7 +309,7 @@ GEM
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
-    multipart-post (2.2.0)
+    multipart-post (2.2.3)
     net-ftp (0.1.3)
       net-protocol
       time
@@ -407,7 +407,7 @@ GEM
       date
     timeout (0.3.0)
     tomlrb (1.3.0)
-    train-core (3.9.2)
+    train-core (3.10.1)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -444,7 +444,7 @@ GEM
     unf_ext (0.0.8)
     unf_ext (0.0.8-x64-mingw32)
     unf_ext (0.0.8-x86-mingw32)
-    unicode-display_width (2.1.0)
+    unicode-display_width (2.2.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
