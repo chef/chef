@@ -392,9 +392,10 @@ steps:
 
 - label: ":habicat: Windows plan"
   commands:
+    - Set-Variable -Name "chef_dir" -Value (Split-Path -Path (Get-Location) -Leaf)
     - Set-Location -Path .. -PassThru
-    - Move-Item -Path chef -Destination C:/ -PassThru
-    - Set-Location -Path C:/chef -PassThru
+    - Move-Item -Path $chef_dir -Destination C:/ -PassThru
+    - Set-Location -Path "C:/$chef_dir" -PassThru
     - ./.expeditor/scripts/verify-plan.ps1
   timeout_in_minutes: 60
   expeditor:
