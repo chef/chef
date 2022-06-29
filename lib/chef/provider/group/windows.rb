@@ -17,7 +17,7 @@
 #
 
 require_relative "../user"
-if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   require_relative "../../util/windows/net_group"
 end
 

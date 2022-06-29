@@ -10,6 +10,7 @@ fips-platforms:
   - windows-*
 skip-artifactory-platforms:
   - freebsd-13-amd64
+windows-64-msystem: UCRT64
 builder-to-testers-map:
   aix-7.1-powerpc:
     - aix-7.1-powerpc
@@ -80,8 +81,6 @@ builder-to-testers-map:
     - ubuntu-18.04-x86_64
     - ubuntu-20.04-x86_64
     - ubuntu-22.04-x86_64
-  windows-2012r2-i386:
-    - windows-2012r2-i386
   windows-2012r2-x86_64:
     - windows-2012-x86_64
     - windows-2012r2-x86_64
