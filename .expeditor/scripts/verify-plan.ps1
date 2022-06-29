@@ -7,9 +7,6 @@ param(
     [string]$Plan
 )
 
-New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
--Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
-
 $env:HAB_ORIGIN = 'ci'
 $Plan = 'chef-infra-client'
 

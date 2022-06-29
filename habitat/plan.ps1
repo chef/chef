@@ -63,9 +63,8 @@ function Invoke-Prepare {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
-        bundle config --local without server docgen maintenance pry travis integration ci chefstyle
+        bundle config --local without server docgen maintenance pry travis integration ci
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
-        bundle config --local jobs 4
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
     } finally {
@@ -94,10 +93,10 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        rake install:local
+        rake install
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            rake install:local
+            rake install
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
