@@ -10,6 +10,7 @@ fips-platforms:
   - windows-*
 skip-artifactory-platforms:
   - freebsd-13-amd64
+windows-64-msystem: UCRT64
 builder-to-testers-map:
   aix-7.1-powerpc:
     - aix-7.1-powerpc
