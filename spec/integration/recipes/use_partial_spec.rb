@@ -27,6 +27,7 @@ describe "notifying_block" do
 
   when_the_repository "has a cookbook with partial resources" do
     before do
+      ::Chef::HTTP::Authenticator.get_cert_password if windows?
       directory "cookbooks/x" do
         file "resources/_shared_properties.rb", <<-EOM
           property :content, String

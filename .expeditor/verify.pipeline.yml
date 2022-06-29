@@ -15,31 +15,31 @@ steps:
   # Tests Ruby 2.6
 #########################################################################
 
-- label: "chef-utils Unit :ruby: 2.6"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd chef-utils
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.6
+# - label: "chef-utils Unit :ruby: 2.6"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - cd chef-utils
+#     - bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-18.04:2.6
 
-- label: "chef-config Unit :ruby: 2.6"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd chef-config
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.6
+# - label: "chef-config Unit :ruby: 2.6"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - cd chef-config
+#     - bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # Tests Ruby 3.1
@@ -264,7 +264,7 @@ steps:
       docker:
         image: rubydistros/almalinux-8:3.1
 
-- label: "Functional Windows :ruby: 2.7"
+- label: "Functional Windows :ruby: 3.1"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
@@ -274,27 +274,27 @@ steps:
         single-use: true
         shell: ["powershell", "-Command"]
 
-- label: "Integration Windows :ruby: 3.0"
+- label: "Integration Windows :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:3.0
+        image: rubydistros/windows-2019:3.1
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 3.0"
+- label: "Unit Windows :ruby: 3.1"
   commands:
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:3.0
+        image: rubydistros/windows-2019:3.1
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist

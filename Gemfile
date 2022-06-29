@@ -4,6 +4,17 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+gem "rest-client", :github => "johnnyshields/rest-client", :branch => "patch-1"
+# gem "ffi", ">= 1.15.5"
+# group(:ffi) do
+#   instance_eval(gem install ffi -v '1.15.5' --source "https://rubygems.org/")
+# end
+
+# if RUBY_PLATFORM == "x64-mingw-ucrt"
+#   gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim.git", branch: "jfm/json_bug_fix"
+#   gem "win32-api", git: "https://github.com/cosmo0920/win32-api", branch: "master"
+# end
+
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
@@ -20,7 +31,7 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 4.24" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 5" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
@@ -39,7 +50,7 @@ gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/rub
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
+  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby unless RUBY_PLATFORM == "x64-mingw-ucrt"
 end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
@@ -54,10 +65,11 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-group(:chefstyle) do
-  # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
-end
+gem "chefstyle"
+# group(:chefstyle) do
+#   # for testing new chefstyle rules
+#   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
+# end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
