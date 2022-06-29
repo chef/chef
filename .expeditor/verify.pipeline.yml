@@ -392,9 +392,9 @@ steps:
 
 - label: ":habicat: Windows plan"
   commands:
-    - cd ..
-    - move chef /
-    - cd /chef
+    - Set-Location -Path .. -PassThru
+    - Move-Item -Path chef -Destination C:/ -PassThru
+    - Set-Location -Path C:/chef -PassThru
     - ./.expeditor/scripts/verify-plan.ps1
   timeout_in_minutes: 60
   expeditor:
