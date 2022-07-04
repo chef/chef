@@ -1,9 +1,9 @@
 # Adding documentation to resources:
-The documentation for Infra Client resources resides at [chef-wed-docs reporsitory](https://github.com/chef/chef-web-docs/).
+The documentation for Infra Client resources resides at [chef-wed-docs repository](https://github.com/chef/chef-web-docs/).
 Currently in order to reflect the documentation added to Infra Client resources on the [website](https://docs.chef.io/) we need to follow some manual steps.
 
 # Prerequisite:
-Clone [chef-wed-docs reporsitory](https://github.com/chef/chef-web-docs/). Install Hugo, npm, go.
+Clone [chef-wed-docs repository](https://github.com/chef/chef-web-docs/). Install Hugo, npm, go.
 
 `brew tap go-swagger/go-swagger && brew install go-swagger hugo node go jq`
 
@@ -17,7 +17,7 @@ The YAML files will be created under `docs_site` directory. Copy the correspondi
 
 # Generating mark down(.md) files:
 Go to the [chef-web-docs](https://github.com/chef/chef-web-docs/) repository, where we copied the YAML file(s).
-Using the YAML file(s) create correspondown markdown(.md) file(s).
+Using the YAML file(s) create corresponding markdown(.md) file(s).
 
 `hugo new -k resource content/resources/RESOURCE_NAME.md`
 
