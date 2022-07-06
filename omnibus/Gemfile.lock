@@ -69,12 +69,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (17.10.0)
+    chef (18.0)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.0)
-      chef-utils (= 17.10.0)
+      chef-config (~> 18)
+      chef-utils (~> 18)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -100,13 +100,13 @@ GEM
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.10.0-universal-mingw32)
+    chef (18.0.127-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.0)
+      chef-config (~> 18)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 17.10.0)
+      chef-utils (~> 18)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -144,9 +144,9 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.5)
-    chef-config (17.10.0)
+    chef-config (18.0)
       addressable
-      chef-utils (= 17.10.0)
+      chef-utils (~> 18)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -157,7 +157,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (17.10.0)
+    chef-utils (18.0)
       concurrent-ruby
     chef-vault (4.1.10)
     chef-zero (15.0.11)
