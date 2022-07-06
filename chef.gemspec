@@ -22,7 +22,14 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.6.0"
+  s.required_ruby_version = ">= 3.1.0"
+
+  if RUBY_PLATFORM == "x64-mingw-ucrt"
+    s.add_dependency "win32-mmap", "~> 0.4.1"
+    s.add_dependency "win32-mutex", "~> 0.4.2"
+    s.add_dependency "chef-powershell", "~> 1.0.12"
+    s.add_dependency "win32-api", "~> 1.10.0"
+  end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"

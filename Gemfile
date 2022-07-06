@@ -4,6 +4,13 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+gem "rest-client", :github => "johnnyshields/rest-client", :branch => "patch-1"
+
+# if RUBY_PLATFORM == "x64-mingw-ucrt"
+#   gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim.git", branch: "jfm/json_bug_fix"
+#   gem "win32-api", git: "https://github.com/cosmo0920/win32-api", branch: "master"
+# end
+
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 

@@ -32,6 +32,17 @@ GIT
   specs:
     proxifier (1.0.3)
 
+GIT
+  remote: https://github.com/johnnyshields/rest-client.git
+  revision: 9ae0cf7e0034c7266591d54768a2c394f3d6c334
+  branch: patch-1
+  specs:
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+
 PATH
   remote: .
   specs:
@@ -39,41 +50,7 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.130)
-      chef-utils (= 18.0.130)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.5.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (~> 4.23)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-ftp
-      net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 18.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.2, >= 3.2.28)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
-    chef (18.0.130-universal-mingw32)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.130)
+      chef-config (= 18.0.127)
       chef-powershell (~> 1.0.12)
       chef-utils (= 18.0.130)
       chef-vault
@@ -86,7 +63,6 @@ PATH
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
-      iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -105,16 +81,9 @@ PATH
       unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-      win32-api (~> 1.5.3)
-      win32-certstore (~> 0.6.10)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
+      win32-api (~> 1.10.0)
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
 
 PATH
   remote: chef-bin
@@ -222,8 +191,6 @@ GEM
       net-ssh
     ffi (1.15.5)
     ffi (1.15.5-x64-mingw-ucrt)
-    ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -269,7 +236,6 @@ GEM
     inspec-core-bin (4.56.20)
       inspec-core (= 4.56.20)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.1)
     json (2.6.2)
     libyajl2 (2.1.0)
@@ -288,8 +254,6 @@ GEM
     mime-types-data (3.2022.0105)
     mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
@@ -297,11 +261,6 @@ GEM
     mixlib-log (3.0.9)
     mixlib-shellout (3.2.7)
       chef-utils
-    mixlib-shellout (3.2.7-universal-mingw32)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     mixlib-shellout (3.2.7-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
@@ -338,28 +297,11 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.7)
-    rack (2.2.3.1)
+    rack (2.2.4)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.5.0)
-    rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw32)
-      ffi (~> 1.9)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x86-mingw32)
-      ffi (~> 1.9)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -399,7 +341,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
     time (0.2.0)
@@ -451,14 +392,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.12)
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
+    win32-api (1.10.1)
     win32-ipc (0.7.0)
       ffi
     win32-mmap (0.4.2)
@@ -467,12 +401,6 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -497,8 +425,6 @@ GEM
 PLATFORMS
   ruby
   x64-mingw-ucrt
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   appbundler
@@ -519,8 +445,9 @@ DEPENDENCIES
   pry-stack_explorer
   rake
   rb-readline
+  rest-client!
   rspec
   webmock
 
 BUNDLED WITH
-   2.3.12
+   2.3.17
