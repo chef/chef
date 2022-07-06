@@ -87,17 +87,18 @@ function Invoke-Build {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-                rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                rake install --trace # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        rake install
+        rake install --trace
+        gem install pkg/chef-18.0.127-universal-mingw32.gem
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            rake install
+            rake install --trace
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
