@@ -4,8 +4,8 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
-gem "chef-utils"#, path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
-gem "chef-config"#, path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
+gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
@@ -39,7 +39,7 @@ gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/rub
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
+  gem "ruby-shadow"#, git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
 end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
@@ -56,7 +56,7 @@ end
 
 group(:chefstyle) do
   # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
+  gem "chefstyle"#, git: "https://github.com/chef/chefstyle.git", branch: "main"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]

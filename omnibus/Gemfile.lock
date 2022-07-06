@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: a9b13a09c2f89e4618225dd41b2fd08f2150a1ba
+  revision: 7bb8c7b4fd2cc5829fba9d52df1dac683fd88069
   branch: main
   specs:
     omnibus-software (4.0.0)
@@ -17,7 +17,7 @@ GIT
       chef-utils (>= 15.4)
       contracts (>= 0.16.0, < 0.17.0)
       ffi-yajl (~> 2.2)
-      license_scout (~> 1.3)
+      license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
       ohai (>= 15, < 18)
@@ -34,8 +34,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.594.0)
-    aws-sdk-core (3.131.1)
+    aws-partitions (1.603.0)
+    aws-sdk-core (3.131.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -47,15 +47,13 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.62.0)
+    aws-sdk-secretsmanager (1.64.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.0)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
-    bcrypt_pbkdf (1.1.0-x64-mingw32)
-    bcrypt_pbkdf (1.1.0-x86-mingw32)
-    berkshelf (8.0.1)
+    berkshelf (8.0.2)
       chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
@@ -100,49 +98,6 @@ GEM
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.10.0-universal-mingw32)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.0)
-      chef-powershell (~> 1.0.12)
-      chef-utils (= 17.10.0)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.5.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (~> 4.23)
-      iso8601 (>= 0.12.1, < 0.14)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 17.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.2, >= 3.2.28)
-      train-winrm (>= 0.2.5)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
-      win32-api (~> 1.5.3)
-      win32-certstore (~> 0.6.2)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
     chef-cleanroom (1.0.5)
     chef-config (17.10.0)
       addressable
@@ -151,9 +106,6 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-powershell (1.0.13)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -194,13 +146,8 @@ GEM
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
     ffi (1.15.5)
-    ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x64-unknown)
-    ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
-    ffi-win32-extensions (1.0.4)
-      ffi
     ffi-yajl (2.4.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
@@ -237,10 +184,9 @@ GEM
       tty-table (~> 0.10)
     iostruct (0.0.4)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.1)
     json (2.6.2)
-    kitchen-vagrant (1.11.0)
+    kitchen-vagrant (1.12.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -260,33 +206,21 @@ GEM
     minitar (0.9)
     mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
-    mixlib-config (3.0.9)
+    mixlib-config (3.0.27)
       tomlrb
-    mixlib-install (3.12.16)
+    mixlib-install (3.12.19)
       mixlib-shellout
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
     mixlib-shellout (3.2.7)
       chef-utils
-    mixlib-shellout (3.2.7-universal-mingw32)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-unknown)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
-    multipart-post (2.1.1)
+    multipart-post (2.2.3)
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
     net-sftp (3.0.0)
@@ -295,7 +229,7 @@ GEM
     net-ssh-gateway (2.0.0)
       net-ssh (>= 4.0.0)
     nori (2.6.0)
-    octokit (4.23.0)
+    octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
     ohai (17.9.0)
@@ -327,7 +261,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.7)
-    rack (2.2.3.1)
+    rack (2.2.4)
     rainbow (3.1.1)
     retryable (3.0.5)
     rexml (3.2.5)
@@ -351,7 +285,7 @@ GEM
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
-    sawyer (0.9.1)
+    sawyer (0.9.2)
       addressable (>= 2.3.5)
       faraday (>= 0.17.3, < 3)
     semverse (3.0.2)
@@ -364,9 +298,8 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    test-kitchen (3.2.2)
+    test-kitchen (3.3.1)
       bcrypt_pbkdf (~> 1.0)
       chef-utils (>= 16.4.35)
       ed25519 (~> 1.2)
@@ -384,7 +317,7 @@ GEM
     toml-rb (2.1.2)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.9.2)
+    train-core (3.10.1)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -413,34 +346,12 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unicode-display_width (2.1.0)
+    unicode-display_width (2.2.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
     webrick (1.7.0)
-    win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.12)
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
-    win32-process (0.10.0)
-      ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -465,9 +376,6 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw32
-  x64-unknown
-  x86-mingw32
 
 DEPENDENCIES
   artifactory
@@ -480,4 +388,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.12
+   2.1.4
