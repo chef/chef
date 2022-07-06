@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 88ddc94275c7618cb92a67c277993c89fc9c2109
+  revision: 2cd91848d807d7a37342b964c6c5e204570469f9
   branch: main
   specs:
-    ohai (18.0.14)
+    ohai (18.0.16)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -76,62 +76,6 @@ PATH
       unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.0.127-universal-mingw32)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.127)
-      chef-powershell (~> 1.0.12)
-      chef-utils (= 18.0.127)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.5.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (~> 4.23)
-      iso8601 (>= 0.12.1, < 0.14)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-ftp
-      net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 18.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.2, >= 3.2.28)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
-      win32-api (~> 1.5.3)
-      win32-certstore (~> 0.6.10)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
-
-PATH
-  remote: chef-bin
-  specs:
-    chef-bin (18.0.127)
-      chef (= 18.0.127)
-
-PATH
-  remote: chef-config
-  specs:
     chef-config (18.0.127)
       addressable
       chef-utils (= 18.0.127)
@@ -139,12 +83,14 @@ PATH
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-
-PATH
-  remote: chef-utils
-  specs:
     chef-utils (18.0.127)
       concurrent-ruby
+
+PATH
+  remote: chef-bin
+  specs:
+    chef-bin (18.0.127)
+      chef (= 18.0.127)
 
 GEM
   remote: https://rubygems.org/
@@ -156,7 +102,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.602.0)
+    aws-partitions (1.603.0)
     aws-sdk-core (3.131.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -178,9 +124,6 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -228,12 +171,8 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
-    ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
-    ffi-win32-extensions (1.0.4)
-      ffi
     ffi-yajl (2.4.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
@@ -275,7 +214,6 @@ GEM
     inspec-core-bin (4.56.20)
       inspec-core (= 4.56.20)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.1)
     json (2.6.2)
     libyajl2 (2.1.0)
@@ -294,22 +232,15 @@ GEM
     mime-types-data (3.2022.0105)
     mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
-    mixlib-config (3.0.9)
+    mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
     mixlib-shellout (3.2.7)
       chef-utils
-    mixlib-shellout (3.2.7-universal-mingw32)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     multi_json (1.15.0)
-    multipart-post (2.2.0)
+    multipart-post (2.2.3)
     net-ftp (0.1.3)
       net-protocol
       time
@@ -339,24 +270,12 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.7)
-    rack (2.2.3.1)
+    rack (2.2.4)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.5.0)
     rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw32)
-      ffi (~> 1.9)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x86-mingw32)
-      ffi (~> 1.9)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -400,14 +319,13 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
     time (0.2.0)
       date
     timeout (0.3.0)
     tomlrb (1.3.0)
-    train-core (3.9.2)
+    train-core (3.10.1)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -442,9 +360,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8)
-    unf_ext (0.0.8-x64-mingw32)
-    unf_ext (0.0.8-x86-mingw32)
-    unicode-display_width (2.1.0)
+    unicode-display_width (2.2.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
@@ -454,28 +370,6 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.12)
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
-    win32-process (0.10.0)
-      ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -499,15 +393,13 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   appbundler
   chef!
   chef-bin!
-  chef-config!
-  chef-utils!
+  chef-config
+  chef-utils
   chef-vault
   cheffish (>= 17)
   chefstyle!
@@ -526,4 +418,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.12
+   2.1.4
