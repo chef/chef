@@ -375,7 +375,7 @@ GEM
     zhexdump (0.0.2)
 
 PLATFORMS
-  ruby
+  x86_64-darwin-21
 
 DEPENDENCIES
   artifactory
@@ -388,4 +388,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.1.4
+   2.3.17
