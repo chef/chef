@@ -688,8 +688,6 @@ describe "chef-client" do
     end
 
     it "the chef client run should succeed" do
-      require "pry"
-      binding.pry
       command = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       command.error!
     end
