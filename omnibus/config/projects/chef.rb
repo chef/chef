@@ -62,7 +62,11 @@ dependency "version-manifest"
 dependency "openssl-customization"
 
 # devkit needs to come dead last these days so we do not use it to compile any gems
-dependency "ruby-msys2-devkit" if windows?
+if windows?
+  override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows_arch_i386?
+  dependency "ruby-windows-devkit"
+  dependency "ruby-windows-devkit-bash"
+end
 
 dependency "ruby-cleanup"
 
