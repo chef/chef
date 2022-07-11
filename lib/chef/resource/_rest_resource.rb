@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+require "addressable/template" unless defined?(Addressable::Template)
 require "rest-client" unless defined?(RestClient)
 require "jmespath" unless defined?(JMESPath)
 require "chef/dsl/rest_resource" unless defined?(Chef::DSL::RestResource)
@@ -221,7 +222,9 @@ action_class do
     response = rest_postprocess(response)
 
     first_only = current_resource.class.rest_api_document_first_element_only
-    first_only && response.is_a?(Array) ? response.first : response
+    response.data = response.data.first if first_only && response.data.is_a?(Array)
+
+    response
   rescue RestClient::Exception => e
     rest_errorhandler(e)
   end
