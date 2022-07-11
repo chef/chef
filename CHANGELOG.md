@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.129 -->
-## [v18.0.129](https://github.com/chef/chef/tree/v18.0.129) (2022-07-07)
+<!-- latest_release 18.0.130 -->
+## [v18.0.130](https://github.com/chef/chef/tree/v18.0.130) (2022-07-11)
 
 #### Merged Pull Requests
-- Fixed sensitive properties unsuppressed content issue [#13014](https://github.com/chef/chef/pull/13014) ([blabade](https://github.com/blabade))
+- Revert &quot;Use new msys2 based devkit for windows&quot; [#13063](https://github.com/chef/chef/pull/13063) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert &quot;Use new msys2 based devkit for windows&quot; [#13063](https://github.com/chef/chef/pull/13063) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.130 -->
 - Fixed sensitive properties unsuppressed content issue [#13014](https://github.com/chef/chef/pull/13014) ([blabade](https://github.com/blabade)) <!-- 18.0.129 -->
 - Fix issue in adhoc nightly builds [#13059](https://github.com/chef/chef/pull/13059) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.128 -->
 - Use new msys2 based devkit for windows [#13038](https://github.com/chef/chef/pull/13038) ([mwrock](https://github.com/mwrock)) <!-- 18.0.127 -->
