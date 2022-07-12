@@ -264,7 +264,7 @@ steps:
       docker:
         image: rubydistros/almalinux-8:3.1
 
-- label: "Functional Windows :ruby: 3.1?"
+- label: "Functional Windows :ruby: 3.1"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
