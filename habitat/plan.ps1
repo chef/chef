@@ -1,6 +1,9 @@
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
+Write-Output "`n"
+Write-Output "The Plan Context is : $PLAN_CONTEXT"
+Write-Output "`n"
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
 $pkg_maintainer="The Chef Maintainers <maintainers@chef.io>"
 $pkg_upstream_url="https://github.com/chef/chef"
@@ -77,7 +80,7 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
-        $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
+        $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
@@ -94,10 +97,10 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        bundle exec rake install:local --verbose # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            bundle exec rake install:local  --verbose# this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
