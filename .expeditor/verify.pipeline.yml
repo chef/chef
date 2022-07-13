@@ -116,20 +116,20 @@ steps:
 #         image: rubydistros/ubuntu-20.04:3.1
 #         privileged: true
 
-- label: "Unit Ubuntu 20.04 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - apt-get update -y
-    - apt-get install -y libarchive-dev
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-20.04:3.1
+# - label: "Unit Ubuntu 20.04 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - apt-get update -y
+#     - apt-get install -y libarchive-dev
+#     - bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:unit
+#     - bundle exec rake component_specs
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/ubuntu-20.04:3.1
 
 # - label: "Integration CentOS 7 :ruby: 3.1"
 #   commands:
@@ -159,19 +159,19 @@ steps:
 #         image: rubydistros/centos-7:3.1
 #         privileged: true
 
-- label: "Unit CentOS 7 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - yum install -y libarchive-devel
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/centos-7:3.1
+# - label: "Unit CentOS 7 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - yum install -y libarchive-devel
+#     - bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:unit
+#     - bundle exec rake component_specs
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/centos-7:3.1
 
 # - label: "Integration openSUSE 15 :ruby: 3.1"
 #   commands:
@@ -202,19 +202,19 @@ steps:
 #         image: rubydistros/opensuse-15:3.1
 #         privileged: true
 
-- label: "Unit openSUSE 15 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - zypper install -y cron insserv-compat libarchive-devel
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/opensuse-15:3.1
+# - label: "Unit openSUSE 15 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - zypper install -y cron insserv-compat libarchive-devel
+#     - bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:unit
+#     - bundle exec rake component_specs
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/opensuse-15:3.1
 
 # - label: "Integration AlmaLinux 8 :ruby: 3.1"
 #   commands:
@@ -246,23 +246,23 @@ steps:
 #           - FORCE_FFI_YAJL=ext
 #           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit AlmaLinux 8 :ruby: 3.1"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - dnf install dnf-plugins-core -y
-    - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-    - dnf config-manager --enable epel
-    - dnf config-manager --set-enabled powertools
-    - dnf install -y libarchive-devel
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/almalinux-8:3.1
+# - label: "Unit AlmaLinux 8 :ruby: 3.1"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_container_prep.sh
+#     - dnf install dnf-plugins-core -y
+#     - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+#     - dnf config-manager --enable epel
+#     - dnf config-manager --set-enabled powertools
+#     - dnf install -y libarchive-devel
+#     - bundle config set --local without omnibus_package
+#     - bundle config set --local path 'vendor/bundle'
+#     - bundle install --jobs=3 --retry=3
+#     - bundle exec rake spec:unit
+#     - bundle exec rake component_specs
+#   expeditor:
+#     executor:
+#       docker:
+#         image: rubydistros/almalinux-8:3.1
 
 # - label: "Functional Windows :ruby: 2.7"
 #   commands:
@@ -287,18 +287,18 @@ steps:
 #           - CHEF_LICENSE=accept-no-persist
 #         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_win_unit.ps1
-  expeditor:
-    executor:
-      docker:
-        host_os: windows
-        image: rubydistros/windows-2019:3.0
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-        shell: ["powershell", "-Command"]
+# - label: "Unit Windows :ruby: 3.0"
+#   commands:
+#     - /workdir/.expeditor/scripts/bk_win_unit.ps1
+#   expeditor:
+#     executor:
+#       docker:
+#         host_os: windows
+#         image: rubydistros/windows-2019:3.0
+#         environment:
+#           - FORCE_FFI_YAJL=ext
+#           - CHEF_LICENSE=accept-no-persist
+#         shell: ["powershell", "-Command"]
 
 # #########################################################################
 #   # EXTERNAL GEM TESTING
