@@ -52,6 +52,7 @@ group(:development, :test) do
   gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
 end
 
 group(:chefstyle) do
