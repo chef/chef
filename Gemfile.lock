@@ -416,7 +416,7 @@ GEM
       net-ssh (>= 2.9, < 7.0)
     train-rest (0.4.2)
       rest-client (~> 2.1)
-      train-core (~> 3.10)
+      train-core (~> 3.0)
     train-winrm (0.2.13)
       winrm (>= 2.3.6, < 3.0)
       winrm-elevated (~> 1.2.2)
