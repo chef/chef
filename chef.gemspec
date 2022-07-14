@@ -56,7 +56,6 @@ Gem::Specification.new do |s|
   s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
   s.add_dependency "unf_ext", "< 0.0.8.1" # temporary until it loads properly on Windows
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
-  s.add_dependency 'chef-bin', '~> 15.1', '>= 15.1.36'
 
   s.add_dependency "proxifier", "~> 1.0"
 
