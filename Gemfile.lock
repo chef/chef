@@ -57,7 +57,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 4.23)
+      inspec-core (~> 5)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -92,7 +92,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 4.23)
+      inspec-core (~> 5)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -249,7 +249,7 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.56.20)
+    inspec-core (5.18.14)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -272,8 +272,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.56.20)
-      inspec-core (= 4.56.20)
+    inspec-core-bin (5.18.14)
+      inspec-core (= 5.18.14)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
@@ -513,7 +513,7 @@ DEPENDENCIES
   chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
-  inspec-core-bin (~> 4.24)
+  inspec-core-bin (~> 5)
   ohai!
   proxifier!
   pry (= 0.13.0)
