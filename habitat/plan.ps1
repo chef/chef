@@ -93,18 +93,20 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        if (-not $?) {
-            Write-Warning " -- That didn't work. Let's try again."
+        #bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        #if (-not $?) {
+        #    Write-Warning " -- That didn't work. Let's try again."
+        #    bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        #    if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
+        #}
+        $install_attempt = 0
+        do {
+            Start-Sleep -Seconds 5
+            $install_attempt++
+            Write-BuildLine "Install attempt $install_attempt"
             bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-            # if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
-        }
-        gem build chef.gemspec
-        gem build chef-universal-mingw32.gemspec
-        gem build chef-bin/chef-bin.gemspec
-        gem build chef-config/chef-config.gemspec
-        gem build chef-utils/chef-utils.gemspec
-        gem build knife/knife.gemspec
+        } while ((-not $?) && $install_attempt < 10)
+
     } finally {
         Pop-Location
     }
