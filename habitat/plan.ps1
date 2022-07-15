@@ -106,7 +106,7 @@ function Invoke-Build {
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
             bundle exec rake install:local --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        } while ((-not $?) && $install_attempt -lt 10)
+        } while ((-not $?) && ($install_attempt -lt 10))
 
     } finally {
         Pop-Location
