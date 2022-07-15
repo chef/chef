@@ -99,8 +99,12 @@ function Invoke-Build {
             bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
             # if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
+        gem build chef.gemspec
         gem build chef-universal-mingw32.gemspec
-        gem install chef-universal-mingw32.gem
+        gem build chef-bin/chef-bin.gemspec
+        gem build chef-config/chef-config.gemspec
+        gem build chef-utils/chef-utils.gemspec
+        gem build knife/knife.gemspec
     } finally {
         Pop-Location
     }
