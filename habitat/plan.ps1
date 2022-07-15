@@ -86,7 +86,7 @@ function Invoke-Build {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-                rake install --trace # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                rake install --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
@@ -104,8 +104,8 @@ function Invoke-Build {
             Start-Sleep -Seconds 5
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        } while ((-not $?) && $install_attempt < 10)
+            bundle exec rake install:local --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        } while ((-not $?) && $install_attempt -lt 10)
 
     } finally {
         Pop-Location
