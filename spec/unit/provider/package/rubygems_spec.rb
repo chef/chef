@@ -137,15 +137,15 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
       # require "pry"
       # binding.pry
-      stub_request(:head, "https://rubygems2.org/")
+      stub_request(:head, "https://rubygems.org/")
         .to_return(status: 200, body: "", headers: {})
-      stub_request(:get, "https://rubygems2.org/info/sexp_processor")
+      stub_request(:get, "https://rubygems.org/info/sexp_processor")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-info")))
-      stub_request(:get, "https://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
+      stub_request(:get, "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
-      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems2.org")).to be_kind_of(Gem::Version)
+      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems.org")).to be_kind_of(Gem::Version)
     end
   end
 
@@ -175,7 +175,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
-      expect(@gem_env.candidate_version_from_remote(dep, "http://rubygems2.org")).to be_kind_of(Gem::Version)
+      expect(@gem_env.candidate_version_from_remote(dep, "http://rubygems.org")).to be_kind_of(Gem::Version)
     end
   end
 
