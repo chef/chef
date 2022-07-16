@@ -16,7 +16,8 @@ powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
 if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 
 Write-Host "--- :construction: Verifying Git is Installed"
-$source = Get-Command -Name Git
+$source = Get-Command -Name Git -Verbose
+Write-Host "Which version of Git is installed? - $source.version"
 if (-not ($source.name -match "git.exe")) {
     choco install git -y
     # gotta refresh the path so you can actually use Git now
