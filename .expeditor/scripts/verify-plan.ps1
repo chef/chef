@@ -19,6 +19,8 @@ Write-Host "--- :construction: Verifying Git is Installed"
 $source = Get-Command -Name Git
 if (-not ($source.name -match "git.exe")) {
     choco install git -y
+    # gotta refresh the path so you can actually use Git now
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 
 Write-Host "--- :key: Generating fake origin key"
