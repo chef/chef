@@ -126,7 +126,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.606.0)
+    aws-partitions (1.607.0)
     aws-sdk-core (3.131.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
@@ -473,4 +473,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.17
+   2.3.7
