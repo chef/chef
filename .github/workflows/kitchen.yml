@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2019]
+        ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
