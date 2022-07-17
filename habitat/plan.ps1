@@ -62,7 +62,8 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-
+        Write-BuildLine " ** Updating the Path and Installing Bundler"
+        $env:Path += [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         gem install bundler:2.3.17
 
         Write-BuildLine " ** Configuring bundler for this build environment"
