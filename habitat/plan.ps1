@@ -61,6 +61,10 @@ function Invoke-Prepare {
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
     try {
+        Write-BuildLine " ** Where the hell is gem?"
+        $gems = Get-ChildItem -Path c:\ -File "gem.*" -Recurse
+        Write-BuildLine "Here is where Gem is installed - " $gems
+
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
         Write-BuildLine " ** Updating the Path and Installing Bundler"
         $env:Path += [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
