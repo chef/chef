@@ -63,6 +63,8 @@ function Invoke-Prepare {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
+        gem install bundler:2.3.17
+
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
