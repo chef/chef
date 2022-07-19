@@ -1511,7 +1511,7 @@ class Chef
 
         # Support recursive `use`
         callers = caller_locations
-        used_from = callers.first.label == 'use' ? callers.at(3).path : callers.first.path
+        used_from = callers.first.label == "use" ? callers.at(3).path : callers.first.path
 
         fullpath = ::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(used_from))
         class_eval IO.read(fullpath)
