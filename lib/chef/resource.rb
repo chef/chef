@@ -1508,7 +1508,13 @@ class Chef
         dirname = ::File.dirname(partial)
         basename = ::File.basename(partial, ".rb")
         basename = basename[1..] if basename.start_with?("_")
-        class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.path)))
+
+        # Support recursive `use`
+        callers = caller_locations
+        used_from = callers.first.label == 'use' ? callers.at(3).path : callers.first.path
+
+        fullpath = ::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(used_from))
+        class_eval IO.read(fullpath)
       end
     end
 
