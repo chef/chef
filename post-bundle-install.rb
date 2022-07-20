@@ -8,7 +8,7 @@ puts "fixing bundle installed gems in #{gem_home}"
 # you can simply gem build + gem install the resulting gem, so nothing fancy.  This does not use
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
 #
-Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
+Dir["#{gem_home}/bundler/gems/*"].compact.each do |gempath|
   puts "===Gempath: #{gempath.inspect}"
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
