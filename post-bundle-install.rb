@@ -10,7 +10,6 @@ puts "fixing bundle installed gems in #{gem_home}"
 #
 Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   puts "===Gempath: #{gempath.inspect}"
-  next if gempath.match("chef-powershell")
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
