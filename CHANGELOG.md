@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.131 -->
-## [v18.0.131](https://github.com/chef/chef/tree/v18.0.131) (2022-07-19)
+<!-- latest_release 18.0.132 -->
+## [v18.0.132](https://github.com/chef/chef/tree/v18.0.132) (2022-07-21)
 
 #### Merged Pull Requests
-- update property DSL docs [#13093](https://github.com/chef/chef/pull/13093) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Add AIX-7.3 to Build Matrix [#13058](https://github.com/chef/chef/pull/13058) ([poorndm](https://github.com/poorndm))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add AIX-7.3 to Build Matrix [#13058](https://github.com/chef/chef/pull/13058) ([poorndm](https://github.com/poorndm)) <!-- 18.0.132 -->
 - update property DSL docs [#13093](https://github.com/chef/chef/pull/13093) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.131 -->
 - Revert &quot;Use new msys2 based devkit for windows&quot; [#13063](https://github.com/chef/chef/pull/13063) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.130 -->
 - Fixed sensitive properties unsuppressed content issue [#13014](https://github.com/chef/chef/pull/13014) ([blabade](https://github.com/blabade)) <!-- 18.0.129 -->
