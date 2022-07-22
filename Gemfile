@@ -36,11 +36,6 @@ end
 # proxifier gem is busted on ruby 3.1 and seems abandoned so use git fork of gem
 gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/ruby-3"
 
-# Everything except AIX and Windows
-group(:ruby_shadow) do
-  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
-end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
 group(:knife_windows_deps) do
@@ -54,10 +49,6 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-group(:chefstyle) do
-  # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
-end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
