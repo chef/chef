@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.134 -->
-## [v18.0.134](https://github.com/chef/chef/tree/v18.0.134) (2022-07-22)
+<!-- latest_release 18.0.135 -->
+## [v18.0.135](https://github.com/chef/chef/tree/v18.0.135) (2022-07-22)
 
 #### Merged Pull Requests
-- Re add: Use new msys2 based devkit for windows&quot;&quot; [#13097](https://github.com/chef/chef/pull/13097) ([neha-p6](https://github.com/neha-p6))
+- Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.135 -->
 - Re add: Use new msys2 based devkit for windows&quot;&quot; [#13097](https://github.com/chef/chef/pull/13097) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.134 -->
 - Skip tests on FreeBSD-13 [#13079](https://github.com/chef/chef/pull/13079) ([poorndm](https://github.com/poorndm)) <!-- 18.0.133 -->
 - Add AIX-7.3 to Build Matrix [#13058](https://github.com/chef/chef/pull/13058) ([poorndm](https://github.com/poorndm)) <!-- 18.0.132 -->
