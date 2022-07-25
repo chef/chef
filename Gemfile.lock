@@ -460,6 +460,7 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (~> 5)
+  ruby-shadow!
   ohai!
   proxifier!
   pry (= 0.13.0)
