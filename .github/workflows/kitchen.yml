@@ -94,6 +94,8 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
+        Write-Output "Downloading Uru Installer..."
+        New-Item -Path c:\uru_temp -Type Directory
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         Invoke-WebRequest -OutFile "c:\uru_temp\uru-0.8.5-windows-x86.7z" -Uri "https://bitbucket.org/jonforums/uru/downloads/uru-0.8.5-windows-x86.7z"
         Write-Output "Installing Uru Ruby Switcher"
