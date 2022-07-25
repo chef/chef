@@ -471,5 +471,3 @@ DEPENDENCIES
   rspec
   webmock
 
-# BUNDLED WITH
-#   2.3.12
