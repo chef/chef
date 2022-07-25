@@ -13,6 +13,7 @@ jobs:
     env:
       BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
+    - run: gem list bundler
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
