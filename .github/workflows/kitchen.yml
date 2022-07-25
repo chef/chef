@@ -25,7 +25,7 @@ jobs:
         $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
 
         $old_version = Ruby --version
-        if($old_version -match "3.0"){
+        if(-not($old_version -match "3.1")){
           $ErrorActionPreference = 'Stop';
           Write-Output 'Downloading Ruby + DevKit';
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
@@ -64,7 +64,7 @@ jobs:
       id: install_chef
       run: |
         . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $env:PATH = "C:\ruby31\bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
         ohai -v
         rake --version
@@ -94,14 +94,8 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
-        $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
-        Write-Output "Register Installed Ruby Version 3.1 With Uru"
-        Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
-        uru 312
-        $old_ruby = Get-Command -Name Ruby
-        Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
         cd kitchen-tests
-        # $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $env:PATH = "C:\ruby31\bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         # # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
         # # we remove thenm here.
         # if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
@@ -111,7 +105,6 @@ jobs:
         # }
         $old_ruby = Get-Command -Name Ruby
         Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
-
 
         bundle install --jobs=3 --retry=3
         # If ($lastexitcode -ne 0) { Exit $lastexitcode }
@@ -131,11 +124,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15]
+        os: [macos-latest]
         ruby: ["3.1"] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+      with:
+        clean: true
     - name: 'Upgrade Ruby Devkit on Macos'
       id: upgrade_ruby
       run: |
@@ -149,27 +144,40 @@ jobs:
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
         /opt/chef/embedded/bin/rake --version
+        echo "Updating Bundler"
+        gem install bundler:2.3.18
+        #  /opt/chef/embedded/bin/bundle update --bundler
+        echo "finished updating Bundler, now getting the version"
         /opt/chef/embedded/bin/bundle -v
+        echo "finished getting the bundler version"
     - name: 'Upgrade Chef/Ohai via Appbundler'
       id: upgrade
       run: |
-        OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-        sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-        sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
-        echo "Installed Chef / Ohai release:"
-        /opt/chef/bin/chef-client -v
-        /opt/chef/bin/ohai -v
+        brew install rbenv ruby-build
+        touch ~/.bash_profile
+        # echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+        # source ~/.bash_profile
+        # sudo rbenv install 3.1.2
+        # echo "which gem file are we using now?"
+        # which gem
+        # OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+        # sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+        # sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
+        # echo "Installed Chef / Ohai release:"
+        # /opt/chef/bin/chef-client -v
+        # /opt/chef/bin/ohai -v
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
         cd kitchen-tests
-        sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
-        sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
-        sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
-        sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-        sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
-        sudo /opt/chef/embedded/bin/berks vendor cookbooks
-        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+        # sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
+        # sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
+        # sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
+        # sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+        # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
+        # sudo /opt/chef/embedded/bin/berks vendor cookbooks
+        # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+
 
   linux:
     strategy:
@@ -200,9 +208,21 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.1"
-          bundler-cache: true
+          bundler-cache: false
           working-directory: kitchen-tests
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+          ruby -v
+          echo "Which ruby are we using?"
+          which ruby
+          gem install bundler:2.3.18
+          gem install chef-utils
+          gem install inspec
+          gem install berkshelf
+          gem install kitchen-dokken
+          bundle install --local
+          kitchen diagnose --all
+          # bundle exec /home/runner/work/chef/chef/kitchen-tests/vendor/bundle/ruby/3.1.0/bin/kitchen test end-to-end-${{ matrix.os }}
+          # kitchen test end-to-end-${{ matrix.os }}
+          # sudo find / -name kitchen -type f
