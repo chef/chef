@@ -94,6 +94,7 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
+        $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
         Write-Output "Register Installed Ruby Version 3.1 With Uru"
         Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
         uru 312
