@@ -4,8 +4,8 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
-gem "rest-client", :github => "johnnyshields/rest-client", :branch => "patch-1"
-# gem "ffi", ">= 1.15.5"
+# gem "rest-client", :github => "chef/rest-client", :branch => "jfm/ucrt_update"
+gem "ffi", ">= 1.15.5"
 # group(:ffi) do
 #   instance_eval(gem install ffi -v '1.15.5' --source "https://rubygems.org/")
 # end
