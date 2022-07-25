@@ -24,17 +24,6 @@ GIT
   specs:
     proxifier (1.0.3)
 
-GIT
-  remote: https://github.com/johnnyshields/rest-client.git
-  revision: 9ae0cf7e0034c7266591d54768a2c394f3d6c334
-  branch: patch-1
-  specs:
-    rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-
 PATH
   remote: .
   specs:
@@ -291,6 +280,8 @@ GEM
     mime-types-data (3.2022.0105)
     mixlib-archive (1.1.7)
       mixlib-log
+    mixlib-archive (1.1.7-universal-mingw32)
+      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
@@ -339,6 +330,11 @@ GEM
     rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.5.0)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -431,6 +427,7 @@ GEM
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
     win32-api (1.10.1)
+    win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
       ffi
@@ -488,6 +485,7 @@ DEPENDENCIES
   chefstyle
   ed25519 (~> 1.2)
   fauxhai-ng
+  ffi (>= 1.15.5)
   inspec-core-bin (~> 5)
   ohai!
   proxifier!
@@ -496,9 +494,8 @@ DEPENDENCIES
   pry-stack_explorer
   rake
   rb-readline
-  rest-client!
   rspec
   webmock
 
 BUNDLED WITH
-   2.3.17
+   2.3.18
