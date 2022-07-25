@@ -94,7 +94,17 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -OutFile "c:\uru_temp\uru-0.8.5-windows-x86.7z" -Uri "https://bitbucket.org/jonforums/uru/downloads/uru-0.8.5-windows-x86.7z"
+        Write-Output "Installing Uru Ruby Switcher"
+        7z x "c:\uru_temp\uru-0.8.5-windows-x86.7z" -o"C:\Program Files (x86)\Uru"
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -WorkingDirectory "C:\Program Files (x86)\Uru\" -ArgumentList 'admin install' -Wait
+
+        Write-Output 'Updating PATH'
         $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
+        [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
+
         Write-Output "Register Installed Ruby Version 3.1 With Uru"
         Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
         uru 312
