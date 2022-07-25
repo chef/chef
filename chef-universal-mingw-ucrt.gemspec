@@ -18,6 +18,6 @@ gemspec.platform = Gem::Platform.new(%w{x64-mingw-ucrt})
 # gemspec.add_dependency "chef-powershell", "~> 1.0.12" # The guts of the powershell_exec code have been moved to its own gem, chef-powershell. It's part of the chef-powershell-shim repo.
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += Dir.glob("{distro,ext}/**/*")
-gemspec.required_ruby_version = '>= 3.1.0'
+gemspec.required_ruby_version = ">= 3.1.2"
 
 gemspec

@@ -17,12 +17,14 @@ jobs:
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
-    - run: bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
+        bundler-cache: false
+    - run: |
+        bundle install
+        bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
     strategy:
       fail-fast: false
@@ -32,9 +34,10 @@ jobs:
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
+        bundler-cache: false
+    - run: bundle install
     - run: bundle exec rspec spec/functional/resource/macos_userdefaults_spec.rb
