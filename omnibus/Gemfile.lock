@@ -276,11 +276,6 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
@@ -479,4 +474,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.7
+   2.3.18

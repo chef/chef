@@ -94,6 +94,11 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
+        Write-Output "Register Installed Ruby Version 3.1 With Uru"
+        Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
+        uru 312
+        $old_ruby = Get-Command -Name Ruby
+        Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
         cd kitchen-tests
         # $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         # # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
@@ -126,7 +131,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-10.15]
-        ruby: ['3.1'] # macos-11.0 is not public for now
+        ruby: ["3.1"] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
