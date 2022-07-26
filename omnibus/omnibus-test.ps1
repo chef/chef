@@ -69,7 +69,9 @@ If ($lastexitcode -ne 0) { Throw $lastexitcode }
 & $embedded_bin_dir\rspec.bat --version
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
-$Env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;$Env:PATH"
+# We add C:\Program Files\Git\bin to the path to ensure the git bash shell is included
+# Omnibus puts C:\Program Files\Git\mingw64\bin which has git.exe but not bash.exe
+$Env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;C:\Program Files\Git\bin;$Env:PATH"
 
 # Test against the vendored chef gem (cd into the output of "gem which chef")
 $chefdir = gem which chef
