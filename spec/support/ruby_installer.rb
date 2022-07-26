@@ -44,8 +44,6 @@ def add_libarchive_dll_directory
   else
     $stderr.puts "Unable to find the right namespace to call #add_dll_directory! Please raise an issue on [GitHub](https://github.com/chef/chef/issues/new/choose)."
   end
-rescue StandardError => e
-  $stderr.puts "======ruby_installer failure error=#{e.message}"
 rescue LoadError
   $stderr.puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
 end
