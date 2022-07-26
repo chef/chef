@@ -57,7 +57,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 5)
+      inspec-core (~> 5.18)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -92,7 +92,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 5)
+      inspec-core (~> 5.18)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -513,7 +513,7 @@ DEPENDENCIES
   chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
-  inspec-core-bin (~> 5)
+  inspec-core-bin (~> 5.18)
   ohai!
   proxifier!
   pry (= 0.13.0)
