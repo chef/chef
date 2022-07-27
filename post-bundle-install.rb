@@ -14,7 +14,13 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next unless matches
 
   if gempath.match("chef-powershell")
-    path = "#{gempath}/chef-powershell" 
+    path = "#{gempath}/chef-powershell"
+    
+    #For now copy the windowspowershell dlls at chef/chef to gem here
+    dll_files = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
+    bin_path = "#{path}/chef-powershell/bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}"
+    FileUtils::mkdir_p "#{bin_path}"
+    FileUtils.cp_r dll_files, bin_path
   else  
     path = "#{gempath}" 
   end
