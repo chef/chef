@@ -157,7 +157,7 @@ jobs:
         touch ~/.zshrc
         export PATH="$HOME/.rbenv/bin:$PATH"
         echo 'source $HOME/.zshenv' >> ~/.zshrc
-        # echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
+        echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
         # source ~/.zshrc
         # echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
         # source ~/.bash_profile
@@ -229,6 +229,6 @@ jobs:
           gem install kitchen-inspec
           bundle install
           # kitchen diagnose --all
-          bundle exec /home/runner/work/chef/chef/kitchen-tests/vendor/bundle/ruby/3.1.0/bin/kitchen test end-to-end-${{ matrix.os }}
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
           # kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
