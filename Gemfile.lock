@@ -486,7 +486,7 @@ DEPENDENCIES
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
-  inspec-core-bin (~> 5)
+  inspec-core-bin (>= 5)
   ohai!
   proxifier!
   pry (= 0.13.0)
