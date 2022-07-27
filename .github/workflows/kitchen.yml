@@ -173,11 +173,15 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
+        rbenv global 3.1.2
         cd kitchen-tests
         echo "which bundler are we using?"
         which bundle
         echo "what version is that?"
         bundle --version
+        # gem install bundler
+        # echo "NOW which version are we using?"
+
         # sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
         # sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
         # sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
@@ -225,7 +229,7 @@ jobs:
           echo "Which ruby are we using?"
           which ruby
           sudo mv /home/runner/work/chef /home/runner/work/chef17
-          git clone git@github.com:chef/chef.git /home/runner/work/chef
+          git clone https://github.com/chef/chef.git /home/runner/work/chef
           cd home/runner/work/chef
           bundle install
           # gem install bundler:2.3.18
