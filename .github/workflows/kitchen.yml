@@ -174,13 +174,17 @@ jobs:
       id: run
       run: |
         cd kitchen-tests
-        sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
-        sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
-        sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
-        sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-        sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
-        sudo /opt/chef/embedded/bin/berks vendor cookbooks
-        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+        echo "which bundler are we using?"
+        which bundle
+        echo "what version is that?"
+        bundle --version
+        # sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
+        # sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
+        # sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
+        # # sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+        # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
+        # sudo /opt/chef/embedded/bin/berks vendor cookbooks
+        # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
 
 
   linux:
@@ -220,19 +224,30 @@ jobs:
           ruby -v
           echo "Which ruby are we using?"
           which ruby
-          gem install bundler:2.3.18
-          gem install chef-utils
-          gem install inspec
-          gem install kitchen-dokken
-          gem install kitchen-vagrant
-          gem install kitchen-inspec
-          echo "Installing Berkshelf now"
-          gem install berkshelf
-          echo "Finished Installing Berkshelf"
-          find / -name "chef" | grep -v "Permission denied"
+          sudo mv /home/runner/work/chef /home/runner/work/chef17
+          git clone git@github.com:chef/chef.git /home/runner/work/chef
+          cd home/runner/work/chef
+          bundle install
+          # gem install bundler:2.3.18
+          # gem install chef-utils
+          # gem install inspec
+          # gem install kitchen-dokken
+          # gem install kitchen-vagrant
+          # gem install kitchen-inspec
+          # echo "Installing Berkshelf now"
+          # gem install berkshelf
+          # echo "Finished Installing Berkshelf"
           # bundle install
           # which kitchen
           # kitchen diagnose --all
           # bundle exec kitchen test end-to-end-${{ matrix.os }}
           # /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
+          # /home/runner/work/chef
+          # /home/runner/work/chef/chef
+          # /home/runner/work/chef/chef/knife/lib/chef
+          # /home/runner/work/chef/chef/omnibus/package-scripts/chef
+          # /home/runner/work/chef/chef/omnibus/resources/chef
+          # /home/runner/work/chef/chef/lib/chef
+          # /home/runner/work/chef/chef/spec/support/lib/chef
+          # /home/runner/work/chef/chef/distro/templates/powershell/chef
