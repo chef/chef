@@ -42,7 +42,6 @@ class Chef
         @raw_key = nil
         @sign_request = true
         @signing_key_filename = opts[:signing_key_filename]
-        puts "====== signing_key_filename, raw_key #{opts.inspect}"
         @key = load_signing_key(opts[:signing_key_filename], opts[:raw_key])
         @auth_credentials = AuthCredentials.new(opts[:client_name], @key, use_ssh_agent: opts[:ssh_agent_signing])
         @version_class = opts[:version_class]
@@ -125,7 +124,6 @@ class Chef
       end
 
       def self.check_certstore_for_key(client_name)
-        puts "====IN check_certstore_for_key client_name=#{client_name}"
         powershell_code = <<~CODE
           $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "chef-#{client_name}" } -ErrorAction Stop
           if (($cert.HasPrivateKey -eq $true) -and ($cert.PrivateKey.Key.ExportPolicy -ne "NonExportable")) {
@@ -135,17 +133,11 @@ class Chef
             return $false
           }
         CODE
-        begin
-          powershell_exec!(powershell_code).result
-        rescue StandardError => e
-          puts "=== Error = #{e.message}"
-        end
-        
+        powershell_exec!(powershell_code).result
       end
 
       def load_signing_key(key_file, raw_key = nil)
         results = retrieve_certificate_key(Chef::Config[:node_name])
-        puts "===== in load_signing_key results=#{results.inspect}"
 
         if !!results
           @raw_key = results
@@ -224,7 +216,6 @@ class Chef
       end
 
       def self.retrieve_certificate_key(client_name)
-        puts "====== in self.retrieve_certificate_key client_name=#{client_name}"
         require "openssl" unless defined?(OpenSSL)
 
         if ChefUtils.windows?
