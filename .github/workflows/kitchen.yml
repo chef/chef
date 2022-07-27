@@ -229,9 +229,9 @@ jobs:
           ruby -v
           echo "Which ruby are we using?"
           which ruby
-          sudo mv /home/runner/work/chef /home/runner/work/chef17
-          git clone https://github.com/chef/chef.git /home/runner/work/chef
-          cd /home/runner/work/chef
+          sudo mv /home/runner/work/chef/chef /home/runner/work/chef/chef17
+          git clone https://github.com/chef/chef.git /home/runner/work/chef/chef
+          cd /home/runner/work/chef/chef
           bundle install
           # gem install bundler:2.3.18
           # gem install chef-utils
