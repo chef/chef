@@ -13,7 +13,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
-  if gempath.match("chef-powershell")   gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
+  if gempath.match("chef-powershell")
     path = "#{gempath}/chef-powershell" 
   else  
     path = "#{gempath}" 
