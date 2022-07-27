@@ -36,12 +36,6 @@ end
 # proxifier gem is busted on ruby 3.1 and seems abandoned so use git fork of gem
 gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/ruby-3"
 
-# Everything except AIX and Windows
-group(:ruby_shadow) do
-  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
-end
-
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
 group(:knife_windows_deps) do
   gem "ed25519", "~> 1.2" # ed25519 ssh key support
@@ -52,11 +46,6 @@ group(:development, :test) do
   gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
-end
-
-group(:chefstyle) do
-  # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
@@ -76,6 +65,7 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # We copy (and overwrite) these files every time "bundle <exec|install>" is
 # executed, just in case they have changed.
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+  gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim.git", branch: "neha-p6/rescue_ffi_parsing", glob: "chef-powershell/*.gemspec"
   instance_eval do
     ruby_exe_dir = RbConfig::CONFIG["bindir"]
     assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
