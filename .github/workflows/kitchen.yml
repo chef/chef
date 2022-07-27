@@ -180,6 +180,7 @@ jobs:
         which bundle
         echo "what version is that?"
         bundle --version
+        sudo find / -name "chef" | grep -v "Permission denied"
         # gem install bundler
         # echo "NOW which version are we using?"
 
@@ -245,7 +246,7 @@ jobs:
           # bundle install
           # which kitchen
           # kitchen diagnose --all
-          # bundle exec kitchen test end-to-end-${{ matrix.os }}
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
           # /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
           # /home/runner/work/chef
