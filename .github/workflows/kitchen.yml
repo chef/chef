@@ -161,7 +161,8 @@ jobs:
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
         source ~/.zshrc
         rbenv install 3.1.2
-        rbenv global 3.1.2-p20
+        echo $?
+        rbenv global 3.1.2
         # echo "which gem file are we using now?"
         # which gem
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
@@ -220,6 +221,8 @@ jobs:
           ruby -v
           echo "Which ruby are we using?"
           which ruby
+          echo "Which Chef are we using?"
+          chef-client -v
           gem install bundler:2.3.18
           gem install chef-utils
           gem install inspec
