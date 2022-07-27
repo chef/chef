@@ -208,7 +208,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@main
-        run: chef -v
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
