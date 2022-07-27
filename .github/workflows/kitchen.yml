@@ -158,7 +158,7 @@ jobs:
         export PATH="$HOME/.rbenv/bin:$PATH"
         echo 'source $HOME/.zshenv' >> ~/.zshrc
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
-        # source ~/.zshrc
+        source ~/.zshrc
         # echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
         # source ~/.bash_profile
         # sudo rbenv install 3.1.2
@@ -228,7 +228,8 @@ jobs:
           gem install kitchen-vagrant
           gem install kitchen-inspec
           bundle install
+          which kitchen
           # kitchen diagnose --all
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
-          # kitchen test end-to-end-${{ matrix.os }}
+          # bundle exec kitchen test end-to-end-${{ matrix.os }}
+          kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
