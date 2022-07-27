@@ -156,10 +156,10 @@ jobs:
         brew install rbenv ruby-build
         touch ~/.zshrc
         export PATH="$HOME/.rbenv/bin:$PATH"
-        export HOMEBREW_NO_ENV_HINTS=true
-        echo 'source $HOME/.zshenv' >> ~/.zshrc
+        export HOMEBREW_NO_ENV_HINTS
+        # echo 'source $HOME/.zshenv' >> ~/.zshrc
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
-        # source ~/.zshrc
+        source ~/.zshrc
         # echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
         # source ~/.bash_profile
         # sudo rbenv install 3.1.2
@@ -230,9 +230,9 @@ jobs:
           echo "Installing Berkshelf now"
           gem install berkshelf
           echo "Finished Installing Berkshelf"
-          bundle install
+          # bundle install
           which kitchen
           # kitchen diagnose --all
           # bundle exec kitchen test end-to-end-${{ matrix.os }}
-          kitchen test end-to-end-${{ matrix.os }}
+          /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
