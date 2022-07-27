@@ -161,13 +161,12 @@ jobs:
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
         source ~/.zshrc
         rbenv install 3.1.2
-        echo $?
         rbenv global 3.1.2
         # echo "which gem file are we using now?"
         # which gem
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-        sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-        sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
+        # sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+        # sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
         # echo "Installed Chef / Ohai release:"
         # /opt/chef/bin/chef-client -v
         # /opt/chef/bin/ohai -v
@@ -221,8 +220,6 @@ jobs:
           ruby -v
           echo "Which ruby are we using?"
           which ruby
-          echo "Which Chef are we using?"
-          chef-client -v
           gem install bundler:2.3.18
           gem install chef-utils
           gem install inspec
@@ -232,9 +229,10 @@ jobs:
           echo "Installing Berkshelf now"
           gem install berkshelf
           echo "Finished Installing Berkshelf"
+          find / -name "chef" | grep -v "Permission denied"
           # bundle install
-          which kitchen
+          # which kitchen
           # kitchen diagnose --all
           # bundle exec kitchen test end-to-end-${{ matrix.os }}
-          /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
+          # /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
