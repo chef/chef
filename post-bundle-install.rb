@@ -20,6 +20,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     
     #For now copy the windowspowershell dlls at chef/chef to gem here
     dll_files = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
+    puts "=== dll files #{dll_files.inspect}"
     bin_path = "#{path}/bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}"
     puts "==== bin_path:#{bin_path}"
 
