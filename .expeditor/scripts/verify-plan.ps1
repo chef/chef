@@ -10,6 +10,9 @@ param(
 $env:HAB_ORIGIN = 'ci'
 $Plan = 'chef-infra-client'
 
+Write-Host "--- :mag: :windows: Hab is missing. Where did you go?"
+gci -path c:\ -File hab.exe -Recurse -ErrorAction SilentlyContinue
+
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 
 powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
