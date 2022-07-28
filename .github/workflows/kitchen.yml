@@ -186,7 +186,7 @@ jobs:
         sudo bundle install --jobs=3 --retry=3
         sudo gem install kitchen
         sudo gem install berkshelf --no-doc
-        # sudo berks vendor cookbooks
+        sudo berks vendor cookbooks
         # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
         # sudo /opt/chef/embedded/bin/berks vendor cookbooks
         # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
@@ -258,8 +258,7 @@ jobs:
           cd /home/runner/work/chef/chef
           bundle install
           gem install kitchen
-          which kitchen
-          cd /kitchen-tests
+          cd /home/runner/work/chef/chef/kitchen-tests
           bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
           # gem install bundler:2.3.18
