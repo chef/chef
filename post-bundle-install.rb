@@ -26,6 +26,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
     FileUtils::mkdir_p "#{bin_path}"
     FileUtils.cp_r dll_files, bin_path
+
+    puts "=== bin_path contents after copying: #{Dir[bin_path + '/*']}}"
   else  
     path = "#{gempath}" 
   end
