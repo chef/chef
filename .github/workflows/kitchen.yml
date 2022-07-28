@@ -180,7 +180,11 @@ jobs:
         which bundle
         echo "what version is that?"
         bundle --version
-        sudo find / -name "chef" | grep -v "Permission denied"
+        sudo mv /Users/runner/work/chef/chef /Users/runner/work/chef/chef17
+        git clone https://github.com/chef/chef.git /Users/runner/work/chef/chef
+        cd /Users/runner/work/chef/chef
+        bundle install
+        gem install kitchen
         # gem install bundler
         # echo "NOW which version are we using?"
 
@@ -191,6 +195,22 @@ jobs:
         # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
         # sudo /opt/chef/embedded/bin/berks vendor cookbooks
         # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+        # /Users/runner/work/chef
+        # /Users/runner/work/chef/chef
+        # /Users/runner/work/chef/chef/omnibus/package-scripts/chef
+        # /Users/runner/work/chef/chef/omnibus/resources/chef
+        # /Users/runner/work/chef/chef/distro/templates/powershell/chef
+        # /Users/runner/work/chef/chef/spec/support/lib/chef
+        # /Users/runner/work/chef/chef/lib/chef
+        # /Users/runner/work/chef/chef/knife/lib/chef
+        # /Users/runner/work/_PipelineMapping/chef
+        # /Users/runner/work/_PipelineMapping/chef/chef
+        # /opt/chef
+        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-18.0.92/spec/support/lib/chef
+        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-18.0.92/lib/chef
+        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-telemetry-1.1.1/lib/chef
+        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/cheffish-17.0.0/lib/chef
+        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-vault-4.1.10/lib/chef
 
 
   linux:
@@ -234,6 +254,10 @@ jobs:
           git clone https://github.com/chef/chef.git /home/runner/work/chef/chef
           cd /home/runner/work/chef/chef
           bundle install
+          gem install kitchen
+          which kitchen
+          cd kitchen-tests
+          bundle install
           # gem install bundler:2.3.18
           # gem install chef-utils
           # gem install inspec
@@ -246,7 +270,7 @@ jobs:
           # bundle install
           # which kitchen
           # kitchen diagnose --all
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+          # bundle exec kitchen test end-to-end-${{ matrix.os }}
           # /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
           # sudo find / -name kitchen -type f
           # /home/runner/work/chef
