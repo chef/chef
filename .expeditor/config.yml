@@ -23,12 +23,6 @@ schedules:
   - name: nightly_build_main
     description: "Run a nightly build in the Buildkite pipeline"
     cronline: "0 6 * * *"
-  - name: nightly_build_chef_17
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "30 9 * * 2,4"
-  - name: nightly_build_chef_16
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "30 2 * * 2"
 
 pipelines:
   - verify:
@@ -276,11 +270,5 @@ subscriptions:
     actions:
       - bash:.expeditor/update_dep.sh
   - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
-  - workload: schedule_triggered:chef/chef:chef-17:nightly_build_chef_17:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
-  - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
     actions:
       - trigger_pipeline:omnibus/adhoc
