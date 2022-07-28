@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.137 -->
-## [v18.0.137](https://github.com/chef/chef/tree/v18.0.137) (2022-07-28)
+<!-- latest_release 18.0.138 -->
+## [v18.0.138](https://github.com/chef/chef/tree/v18.0.138) (2022-07-28)
 
 #### Merged Pull Requests
-- Wording change in error for missing recipe dependency (&quot;Obvious Fix&quot;) [#13061](https://github.com/chef/chef/pull/13061) ([c-drive](https://github.com/c-drive))
+- Added how to doc with details about documentation for infra client resources [#13046](https://github.com/chef/chef/pull/13046) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Added how to doc with details about documentation for infra client resources [#13046](https://github.com/chef/chef/pull/13046) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.138 -->
 - Wording change in error for missing recipe dependency (&quot;Obvious Fix&quot;) [#13061](https://github.com/chef/chef/pull/13061) ([c-drive](https://github.com/c-drive)) <!-- 18.0.137 -->
 - Require etc library [#13068](https://github.com/chef/chef/pull/13068) ([curzonj](https://github.com/curzonj)) <!-- 18.0.136 -->
 - Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.135 -->
