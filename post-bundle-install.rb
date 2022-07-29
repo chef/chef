@@ -24,7 +24,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     bin_path = "#{path}/bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}"
     puts "==== bin_path:#{bin_path}"
 
-    FileUtils::mkdir_p "#{bin_path}"
+    FileUtils.mkdir_p "#{bin_path}"
     FileUtils.cp_r dll_files, bin_path
 
     puts "=== bin_path contents after copying: #{Dir[bin_path + '/*']}}"
@@ -44,6 +44,6 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   Dir.chdir(path) do
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
-    system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    system("gem install ./#{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
   end
 end
