@@ -139,7 +139,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
         .to_return(status: 200, body: "", headers: {})
       stub_request(:get, "https://rubygems2.org/info/sexp_processor")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-info")))
-      stub_request(:get, "https://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
+      stub_request(:get, "https://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.16.1.gemspec.rz")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
