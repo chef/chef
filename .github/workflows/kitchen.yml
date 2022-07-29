@@ -149,8 +149,20 @@ jobs:
         echo "finished updating Bundler, now getting the version"
         /opt/chef/embedded/bin/bundle -v
         echo "finished getting the bundler version"
-    - name: 'Upgrade Chef/Ohai via Appbundler'
-      id: upgrade
+    # - name: 'Upgrade Chef/Ohai via Appbundler'
+    #   id: upgrade
+    #   run: |
+    #     brew install rbenv ruby-build
+    #     touch ~/.zshrc
+    #     export PATH="$HOME/.rbenv/bin:$PATH"
+    #     export HOMEBREW_NO_ENV_HINTS
+    #     echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
+    #     source ~/.zshrc
+    #     rbenv install 3.1.2
+    #     rbenv global 3.1.2
+    #     OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+    - name: 'Run end_to_end::default recipe'
+      id: run
       run: |
         brew install rbenv ruby-build
         touch ~/.zshrc
@@ -159,11 +171,6 @@ jobs:
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
         source ~/.zshrc
         rbenv install 3.1.2
-        rbenv global 3.1.2
-        OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-    - name: 'Run end_to_end::default recipe'
-      id: run
-      run: |
         rbenv global 3.1.2
         gem install bundler:2.3.18
         echo "which bundler are we using?"
@@ -174,12 +181,13 @@ jobs:
         git clone https://github.com/chef/chef.git /Users/runner/work/chef/chef
         cd /Users/runner/work/chef/chef
         git checkout jfm/ruby_revert_to_ruby31
+        sudo bundle install
         cd kitchen-tests
         sudo bundle install --jobs=3 --retry=3
-        sudo gem install kitchen
-        sudo gem install berkshelf --no-doc
-        sudo berks vendor cookbooks
-        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+        # sudo gem install kitchen
+        # sudo gem install berkshelf --no-doc
+        # sudo berks vendor cookbooks
+        # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
 
   linux:
     strategy:
