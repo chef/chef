@@ -23,7 +23,7 @@ class Chef
     class WindowsUserPrivilege < Chef::Resource
 
       provides :windows_user_privilege
-      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment\n For litt of principals Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities"
+      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment\n For list of principals to use with :add action Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities"
 
       introduced "16.0"
 
@@ -123,49 +123,10 @@ class Chef
                            SeTrustedCredManAccessPrivilege
                            SeUndockPrivilege
                           }.freeze
-      
-      PRINCIPAL_OPTS = [ 'Anonymous Logon'
-                         'Attested Key Property'
-                         'Authenticated Users'
-                         'Authentication Authority Asserted Identity'
-                         'Batch'
-                         'Console Logon'
-                         'Creator Group'
-                         'Creator Owner'
-                         'Dialup'
-                         'Digest Authentication'
-                         'Enterprise Domain Controllers'
-                         'Everyone'
-                         'Fresh Public Key Identity'
-                         'Interactive'
-                         'IUSR'
-                         'Key Trust'
-                         'Local Service'
-                         'LocalSystem'
-                         'MFA Key Property'
-                         'Network'
-                         'Network Service'
-                         'NTLM Authentication'
-                         'Other Organization'
-                         'Owner Rights'
-                         'Principal Self'
-                         'Proxy'
-                         'Remote Interactive Logon'
-                         'Restricted'
-                         'SChannel Authentication'
-                         'Service'
-                         'Service Asserted Identity'
-                         'Terminal Server User'
-                         'This Organization'
-                         'Window Manager\Window Manager Group'
-                        ].freeze
 
       property :principal, String,
         description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
-        name_property: true,
-        callbacks: {
-          "Principal property restricted to the following values: #{PRINCIPLE_OPTS}" => lambda { |n| (n - PRINCIPAL_OPTS).empty? },
-        }, identity: true
+        name_property: true
 
       property :users, [Array, String],
         description: "An optional property to set the privilege for given users. Use only with set action.",
