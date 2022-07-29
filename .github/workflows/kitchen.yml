@@ -173,6 +173,7 @@ jobs:
         sudo mv /Users/runner/work/chef/chef /Users/runner/work/chef/chef17
         git clone https://github.com/chef/chef.git /Users/runner/work/chef/chef
         cd /Users/runner/work/chef/chef
+        git checkout jfm/ruby_revert_to_ruby31
         cd kitchen-tests
         sudo bundle install --jobs=3 --retry=3
         sudo gem install kitchen
