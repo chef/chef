@@ -146,7 +146,6 @@ jobs:
         /opt/chef/embedded/bin/rake --version
         echo "Updating Bundler"
         gem install bundler:2.3.18
-        #  /opt/chef/embedded/bin/bundle update --bundler
         echo "finished updating Bundler, now getting the version"
         /opt/chef/embedded/bin/bundle -v
         echo "finished getting the bundler version"
@@ -157,19 +156,11 @@ jobs:
         touch ~/.zshrc
         export PATH="$HOME/.rbenv/bin:$PATH"
         export HOMEBREW_NO_ENV_HINTS
-        # echo 'source $HOME/.zshenv' >> ~/.zshrc
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
         source ~/.zshrc
         rbenv install 3.1.2
         rbenv global 3.1.2
-        # echo "which gem file are we using now?"
-        # which gem
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-        # sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-        # sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
-        # echo "Installed Chef / Ohai release:"
-        # /opt/chef/bin/chef-client -v
-        # /opt/chef/bin/ohai -v
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
@@ -188,34 +179,6 @@ jobs:
         sudo gem install berkshelf --no-doc
         sudo berks vendor cookbooks
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
-        # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
-        # sudo /opt/chef/embedded/bin/berks vendor cookbooks
-        # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
-
-        # sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
-        # sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
-        # sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
-        # # sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-        # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
-        # sudo /opt/chef/embedded/bin/berks vendor cookbooks
-        # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
-        # /Users/runner/work/chef
-        # /Users/runner/work/chef/chef
-        # /Users/runner/work/chef/chef/omnibus/package-scripts/chef
-        # /Users/runner/work/chef/chef/omnibus/resources/chef
-        # /Users/runner/work/chef/chef/distro/templates/powershell/chef
-        # /Users/runner/work/chef/chef/spec/support/lib/chef
-        # /Users/runner/work/chef/chef/lib/chef
-        # /Users/runner/work/chef/chef/knife/lib/chef
-        # /Users/runner/work/_PipelineMapping/chef
-        # /Users/runner/work/_PipelineMapping/chef/chef
-        # /opt/chef
-        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-18.0.92/spec/support/lib/chef
-        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-18.0.92/lib/chef
-        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-telemetry-1.1.1/lib/chef
-        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/cheffish-17.0.0/lib/chef
-        # /opt/chef/embedded/lib/ruby/gems/3.0.0/gems/chef-vault-4.1.10/lib/chef
-
 
   linux:
     strategy:
@@ -262,26 +225,3 @@ jobs:
           cd /home/runner/work/chef/chef/kitchen-tests
           bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
-          # gem install bundler:2.3.18
-          # gem install chef-utils
-          # gem install inspec
-          # gem install kitchen-dokken
-          # gem install kitchen-vagrant
-          # gem install kitchen-inspec
-          # echo "Installing Berkshelf now"
-          # gem install berkshelf
-          # echo "Finished Installing Berkshelf"
-          # bundle install
-          # which kitchen
-          # kitchen diagnose --all
-          # bundle exec kitchen test end-to-end-${{ matrix.os }}
-          # /opt/hostedtoolcache/Ruby/3.1.2/x64/bin/kitchen test end-to-end-${{ matrix.os }}
-          # sudo find / -name kitchen -type f
-          # /home/runner/work/chef
-          # /home/runner/work/chef/chef
-          # /home/runner/work/chef/chef/knife/lib/chef
-          # /home/runner/work/chef/chef/omnibus/package-scripts/chef
-          # /home/runner/work/chef/chef/omnibus/resources/chef
-          # /home/runner/work/chef/chef/lib/chef
-          # /home/runner/work/chef/chef/spec/support/lib/chef
-          # /home/runner/work/chef/chef/distro/templates/powershell/chef
