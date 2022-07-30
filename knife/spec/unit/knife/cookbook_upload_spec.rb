@@ -48,10 +48,20 @@ describe Chef::Knife::CookbookUpload do
   let(:output) { StringIO.new }
 
   let(:name_args) { ["test_cookbook"] }
+  let(:calling_request) { "API" }
 
   let(:knife) do
     k = Chef::Knife::CookbookUpload.new
     k.name_args = name_args
+    allow(k.ui).to receive(:stdout).and_return(output)
+    allow(k.ui).to receive(:stderr).and_return(output)
+    k
+  end
+
+  let(:knife_api) do
+    k = Chef::Knife::CookbookUpload.new
+    k.name_args = name_args
+    k.calling_request = calling_request
     allow(k.ui).to receive(:stdout).and_return(output)
     allow(k.ui).to receive(:stderr).and_return(output)
     k
@@ -100,6 +110,11 @@ describe Chef::Knife::CookbookUpload do
       it "should upload the cookbook" do
         expect { knife.run }.to raise_error(Chef::Exceptions::MetadataNotFound)
       end
+
+      it "should raise the API error while upload the cookbook" do
+        expect { knife_api.run }.to raise_error(Chef::Exceptions::UnprocessableEntityAPI, { message: "No metadata.rb or metadata.json found for cookbook test_cookbook1 in /tmp/blah", status: 422 }.to_json)
+      end
+
     end
 
     describe "when name attribute in metadata not set" do
@@ -115,6 +130,10 @@ describe Chef::Knife::CookbookUpload do
       it "should upload the cookbook" do
         expect { knife.run }.to raise_error(Chef::Exceptions::MetadataNotValid)
       end
+
+      it "should raise the API error while upload the cookbook" do
+        expect { knife_api.run }.to raise_error(Chef::Exceptions::UnprocessableEntityAPI, { message: "Cookbook loaded at path [/tmp/blah] has invalid metadata: The `name' attribute is required in cookbook metadata", status: 422 }.to_json)
+      end
     end
 
     describe "when specifying a cookbook name" do
@@ -123,10 +142,19 @@ describe Chef::Knife::CookbookUpload do
         knife.run
       end
 
+      it "should upload the cookbook via external call i.e API" do
+        expect(knife_api).to receive(:upload).once
+        knife_api.run
+      end
+
       it "should report on success" do
         expect(knife).to receive(:upload).once
         expect(knife.ui).to receive(:info).with(/Uploaded 1 cookbook/)
         knife.run
+      end
+
+      it "should report on success via external call i.e API" do
+        expect(knife_api.run).to eq({ "status" => 200, "message" => "Success" })
       end
     end
 

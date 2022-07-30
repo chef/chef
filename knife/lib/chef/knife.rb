@@ -68,6 +68,7 @@ class Chef
 
     attr_accessor :name_args
     attr_accessor :ui
+    attr_accessor :calling_request
 
     # knife acl subcommands are grouped in this category using this constant to verify.
     OPSCODE_HOSTED_CHEF_ACCESS_CONTROL = %w{acl group user}.freeze
@@ -311,6 +312,7 @@ class Chef
 
       command_name_words = self.class.snake_case_name.split("_")
 
+      @calling_request = "CLI"
       # Mixlib::CLI ignores the embedded name_args
       @name_args = parse_options(argv)
       @name_args.delete(command_name_words.join("-"))

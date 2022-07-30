@@ -163,6 +163,13 @@ class Chef
             end
           end
         end
+        { "status" => 200, "message" => "Success" } if @calling_request != "CLI"
+      rescue Exception => e
+        if calling_request == "API"
+          raise Exceptions::UnprocessableEntityAPI, e
+        else
+          raise
+        end
       end
 
       def server_side_cookbooks

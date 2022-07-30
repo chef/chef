@@ -103,6 +103,14 @@ class Chef
     # Cookbook loader used to raise an argument error when cookbook not found.
     # for back compat, need to raise an error that inherits from ArgumentError
     class CookbookNotFoundInRepo < ArgumentError; end
+
+    class UnprocessableEntityAPI < StandardError
+      def initialize(msg, exception_type = "API exception")
+        @exception_type = exception_type
+        super( { message: msg, status: 422 }.to_json)
+      end
+    end
+
     class CookbookMergingError < RuntimeError; end
     class RecipeNotFound < ArgumentError; end
     # AttributeNotFound really means the attribute file could not be found
