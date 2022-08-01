@@ -44,6 +44,6 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   Dir.chdir(path) do
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
-    system("gem install ./#{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
   end
 end
