@@ -43,6 +43,10 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   puts "re-installing #{gem_name}..."
 
   Dir.chdir(path) do
+    if gem_name == "chef-powershell"
+      File.delete("#{gem_name}.gemspec") if File.exist?("#{gem_name}.gemspec")
+      File.rename("template.txt", "chef-powershell.gemspec")
+    end
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
     system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
   end
