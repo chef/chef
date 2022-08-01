@@ -1,4 +1,6 @@
 [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
+
+Write-Host "!!! $hab_version"
 if ($hab_version -lt [Version]"0.85.0" ) {
     Write-Host "--- :habicat: Installing the version of Habitat required"
     install-habitat --version 0.85.0.20190916
