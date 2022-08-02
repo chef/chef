@@ -145,4 +145,6 @@ describe Chef::ChefFS::FileSystem, ruby: ">= 3.0" do
       end
     end
   end
+
+  # Need to add the test case for copy_to method - not able to do the implimentation with Dir.mktmpdir
 end
