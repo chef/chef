@@ -14,6 +14,10 @@ Write-Host "--- :8ball: :windows: Verifying $Plan"
 
 powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
 if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
+
+# 2022-08-02 TP: ensure-minimum-viable-hab seems to now have to actually install hab
+# instead of just making sure it's a recent version. Therefore, the PATH gets updated in
+# the script and needs to be refreshed here.
 $Env:PATH =  [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
 
 Write-Host "--- :key: Generating fake origin key"

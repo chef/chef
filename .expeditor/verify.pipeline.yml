@@ -267,6 +267,7 @@ steps:
 - label: "Functional Windows :ruby: 2.7"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
+  timeout_in_minutes: 60
   expeditor:
     executor:
       windows:
@@ -290,6 +291,7 @@ steps:
 - label: "Unit Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
+  timeout_in_minutes: 60
   expeditor:
     executor:
       docker:
