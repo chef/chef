@@ -48,11 +48,6 @@ describe Chef::Resource::ChefClientSystemdTimer do
     expect { resource.action :remove }.not_to raise_error
   end
 
-  it "set splay to 0" do
-    resource.splay 0
-    expect(resource.splay).to eql(0)
-  end
-
   describe "#chef_client_cmd" do
 
     let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
