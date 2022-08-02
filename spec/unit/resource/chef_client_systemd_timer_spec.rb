@@ -48,17 +48,8 @@ describe Chef::Resource::ChefClientSystemdTimer do
     expect { resource.action :remove }.not_to raise_error
   end
 
-  it "coerces splay to an Integer" do
-    resource.splay "10"
-    expect(resource.splay).to eql(10)
-  end
-
-  it "raises an error if splay is not a positive number" do
-    expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
-  end
-
   it "set splay to 0" do
-    resource.splay "0"
+    resource.splay 0
     expect(resource.splay).to eql(0)
   end
 
