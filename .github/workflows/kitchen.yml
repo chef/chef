@@ -148,7 +148,7 @@ jobs:
     # - name: 'Upgrade Chef/Ohai via Appbundler'
     #   id: upgrade
     #   run: |
-         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+    #     OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
