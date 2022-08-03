@@ -155,7 +155,7 @@ jobs:
         brew install rbenv ruby-build
         touch ~/.zshrc
         export PATH="$HOME/.rbenv/bin:$PATH"
-        export HOMEBREW_NO_ENV_HINTS
+        export HOMEBREW_NO_ENV_HINTS="true"
         echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
         source ~/.zshrc
         rbenv install 3.1.2
