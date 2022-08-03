@@ -37,6 +37,9 @@ describe Chef::Resource::WindowsFont, :windows_only do
     resource
   end
 
+  ## these were commented out because testing hangs in the verify pipeline with them enabled. WEIRD
+  ## that needs to be addressed
+
   # it "installs font on first install" do
   #   subject.run_action(:install)
   #   expect(subject).to be_updated_by_last_action

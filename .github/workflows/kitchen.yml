@@ -57,8 +57,6 @@ jobs:
           ruby -v
           if (-not $?) { throw "Can't run Ruby. Is it installed?" }
         }
-        $old_ruby = Get-Command -Name Ruby
-        Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
 
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
@@ -103,8 +101,6 @@ jobs:
         #     Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
         #     Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
         # }
-        $old_ruby = Get-Command -Name Ruby
-        Write-Output "NOW Which Ruby are we using? : " $old_ruby.Path
 
         bundle install --jobs=3 --retry=3
         # If ($lastexitcode -ne 0) { Exit $lastexitcode }
@@ -152,15 +148,7 @@ jobs:
     # - name: 'Upgrade Chef/Ohai via Appbundler'
     #   id: upgrade
     #   run: |
-    #     brew install rbenv ruby-build
-    #     touch ~/.zshrc
-    #     export PATH="$HOME/.rbenv/bin:$PATH"
-    #     export HOMEBREW_NO_ENV_HINTS
-    #     echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
-    #     source ~/.zshrc
-    #     rbenv install 3.1.2
-    #     rbenv global 3.1.2
-    #     OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
@@ -184,9 +172,9 @@ jobs:
         sudo bundle install
         cd kitchen-tests
         sudo bundle install --jobs=3 --retry=3
-        # sudo gem install kitchen
-        # sudo gem install berkshelf --no-doc
-        # sudo berks vendor cookbooks
+        sudo gem install kitchen
+        sudo gem install berkshelf --no-doc
+        sudo berks vendor cookbooks
         # sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
 
   linux:
