@@ -4,17 +4,7 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
-# gem "rest-client", :github => "chef/rest-client", :branch => "jfm/ucrt_update"
 gem "ffi", ">= 1.15.5"
-# group(:ffi) do
-#   instance_eval(gem install ffi -v '1.15.5' --source "https://rubygems.org/")
-# end
-
-# if RUBY_PLATFORM == "x64-mingw-ucrt"
-#   gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim.git", branch: "jfm/json_bug_fix"
-#   gem "win32-api", git: "https://github.com/cosmo0920/win32-api", branch: "master"
-# end
-
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
