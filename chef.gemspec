@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
     s.add_dependency "win32-event", "~> 0.6.1"
     s.add_dependency "win32-taskscheduler", "~> 2.0"
     s.add_dependency "win32-eventlog", "0.6.3"
-    s.add_dependency "win32-process", "~> 0.9"
+    s.add_dependency "win32-process", "~> 0.10"
     s.add_dependency "wmi-lite", "~> 1.0"
     s.add_dependency "iso8601", ">= 0.12.1", "< 0.14"
     s.add_dependency "win32-certstore", "~> 0.6.15"

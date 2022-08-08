@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 2cd91848d807d7a37342b964c6c5e204570469f9
+  revision: e4f52072309e66149dd97e02608d1a6dc6239f80
   branch: main
   specs:
-    ohai (18.0.16)
+    ohai (18.0.17)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -103,7 +103,7 @@ PATH
       win32-eventlog (= 0.6.3)
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
+      win32-process (~> 0.10)
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
@@ -307,7 +307,7 @@ GEM
     netrc (0.11.0)
     nori (2.6.0)
     parallel (1.22.1)
-    parser (3.1.2.0)
+    parser (3.1.2.1)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
@@ -359,7 +359,7 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.19.1)
+    rubocop-ast (1.21.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
@@ -419,7 +419,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webmock (3.14.0)
+    webmock (3.17.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
