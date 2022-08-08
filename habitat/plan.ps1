@@ -96,18 +96,6 @@ function Invoke-Build {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-
-                # # jfm debugging
-                # if($git_gem -match "chefstyle"){
-                #     gem environment
-                #     $stylers = Get-childitem -path c:\ -File chefstyle.bat -Recurse -ErrorAction SilentlyContinue
-                #     Write-Output "Here are all the chefstyle instances:"
-                #     foreach($styler in $stylers){
-                #         Write-Output $styler.FullName
-                #         gem install $styler.FullName --backtrace
-                #     }
-                # }
-
                 rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
             } finally {
