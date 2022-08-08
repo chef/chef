@@ -29,11 +29,15 @@ jobs:
           $ErrorActionPreference = 'Stop';
           Write-Output 'Downloading Ruby + DevKit';
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-          (New-Object System.Net.WebClient).DownloadFile($pkg_source, 'c:\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe');
+          $package_destination = "$env:temp\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe"
+          (New-Object System.Net.WebClient).DownloadFile($pkg_source, $package_destination);
+          Write-Output "Did the file download?"
+          $output = Get-ChildItem -Path $env:temp
+          Write-Output $output
           Write-Output 'Installing Ruby + DevKit';
-          Start-Process c:\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe -ArgumentList '/verysilent /dir=C:\ruby31' -Wait ;
+          Start-Process $package_destination -ArgumentList '/verysilent /dir=C:\ruby31' -Wait ;
           Write-Output 'Cleaning up installation';
-          Remove-Item c:\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe -Force;
+          Remove-Item $package_destination -Force;
           Write-Output "Installing URU to manage Ruby Versions"
           choco install 7zip -y
           Write-Output "Downloading Uru Installer..."
