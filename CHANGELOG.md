@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.139 -->
-## [v18.0.139](https://github.com/chef/chef/tree/v18.0.139) (2022-08-02)
+<!-- latest_release 18.0.140 -->
+## [v18.0.140](https://github.com/chef/chef/tree/v18.0.140) (2022-08-09)
 
 #### Merged Pull Requests
-- add url for principal names [#13104](https://github.com/chef/chef/pull/13104) ([Stromweld](https://github.com/Stromweld))
+- fix chef_client_scheduled_task splay to accept 0 [#13095](https://github.com/chef/chef/pull/13095) ([Stromweld](https://github.com/Stromweld))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix chef_client_scheduled_task splay to accept 0 [#13095](https://github.com/chef/chef/pull/13095) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.140 -->
 - add url for principal names [#13104](https://github.com/chef/chef/pull/13104) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.139 -->
 - Added how to doc with details about documentation for infra client resources [#13046](https://github.com/chef/chef/pull/13046) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.138 -->
 - Wording change in error for missing recipe dependency (&quot;Obvious Fix&quot;) [#13061](https://github.com/chef/chef/pull/13061) ([c-drive](https://github.com/c-drive)) <!-- 18.0.137 -->
