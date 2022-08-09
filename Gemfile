@@ -5,7 +5,7 @@ gem "chef", path: "."
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 #Debug-jfm
-gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim/tree/main/chef-powershell", branch: "neha-p6/rescue_ffi_parsing" if RUBY_PLATFORM.match?(/x64-mingw-ucrt/i)
+gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim.git", branch: "neha-p6/rescue_ffi_parsing" if RUBY_PLATFORM.match?(/x64-mingw-ucrt/i)
 
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
