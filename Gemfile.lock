@@ -24,6 +24,13 @@ GIT
   specs:
     proxifier (1.0.3)
 
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
+
 PATH
   remote: .
   specs:
@@ -458,6 +465,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
