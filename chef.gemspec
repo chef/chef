@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   if RUBY_PLATFORM == "x64-mingw-ucrt"
     s.add_dependency "win32-mmap", "~> 0.4.1"
     s.add_dependency "win32-mutex", "~> 0.4.2"
-    s.add_dependency "chef-powershell", "~> 1.0.12"
+    # s.add_dependency "chef-powershell", "~> 1.0.12"
     s.add_dependency "win32-api", "~> 1.10.0"
     s.add_dependency "win32-service", ">= 2.1.5", "< 3.0"
     s.add_dependency "win32-event", "~> 0.6.1"

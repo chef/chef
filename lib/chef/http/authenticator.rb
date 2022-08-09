@@ -210,19 +210,8 @@ class Chef
         powershell_code = <<~CODE
           $secure_string = "#{password}" | ConvertTo-SecureString
           $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
-          if($string.length -gt 14){
-            $string = "error in retrieving the password"
-          }
           return $string
         CODE
-        puts "\n"
-        puts "\n"
-        puts "\n"
-        puts "Here are the results from the decrypt:\n"
-        puts "#{powershell_exec!(powershell_code).result}"
-        puts "\n"
-        puts "\n"
-        puts "\n"
         powershell_exec!(powershell_code).result
       end
 

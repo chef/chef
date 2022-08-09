@@ -4,6 +4,9 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+#Debug-jfm
+gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim/tree/main/chef-powershell", branch: "neha-p6/rescue_ffi_parsing"
+
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
