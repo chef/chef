@@ -43,6 +43,11 @@ describe Chef::Resource::ChefClientScheduledTask do
     expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
+  it "set splay to 0" do
+    resource.splay "0"
+    expect(resource.splay).to eql(0)
+  end
+
   it "coerces frequency_modifier to an Integer" do
     resource.frequency_modifier "10"
     expect(resource.frequency_modifier).to eql(10)

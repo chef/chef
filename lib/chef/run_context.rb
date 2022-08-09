@@ -414,7 +414,7 @@ class Chef
           MissingCookbookDependency:
           Recipe `#{recipe_name}` is not in the run_list, and cookbook '#{cookbook_name}'
           is not a dependency of any cookbook in the run_list. To load this recipe,
-          first add a dependency of the cookbook '#{cookbook_name}' into the metadata 
+          first add a dependency of the cookbook '#{cookbook_name}' into the metadata
 		  of the cookbook which depends on '#{cookbook_name}'.
         ERROR_MESSAGE
       end
