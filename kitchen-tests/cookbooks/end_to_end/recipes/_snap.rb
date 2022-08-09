@@ -36,4 +36,4 @@ snap_package "hello" do
   action :remove
 end
 
-snap_package %w(hello black)
+snap_package %w{hello black}
