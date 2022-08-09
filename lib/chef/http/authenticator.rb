@@ -215,6 +215,14 @@ class Chef
           }
           return $string
         CODE
+        puts "\n"
+        puts "\n"
+        puts "\n"
+        puts "Here are the results from the decrypt:\n"
+        puts "#{powershell_exec!(powershell_code).result}"
+        puts "\n"
+        puts "\n"
+        puts "\n"
         powershell_exec!(powershell_code).result
       end
 
