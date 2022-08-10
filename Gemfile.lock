@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e4f52072309e66149dd97e02608d1a6dc6239f80
+  revision: 89e6a08889f414efabc53a1c15c418baddc5cd2d
   branch: main
   specs:
-    ohai (18.0.17)
+    ohai (18.0.20)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -18,6 +18,17 @@ GIT
       wmi-lite (~> 1.0)
 
 GIT
+  remote: https://github.com/chef/rest-client
+  revision: f3e30a17e5dd826b5f5dce82edcecc52464548e3
+  branch: jfm/ucrt_update1
+  specs:
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+
+GIT
   remote: https://github.com/chef/ruby-proxifier
   revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
   branch: lcg/ruby-3
@@ -28,40 +39,6 @@ PATH
   remote: .
   specs:
     chef (18.0.140)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.140)
-      chef-utils (= 18.0.140)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.5.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (~> 4.23)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-ftp
-      net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 18.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.2, >= 3.2.28)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
-    chef (18.0.140-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -328,11 +305,6 @@ GEM
     rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.5.0)
-    rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -419,7 +391,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webmock (3.17.0)
+    webmock (3.17.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -491,6 +463,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake
   rb-readline
+  rest-client!
   rspec
   webmock
 
