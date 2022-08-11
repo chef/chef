@@ -209,10 +209,9 @@ class Chef
       def self.decrypt_pfx_pass(password)
         powershell_code = <<~CODE
           $secure_string = "#{password}" | ConvertTo-SecureString
-          $marshal = [System.Runtime.InteropServices.Marshal]
-          $ptr = $marshal::SecureStringToBSTR($secure_string)
-          $string = $marshal::PtrToStringBSTR($ptr)
-          $marshal::ZeroFreeBSTR($ptr)
+          Write-Output "*******secure_string= $secure_string"
+          $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
+          Write-Output "********string= $string"
           return $string
         CODE
         powershell_exec!(powershell_code).result
