@@ -209,12 +209,18 @@ class Chef
       def self.decrypt_pfx_pass(password)
         powershell_code = <<~CODE
           $secure_string = "#{password}" | ConvertTo-SecureString
-          Write-Output "*******secure_string= $secure_string"
+          $secure_string | Out-File -FilePath C:\\TestDir\\secure_string.txt
           $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
-          Write-Output "********string= $string"
+          $string | Out-File -FilePath C:\\TestDir\\decrypted_string.txt
           return $string
         CODE
-        powershell_exec!(powershell_code).result
+        begin
+          powershell_exec!(powershell_code).result
+        rescue StandardError => error
+          
+        end
+        puts "======== secure string " + File.read("C:/TestDir/secure_string.txt")
+        puts "======== descrypted " + File.read("C:/TestDir/decrypted_string.txt")
       end
 
       def self.retrieve_certificate_key(client_name)
