@@ -107,6 +107,7 @@ describe "notifying_block" do
     end
 
     it "should run cleanly and print the output" do
+      sleep(3)
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       expect(result.stdout).to match(/DIDIT: stuff/)
       result.error!
