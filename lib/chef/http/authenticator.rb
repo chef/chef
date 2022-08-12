@@ -217,10 +217,10 @@ class Chef
         begin
           powershell_exec!(powershell_code).result
         rescue StandardError => error
-          puts "=====Descryption error #{error.message}"
+          puts "=====Decryption error #{error.message}"
+          puts "======== secure string " + File.read("C:/secure_string.txt")
+          puts "======== decrypted " + File.read("C:/decrypted_string.txt")
         end
-        puts "======== secure string " + File.read("C:/secure_string.txt")
-        puts "======== descrypted " + File.read("C:/decrypted_string.txt")
       end
 
       def self.retrieve_certificate_key(client_name)
