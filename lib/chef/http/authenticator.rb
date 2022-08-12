@@ -217,7 +217,7 @@ class Chef
         begin
           powershell_exec!(powershell_code).result
         rescue StandardError => error
-          
+          puts "=====Descryption error #{error.message}"
         end
         puts "======== secure string " + File.read("C:/secure_string.txt")
         puts "======== descrypted " + File.read("C:/decrypted_string.txt")
