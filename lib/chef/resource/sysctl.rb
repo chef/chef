@@ -187,7 +187,7 @@ class Chef
 
           sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
 
-          sysctl_lines.join("\n")
+          sysctl_lines.join("\n") + "\n"
         end
       end
 
