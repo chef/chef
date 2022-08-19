@@ -1,3 +1,4 @@
 source "https://supermarket.chef.io"
 
 cookbook "end_to_end", path: "cookbooks/end_to_end"
+cookbook "just_git", path: "cookbooks/just_git"

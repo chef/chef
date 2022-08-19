@@ -122,7 +122,8 @@ jobs:
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         berks vendor cookbooks
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        chef-client -z -o end_to_end --chef-license accept-no-persist
+        chef-client -z -o just_git --chef-license accept-no-persist
+        #        chef-client -z -o end_to_end --chef-license accept-no-persist
 
   macos:
     strategy:
