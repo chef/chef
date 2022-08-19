@@ -62,14 +62,14 @@ describe Chef::Resource::Sysctl do
     context "when comment is a String" do
       it "Returns content for use with a file resource" do
         resource.comment("This sets foo / bar on our system")
-        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar")
+        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar\n")
       end
     end
 
     context "when comment is an Array" do
       it "Returns content for use with a file resource" do
         resource.comment(["This sets foo / bar on our system", "We need for baz"])
-        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar")
+        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar\n")
       end
     end
   end
