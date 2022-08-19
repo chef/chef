@@ -24,6 +24,10 @@ jobs:
         $pkg_revision="1"
         $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
 
+        Write-Output "<<<<<< is there a git"
+        $program_files=$(gci "C:\Program Files\")
+        Write-Output $program_files
+
         $old_version = Ruby --version
         if(-not($old_version -match "3.1")){
           $ErrorActionPreference = 'Stop';
