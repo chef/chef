@@ -113,9 +113,11 @@ class Chef
     #     and the transformed value returned as output. Lazy values will *not*
     #     be passed to this method until after they are evaluated. Called in the
     #     context of the resource (meaning you can access other properties).
-    #   @option options [Boolean] :required `true` if this property
-    #     must be present; `false` otherwise. This is checked after the resource
-    #     is fully initialized.
+    #   @option options [Boolean, Array<Symbol>] :required `true` if this property
+    #     must be present for *all* actions; `false` otherwise. Alternatively
+    #     you may specify a list of actions the property is required for, when
+    #     the property is only required for a subset of actions. This is checked
+    #     after the resource is fully initialized.
     #   @option options [String] :deprecated If set, this property is deprecated and
     #     will create a deprecation warning.
     #

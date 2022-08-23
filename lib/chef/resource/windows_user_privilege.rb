@@ -23,7 +23,7 @@ class Chef
     class WindowsUserPrivilege < Chef::Resource
 
       provides :windows_user_privilege
-      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
+      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment\n For list of principals to use with :add action Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities"
 
       introduced "16.0"
 

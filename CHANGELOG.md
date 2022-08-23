@@ -1,17 +1,34 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.124 -->
-## [v18.0.124](https://github.com/chef/chef/tree/v18.0.124) (2022-06-25)
+<!-- latest_release 18.0.141 -->
+## [v18.0.141](https://github.com/chef/chef/tree/v18.0.141) (2022-08-16)
 
 #### Merged Pull Requests
-- AdHoc Pipeline Windows PageFile Test errors [#13009](https://github.com/chef/chef/pull/13009) ([johnmccrae](https://github.com/johnmccrae))
+- Add newline to end of sysctl files [#13118](https://github.com/chef/chef/pull/13118) ([tmccombs](https://github.com/tmccombs))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add newline to end of sysctl files [#13118](https://github.com/chef/chef/pull/13118) ([tmccombs](https://github.com/tmccombs)) <!-- 18.0.141 -->
+- fix chef_client_scheduled_task splay to accept 0 [#13095](https://github.com/chef/chef/pull/13095) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.140 -->
+- add url for principal names [#13104](https://github.com/chef/chef/pull/13104) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.139 -->
+- Added how to doc with details about documentation for infra client resources [#13046](https://github.com/chef/chef/pull/13046) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.138 -->
+- Wording change in error for missing recipe dependency (&quot;Obvious Fix&quot;) [#13061](https://github.com/chef/chef/pull/13061) ([c-drive](https://github.com/c-drive)) <!-- 18.0.137 -->
+- Require etc library [#13068](https://github.com/chef/chef/pull/13068) ([curzonj](https://github.com/curzonj)) <!-- 18.0.136 -->
+- Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.135 -->
+- Re add: Use new msys2 based devkit for windows&quot;&quot; [#13097](https://github.com/chef/chef/pull/13097) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.134 -->
+- Skip tests on FreeBSD-13 [#13079](https://github.com/chef/chef/pull/13079) ([poorndm](https://github.com/poorndm)) <!-- 18.0.133 -->
+- Add AIX-7.3 to Build Matrix [#13058](https://github.com/chef/chef/pull/13058) ([poorndm](https://github.com/poorndm)) <!-- 18.0.132 -->
+- update property DSL docs [#13093](https://github.com/chef/chef/pull/13093) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.131 -->
+- Revert &quot;Use new msys2 based devkit for windows&quot; [#13063](https://github.com/chef/chef/pull/13063) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.130 -->
+- Fixed sensitive properties unsuppressed content issue [#13014](https://github.com/chef/chef/pull/13014) ([blabade](https://github.com/blabade)) <!-- 18.0.129 -->
+- Fix issue in adhoc nightly builds [#13059](https://github.com/chef/chef/pull/13059) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.128 -->
+- Use new msys2 based devkit for windows [#13038](https://github.com/chef/chef/pull/13038) ([mwrock](https://github.com/mwrock)) <!-- 18.0.127 -->
+- Use dist constant when invoking knife configure [#12926](https://github.com/chef/chef/pull/12926) ([ramereth](https://github.com/ramereth)) <!-- 18.0.126 -->
+- Add nightlies for chef-17 to run every Tue, Thu  and chef-16 to run every Tue [#13018](https://github.com/chef/chef/pull/13018) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.125 -->
 - AdHoc Pipeline Windows PageFile Test errors [#13009](https://github.com/chef/chef/pull/13009) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.124 -->
 - Fix fedora kitchen test failure [#13020](https://github.com/chef/chef/pull/13020) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.123 -->
 - Refactored tests for older Windows versions [#13019](https://github.com/chef/chef/pull/13019) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.122 -->

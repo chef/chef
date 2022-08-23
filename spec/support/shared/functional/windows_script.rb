@@ -163,7 +163,7 @@ shared_context Chef::Resource::WindowsScript do
 
     describe "when the run action is invoked on Windows" do
       it "executes the script code" do
-        resource.code("whoami > \"#{script_output_path}\"")
+        resource.code("chcp > \"#{script_output_path}\"")
         resource.returns(0)
         resource.run_action(:run)
       end
@@ -199,7 +199,7 @@ shared_context Chef::Resource::WindowsScript do
       end
 
       it "executes the script code" do
-        resource.code("whoami > \"#{script_output_path}\"")
+        resource.code("chcp > \"#{script_output_path}\"")
         resource.returns(0)
         resource.run_action(:run)
       end
