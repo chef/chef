@@ -201,7 +201,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@${{ github.ref_name }}
+        uses: actions/checkout@${{ env.GITHUB_REF_NAME }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
