@@ -22,7 +22,6 @@ gxGpgCbYLLIoewP+Oj6xvZgGl6vj0xW9a4144xjFo1o1vqWkj+3IZGmnZ/jyznWd
 4vhvM8gKbdeeWoOAJDLzDZiDrUpKtIkBcLuJ7Cw=
 -----END CERTIFICATE-----
   CERT
-  "not an apple"
 end
 
 # see if we can fetch from our new trusted domain

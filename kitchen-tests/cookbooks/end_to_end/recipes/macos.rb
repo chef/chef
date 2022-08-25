@@ -59,23 +59,7 @@ end
 ssh_known_hosts_entry "github.com"
 
 include_recipe "::_chef_client_config"
-
-
-pemfile='/Users/runner/.chef/trusted_certs/self-signed.badssl.com.pem'
-p Dir['/Users/runner/.chef/trusted_certs/*']
-if File.exist?(pemfile)
-  puts "<==BEFORE==>"
-  puts File.read(pemfile)
-end
-
 include_recipe "::_chef_client_trusted_certificate"
-
-p Dir['/Users/runner/.chef/trusted_certs/*']
-if File.exist?(pemfile)
-  puts "<==AFTER==>"
-  puts File.read(pemfile)
-end
-
 
 chef_client_launchd "Every 30 mins Infra Client run" do
   interval 30
