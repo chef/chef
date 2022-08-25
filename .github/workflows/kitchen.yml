@@ -165,10 +165,7 @@ jobs:
         which bundle
         echo "what version is that?"
         bundle --version
-        sudo mv /Users/runner/work/chef/chef /Users/runner/work/chef/chef17
-        git clone https://github.com/chef/chef.git /Users/runner/work/chef/chef
         cd /Users/runner/work/chef/chef
-        git checkout jfm/ruby_revert_to_ruby31
         sudo bundle install
         cd kitchen-tests
         sudo bundle install --jobs=3 --retry=3
@@ -201,7 +198,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@main
+        uses: actions/checkout@v2
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
