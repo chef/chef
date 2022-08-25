@@ -20,10 +20,7 @@
 require "spec_helper"
 
 describe Chef::Resource::Cron do
-  let(:node) { Chef::Node.new }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::Cron.new("cronify", run_context) }
+  let(:resource) { Chef::Resource::Cron.new("cronify") }
 
   it "sets the default action as :create" do
     expect(resource.action).to eql([:create])
@@ -165,40 +162,6 @@ describe Chef::Resource::Cron do
 
     it "returns the command as its identity" do
       expect(resource.identity).to eq("tackle")
-    end
-  end
-
-  describe "When integers are used" do
-    # Using integers instead of strings used to cause every chef-client run to report an update
-    before do
-      resource.minute(1)
-      resource.hour(1)
-      resource.day(1)
-      resource.month(1)
-      resource.weekday(1)
-      resource.user("root")
-      resource.command("/usr/sbin/ifconfig")
-    end
-
-    it "is idempotent" do
-      node.automatic_attrs[:platform_family] = "ubuntu" # force to run in unix context
-      mock_cron = <<~CRON
-        # Chef Name: cronify
-        1 1 1 1 1 /usr/sbin/ifconfig
-
-      CRON
-      stdout_double = double(
-        "shell_out",
-        stdout: mock_cron,
-        exitstatus: 0,
-        error?: false
-      )
-      allow(resource).to receive(:shell_out).
-        with(%w{/usr/bin/crontab -l}, user: "root").
-        and_return(stdout_double)
-
-      resource.run_action(:create)
-      expect(resource).not_to be_updated_by_last_action
     end
   end
 end
