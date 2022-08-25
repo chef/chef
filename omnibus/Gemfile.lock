@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 1d540dcdefae0fa75eb832590e85294e7c26660a
-  branch: main
+  revision: 8b1efa78a0aad9574512253c7082a83fe4070819
+  branch: jfm/ucrt_update
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 9.0.0)
@@ -272,6 +272,11 @@ GEM
     mixlib-shellout (3.2.7)
       chef-utils
     mixlib-shellout (3.2.7-universal-mingw32)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    mixlib-shellout (3.2.7-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
