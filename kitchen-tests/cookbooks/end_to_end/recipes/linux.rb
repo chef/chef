@@ -110,7 +110,21 @@ user_ulimit "tomcat" do
 end
 
 include_recipe "::_chef_client_config"
+
+pemfile='/opt/kitchen/trusted_certs/self-signed.badssl.com.pem'
+p Dir['/opt/kitchen/trusted_certs']
+if File.exist?(pemfile)
+  puts "<==BEFORE==>"
+  puts File.read(pemfile)
+end
+
 include_recipe "::_chef_client_trusted_certificate"
+
+p Dir['/opt/kitchen/trusted_certs']
+if File.exist?(pemfile)
+  puts "<==AFTER==>"
+  puts File.read(pemfile)
+end
 
 chef_client_cron "Run chef-client as a cron job"
 
