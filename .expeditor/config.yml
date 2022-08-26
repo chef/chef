@@ -54,6 +54,9 @@ pipelines:
       definition: .expeditor/adhoc-canary.omnibus.yml
       env:
         - ADHOC: true
+  - macos_universal_package:
+      description: Builds universal macos package using arch specific packages
+      definition: .expeditor/macos_universal_package.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -86,6 +89,7 @@ subscriptions:
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
       - trigger_pipeline:docker/build
+      - trigger_pipelie:macos_universal_package
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - bash:.expeditor/promote-docker-images.sh

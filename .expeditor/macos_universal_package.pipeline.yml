@@ -1,0 +1,18 @@
+---
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 60
+      retry:
+        automatic:
+          limit: 1
+
+steps:
+
+- label: ":mac: Create universal macos package"
+  commands:
+    - ./.expeditor/scripts/create_mac_universal_pkg.sh
+  expeditor:
+    executor:
+      macos:
+        os-version: "11"
