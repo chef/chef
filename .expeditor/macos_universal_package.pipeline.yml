@@ -15,4 +15,4 @@ steps:
   expeditor:
     executor:
       macos:
-        os-version: "11"
+        os-version: "10.15"
