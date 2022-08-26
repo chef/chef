@@ -89,7 +89,7 @@ subscriptions:
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
       - trigger_pipeline:docker/build
-      - trigger_pipelie:macos_universal_package
+      - trigger_pipeline:macos_universal_package
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - bash:.expeditor/promote-docker-images.sh
