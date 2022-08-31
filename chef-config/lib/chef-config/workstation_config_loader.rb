@@ -17,6 +17,7 @@
 #
 
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require "etc" unless defined?(Etc)
 require_relative "config"
 require_relative "exceptions"
 require_relative "logger"

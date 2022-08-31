@@ -43,6 +43,11 @@ describe Chef::Resource::ChefClientCron do
     expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
+  it "set splay to 0" do
+    resource.splay "0"
+    expect(resource.splay).to eql(0)
+  end
+
   it "builds a default value for chef_binary_path dist values" do
     expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end

@@ -107,7 +107,7 @@ class Chef
 
       property :splay, [Integer, String],
         coerce: proc { |x| Integer(x) },
-        callbacks: { "should be a positive number" => proc { |v| v > 0 } },
+        callbacks: { "should be a positive number" => proc { |v| v >= 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time.",
         default: 300
 

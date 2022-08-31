@@ -1,17 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.135 -->
-## [v18.0.135](https://github.com/chef/chef/tree/v18.0.135) (2022-07-22)
+<!-- latest_release 18.0.142 -->
+## [v18.0.142](https://github.com/chef/chef/tree/v18.0.142) (2022-08-30)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add empty pipeline for macos universal package [#13152](https://github.com/chef/chef/pull/13152) ([vkarve-chef](https://github.com/vkarve-chef))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add empty pipeline for macos universal package [#13152](https://github.com/chef/chef/pull/13152) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.0.142 -->
+- Add newline to end of sysctl files [#13118](https://github.com/chef/chef/pull/13118) ([tmccombs](https://github.com/tmccombs)) <!-- 18.0.141 -->
+- fix chef_client_scheduled_task splay to accept 0 [#13095](https://github.com/chef/chef/pull/13095) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.140 -->
+- add url for principal names [#13104](https://github.com/chef/chef/pull/13104) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.139 -->
+- Added how to doc with details about documentation for infra client resources [#13046](https://github.com/chef/chef/pull/13046) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.138 -->
+- Wording change in error for missing recipe dependency (&quot;Obvious Fix&quot;) [#13061](https://github.com/chef/chef/pull/13061) ([c-drive](https://github.com/c-drive)) <!-- 18.0.137 -->
+- Require etc library [#13068](https://github.com/chef/chef/pull/13068) ([curzonj](https://github.com/curzonj)) <!-- 18.0.136 -->
 - Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.135 -->
 - Re add: Use new msys2 based devkit for windows&quot;&quot; [#13097](https://github.com/chef/chef/pull/13097) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.134 -->
 - Skip tests on FreeBSD-13 [#13079](https://github.com/chef/chef/pull/13079) ([poorndm](https://github.com/poorndm)) <!-- 18.0.133 -->
