@@ -9,18 +9,16 @@ name: unit_specs
 
 jobs:
   unit:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-10.15] # macos-11.0 is not public for now
-        # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['3.0']
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        clean: true
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
+        ruby-version: "3.1"
+        bundler-cache: false
+    - run: bundle update --bundler
+    - run: bundle install
     - run: bundle exec rake spec:unit
     - run: bundle exec rake component_specs

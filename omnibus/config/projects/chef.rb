@@ -64,10 +64,10 @@ dependency "openssl-customization"
 # devkit needs to come dead last these days so we do not use it to compile any gems
 dependency "ruby-msys2-devkit" if windows?
 
-dependency "ruby-cleanup"
+# dependency "ruby-cleanup"
 
 # further gem cleanup other projects might not yet want to use
-dependency "more-ruby-cleanup"
+# dependency "more-ruby-cleanup"
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
@@ -94,8 +94,8 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "AF21BA8C9E50AE20DA9907B6E2D4B0CC3306CA03", machine_store: true
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
+  signing_identity "13B510D1CF1B3467856A064F1BEA12D0884D2528", machine_store: true
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-x64-mingw-ucrt/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 
