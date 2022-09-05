@@ -145,7 +145,7 @@ jobs:
         /opt/chef/bin/ohai -v
         /opt/chef/embedded/bin/rake --version
         echo "Updating Bundler"
-        gem install bundler:2.3.18
+        bundle update --bundler
         echo "finished updating Bundler, now getting the version"
         /opt/chef/embedded/bin/bundle -v
         echo "finished getting the bundler version"
@@ -160,7 +160,7 @@ jobs:
         source ~/.zshrc
         rbenv install 3.1.2
         rbenv global 3.1.2
-        gem install bundler:2.3.18
+        bundle update --bundler
         echo "which bundler are we using?"
         which bundle
         echo "what version is that?"
