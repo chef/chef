@@ -1,4 +1,14 @@
 GIT
+  remote: https://github.com/chef/mixlib-archive
+  revision: 772d6659794687557164de918b2ea00b79ac77eb
+  branch: jfm/ucrt_update1
+  specs:
+    mixlib-archive (1.2.0)
+      mixlib-log
+    mixlib-archive (1.2.0-x64-mingw-ucrt)
+      mixlib-log
+
+GIT
   remote: https://github.com/chef/ohai.git
   revision: f13a48ad2d0025482c19df06ff27670071e8e1e1
   branch: main
@@ -49,7 +59,6 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 18.0.142)
-      chef-powershell (~> 1.0.12)
       chef-utils (= 18.0.142)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -61,9 +70,7 @@ PATH
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       inspec-core (>= 5)
-      iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
@@ -80,16 +87,6 @@ PATH
       unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-      win32-api (~> 1.10.0)
-      win32-certstore (~> 0.6.15)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.10)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
 
 PATH
   remote: chef-bin
@@ -146,9 +143,6 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -244,7 +238,6 @@ GEM
     inspec-core-bin (5.18.14)
       inspec-core (= 5.18.14)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.1)
     json (2.6.2)
     libyajl2 (2.1.0)
@@ -261,10 +254,6 @@ GEM
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2022.0105)
-    mixlib-archive (1.1.7)
-      mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
@@ -352,7 +341,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
     time (0.2.0)
@@ -404,29 +392,8 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.10.1)
-    win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.12)
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -465,6 +432,7 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5)
+  mixlib-archive!
   ohai!
   proxifier!
   pry (= 0.13.0)
