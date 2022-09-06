@@ -52,7 +52,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-log", ">= 2.0.3", "< 4.0"
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
-  s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
+  # s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
   s.add_dependency "inspec-core", ">= 5"
 
