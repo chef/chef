@@ -1,11 +1,9 @@
 GIT
   remote: https://github.com/chef/mixlib-archive
-  revision: 4fd88e9abfd0c4686838c84dc657317d8f6320a9
+  revision: a24ab75591eb96917dfe8f45a4ceeeed80ad82f1
   branch: jfm/ucrt_update1
   specs:
     mixlib-archive (1.2.0)
-      mixlib-log
-    mixlib-archive (1.2.0-x64-mingw-ucrt)
       mixlib-log
 
 GIT
