@@ -1,20 +1,20 @@
-#!/bin/sh
+#!/bin/sh -v
 
 mkdir -p ./stage/pkg/tmp/chef-pkgs
 mkdir -p ./stage/script
 
 pushd ./stage/pkg/tmp/chef-pkgs
 
-curl -O https://packages.chef.io/files/current/chef/18.0.92/mac_os_x/11/chef-18.0.92-1.x86_64.dmg
-hdiutil attach chef-18.0.92-1.x86_64.dmg
+curl -O --no-progress-meter https://packages.chef.io/files/current/chef/18.0.92/mac_os_x/11/chef-18.0.92-1.x86_64.dmg
+hdiutil attach -quiet chef-18.0.92-1.x86_64.dmg
 cp /Volumes/Chef\ Infra\ Client/chef-18.0.92-1.x86_64.pkg ./
-hdiutil detach /Volumes/Chef\ Infra\ Client 
+hdiutil detach -quiet /Volumes/Chef\ Infra\ Client
 rm chef-18.0.92-1.x86_64.dmg
 
-curl -O https://packages.chef.io/files/current/chef/18.0.92/mac_os_x/11/chef-18.0.92-1.arm64.dmg
-hdiutil attach chef-18.0.92-1.arm64.dmg
+curl -O --no-progress-meter https://packages.chef.io/files/current/chef/18.0.92/mac_os_x/11/chef-18.0.92-1.arm64.dmg
+hdiutil attach -quiet chef-18.0.92-1.arm64.dmg
 cp /Volumes/Chef\ Infra\ Client/chef-18.0.92-1.arm64.pkg ./
-hdiutil detach /Volumes/Chef\ Infra\ Client 
+hdiutil detach -quiet /Volumes/Chef\ Infra\ Client
 rm chef-18.0.92-1.arm64.dmg
 
 popd
@@ -33,4 +33,4 @@ EOF
 chmod +x ./stage/script/postinstall
 
 pkgbuild --root stage/pkg --scripts stage/script --identifier "io.chef.infra-client.wrapper" \
- --version "18.0.92" --install-location / --min-os-version 10.15 stage/pkg/chef-18.0.92-1.universal.pkg
+ --version "18.0.92" --install-location / stage/pkg/chef-18.0.92-1.universal.pkg
