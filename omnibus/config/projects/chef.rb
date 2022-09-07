@@ -64,10 +64,10 @@ dependency "openssl-customization"
 # devkit needs to come dead last these days so we do not use it to compile any gems
 dependency "ruby-msys2-devkit" if windows?
 
-# dependency "ruby-cleanup"
+dependency "ruby-cleanup"
 
 # further gem cleanup other projects might not yet want to use
-# dependency "more-ruby-cleanup"
+dependency "more-ruby-cleanup"
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
