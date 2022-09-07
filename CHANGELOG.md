@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.15.7 -->
+## [v14.15.7](https://github.com/chef/chef/tree/v14.15.7) (2022-09-07)
+
+#### Merged Pull Requests
+- update habitat plans to package chef 14 [#13138](https://github.com/chef/chef/pull/13138) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.15.6 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- update habitat plans to package chef 14 [#13138](https://github.com/chef/chef/pull/13138) ([mwrock](https://github.com/mwrock)) <!-- 14.15.7 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
