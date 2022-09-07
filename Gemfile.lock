@@ -1,9 +1,11 @@
 GIT
   remote: https://github.com/chef/mixlib-archive
-  revision: f264f51ea8827c699caed76904d61652ac1c6b41
+  revision: 4fd88e9abfd0c4686838c84dc657317d8f6320a9
   branch: jfm/ucrt_update1
   specs:
     mixlib-archive (1.2.0)
+      mixlib-log
+    mixlib-archive (1.2.0-x64-mingw-ucrt)
       mixlib-log
 
 GIT
@@ -27,7 +29,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 53e19d6248dfa7b4848c7a03bade3662eab0ba05
+  revision: 9316d9c5d5a8e2a25b53f3fb8a54f574318b7dda
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
@@ -35,7 +37,7 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rest-client (2.1.0-mingw)
+    rest-client (2.1.0-x64-mingw)
       ffi (~> 1.15)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -53,6 +55,39 @@ PATH
   remote: .
   specs:
     chef (18.0.142)
+      addressable
+      aws-sdk-s3 (~> 1.91)
+      aws-sdk-secretsmanager (~> 1.46)
+      chef-config (= 18.0.142)
+      chef-utils (= 18.0.142)
+      chef-vault
+      chef-zero (>= 14.0.11)
+      corefoundation (~> 0.3.4)
+      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      erubis (~> 2.7)
+      ffi (>= 1.15.5)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
+      ffi-yajl (~> 2.2)
+      iniparse (~> 1.4)
+      inspec-core (>= 5)
+      license-acceptance (>= 1.0.5, < 3)
+      mixlib-authentication (>= 2.1, < 4)
+      mixlib-cli (>= 2.1.1, < 3.0)
+      mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
+      net-ftp
+      net-sftp (>= 2.1.2, < 4.0)
+      ohai (~> 18.0)
+      plist (~> 3.2)
+      proxifier (~> 1.0)
+      syslog-logger (~> 1.6)
+      train-core (~> 3.10, >= 3.2.28)
+      train-rest (>= 0.4.1)
+      train-winrm (>= 0.2.5)
+      unf_ext (< 0.0.8.1)
+      uuidtools (>= 2.1.5, < 3.0)
+      vault (~> 0.16)
+    chef (18.0.142-x64-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -93,7 +128,7 @@ PATH
       win32-eventlog (= 0.6.3)
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
-      win32-process (~> 0.10)
+      win32-process (~> 0.9)
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
@@ -408,7 +443,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.10.1)
+    win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
       ffi
