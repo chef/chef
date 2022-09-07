@@ -1,6 +1,14 @@
 pid_file = "chef.pid"
 run_list = ""
 
+local_mode = true
+
+# Positive License Acceptance. See https://docs.chef.io/chef_license_accept/
+chef_license = "donotaccept"
+
+# Path to the chef client config on disk.  If blank, will default to the one built by habitat.
+config_path = ""
+
 # The location in which nodes are stored when the chef-client is run in local mode
 
 log_location = "STDOUT"
