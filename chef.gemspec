@@ -26,22 +26,22 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 3.1.0"
 
-  # Adding Windows support in here
-  # if RUBY_PLATFORM == "x64-mingw-ucrt"
-  #   s.add_dependency "win32-mmap", "~> 0.4.1"
-  #   s.add_dependency "win32-mutex", "~> 0.4.2"
-  #   s.add_dependency "chef-powershell", "~> 1.0.12"
-  #   s.add_dependency "win32-api", "~> 1.10.0"
-  #   s.add_dependency "win32-service", ">= 2.1.5", "< 3.0"
-  #   s.add_dependency "win32-event", "~> 0.6.1"
-  #   s.add_dependency "win32-taskscheduler", "~> 2.0"
-  #   s.add_dependency "win32-eventlog", "0.6.3"
-  #   s.add_dependency "win32-process", "~> 0.10"
-  #   s.add_dependency "wmi-lite", "~> 1.0"
-  #   s.add_dependency "iso8601", ">= 0.12.1", "< 0.14"
-  #   s.add_dependency "win32-certstore", "~> 0.6.15"
-  #   s.extensions << "ext/win32-eventlog/Rakefile"
-  # end
+  Adding Windows support in here
+  if RUBY_PLATFORM == "x64-mingw-ucrt"
+    s.add_dependency "win32-mmap", "~> 0.4.1"
+    s.add_dependency "win32-mutex", "~> 0.4.2"
+    s.add_dependency "chef-powershell", "~> 1.0.12"
+    s.add_dependency "win32-api", "~> 1.10.0"
+    s.add_dependency "win32-service", ">= 2.1.5", "< 3.0"
+    s.add_dependency "win32-event", "~> 0.6.1"
+    s.add_dependency "win32-taskscheduler", "~> 2.0"
+    s.add_dependency "win32-eventlog", "0.6.3"
+    s.add_dependency "win32-process", "~> 0.10"
+    s.add_dependency "wmi-lite", "~> 1.0"
+    s.add_dependency "iso8601", ">= 0.12.1", "< 0.14"
+    s.add_dependency "win32-certstore", "~> 0.6.15"
+    s.extensions << "ext/win32-eventlog/Rakefile"
+  end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
