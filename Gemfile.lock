@@ -1,9 +1,17 @@
 GIT
+  remote: https://github.com/chef/mixlib-archive
+  revision: f264f51ea8827c699caed76904d61652ac1c6b41
+  branch: jfm/ucrt_update1
+  specs:
+    mixlib-archive (1.2.0)
+      mixlib-log
+
+GIT
   remote: https://github.com/chef/ohai.git
-  revision: 89e6a08889f414efabc53a1c15c418baddc5cd2d
+  revision: 50899edffa0f29f1d5268dd9cb2f3b773681a1c7
   branch: main
   specs:
-    ohai (18.0.20)
+    ohai (18.0.23)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -19,10 +27,16 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: f3e30a17e5dd826b5f5dce82edcecc52464548e3
+  revision: 53e19d6248dfa7b4848c7a03bade3662eab0ba05
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-mingw)
+      ffi (~> 1.15)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -43,40 +57,6 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 18.0.142)
-      chef-utils (= 18.0.142)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.5.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (~> 4.23)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-ftp
-      net-sftp (>= 2.1.2, < 4.0)
-      ohai (~> 18.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.2, >= 3.2.28)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (< 0.0.8.1)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
-    chef (18.0.142-universal-mingw32)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.142)
       chef-powershell (~> 1.0.12)
       chef-utils (= 18.0.142)
       chef-vault
@@ -91,7 +71,6 @@ PATH
       inspec-core (>= 5)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
@@ -145,15 +124,15 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.623.0)
-    aws-sdk-core (3.136.0)
+    aws-partitions (1.626.0)
+    aws-sdk-core (3.141.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -289,8 +268,6 @@ GEM
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2022.0105)
-    mixlib-archive (1.1.7)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
@@ -327,13 +304,13 @@ GEM
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
+    pry-byebug (3.10.1)
       byebug (~> 11.0)
-      pry (~> 0.13.0)
+      pry (>= 0.13, < 0.15)
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    public_suffix (4.0.7)
+    public_suffix (5.0.0)
     rack (2.2.4)
     rainbow (3.1.1)
     rake (13.0.6)
@@ -392,7 +369,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 4.0)
       net-ssh (>= 2.9, < 7.0)
-    train-rest (0.4.2)
+    train-rest (0.5.0)
+      aws-sigv4 (~> 1.5)
       rest-client (~> 2.1)
       train-core (~> 3.0)
     train-winrm (0.2.13)
@@ -425,7 +403,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webmock (3.17.1)
+    webmock (3.18.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -490,6 +468,7 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5)
+  mixlib-archive!
   ohai!
   proxifier!
   pry (= 0.13.0)
