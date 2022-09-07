@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 3.1.0"
 
-  Adding Windows support in here
+  # Adding Windows support in here
   if RUBY_PLATFORM == "x64-mingw-ucrt"
     s.add_dependency "win32-mmap", "~> 0.4.1"
     s.add_dependency "win32-mutex", "~> 0.4.2"
