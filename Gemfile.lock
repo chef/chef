@@ -27,15 +27,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: e5e4b84e06a13f311db080e56df04995ab56eaf5
+  revision: 93fc90399f02eed44f8d4b371681fdd0411d98b3
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw)
       ffi (~> 1.15)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
