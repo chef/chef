@@ -97,7 +97,6 @@ jobs:
       id: run
       run: |
         cd kitchen-tests
-        $env:PATH = "C:\ruby31\bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
         # we remove thenm here.
         if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
@@ -211,11 +210,15 @@ jobs:
           ruby -v
           echo "Which ruby are we using?"
           which ruby
-          sudo mv /home/runner/work/chef/chef /home/runner/work/chef/chef17
-          git clone https://github.com/chef/chef.git /home/runner/work/chef/chef
+          #rm -rf /home/runner/work/chef/chef
+          #sudo mv /home/runner/work/chef/chef /home/runner/work/chef/chef17
+          #git clone https://github.com/chef/chef.git /home/runner/work/chef/chef
+          #
           cd /home/runner/work/chef/chef
           bundle install
           gem install kitchen
           cd /home/runner/work/chef/chef/kitchen-tests
           bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
+          echo "At the end, which ruby are we using?"
+          which ruby
