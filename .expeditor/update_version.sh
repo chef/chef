@@ -18,6 +18,7 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-bin/lib/ch
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-utils/lib/chef-utils/version.rb
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" knife/lib/chef/knife/version.rb
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"${VERSION}\")/" lib/chef/version.rb
+asdf global ruby "3.1.0"
 
 # Update the version inside Gemfile.lock
 bundle update chef chef-config chef-utils --jobs=7 --conservative
