@@ -24,6 +24,8 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: echo "ENV['BUILDKITE_COMMIT'] <%= ENV['BUILDKITE_COMMIT'] %>"
+    - remote: echo "%x(git rev-parse HEAD).chomp <%= %x(git rev-parse HEAD).chomp %>"
     - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
         - centos-6
