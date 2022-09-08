@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/mixlib-archive
-  revision: b4a3a4df06819cb785b7fe1c4c4f93d164746102
+  revision: a24ab75591eb96917dfe8f45a4ceeeed80ad82f1
   branch: jfm/ucrt_update1
   specs:
     mixlib-archive (1.2.0)
@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: f13a48ad2d0025482c19df06ff27670071e8e1e1
+  revision: 50899edffa0f29f1d5268dd9cb2f3b773681a1c7
   branch: main
   specs:
-    ohai (18.0.22)
+    ohai (18.0.23)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -27,16 +27,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 53e19d6248dfa7b4848c7a03bade3662eab0ba05
+  revision: 93fc90399f02eed44f8d4b371681fdd0411d98b3
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-mingw)
-      ffi (~> 1.15)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -48,6 +42,13 @@ GIT
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
+
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
 
 PATH
   remote: .
@@ -68,7 +69,6 @@ PATH
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       inspec-core (>= 5)
-      iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
@@ -86,16 +86,6 @@ PATH
       unf_ext (< 0.0.8.1)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-      win32-api (~> 1.10.0)
-      win32-certstore (~> 0.6.15)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.10)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
 
 PATH
   remote: chef-bin
@@ -131,7 +121,7 @@ GEM
     ast (2.4.2)
     aws-eventstream (1.2.0)
     aws-partitions (1.626.0)
-    aws-sdk-core (3.140.0)
+    aws-sdk-core (3.142.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -152,9 +142,6 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -250,7 +237,6 @@ GEM
     inspec-core-bin (5.18.14)
       inspec-core (= 5.18.14)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.1)
     json (2.6.2)
     libyajl2 (2.1.0)
@@ -354,7 +340,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
     time (0.2.0)
@@ -407,29 +392,8 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.10.1)
-    win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.12)
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -478,7 +442,8 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
-   2.3.21
+   2.3.7
