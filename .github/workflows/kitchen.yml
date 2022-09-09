@@ -144,11 +144,11 @@ jobs:
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
         /opt/chef/embedded/bin/rake --version
-        echo "Updating Bundler"
-        gem install bundler:2.3.18
-        echo "finished updating Bundler, now getting the version"
-        /opt/chef/embedded/bin/bundle -v
-        echo "finished getting the bundler version"
+        # echo "Updating Bundler"
+        # gem install bundler:2.3.18
+        # echo "finished updating Bundler, now getting the version"
+        # /opt/chef/embedded/bin/bundle -v
+        # echo "finished getting the bundler version"
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
