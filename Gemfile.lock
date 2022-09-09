@@ -45,12 +45,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.0.143)
+    chef (18.0.144)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.143)
-      chef-utils (= 18.0.143)
+      chef-config (= 18.0.144)
+      chef-utils (= 18.0.144)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -83,15 +83,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.0.143)
-      chef (= 18.0.143)
+    chef-bin (18.0.144)
+      chef (= 18.0.144)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.0.143)
+    chef-config (18.0.144)
       addressable
-      chef-utils (= 18.0.143)
+      chef-utils (= 18.0.144)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -100,7 +100,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.0.143)
+    chef-utils (18.0.144)
       concurrent-ruby
 
 GEM
@@ -113,8 +113,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.626.0)
-    aws-sdk-core (3.142.0)
+    aws-partitions (1.627.0)
+    aws-sdk-core (3.143.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -440,4 +440,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.3.18
