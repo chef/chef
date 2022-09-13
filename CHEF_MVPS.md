@@ -24,7 +24,7 @@ Each year at ChefConf, a number of individuals are awarded the Awesome Community
   - [Bastien Jove](https://github.com/tensibai)
   - [Lance Albertson](https://github.com/ramereth)
   - [Marc Chamberland](https://github.com/bobchaos)
-- [2019][USA](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/), [Europe](https://blog.chef.io/congratulations-to-our-chefconf-london-2019-award-winners/)
+- 2019 [USA](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/), [Europe](https://blog.chef.io/congratulations-to-our-chefconf-london-2019-award-winners/)
   - [Graham Weldon](https://github.com/predominant)
   - [Jason Field](https://github.com/xorima)
   - [Joshua Basch](https://github.com/HT154)
@@ -73,6 +73,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 - Bryan Berry
 - Bryan McLellan
 - Jeff Blaine
+- Phil Dibowitz
 
 ## The MVP recipients
 
