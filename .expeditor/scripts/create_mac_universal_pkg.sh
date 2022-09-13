@@ -1,5 +1,10 @@
 #!/bin/sh -v
 
+echo "${EXPEDITOR_CHANNEL}"
+echo "${EXPEDITOR_VERSION}"
+echo "${EXPEDITOR_PRODUCT_NAME}"
+echo "${EXPEDITOR_PRODUCT_KEY}"
+
 mkdir -p ./stage/pkg/tmp/chef-pkgs
 mkdir -p ./stage/script
 
@@ -33,4 +38,5 @@ EOF
 chmod +x ./stage/script/postinstall
 
 pkgbuild --root stage/pkg --scripts stage/script --identifier "io.chef.infra-client.wrapper" \
- --version "18.0.92" --install-location / stage/pkg/chef-18.0.92-1.universal.pkg
+ --version "18.0.92" --install-location / --sign "Chef Software, Inc. (EU3VF8YLX2)" \
+ stage/pkg/chef-18.0.92-1.universal.pkg
