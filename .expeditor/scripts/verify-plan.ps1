@@ -10,22 +10,6 @@ param(
 $env:HAB_ORIGIN = 'ci'
 $Plan = 'chef-infra-client'
 
-# start jfm
-Write-Host "--- :8ball: Are my ENV Variables getting passed from the Config.yml?"
-Write-Host "`n"
-$vars = gci env:* | sort-object name
-$Tab = [char]9
-for($x=1; $x -le $vars.count; $x++){
-    Write-Host $vars[$x].name -NoNewline
-    Write-Host $Tab -NoNewline
-    Write-Host $Tab -NoNewline
-    Write-Host $Tab -NoNewline
-    Write-Host $Tab -NoNewline
-    Write-Host $vars[$x].value
-}
-Write-Host "`n"
-# end jfm
-
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 
 powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
