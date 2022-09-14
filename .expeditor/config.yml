@@ -35,7 +35,7 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems. 
-        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: "jfm/ucrt_update"
+        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: jfm/ucrt_update
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
@@ -47,14 +47,14 @@ pipelines:
       env:
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: "jfm/ucrt_update"
+        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: jfm/ucrt_update
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: "jfm/ucrt_update"
+        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: jfm/ucrt_update
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
@@ -62,7 +62,7 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: "jfm/ucrt_update"
+        - OMNIBUS_SOFTWARE_GITHUB_BRANCH: jfm/ucrt_update
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
