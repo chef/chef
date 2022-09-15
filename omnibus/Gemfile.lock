@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 8b1efa78a0aad9574512253c7082a83fe4070819
+  revision: ba2aea36e315cea22990d65dff6580e24c92777d
   branch: jfm/ucrt_update
   specs:
     omnibus-software (4.0.0)
@@ -29,13 +29,13 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.610.0)
-    aws-sdk-core (3.131.3)
+    aws-partitions (1.630.0)
+    aws-sdk-core (3.147.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -53,6 +53,8 @@ GEM
     aws-sigv4 (1.5.1)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
+    bcrypt_pbkdf (1.1.0-x64-mingw32)
+    bcrypt_pbkdf (1.1.0-x86-mingw32)
     berkshelf (8.0.2)
       chef (>= 15.7.32)
       chef-config
@@ -324,7 +326,7 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (4.0.7)
+    public_suffix (5.0.0)
     rack (2.2.4)
     rainbow (3.1.1)
     retryable (3.0.5)
@@ -463,9 +465,9 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw
-  x64-mingw-ucrt
   x64-mingw32
+  x64-unknown
+  x64-unknown
   x86-mingw32
 
 DEPENDENCIES
