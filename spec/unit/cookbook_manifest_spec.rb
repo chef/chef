@@ -131,7 +131,7 @@ describe Chef::CookbookManifest do
         {
           "name" => name,
           "path" => relative_path,
-          "checksum" => Chef::Digester.generate_md5_checksum_for_file(path),
+          "checksum" => Chef::Digester.generate_sha256_checksum_for_file(path),
           "specificity" => "default",
         }.tap do |fp|
           if full

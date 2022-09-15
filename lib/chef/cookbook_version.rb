@@ -77,7 +77,7 @@ class Chef
     # This is the one and only method that knows how cookbook files'
     # checksums are generated.
     def self.checksum_cookbook_file(filepath)
-      Chef::Digester.generate_md5_checksum_for_file(filepath)
+      Chef::Digester.generate_sha256_checksum_for_file(filepath)
     rescue Errno::ENOENT
       Chef::Log.trace("File #{filepath} does not exist, so there is no checksum to generate")
       nil

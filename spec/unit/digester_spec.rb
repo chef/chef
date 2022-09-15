@@ -40,8 +40,8 @@ describe Chef::Digester do
 
     it "generates a checksum from a non-file IO object" do
       io = StringIO.new("riseofthemachines\nriseofthechefs\n")
-      expected_md5 = "0e157ac1e2dd73191b76067fb6b4bceb"
-      expect(@cache.generate_md5_checksum(io)).to eq(expected_md5)
+      expected_sha256 = "ab2b0c9f06d37b06111ecc1b9a2156fb6ae8454122978564e3541408aac3c5d8"
+      expect(@cache.generate_sha256_checksum(io)).to eq(expected_sha256)
     end
 
   end

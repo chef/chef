@@ -186,6 +186,12 @@ class Chef
           cache_file_basename(uri_md5)
         end
 
+        def sanitized_cache_file_basename_sha256
+          # Old way of creating the file basename
+          uri_sha256 = Chef::Digester.instance.generate_sha256_checksum(StringIO.new(uri))
+          cache_file_basename(uri_sha256)
+        end
+
         def cache_file_basename(checksum)
           "#{scrubbed_uri}-#{checksum}.json"
         end
