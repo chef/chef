@@ -176,21 +176,21 @@ jobs:
   linux:
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - 'amazonlinux-2'
-          - 'centos-6'
-          - 'centos-7'
-          - 'almalinux-8'
-          - 'debian-9'
-          - 'debian-10'
-          - 'debian-11'
-          - 'fedora-latest'
-          - 'opensuse-leap-15'
-          - 'ubuntu-1804'
-          - 'ubuntu-2004'
-          - 'ubuntu-2204'
-        ruby: ['3.1']
+      # matrix:
+      #   os:
+      #     - 'amazonlinux-2'
+      #     - 'centos-6'
+      #     - 'centos-7'
+      #     - 'almalinux-8'
+      #     - 'debian-9'
+      #     - 'debian-10'
+      #     - 'debian-11'
+      #     - 'fedora-latest'
+      #     - 'opensuse-leap-15'
+      #     - 'ubuntu-1804'
+      #     - 'ubuntu-2004'
+      #     - 'ubuntu-2204'
+      #   ruby: ['3.1']
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -201,7 +201,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.1"
+          ruby-version: '3.1'
           bundler-cache: false
           working-directory: kitchen-tests
       - name: Run Test Kitchen
@@ -212,6 +212,7 @@ jobs:
           which ruby
           cd /home/runner/work/chef/chef
           bundle install
+          gem install bundler:2.3.7
           gem install kitchen
           cd /home/runner/work/chef/chef/kitchen-tests
           bundle install
