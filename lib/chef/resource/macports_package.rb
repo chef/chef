@@ -25,6 +25,8 @@ class Chef
 
       description "Use the **macports_package** resource to manage packages for the macOS platform using the MacPorts package management system."
 
+      allowed_actions :install, :upgrade, :remove, :purge
+
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
         identity: true

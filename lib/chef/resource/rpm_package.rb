@@ -24,6 +24,8 @@ class Chef
 
       provides :rpm_package
 
+      allowed_actions :install, :upgrade, :remove
+
       description "Use the **rpm_package** resource to manage packages using the RPM Package Manager."
 
       property :allow_downgrade, [ TrueClass, FalseClass ],

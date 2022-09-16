@@ -24,6 +24,8 @@ class Chef
 
       provides :pacman_package
 
+      allowed_actions :install, :upgrade, :remove, :purge
+
       description "Use the **pacman_package** resource to manage packages (using pacman) on the Arch Linux platform."
     end
   end

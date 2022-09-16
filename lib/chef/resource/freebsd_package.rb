@@ -30,6 +30,8 @@ class Chef
 
       description "Use the **freebsd_package** resource to manage packages for the FreeBSD platform."
 
+      allowed_actions :install, :remove
+
       # make sure we assign the appropriate underlying providers based on what
       # package managers exist on this FreeBSD system or the source of the package
       #

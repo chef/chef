@@ -27,6 +27,8 @@ class Chef
 
       description "Use the **smartos_package** resource to manage packages for the SmartOS platform."
 
+      allowed_actions :install, :upgrade, :remove
+
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
         identity: true

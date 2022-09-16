@@ -56,6 +56,8 @@ class Chef
 
       description "Use the **apt_package** resource to manage packages on Debian, Ubuntu, and other platforms that use the APT package system."
 
+      allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock
+
       property :default_release, String,
         description: "The default release. For example: `stable`.",
         desired_state: false

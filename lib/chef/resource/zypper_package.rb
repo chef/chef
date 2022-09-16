@@ -53,6 +53,8 @@ class Chef
         ```
       DOC
 
+      allowed_actions :install, :upgrade, :remove, :purge, :lock, :unlock
+
       property :gpg_check, [ TrueClass, FalseClass ],
         description: "Verify the package's GPG signature. Can also be controlled site-wide using the `zypper_check_gpg` config option.",
         default: lazy { Chef::Config[:zypper_check_gpg] }, default_description: "true"

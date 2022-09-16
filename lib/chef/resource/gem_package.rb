@@ -59,6 +59,8 @@ class Chef
         ```
       EXAMPLES
 
+      allowed_actions :install, :upgrade, :remove, :purge
+
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
         identity: true
