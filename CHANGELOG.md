@@ -1,17 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.141 -->
-## [v18.0.141](https://github.com/chef/chef/tree/v18.0.141) (2022-08-16)
+<!-- latest_release 18.0.144 -->
+## [v18.0.144](https://github.com/chef/chef/tree/v18.0.144) (2022-09-09)
 
 #### Merged Pull Requests
-- Add newline to end of sysctl files [#13118](https://github.com/chef/chef/pull/13118) ([tmccombs](https://github.com/tmccombs))
+- Move Gemfile.locks to 2.3.7 and disable .github kitchen install of 2.3.18 [#13176](https://github.com/chef/chef/pull/13176) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move Gemfile.locks to 2.3.7 and disable .github kitchen install of 2.3.18 [#13176](https://github.com/chef/chef/pull/13176) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.144 -->
+- The worker container for expeditor needs to use Ruby 3.1.0 [#13171](https://github.com/chef/chef/pull/13171) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.143 -->
+- Add empty pipeline for macos universal package [#13152](https://github.com/chef/chef/pull/13152) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.0.142 -->
 - Add newline to end of sysctl files [#13118](https://github.com/chef/chef/pull/13118) ([tmccombs](https://github.com/tmccombs)) <!-- 18.0.141 -->
 - fix chef_client_scheduled_task splay to accept 0 [#13095](https://github.com/chef/chef/pull/13095) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.140 -->
 - add url for principal names [#13104](https://github.com/chef/chef/pull/13104) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.139 -->

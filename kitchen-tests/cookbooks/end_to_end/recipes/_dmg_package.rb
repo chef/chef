@@ -11,11 +11,11 @@ dmg_package "LittleSecrets" do
   action   :install
 end
 
-dmg_package "virtualbox" do
-  app "virtualbox"
-  source "http://download.virtualbox.org/virtualbox/6.1.8/VirtualBox-6.1.8-137981-OSX.dmg"
-  checksum "569e91eb3c7cb002d407b236a7aa71ac610cf2ad1afa03730dab11fbd4b89e7c"
-  type "pkg"
-  accept_eula true
-  allow_untrusted true
-end
+# dmg_package "virtualbox" do
+#   app "virtualbox"
+#   source "http://download.virtualbox.org/virtualbox/6.1.8/VirtualBox-6.1.8-137981-OSX.dmg"
+#   checksum "569e91eb3c7cb002d407b236a7aa71ac610cf2ad1afa03730dab11fbd4b89e7c"
+#   type "pkg"
+#   accept_eula true
+#   allow_untrusted true
+# end

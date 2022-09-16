@@ -44,13 +44,11 @@ include_recipe "::_chef_gem"
 
 include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
 
-# FIXME linux docker images seem to produce
-# EBUSY errors on moving or writing to /etc/resolv.conf
-#
-# resolver_config "/etc/resolv.conf" do
-#   nameservers [ "8.8.8.8", "8.8.4.4" ]
-#   search [ "chef.io" ]
-# end
+resolver_config "/etc/resolv.conf" do
+  nameservers [ "8.8.8.8", "8.8.4.4" ]
+  search [ "chef.io" ]
+  atomic_update false # otherwise EBUSY for linux docker containers
+end
 
 users_from_databag = search("users", "*:*")
 
