@@ -221,4 +221,5 @@ jobs:
           ruby --version
           echo "now checking for any chef-client version"
           sudo find / -name chef
-          # bundle exec kitchen test end-to-end-${{ matrix.os }}
+          echo -=r "\r\n\r\n\r\n"
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
