@@ -219,4 +219,6 @@ jobs:
           echo "looking for my friend, Ruby"
           which ruby
           ruby --version
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+          echo "now checking for any chef-client version"
+          which chef-client
+          # bundle exec kitchen test end-to-end-${{ matrix.os }}
