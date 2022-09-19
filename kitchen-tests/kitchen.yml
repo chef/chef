@@ -25,12 +25,14 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: export BUILDKITE_COMMIT=tp/ruby_revert_to_ruby31
     - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
         - centos-6
         - centos-7
         - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: export BUILDKITE_COMMIT=tp/ruby_revert_to_ruby31
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
       excludes:
         - centos-6

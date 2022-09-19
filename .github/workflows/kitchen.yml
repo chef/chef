@@ -207,19 +207,18 @@ jobs:
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
+<<<<<<< HEAD
           ruby -v
           echo "Which ruby are we using?"
           which ruby
+=======
+          sudo mv /home/runner/work/chef/chef /home/runner/work/chef/chef17
+          git clone https://github.com/chef/chef.git /home/runner/work/chef/chef
+>>>>>>> 46813caf39 (Now adding debugging to kitchen for more detail)
           cd /home/runner/work/chef/chef
           gem install bundler:2.3.7
           bundle install
           gem install kitchen
           cd /home/runner/work/chef/chef/kitchen-tests
           bundle install
-          echo "looking for my friend, Ruby"
-          which ruby
-          ruby --version
-          echo "now checking for any chef-client version"
-          sudo find / -name chef
-          echo -=r "\r\n\r\n\r\n"
           bundle exec kitchen test end-to-end-${{ matrix.os }}
