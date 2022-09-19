@@ -81,7 +81,7 @@ chef-utils/pkg
 
 # knife
 knife/.bundle
-knife/Gemfile.lock
+#knife/Gemfile.lock We need this lockfile (for now) to make chef getting installed with windows gemspec under knife
 knife/pkg
 knife/spec/data/test-dir
 knife/spec/data/nodes
