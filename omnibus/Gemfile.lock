@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 8b1efa78a0aad9574512253c7082a83fe4070819
-  branch: jfm/ucrt_update
+  revision: fc901c6446e6354058133b89a29a6ef8e2995b3d
+  branch: main
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 9.0.0)
