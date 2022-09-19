@@ -20,4 +20,6 @@ gemspec.add_dependency "chef-powershell", "~> 1.0.12" # The guts of the powershe
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += Dir.glob("{distro,ext}/**/*")
 
+gemspec.required_ruby_version = ">= 3.1.2"
+
 gemspec
