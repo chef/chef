@@ -71,7 +71,7 @@ function Invoke-Prepare {
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";c:\\Program Files\\Git\\bin"
-        gem install bundler:2.3.17
+        # gem install bundler:2.3.7
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
