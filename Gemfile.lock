@@ -27,13 +27,12 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-
-GIT
-  remote: https://github.com/chef/ruby-proxifier
-  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
-  branch: lcg/ruby-3
-  specs:
-    proxifier (1.0.3)
+    rest-client (2.1.0-x64-mingw-ucrt)
+      ffi (~> 1.15)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
 
 GIT
   remote: https://github.com/chef/ruby-shadow
@@ -41,6 +40,13 @@ GIT
   branch: lcg/ruby-3.0
   specs:
     ruby-shadow (2.5.0)
+    
+GIT
+  remote: https://github.com/chef/ruby-proxifier
+  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
+  branch: lcg/ruby-3
+  specs:
+    proxifier (1.0.3)
 
 PATH
   remote: .
