@@ -61,7 +61,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
-  s.add_dependency "chef-powershell", "~> 1.0.12" # The guts of the powershell_exec code have been moved to its own gem, chef-powershell. It's part of the chef-powershell-shim repo.
   s.add_dependency "vault", "~> 0.16" # hashi vault official client gem
   s.bindir       = "bin"
   s.executables  = %w{ }
