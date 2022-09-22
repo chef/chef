@@ -24,23 +24,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 3.1.0"
 
-  # Adding Windows support in here
-  if RUBY_PLATFORM == "x64-mingw-ucrt"
-    s.add_dependency "win32-mmap", "~> 0.4.1"
-    s.add_dependency "win32-mutex", "~> 0.4.2"
-    s.add_dependency "chef-powershell", "~> 1.0.12"
-    s.add_dependency "win32-api", "~> 1.10.0"
-    s.add_dependency "win32-service", ">= 2.1.5", "< 3.0"
-    s.add_dependency "win32-event", "~> 0.6.1"
-    s.add_dependency "win32-taskscheduler", "~> 2.0"
-    s.add_dependency "win32-eventlog", "0.6.3"
-    s.add_dependency "win32-process", "~> 0.10"
-    s.add_dependency "wmi-lite", "~> 1.0"
-    s.add_dependency "iso8601", ">= 0.12.1", "< 0.14"
-    s.add_dependency "win32-certstore", "~> 0.6.15"
-    s.extensions << "ext/win32-eventlog/Rakefile"
-  end
-
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.10", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
@@ -71,7 +54,7 @@ Gem::Specification.new do |s|
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
-  s.add_dependency "unf_ext", "< 0.0.8.1" # temporary until it loads properly on Windows
+  s.add_dependency "unf_ext", ">= 0.0.8.2" # This is ruby31 compatible ucrt gem version
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier", "~> 1.0"
