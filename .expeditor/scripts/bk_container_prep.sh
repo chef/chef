@@ -10,6 +10,9 @@ ruby -v
 echo "bundler version:"
 bundle -v
 
+echo "OS version:"
+uname -a
+
 echo "--- Preparing Container..."
 
 export FORCE_FFI_YAJL="ext"
