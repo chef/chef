@@ -31,6 +31,9 @@ env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_
 
 windows_arch env_omnibus_windows_arch
 
+# Allows us to verify that we're building on the platform we think we are.
+puts "RUBY PLATFORM @ omnibus-load time: #{RUBY_PLATFORM}"
+
 use_git_caching true
 
 # Enable S3 asset caching
