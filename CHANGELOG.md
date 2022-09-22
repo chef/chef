@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.149 -->
-## [v18.0.149](https://github.com/chef/chef/tree/v18.0.149) (2022-09-21)
+<!-- latest_release 18.0.150 -->
+## [v18.0.150](https://github.com/chef/chef/tree/v18.0.150) (2022-09-22)
 
 #### Merged Pull Requests
-- Windows Verify Plan fails during &quot;Rake Install rest-client&quot; [#13199](https://github.com/chef/chef/pull/13199) ([johnmccrae](https://github.com/johnmccrae))
+- Separate gemspec for windows [#13202](https://github.com/chef/chef/pull/13202) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Separate gemspec for windows [#13202](https://github.com/chef/chef/pull/13202) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.150 -->
 - Windows Verify Plan fails during &quot;Rake Install rest-client&quot; [#13199](https://github.com/chef/chef/pull/13199) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.149 -->
 - Remove the chef17 git clone step [#13197](https://github.com/chef/chef/pull/13197) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.148 -->
 - Update omnibus gem hash as well [#13198](https://github.com/chef/chef/pull/13198) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.147 -->
