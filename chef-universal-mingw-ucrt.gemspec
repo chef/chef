@@ -1,3 +1,4 @@
+#This is windows gemspec
 gemspec = instance_eval(File.read(File.expand_path("chef.gemspec", __dir__)))
 
 gemspec.platform = Gem::Platform.new(%w{x64-mingw-ucrt})

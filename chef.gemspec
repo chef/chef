@@ -9,7 +9,7 @@ else
   require "chef-utils/version_string"
 end
 require "chef/version"
-
+#This gemspec is common for windows and other platforms
 Gem::Specification.new do |s|
   s.name = "chef"
   s.version = Chef::VERSION
