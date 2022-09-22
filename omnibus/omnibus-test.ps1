@@ -1,6 +1,12 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
+# We have seen rare cases where the platform we think we are testing on is not the
+# platform we are really testing on.  We're outputting the complete OS name here
+# so that we can confirm the name in the build log when necessary.
+Write-Output "Verifying the Windows version we're running on"
+Write-Output (Get-WMIObject win32_operatingsystem).name
+
 # install chocolatey
 Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072

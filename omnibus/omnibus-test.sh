@@ -15,6 +15,12 @@ if [[ -f /etc/redhat-release ]]; then
   fi
 fi
 
+# We have seen rare cases where the platform we think we are testing on
+# is not the platform we are really testing on.  We're outputting the complete
+# uname string so that we can confirm platform and version in the build log when necessary
+echo "--- Verifying OS"
+uname -a
+
 # Set up a custom tmpdir, and clean it up before and after the tests
 export TMPDIR="${TMPDIR:-/tmp}/cheftest"
 sudo rm -rf "$TMPDIR"
