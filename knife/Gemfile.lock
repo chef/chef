@@ -1,3 +1,4 @@
+#We will keep it for now so that on bundle install knife can pickup windows gemspec under chef
 PATH
   remote: ..
   specs:
