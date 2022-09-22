@@ -61,7 +61,7 @@ end
 
 # hack in all the preinstall tasks to occur before the traditional install task
 task install: "pre_install:all"
-# make sure we build the correct gemspec on windows
+# make sure we build the correct gemspec on windows.
 gemspec = Gem.win_platform? ? "chef-x64-mingw-ucrt" : "chef"
 
 Bundler::GemHelper.install_tasks name: gemspec

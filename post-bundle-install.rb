@@ -17,7 +17,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   next unless gem_name
 
-  # FIXME: should omit the gem which is in the current directory and not hard code chef
+  # FIXME: should omit the gem which is in the current directory and not hard code for chef
   next if %w{chef chef-x64-mingw-ucrt}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
