@@ -29,6 +29,10 @@ export BUNDLE_GEMFILE=$PWD/kitchen-tests/Gemfile
 export FORCE_FFI_YAJL=ext
 export CHEF_LICENSE="accept-silent"
 
+# what OS is this REALLY?
+echo "--- Verifying OS"
+uname -a
+
 # Update Gems
 echo "--- Installing Gems"
 echo 'gem: --no-document' >> ~/.gemrc

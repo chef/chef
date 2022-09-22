@@ -17,6 +17,10 @@ error () {
   exit 1
 }
 
+# what OS is this REALLY?
+echo "--- :construction: Verifying OS"
+uname -a
+
 echo "--- :8ball: :linux: Verifying $PLAN"
 project_root="$(git rev-parse --show-toplevel)"
 
