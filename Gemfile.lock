@@ -40,7 +40,7 @@ GIT
   branch: lcg/ruby-3.0
   specs:
     ruby-shadow (2.5.0)
-    
+
 GIT
   remote: https://github.com/chef/ruby-proxifier
   revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
@@ -97,11 +97,11 @@ PATH
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.5.0)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 4.23)
+      inspec-core (>= 5)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -115,7 +115,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
-      train-core (~> 3.2, >= 3.2.28)
+      train-core (~> 3.10, >= 3.2.28)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
       unf_ext (>= 0.0.8.2)
@@ -127,7 +127,7 @@ PATH
       win32-eventlog (= 0.6.3)
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
-      win32-process (~> 0.10)
+      win32-process (~> 0.9)
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
@@ -433,7 +433,8 @@ GEM
       tty-screen (~> 0.8)
     unf (0.1.4)
       unf_ext
-    unf_ext (>= 0.0.8.2)
+    unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.2.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
@@ -513,6 +514,7 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
