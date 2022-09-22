@@ -17,6 +17,8 @@ steps:
 
 - label: "Integration Ubuntu 18.04 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -30,6 +32,8 @@ steps:
 
 - label: "Functional Ubuntu 18.04 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
@@ -45,6 +49,8 @@ steps:
 
 - label: "Unit Ubuntu 18.04 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y libarchive-dev
@@ -60,6 +66,8 @@ steps:
 
 - label: "Integration Ubuntu 20.04 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -73,6 +81,8 @@ steps:
 
 - label: "Functional Ubuntu 20.04 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales libarchive-dev # needed for functional tests to pass
@@ -88,6 +98,8 @@ steps:
 
 - label: "Unit Ubuntu 20.04 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y libarchive-dev
@@ -103,6 +115,8 @@ steps:
 
 - label: "Integration CentOS 7 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -116,6 +130,8 @@ steps:
 
 - label: "Functional CentOS 7 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
     - yum install -y libarchive-devel
@@ -131,6 +147,8 @@ steps:
 
 - label: "Unit CentOS 7 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y libarchive-devel
     - bundle config set --local without omnibus_package
@@ -145,6 +163,8 @@ steps:
 
 - label: "Integration openSUSE 15 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle config set --local without omnibus_package
@@ -159,6 +179,8 @@ steps:
 
 - label: "Functional openSUSE 15 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
     - zypper install -y libarchive-devel
@@ -174,6 +196,8 @@ steps:
 
 - label: "Unit openSUSE 15 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat libarchive-devel
     - bundle config set --local without omnibus_package
@@ -188,6 +212,8 @@ steps:
 
 - label: "Integration AlmaLinux 8 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -201,6 +227,8 @@ steps:
 
 - label: "Functional AlmaLinux 8 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle config set --local without omnibus_package
@@ -218,6 +246,8 @@ steps:
 
 - label: "Unit AlmaLinux 8 :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install dnf-plugins-core -y
     - dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
@@ -236,6 +266,8 @@ steps:
 
 - label: "Functional Windows :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
     executor:
@@ -246,6 +278,8 @@ steps:
 
 - label: "Integration Windows :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_win_integration.ps1
   expeditor:
     executor:
@@ -259,6 +293,8 @@ steps:
 
 - label: "Unit Windows :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
   expeditor:
     executor:
@@ -276,6 +312,8 @@ steps:
 
 - label: "chef-zero gem :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -291,6 +329,8 @@ steps:
 
 - label: "cheffish gem :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -303,6 +343,8 @@ steps:
 
 - label: "chefspec gem :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -315,6 +357,8 @@ steps:
 
 - label: "knife-windows gem :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -327,6 +371,8 @@ steps:
 
 - label: "berkshelf gem :ruby: 3.1"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y graphviz
@@ -340,6 +386,8 @@ steps:
 
 - label: ":habicat: Linux plan"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-linux'
     - sudo ./.expeditor/scripts/verify-plan.sh
   timeout_in_minutes: 60
@@ -351,6 +399,8 @@ steps:
 
 - label: ":habicat: Linux plan (kernel2)"
   commands:
+    - echo "--- Verifying OS"
+    - uname -a
     - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-linux-kernel2'
     - sudo ./.expeditor/scripts/verify-plan.sh
   timeout_in_minutes: 60
@@ -362,6 +412,7 @@ steps:
 
 - label: ":habicat: Windows plan"
   commands:
+    - Write-Output "--- Verifying the Windows version we're running on"; Write-Output (Get-WMIObject win32_operatingsystem).name
     - ./.expeditor/scripts/verify-plan.ps1
   timeout_in_minutes: 0
   expeditor:

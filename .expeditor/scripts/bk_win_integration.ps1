@@ -6,6 +6,9 @@ Set-Item -Path Env:Path -Value ("C:\Program Files\Git\mingw64\bin;C:\Program Fil
 
 winrm quickconfig -q
 
-echo "+++ bundle exec rake spec:integration"
+Write-Output "--- Verifying the Windows version we're running on"
+Write-Output (Get-WMIObject win32_operatingsystem).name
+
+Write-Output  "+++ bundle exec rake spec:integration"
 bundle exec rake spec:integration
 if (-not $?) { throw "Chef integration specs failing." }

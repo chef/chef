@@ -19,6 +19,9 @@ if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 Write-Output "--- configure winrm"
 winrm quickconfig -q
 
+Write-Output "--- Verifying the Windows version we're running on"
+Write-Output (Get-WMIObject win32_operatingsystem).name
+
 Write-Output "--- bundle install"
 bundle config set --local without 'omnibus_package'
 bundle install --jobs=3 --retry=3

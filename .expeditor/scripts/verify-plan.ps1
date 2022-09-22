@@ -25,6 +25,9 @@ if (-not ($source.name -match "git.exe")) {
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 
+Write-Output "--- :construction: Verifying the Windows version we're running on"
+Write-Output (Get-WMIObject win32_operatingsystem).name
+
 Write-Host "--- :key: Generating fake origin key"
 hab origin key generate $env:HAB_ORIGIN
 
