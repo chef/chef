@@ -124,8 +124,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
-        ruby: ["3.1"] # macos-11.0 is not public for now
+        os: [macos-latest] # macos-11.0 is not public for now
+        ruby: ["3.1"]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -176,21 +176,21 @@ jobs:
   linux:
     strategy:
       fail-fast: false
-      # matrix:
-      #   os:
-      #     - 'amazonlinux-2'
-      #     - 'centos-6'
-      #     - 'centos-7'
-      #     - 'almalinux-8'
-      #     - 'debian-9'
-      #     - 'debian-10'
-      #     - 'debian-11'
-      #     - 'fedora-latest'
-      #     - 'opensuse-leap-15'
-      #     - 'ubuntu-1804'
-      #     - 'ubuntu-2004'
-      #     - 'ubuntu-2204'
-      #   ruby: ['3.1']
+      matrix:
+        os:
+          - 'amazonlinux-2'
+          - 'centos-6'
+          - 'centos-7'
+          - 'almalinux-8'
+          - 'debian-9'
+          - 'debian-10'
+          - 'debian-11'
+          - 'fedora-latest'
+          - 'opensuse-leap-15'
+          - 'ubuntu-1804'
+          - 'ubuntu-2004'
+          - 'ubuntu-2204'
+        ruby: ['3.1']
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -207,14 +207,8 @@ jobs:
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-<<<<<<< HEAD
-          ruby -v
-          echo "Which ruby are we using?"
-          which ruby
-=======
           sudo mv /home/runner/work/chef/chef /home/runner/work/chef/chef17
           git clone https://github.com/chef/chef.git /home/runner/work/chef/chef
->>>>>>> 46813caf39 (Now adding debugging to kitchen for more detail)
           cd /home/runner/work/chef/chef
           gem install bundler:2.3.7
           bundle install
