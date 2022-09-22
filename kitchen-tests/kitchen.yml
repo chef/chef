@@ -16,7 +16,6 @@ provisioner:
   chef_license: "accept-no-persist"
   slow_resource_report: true
   clean_dokken_sandbox: false
-  log_level: debug
 
 lifecycle:
   pre_converge:
