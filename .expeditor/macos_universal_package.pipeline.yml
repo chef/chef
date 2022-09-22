@@ -10,9 +10,9 @@ expeditor:
 steps:
 
 - label: ":mac: Create universal macos package"
+  agents:
+    queue: omnibus-mac_os_x-11-x86_64
+    omnibus: builder
+    omnibus-toolchain: "*"
   commands:
     - ./.expeditor/scripts/create_mac_universal_pkg.sh
-  expeditor:
-    executor:
-      macos:
-        os-version: "10.15"
