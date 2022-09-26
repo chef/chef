@@ -13,6 +13,7 @@ $Plan = 'chef-infra-client'
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 
 powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 
 Write-Host "--- :key: Generating fake origin key"
