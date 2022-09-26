@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
     s.required_ruby_version = ">= 3.1.0"
   end
 
-
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.10", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
