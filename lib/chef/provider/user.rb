@@ -66,7 +66,7 @@ class Chef
           end
           current_resource.comment(user_info.gecos)
 
-          # NOTE: The if condition `new_resource.password && current_resource.password == "x"` needs to be checked first so that `require "shadow"`` is not run on AIX, which will result in spec failures.
+          # NOTE: The if condition `new_resource.password && current_resource.password == "x"` needs to be checked first so that `require "shadow"`` is not run on AIX, which will result in spec failures in why_run. define_resource_requirements assumes that the libraries not supported on a platform will never load on it. i.e: ruby_shadow should never be loaded on AIX platform. Ref error: https://buildkite.com/chef/chef-chef-main-omnibus-release/builds/1667#51867452-352c-45ff-b402-9518d88c7d8d
           # On AIX platforms ruby_shadow does not work as it does not store encrypted passwords in the /etc/passwd file but in /etc/security/passwd file.
           # Ruby's ETC.getpwnam also makes use of /etc/passwd file (https://github.com/ruby/etc/blob/master/ext/etc/etc.c), which returns "x" for a nil password, whereas
           # on AIX it returns a "*" (https://www.ibm.com/docs/bg/aix/7.2?topic=passwords-using-etcpasswd-file)
