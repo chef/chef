@@ -66,13 +66,19 @@ class Chef
           end
           current_resource.comment(user_info.gecos)
 
-          begin
-            require "shadow"
-          rescue LoadError
-            @shadow_lib_ok = false
-          else
-            @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
-            current_resource.password(@shadow_info.sp_pwdp) if new_resource.password && current_resource.password == "x"
+          # NOTE: The if condition `new_resource.password && current_resource.password == "x"` needs to be checked first so that `require "shadow"`` is not run on AIX, which will result in spec failures.
+          # On AIX platforms ruby_shadow does not work as it doesnot store encrypted passwords in the /etc/passwd file but in /etc/security/passwd file.
+          # Ruby's ETC.getpwnam also makes use of /etc/passwd file (https://github.com/ruby/etc/blob/master/ext/etc/etc.c), which returns "x" for a nil password, whereas 
+          # on AIX it returns a "*" (https://www.ibm.com/docs/bg/aix/7.2?topic=passwords-using-etcpasswd-file) 
+          if new_resource.password && current_resource.password == "x"
+            begin
+              require "shadow"
+            rescue LoadError
+              @shadow_lib_ok = false
+            else
+              @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+              current_resource.password(@shadow_info.sp_pwdp)
+            end
           end
 
           convert_group_name if new_resource.gid
