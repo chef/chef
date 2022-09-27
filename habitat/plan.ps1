@@ -85,7 +85,11 @@ function Invoke-Build {
         $bin_path2 = (Get-ChildItem "c:\hab\studios" -File "make.exe" -Recurse).DirectoryName
         $env:path = $bin_path + ";" + $bin_path2 + ";" + $env:path
 
-        Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
+        Write-BuildLine "`r  ** Updating Bundler to 2.2.32 and installing ChefStyle **"
+        gem install bundler:2.2.32
+        gem install chefstyle
+
+        Write-BuildLine "`r ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
