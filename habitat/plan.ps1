@@ -80,9 +80,12 @@ function Invoke-Build {
         $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
 
         # for some reason, hab pathing is borked and files needed to compile the windows eventlog aren't showing up. This corrects that.
+        Write-Buildline " ** Expanding the path **`r"
         $bin_path = (Get-ChildItem "c:\hab\studios" -File "windres.exe" -Recurse).DirectoryName
-        $env:path = $bin_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        gem install bundler
+        $bin_path2 = (Get-ChildItem "c:\hab\studios" -File "make.exe" -Recurse).DirectoryName
+        $env:path = $bin_path + ";" + $bin_path2 + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        get-command gem
+        # gem install bundler
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
