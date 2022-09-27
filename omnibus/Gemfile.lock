@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 5b41f817c386d598c57652f1e1340ea312ed487d
-  branch: main
+  revision: 0dbab02e77d8c4ada0ecb43c0c7ce104dd4481699
+  branch: praj/INFC-268/whitelist_solaris_libs
   specs:
     omnibus (9.0.6)
       aws-sdk-s3 (~> 1)
