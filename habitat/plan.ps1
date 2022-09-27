@@ -83,9 +83,7 @@ function Invoke-Build {
         Write-Buildline " ** Expanding the path **`r"
         $bin_path = (Get-ChildItem "c:\hab\studios" -File "windres.exe" -Recurse).DirectoryName
         $bin_path2 = (Get-ChildItem "c:\hab\studios" -File "make.exe" -Recurse).DirectoryName
-        $env:path = $bin_path + ";" + $bin_path2 + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        get-command gem
-        # gem install bundler
+        $env:path = $bin_path + ";" + $bin_path2 + ";" + $env:path
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
