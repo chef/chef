@@ -23,6 +23,11 @@ class Chef
         provides :user, os: "aix"
         provides :aix_user
 
+        # The ruby-shadow gem is not supported on aix.
+        def supports_ruby_shadow?
+          false
+        end
+
         def create_user
           shell_out!("useradd", universal_options, useradd_options, new_resource.username)
           add_password
