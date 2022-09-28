@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 0dbab02e77d8c4ada0ecb43c0c7ce104dd4481699
-  branch: praj/INFC-268/whitelist_solaris_libs
+  revision: 086cb5dfc39930a0fe5e065a7d37d398ab429395
+  branch: jfm/praj/whitelist_testing
   specs:
     omnibus (9.0.6)
       aws-sdk-s3 (~> 1)
@@ -276,11 +276,6 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
@@ -479,4 +474,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.21
+   2.3.18
