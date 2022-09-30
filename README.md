@@ -34,6 +34,7 @@ Issues can be reported by using [GitHub Issues](https://github.com/chef/chef/iss
 
 Note that this repository is primarily for reporting issues in the chef-client itself.  For reporting issues against other Chef projects, please look up the appropriate repository. If you're unsure where to submit an issue, please ask in the #chef-dev channel in [Chef Community Slack](https://community-slack.chef.io/).
 
+
 ## How We Build & Release Chef
 
 For information on how a contribution goes from PR to released package, see [How Chef Infra Is Built](docs/dev/design_documents/how_chef_is_tested_and_built.md)
