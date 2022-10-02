@@ -127,7 +127,7 @@ shared_examples_for Chef::Provider::File do
   end
 
   let!(:tempfile) do
-    BasicTempfile.create("rspec-shared-file-provider")
+    BasicTempfile.new("rspec-shared-file-provider")
   end
 
   before(:each) do
