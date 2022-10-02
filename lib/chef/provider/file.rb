@@ -421,7 +421,7 @@ class Chef
 
         # unlink necessary to clean up in why-run mode
         tempfile.close
-        tempfile.unlink
+        # tempfile.unlink
       end
 
       # This logic ideally will be  made into some kind of generic

@@ -70,7 +70,7 @@ class Chef
         yield file
         unless tempfile.nil?
           tempfile.close
-          tempfile.unlink
+          # tempfile.unlink
         end
       end
 

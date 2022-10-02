@@ -512,7 +512,8 @@ describe Chef::Application do
       end
 
       after(:each) do
-        @config_file.unlink
+        # @config_file.unlink
+        @config_file.close
       end
 
       it "should raise informative fatals for badly written config" do

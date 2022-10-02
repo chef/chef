@@ -37,13 +37,13 @@ shared_examples_for "a diff util" do
 
   it "produces a diff even if the old_file does not exist" do
     old_tempfile.close
-    old_tempfile.unlink
+    # old_tempfile.unlink
     expect(differ.for_output).to eql(["(no diff)"])
   end
 
   it "produces a diff even if the new_file does not exist" do
     new_tempfile.close
-    new_tempfile.unlink
+    # new_tempfile.unlink
     expect(differ.for_output).to eql(["(no diff)"])
   end
 

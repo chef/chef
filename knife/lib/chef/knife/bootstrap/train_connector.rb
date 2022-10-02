@@ -159,7 +159,7 @@ class Chef
           nil
         ensure
           t.close
-          t.unlink
+          # t.unlink
         end
 
         #

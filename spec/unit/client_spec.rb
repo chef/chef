@@ -465,7 +465,8 @@ describe Chef::Client do
 
         after do
           @tmpout.close unless @tmpout.closed?
-          @tmpout.unlink
+          # @tmpout.unlink
+          @tmpout.close
         end
 
         it "configures the formatter for the file path" do

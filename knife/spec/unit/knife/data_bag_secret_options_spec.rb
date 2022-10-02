@@ -44,7 +44,7 @@ describe Chef::Knife::DataBagSecretOptions do
 
   after do
     secret_file.close
-    secret_file.unlink
+    # secret_file.unlink
   end
 
   describe "#validate_secrets" do

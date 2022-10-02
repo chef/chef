@@ -100,7 +100,8 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @dhparam_file.unlink
+      # @dhparam_file.unlink
+      @dhparam_file.close
     end
   end
 
@@ -211,7 +212,8 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @crlfile.unlink
+      # @crlfile.unlink
+      @crlfile.close
     end
   end
 
@@ -887,7 +889,8 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @certfile.unlink
+      # @certfile.unlink
+      @certfile.close
     end
   end
 end

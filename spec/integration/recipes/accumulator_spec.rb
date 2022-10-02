@@ -24,7 +24,7 @@ describe "Accumulators" do
     t = Tempfile.create("chef_accumulator_test")
     path = t.path
     t.close
-    t.unlink
+    # t.unlink
     path
   end
 

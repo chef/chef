@@ -65,7 +65,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         resource.run_action(:run)
       ensure
         file.close
-        file.unlink
+        # file.unlink
       end
     end
 
@@ -91,7 +91,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         expect { resource.run_action(:run) }.not_to raise_error
       ensure
         file.close
-        file.unlink
+        # file.unlink
       end
     end
 

@@ -76,7 +76,8 @@ describe Chef::Provider::User::Solaris do
       new_resource.password "verysecurepassword"
       provider.manage_user
       expect(::File.read(password_file.path)).to match(/adam:verysecurepassword:/)
-      password_file.unlink
+      # password_file.unlink
+      password_file.close
     end
   end
 

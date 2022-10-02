@@ -94,7 +94,7 @@ class Chef
             hab("config", "apply", opts, new_resource.service_group, incarnation, tempfile.path)
           ensure
             tempfile.close
-            tempfile.unlink
+            # tempfile.unlink
           end
         end
       end

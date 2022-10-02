@@ -127,7 +127,7 @@ class Chef
             cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
           end
           shell_out!(cmd)
-          file.unlink
+          file.close
         end
       end
 
