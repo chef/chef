@@ -64,7 +64,7 @@ class Chef
 
       # Load the cookbook. Raises an error if the cookbook_path given to the
       # constructor doesn't point to a valid cookbook.
-      def load!        
+      def load!
         metadata # force lazy evaluation to occur
 
         # re-raise any exception that occurred when reading the metadata
@@ -138,7 +138,7 @@ class Chef
         # their metadata. We only rescue StandardError because you have to be
         # doing something *really* terrible to raise an exception that inherits
         # directly from Exception in your metadata.rb file.
-      rescue StandardError => e        
+      rescue StandardError => e
         @metadata_error = e
         @metadata
       end
