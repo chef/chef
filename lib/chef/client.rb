@@ -816,7 +816,7 @@ class Chef
     def self.import_pfx_to_store(new_pfx)
       password = ::Chef::HTTP::Authenticator.get_cert_password
       require "win32-certstore"
-      tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
+      tempfile = Tempfile.create("#{Chef::Config[:node_name]}.pfx")
       File.open(tempfile, "wb") { |f| f.print new_pfx.to_der }
 
       store = ::Win32::Certstore.open("MY")

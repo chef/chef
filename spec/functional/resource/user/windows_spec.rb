@@ -60,7 +60,7 @@ describe Chef::Provider::User::Windows, :windows_only do
   def set_windows_minimum_password_length(minimum_password_length = 0)
     require "tempfile"
     temp_security_database = "C:\\windows\\security\\database\\seceditnew.sdb"
-    temp_security_template = Tempfile.new(["chefpolicy", ".inf"])
+    temp_security_template = Tempfile.create(["chefpolicy", ".inf"])
     file_content = <<~EOF
       [Unicode]
       Unicode=yes

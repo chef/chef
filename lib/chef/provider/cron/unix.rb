@@ -45,7 +45,7 @@ class Chef
         end
 
         def write_crontab(crontab)
-          tempcron = Tempfile.new("chef-cron")
+          tempcron = Tempfile.create("chef-cron")
           tempcron << crontab
           tempcron.flush
           tempcron.chmod(0644)

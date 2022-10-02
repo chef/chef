@@ -20,7 +20,7 @@ require "tempfile"
 
 describe Chef::Compliance::Waiver do
   let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:data) { { "ssh-01" => { "expiration_date" => Date.jd(2463810), "justification" => "waived, yo", "run" => false } } }
+  let(:data) { { "ssh-01" => { "expiration_date" => Date.jd(2463810), "run" => false, "justification" => "waived, yo" } } }
   let(:path) { "/var/chef/cache/cookbooks/acme_compliance/compliance/waivers/default.yml" }
   let(:cookbook_name) { "acme_compliance" }
   let(:waiver) { Chef::Compliance::Waiver.new(events, data, path, cookbook_name) }
@@ -90,7 +90,7 @@ ssh-01:
   run: false
   justification: "waived, yo"
     EOH
-    tempfile = Tempfile.new("chef-compliance-test")
+    tempfile = Tempfile.create("chef-compliance-test")
     tempfile.write string
     tempfile.close
     newwaiver = Chef::Compliance::Waiver.from_file(events, tempfile.path, cookbook_name)

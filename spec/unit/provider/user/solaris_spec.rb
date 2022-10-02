@@ -64,13 +64,13 @@ describe Chef::Provider::User::Solaris do
     it "should write out a modified version of the password file" do
       # Let this test run #write_shadow_file
       allow(provider).to receive(:write_shadow_file).and_call_original
-      password_file = Tempfile.new("shadow")
+      password_file = Tempfile.create("shadow")
       password_file.puts "adam:existingpassword:15441::::::"
       password_file.close
       stub_const("Chef::Provider::User::Solaris::PASSWORD_FILE", password_file.path)
       allow(provider).to receive(:shell_out_compacted!).and_return(true)
       # may not be able to write to /etc for tests...
-      temp_file = Tempfile.new("shadow")
+      temp_file = Tempfile.create("shadow")
       allow(Tempfile).to receive(:new).with("shadow", "/etc").and_return(temp_file)
       new_resource.password "verysecurepassword"
       provider.manage_user

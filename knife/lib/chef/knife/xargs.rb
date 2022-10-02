@@ -174,7 +174,7 @@ class Chef
         begin
           # Create the temporary files
           files.each do |file|
-            tempfile = Tempfile.new(file.name)
+            tempfile = Tempfile.create(file.name)
             tempfiles[tempfile] = { file: file }
           end
         rescue

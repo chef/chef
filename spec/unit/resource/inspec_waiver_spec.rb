@@ -165,7 +165,7 @@ justification = "waived, yo"
 
   context "with a waiver in a file" do
     it "loads a YAML file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yaml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yaml"])
       tempfile.write waiver_yaml
       tempfile.close
       resource.name tempfile.path
@@ -181,7 +181,7 @@ justification = "waived, yo"
     end
 
     it "loads a YAML file in a source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yaml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yaml"])
       tempfile.write waiver_yaml
       tempfile.close
       resource.name "my-resource-name"
@@ -198,7 +198,7 @@ justification = "waived, yo"
     end
 
     it "loads a YML file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yml"])
       tempfile.write waiver_yaml
       tempfile.close
       resource.name tempfile.path
@@ -214,7 +214,7 @@ justification = "waived, yo"
     end
 
     it "loads a YML file using the source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yml"])
       tempfile.write waiver_yaml
       tempfile.close
       resource.name "my-resource-name"
@@ -231,7 +231,7 @@ justification = "waived, yo"
     end
 
     it "loads a JSON file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".json"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".json"])
       tempfile.write waiver_json
       tempfile.close
       resource.name tempfile.path
@@ -247,7 +247,7 @@ justification = "waived, yo"
     end
 
     it "loads a JSON file using the source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".json"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".json"])
       tempfile.write waiver_json
       tempfile.close
       resource.name "my-resource-name"
@@ -264,7 +264,7 @@ justification = "waived, yo"
     end
 
     it "loads a TOML file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".toml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".toml"])
       tempfile.write waiver_toml
       tempfile.close
       resource.name tempfile.path
@@ -280,7 +280,7 @@ justification = "waived, yo"
     end
 
     it "loads a TOML file using the source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".toml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".toml"])
       tempfile.write waiver_toml
       tempfile.close
       resource.name "my-resource-name"

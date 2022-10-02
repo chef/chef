@@ -77,7 +77,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
   end
 
   let(:vfstab_file) do
-    t = Tempfile.new("rspec-vfstab")
+    t = Tempfile.create("rspec-vfstab")
     t.write(vfstab_file_contents)
     t.close
     t

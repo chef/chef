@@ -85,7 +85,7 @@ class Chef
           opts << ["--remote-sup", new_resource.remote_sup] if new_resource.remote_sup
           opts << ["--user", new_resource.user] if new_resource.user
 
-          tempfile = Tempfile.new(["habitat_config", ".toml"])
+          tempfile = Tempfile.create(["habitat_config", ".toml"])
           begin
             tempfile.write(render_toml(new_resource.config))
             tempfile.close

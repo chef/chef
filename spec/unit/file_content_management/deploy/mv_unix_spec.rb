@@ -101,8 +101,8 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
 
   describe "when testing against real files", unix_only: true do
     it "preserves sticky bits" do
-      staging_file = Tempfile.new("staging_file")
-      target_file = Tempfile.new("target_file")
+      staging_file = Tempfile.create("staging_file")
+      target_file = Tempfile.create("target_file")
       File.chmod(04755, target_file.path)
       content_deployer.deploy(staging_file.path, target_file.path)
       expect(::File.stat(target_file.path).mode & 07777).to eql(04755)

@@ -275,11 +275,11 @@ class Chef
           # Copy to tempfiles before diffing
           # TODO don't copy things that are already in files!  Or find an in-memory diff algorithm
 
-          new_tempfile = Tempfile.new("new")
+          new_tempfile = Tempfile.create("new")
           new_tempfile.write(new_value)
           new_tempfile.close
 
-          old_tempfile = Tempfile.new("old")
+          old_tempfile = Tempfile.create("old")
           old_tempfile.write(old_value)
           old_tempfile.close
 

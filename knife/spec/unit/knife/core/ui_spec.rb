@@ -131,7 +131,7 @@ describe Chef::Knife::UI do
       before do
         @ui.config[:disable_editing] = false
         @ui.config[:editor] = my_editor
-        @tempfile = Tempfile.new([ "knife-edit-", ".json" ])
+        @tempfile = Tempfile.create([ "knife-edit-", ".json" ])
         expect(Tempfile).to receive(:open).with([ "knife-edit-", ".json" ]).and_yield(@tempfile)
       end
 
@@ -146,7 +146,7 @@ describe Chef::Knife::UI do
             expect(subject).to eql(json_from_editor)
           end
           it "the tempfile should have mode 0600", :unix_only do
-            # XXX: this looks odd because we're really testing Tempfile.new here
+            # XXX: this looks odd because we're really testing Tempfile.create here
             expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
             expect(subject).to eql(json_from_editor)
           end
@@ -159,7 +159,7 @@ describe Chef::Knife::UI do
             expect(subject).to eql(ruby_from_editor)
           end
           it "the tempfile should have mode 0600", :unix_only do
-            # XXX: this looks odd because we're really testing Tempfile.new here
+            # XXX: this looks odd because we're really testing Tempfile.create here
             expect(File.stat(@tempfile.path).mode & 0777).to eql(0600)
             expect(subject).to eql(ruby_from_editor)
           end

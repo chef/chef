@@ -105,7 +105,7 @@ class Chef
           security_option = new_resource.secoption
           security_value = new_resource.secvalue
 
-          file = Tempfile.new(["#{security_option}", ".inf"])
+          file = Tempfile.create(["#{security_option}", ".inf"])
           case security_option
           when "LockoutBadCount"
             cmd = "net accounts /LockoutThreshold:#{security_value}"

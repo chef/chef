@@ -36,7 +36,7 @@ describe MonoLogger do
 
   describe "when given an object that is stringable (to_str)" do
     it "should open a File object with the given path" do
-      temp_file = Tempfile.new("rspec-monologger-log")
+      temp_file = Tempfile.create("rspec-monologger-log")
       temp_file.close
       MonoLogger.new(temp_file.path).fatal("Do, or do not. There is no try.")
       expect(File.read(temp_file.path)).to match(/Do, or do not. There is no try./)

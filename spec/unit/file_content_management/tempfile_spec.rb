@@ -23,7 +23,7 @@ describe Chef::FileContentManagement::Tempfile do
   def tempfile_object_for_path(path)
     r = Chef::Resource::File.new("decorative name that should not matter")
     r.path path
-    Chef::FileContentManagement::Tempfile.new(r)
+    Chef::FileContentManagement::Tempfile.create(r)
   end
 
   describe "#tempfile_basename" do

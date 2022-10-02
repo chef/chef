@@ -415,7 +415,7 @@ describe Chef::Application do
     end
 
     context "when cli arguments contain valid recipe file path" do
-      let(:tempfile) { Tempfile.new("default.rb").path }
+      let(:tempfile) { Tempfile.create("default.rb").path }
       before do
         allow(app).to receive(:cli_arguments).and_return([tempfile])
       end
@@ -478,7 +478,7 @@ describe Chef::Application do
     context "when cli arguments contain valid recipe file path and invalid string" do
       let(:fatal) { false }
       before do
-        tempfile = Tempfile.new("default.rb").path
+        tempfile = Tempfile.create("default.rb").path
         allow(app).to receive(:cli_arguments).and_return([tempfile, "test"])
         allow(Chef::Application).to receive(:fatal!).and_return(fatal)
       end
@@ -504,7 +504,7 @@ describe Chef::Application do
 
     describe "when config file exists but contains errors" do
       def create_config_file(text)
-        @config_file = Tempfile.new("rspec-chef-config")
+        @config_file = Tempfile.create("rspec-chef-config")
         @config_file.write(text)
         @config_file.close
         @app.config[:config_file] = @config_file.path

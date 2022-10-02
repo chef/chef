@@ -106,7 +106,7 @@ describe "chef-client" do
     let(:validation_path) { "" }
 
     before do
-      tempfile = Tempfile.new(validation_path)
+      tempfile = Tempfile.create(validation_path)
       tempfile.write "string"
       tempfile.close
       @path = tempfile.path

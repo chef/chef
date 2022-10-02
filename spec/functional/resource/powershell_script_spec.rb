@@ -55,7 +55,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns the exit status 27 for a powershell script that exits with 27" do
-      file = Tempfile.new(["foo", ".ps1"])
+      file = Tempfile.create(["foo", ".ps1"])
       begin
         file.write "exit 27"
         file.close
@@ -74,7 +74,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       # Versions of PowerShell prior to 4.0 return a 16-bit unsigned value --
       # PowerShell 4.0 and later versions return a 32-bit signed value.
-      file = Tempfile.new(["foo", ".ps1"])
+      file = Tempfile.create(["foo", ".ps1"])
       begin
         file.write "exit #{negative_exit_status}"
         file.close

@@ -6,7 +6,7 @@ describe Chef::Application::Base, "setup_application" do
   context "when validation key is supplied" do
     before do
       @app = Chef::Application::Base.new
-      tempfile = Tempfile.new(validation_path)
+      tempfile = Tempfile.create(validation_path)
       tempfile.write "string"
       tempfile.close
       @path = tempfile.path

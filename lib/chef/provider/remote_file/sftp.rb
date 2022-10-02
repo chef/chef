@@ -97,7 +97,7 @@ class Chef
 
         def get
           tempfile =
-            Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+            Chef::FileContentManagement::Tempfile.create(@new_resource).tempfile
           sftp.download!(uri.path, tempfile.path)
           tempfile.close if tempfile
           tempfile

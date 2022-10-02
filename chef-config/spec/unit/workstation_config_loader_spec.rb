@@ -245,7 +245,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       # We need to keep a reference to the tempfile because while #close does
       # not unlink the file, the object being GC'd will.
       let(:tempfile) do
-        Tempfile.new("Chef-WorkstationConfigLoader-rspec-test").tap do |t|
+        Tempfile.create("Chef-WorkstationConfigLoader-rspec-test").tap do |t|
           t.print(config_content)
           t.close
         end
@@ -366,7 +366,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       let(:tempdir) { Dir.mktmpdir("chef-workstation-test") }
 
       let!(:confd_file) do
-        Tempfile.new(["Chef-WorkstationConfigLoader-rspec-test", ".rb"], tempdir).tap do |t|
+        Tempfile.create(["Chef-WorkstationConfigLoader-rspec-test", ".rb"], tempdir).tap do |t|
           t.print(config_content)
           t.close
         end
@@ -406,7 +406,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         let(:config_content) { "config_d_file_evaluated(true)" }
 
         let!(:not_confd_file) do
-          Tempfile.new(["Chef-WorkstationConfigLoader-rspec-test", ".foorb"], tempdir).tap do |t|
+          Tempfile.create(["Chef-WorkstationConfigLoader-rspec-test", ".foorb"], tempdir).tap do |t|
             t.print(syntax_error_content)
             t.close
           end

@@ -32,7 +32,7 @@ class Chef
           if file_cache_location.nil?
             nil
           else
-            tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
+            tempfile = Chef::FileContentManagement::Tempfile.create(@new_resource).tempfile
             tempfile.close
             logger.trace("#{@new_resource} staging #{file_cache_location} to #{tempfile.path}")
             FileUtils.cp(file_cache_location, tempfile.path)

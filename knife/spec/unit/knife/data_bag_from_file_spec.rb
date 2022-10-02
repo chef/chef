@@ -54,10 +54,10 @@ describe Chef::Knife::DataBagFromFile do
 
   let(:tmp_dir) { make_canonical_temp_directory }
   let(:db_folder) { File.join(tmp_dir, data_bags_path, bag_name) }
-  let(:db_file) { Tempfile.new(["data_bag_from_file_test", ".json"], db_folder) }
-  let(:db_file2) { Tempfile.new(["data_bag_from_file_test2", ".json"], db_folder) }
+  let(:db_file) { Tempfile.create(["data_bag_from_file_test", ".json"], db_folder) }
+  let(:db_file2) { Tempfile.create(["data_bag_from_file_test2", ".json"], db_folder) }
   let(:db_folder2) { File.join(tmp_dir, data_bags_path, bag_name2) }
-  let(:db_file3) { Tempfile.new(["data_bag_from_file_test3", ".json"], db_folder2) }
+  let(:db_file3) { Tempfile.create(["data_bag_from_file_test3", ".json"], db_folder2) }
 
   def new_bag_expects(b = bag_name, d = plain_data)
     data_bag = double

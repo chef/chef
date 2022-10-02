@@ -45,7 +45,7 @@ class Chef
         class << self
 
           def create_build_dir(cookbook)
-            tmp_cookbook_path = Tempfile.new("#{ChefUtils::Dist::Infra::SHORT}-#{cookbook.name}-build")
+            tmp_cookbook_path = Tempfile.create("#{ChefUtils::Dist::Infra::SHORT}-#{cookbook.name}-build")
             tmp_cookbook_path.close
             tmp_cookbook_dir = tmp_cookbook_path.path
             File.unlink(tmp_cookbook_dir)

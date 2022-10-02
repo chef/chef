@@ -22,7 +22,7 @@ require "tmpdir"
 describe Chef::Util::Backup do
 
   let(:tempfile) do
-    Tempfile.new("chef-util-backup-spec-test")
+    Tempfile.create("chef-util-backup-spec-test")
   end
 
   before(:each) do

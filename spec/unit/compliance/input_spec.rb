@@ -90,7 +90,7 @@ ssh-01:
   run: false
   justification: "waived, yo"
     EOH
-    tempfile = Tempfile.new("chef-compliance-test")
+    tempfile = Tempfile.create("chef-compliance-test")
     tempfile.write string
     tempfile.close
     newinput = Chef::Compliance::Input.from_file(events, tempfile.path, cookbook_name)

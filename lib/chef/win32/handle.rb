@@ -41,7 +41,8 @@ class Chef
         # According to http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx, it is not necessary
         # to close the pseudo handle returned by the GetCurrentProcess function.  The docs also say that it doesn't hurt to call
         # CloseHandle on it. However, doing so from inside of Ruby always seems to produce an invalid handle error.
-        proc { close_handle(handle) unless handle == CURRENT_PROCESS_HANDLE }
+        # jfm - getting the errors noted just above but only on Server 2012. So Strange. So maybe a Windows bug that got fixed?
+        # proc { close_handle(handle) unless handle == CURRENT_PROCESS_HANDLE }
       end
 
       def self.close_handle(handle)

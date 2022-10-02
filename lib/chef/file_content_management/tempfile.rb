@@ -61,7 +61,7 @@ class Chef
       #
       # These are important for windows to get permissions right, and may
       # be useful for SELinux and other ACL approaches.  Please use them
-      # as the arguments to Tempfile.new() consistently.
+      # as the arguments to Tempfile.create() consistently.
       #
       def tempfile_basename
         basename = ::File.basename(@new_resource.path, tempfile_extension)

@@ -20,13 +20,13 @@ require "spec_helper"
 require "tmpdir"
 
 shared_context "using file paths with spaces" do
-  let!(:old_tempfile) { Tempfile.new("chef-util diff-spec") }
-  let!(:new_tempfile) { Tempfile.new("chef-util diff-spec") }
+  let!(:old_tempfile) { Tempfile.create("chef-util diff-spec") }
+  let!(:new_tempfile) { Tempfile.create("chef-util diff-spec") }
 end
 
 shared_context "using file paths without spaces" do
-  let!(:old_tempfile) { Tempfile.new("chef-util-diff-spec") }
-  let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec") }
+  let!(:old_tempfile) { Tempfile.create("chef-util-diff-spec") }
+  let!(:new_tempfile) { Tempfile.create("chef-util-diff-spec") }
 end
 
 shared_examples_for "a diff util" do
