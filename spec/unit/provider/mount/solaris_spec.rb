@@ -18,6 +18,7 @@
 
 require "spec_helper"
 require "ostruct"
+require "tempfile" unless defined?(Tempfile)
 
 # Do not run these tests on windows because some path handling
 # code is not implemented to handle windows paths.

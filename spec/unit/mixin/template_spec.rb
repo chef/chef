@@ -17,6 +17,7 @@
 #
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 require "cgi"
 describe Chef::Mixin::Template, "render_template" do

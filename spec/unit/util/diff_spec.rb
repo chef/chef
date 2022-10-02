@@ -18,6 +18,7 @@
 
 require "spec_helper"
 require "tmpdir"
+require "tempfile" unless defined?(Tempfile)
 
 shared_context "using file paths with spaces" do
   let!(:old_tempfile) { Tempfile.create("chef-util diff-spec") }

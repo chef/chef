@@ -106,6 +106,7 @@ describe "chef-client" do
     let(:validation_path) { "" }
 
     before do
+      require "tempfile" unless defined?(Tempfile)
       tempfile = Tempfile.create(validation_path)
       tempfile.write "string"
       tempfile.close

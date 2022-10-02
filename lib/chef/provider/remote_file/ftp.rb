@@ -140,7 +140,7 @@ class Chef
 
         # Fetches using Net::FTP, returns a Tempfile with the content
         def get
-          tempfile = Chef::FileContentManagement::Tempfile.create(@new_resource).tempfile
+          tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           if typecode
             ftp.voidcmd("TYPE #{typecode.upcase}")
           end

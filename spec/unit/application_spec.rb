@@ -17,6 +17,7 @@
 # limitations under the License.
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Application do
   before do

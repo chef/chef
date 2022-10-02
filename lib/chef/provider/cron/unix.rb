@@ -21,6 +21,7 @@
 require_relative "../../log"
 require_relative "../../provider"
 require_relative "../cron"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Provider

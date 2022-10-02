@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Resource::InspecWaiver do
   def load_waiver(filename)

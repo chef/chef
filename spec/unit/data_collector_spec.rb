@@ -881,6 +881,7 @@ describe Chef::DataCollector do
   end
 
   describe "#send_to_file_location(file_name, message)" do
+    require "tempfile" unless defined?(Tempfile)
     let(:tempfile) { Tempfile.create("rspec-chef-datacollector-out") }
     let(:shift_jis) { "I have no idea what this character is:\n #{0x83.chr}#{0x80.chr}.\n" }
     it "handles invalid UTF-8 properly" do

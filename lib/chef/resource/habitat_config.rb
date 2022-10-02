@@ -16,6 +16,7 @@
 require_relative "../http"
 require_relative "../json_compat"
 require_relative "../resource"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Resource

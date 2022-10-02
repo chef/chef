@@ -19,6 +19,7 @@
 # limitations under the License.
 
 require_relative "../user"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Provider

@@ -20,7 +20,7 @@ require "knife_spec_helper"
 
 require "chef/data_bag_item"
 require "chef/encrypted_data_bag_item"
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 
 Chef::Knife::DataBagFromFile.load_deps
 

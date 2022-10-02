@@ -17,6 +17,7 @@
 #
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::FileContentManagement::Deploy::MvUnix do
 

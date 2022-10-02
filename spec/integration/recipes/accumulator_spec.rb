@@ -1,6 +1,7 @@
 require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
+require "tempfile" unless defined?(Tempfile)
 
 describe "Accumulators" do
   include IntegrationSupport

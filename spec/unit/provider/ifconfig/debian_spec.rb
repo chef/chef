@@ -18,6 +18,7 @@
 
 require "spec_helper"
 require "chef/exceptions"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Provider::Ifconfig::Debian do
 

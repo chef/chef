@@ -40,6 +40,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
 # SOFTWARE.
 
+require "tempfile" unless defined?(Tempfile)
+
 class Chef
   class Util
     class Diff

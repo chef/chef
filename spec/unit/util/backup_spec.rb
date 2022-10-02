@@ -18,6 +18,7 @@
 
 require "spec_helper"
 require "tmpdir"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Util::Backup do
 

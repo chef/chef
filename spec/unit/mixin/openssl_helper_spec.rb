@@ -15,6 +15,7 @@
 
 require "spec_helper"
 require "chef/mixin/openssl_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Mixin::OpenSSLHelper do
   let(:instance) do

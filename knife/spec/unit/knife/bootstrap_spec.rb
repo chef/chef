@@ -18,6 +18,7 @@
 #
 
 require "knife_spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 Chef::Knife::Bootstrap.load_deps
 

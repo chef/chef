@@ -15,6 +15,7 @@
 #
 
 require_relative "../chef_fs/knife"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Knife

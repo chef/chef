@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require "tempfile" unless defined?(Tempfile)
 require "tmpdir"
 if windows?
   require "chef/win32/file"
@@ -127,7 +128,7 @@ shared_examples_for Chef::Provider::File do
   end
 
   let!(:tempfile) do
-    BasicTempfile.new("rspec-shared-file-provider")
+    BasicTempfile.create("rspec-shared-file-provider")
   end
 
   before(:each) do

@@ -20,6 +20,7 @@
 #
 
 require "knife_spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Knife::UI do
   before do

@@ -20,6 +20,7 @@ require_relative "file_system"
 require_relative "file_system/exceptions"
 require_relative "../util/diff"
 require "chef-utils/parallel_map" unless defined?(ChefUtils::ParallelMap)
+require "tempfile" unless defined?(Tempfile)
 
 using ChefUtils::ParallelMap
 

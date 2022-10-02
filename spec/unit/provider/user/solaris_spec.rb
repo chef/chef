@@ -21,6 +21,7 @@
 #
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Provider::User::Solaris do
 

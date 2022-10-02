@@ -282,7 +282,7 @@ class Chef
           # command rather than deploying the file to somewhere on disk.  There's some
           # better API that needs extracting here.
           new_resource.path(Chef::FileCache.create_cache_path("profiles"))
-          tempfile = Chef::FileContentManagement::Tempfile.create(new_resource).tempfile
+          tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
           tempfile.write(new_profile_hash.to_plist)
           tempfile.close
           tempfile.path

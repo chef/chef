@@ -18,6 +18,7 @@
 
 require "chef/platform/query_helpers"
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 

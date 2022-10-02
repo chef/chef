@@ -19,7 +19,7 @@
 require "knife_spec_helper"
 require "chef/knife"
 require "chef/config"
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 
 class ExampleDataBagCommand < Chef::Knife
   include Chef::Knife::DataBagSecretOptions

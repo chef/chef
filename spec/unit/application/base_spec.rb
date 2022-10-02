@@ -1,4 +1,5 @@
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Application::Base, "setup_application" do
   let(:validation_path) { "" }
