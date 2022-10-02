@@ -110,7 +110,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
       # staging_file.unlink
       # target_file.unlink
       staging_file.close
-      target_file.close      
+      target_file.close   
     end
   end
 end
