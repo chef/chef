@@ -46,7 +46,7 @@ class Chef
     def_delegators :attributes, :rm, :rm_default, :rm_normal, :rm_override
     def_delegators :attributes, :default!, :normal!, :override!, :force_default!, :force_override!
     def_delegators :attributes, :default_unless, :normal_unless, :override_unless, :set_unless
-    def_delegators :attributes, :read, :read!, :write, :write!, :unlink, :unlink!
+    def_delegators :attributes, :close, :read, :read!, :write, :write!, :unlink, :unlink!
 
     attr_accessor :recipe_list, :run_state
 

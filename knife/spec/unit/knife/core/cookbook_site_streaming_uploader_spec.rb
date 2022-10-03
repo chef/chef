@@ -20,6 +20,8 @@ require "knife_spec_helper"
 
 require "chef/knife/core/cookbook_site_streaming_uploader"
 
+require "tempfile" unless defined?(Tempfile)
+
 class FakeTempfile
   def initialize(basename)
     @basename = basename
@@ -48,7 +50,7 @@ describe Chef::Knife::Core::CookbookSiteStreamingUploader do
       cookbook = @loader[:openldap]
       files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, "**", "*"), File::FNM_DOTMATCH).count { |file| File.file?(file) }
 
-      expect(Tempfile).to receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
+      expect(Tempfile).to receive(:create).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
       expect(FileUtils).to receive(:mkdir_p).exactly(files_count + 1).times
       expect(FileUtils).to receive(:cp).exactly(files_count).times
       subject.create_build_dir(cookbook)

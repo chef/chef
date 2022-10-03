@@ -544,7 +544,7 @@ shared_examples_for Chef::Provider::File do
           allow(content).to receive(:tempfile).and_return(tempfile)
           expect(File).to receive(:exist?).with("/tmp/foo-bar-baz").and_return(true)
           expect(tempfile).to receive(:close).once
-          expect(tempfile).to receive(:unlink).once
+          # expect(tempfile).to receive(:unlink).once
         end
 
         context "when the contents have changed" do
