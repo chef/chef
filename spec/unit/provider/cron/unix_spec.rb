@@ -19,6 +19,7 @@
 #
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Provider::Cron::Unix do
 
@@ -114,10 +115,10 @@ describe Chef::Provider::Cron::Unix do
     let(:tempfile) { double("foo", path: "/tmp/foo", close: true) }
 
     before do
-      expect(Tempfile).to receive(:new).and_return(tempfile)
+      expect(Tempfile).to receive(:create).and_return(tempfile)
       expect(tempfile).to receive(:flush)
       expect(tempfile).to receive(:chmod).with(420)
-      expect(tempfile).to receive(:close!)
+      expect(tempfile).to receive(:close)
       allow(tempfile).to receive(:<<)
       allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username).and_return(shell_out)
     end
