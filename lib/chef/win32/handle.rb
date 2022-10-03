@@ -21,6 +21,8 @@ require_relative "api/psapi"
 require_relative "api/system"
 require_relative "error"
 
+require "chef/mixin/powershell_exec"
+
 class Chef
   module ReservedNames::Win32
     class Handle
