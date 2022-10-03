@@ -18,6 +18,7 @@
 require "knife_spec_helper"
 require "ostruct"
 require "chef/knife/bootstrap/train_connector"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Knife::Bootstrap::TrainConnector do
   let(:protocol) { "mock" }
@@ -198,7 +199,7 @@ describe Chef::Knife::Bootstrap::TrainConnector do
         expect(File.read(local_path)).to eq "test data"
         expect(remote_path).to eq "/target/path"
       end
-      expect_any_instance_of(Tempfile).to receive(:binmode)
+      expect_any_instance_of(Tempfile).to receive(:binmode).with(true)
       subject.upload_file_content!("test data", "/target/path")
     end
   end
