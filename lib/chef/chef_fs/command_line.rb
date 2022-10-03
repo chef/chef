@@ -294,7 +294,7 @@ class Chef
           # old_tempfile.close!
           # new_tempfile.close!
           old_tempfile.close
-          new_tempfile.close          
+          new_tempfile.close
         end
       end
     end
