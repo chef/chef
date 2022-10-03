@@ -32,16 +32,22 @@ class Chef
 
       def initialize(handle)
         @handle = handle
+        @is_2012 ||= get_proc_os
         ObjectSpace.define_finalizer(self, Handle.close_handle_finalizer(handle))
       end
 
       attr_reader :handle
 
+      def get_proc_os
+        os = powershell_exec("(Get-CimInstance win32_operatingsystem).Caption").result
+        os.match(/2012/) && !os.match(/R2/) ? true : false
+      end
+
       def self.close_handle_finalizer(handle)
         # According to http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx, it is not necessary
         # to close the pseudo handle returned by the GetCurrentProcess function.  The docs also say that it doesn't hurt to call
         # CloseHandle on it. However, doing so from inside of Ruby always seems to produce an invalid handle error.
-        proc { close_handle(handle) unless handle == CURRENT_PROCESS_HANDLE }
+        proc { close_handle(handle) unless handle == CURRENT_PROCESS_HANDLE } unless @is_2012
       end
 
       def self.close_handle(handle)
