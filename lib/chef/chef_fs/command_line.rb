@@ -291,8 +291,10 @@ class Chef
         rescue => e
           "!!! Unable to diff #{old_path} and #{new_path} due to #{e}"
         ensure
-          old_tempfile.close!
-          new_tempfile.close!
+          # old_tempfile.close!
+          # new_tempfile.close!
+          old_tempfile.close
+          new_tempfile.close          
         end
       end
     end

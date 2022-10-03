@@ -178,7 +178,8 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @keyfile.unlink
+      # @keyfile.unlink
+      @keyfile.close
     end
   end
 
