@@ -28,6 +28,8 @@ class Chef
     class Handle
       extend Chef::ReservedNames::Win32::API::Process
 
+      include ChefPowerShell::ChefPowerShell::PowerShellExec
+
       # See http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx
       # The handle value returned by the GetCurrentProcess function is the pseudo handle (HANDLE)-1 (which is 0xFFFFFFFF)
       CURRENT_PROCESS_HANDLE = 4294967295
