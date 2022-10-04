@@ -107,8 +107,8 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
       File.chmod(04755, target_file.path)
       content_deployer.deploy(staging_file.path, target_file.path)
       expect(::File.stat(target_file.path).mode & 07777).to eql(04755)
-      staging_file.close!
-      target_file.close!
+      staging_file.close
+      target_file.close
     end
   end
 end
