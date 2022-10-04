@@ -242,7 +242,7 @@ class Chef
         begin
           yield tempfile
         ensure
-          tempfile && tempfile.close!
+          tempfile && tempfile.close
         end
       end
       tempfile

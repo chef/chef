@@ -21,6 +21,7 @@
 require_relative "../../log"
 require_relative "../../provider"
 require_relative "../cron"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Provider
@@ -45,7 +46,7 @@ class Chef
         end
 
         def write_crontab(crontab)
-          tempcron = Tempfile.new("chef-cron")
+          tempcron = Tempfile.create("chef-cron")
           tempcron << crontab
           tempcron.flush
           tempcron.chmod(0644)

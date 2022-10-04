@@ -18,6 +18,7 @@
 
 require "chef/platform/query_helpers"
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
@@ -55,16 +56,16 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns the exit status 27 for a powershell script that exits with 27" do
-      file = Tempfile.new(["foo", ".ps1"])
+      file = Tempfile.create(["foo", ".ps1"])
       begin
         file.write "exit 27"
-        file.close
+        file.close!
         resource.code(". \"#{file.path}\"")
         resource.returns(27)
         resource.run_action(:run)
       ensure
-        file.close
-        file.unlink
+        file.close!
+        # file.unlink
       end
     end
 
@@ -74,10 +75,10 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
       # Versions of PowerShell prior to 4.0 return a 16-bit unsigned value --
       # PowerShell 4.0 and later versions return a 32-bit signed value.
-      file = Tempfile.new(["foo", ".ps1"])
+      file = Tempfile.create(["foo", ".ps1"])
       begin
         file.write "exit #{negative_exit_status}"
-        file.close
+        file.close!
         resource.code(". \"#{file.path}\"")
 
         # PowerShell earlier than 4.0 takes negative exit codes
@@ -89,8 +90,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         resource.returns([negative_exit_status, unsigned_exit_status])
         expect { resource.run_action(:run) }.not_to raise_error
       ensure
-        file.close
-        file.unlink
+        file.close!
+        # file.unlink
       end
     end
 

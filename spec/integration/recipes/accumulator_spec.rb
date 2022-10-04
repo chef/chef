@@ -1,6 +1,7 @@
 require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
+require "tempfile" unless defined?(Tempfile)
 
 describe "Accumulators" do
   include IntegrationSupport
@@ -20,10 +21,10 @@ describe "Accumulators" do
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }
 
   let(:aliases_temppath) do
-    t = Tempfile.new("chef_accumulator_test")
+    t = Tempfile.create("chef_accumulator_test")
     path = t.path
-    t.close
-    t.unlink
+    t.close!
+    # t.unlink
     path
   end
 

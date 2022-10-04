@@ -3,6 +3,7 @@ require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 require "tiny_server"
 require "tmpdir"
+require "tempfile" unless defined?(Tempfile)
 require "chef-utils/dist"
 require "chef/mixin/powershell_exec"
 
@@ -106,7 +107,7 @@ describe "chef-client" do
     let(:validation_path) { "" }
 
     before do
-      tempfile = Tempfile.new(validation_path)
+      tempfile = Tempfile.create(validation_path)
       tempfile.write "string"
       tempfile.close
       @path = tempfile.path

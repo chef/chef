@@ -17,6 +17,7 @@
 #
 require "spec_helper"
 require "chef/cookbook_version"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Cookbook::FileVendor do
 
@@ -116,6 +117,8 @@ describe Chef::Cookbook::FileVendor do
     end
 
     it "retrieves the file from the correct location based on path to the cookbook that contains the correct name metadata" do
+      # require "pry"
+      # binding.pry
       file_vendor = file_vendor_class.create_from_manifest(manifest)
       file_vendor.get_filename("metadata.rb")
     end

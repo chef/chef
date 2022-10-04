@@ -15,6 +15,7 @@
 #
 
 require_relative "../chef_fs/knife"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Knife
@@ -174,7 +175,7 @@ class Chef
         begin
           # Create the temporary files
           files.each do |file|
-            tempfile = Tempfile.new(file.name)
+            tempfile = Tempfile.create(file.name)
             tempfiles[tempfile] = { file: file }
           end
         rescue
@@ -213,13 +214,13 @@ class Chef
         rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
           ui.error "#{format_path(e.entry)}: #{e.reason}."
           error = true
-          tempfile.close!
+          tempfile.close
           tempfiles.delete(tempfile)
           next
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
           ui.error "#{format_path(e.entry)}: No such file or directory"
           error = true
-          tempfile.close!
+          tempfile.close
           tempfiles.delete(tempfile)
           next
 

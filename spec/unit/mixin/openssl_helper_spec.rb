@@ -15,6 +15,7 @@
 
 require "spec_helper"
 require "chef/mixin/openssl_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Mixin::OpenSSLHelper do
   let(:instance) do
@@ -71,7 +72,7 @@ describe Chef::Mixin::OpenSSLHelper do
     require "tempfile"
 
     before(:each) do
-      @dhparam_file = Tempfile.new("dhparam")
+      @dhparam_file = Tempfile.create("dhparam")
     end
 
     context "When the dhparam.pem file does not exist" do
@@ -99,7 +100,7 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @dhparam_file.unlink
+      @dhparam_file.close unless @dhparam_file.closed?
     end
   end
 
@@ -110,7 +111,7 @@ describe Chef::Mixin::OpenSSLHelper do
     cipher = ::OpenSSL::Cipher.new("des3")
 
     before(:each) do
-      @keyfile = Tempfile.new("keyfile")
+      @keyfile = Tempfile.create("keyfile")
     end
 
     context "When the key file does not exist" do
@@ -176,7 +177,7 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @keyfile.unlink
+      @keyfile.close unless @keyfile.closed?
     end
   end
 
@@ -184,7 +185,7 @@ describe Chef::Mixin::OpenSSLHelper do
     require "tempfile"
 
     before(:each) do
-      @crlfile = Tempfile.new("crlfile")
+      @crlfile = Tempfile.create("crlfile")
     end
 
     context "When the crl file doesnt not exist" do
@@ -210,7 +211,7 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @crlfile.unlink
+      @crlfile.close unless @crlfile.closed?
     end
   end
 
@@ -852,7 +853,7 @@ describe Chef::Mixin::OpenSSLHelper do
     require "tempfile"
 
     before(:each) do
-      @certfile = Tempfile.new("certfile")
+      @certfile = Tempfile.create("certfile")
     end
 
     context "When the cert file doesn't exist" do
@@ -886,7 +887,7 @@ describe Chef::Mixin::OpenSSLHelper do
     end
 
     after(:each) do
-      @certfile.unlink
+      @certfile.close
     end
   end
 end

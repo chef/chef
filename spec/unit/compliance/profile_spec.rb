@@ -106,7 +106,7 @@ version: 2.6.4#{" "}
 supports:#{"     "}
   - os-family: unix
     EOH
-    tempfile = Tempfile.new("chef-compliance-test")
+    tempfile = Tempfile.create("chef-compliance-test")
     tempfile.write string
     tempfile.close
     newprofile = Chef::Compliance::Profile.from_file(events, tempfile.path, cookbook_name)

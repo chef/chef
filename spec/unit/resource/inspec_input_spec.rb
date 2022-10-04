@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Resource::InspecInput do
   def load_input(filename)
@@ -153,7 +154,7 @@ ssh_custom_path = "/whatever2"
 
   context "with a input in a file" do
     it "loads a YAML file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yaml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yaml"])
       tempfile.write input_yaml
       tempfile.close
       resource.name tempfile.path
@@ -169,7 +170,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a YAML file in a source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yaml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yaml"])
       tempfile.write input_yaml
       tempfile.close
       resource.name "my-resource-name"
@@ -186,7 +187,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a YML file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yml"])
       tempfile.write input_yaml
       tempfile.close
       resource.name tempfile.path
@@ -202,7 +203,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a YML file using the source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".yml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".yml"])
       tempfile.write input_yaml
       tempfile.close
       resource.name "my-resource-name"
@@ -219,7 +220,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a JSON file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".json"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".json"])
       tempfile.write input_json
       tempfile.close
       resource.name tempfile.path
@@ -235,7 +236,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a JSON file using the source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".json"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".json"])
       tempfile.write input_json
       tempfile.close
       resource.name "my-resource-name"
@@ -252,7 +253,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a TOML file" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".toml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".toml"])
       tempfile.write input_toml
       tempfile.close
       resource.name tempfile.path
@@ -268,7 +269,7 @@ ssh_custom_path = "/whatever2"
     end
 
     it "loads a TOML file using the source attribute" do
-      tempfile = Tempfile.new(["spec-compliance-test", ".toml"])
+      tempfile = Tempfile.create(["spec-compliance-test", ".toml"])
       tempfile.write input_toml
       tempfile.close
       resource.name "my-resource-name"

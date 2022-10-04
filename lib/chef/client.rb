@@ -56,6 +56,7 @@ require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
+require "tempfile" unless defined?(Tempfile)
 
 require_relative "compliance/runner"
 
@@ -816,12 +817,12 @@ class Chef
     def self.import_pfx_to_store(new_pfx)
       password = ::Chef::HTTP::Authenticator.get_cert_password
       require "win32-certstore"
-      tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
+      tempfile = Tempfile.create("#{Chef::Config[:node_name]}.pfx")
       File.open(tempfile, "wb") { |f| f.print new_pfx.to_der }
 
       store = ::Win32::Certstore.open("MY")
       store.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
-      tempfile.unlink
+      tempfile.close
     end
 
     #

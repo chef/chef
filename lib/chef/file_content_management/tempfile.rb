@@ -41,7 +41,8 @@ class Chef
         tempfile_dirnames.each do |tempfile_dirname|
 
           # preserving the file extension of the target filename should be considered a public API
-          tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
+          # tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
+          tf = ::Tempfile.create([tempfile_basename, tempfile_extension], tempfile_dirname)
           break
         rescue SystemCallError => e
           message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"

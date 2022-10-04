@@ -105,7 +105,7 @@ describe Chef::Mixin::Template, "render_template" do
 
     it "should render local files" do
 
-      tf = Tempfile.new("partial")
+      tf = Tempfile.create("partial")
       tf.write "test"
       tf.rewind
 
@@ -125,7 +125,7 @@ describe Chef::Mixin::Template, "render_template" do
 
     it "should render using the source argument if provided" do
 
-      tf = Tempfile.new("partial")
+      tf = Tempfile.create("partial")
       tf.write "test"
       tf.rewind
 

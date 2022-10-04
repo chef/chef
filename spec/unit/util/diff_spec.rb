@@ -18,15 +18,16 @@
 
 require "spec_helper"
 require "tmpdir"
+require "tempfile" unless defined?(Tempfile)
 
 shared_context "using file paths with spaces" do
-  let!(:old_tempfile) { Tempfile.new("chef-util diff-spec") }
-  let!(:new_tempfile) { Tempfile.new("chef-util diff-spec") }
+  let!(:old_tempfile) { Tempfile.create("chef-util diff-spec") }
+  let!(:new_tempfile) { Tempfile.create("chef-util diff-spec") }
 end
 
 shared_context "using file paths without spaces" do
-  let!(:old_tempfile) { Tempfile.new("chef-util-diff-spec") }
-  let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec") }
+  let!(:old_tempfile) { Tempfile.create("chef-util-diff-spec") }
+  let!(:new_tempfile) { Tempfile.create("chef-util-diff-spec") }
 end
 
 shared_examples_for "a diff util" do
@@ -36,13 +37,13 @@ shared_examples_for "a diff util" do
 
   it "produces a diff even if the old_file does not exist" do
     old_tempfile.close
-    old_tempfile.unlink
+    # old_tempfile.unlink
     expect(differ.for_output).to eql(["(no diff)"])
   end
 
   it "produces a diff even if the new_file does not exist" do
     new_tempfile.close
-    new_tempfile.unlink
+    # new_tempfile.unlink
     expect(differ.for_output).to eql(["(no diff)"])
   end
 

@@ -40,6 +40,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
 # SOFTWARE.
 
+require "tempfile" unless defined?(Tempfile)
+
 class Chef
   class Util
     class Diff
@@ -62,13 +64,13 @@ class Chef
         tempfile = nil
         unless File.exist?(file)
           Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
-          tempfile = Tempfile.new("chef-diff")
+          tempfile = Tempfile.create("chef-diff")
           file = tempfile.path
         end
         yield file
         unless tempfile.nil?
           tempfile.close
-          tempfile.unlink
+          # tempfile.unlink
         end
       end
 

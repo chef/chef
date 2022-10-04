@@ -28,8 +28,11 @@ module Mixlib
     autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
   end
 end
-require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "../cookbook_metadata"
+
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "tempfile" unless defined?(Tempfile)
+
 class Chef
   class Knife
     module Core
@@ -45,7 +48,7 @@ class Chef
         class << self
 
           def create_build_dir(cookbook)
-            tmp_cookbook_path = Tempfile.new("#{ChefUtils::Dist::Infra::SHORT}-#{cookbook.name}-build")
+            tmp_cookbook_path = Tempfile.create("#{ChefUtils::Dist::Infra::SHORT}-#{cookbook.name}-build")
             tmp_cookbook_path.close
             tmp_cookbook_dir = tmp_cookbook_path.path
             File.unlink(tmp_cookbook_dir)

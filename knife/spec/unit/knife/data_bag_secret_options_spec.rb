@@ -36,15 +36,15 @@ describe Chef::Knife::DataBagSecretOptions do
 
   let(:secret) { "abc123SECRET" }
   let(:secret_file) do
-    sfile = Tempfile.new("encrypted_data_bag_secret")
+    sfile = Tempfile.create("encrypted_data_bag_secret")
     sfile.puts(secret)
     sfile.flush
     sfile
   end
 
   after do
-    secret_file.close
-    secret_file.unlink
+    secret_file.close!
+    # secret_file.unlink
   end
 
   describe "#validate_secrets" do

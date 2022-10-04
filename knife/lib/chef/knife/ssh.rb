@@ -17,6 +17,7 @@
 #
 
 require_relative "../knife"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Knife
@@ -475,7 +476,7 @@ class Chef
       end
 
       def screen
-        tf = Tempfile.new("knife-ssh-screen")
+        tf = Tempfile.create("knife-ssh-screen")
         ChefConfig::PathHelper.home(".screenrc") do |screenrc_path|
           if File.exist? screenrc_path
             tf.puts("source #{screenrc_path}")
@@ -490,7 +491,7 @@ class Chef
           server.user ? tf.puts("#{server.user}@#{server.host}") : tf.puts(server.host)
           window += 1
         end
-        tf.close
+        tf.close!
         exec("screen -c #{tf.path}")
       end
 

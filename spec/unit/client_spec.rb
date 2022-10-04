@@ -459,13 +459,13 @@ describe Chef::Client do
 
       context "with an output path" do
         before do
-          @tmpout = Tempfile.open("rspec-for-client-formatter-selection-#{Process.pid}")
+          @tmpout = Tempfile.create("rspec-for-client-formatter-selection-#{Process.pid}")
           Chef::Config.add_formatter(:min, @tmpout.path)
         end
 
         after do
           @tmpout.close unless @tmpout.closed?
-          @tmpout.unlink
+          # @tmpout.unlink
         end
 
         it "configures the formatter for the file path" do

@@ -18,6 +18,7 @@
 
 require "spec_helper"
 require "chef/exceptions"
+require "tempfile" unless defined?(Tempfile)
 
 describe Chef::Provider::Ifconfig::Debian do
 
@@ -56,7 +57,7 @@ describe Chef::Provider::Ifconfig::Debian do
   describe "generate_config" do
 
     context "when writing a file" do
-      let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+      let(:tempfile) { Tempfile.create("rspec-chef-ifconfig-debian") }
 
       let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
 
@@ -105,7 +106,7 @@ describe Chef::Provider::Ifconfig::Debian do
     end
 
     context "when the file is up-to-date" do
-      let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+      let(:tempfile) { Tempfile.create("rspec-chef-ifconfig-debian") }
 
       let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
 
@@ -182,7 +183,7 @@ describe Chef::Provider::Ifconfig::Debian do
       context "when writing a file" do
         let(:config_file_ifcfg) { StringIO.new }
 
-        let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+        let(:tempfile) { Tempfile.create("rspec-chef-ifconfig-debian") }
 
         let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
 
@@ -231,7 +232,7 @@ describe Chef::Provider::Ifconfig::Debian do
       end
 
       context "when the file is up-to-date" do
-        let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+        let(:tempfile) { Tempfile.create("rspec-chef-ifconfig-debian") }
 
         let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
 
@@ -295,7 +296,7 @@ describe Chef::Provider::Ifconfig::Debian do
 
   describe "delete_config for action_delete" do
 
-    let(:tempfile) { Tempfile.new("rspec-chef-ifconfig-debian") }
+    let(:tempfile) { Tempfile.create("rspec-chef-ifconfig-debian") }
 
     let(:tempdir_path) { Dir.mktmpdir("rspec-chef-ifconfig-debian-dir") }
 

@@ -16,6 +16,7 @@
 require_relative "../http"
 require_relative "../json_compat"
 require_relative "../resource"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Resource
@@ -85,7 +86,7 @@ class Chef
           opts << ["--remote-sup", new_resource.remote_sup] if new_resource.remote_sup
           opts << ["--user", new_resource.user] if new_resource.user
 
-          tempfile = Tempfile.new(["habitat_config", ".toml"])
+          tempfile = Tempfile.create(["habitat_config", ".toml"])
           begin
             tempfile.write(render_toml(new_resource.config))
             tempfile.close
@@ -93,7 +94,7 @@ class Chef
             hab("config", "apply", opts, new_resource.service_group, incarnation, tempfile.path)
           ensure
             tempfile.close
-            tempfile.unlink
+            # tempfile.unlink
           end
         end
       end

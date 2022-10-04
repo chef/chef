@@ -151,15 +151,15 @@ class Chef
         # @param remote_path [String] The destination path on the remote file system.
         # @return NilClass
         def upload_file_content!(content, remote_path)
-          t = Tempfile.new("chef-content")
+          t = Tempfile.create("chef-content")
           t.binmode
           t << content
-          t.close
+          t.close!
           upload_file!(t.path, remote_path)
           nil
         ensure
-          t.close
-          t.unlink
+          t.close!
+          # t.unlink
         end
 
         #
