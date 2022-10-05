@@ -107,7 +107,7 @@ class Chef
 
       property :splay, [Integer, String],
         coerce: proc { |x| Integer(x) },
-        callbacks: { "should be a positive number" => proc { |v| v > 0 } },
+        callbacks: { "should be a positive number" => proc { |v| v >= 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time.",
         default: 300
 
@@ -122,7 +122,8 @@ class Chef
 
       property :config_directory, String,
         description: "The path of the config directory.",
-        default: ChefConfig::Config.etc_chef_dir
+        default: ChefConfig::Config.etc_chef_dir,
+        default_description: ChefConfig::Config.c_chef_dir
 
       property :log_directory, String,
         description: "The path of the directory to create the log file in.",

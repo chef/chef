@@ -13,8 +13,6 @@
       @minimal_ohai
       @named_run_list
       @no_proxy
-      @ohai_disabled_plugins
-      @ohai_optional_plugins
       @pid_file
       @policy_group
       @policy_name
@@ -40,10 +38,10 @@ log_location <%= @log_location.inspect %>
 <% end -%>
 <%# These data_collector options are special as they have a '.' -%>
 <% unless @data_collector_server_url.nil? || @data_collector_server_url.empty? %>
-data_collector.server_url <%= @data_collector_server_url %>
+data_collector.server_url <%= @data_collector_server_url.inspect %>
 <% end %>
 <% unless @data_collector_token.nil? || @data_collector_token.empty? %>
-data_collector.token <%= @data_collector_token %>
+data_collector.token <%= @data_collector_token.inspect %>
 <% end %>
 <%# The code below is not DRY on purpose to improve readability -%>
 <% unless @start_handlers.empty? -%>

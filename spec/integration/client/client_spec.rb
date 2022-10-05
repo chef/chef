@@ -37,7 +37,14 @@ describe "chef-client" do
 
   def install_certificate_in_store(client_name)
     if ChefUtils.windows?
-      powershell_exec!("New-SelfSignedCertificate -certstorelocation cert:\\localmachine\\my -Subject #{client_name} -FriendlyName #{client_name} -KeyExportPolicy Exportable")
+      powershell_exec! <<~EOH
+        if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
+          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}"
+        }
+        else {
+          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
+        }
+      EOH
     end
   end
 
@@ -65,13 +72,13 @@ describe "chef-client" do
 
   def verify_export_password_exists
     powershell_exec! <<~EOH
-      Try {
-          $response = Get-ItemPropertyValue -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
-          if ($response) {return $true}
+    Try {
+      $response = Get-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
+      if ($response) {return $true}
       }
-      Catch {
-          return $false
-      }
+    Catch {
+        return $false
+    }
     EOH
   end
 

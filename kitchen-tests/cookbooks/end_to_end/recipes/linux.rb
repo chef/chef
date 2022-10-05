@@ -28,7 +28,11 @@ timezone "America/Los_Angeles"
 include_recipe "::_yum" if platform_family?("rhel")
 
 if platform_family?("rhel", "fedora", "amazon")
-  include_recipe "selinux::disabled"
+  selinux_install "selinux"
+
+  selinux_state "permissive" do
+    action :permissive
+  end
 end
 
 build_essential do
@@ -43,6 +47,7 @@ include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
   search [ "chef.io" ]
+  atomic_update false # otherwise EBUSY for linux docker containers
 end
 
 users_from_databag = search("users", "*:*")
@@ -57,7 +62,7 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd"
+include_recipe "nscd" unless fedora? # fedora 34+ doesn't have nscd
 
 logrotate_package "logrotate"
 

@@ -47,24 +47,36 @@ ForEach ($b in
   }
   Else {
     Write-Output "Error: Could not find $b"
-    exit 1
+    Throw 1
   }
 }
 
 $Env:PATH = "C:\opscode\chef\bin;$Env:PATH"
 
 chef-client --version
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # Exercise various packaged tools to validate binstub shebangs
 & $embedded_bin_dir\ruby --version
-& $embedded_bin_dir\gem.bat --version
-& $embedded_bin_dir\bundle.bat --version
-& $embedded_bin_dir\rspec.bat --version
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
-$Env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;$Env:PATH"
+& $embedded_bin_dir\gem.bat --version
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
+
+& $embedded_bin_dir\bundle.bat --version
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
+
+& $embedded_bin_dir\rspec.bat --version
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
+
+# We add C:\Program Files\Git\bin to the path to ensure the git bash shell is included
+# Omnibus puts C:\Program Files\Git\mingw64\bin which has git.exe but not bash.exe
+$Env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;C:\Program Files\Git\bin;$Env:PATH"
 
 # Test against the vendored chef gem (cd into the output of "gem which chef")
 $chefdir = gem which chef
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
+
 $chefdir = Split-Path -Path "$chefdir" -Parent
 $chefdir = Split-Path -Path "$chefdir" -Parent
 Set-Location -Path $chefdir
@@ -79,9 +91,10 @@ $Env:CHEF_LICENSE = "accept-no-persist"
 
 # some tests need winrm configured
 winrm quickconfig -quiet
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 bundle
-If ($lastexitcode -ne 0) { Exit $lastexitcode }
+If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # buildkite changes the casing of the Path variable to PATH
 # It is not clear how or where that happens, but it breaks the choco
@@ -98,11 +111,17 @@ $exit = 0
 
 bundle exec rspec -f progress --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
+Write-Output "Last exit code: $lastexitcode"
+Write-Output ""
 
 bundle exec rspec -f progress --profile -- ./spec/functional
 If ($lastexitcode -ne 0) { $exit = 1 }
+Write-Output "Last exit code: $lastexitcode"
+Write-Output ""
 
 bundle exec rspec -f progress --profile -- ./spec/integration
 If ($lastexitcode -ne 0) { $exit = 1 }
+Write-Output "Last exit code: $lastexitcode"
+Write-Output ""
 
-Exit $exit
+If ($exit -ne 0) { Throw $exit }

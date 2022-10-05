@@ -20,16 +20,27 @@
 
 require_relative "../package"
 require_relative "../../resource/zypper_package"
+require_relative "zypper/version"
 
 class Chef
   class Provider
     class Package
       class Zypper < Chef::Provider::Package
         use_multipackage_api
+        use_package_name_for_source
         allow_nils
 
         provides :package, platform_family: "suse"
         provides :zypper_package
+
+        def define_resource_requirements
+          super
+          requirements.assert(:install, :upgrade) do |a|
+            a.assertion { source_files_exist? }
+            a.failure_message Chef::Exceptions::Package, "#{new_resource} source file(s) do not exist: #{missing_sources}"
+            a.whyrun "Assuming they would have been previously created."
+          end
+        end
 
         def load_current_resource
           @current_resource = Chef::Resource::ZypperPackage.new(new_resource.name)
@@ -70,7 +81,35 @@ class Chef
         end
 
         def candidate_version
-          @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
+          package_name_array.each_with_index.map do |pkg, i|
+            available_version(i)
+          end
+        end
+
+        # returns true if all sources exist.  Returns false if any do not, or if no
+        # sources were specified.
+        # @return [Boolean] True if all sources exist
+        def source_files_exist?
+          if !new_resource.source.nil?
+            resolved_source_array.all? { |s| s && ::File.exist?(s) }
+          else
+            true
+          end
+        end
+
+        # Helper to return all the names of the missing sources for error messages.
+        # @return [Array<String>] Array of missing sources
+        def missing_sources
+          resolved_source_array.select { |s| s.nil? || !::File.exist?(s) }
+        end
+
+        def resolve_source_to_version
+          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+            case line
+              when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
+            end
+          end
         end
 
         def resolve_current_version(package_name)
@@ -119,7 +158,12 @@ class Chef
 
         def available_version(index)
           @available_version ||= []
-          @available_version[index] ||= resolve_available_version(package_name_array[index], safe_version_array[index])
+
+          @available_version[index] ||= if new_resource.source
+                                          resolve_source_to_version
+                                        else
+                                          resolve_available_version(package_name_array[index], safe_version_array[index])
+                                        end
           @available_version[index]
         end
 
@@ -141,7 +185,7 @@ class Chef
         end
 
         def zypper_package(command, global_options, *options, names, versions)
-          zipped_names = zip(names, versions)
+          zipped_names = new_resource.source || zip(names, versions)
           if zypper_version < 1.0
             shell_out!("zypper", global_options, gpg_checks, command, *options, "-y", names)
           else

@@ -1,17 +1,84 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.88 -->
-## [v18.0.88](https://github.com/chef/chef/tree/v18.0.88) (2022-04-07)
+<!-- latest_release 18.0.155 -->
+## [v18.0.155](https://github.com/chef/chef/tree/v18.0.155) (2022-09-28)
 
 #### Merged Pull Requests
-- Updating For Ruby 3.1 [#12769](https://github.com/chef/chef/pull/12769) ([johnmccrae](https://github.com/johnmccrae))
+- Disable platforms still under development [#13218](https://github.com/chef/chef/pull/13218) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable platforms still under development [#13218](https://github.com/chef/chef/pull/13218) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.155 -->
+- Update to latest omnibus [#13216](https://github.com/chef/chef/pull/13216) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.154 -->
+- Allow user providers to declare no support for ruby-shadow [#13213](https://github.com/chef/chef/pull/13213) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.153 -->
+- Permit ruby 3.0 for AIX [#13207](https://github.com/chef/chef/pull/13207) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.152 -->
+- Update Chef version in Gemfile.lock under knife [#13203](https://github.com/chef/chef/pull/13203) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.151 -->
+- Separate gemspec for windows [#13202](https://github.com/chef/chef/pull/13202) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.150 -->
+- Windows Verify Plan fails during &quot;Rake Install rest-client&quot; [#13199](https://github.com/chef/chef/pull/13199) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.149 -->
+- Remove the chef17 git clone step [#13197](https://github.com/chef/chef/pull/13197) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.148 -->
+- Update omnibus gem hash as well [#13198](https://github.com/chef/chef/pull/13198) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.147 -->
+- Force omnibus version [#13193](https://github.com/chef/chef/pull/13193) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.146 -->
+- Tweaking env variables in the config.yml file [#13178](https://github.com/chef/chef/pull/13178) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.145 -->
+- Move Gemfile.locks to 2.3.7 and disable .github kitchen install of 2.3.18 [#13176](https://github.com/chef/chef/pull/13176) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.144 -->
+- The worker container for expeditor needs to use Ruby 3.1.0 [#13171](https://github.com/chef/chef/pull/13171) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.143 -->
+- Add empty pipeline for macos universal package [#13152](https://github.com/chef/chef/pull/13152) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.0.142 -->
+- Add newline to end of sysctl files [#13118](https://github.com/chef/chef/pull/13118) ([tmccombs](https://github.com/tmccombs)) <!-- 18.0.141 -->
+- fix chef_client_scheduled_task splay to accept 0 [#13095](https://github.com/chef/chef/pull/13095) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.140 -->
+- add url for principal names [#13104](https://github.com/chef/chef/pull/13104) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.139 -->
+- Added how to doc with details about documentation for infra client resources [#13046](https://github.com/chef/chef/pull/13046) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.138 -->
+- Wording change in error for missing recipe dependency (&quot;Obvious Fix&quot;) [#13061](https://github.com/chef/chef/pull/13061) ([c-drive](https://github.com/c-drive)) <!-- 18.0.137 -->
+- Require etc library [#13068](https://github.com/chef/chef/pull/13068) ([curzonj](https://github.com/curzonj)) <!-- 18.0.136 -->
+- Bump omnibus-software from `a9b13a0` to `1d540dc` in /omnibus [#13089](https://github.com/chef/chef/pull/13089) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.135 -->
+- Re add: Use new msys2 based devkit for windows&quot;&quot; [#13097](https://github.com/chef/chef/pull/13097) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.134 -->
+- Skip tests on FreeBSD-13 [#13079](https://github.com/chef/chef/pull/13079) ([poorndm](https://github.com/poorndm)) <!-- 18.0.133 -->
+- Add AIX-7.3 to Build Matrix [#13058](https://github.com/chef/chef/pull/13058) ([poorndm](https://github.com/poorndm)) <!-- 18.0.132 -->
+- update property DSL docs [#13093](https://github.com/chef/chef/pull/13093) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.131 -->
+- Revert &quot;Use new msys2 based devkit for windows&quot; [#13063](https://github.com/chef/chef/pull/13063) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.130 -->
+- Fixed sensitive properties unsuppressed content issue [#13014](https://github.com/chef/chef/pull/13014) ([blabade](https://github.com/blabade)) <!-- 18.0.129 -->
+- Fix issue in adhoc nightly builds [#13059](https://github.com/chef/chef/pull/13059) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.128 -->
+- Use new msys2 based devkit for windows [#13038](https://github.com/chef/chef/pull/13038) ([mwrock](https://github.com/mwrock)) <!-- 18.0.127 -->
+- Use dist constant when invoking knife configure [#12926](https://github.com/chef/chef/pull/12926) ([ramereth](https://github.com/ramereth)) <!-- 18.0.126 -->
+- Add nightlies for chef-17 to run every Tue, Thu  and chef-16 to run every Tue [#13018](https://github.com/chef/chef/pull/13018) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.125 -->
+- AdHoc Pipeline Windows PageFile Test errors [#13009](https://github.com/chef/chef/pull/13009) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.124 -->
+- Fix fedora kitchen test failure [#13020](https://github.com/chef/chef/pull/13020) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.123 -->
+- Refactored tests for older Windows versions [#13019](https://github.com/chef/chef/pull/13019) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.122 -->
+- Correcting Cert creation for rspec tests [#13010](https://github.com/chef/chef/pull/13010) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.121 -->
+- Updated Ruby version in omnibus_overrides [#12995](https://github.com/chef/chef/pull/12995) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.120 -->
+- Fix documentation for chef_client_scheduled_task [#12917](https://github.com/chef/chef/pull/12917) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.0.119 -->
+- Zypper package source property addition [#12182](https://github.com/chef/chef/pull/12182) ([manick-vel-11](https://github.com/manick-vel-11)) <!-- 18.0.118 -->
+- Smriti/3884 mounting cifs shares with spaces [#11626](https://github.com/chef/chef/pull/11626) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 18.0.117 -->
+- Fix cron_d job name character set [#12377](https://github.com/chef/chef/pull/12377) ([hamarituc](https://github.com/hamarituc)) <!-- 18.0.116 -->
+- Add CONTAINER_IMAGE dist constant [#12806](https://github.com/chef/chef/pull/12806) ([jakauppila](https://github.com/jakauppila)) <!-- 18.0.115 -->
+- Stop executing locale-gen on every chef run by adding -h flag [#12833](https://github.com/chef/chef/pull/12833) ([hrak](https://github.com/hrak)) <!-- 18.0.114 -->
+- KTLO - Updating authenticator.rb to correct for random password creation failures [#12980](https://github.com/chef/chef/pull/12980) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.113 -->
+- refactoring the version check [#12988](https://github.com/chef/chef/pull/12988) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.112 -->
+- Bumping license_scout version [#12992](https://github.com/chef/chef/pull/12992) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.111 -->
+- Adjusting cert creation for older Windows platforms [#12965](https://github.com/chef/chef/pull/12965) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.110 -->
+- Bump ohai to 18.0.14 [#12973](https://github.com/chef/chef/pull/12973) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.0.109 -->
+- Update the command to enable adhoc jobs for chef/chef main pipeline [#12979](https://github.com/chef/chef/pull/12979) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.108 -->
+- Fix error &#39;error validating X-Vault-AWS-IAM-Server-ID header: missing header X-Vault-AWS-IAM-Server-ID&#39; in Hashi Vault secret manager for AWS IAM auth method [#12956](https://github.com/chef/chef/pull/12956) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.107 -->
+- Add nightly builds for chef/chef:main [#12971](https://github.com/chef/chef/pull/12971) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 18.0.106 -->
+- Remove the beta feature warning which shows up when using Secret Manager [#12925](https://github.com/chef/chef/pull/12925) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.105 -->
+- adding UCRT support to the build pipelines [#12959](https://github.com/chef/chef/pull/12959) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.104 -->
+- Updated ncurses and gems [#12953](https://github.com/chef/chef/pull/12953) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.103 -->
+- Updated files to account for pem storage in the Certificate Store [#12910](https://github.com/chef/chef/pull/12910) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.102 -->
+- updated version data to properly account for Windows 11 and its assoc… [#12919](https://github.com/chef/chef/pull/12919) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.101 -->
+- Knife upload: bad error message when a recipe has a syntax error [#11678](https://github.com/chef/chef/pull/11678) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 18.0.100 -->
+- updating throw statement to only execute on non-zero exit codes [#12918](https://github.com/chef/chef/pull/12918) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.99 -->
+- Refactoring Windows certificate code and tests to reflect updates in the win32-certstore gem [#12859](https://github.com/chef/chef/pull/12859) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.98 -->
+- flush package cache after registering via rhsm_register [#12828](https://github.com/chef/chef/pull/12828) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.97 -->
+- handling exception for compliance phase error during chef spec run [#12830](https://github.com/chef/chef/pull/12830) ([i5pranay93](https://github.com/i5pranay93)) <!-- 18.0.96 -->
+- Renamed private method as conflicting to inbuilt method and getting warning [#12849](https://github.com/chef/chef/pull/12849) ([sanga1794](https://github.com/sanga1794)) <!-- 18.0.95 -->
+- Bump berkshelf from 7.2.2 to 8.0.0 in /omnibus [#12837](https://github.com/chef/chef/pull/12837) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.94 -->
+- add expire and inactive options to linux user resource [#11659](https://github.com/chef/chef/pull/11659) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.93 -->
+- Fix chef_client_config template rendering [#12817](https://github.com/chef/chef/pull/12817) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.0.92 -->
+- main - Update bundle [#12788](https://github.com/chef/chef/pull/12788) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.91 -->
+- Updates for the chef_client_config resource [#12732](https://github.com/chef/chef/pull/12732) ([chef-davin](https://github.com/chef-davin)) <!-- 18.0.90 -->
+- SELinux integration to infra client [#12694](https://github.com/chef/chef/pull/12694) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.89 -->
 - Updating For Ruby 3.1 [#12769](https://github.com/chef/chef/pull/12769) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.88 -->
 - Updating gemfile.locks [#12751](https://github.com/chef/chef/pull/12751) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.87 -->
 - Rest Resource Support [#12755](https://github.com/chef/chef/pull/12755) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 18.0.86 -->

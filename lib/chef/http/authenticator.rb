@@ -26,8 +26,6 @@ class Chef
   class HTTP
     class Authenticator
       DEFAULT_SERVER_API_VERSION = "2".freeze
-      # cspell:disable-next-line
-      SOME_CHARS = "~!@#%^&*_-+=`|\\(){}[<]:;'>,.?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz".each_char.to_a
 
       extend Chef::Mixin::PowershellExec
 
@@ -190,8 +188,9 @@ class Chef
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
+        require "securerandom" unless defined?(SecureRandom)
         size = 14
-        password = SOME_CHARS.sample(size).join
+        password = SecureRandom.alphanumeric(size)
         encrypted_pass = encrypt_pfx_pass(password)
         values = { name: "PfxPass", type: :string, data: encrypted_pass }
         @win32registry.set_value(new_path, values)
@@ -228,18 +227,28 @@ class Chef
             file_path = ps_blob["PSPath"].split("::")[1]
             pkcs = OpenSSL::PKCS12.new(File.binread(file_path), password)
 
-            # We test the pfx we just extracted the private key from
+            # We check the pfx we just extracted the private key from
             # if that cert is expiring in 7 days or less we generate a new pfx/p12 object
             # then we post the new public key from that to the client endpoint on
             # chef server.
-            # is_certificate_expiring(pkcs)
             File.delete(file_path)
+            key_expiring = is_certificate_expiring?(pkcs)
+            if key_expiring
+              powershell_exec!(delete_old_key_ps(client_name))
+              ::Chef::Client.update_key_and_register(Chef::Config[:client_name], pkcs)
+            end
 
             return pkcs.key.private_to_pem
           end
         end
 
         false
+      end
+
+      def self.is_certificate_expiring?(pkcs)
+        today = Date.parse(Time.now.utc.iso8601)
+        future = Date.parse(pkcs.certificate.not_after.iso8601)
+        future.mjd - today.mjd <= 7
       end
 
       def self.get_the_key_ps(client_name, password)
@@ -253,6 +262,12 @@ class Chef
             Catch {
               return $false
             }
+        CODE
+      end
+
+      def self.delete_old_key_ps(client_name)
+        powershell_code = <<~CODE
+          Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } | Remove-Item -ErrorAction Stop;
         CODE
       end
 

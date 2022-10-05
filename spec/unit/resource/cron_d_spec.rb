@@ -18,7 +18,11 @@
 require "spec_helper"
 
 describe Chef::Resource::CronD do
-  let(:resource) { Chef::Resource::CronD.new("cronify") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::CronD.new("cronify", run_context) }
+  let(:provider) { resource.provider_for_action(:create) }
 
   it "has a default action of [:create]" do
     expect(resource.action).to eql([:create])
@@ -32,6 +36,38 @@ describe Chef::Resource::CronD do
 
   it "the cron_name property is the name_property" do
     expect(resource.cron_name).to eql("cronify")
+  end
+
+  context "on linux" do
+    before(:each) do
+      node.automatic_attrs[:os] = "linux"
+    end
+
+    it "the cron_name property is valid" do
+      provider.define_resource_requirements
+
+      expect { resource.cron_name "cron-job";   provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "cron_job_0"; provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "CronJob";    provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "cron!";      provider.process_resource_requirements }.to raise_error "The cron job name should contain letters, numbers, hyphens and underscores only."
+      expect { resource.cron_name "cron job";   provider.process_resource_requirements }.to raise_error "The cron job name should contain letters, numbers, hyphens and underscores only."
+    end
+  end
+
+  context "not on linux" do
+    before(:each) do
+      node.automatic_attrs[:os] = "aix"
+    end
+
+    it "all cron names are valid" do
+      provider.define_resource_requirements
+
+      expect { resource.cron_name "cron-job";   provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "cron_job_0"; provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "CronJob";    provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "cron!";      provider.process_resource_requirements }.not_to raise_error
+      expect { resource.cron_name "cron job";   provider.process_resource_requirements }.not_to raise_error
+    end
   end
 
   it "the mode property defaults to '0600'" do

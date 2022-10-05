@@ -16,10 +16,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7
-        bundler-cache: true
+        ruby-version: 3.1
+        bundler-cache: false
     - uses: r7kamura/rubocop-problem-matchers-action@v1 # this shows the failures in the PR
-    - run: bundle exec chefstyle -c .rubocop.yml
+    - run: |
+        gem install chefstyle
+        chefstyle -c .rubocop.yml
 
   spellcheck:
     runs-on: ubuntu-latest
