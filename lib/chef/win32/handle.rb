@@ -36,13 +36,13 @@ class Chef
 
       def initialize(handle)
         @handle = handle
-        @is_2012 ||= get_proc_os
+        @is_2012 ||= win2012notr2?
         ObjectSpace.define_finalizer(self, Handle.close_handle_finalizer(handle))
       end
 
       attr_reader :handle
 
-      def get_proc_os
+      def win2012notr2?
         os = powershell_exec("(Get-CimInstance win32_operatingsystem).Caption").result
         os.match(/2012/) && !os.match(/R2/) ? true : false
       end
@@ -51,6 +51,10 @@ class Chef
         # According to http://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx, it is not necessary
         # to close the pseudo handle returned by the GetCurrentProcess function.  The docs also say that it doesn't hurt to call
         # CloseHandle on it. However, doing so from inside of Ruby always seems to produce an invalid handle error.
+
+        # Warning - Temporary Fix: This is causing the errors noted above in Chef-18 but only for Windows Server 2012. The long term
+        # fix is to update how we consume and close files using the Tempfile class. Alternately, we kill support for Server 2012 as it is the only OS
+        # having a problem
         proc { close_handle(handle) unless handle == CURRENT_PROCESS_HANDLE } unless @is_2012
       end
 
