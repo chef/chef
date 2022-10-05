@@ -36,13 +36,13 @@ class Chef
 
       def initialize(handle)
         @handle = handle
-        @is_2012 ||= win2012notr2?
+        @is_2012 ||= win2012_not_r2?
         ObjectSpace.define_finalizer(self, Handle.close_handle_finalizer(handle))
       end
 
       attr_reader :handle
 
-      def win2012notr2?
+      def win2012_not_r2?
         os = powershell_exec("(Get-CimInstance win32_operatingsystem).Caption").result
         os.match(/2012/) && !os.match(/R2/) ? true : false
       end
