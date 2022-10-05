@@ -89,7 +89,7 @@ describe Chef::FileContentManagement::Tempfile do
 
     it "should create a temporary file" do
       subject = tempfile_object_for_path("/foo/bar/new_file")
-      expect(subject.send(:tempfile_open)).to be_a(Tempfile)
+      expect(subject.send(:tempfile_open)).to be_a(File)
     end
 
     it "should preserve the extension in the tempfile path" do
