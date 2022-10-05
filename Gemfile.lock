@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: db6480f47f37954b9d3ac1fbb7837fbdb474646a
+  revision: 3855db320bf14766e37eaeb1bb61ba87c2542ac8
   branch: main
   specs:
-    ohai (18.0.9)
+    ohai (18.0.24)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -31,13 +31,6 @@ GIT
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
-
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
 
 PATH
   remote: .
@@ -147,30 +140,30 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.574.0)
-    aws-sdk-core (3.130.0)
+    aws-partitions (1.642.0)
+    aws-sdk-core (3.158.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
-      jmespath (~> 1.0)
-    aws-sdk-kms (1.55.0)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-kms (1.58.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.113.0)
+    aws-sdk-s3 (1.114.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.59.0)
+    aws-sdk-secretsmanager (1.66.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.4.0)
+    aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
@@ -182,7 +175,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-vault (4.1.5)
+    chef-vault (4.1.10)
     chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
@@ -206,7 +199,7 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     ed25519 (1.3.0)
-    erubi (1.10.0)
+    erubi (1.11.0)
     erubis (2.7.0)
     faraday (1.4.3)
       faraday-em_http (~> 1.0)
@@ -227,7 +220,6 @@ GEM
       net-ssh
     ffi (1.15.5)
     ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x64-unknown)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
@@ -244,11 +236,11 @@ GEM
     hashdiff (1.0.1)
     hashie (4.1.0)
     http-accept (1.7.0)
-    http-cookie (1.0.4)
+    http-cookie (1.0.5)
       domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.56.19)
+    inspec-core (4.56.20)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -271,12 +263,12 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.56.19)
-      inspec-core (= 4.56.19)
+    inspec-core-bin (4.56.20)
+      inspec-core (= 4.56.20)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.1)
-    json (2.6.1)
+    json (2.6.2)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -284,7 +276,7 @@ GEM
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
     little-plugger (1.1.4)
-    logging (2.3.0)
+    logging (2.3.1)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
@@ -297,7 +289,7 @@ GEM
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
-    mixlib-config (3.0.9)
+    mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
     mixlib-shellout (3.2.7)
@@ -307,13 +299,8 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     multi_json (1.15.0)
-    multipart-post (2.1.1)
+    multipart-post (2.2.3)
     net-ftp (0.1.3)
       net-protocol
       time
@@ -327,7 +314,7 @@ GEM
     netrc (0.11.0)
     nori (2.6.0)
     parallel (1.22.1)
-    parser (3.1.1.0)
+    parser (3.1.2.1)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
@@ -336,18 +323,18 @@ GEM
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
+    pry-byebug (3.10.1)
       byebug (~> 11.0)
-      pry (~> 0.13.0)
+      pry (>= 0.13, < 0.15)
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    public_suffix (4.0.6)
-    rack (2.2.3)
+    public_suffix (5.0.0)
+    rack (2.2.4)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.2.1)
+    regexp_parser (2.6.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -372,7 +359,7 @@ GEM
       rspec-mocks (~> 3.11.0)
     rspec-core (3.11.0)
       rspec-support (~> 3.11.0)
-    rspec-expectations (3.11.0)
+    rspec-expectations (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-its (1.3.0)
@@ -381,7 +368,7 @@ GEM
     rspec-mocks (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
-    rspec-support (3.11.0)
+    rspec-support (3.11.1)
     rubocop (1.25.1)
       parallel (~> 1.10)
       parser (>= 3.1.0.0)
@@ -391,13 +378,13 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.16.0)
+    rubocop-ast (1.21.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
-    semverse (3.0.0)
+    semverse (3.0.2)
     sslshake (1.3.1)
     strings (0.2.1)
       strings-ansi (~> 0.2)
@@ -409,16 +396,17 @@ GEM
     thor (1.2.1)
     time (0.2.0)
       date
-    timeout (0.2.0)
+    timeout (0.3.0)
     tomlrb (1.3.0)
-    train-core (3.8.9)
+    train-core (3.10.1)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 4.0)
       net-ssh (>= 2.9, < 7.0)
-    train-rest (0.4.2)
+    train-rest (0.5.0)
+      aws-sigv4 (~> 1.5)
       rest-client (~> 2.1)
       train-core (~> 3.0)
     train-winrm (0.2.13)
@@ -445,23 +433,21 @@ GEM
       tty-screen (~> 0.8)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8.1)
-    unf_ext (0.0.8.1-x64-mingw32)
-    unf_ext (0.0.8.1-x86-mingw32)
-    unicode-display_width (2.1.0)
+    unf_ext (0.0.8.2)
+    unicode-display_width (2.3.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    vault (0.16.0)
+    vault (0.17.0)
       aws-sigv4
-    webmock (3.14.0)
+    webmock (3.18.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
     win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.2)
+    win32-certstore (0.6.15)
+      chef-powershell (>= 1.0.12)
       ffi
-      mixlib-shellout
     win32-event (0.6.3)
       win32-ipc (>= 0.6.0)
     win32-eventlog (0.6.3)
@@ -472,7 +458,7 @@ GEM
       ffi
     win32-mutex (0.4.3)
       win32-ipc (>= 0.6.0)
-    win32-process (0.9.0)
+    win32-process (0.10.0)
       ffi (>= 1.0.0)
     win32-service (2.3.2)
       ffi
@@ -527,7 +513,6 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
