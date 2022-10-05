@@ -35,13 +35,6 @@ GIT
       netrc (~> 0.8)
 
 GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
-
-GIT
   remote: https://github.com/chef/ruby-proxifier
   revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
   branch: lcg/ruby-3
@@ -514,7 +507,6 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
