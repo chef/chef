@@ -18,6 +18,8 @@
 
 require "spec_helper"
 
+require "pry"
+
 describe Chef::FileContentManagement::Tempfile do
 
   def tempfile_object_for_path(path)
@@ -100,15 +102,15 @@ describe Chef::FileContentManagement::Tempfile do
 
     it "should pick the destdir preferentially" do
       subject = tempfile_object_for_path("/foo/bar/new_file")
-      expect(Tempfile).to receive(:open).with([tempname, ""], "/foo/bar").and_return(tempfile)
+      expect(Tempfile).to receive(:create).with([tempname, ""], "/foo/bar").and_return(tempfile)
       subject.send(:tempfile_open)
     end
 
     it "should use ENV['TMP'] otherwise" do
       subject = tempfile_object_for_path("/foo/bar/new_file")
       expect(Dir).to receive(:tmpdir).and_return("/tmp/dir")
-      expect(Tempfile).to receive(:open).with([tempname, ""], "/foo/bar").and_raise(SystemCallError, "foo")
-      expect(Tempfile).to receive(:open).with([tempname, ""], "/tmp/dir").and_return(tempfile)
+      expect(Tempfile).to receive(:create).with([tempname, ""], "/foo/bar").and_raise(SystemCallError, "foo")
+      expect(Tempfile).to receive(:create).with([tempname, ""], "/tmp/dir").and_return(tempfile)
       subject.send(:tempfile_open)
     end
   end
