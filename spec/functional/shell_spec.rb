@@ -79,6 +79,8 @@ describe Shell do
       # Windows ruby installs don't (always?) have PTY,
       # so hide the require here
 
+      ENV['TERM'] ||= 'vt100'
+
       require "pty"
       config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
       reader, writer, pid = PTY.spawn("bundle exec #{ChefUtils::Dist::Infra::SHELL} --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
