@@ -57,7 +57,7 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd" unless fedora? 
+include_recipe "nscd" unless fedora?
 
 logrotate_package "logrotate"
 
