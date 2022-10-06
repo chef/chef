@@ -40,10 +40,10 @@ include_recipe "::_chef_gem"
 
 include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
 
-resolver_config "/etc/resolv.conf" do
-  nameservers [ "8.8.8.8", "8.8.4.4" ]
-  search [ "chef.io" ]
-end
+# resolver_config "/etc/resolv.conf" do
+#   nameservers [ "8.8.8.8", "8.8.4.4" ]
+#   search [ "chef.io" ]
+# end
 
 users_from_databag = search("users", "*:*")
 
@@ -57,7 +57,7 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd"
+include_recipe "nscd" unless fedora? 
 
 logrotate_package "logrotate"
 
