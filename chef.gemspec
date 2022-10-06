@@ -56,7 +56,7 @@ Gem::Specification.new do |s|
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier", "~> 1.0"
-  s.add_dependency "unf_ext", "< 0.0.8.1" # temporary until it loads properly on Windows
+  s.add_dependency "unf_ext", ">= 0.0.8.2" # temporary until it loads properly on Windows
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
