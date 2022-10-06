@@ -41,12 +41,8 @@ end
 
 describe "Chef::Platform#dsc_refresh_mode_disabled?", :windows_only do
   let(:node) { instance_double("Chef::Node") }
-  let(:powershell) { Class.new { include ChefPowerShell::ChefPowerShellModule::PowerShellExec } }
-  subject(:object) { powershell.new }
 
   it "returns true when RefreshMode is Disabled" do
-    execution = object.powershell_exec("Get-DscLocalConfigurationManager", :powershell, timeout: -1)
-    expect(execution.result["RefreshMode"]).to eq "PUSH"
     expect(Chef::Platform.dsc_refresh_mode_disabled?(node)).to be false
   end
 end
