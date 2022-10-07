@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.155 -->
-## [v18.0.155](https://github.com/chef/chef/tree/v18.0.155) (2022-09-28)
+<!-- latest_release 18.0.156 -->
+## [v18.0.156](https://github.com/chef/chef/tree/v18.0.156) (2022-10-07)
 
 #### Merged Pull Requests
-- Disable platforms still under development [#13218](https://github.com/chef/chef/pull/13218) ([marcparadise](https://github.com/marcparadise))
+- On AIX, add delay to ensure members added to group are visible to tests [#13220](https://github.com/chef/chef/pull/13220) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- On AIX, add delay to ensure members added to group are visible to tests [#13220](https://github.com/chef/chef/pull/13220) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.156 -->
 - Disable platforms still under development [#13218](https://github.com/chef/chef/pull/13218) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.155 -->
 - Update to latest omnibus [#13216](https://github.com/chef/chef/pull/13216) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.154 -->
 - Allow user providers to declare no support for ruby-shadow [#13213](https://github.com/chef/chef/pull/13213) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.153 -->
