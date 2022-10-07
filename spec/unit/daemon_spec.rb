@@ -170,15 +170,7 @@ describe Chef::Daemon do
 
       it "should log an appropriate error message and fail miserably" do
         allow(Process).to receive(:initgroups).and_raise(Errno::EPERM)
-        error = case RUBY_PLATFORM
-                when /solaris2/
-                  "Insufficient privileges"
-                when /aix/
-                  "Not owner"
-                else
-                  "Operation not permitted"
-                end
-        expect(Chef::Application).to receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. #{error}")
+        expect(Chef::Application).to receive(:fatal!).with(/Permission denied when trying to change 999:999 to 501:20/)
         Chef::Daemon._change_privilege(testuser)
       end
     end
