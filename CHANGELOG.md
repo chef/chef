@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.156 -->
-## [v18.0.156](https://github.com/chef/chef/tree/v18.0.156) (2022-10-07)
+<!-- latest_release 18.0.157 -->
+## [v18.0.157](https://github.com/chef/chef/tree/v18.0.157) (2022-10-08)
 
 #### Merged Pull Requests
-- On AIX, add delay to ensure members added to group are visible to tests [#13220](https://github.com/chef/chef/pull/13220) ([neha-p6](https://github.com/neha-p6))
+- Fix term and privilege related broken tests in Solaris build [#13230](https://github.com/chef/chef/pull/13230) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix term and privilege related broken tests in Solaris build [#13230](https://github.com/chef/chef/pull/13230) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.157 -->
 - On AIX, add delay to ensure members added to group are visible to tests [#13220](https://github.com/chef/chef/pull/13220) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.156 -->
 - Disable platforms still under development [#13218](https://github.com/chef/chef/pull/13218) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.155 -->
 - Update to latest omnibus [#13216](https://github.com/chef/chef/pull/13216) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.154 -->
