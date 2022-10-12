@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.159 -->
-## [v18.0.159](https://github.com/chef/chef/tree/v18.0.159) (2022-10-10)
+<!-- latest_release 18.0.160 -->
+## [v18.0.160](https://github.com/chef/chef/tree/v18.0.160) (2022-10-12)
 
 #### Merged Pull Requests
-- Reenable Solaris build/release [#13232](https://github.com/chef/chef/pull/13232) ([tpowell-progress](https://github.com/tpowell-progress))
+- updating builders to add server 2012 back in [#13235](https://github.com/chef/chef/pull/13235) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- updating builders to add server 2012 back in [#13235](https://github.com/chef/chef/pull/13235) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.160 -->
 - Reenable Solaris build/release [#13232](https://github.com/chef/chef/pull/13232) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.159 -->
 - Do not raise if we can&#39;t close win resource handle [#13229](https://github.com/chef/chef/pull/13229) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.158 -->
 - Fix term and privilege related broken tests in Solaris build [#13230](https://github.com/chef/chef/pull/13230) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.157 -->
