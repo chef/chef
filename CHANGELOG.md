@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.19 -->
-## [v17.10.19](https://github.com/chef/chef/tree/v17.10.19) (2022-06-14)
+<!-- latest_release 17.10.20 -->
+## [v17.10.20](https://github.com/chef/chef/tree/v17.10.20) (2022-10-12)
 
 #### Merged Pull Requests
-- Backport to 17: Stop executing locale-gen on every chef run [#12905](https://github.com/chef/chef/pull/12905) ([hrak](https://github.com/hrak))
+- Update self-signed.badssl.com cert for chef-17 [#13231](https://github.com/chef/chef/pull/13231) ([blabade](https://github.com/blabade))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update self-signed.badssl.com cert for chef-17 [#13231](https://github.com/chef/chef/pull/13231) ([blabade](https://github.com/blabade)) <!-- 17.10.20 -->
 - Backport to 17: Stop executing locale-gen on every chef run [#12905](https://github.com/chef/chef/pull/12905) ([hrak](https://github.com/hrak)) <!-- 17.10.19 -->
 - backport-17: Fix error &#39;error validating X-Vault-AWS-IAM-Server-ID header: missing header X-Vault-AWS-IAM-Server-ID&#39; in Hashi Vault secret manager for AWS IAM auth method  [#12957](https://github.com/chef/chef/pull/12957) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.18 -->
 - Backport to 17: Add rubygems_url property to chef_client_config resource [#12978](https://github.com/chef/chef/pull/12978) ([DecoyJoe](https://github.com/DecoyJoe)) <!-- 17.10.17 -->
