@@ -13,6 +13,54 @@ chef_sleep "2"
 
 execute "dir"
 
+execute "Print git version" do
+  command "git --version & git --exec-path"
+  live_stream true
+end
+
+# FIXME  Uninstall git using powershell
+# this is a temporary band-aid due to the fallback git version in
+# https://github.com/sous-chefs/git defaulting to an older version of git
+# than will be installed on the current image this runs in for GitHub Actions
+powershell_script "uninstall_git" do
+  code <<-EOH
+    $possibleInstalledPaths = @("C:/Program Files/Git/", "C:/Program Files (x64)/Git/", "c:/git/")
+    $foundAnInstallation = $false
+    ### For all places where Git "could" be.
+    foreach ($installPath in $possibleInstalledPaths)
+    {
+      ### If the path where Git could exist
+      if (Test-Path($installPath))
+      {
+        ## Some Git stuff might be running.. kill them.
+        Stop-Process -processname Bash -erroraction 'silentlycontinue'
+        Stop-Process -processname Putty* -erroraction 'silentlycontinue'
+        $foundAnInstallation = $true
+        Write-Host "Removing Git from " $installPath
+        ### Find if there's an uninstaller in the folder.
+        $uninstallers = Get-ChildItem $installPath"unins*.exe"
+        ### In reality, there should only be just one that matches.
+        foreach ($uninstaller in $uninstallers)
+        {
+           ### Invoke the uninstaller.
+           $uninstallerCommandLineOptions = "/SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS"
+           Start-Process -Wait -FilePath $uninstaller -ArgumentList $uninstallerCommandLineOptions
+        }
+        ### Remove the folder if it didn't clean up properly.
+        if (Test-Path($installPath))
+        {
+           Remove-Item -Recurse -Force $installPath
+        }
+      }
+    }
+    if (!($foundAnInstallation))
+    {
+       Write-Host "No git installation found. Nothing to uninstall"
+    }
+  EOH
+  live_stream true
+end
+
 powershell_script "sleep 1 second" do
   code "Start-Sleep -s 1"
   live_stream true
