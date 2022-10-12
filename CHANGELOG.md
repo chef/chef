@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.160 -->
-## [v18.0.160](https://github.com/chef/chef/tree/v18.0.160) (2022-10-12)
+<!-- latest_release 18.0.161 -->
+## [v18.0.161](https://github.com/chef/chef/tree/v18.0.161) (2022-10-12)
 
 #### Merged Pull Requests
-- updating builders to add server 2012 back in [#13235](https://github.com/chef/chef/pull/13235) ([johnmccrae](https://github.com/johnmccrae))
+- Adding a new repository to ensure images match the cache [#13237](https://github.com/chef/chef/pull/13237) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adding a new repository to ensure images match the cache [#13237](https://github.com/chef/chef/pull/13237) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.161 -->
 - updating builders to add server 2012 back in [#13235](https://github.com/chef/chef/pull/13235) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.160 -->
 - Reenable Solaris build/release [#13232](https://github.com/chef/chef/pull/13232) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.159 -->
 - Do not raise if we can&#39;t close win resource handle [#13229](https://github.com/chef/chef/pull/13229) ([marcparadise](https://github.com/marcparadise)) <!-- 18.0.158 -->
