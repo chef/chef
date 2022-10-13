@@ -176,6 +176,7 @@ steps:
 - label: "Integration openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -190,6 +191,7 @@ steps:
 - label: "Functional openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
     - zypper install -y cronie insserv-compat
     - zypper install -y libarchive-devel
     - cd /workdir; bundle config set --local without omnibus_package
@@ -205,6 +207,7 @@ steps:
 - label: "Unit openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
     - zypper install -y cron insserv-compat libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
