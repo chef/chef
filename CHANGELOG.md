@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.162 -->
-## [v18.0.162](https://github.com/chef/chef/tree/v18.0.162) (2022-10-13)
+<!-- latest_release 18.0.163 -->
+## [v18.0.163](https://github.com/chef/chef/tree/v18.0.163) (2022-10-14)
 
 #### Merged Pull Requests
-- Updated release notes to consider cookstyle verification point [#13225](https://github.com/chef/chef/pull/13225) ([blabade](https://github.com/blabade))
+- Fixes bug in compare_user on Linux systems [#13223](https://github.com/chef/chef/pull/13223) ([fretb](https://github.com/fretb))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixes bug in compare_user on Linux systems [#13223](https://github.com/chef/chef/pull/13223) ([fretb](https://github.com/fretb)) <!-- 18.0.163 -->
 - Updated release notes to consider cookstyle verification point [#13225](https://github.com/chef/chef/pull/13225) ([blabade](https://github.com/blabade)) <!-- 18.0.162 -->
 - Adding a new repository to ensure images match the cache [#13237](https://github.com/chef/chef/pull/13237) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.161 -->
 - updating builders to add server 2012 back in [#13235](https://github.com/chef/chef/pull/13235) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.160 -->
