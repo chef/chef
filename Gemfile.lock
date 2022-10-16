@@ -478,7 +478,6 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
-  x86_64-darwin-19
 
 DEPENDENCIES
   appbundler
@@ -502,4 +501,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.15
+   2.2.32
