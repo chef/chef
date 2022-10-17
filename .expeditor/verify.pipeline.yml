@@ -177,6 +177,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
+    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-backports" "https://ftp.gwdg.de/pub/opensuse/update/leap/15.3/backports/" "chefzypper-bp"
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -192,6 +193,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
+    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-backports" "https://ftp.gwdg.de/pub/opensuse/update/leap/15.3/backports/" "chefzypper-bp"
     - zypper install -y cronie insserv-compat
     - zypper install -y libarchive-devel
     - cd /workdir; bundle config set --local without omnibus_package
@@ -208,6 +210,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
+    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-backports" "https://ftp.gwdg.de/pub/opensuse/update/leap/15.3/backports/" "chefzypper-bp"
     - zypper install -y cron insserv-compat libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
