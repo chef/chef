@@ -23,7 +23,7 @@ class Chef
     class WindowsUserPrivilege < Chef::Resource
 
       provides :windows_user_privilege
-      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment\n For list of principals to use with :add action Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities"
+      description "The windows_user_privilege resource allows to add a privilege to a principal or (User/Group).\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
 
       introduced "16.0"
 
@@ -38,12 +38,11 @@ class Chef
       end
       ```
 
-      **Add the SeDenyRemoteInteractiveLogonRight Privilege to the Builtin Guests and Local Accounts User Groups**:
+      **Add the SeDenyRemoteInteractiveLogonRight Privilege to the 'Remote interactive logon' principal**:
 
       ```ruby
       windows_user_privilege 'Remote interactive logon' do
         privilege      'SeDenyRemoteInteractiveLogonRight'
-        users          ['Builtin\\Guests', 'NT AUTHORITY\\Local Account']
         action         :add
       end
       ```
@@ -125,7 +124,7 @@ class Chef
                           }.freeze
 
       property :principal, String,
-        description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
+        description: "An optional property to add the privilege for given principal. Use only with add and remove action.",
         name_property: true
 
       property :users, [Array, String],
@@ -133,7 +132,7 @@ class Chef
         coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
-        description: "One or more privileges to set for users.",
+        description: "One or more privileges to set for principal or users/groups.",
         required: true,
         coerce: proc { |v| Array(v) },
         callbacks: {
@@ -146,15 +145,15 @@ class Chef
         end
       end
 
-      action :add, description: "Add a user privilege." do
-        ([*new_resource.privilege] - [*current_resource.privilege]).each do |user_right|
-          converge_by("adding user '#{new_resource.principal}' privilege #{user_right}") do
-            Chef::ReservedNames::Win32::Security.add_account_right(new_resource.principal, user_right)
+      action :add, description: "Add a privileges to a principal, for a list of principals to use Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities" do
+        ([*new_resource.privilege] - [*current_resource.privilege]).each do |principal_right|
+          converge_by("adding principal '#{new_resource.principal}' privilege #{principal_right}") do
+            Chef::ReservedNames::Win32::Security.add_account_right(new_resource.principal, principal_right)
           end
         end
       end
 
-      action :set, description: "Set the privileges that are listed in the `privilege` property for only the users listed in the `users` property." do
+      action :set, description: "Set the privileges that are listed in the `privilege` property for only the users listed in the `users` property. All other users not listed with given privilege will be have the privilege removed" do
         if new_resource.users.nil? || new_resource.users.empty?
           raise Chef::Exceptions::ValidationFailed, "Users are required property with set action."
         end
@@ -203,7 +202,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove a user privilege" do
+      action :remove, description: "Remove a principal privilege" do
         curr_res_privilege = current_resource.privilege
         missing_res_privileges = (new_resource.privilege - curr_res_privilege)
 
@@ -211,9 +210,9 @@ class Chef
           Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
         end
 
-        (new_resource.privilege - missing_res_privileges).each do |user_right|
-          converge_by("removing user #{new_resource.principal} from privilege #{user_right}") do
-            Chef::ReservedNames::Win32::Security.remove_account_right(new_resource.principal, user_right)
+        (new_resource.privilege - missing_res_privileges).each do |principal_right|
+          converge_by("removing principal #{new_resource.principal} from privilege #{principal_right}") do
+            Chef::ReservedNames::Win32::Security.remove_account_right(new_resource.principal, principal_right)
           end
         end
       end
