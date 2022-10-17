@@ -87,6 +87,10 @@ function Invoke-Build {
         Write-BuildLine "`r  ** Updating Bundler to 2.3.7 **"
         gem install bundler:2.3.7
 
+        ruby -e "puts '******************'"
+        ruby -e "puts RUBY_PLATFORM"
+        ruby -e "puts '******************'"
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
