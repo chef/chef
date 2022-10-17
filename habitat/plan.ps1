@@ -109,7 +109,7 @@ function Invoke-Build {
             Start-Sleep -Seconds 5
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local --trace=stdout
+            bundle exec rake install:local # --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
 
     } finally {
