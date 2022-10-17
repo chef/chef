@@ -79,6 +79,14 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
+        Write-Buildline " ** Expanding the path **`r"
+        $bin_path = (Get-ChildItem "c:\hab\studios" -File "windres.exe" -Recurse).DirectoryName
+        $bin_path2 = (Get-ChildItem "c:\hab\studios" -File "make.exe" -Recurse).DirectoryName
+        $env:path = $bin_path + ";" + $bin_path2 + ";" + $env:path
+
+        Write-BuildLine "`r  ** Updating Bundler to 2.3.7 **"
+        gem install bundler:2.3.7
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
