@@ -135,20 +135,20 @@ class Chef
                           }.freeze
 
       property :principal, String,
-        description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a User/Group or one of special identities found here Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities",
-        name_property: true
+               description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a User/Group or one of special identities found here Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities",
+               name_property: true
 
       property :users, [Array, String],
-        description: "An optional property to set the privilege for given users. Use only with set action.",
-        coerce: proc { |v| Array(v) }
+               description: "An optional property to set the privilege for given users. Use only with set action.",
+               coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
-        description: "One or more privileges to set for principal or users/groups. For more information on what each privilege does Ref: https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment",
-        required: true,
-        coerce: proc { |v| Array(v) },
-        callbacks: {
-          "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
-        }, identity: true
+               description: "One or more privileges to set for principal or users/groups. For more information on what each privilege does Ref: https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment",
+               required: true,
+               coerce: proc { |v| Array(v) },
+               callbacks: {
+                 "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
+               }, identity: true
 
       load_current_value do |new_resource|
         if new_resource.principal && (new_resource.action.include?(:add) || new_resource.action.include?(:remove))
