@@ -20,7 +20,7 @@ require "chef/mixin/shell_out"
 
 metadata = {
   requires_root: true,
-  linux_only: true
+  linux_only: true,
 }
 
 describe "Chef::Resource::User with Chef::Provider::User::LinuxUser provider", metadata do
@@ -64,7 +64,12 @@ describe "Chef::Resource::User with Chef::Provider::User::LinuxUser provider", m
   end
 
   let(:uid) { nil }
-  let(:gid) { 20 }
+  let(:gid) do
+    # SLES 15 doesn't have the "20" group and
+    # so lets just pick the last group... no,
+    # Etc.group.map(&:gid).last does not work
+    Etc.enum_for(:group).map(&:gid).last
+  end
   let(:home) { nil }
   let(:manage_home) { false }
   let(:password) { "XXXYYYZZZ" }
@@ -77,6 +82,7 @@ describe "Chef::Resource::User with Chef::Provider::User::LinuxUser provider", m
     r.username(username)
     r.uid(uid)
     r.gid(gid)
+
     r.home(home)
     r.shell(shell)
     r.comment(comment)
