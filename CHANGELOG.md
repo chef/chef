@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.6 -->
-## [v16.18.6](https://github.com/chef/chef/tree/v16.18.6) (2022-10-18)
+<!-- latest_release 16.18.7 -->
+## [v16.18.7](https://github.com/chef/chef/tree/v16.18.7) (2022-10-18)
 
 #### Merged Pull Requests
-- [Chef-16] Fix OpenSUSE failures in verify pipeline [#13239](https://github.com/chef/chef/pull/13239) ([neha-p6](https://github.com/neha-p6))
+- [chef-16]Fix windows build failures in adhoc pipeline throwing error &#39;SignTool Error: No certificates were found that met all the given criteria&#39; by updating the msi&#39; [#13241](https://github.com/chef/chef/pull/13241) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-16]Fix windows build failures in adhoc pipeline throwing error &#39;SignTool Error: No certificates were found that met all the given criteria&#39; by updating the msi&#39; [#13241](https://github.com/chef/chef/pull/13241) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.7 -->
 - [Chef-16] Fix OpenSUSE failures in verify pipeline [#13239](https://github.com/chef/chef/pull/13239) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.6 -->
 - [chef-16] Fix github actions multiple failures [#13238](https://github.com/chef/chef/pull/13238) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.5 -->
 - Backport to 16: Stop executing locale-gen on every chef run [#12904](https://github.com/chef/chef/pull/12904) ([hrak](https://github.com/hrak)) <!-- 16.18.4 -->
