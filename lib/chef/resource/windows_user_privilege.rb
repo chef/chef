@@ -38,6 +38,16 @@ class Chef
       end
       ```
 
+      **Provide only the Builtin Guests and Administrator Groups with the SeCreatePageFile Privilege**:
+
+      ```ruby
+      windows_user_privilege 'Create Pagefile' do
+        privilege      'SeCreatePagefilePrivilege'
+        users          ['BUILTIN\\Guests', 'BUILTIN\\Administrators']
+        action         :set
+      end
+      ```
+
       **Add the SeDenyRemoteInteractiveLogonRight Privilege to the 'Remote interactive logon' principal**:
 
       ```ruby
@@ -47,13 +57,13 @@ class Chef
       end
       ```
 
-      **Provide only the Builtin Guests and Administrator Groups with the SeCreatePageFile Privilege**:
+      **Add to the Builtin Guests Group the SeCreatePageFile Privilege**:
 
       ```ruby
-      windows_user_privilege 'Create Pagefile' do
+      windows_user_privilege 'Guests add Create Pagefile' do
+        principal      'BUILTIN\\Guests'
         privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\\Guests', 'BUILTIN\\Administrators']
-        action         :set
+        action         :add
       end
       ```
 
@@ -88,6 +98,7 @@ class Chef
                            SeCreateSymbolicLinkPrivilege
                            SeCreateTokenPrivilege
                            SeDebugPrivilege
+                           SeDelegateSessionUserImpersonatePrivilege
                            SeDenyBatchLogonRight
                            SeDenyInteractiveLogonRight
                            SeDenyNetworkLogonRight
@@ -124,7 +135,7 @@ class Chef
                           }.freeze
 
       property :principal, String,
-        description: "An optional property to add the privilege for given principal. Use only with add and remove action.",
+        description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a User/Group or one of special identities found here Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities",
         name_property: true
 
       property :users, [Array, String],
@@ -132,7 +143,7 @@ class Chef
         coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
-        description: "One or more privileges to set for principal or users/groups.",
+        description: "One or more privileges to set for principal or users/groups. For more information on what each privilege does Ref: https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment",
         required: true,
         coerce: proc { |v| Array(v) },
         callbacks: {
@@ -145,7 +156,7 @@ class Chef
         end
       end
 
-      action :add, description: "Add a privileges to a principal, for a list of principals to use Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities" do
+      action :add, description: "Add a privileges to a principal." do
         ([*new_resource.privilege] - [*current_resource.privilege]).each do |principal_right|
           converge_by("adding principal '#{new_resource.principal}' privilege #{principal_right}") do
             Chef::ReservedNames::Win32::Security.add_account_right(new_resource.principal, principal_right)
@@ -153,7 +164,7 @@ class Chef
         end
       end
 
-      action :set, description: "Set the privileges that are listed in the `privilege` property for only the users listed in the `users` property. All other users not listed with given privilege will be have the privilege removed" do
+      action :set, description: "Set the privileges that are listed in the `privilege` property for only the users listed in the `users` property. All other users not listed with given privilege will be have the privilege removed." do
         if new_resource.users.nil? || new_resource.users.empty?
           raise Chef::Exceptions::ValidationFailed, "Users are required property with set action."
         end
