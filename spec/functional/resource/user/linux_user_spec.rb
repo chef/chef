@@ -20,6 +20,7 @@ require "chef/mixin/shell_out"
 
 metadata = {
   requires_root: true,
+  linux_only: true
 }
 
 describe "Chef::Resource::User with Chef::Provider::User::LinuxUser provider", metadata do

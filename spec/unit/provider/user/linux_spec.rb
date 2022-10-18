@@ -20,7 +20,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::User::Linux do
+describe Chef::Provider::User::Linux, linux_only: true do
 
   subject(:provider) do
     p = described_class.new(@new_resource, @run_context)
