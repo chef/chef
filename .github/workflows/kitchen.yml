@@ -5,7 +5,7 @@ name: kitchen
   pull_request:
   push:
     branches:
-      - main
+      - chef-17
 
 jobs:
   windows:
@@ -19,7 +19,7 @@ jobs:
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current -v 17
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
         ohai -v
