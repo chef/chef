@@ -22,6 +22,9 @@ catch {
     write-output "`n"
     $PSVersionTable
     [System.Environment]::OSVersion
+    Write-Output "What version of Hab is this? $((hab --version).split(" ")[1].split("/")[0])"
+    write-output "`n"
+    Get-Command Hab
     write-output "`n"
     # This install fails if Hab isn't on the path when we check for the version. This ensures it is installed
     Write-Host "--- :habicat: Forcing an install of habitat"
