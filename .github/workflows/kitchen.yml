@@ -118,7 +118,7 @@ jobs:
       matrix:
         os:
           - 'amazonlinux-2'
-          - 'centos-6'
+          # - 'centos-6'
           - 'centos-7'
           - 'centos-8'
           - 'debian-9'
