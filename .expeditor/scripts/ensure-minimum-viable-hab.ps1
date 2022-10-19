@@ -2,6 +2,10 @@ try {
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]"0.85.0" ) {
         Write-Host "--- :habicat: Installing the version of Habitat required"
+        Write-Output "What version of Windows and PowerShell is this?`n"
+        $PSVersionTable
+        write-ouput "`n"
+        Get-Command Hab
         Set-ExecutionPolicy Bypass -Scope Process -Force
         Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
