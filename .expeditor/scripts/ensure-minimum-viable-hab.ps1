@@ -5,6 +5,7 @@ try {
         Write-Output "What version of Windows and PowerShell is this?`n"
         $PSVersionTable
         [System.Environment]::OSVersion
+        Write-Output "What version of Hab is this? $((hab --version).split(" ")[1].split("/")[0])"
         write-ouput "`n"
         Get-Command Hab
         Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -26,4 +27,3 @@ catch {
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + ";C:\ProgramData\Habitat\"
 }
-
