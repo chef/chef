@@ -34,9 +34,9 @@ jobs:
         # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
         # This leads to failures during testing. Moving that file to its correct position here.
         # Another example of 'bad' that needs to be corrected
-        $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
-        $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
-        Move-Item -Path $output.FullName -Destination $target_path
+        # $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+        # $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+        # Move-Item -Path $output.FullName -Destination $target_path
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
