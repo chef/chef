@@ -80,6 +80,11 @@ describe Shell do
       # so hide the require here
 
       require "pty"
+
+      # FIXME this is temporary... Solaris envs have TERM set to unknown
+      # and the value isn't propagating from the build environment TERM
+      # variable
+      ENV["TERM"] = "vt100" if ["", "unknown"].include?(ENV["TERM"].to_s)
       config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
       reader, writer, pid = PTY.spawn("bundle exec chef-shell --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
       read_until(reader, "chef (#{Chef::VERSION})>")
