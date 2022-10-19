@@ -4,6 +4,7 @@ try {
         Write-Host "--- :habicat: Installing the version of Habitat required"
         Write-Output "What version of Windows and PowerShell is this?`n"
         $PSVersionTable
+        [System.Environment]::OSVersion
         write-ouput "`n"
         Get-Command Hab
         Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -17,6 +18,7 @@ try {
 catch {
     Write-Output "What version of Windows and PowerShell is this?`n"
     $PSVersionTable
+    [System.Environment]::OSVersion
     write-ouput "`n"
     # This install fails if Hab isn't on the path when we check for the version. This ensures it is installed
     Write-Host "--- :habicat: Forcing an install of habitat"
