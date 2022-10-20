@@ -13,8 +13,9 @@ try {
         Write-Host "`n"
         Get-Command Hab
         Set-ExecutionPolicy Bypass -Scope Process -Force
-        choco install habitat
-        # Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+        # choco feature enable -n=allowGlobalConfirmation
+        # choco install habitat
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         $test_output = Get-ChildItem -path c:\ -File "hab.exe" -Recurse -ErrorAction SilentlyContinue
         Write-Host "Here's Hab`n"
@@ -36,6 +37,7 @@ catch {
     # This install fails if Hab isn't on the path when we check for the version. This ensures it is installed
     Write-Host "--- :habicat: Forcing an install of habitat"
     Set-ExecutionPolicy Bypass -Scope Process -Force
+    choco feature enable -n=allowGlobalConfirmation
     choco install habitat
     # Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     $test_output = Get-ChildItem -path c:\ -File "hab.exe" -Recurse -ErrorAction SilentlyContinue
