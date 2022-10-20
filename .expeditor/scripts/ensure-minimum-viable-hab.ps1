@@ -29,5 +29,8 @@ catch {
     Write-Host "--- :habicat: Forcing an install of habitat"
     Set-ExecutionPolicy Bypass -Scope Process -Force
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+    $test_output = gci -path c:\ -File "hab.exe"
+    Write-Host "Here's Hab`n"
+    Write-Host $test_output
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + ";C:\ProgramData\Habitat\"
 }
