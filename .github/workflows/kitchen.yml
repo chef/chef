@@ -39,7 +39,8 @@ jobs:
           $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
           Copy-Item -Path $output.FullName -Destination $target_path
         }
-
+        Write-Output "We're probably running on Chef-18/Ruby 3.1 - getting the Ruby version"
+        Ruby --version
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
