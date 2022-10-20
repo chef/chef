@@ -35,6 +35,7 @@ jobs:
         # This leads to failures during testing. Moving that file to its correct position here.
         If(-not(Test-Path C:\opscode\chef\embedded\msys64\mingw64\x86_64-w64-mingw32\include\ansidecl.h)){
           $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+          Write-Output $output
           $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
           Copy-Item -Path $output.FullName -Destination $target_path
         }
