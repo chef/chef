@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.22 -->
-## [v17.10.22](https://github.com/chef/chef/tree/v17.10.22) (2022-10-20)
+<!-- latest_release 17.10.23 -->
+## [v17.10.23](https://github.com/chef/chef/tree/v17.10.23) (2022-10-20)
 
 #### Merged Pull Requests
-- [Chef-17] Backporting a fix for the Linux testers that fixes an issue with nscd… [#13258](https://github.com/chef/chef/pull/13258) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Backporting a fix for the Linux testers that fixes a resolver_conf issue [#13257](https://github.com/chef/chef/pull/13257) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] Backporting a fix for the Linux testers that fixes a resolver_conf issue [#13257](https://github.com/chef/chef/pull/13257) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.23 -->
 - [Chef-17] Backporting a fix for the Linux testers that fixes an issue with nscd… [#13258](https://github.com/chef/chef/pull/13258) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.22 -->
 - [Chef-17] Adding a new Zypper repo with a higher priority [#13255](https://github.com/chef/chef/pull/13255) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.21 -->
 - Update self-signed.badssl.com cert for chef-17 [#13231](https://github.com/chef/chef/pull/13231) ([blabade](https://github.com/blabade)) <!-- 17.10.20 -->
