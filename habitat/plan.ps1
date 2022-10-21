@@ -87,7 +87,7 @@ function Invoke-Build {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-                rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                rake install:local # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
