@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.9 -->
-## [v16.18.9](https://github.com/chef/chef/tree/v16.18.9) (2022-10-21)
+<!-- latest_release 16.18.10 -->
+## [v16.18.10](https://github.com/chef/chef/tree/v16.18.10) (2022-10-21)
 
 #### Merged Pull Requests
-- Bump train-core to 3.10.7 [#13269](https://github.com/chef/chef/pull/13269) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13272](https://github.com/chef/chef/pull/13272) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13272](https://github.com/chef/chef/pull/13272) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.10 -->
 - Bump train-core to 3.10.7 [#13269](https://github.com/chef/chef/pull/13269) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.9 -->
 - [Chef-16] Fix solaris build and test failures in adhoc pipeline [#13240](https://github.com/chef/chef/pull/13240) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.8 -->
 - [chef-16]Fix windows build failures in adhoc pipeline throwing error &#39;SignTool Error: No certificates were found that met all the given criteria&#39; by updating the msi&#39; [#13241](https://github.com/chef/chef/pull/13241) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.7 -->
