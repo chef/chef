@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.26 -->
-## [v17.10.26](https://github.com/chef/chef/tree/v17.10.26) (2022-10-21)
+<!-- latest_release 17.10.27 -->
+## [v17.10.27](https://github.com/chef/chef/tree/v17.10.27) (2022-10-21)
 
 #### Merged Pull Requests
-- [Chef-17] Correcting for Hab not being installed [#13266](https://github.com/chef/chef/pull/13266) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] Update omnibus version to fix read_shared_libs to fix solaris adhoc pipeline issue [#13243](https://github.com/chef/chef/pull/13243) ([blabade](https://github.com/blabade))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-17] Update omnibus version to fix read_shared_libs to fix solaris adhoc pipeline issue [#13243](https://github.com/chef/chef/pull/13243) ([blabade](https://github.com/blabade)) <!-- 17.10.27 -->
 - [Chef-17] Correcting for Hab not being installed [#13266](https://github.com/chef/chef/pull/13266) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.26 -->
 - Bump omnibus from `83d8428` to `d1fe3bb` in /omnibus [#13274](https://github.com/chef/chef/pull/13274) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.25 -->
 - [Chef-17] Backporting the fix from Chef-18 to get uru to work correctly [#13261](https://github.com/chef/chef/pull/13261) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.24 -->
