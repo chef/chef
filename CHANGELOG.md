@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.24 -->
-## [v17.10.24](https://github.com/chef/chef/tree/v17.10.24) (2022-10-20)
+<!-- latest_release 17.10.25 -->
+## [v17.10.25](https://github.com/chef/chef/tree/v17.10.25) (2022-10-21)
 
 #### Merged Pull Requests
-- [Chef-17] Backporting the fix from Chef-18 to get uru to work correctly [#13261](https://github.com/chef/chef/pull/13261) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus from `83d8428` to `d1fe3bb` in /omnibus [#13274](https://github.com/chef/chef/pull/13274) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `83d8428` to `d1fe3bb` in /omnibus [#13274](https://github.com/chef/chef/pull/13274) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.25 -->
 - [Chef-17] Backporting the fix from Chef-18 to get uru to work correctly [#13261](https://github.com/chef/chef/pull/13261) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.24 -->
 - [Chef-17] Backporting a fix for the Linux testers that fixes a resolver_conf issue [#13257](https://github.com/chef/chef/pull/13257) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.23 -->
 - [Chef-17] Backporting a fix for the Linux testers that fixes an issue with nscd… [#13258](https://github.com/chef/chef/pull/13258) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.22 -->
