@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.165 -->
-## [v18.0.165](https://github.com/chef/chef/tree/v18.0.165) (2022-10-18)
+<!-- latest_release 18.0.166 -->
+## [v18.0.166](https://github.com/chef/chef/tree/v18.0.166) (2022-10-21)
 
 #### Merged Pull Requests
-- better clarify user and principal in windows_user_privilege resource [#13250](https://github.com/chef/chef/pull/13250) ([Stromweld](https://github.com/Stromweld))
+- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13273](https://github.com/chef/chef/pull/13273) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.9.26 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13273](https://github.com/chef/chef/pull/13273) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.166 -->
 - better clarify user and principal in windows_user_privilege resource [#13250](https://github.com/chef/chef/pull/13250) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.165 -->
 - Add linux_only: true to new linux user specs [#13252](https://github.com/chef/chef/pull/13252) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.164 -->
 - Fixes bug in compare_user on Linux systems [#13223](https://github.com/chef/chef/pull/13223) ([fretb](https://github.com/fretb)) <!-- 18.0.163 -->
