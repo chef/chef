@@ -11,7 +11,7 @@ override "libxml2", version: "2.9.10" if windows?
 override "libxslt", version: "1.1.34" if windows?
 override "libyaml", version: "0.1.7"
 override "makedepend", version: "1.0.5"
-override "ncurses", version: "5.9"
+override "ncurses", version: "6.3"
 override "nokogiri", version: "1.13.1"
 override "openssl", version: mac_os_x? ? "1.1.1m" : "1.0.2zb"
 override "pkg-config-lite", version: "0.28-1"
