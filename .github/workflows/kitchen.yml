@@ -81,6 +81,7 @@ jobs:
         # This leads to failures during testing. Moving that file to its correct position here.
         # Another example of 'bad' that needs to be corrected
         $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+        if ($output -is [Array]) { $output = $output[0] }
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
         Move-Item -Path $output.FullName -Destination $target_path
 
