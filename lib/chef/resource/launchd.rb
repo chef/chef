@@ -129,6 +129,9 @@ class Chef
       property :abandon_process_group, [ TrueClass, FalseClass ],
         description: "If a job dies, all remaining processes with the same process ID may be kept running. Set to true to kill all remaining processes."
 
+      property :associated_bundle_identifiers, Hash,
+        description: "This optional key indicates which bundles the Login Items Added by Apps panel associates with the helper executable."
+
       property :debug, [ TrueClass, FalseClass ],
         description: "Sets the log mask to `LOG_DEBUG` for this job."
 
