@@ -331,7 +331,7 @@ GEM
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
-    semverse (3.0.2)
+    semverse (3.0.0)
     sslshake (1.3.1)
     strings (0.2.1)
       strings-ansi (~> 0.2)
