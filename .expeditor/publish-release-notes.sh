@@ -2,6 +2,8 @@
 
 set -eou pipefail
 
+rm -rf chef.wiki
+
 git clone https://x-access-token:${GITHUB_TOKEN}@github.com/chef/chef.wiki.git
 
 pushd ./chef.wiki
