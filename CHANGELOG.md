@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.11 -->
-## [v16.18.11](https://github.com/chef/chef/tree/v16.18.11) (2022-10-25)
+<!-- latest_release 16.18.12 -->
+## [v16.18.12](https://github.com/chef/chef/tree/v16.18.12) (2022-10-27)
 
 #### Merged Pull Requests
-- [chef-16] Update ncurses to 6.3 to fix build failures in adhoc pipeline on FreeBSD12 [#13267](https://github.com/chef/chef/pull/13267) ([neha-p6](https://github.com/neha-p6))
+- Revert &quot;Bump train-core to 3.10.7&quot; [#13294](https://github.com/chef/chef/pull/13294) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert &quot;Bump train-core to 3.10.7&quot; [#13294](https://github.com/chef/chef/pull/13294) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.12 -->
 - [chef-16] Update ncurses to 6.3 to fix build failures in adhoc pipeline on FreeBSD12 [#13267](https://github.com/chef/chef/pull/13267) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.11 -->
 - Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13272](https://github.com/chef/chef/pull/13272) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.10 -->
 - Bump train-core to 3.10.7 [#13269](https://github.com/chef/chef/pull/13269) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.9 -->
