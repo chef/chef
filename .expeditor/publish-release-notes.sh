@@ -2,6 +2,9 @@
 
 set -eou pipefail
 
+# The expeditor process will error out if the wiki remains on the box for some reason.
+# Pre-emptively delete it to avoid the error
+rm -fr chef.wiki.git
 git clone https://x-access-token:${GITHUB_TOKEN}@github.com/chef/chef.wiki.git
 
 pushd ./chef.wiki
