@@ -76,7 +76,7 @@ function Invoke-Prepare {
         gem install bundler
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-BuildLine "which Bundler? : "
-        Invoke-Expression "which bundler"
+        Get-Command Bundler
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
