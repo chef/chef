@@ -45,7 +45,7 @@ function Invoke-Download() {
     $git_path += "c:\\Program Files\\Git\\bin"
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        Compress-Archive -Path ${HAB_CACHE_SRC_PATH}\\${pkg_filename}
+        Compress-Archive -Path ${HAB_CACHE_SRC_PATH} -DestinationPath ${HAB_CACHE_SRC_PATH}\\${pkg_filename}
         # [System.Diagnostics.Process]::Start("$git_path\\git", "archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         Start-Sleep -Seconds 30
         # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
