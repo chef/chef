@@ -73,7 +73,7 @@ function Invoke-Prepare {
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";$PWD"
-        gem install bundler:2.3.17
+        gem install bundler
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-Output "which Bundler? : "
         Invoke-Expression "which bundler"
