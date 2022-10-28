@@ -75,7 +75,7 @@ function Invoke-Prepare {
         $env:Path += ";$PWD"
         gem install bundler
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        Write-Output "which Bundler? : "
+        Write-BuildLine "which Bundler? : "
         Invoke-Expression "which bundler"
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
