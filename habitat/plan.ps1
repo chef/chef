@@ -72,7 +72,7 @@ function Invoke-Prepare {
 @"%~dp0ruby.exe" "%~dpn0" %*
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";c:\\Program Files\\Git\\bin"
+        $env:Path += ";$PWD"
         gem install bundler:2.3.17
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
