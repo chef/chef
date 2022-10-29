@@ -161,8 +161,8 @@ end
 @ECHO OFF
 "%~dp0ruby.exe" "%~dpn0" %*
 "@
-        $app_bundler | Set-Content -Path "C:\\Ruby31\bin\appbundler" -Value $app_bundler
-        $app_bundler_bat | Set-Content -Path "C:\\Ruby31\bin\appbundler.bat" -Value $app_bundler_bat
+        Set-Content -Path "C:\\Ruby31\bin\appbundler" -Value $app_bundler
+        Set-Content -Path "C:\\Ruby31\bin\appbundler.bat" -Value $app_bundler_bat
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
