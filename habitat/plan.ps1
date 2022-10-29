@@ -135,6 +135,12 @@ function Invoke-Install {
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
+            Write-Output " *** Looking for App Bundler *** "
+            $output = Get-ChildItem -Path C:\ -file "appbundler.bat" -Recurse -ErrorAction SilentlyContinue
+            Write-Output "Found it here :"
+            Foreach($path in $output){
+                Write-Output $path
+            }
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }
