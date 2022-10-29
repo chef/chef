@@ -66,13 +66,6 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-#         Write-BuildLine " ** Where the hell is 'Gem'?"
-#         $gem_file = @"
-# @ECHO OFF
-# @"%~dp0ruby.exe" "%~dpn0" %*
-# "@
-#         $gem_file | Set-Content "$PWD\\gem.bat"
-#         $env:Path += ";$PWD"
         $env:Path = "C:\\ruby31\\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
@@ -132,14 +125,14 @@ function Invoke-Install {
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
-
-        foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
-            Write-BuildLine "** generating binstubs for $gem with precise version pins"
-            $gem_file = @"
-@ECHO OFF
-"%~dp0ruby.exe" "%~dpn0" %*
-"@
-            $gem_file | Set-Content "C:\\ruby31\\bin\\appbundler.bat"
+        gem install appbundler
+#         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
+#             Write-BuildLine "** generating binstubs for $gem with precise version pins"
+#             $gem_file = @"
+# @ECHO OFF
+# "%~dp0ruby.exe" "%~dpn0" %*
+# "@
+#             $gem_file | Set-Content "C:\\ruby31\\bin\\appbundler.bat"
 
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
