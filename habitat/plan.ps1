@@ -66,14 +66,14 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-        Write-BuildLine " ** Where the hell is 'Gem'?"
-        $gem_file = @"
-@ECHO OFF
-@"%~dp0ruby.exe" "%~dpn0" %*
-"@
-        $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";$PWD"
-        $env:Path = "C:\ruby31\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+#         Write-BuildLine " ** Where the hell is 'Gem'?"
+#         $gem_file = @"
+# @ECHO OFF
+# @"%~dp0ruby.exe" "%~dpn0" %*
+# "@
+#         $gem_file | Set-Content "$PWD\\gem.bat"
+#         $env:Path += ";$PWD"
+        $env:Path = "C:\\ruby31\\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
@@ -135,14 +135,13 @@ function Invoke-Install {
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
-            # Write-Output " *** Looking for App Bundler *** "
-            # $output = Get-ChildItem -Path C:\ -file "appbundler.*" -Recurse -ErrorAction SilentlyContinue
-            # Write-Output "Found it here :"
-            # Foreach($path in $output){
-            #     Write-Output $path
-            # }
-            # appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
-            appbundler "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
+            $gem_file = @"
+@ECHO OFF
+"%~dp0ruby.exe" "%~dpn0" %*
+"@
+            $gem_file | Set-Content "C:\\ruby31\\bin\\appbundler.bat"
+
+            appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }
         Remove-StudioPathFrom -File $pkg_prefix/vendor/gems/chef-$pkg_version*/Gemfile
