@@ -76,7 +76,7 @@ function Invoke-Prepare {
         gem install bundler
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-BuildLine "which Bundler? : "
-        $output = get-childitem -path c:\ -file "bundler.*" -recurse
+        $output = get-childitem -path c:\ -file "bundler.*" -recurse -ErrorAction SilentlyContinue
         Write-Output "Found Bundler here:"
         Foreach($path in $output){
             Write-Output $path
