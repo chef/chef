@@ -126,14 +126,8 @@ function Invoke-Install {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
         gem install appbundler
-#         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
-#             Write-BuildLine "** generating binstubs for $gem with precise version pins"
-#             $gem_file = @"
-# @ECHO OFF
-# "%~dp0ruby.exe" "%~dpn0" %*
-# "@
-#             $gem_file | Set-Content "C:\\ruby31\\bin\\appbundler.bat"
-
+        foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
+            Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }
