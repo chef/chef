@@ -73,14 +73,7 @@ function Invoke-Prepare {
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";$PWD"
-        gem install bundler
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        Write-BuildLine "which Bundler? : "
-        $output = get-childitem -path c:\ -file "bundler.*" -recurse -ErrorAction SilentlyContinue
-        Write-Output "Found Bundler here:"
-        Foreach($path in $output){
-            Write-Output $path
-        }
+        $env:Path = "C:\ruby31\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
