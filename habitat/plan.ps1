@@ -46,8 +46,6 @@ function Invoke-Download() {
     # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     # $git_path = "c:\\Program Files\\Git\\cmd"
     # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-    Write-Output "Dumping local system details : `n"
-    Get-ComputerInfo
     try {
         # Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         # # Write-Output "`n *** Installing Choco *** `n"
@@ -63,8 +61,8 @@ function Invoke-Download() {
         # Write-Output "Package Filename is : ${pkg_filename}"
         # # [System.Diagnostics.Process]::Start("c:\\Program Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         # Write-Output "Now archiving the repo"
-        # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
-        # # Invoke-Expression -Command "$full_git_path  archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
+        # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose") -ErrorAction Start-
+        Invoke-Expression -Command "$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose" -ErrorAction Stop
         # Write-Output "Zipping the Repo is finished"
         # Start-Sleep -Seconds 30
         # Write-Output " *** Finished Creating the Archive *** `n"
