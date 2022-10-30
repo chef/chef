@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Continue'
+$ErrorActionPreference = 'Stop'
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
@@ -62,7 +62,7 @@ function Invoke-Download() {
         # # [System.Diagnostics.Process]::Start("c:\\Program Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         # Write-Output "Now archiving the repo"
         # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose") -ErrorAction Start-
-        Invoke-Expression -Command "$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose" -ErrorAction Stop
+        Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
         # Write-Output "Zipping the Repo is finished"
         # Start-Sleep -Seconds 30
         # Write-Output " *** Finished Creating the Archive *** `n"
