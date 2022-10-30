@@ -59,15 +59,16 @@ function Invoke-Download() {
         # # Get-Command "Git"
         # Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         # Write-Output "Package Filename is : ${pkg_filename}"
-        # # [System.Diagnostics.Process]::Start("c:\\Program Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
+        [System.Diagnostics.Process]::Start("c:\\Program Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         # Write-Output "Now archiving the repo"
-        # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose") -ErrorAction Start-
-        Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
+        # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
+        # Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
         # Write-Output "Zipping the Repo is finished"
         # Start-Sleep -Seconds 30
         # Write-Output " *** Finished Creating the Archive *** `n"
         # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
         # if (-not $?) { throw "unable to create archive of source" }
+        Write-Output "Made it to the bottom of the Try statement"
     catch{
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
         Write-BuildLine $_
