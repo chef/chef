@@ -47,19 +47,21 @@ function Invoke-Download() {
     $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        Write-Output "Installing Choco"
+        Write-Output "`n *** Installing Choco *** `n"
         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         choco install gh -y
         choco install git -y 
         $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         $full_git_path = $($git_path + "\git.exe")
+        Write-Ouput "Is Git REALLY Installed? "
         Test-Path -Path $full_git_path
         # Get-Command "Git"
         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         Write-Output "Package Filename is : ${pkg_filename}"
         # [System.Diagnostics.Process]::Start("git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         Write-Output "Now archiving the repo"
-        Invoke-Expression -Command "$full_git_path  archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
+        [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
+        # Invoke-Expression -Command "$full_git_path  archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
         Write-Output "Zipping the Repo is finished"
         Start-Sleep -Seconds 30
         Write-Output " *** Finished Creating the Archive *** `n"
