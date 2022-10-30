@@ -38,54 +38,78 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 }
 
+# function Invoke-Download() {
+#     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
+#     # source is in this repo, so we're going to create an archive from the
+#     # appropriate path within the repo and place the generated tarball in the
+#     # location expected by do_unpack
+#     # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+#     # $git_path = "c:\\Program Files\\Git\\cmd"
+#     # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+#     try {
+#         # Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+#         # # Write-Output "`n *** Installing Choco *** `n"
+#         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+#         choco install git -y
+#         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+#         # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+#         $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
+#         Write-Output "Is Git REALLY Installed? "
+#         Test-Path -Path $full_git_path
+#         # # Get-Command "Git"
+#         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
+#         Write-Output "Package Filename is : ${pkg_filename}"
+#         Write-Output "getting Variables now`n"
+#         $path = Get-Variable -Name HAB_CACHE_SRC_PATH -ValueOnly
+#         $file = Get-Variable -Name pkg_filename -ValueOnly
+#         Write-Output "Here's the path : $path"
+#         Write-Output "Here's the file : $file"
+#         $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD"
+#         Write-Output "Here's the whole command : $command"
+#         # c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD
+#         # Invoke-Expression "& $command" -Verbose -ErrorAction Stop
+#         # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
+#         # Write-Output "Now archiving the repo"
+#         # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
+#         # Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
+#         # Write-Output "Zipping the Repo is finished"
+#         # Start-Sleep -Seconds 30
+#         # Write-Output " *** Finished Creating the Archive *** `n"
+#         # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
+#         if (-not $?) { throw "unable to create archive of source" }
+#         Write-Output "Made it to the bottom of the Try statement"
+#     catch{
+#         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
+#         Write-BuildLine $_
+#     }
+#     } finally {
+#         Write-Output " *** Executing Pop-Location *** "
+#         Pop-Location
+#         Write-Output " *** Finished Pop-Location *** "
+#     }
+# }
 function Invoke-Download() {
     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
-    # source is in this repo, so we're going to create an archive from the
-    # appropriate path within the repo and place the generated tarball in the
-    # location expected by do_unpack
-    # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-    # $git_path = "c:\\Program Files\\Git\\cmd"
-    # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
-        # Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        # # Write-Output "`n *** Installing Choco *** `n"
+        Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        Write-Output "`n *** Installing Choco *** `n"
         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         choco install git -y
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
-        Write-Output "Is Git REALLY Installed? "
-        Test-Path -Path $full_git_path
-        # # Get-Command "Git"
-        Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
-        Write-Output "Package Filename is : ${pkg_filename}"
-        Write-Output "getting Variables now`n"
         $path = Get-Variable -Name HAB_CACHE_SRC_PATH -ValueOnly
         $file = Get-Variable -Name pkg_filename -ValueOnly
         Write-Output "Here's the path : $path"
         Write-Output "Here's the file : $file"
         $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD"
         Write-Output "Here's the whole command : $command"
-        # c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD
-        # Invoke-Expression "& $command" -Verbose -ErrorAction Stop
-        # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
-        # Write-Output "Now archiving the repo"
-        # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
-        # Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
-        # Write-Output "Zipping the Repo is finished"
-        # Start-Sleep -Seconds 30
-        # Write-Output " *** Finished Creating the Archive *** `n"
-        # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
-        if (-not $?) { throw "unable to create archive of source" }
-        Write-Output "Made it to the bottom of the Try statement"
-    catch{
+        Invoke-Expression "& $command" -Verbose -ErrorAction Stop
+    }
+    catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
         Write-BuildLine $_
     }
-    } finally {
-        Write-Output " *** Executing Pop-Location *** "
+    finally {
         Pop-Location
-        Write-Output " *** Finished Pop-Location *** "
     }
 }
 
