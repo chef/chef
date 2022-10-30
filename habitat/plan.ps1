@@ -60,9 +60,13 @@ function Invoke-Download() {
         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         Write-Output "Package Filename is : ${pkg_filename}"
         Write-Output "getting Variables now`n"
-        Get-Variable
-        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose"
-        [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
+        $path = Get-Variable -Name HAB_CACHE_SRC_PATH -ValueOnly
+        $file = Get-Variable -Name pkg_filename -ValueOnly
+        Write-Output "Here's the path : $path"
+        Write-Output "Here's the file : $file"
+        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\\" + $file) HEAD --verbose"
+        Invoke-Expression "& $command"
+        # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
         # Write-Output "Now archiving the repo"
         # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
         # Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
