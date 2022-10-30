@@ -47,12 +47,21 @@ function Invoke-Download() {
     $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        choco install gh -y
+        choco install git -y 
+        refrehsenv
+        $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Write-Output "Here is the Path : `n"
+        Write-Output $env:Path
         Write-Output " *** Debugging Git Archive *** `n"
-        Get-Command "Git"
+        Write-Output "is Git located on the path correctly? Now running Test-Path"
+        Test-Path -Path $($git_path + "\git.exe")
+        # Get-Command "Git"
         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         Write-Output "Package Filename is : ${pkg_filename}"
+        [System.Diagnostics.Process]::Start(gh
         # [System.Diagnostics.Process]::Start("git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
-        Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
+        # Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
         Start-Sleep -Seconds 30
         # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
         if (-not $?) { throw "unable to create archive of source" }
