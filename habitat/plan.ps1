@@ -47,6 +47,10 @@ function Invoke-Download() {
     $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        Write-Output " *** Debugging Git Archive *** `n"
+        Get-Command "Git"
+        Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
+        Write-Output "Package Filename is : ${pkg_filename}"
         # [System.Diagnostics.Process]::Start("git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
         Start-Sleep -Seconds 30
