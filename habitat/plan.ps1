@@ -59,6 +59,8 @@ function Invoke-Download() {
         # # Get-Command "Git"
         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         Write-Output "Package Filename is : ${pkg_filename}"
+        Write-Output "Dumping Env Variables :`n"
+        dir env:
         [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
         # Write-Output "Now archiving the repo"
         # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
