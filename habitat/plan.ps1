@@ -1,3 +1,4 @@
+$ErrorActionPreference = 'Continue'
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
@@ -46,27 +47,32 @@ function Invoke-Download() {
     $git_path = "c:\\Program Files\\Git\\bin"
     $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
-        Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        # Write-Output "`n *** Installing Choco *** `n"
-        # Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        # choco install gh -y
-        # choco install git -y 
-        $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        $full_git_path = $($git_path + "\git.exe")
-        Write-Ouput "Is Git REALLY Installed? "
-        Test-Path -Path $full_git_path
-        # Get-Command "Git"
-        Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
-        Write-Output "Package Filename is : ${pkg_filename}"
-        # [System.Diagnostics.Process]::Start("c:\\Program Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
-        Write-Output "Now archiving the repo"
-        [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
-        # Invoke-Expression -Command "$full_git_path  archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
-        Write-Output "Zipping the Repo is finished"
-        Start-Sleep -Seconds 30
-        Write-Output " *** Finished Creating the Archive *** `n"
-        # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
-        if (-not $?) { throw "unable to create archive of source" }
+        $output = Get-ChildItem -Path C:\ -File "git.exe" -Recurse -ErrorAction SilentlyContinue
+        Write-Output "Here are the installed instances of Git"
+        foreach($path in $output){
+            Write-Output $path
+        }
+        # Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        # # Write-Output "`n *** Installing Choco *** `n"
+        # # Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        # # choco install gh -y
+        # # choco install git -y 
+        # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        # $full_git_path = $($git_path + "\git.exe")
+        # Write-Ouput "Is Git REALLY Installed? "
+        # Test-Path -Path $full_git_path
+        # # Get-Command "Git"
+        # Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
+        # Write-Output "Package Filename is : ${pkg_filename}"
+        # # [System.Diagnostics.Process]::Start("c:\\Program Files\\Git\\cmd\\git.exe archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
+        # Write-Output "Now archiving the repo"
+        # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
+        # # Invoke-Expression -Command "$full_git_path  archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
+        # Write-Output "Zipping the Repo is finished"
+        # Start-Sleep -Seconds 30
+        # Write-Output " *** Finished Creating the Archive *** `n"
+        # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
+        # if (-not $?) { throw "unable to create archive of source" }
     catch{
         Write-Output "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
         Write-Output $_
