@@ -96,13 +96,8 @@ function Invoke-Download() {
         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         choco install git -y
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        $path = Get-Variable -Name HAB_CACHE_SRC_PATH -ValueOnly
-        $file = Get-Variable -Name pkg_filename -ValueOnly
-        Write-Output "Here's the path : $path"
-        Write-Output "Here's the file : $file"
-        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD"
-        Write-Output "Here's the whole command : $command"
-        Invoke-Expression "& $command" -Verbose -ErrorAction Stop
+        $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
+        [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
     }
     catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
