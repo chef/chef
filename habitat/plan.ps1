@@ -46,6 +46,8 @@ function Invoke-Download() {
     # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     # $git_path = "c:\\Program Files\\Git\\cmd"
     # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    Write-Output "Dumping local system details : `n"
+    Get-ComputerInfo
     try {
         # Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         # # Write-Output "`n *** Installing Choco *** `n"
@@ -54,7 +56,7 @@ function Invoke-Download() {
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
-        Write-Ouput "Is Git REALLY Installed? "
+        Write-Output "Is Git REALLY Installed? "
         Test-Path -Path $full_git_path
         # # Get-Command "Git"
         # Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
