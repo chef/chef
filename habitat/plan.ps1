@@ -64,7 +64,7 @@ function Invoke-Download() {
         $file = Get-Variable -Name pkg_filename -ValueOnly
         Write-Output "Here's the path : $path"
         Write-Output "Here's the file : $file"
-        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD --verbose"
+        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD"
         Write-Output "Here's the whole command : $command"
         Invoke-Expression "& $command" -Verbose -ErrorAction Stop
         # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
@@ -75,7 +75,7 @@ function Invoke-Download() {
         # Start-Sleep -Seconds 30
         # Write-Output " *** Finished Creating the Archive *** `n"
         # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
-        # if (-not $?) { throw "unable to create archive of source" }
+        if (-not $?) { throw "unable to create archive of source" }
         Write-Output "Made it to the bottom of the Try statement"
     catch{
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
