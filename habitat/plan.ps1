@@ -43,7 +43,7 @@ function Invoke-Download() {
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-    $git_path = "c:\\Program Files\\Git\\bin"
+    $git_path = "c:\\Program Files\\Git\\cmd"
     $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
@@ -51,7 +51,6 @@ function Invoke-Download() {
         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         choco install gh -y
         choco install git -y 
-        refrehsenv
         $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Write-Output "Here is the Path : `n"
         Write-Output $env:Path
