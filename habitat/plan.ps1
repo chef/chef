@@ -64,7 +64,7 @@ function Invoke-Download() {
         $file = Get-Variable -Name pkg_filename -ValueOnly
         Write-Output "Here's the path : $path"
         Write-Output "Here's the file : $file"
-        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\\" + $file) HEAD --verbose"
+        $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD --verbose"
         Write-Output "Here's the whole command : $command"
         Invoke-Expression "& $command" -Verbose -ErrorAction Stop
         # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
