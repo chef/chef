@@ -42,7 +42,7 @@ function Invoke-Download() {
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
-    # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     $git_path = "c:\\Program Files\\Git\\bin"
     $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
     try {
@@ -61,7 +61,6 @@ function Invoke-Download() {
         # Get-Command "Git"
         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         Write-Output "Package Filename is : ${pkg_filename}"
-        [System.Diagnostics.Process]::Start(gh
         # [System.Diagnostics.Process]::Start("git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
         # Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
         Start-Sleep -Seconds 30
