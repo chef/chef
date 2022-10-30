@@ -66,7 +66,7 @@ function Invoke-Download() {
         Write-Output "Here's the file : $file"
         $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD"
         Write-Output "Here's the whole command : $command"
-        c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD
+        # c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD
         # Invoke-Expression "& $command" -Verbose -ErrorAction Stop
         # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
         # Write-Output "Now archiving the repo"
