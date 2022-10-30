@@ -53,9 +53,9 @@ function Invoke-Download() {
         choco install git -y
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        # $full_git_path = $($git_path + "\git.exe")
-        # Write-Ouput "Is Git REALLY Installed? "
-        # Test-Path -Path $full_git_path
+        $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
+        Write-Ouput "Is Git REALLY Installed? "
+        Test-Path -Path $full_git_path
         # # Get-Command "Git"
         # Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
         # Write-Output "Package Filename is : ${pkg_filename}"
@@ -69,8 +69,8 @@ function Invoke-Download() {
         # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
         # if (-not $?) { throw "unable to create archive of source" }
     catch{
-        Write-Output "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
-        Write-Output $_
+        Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
+        Write-BuildLine $_
     }
     } finally {
         Write-Output " *** Executing Pop-Location *** "
@@ -80,11 +80,13 @@ function Invoke-Download() {
 }
 
 function Invoke-Verify() {
+    Write-BuildLine " ** Invoke Verify Top"
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
     return 0
 }
 
 function Invoke-Prepare {
+    Write-BuildLine " ** Invoke Prepare Top"
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
     try {
@@ -101,6 +103,7 @@ function Invoke-Prepare {
 }
 
 function Invoke-Build {
+    Write-BuildLine " ** Invoke-Build Top"
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
