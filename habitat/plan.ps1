@@ -93,14 +93,21 @@ function Invoke-SetupEnvironment {
 function Invoke-Download {
     Write-BuildLine " ** Invoke-Download Top"
     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
+    $env:HAB_CACHE_SRC_PATH = ${HAB_CACHE_SRC_PATH}
+    $env:pkg_filename = ${pkg_filename}
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        Write-Output "`n *** Installing Choco *** `n"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-        choco install git -y
+        if(-not(Test-Path -Path "C:\\ProgramData\\chocolatey\\bin\\choco.exe" -ErrorAction Ignore)){
+            Write-Host "`n *** Installing Choco *** `n"
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        }
+        if(-not(Test-Path -Path "C:\\Program Files\\Git\\cmd\\git.exe" -ErrorAction Ignore )){
+            Write-Host "Installing Git"
+            choco install git -y
+            $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        } 
         $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        # $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
-        Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD" -ErrorAction Stop
+        Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop
     }
     catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
