@@ -104,15 +104,18 @@ function Invoke-Download {
         if(-not(Test-Path -Path "C:\\Program Files\\Git\\cmd\\git.exe" -ErrorAction Ignore )){
             Write-Host "Installing Git"
             choco install git -y
-            $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        } 
-        $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop
-        Write-Host "Just wrote the archive"
-        Write-Host "Testing the Archive Path to ensure it exists :"
-        Test-Path -Path $HAB_CACHE_SRC_PATH\\$pkg_filename
+            $env:Path += "C:\Program` Files\Git\cmd;"
+        }
+        $env:Path = 'C:\Program Files\Git\cmd;' + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop -Verbose
         Write-Host "Searching for Ruby"
-        Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
+        $paths = Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
+        foreach($path in $paths){
+            if ($path -match "hab") {
+                $hab_path = Split-Path -Path $path -Parent
+                $env:Path += $hab_path + ";" + $nev:path
+            }
+        }
     }
     catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
@@ -135,7 +138,9 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-        $env:Path = "C:\\ruby31\\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        gem install bundler
+        $output = Get-ChildItem -Path C:\ -File "bundle.*" -Recurse -ErrorAction SilentlyContinue
+        Write-Output "Here's the output : $output"
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
@@ -232,8 +237,9 @@ end
 @ECHO OFF
 "%~dp0ruby.exe" "%~dpn0" %*
 "@
-        Set-Content -Path "C:\\Ruby31\bin\appbundler" -Value $app_bundler
-        Set-Content -Path "C:\\Ruby31\bin\appbundler.bat" -Value $app_bundler_bat
+        Write-Output "What is the hab_path at this point? : $hab_path"
+        Set-Content -Path "$hab_path\appbundler" -Value $app_bundler
+        Set-Content -Path "$hab_path\appbundler.bat" -Value $app_bundler_bat
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
