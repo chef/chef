@@ -109,8 +109,10 @@ function Invoke-Download {
         $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop
         Write-Host "Just wrote the archive"
-        Write-Host "What version of Ruby is this?"
-        Ruby --version
+        Write-Host "Testing the Archive Path to ensure it exists :"
+        Test-Path -Path $HAB_CACHE_SRC_PATH\\$pkg_filename
+        Write-Host "Searching for Ruby"
+        Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
     }
     catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
