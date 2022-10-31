@@ -18,6 +18,7 @@ $pkg_deps=@(
 )
 
 function Invoke-Begin {
+    Write-BuildLine " ** Invoke-Begin Top"
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]"0.85.0" ) {
         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
@@ -29,6 +30,7 @@ function Invoke-Begin {
 }
 
 function Invoke-SetupEnvironment {
+    Write-BuildLine " ** Invoke-SetupEnvironment Top"
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
@@ -89,6 +91,7 @@ function Invoke-SetupEnvironment {
 #     }
 # }
 function Invoke-Download() {
+    Write-BuildLine " ** Invoke-Download Top"
     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
@@ -177,6 +180,7 @@ function Invoke-Build {
 }
 
 function Invoke-Install {
+    Write-BuildLine " ** Invoke-Install Top"
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
@@ -230,6 +234,7 @@ end
 }
 
 function Invoke-After {
+    Write-BuildLine " ** Invoke-After Top"
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
@@ -255,5 +260,6 @@ function Remove-StudioPathFrom {
         [String]
         $File
     )
+    Write-BuildLine " ** Remove-StudioPathFrom Top"
     (Get-Content $File) -replace ($env:FS_ROOT -replace "\\","/"),"" | Set-Content $File
 }
