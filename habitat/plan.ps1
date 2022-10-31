@@ -100,7 +100,7 @@ function Invoke-Download {
         choco install git -y
         $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         # $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
-        Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose" -ErrorAction Stop -Verbose
+        Invoke-Expression -Command "git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD" -ErrorAction Stop
     }
     catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
