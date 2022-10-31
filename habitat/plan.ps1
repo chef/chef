@@ -129,6 +129,8 @@ function Invoke-Download {
 function Invoke-Verify {
     Write-BuildLine " ** Invoke Verify Top"
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
+    Write-BuildLine " HAB_CACHE_SRC_PATH = $HAB_CACHE_SRC_PATH "
+    Write-BuildLine " pkg_filename = $pkg_filename "
     return 0
 }
 
