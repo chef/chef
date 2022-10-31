@@ -90,13 +90,13 @@ function Invoke-SetupEnvironment {
 #         Write-Output " *** Finished Pop-Location *** "
 #     }
 # }
-function Invoke-Download() {
+function Invoke-Download {
     Write-BuildLine " ** Invoke-Download Top"
     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         Write-Output "`n *** Installing Choco *** `n"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         choco install git -y
         $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         # $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
@@ -111,11 +111,10 @@ function Invoke-Download() {
     }
 }
 
-function Invoke-Verify() {
+function Invoke-Verify {
     Write-BuildLine " ** Invoke Verify Top"
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
-    return 0
-    Write-BuildLine " ** Invoke Verify Bottom"
+    return 0   
 }
 
 function Invoke-Prepare {
