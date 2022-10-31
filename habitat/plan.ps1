@@ -108,6 +108,10 @@ function Invoke-Download {
         }
         $env:Path = 'C:\Program Files\Git\cmd;' + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
         Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop -Verbose
+
+        if(Test-Path -Path "$HAB_CACHE_SRC_PATH\\$pkg_filename") {
+          Write-Host (Get-ChildItem -Path "$HAB_CACHE_SRC_PATH\\$pkg_filename")
+        }
         Write-Host "Searching for Ruby"
         $paths = Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
         foreach($path in $paths){
