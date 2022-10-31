@@ -129,7 +129,7 @@ function Invoke-Download {
 function Invoke-Verify {
     Write-BuildLine " ** Invoke Verify Top"
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
-    return 0   
+    return 0
 }
 
 function Invoke-Prepare {
@@ -235,14 +235,15 @@ end
 
         $app_bundler_bat = @"
 @ECHO OFF
-"%~dp0ruby.exe" "%~dpn0" %*
+"$pkg_prefix\bin\ruby.exe" "%~dpn0" %*
 "@
         Write-Output "What is the hab_path at this point? : $hab_path"
         Set-Content -Path "$hab_path\appbundler" -Value $app_bundler
         Set-Content -Path "$hab_path\appbundler.bat" -Value $app_bundler_bat
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
-            appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
+            Start-Process -FilePath "$hab_path\appbundler.bat" -ArgumentList "${HAB_CACHE_SRC_PATH}/${pkg_dirname} $pkg_prefix/bin $gem" -Wait -NoNewWindow
+            # appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }
         Remove-StudioPathFrom -File $pkg_prefix/vendor/gems/chef-$pkg_version*/Gemfile
