@@ -235,7 +235,7 @@ end
 
         $app_bundler_bat = @"
 @ECHO OFF
-"$pkg_prefix\bin\ruby.exe" "%~dpn0" %*
+"ruby.exe" "%~dpn0" %*
 "@
         Write-Output "What is the hab_path at this point? : $hab_path"
         Set-Content -Path "$hab_path\appbundler" -Value $app_bundler
