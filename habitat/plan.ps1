@@ -115,6 +115,7 @@ function Invoke-Verify() {
     Write-BuildLine " ** Invoke Verify Top"
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
     return 0
+    Write-BuildLine " ** Invoke Verify Bottom"
 }
 
 function Invoke-Prepare {
