@@ -62,6 +62,10 @@ Once this is updated, you'll need to build / push the artifact to the Chocolatey
 
 Note: In order to push the artifact, you will need to be added as a maintainer on [Chocolatey.org](https://chocolatey.org/).
 
+### Cookstyle Verification
+Please make sure cookstyle is working properly & auto correcting detected offenses for any of the cookbooks you are trying to test against the newer version of Chef Infra Client
+Reference doc - https://github.com/chef/cookstyle#usage
+
 ### Relax
 
 You're done. You have a month to relax.

@@ -178,12 +178,30 @@ describe Chef::Provider::User do
         end
       end
 
-      it "should fail assertions when ruby-shadow cannot be loaded" do
-        expect(@provider).to receive(:require).with("shadow") { raise LoadError }
-        @provider.load_current_resource
-        @provider.action = :create
-        @provider.define_resource_requirements
-        expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::MissingLibrary
+      context "when ruby-shadow is supported on the platform" do
+        before do
+          allow(@provider).to receive(:supports_ruby_shadow?).and_return true
+        end
+        it "should fail assertions when ruby-shadow cannot be loaded" do
+          expect(@provider).to receive(:require).with("shadow") { raise LoadError }
+          @provider.load_current_resource
+          @provider.action = :create
+          @provider.define_resource_requirements
+          expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::MissingLibrary
+        end
+      end
+
+      context "when ruby-shadow is not supported on the platform" do
+        before do
+          allow(@provider).to receive(:supports_ruby_shadow?).and_return false
+        end
+        it "should not fail any assertions when ruby-shadow cannot be loaded" do
+          expect(@provider).to receive(:require).with("shadow") { raise LoadError }
+          @provider.load_current_resource
+          @provider.action = :create
+          @provider.define_resource_requirements
+          @provider.process_resource_requirements
+        end
       end
 
     end

@@ -29,7 +29,10 @@ class Chef
         end
 
         def compare_user
-          super
+          user_changed = super
+
+          @change_desc ||= []
+
           %i{expire_date inactive}.each do |user_attrib|
             new_val = new_resource.send(user_attrib)
             cur_val = current_resource.send(user_attrib)
@@ -37,6 +40,8 @@ class Chef
               @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
             end
           end
+
+          user_changed || !@change_desc.empty?
         end
 
         def create_user

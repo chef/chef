@@ -78,7 +78,7 @@ class Chef
       ```ruby
       windows_package '7zip' do
         source 'http://www.7-zip.org/a/7z938-x64.msi'
-        checksum '7c8e873991c82ad9cfc123415254ea6101e9a645e12977dcd518979e50fdedf3'
+        checksum '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
       end
       ```
 
@@ -91,7 +91,7 @@ class Chef
         source 'http://www.7-zip.org/a/7z938-x64.msi'
         remote_file_attributes ({
           :path => 'C:\\7zip.msi',
-          :checksum => '7c8e873991c82ad9cfc123415254ea6101e9a645e12977dcd518979e50fdedf3'
+          :checksum => '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
         })
       end
       ```
@@ -100,7 +100,7 @@ class Chef
 
       ```ruby
       windows_package 'Mercurial 3.6.1 (64-bit)' do
-        source 'http://mercurial.selenic.com/release/windows/Mercurial-3.6.1-x64.exe'
+        source 'https://www.mercurial-scm.org/release/windows/Mercurial-3.6.1-x64.exe'
         checksum 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d'
       end
       ```
