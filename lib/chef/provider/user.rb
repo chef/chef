@@ -72,13 +72,31 @@ class Chef
             @shadow_lib_ok = false
           else
             @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
-            current_resource.password(@shadow_info.sp_pwdp) if new_resource.password && current_resource.password == "x"
+            # This conditional remains in place until we can sort out whether we need it.
+            # Currently removing it causes tests to fail, but that /seems/ to be mocking/setup issues.
+            # Some notes for context:
+            # 1. Ruby's ETC.getpwnam makes use of /etc/passwd file (https://github.com/ruby/etc/blob/master/ext/etc/etc.c),
+            #    which returns "x" for a nil password. on AIX it returns a "*"
+            #    (https://www.ibm.com/docs/bg/aix/7.2?topic=passwords-using-etcpasswd-file)
+            # 2. On AIX platforms ruby_shadow does not work as it does not
+            #    store encrypted passwords in the /etc/passwd file but in /etc/security/passwd file.
+            #    The AIX provider for user currently declares it does not support ruby-shadow.
+            if new_resource.password && current_resource.password == "x"
+              current_resource.password(@shadow_info.sp_pwdp)
+            end
           end
 
           convert_group_name if new_resource.gid
         end
 
         current_resource
+      end
+
+      # An overridable for platforms that do not support ruby shadow. This way we
+      # can verify that the platform supports ruby shadow before requiring that
+      # it be available.
+      def supports_ruby_shadow?
+        true
       end
 
       def load_shadow_options
@@ -102,7 +120,7 @@ class Chef
           a.whyrun "group name #{new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
         end
         requirements.assert(:all_actions) do |a|
-          a.assertion { @shadow_lib_ok }
+          a.assertion { !supports_ruby_shadow? || @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
           a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." \
             "Note that user update converge may report false-positive on the basis of mismatched password. "

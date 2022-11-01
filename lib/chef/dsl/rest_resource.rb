@@ -31,13 +31,20 @@ class Chef
 
       # URL to collection
       def rest_api_collection(rest_api_collection = NOT_PASSED)
-        @rest_api_collection = rest_api_collection if rest_api_collection != NOT_PASSED
+        if rest_api_collection != NOT_PASSED
+          raise ArgumentError, "You must pass an absolute path to rest_api_collection" unless rest_api_collection.start_with? "/"
+
+          @rest_api_collection = rest_api_collection
+        end
+
         @rest_api_collection
       end
 
       # RFC6570-Templated URL to document
       def rest_api_document(rest_api_document = NOT_PASSED, first_element_only: false)
         if rest_api_document != NOT_PASSED
+          raise ArgumentError, "You must pass an absolute path to rest_api_document" unless rest_api_document.start_with? "/"
+
           @rest_api_document = rest_api_document
           @rest_api_document_first_element_only = first_element_only
         end

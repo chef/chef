@@ -44,10 +44,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       members.shift # Get rid of GroupMembership: string
       members.include?(user)
     else
-      # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
-      # Adding a 2 second delay for this platform is enough to get correct results.
-      # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
-      sleep 2 if aix? && (ohai[:platform_version] == "7.2")
+      # NOTE: For some reason our temporary AIX 7.x systems do not correctly report group membership immediately after changes have been made.
+      # Adding a delay for this platform is enough to get correct results.
+      # reference: https://github.com/chef/release-engineering/issues/1617
+      sleep 3 if aix?
       Etc.getgrnam(group_name).mem.include?(user)
     end
   end
@@ -133,6 +133,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       temp_resource.append(true)
       temp_resource.run_action(:modify)
       members.each do |member|
+        # NOTE For some reason our temporary AIX 7.x systems do not correctly report group membership immediately after changes have been made.
+        # Adding a delay for this platform is enough to get correct results.
+        # reference: https://github.com/chef/release-engineering/issues/1617
+        sleep 3 if aix?
         expect(user_exist_in_group?(member)).to eq(true)
       end
     end
