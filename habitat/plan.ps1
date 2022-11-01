@@ -58,10 +58,15 @@ function Invoke-Download {
         }
         choco feature disable -n=showDownloadProgress
         choco feature enable -n=allowGlobalConfirmation
+        $file = $($HAB_CACHE_SRC_PATH + "\\" + $pkg_filename)
+        Write-Host "Going to Make a zipfile right here : "
         $env:Path = 'C:\Program Files\Git\cmd;' + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop -Verbose
+        Invoke-Expression -Command "git archive --format=zip --output=$file HEAD" -ErrorAction Stop -Verbose
+        Write-Host "Did I correctly make that file?"
+        Test-Path -Path $file
         Write-Host "Searching for Ruby"
         $paths = Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
+        Write-Host "I collected the paths with Ruby on them."
         foreach($path in $paths){
             if ($path -match "hab") {
                 $global:hab_path = Split-Path -Path $path -Parent
