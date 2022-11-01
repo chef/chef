@@ -7,7 +7,7 @@ end
 # This pause is in place to make sure the supervisor is up and running before we proceed. The previous resource does the full install and initial startup. That can take a bit longer in the pipeline.
 ruby_block "wait-for-sup-default-startup" do
   block do
-    raise unless system("hab sup status")
+    raise unless system("hab svc status")
   end
   retries 30
   retry_delay 1

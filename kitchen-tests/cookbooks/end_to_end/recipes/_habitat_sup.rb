@@ -14,7 +14,7 @@ end
 
 ruby_block "wait-for-sup-default-startup" do
   block do
-    raise unless system("hab sup status")
+    raise unless system("hab svc status")
   end
   retries 30
   retry_delay 1
