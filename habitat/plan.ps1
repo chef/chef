@@ -40,56 +40,6 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 }
 
-# function Invoke-Download() {
-#     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
-#     # source is in this repo, so we're going to create an archive from the
-#     # appropriate path within the repo and place the generated tarball in the
-#     # location expected by do_unpack
-#     # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-#     # $git_path = "c:\\Program Files\\Git\\cmd"
-#     # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-#     try {
-#         # Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-#         # # Write-Output "`n *** Installing Choco *** `n"
-#         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-#         choco install git -y
-#         $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-#         # $env:Path = $git_path + ";" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-#         $full_git_path = $("C:\\Program Files\\Git\\cmd\\git.exe")
-#         Write-Output "Is Git REALLY Installed? "
-#         Test-Path -Path $full_git_path
-#         # # Get-Command "Git"
-#         Write-Output "Hab source path is : ${HAB_CACHE_SRC_PATH}`n"
-#         Write-Output "Package Filename is : ${pkg_filename}"
-#         Write-Output "getting Variables now`n"
-#         $path = Get-Variable -Name HAB_CACHE_SRC_PATH -ValueOnly
-#         $file = Get-Variable -Name pkg_filename -ValueOnly
-#         Write-Output "Here's the path : $path"
-#         Write-Output "Here's the file : $file"
-#         $command = "c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD"
-#         Write-Output "Here's the whole command : $command"
-#         # c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$($path + "\" + $file) HEAD
-#         # Invoke-Expression "& $command" -Verbose -ErrorAction Stop
-#         # [System.Diagnostics.Process]::Start("c:\\Program` Files\\Git\\cmd\\git.exe archive --format=zip --output=$(${HAB_CACHE_SRC_PATH} + "\\" + ${pkg_filename}) HEAD --verbose")
-#         # Write-Output "Now archiving the repo"
-#         # [System.Diagnostics.Process]::Start("$full_git_path archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose")
-#         # Invoke-Expression -Command "$($full_git_path) archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD --verbose"
-#         # Write-Output "Zipping the Repo is finished"
-#         # Start-Sleep -Seconds 30
-#         # Write-Output " *** Finished Creating the Archive *** `n"
-#         # # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
-#         if (-not $?) { throw "unable to create archive of source" }
-#         Write-Output "Made it to the bottom of the Try statement"
-#     catch{
-#         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
-#         Write-BuildLine $_
-#     }
-#     } finally {
-#         Write-Output " *** Executing Pop-Location *** "
-#         Pop-Location
-#         Write-Output " *** Finished Pop-Location *** "
-#     }
-# }
 function Invoke-Download {
     Write-BuildLine " ** Invoke-Download Top"
     Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
@@ -104,15 +54,18 @@ function Invoke-Download {
         if(-not(Test-Path -Path "C:\\Program Files\\Git\\cmd\\git.exe" -ErrorAction Ignore )){
             Write-Host "Installing Git"
             choco install git -y
-            $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        } 
-        $env:Path = "C:\Program` Files\Git\cmd;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop
-        Write-Host "Just wrote the archive"
-        Write-Host "Testing the Archive Path to ensure it exists :"
-        Test-Path -Path $HAB_CACHE_SRC_PATH\\$pkg_filename
+            $env:Path += "C:\Program` Files\Git\cmd;"
+        }
+        $env:Path = 'C:\Program Files\Git\cmd;' + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Invoke-Expression -Command "git archive --format=zip --output=$HAB_CACHE_SRC_PATH\\$pkg_filename HEAD" -ErrorAction Stop -Verbose
         Write-Host "Searching for Ruby"
-        Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
+        $paths = Get-ChildItem -Path c:\ -File "ruby.exe" -Recurse -ErrorAction SilentlyContinue
+        foreach($path in $paths){
+            if ($path -match "hab") {
+                $global:hab_path = Split-Path -Path $path -Parent
+                $env:Path += $hab_path + ";" + $nev:path
+            }
+        }
     }
     catch {
         Write-BuildLine "Plan.ps1 threw an error in Invoke-Download - An error occurred:"
@@ -135,7 +88,7 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-        $env:Path = "C:\\ruby31\\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        gem install bundler
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
@@ -232,8 +185,8 @@ end
 @ECHO OFF
 "%~dp0ruby.exe" "%~dpn0" %*
 "@
-        Set-Content -Path "C:\\Ruby31\bin\appbundler" -Value $app_bundler
-        Set-Content -Path "C:\\Ruby31\bin\appbundler.bat" -Value $app_bundler_bat
+        Set-Content -Path "$hab_path\appbundler" -Value $app_bundler
+        Set-Content -Path "$hab_path\appbundler.bat" -Value $app_bundler_bat
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
