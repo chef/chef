@@ -138,6 +138,19 @@ function Invoke-Verify {
     return 0
 }
 
+function Invoke-Clean {
+    Write-BuildLine "PLAN.PS1 Clean the cache"
+    $src = "$HAB_CACHE_SRC_PATH\$pkg_dirname"
+    try {
+      if (Test-Path "$src") {
+          Remove-Item "$src" -Recurse -Force
+      }
+      Write-BuildLine "Recursive Remove-Item succeeded"
+    } catch {
+      Write-BuildLine "Recursive Remove-Item failed"
+    }
+}
+
 function Invoke-Prepare {
     Write-BuildLine " ** Invoke Prepare Top"
     $env:GEM_HOME = "$pkg_prefix/vendor"
