@@ -36,10 +36,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  revision: f135b3fd52d0a638f2eb9b17a8952a7f0f317688
   branch: lcg/ruby-3.0
   specs:
-    ruby-shadow (2.5.0)
+    ruby-shadow (2.5.1)
 
 GIT
   remote: https://github.com/chef/ruby-proxifier
