@@ -15,6 +15,7 @@ $pkg_deps=@(
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
 )
+$pkg_build_deps=@( "core/git")
 
 function Invoke-Begin {
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
@@ -42,12 +43,9 @@ function Invoke-Download() {
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
-    $git_path += "c:\\Program Files\\Git\\bin"
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        [System.Diagnostics.Process]::Start("$git_path\\git", "archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD")
-        Start-Sleep -Seconds 30
-        # getting an error about the archive being in use, adding the sleep to let other handles on the file finish.
+        git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         if (-not $?) { throw "unable to create archive of source" }
     } finally {
         Pop-Location
