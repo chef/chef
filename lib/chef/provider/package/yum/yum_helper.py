@@ -61,8 +61,8 @@ def query(base, command):
         for repo in command['repos']:
             if 'enable' in repo:
                 base.repos.enableRepo(repo['enable'])
-        if 'disable' in repo:
-            base.repos.disableRepo(repo['disable'])
+            if 'disable' in repo:
+                base.repos.disableRepo(repo['disable'])
 
     args = { 'name': command['provides'] }
     do_nevra = False
@@ -123,15 +123,7 @@ def query(base, command):
         outpipe.write("%(n)s %(e)s:%(v)s-%(r)s %(a)s\n" % { 'n': pkg.name, 'e': pkg.epoch, 'v': pkg.version, 'r': pkg.release, 'a': pkg.arch })
         outpipe.flush()
 
-    # Reset any repos we were passed in enablerepo/disablerepo to the original state in enabled_repos
-    if 'repos' in command:
-        for repo in command['repos']:
-            if 'enable' in repo:
-                if base.repos.getRepo(repo['enable']) not in enabled_repos:
-                    base.repos.disableRepo(repo['enable'])
-        if 'disable' in repo:
-            if base.repos.getRepo(repo['disable']) in enabled_repos:
-                base.repos.enableRepo(repo['disable'])
+    # XXX: Reset any repos we were passed in enablerepo/disablerepo to the original state in enabled_repos
 
 # the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
