@@ -53,8 +53,6 @@ def install_only_packages(base, name):
     outpipe.flush()
 
 def query(base, command):
-    enabled_repos = base.repos.listEnabled()
-
     # Handle any repocontrols passed in with our options
 
     if 'repos' in command:
@@ -123,7 +121,7 @@ def query(base, command):
         outpipe.write("%(n)s %(e)s:%(v)s-%(r)s %(a)s\n" % { 'n': pkg.name, 'e': pkg.epoch, 'v': pkg.version, 'r': pkg.release, 'a': pkg.arch })
         outpipe.flush()
 
-    # XXX: Reset any repos we were passed in enablerepo/disablerepo to the original state in enabled_repos
+    # XXX: Reset any repos we were passed in enablerepo/disablerepo to the original state
 
 # the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
