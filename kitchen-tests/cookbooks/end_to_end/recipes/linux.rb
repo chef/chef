@@ -157,6 +157,4 @@ if ::File.exist?("/etc/systemd/system")
   include_recipe "::_habitat_user_toml"
 end
 
-# at the moment these do not run properly in docker
-# we need to investigate if this is a snap on docker issue or a chef issue
-# include_recipe "::_snap" if platform?("ubuntu")
+include_recipe "::_snap" if platform?("ubuntu")
