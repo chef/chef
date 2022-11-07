@@ -31,6 +31,14 @@ describe Chef::Resource::WindowsFont, :windows_only do
     Chef::RunContext.new(node, {}, events)
   end
 
+  around do |example|
+    Timeout.timeout(10) do
+      example.run
+    end
+  rescue Timeout::Error
+    puts "Timeout on #{example.metadata[:full_description]}"
+  end
+
   subject do
     resource = Chef::Resource::WindowsFont.new(resource_name, run_context)
     resource.source resource_source

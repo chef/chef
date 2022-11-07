@@ -62,6 +62,7 @@ PATH
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
       chef-config (= 16.18.19)
+      chef-powershell (~> 1.0.12)
       chef-utils (= 16.18.19)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -144,6 +145,9 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
+    chef-powershell (1.0.13)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
