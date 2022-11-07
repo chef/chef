@@ -26,8 +26,13 @@
 
 # Windows architecture defaults - set to x86 unless otherwise specified.
 # ------------------------------
-env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
-env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
+ENV['MSYSTEM']='UCRT64'
+ENV['MSYS2_INSTALL_DIR']="C:/Ruby31-x64/msys64"
+ENV['PATH']="C:\\Program Files\\7-Zip;C:\\Ruby31-x64\\msys64\\usr\\bin;C:\\Ruby31-x64\\msys64\\ucrt64\\bin;"+ENV['PATH']
+
+#env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
+#env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
+env_omnibus_windows_arch = :x64
 
 windows_arch env_omnibus_windows_arch
 
@@ -50,4 +55,4 @@ fetcher_read_timeout 120
 # local_software_dirs ['/path/to/local/software']
 
 fatal_transitive_dependency_licensing_warnings true
-fips_mode (ENV["OMNIBUS_FIPS_MODE"] || "").casecmp("true") >= 0
+fips_mode true
