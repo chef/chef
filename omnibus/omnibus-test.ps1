@@ -1,7 +1,7 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install chocolatey
+# install chocolatey 
 function installChoco {
 
   if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
