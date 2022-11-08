@@ -16,7 +16,7 @@ jobs:
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: 'Upgrade Ruby Devkit on Windows'
       id: upgrade_ruby
       run: |
@@ -135,7 +135,7 @@ jobs:
         ruby: ["3.1"] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         clean: true
     - name: 'Upgrade Ruby Devkit on Macos'
@@ -205,7 +205,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
