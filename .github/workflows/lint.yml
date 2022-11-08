@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: carlosperate/download-file-action@v1.0.3
+      - uses: carlosperate/download-file-action@v2.0.0
         id: download-custom-dictionary
         with:
           file-url: 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt'
