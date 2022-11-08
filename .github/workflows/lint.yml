@@ -18,7 +18,7 @@ jobs:
       with:
         ruby-version: 3.1
         bundler-cache: false
-    - uses: r7kamura/rubocop-problem-matchers-action@v1 # this shows the failures in the PR
+    - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
     - run: |
         gem install chefstyle
         chefstyle -c .rubocop.yml
