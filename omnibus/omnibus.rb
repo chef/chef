@@ -26,12 +26,12 @@
 
 # Windows architecture defaults - set to x86 unless otherwise specified.
 # ------------------------------
-ENV['MSYSTEM']='UCRT64'
-ENV['MSYS2_INSTALL_DIR']="C:/Ruby31-x64/msys64"
-ENV['PATH']="C:\\Program Files\\7-Zip;C:\\Ruby31-x64\\msys64\\usr\\bin;C:\\Ruby31-x64\\msys64\\ucrt64\\bin;"+ENV['PATH']
+#ENV['MSYSTEM']='UCRT64'
+#ENV['MSYS2_INSTALL_DIR']="C:/Ruby31-x64/msys64"
+#ENV['PATH']="C:\\Program Files\\7-Zip;C:\\Ruby31-x64\\msys64\\usr\\bin;C:\\Ruby31-x64\\msys64\\ucrt64\\bin;"+ENV['PATH']
 
-#env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
-#env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
+env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
+env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
 env_omnibus_windows_arch = :x64
 
 windows_arch env_omnibus_windows_arch
