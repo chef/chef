@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.175 -->
-## [v18.0.175](https://github.com/chef/chef/tree/v18.0.175) (2022-11-04)
+<!-- latest_release 18.0.176 -->
+## [v18.0.176](https://github.com/chef/chef/tree/v18.0.176) (2022-11-08)
 
 #### Merged Pull Requests
-- Fix call to install_snaps which is missing an argument [#13025](https://github.com/chef/chef/pull/13025) ([gene1wood](https://github.com/gene1wood))
+- adding choco function to test if it exists already [#13330](https://github.com/chef/chef/pull/13330) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.169 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- adding choco function to test if it exists already [#13330](https://github.com/chef/chef/pull/13330) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.0.176 -->
 - Fix call to install_snaps which is missing an argument [#13025](https://github.com/chef/chef/pull/13025) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.175 -->
 - Fix windows habitat git [#13316](https://github.com/chef/chef/pull/13316) ([mwrock](https://github.com/mwrock)) <!-- 18.0.174 -->
 - Bump deps for net-ssh 7.x for RHEL 9 and Ubuntu 22.04 ssh [#13284](https://github.com/chef/chef/pull/13284) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.173 -->
