@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.177 -->
-## [v18.0.177](https://github.com/chef/chef/tree/v18.0.177) (2022-11-08)
+<!-- latest_release 18.0.178 -->
+## [v18.0.178](https://github.com/chef/chef/tree/v18.0.178) (2022-11-08)
 
 #### Merged Pull Requests
-- Remove &quot;free&quot; command from buildkite run as it&#39;s not supported [#13315](https://github.com/chef/chef/pull/13315) ([gene1wood](https://github.com/gene1wood))
+- Fix false updates on cron resource when using integers [#13147](https://github.com/chef/chef/pull/13147) ([kimbernator](https://github.com/kimbernator))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.169 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix false updates on cron resource when using integers [#13147](https://github.com/chef/chef/pull/13147) ([kimbernator](https://github.com/kimbernator)) <!-- 18.0.178 -->
 - Remove &quot;free&quot; command from buildkite run as it&#39;s not supported [#13315](https://github.com/chef/chef/pull/13315) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.177 -->
 - adding choco function to test if it exists already [#13330](https://github.com/chef/chef/pull/13330) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.0.176 -->
 - Fix call to install_snaps which is missing an argument [#13025](https://github.com/chef/chef/pull/13025) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.175 -->
