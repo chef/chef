@@ -8,11 +8,13 @@ $env:OMNIBUS_GITHUB_BRANCH="tp/debug-fips-locally"
 $env:OMNIBUS_SOFTARE_GITHUB_BRANCH="tp/debug-fips-locally"
 
 bundle config set --local without development
+bundle update --conservative omnibus
+bundle update --conservative omnibus-software
 bundle install
 pushd ..
 bundle install
 popd
 $env:MSYSTEM = "UCRT64"
 $env:MSYS2_INSTALL_DIR = "C:\Ruby31-x64\msys64"
-
+mkdir $env:MSYS2_INSTALL_DIR\tmp
 bundle exec omnibus build chef
