@@ -5,7 +5,7 @@ habitat_sup "tester" do
   listen_gossip "0.0.0.0:9998"
 end
 
-ruby_block "wait-for-sup-default-startup" do
+ruby_block "wait-for-svc-default-startup" do
   block do
     raise unless system("hab svc status")
   end

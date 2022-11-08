@@ -12,7 +12,7 @@ habitat_sup "tester" do
   launcher_version "13458"
 end
 
-ruby_block "wait-for-sup-default-startup" do
+ruby_block "wait-for-svc-default-startup" do
   block do
     raise unless system("hab svc status")
   end

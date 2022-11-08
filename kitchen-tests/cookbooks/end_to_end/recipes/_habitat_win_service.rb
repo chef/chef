@@ -3,7 +3,7 @@ habitat_sup "default" do
   gateway_auth_token "secret"
 end
 
-ruby_block "wait-for-sup-default-startup" do
+ruby_block "wait-for-svc-default-startup" do
   block do
     raise unless system("hab svc status")
   end
