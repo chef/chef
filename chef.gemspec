@@ -22,11 +22,15 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.6.0"
+  if RUBY_PLATFORM =~ /aix/
+    s.required_ruby_version = ">= 3.0.3"
+  else
+    s.required_ruby_version = ">= 3.1.0"
+  end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
+  s.add_dependency "train-core", "~> 3.10", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
@@ -37,11 +41,11 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
-  s.add_dependency "inspec-core", "~> 4.23"
+  s.add_dependency "inspec-core", ">= 5"
 
-  s.add_dependency "ffi", ">= 1.5.0"
+  s.add_dependency "ffi", ">= 1.15.5"
   s.add_dependency "ffi-yajl", "~> 2.2"
-  s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0" # remote_file resource
+  s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
   s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
@@ -54,7 +58,7 @@ Gem::Specification.new do |s|
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
-  s.add_dependency "unf_ext", "< 0.0.8.1" # temporary until it loads properly on Windows
+  s.add_dependency "unf_ext", ">= 0.0.8.2" # This is ruby31 compatible ucrt gem version
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier", "~> 1.0"

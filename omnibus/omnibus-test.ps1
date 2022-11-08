@@ -1,10 +1,29 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+# install chocolatey 
+function installChoco {
+
+  if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
+      Write-Output "Chocolatey is not installed, proceeding to install"
+          try {
+              write-output "installing in 3..2..1.."
+              Set-ExecutionPolicy Bypass -Scope Process -Force
+              [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+              iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+          }
+
+          catch { 
+                Write-Error $_.Exception.Message
+          }
+  }
+
+  else { 
+      Write-Output "Chocolatey is already installed"
+  }
+}
+
+installChoco
 
 # install powershell core
 Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
