@@ -11,9 +11,9 @@ steps:
 
 - label: ":linux: Validate Linux"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX=chef/chef-infra-client/18.0.178/20221108210251
+    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.178/20221108210251"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
-    - 'echo "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"'
+    - echo "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
     - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
   expeditor:
@@ -24,9 +24,9 @@ steps:
 
 - label: ":linux: Validate Linux (kernel2)"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX=chef/chef-infra-client/18.0.178/20221108210251
+    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.178/20221108210251"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux-kernel2
-    - 'echo "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"'
+    - echo "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
     - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
   expeditor:
@@ -37,9 +37,9 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS = chef/chef-infra-client/18.0.178/20221108210251
+    - $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS = 'chef/chef-infra-client/18.0.178/20221108210251'
     - powershell -File ./.expeditor/scripts/ensure-minimum-viable-hab.ps1
-    - 'Write-Host "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"'
+    - Write-Host "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"
     - hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
     - powershell -File ./habitat/tests/test.ps1 -PackageIdentifier $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
   expeditor:
