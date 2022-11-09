@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 89e6a08889f414efabc53a1c15c418baddc5cd2d
+  revision: b59776be1a66db77473f729132b94085fd8fa49d
   branch: main
   specs:
-    ohai (18.0.20)
+    ohai (18.0.26)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -33,13 +33,6 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
 
 GIT
   remote: https://github.com/chef/ruby-proxifier
@@ -85,52 +78,6 @@ PATH
       unf_ext (>= 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.0.178-x64-mingw-ucrt)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.0.178)
-      chef-powershell (~> 1.0.12)
-      chef-utils (= 18.0.178)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.15.5)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (>= 5)
-      iso8601 (>= 0.12.1, < 0.14)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-ftp
-      net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 18.0)
-      plist (~> 3.2)
-      proxifier (~> 1.0)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.10, >= 3.2.28)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (>= 0.0.8.2)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
-      win32-api (~> 1.10.0)
-      win32-certstore (~> 0.6.15)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
 
 PATH
   remote: chef-bin
@@ -158,38 +105,35 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.627.0)
-    aws-sdk-core (3.143.0)
+    aws-partitions (1.658.0)
+    aws-sdk-core (3.166.0)
       aws-eventstream (~> 1, >= 1.0.2)
-      aws-partitions (~> 1, >= 1.525.0)
-      aws-sigv4 (~> 1.1)
+      aws-partitions (~> 1, >= 1.651.0)
+      aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.58.0)
-      aws-sdk-core (~> 3, >= 3.127.0)
+    aws-sdk-kms (1.59.0)
+      aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.114.0)
-      aws-sdk-core (~> 3, >= 3.127.0)
+    aws-sdk-s3 (1.117.1)
+      aws-sdk-core (~> 3, >= 3.165.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.65.0)
-      aws-sdk-core (~> 3, >= 3.127.0)
+    aws-sdk-secretsmanager (1.67.0)
+      aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.5.1)
+    aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -285,7 +229,6 @@ GEM
     inspec-core-bin (5.18.14)
       inspec-core (= 5.18.14)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.1)
     json (2.6.2)
     libyajl2 (2.1.0)
@@ -318,7 +261,7 @@ GEM
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.2.3)
-    net-ftp (0.1.3)
+    net-ftp (0.2.0)
       net-protocol
       time
     net-protocol (0.1.3)
@@ -340,18 +283,18 @@ GEM
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
+    pry-byebug (3.10.1)
       byebug (~> 11.0)
-      pry (~> 0.13.0)
+      pry (>= 0.13, < 0.15)
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    public_suffix (4.0.7)
+    public_suffix (5.0.0)
     rack (2.2.4)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.5.0)
+    regexp_parser (2.6.0)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -359,16 +302,16 @@ GEM
       rspec-mocks (~> 3.11.0)
     rspec-core (3.11.0)
       rspec-support (~> 3.11.0)
-    rspec-expectations (3.11.0)
+    rspec-expectations (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-its (1.3.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.11.1)
+    rspec-mocks (3.11.2)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
-    rspec-support (3.11.0)
+    rspec-support (3.11.1)
     rubocop (1.25.1)
       parallel (~> 1.10)
       parser (>= 3.1.0.0)
@@ -378,7 +321,7 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.21.0)
+    rubocop-ast (1.23.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
@@ -391,7 +334,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
     time (0.2.0)
@@ -435,38 +377,18 @@ GEM
       unf_ext
     unf_ext (0.0.8.2)
     unf_ext (0.0.8.2-x64-mingw-ucrt)
-    unicode-display_width (2.2.0)
+    unicode-display_width (2.3.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webmock (3.17.1)
+    webmock (3.18.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
-    win32-api (1.10.1)
-    win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.12)
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -514,7 +436,6 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
