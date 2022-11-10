@@ -25,7 +25,7 @@ if (-Not (Test-Path "C:\Projects"))
 {
   mkdir c:\projects
 }
-cd c:\projects
+cd \projects
 
 if (-Not (Test-Path "C:\Ruby31-x64"))
 {
@@ -48,8 +48,8 @@ if (-Not (Test-Path "C:\projects\chef"))
 {
   # Set up dev work directory
   git clone https://github.com/chef/chef
-  cd chef
 }
+cd chef
 
 git fetch origin
 git checkout tp/debug-fips-locally
