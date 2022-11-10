@@ -92,7 +92,7 @@ class Chef
 
       property :release,
         [Float, String],
-        description: "Sets the operating system minor release to use for subscriptions for the system. Products and updates are limited to the specified minor release version. This is used only used with the `auto_attach` option.  For example, `release '6.4'` will append `--release=6.4` to the register command.",
+        description: "Sets the operating system minor release to use for subscriptions for the system. Products and updates are limited to the specified minor release version. This is used used with the `auto_attach` option, it may also be used with activation keys.  For example, `release '6.4'` will append `--release=6.4` to the register command.",
         introduced: "17.8"
 
       action :register, description: "Register the node with RHSM." do
@@ -205,6 +205,7 @@ class Chef
               command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
               command << "--serverurl=#{Shellwords.shellescape(new_resource.server_url)}" if new_resource.server_url
               command << "--baseurl=#{Shellwords.shellescape(new_resource.base_url)}" if new_resource.base_url
+              command << "--release=#{Shellwords.shellescape(new_resource.release)}" if new_resource.release
               command << "--force" if new_resource.force
 
               return command.join(" ")
