@@ -15,7 +15,7 @@ if (-Not (Get-Command choco -ErrorAction SilentlyContinue))
 if (-Not (Get-Command git -ErrorAction SilentlyContinue))
 {
 # Install git
-  choco install git
+  choco install -y git
 
 # Refresh PATH
   $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -36,14 +36,13 @@ if (-Not (Test-Path "C:\Ruby31-x64"))
 # install 7-Zip and add to path
 # `mkdir c:\ruby31-x64\msys64\tmp`
 #
-if (-Not (Get-Command heat.exe -ErrorAction SilentlyContinue))
-{
-  choco install dotnet3.5
-  Invoke-WebRequest -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe" -OutFile "wix311.exe"
-  .\wix311.exe
-  $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-}
+#if (-Not (Get-Command heat.exe -ErrorAction SilentlyContinue))
+#{
+#  choco install -y dotnet3.5
+#  Invoke-WebRequest -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe" -OutFile "wix311.exe"
+#  .\wix311.exe
+#  $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+#}
 
 if (-Not (Test-Path "C:\projects\chef"))
 {
