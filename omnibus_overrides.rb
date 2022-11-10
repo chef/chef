@@ -19,7 +19,6 @@ override "makedepend", version: "1.0.5"
 override "ncurses", version: "6.3"
 override "nokogiri", version: "1.13.1"
 override "openssl", version: mac_os_x? ? "1.1.1m" : "1.0.2zb"
-override "openssl-fips", version: "2.0.14" # XXX this should not do anything
 override "pkg-config-lite", version: "0.28-1"
 override :ruby, version: aix? ? "3.0.3" : "3.1.2"
 override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
