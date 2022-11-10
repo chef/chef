@@ -69,7 +69,7 @@ class Chef
 
       property :global, [TrueClass, FalseClass],
         description: "Determines whether or not the domain is global.",
-        deprecated: true,
+        deprecated: "As of Chef Infra Client 17.8 the `global` property is no longer necessary.",
         default: false,
         desired_state: false
 
@@ -90,7 +90,7 @@ class Chef
         description: "The value type of the preference key.",
         equal_to: %w{bool string int float array dict},
         desired_state: false,
-        deprecated: true
+        deprecated: "As of Chef Infra Client 17.8 the `type` property is no longer necessary."
 
       property :user, [String, Symbol],
         description: "The system user that the default will be applied to. Set :current for current user, :all for all users or pass a valid username",
@@ -100,7 +100,7 @@ class Chef
         description: "Set to true if the setting you wish to modify requires privileged access. This requires passwordless sudo for the `/usr/bin/defaults` command to be setup for the user running #{ChefUtils::Dist::Infra::PRODUCT}.",
         default: false,
         desired_state: false,
-        deprecated: true
+        deprecated: "As of Chef Infra Client 17.8 the `sudo` property is no longer necessary."
 
       load_current_value do |new_resource|
         Chef::Log.debug "#load_current_value: attempting to read \"#{new_resource.domain}\" value from preferences to determine state"
