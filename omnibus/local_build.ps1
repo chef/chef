@@ -74,5 +74,8 @@ bundle install
 pushd ..
 bundle install
 popd
-mkdir $env:MSYS2_INSTALL_DIR\tmp
+if (-Not (Test-Path $env:MSYS2_INSTALL_DIR\tmp))
+{
+  mkdir $env:MSYS2_INSTALL_DIR\tmp
+}
 bundle exec omnibus build chef
