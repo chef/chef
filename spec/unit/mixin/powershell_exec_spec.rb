@@ -25,8 +25,8 @@ describe Chef::Mixin::PowershellExec, :windows_only do
 
   describe "#powershell_exec" do
     context "not specifying an interpreter" do
-      it "runs a basic command and returns a Chef::PowerShell object" do
-        expect(object.powershell_exec("$PSVersionTable")).to be_kind_of(Chef::PowerShell)
+      it "runs a basic command and returns a ChefPowerShell::PowerShell object" do
+        expect(object.powershell_exec("$PSVersionTable")).to be_kind_of(ChefPowerShell::PowerShell)
       end
 
       it "uses less than version 6" do
@@ -36,8 +36,8 @@ describe Chef::Mixin::PowershellExec, :windows_only do
     end
 
     context "using pwsh interpreter" do
-      it "runs a basic command and returns a Chef::PowerShell object" do
-        expect(object.powershell_exec("$PSVersionTable", :pwsh)).to be_kind_of(Chef::Pwsh)
+      it "runs a basic command and returns a ChefPowerShell::Pwsh object" do
+        expect(object.powershell_exec("$PSVersionTable", :pwsh)).to be_kind_of(ChefPowerShell::Pwsh)
       end
 
       it "uses greater than version 6" do
@@ -47,8 +47,8 @@ describe Chef::Mixin::PowershellExec, :windows_only do
     end
 
     context "using powershell interpreter" do
-      it "runs a basic command and returns a Chef::PowerShell object" do
-        expect(object.powershell_exec("$PSVersionTable", :powershell)).to be_kind_of(Chef::PowerShell)
+      it "runs a basic command and returns a ChefPowerShell::PowerShell object" do
+        expect(object.powershell_exec("$PSVersionTable", :powershell)).to be_kind_of(ChefPowerShell::PowerShell)
       end
 
       it "uses less than version 6" do
@@ -75,12 +75,12 @@ describe Chef::Mixin::PowershellExec, :windows_only do
   end
 
   describe "#powershell_exec!" do
-    it "runs a basic command and returns a Chef::PowerShell object" do
-      expect(object.powershell_exec!("$PSVersionTable")).to be_kind_of(Chef::PowerShell)
+    it "runs a basic command and returns a ChefPowerShell::PowerShell object" do
+      expect(object.powershell_exec!("$PSVersionTable")).to be_kind_of(ChefPowerShell::PowerShell)
     end
 
     it "raises an error if the command fails" do
-      expect { object.powershell_exec!("this-should-error") }.to raise_error(Chef::PowerShell::CommandFailed)
+      expect { object.powershell_exec!("this-should-error") }.to raise_error(ChefPowerShell::PowerShellExceptions::PowerShellCommandFailed)
     end
 
     it "raises an error if the interpreter is invalid" do
