@@ -1,7 +1,7 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install chocolatey 
+# install chocolatey
 function installChoco {
 
   if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
@@ -13,12 +13,12 @@ function installChoco {
               iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
           }
 
-          catch { 
+          catch {
                 Write-Error $_.Exception.Message
           }
   }
 
-  else { 
+  else {
       Write-Output "Chocolatey is already installed"
   }
 }
@@ -26,7 +26,11 @@ function installChoco {
 installChoco
 
 # install powershell core
-Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+  $TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
+  [System.Net.ServicePointManager]::SecurityProtocol = $TLS12Protocol
+}
+Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/PowerShell-7.3.0-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
 Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
 $env:path += ";C:\Program Files\PowerShell\7"
 
