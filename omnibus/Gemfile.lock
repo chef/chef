@@ -8,11 +8,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: d1fe3bbba0bf8c6cbc0e9d75bfcc8216e4345078
+  revision: b05edca9459a318c573b612462ddb169fa11256b
   branch: main
   specs:
-    omnibus (9.0.8)
-      aws-sdk-s3 (~> 1)
+    omnibus (9.0.11)
+      aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
       contracts (>= 0.16.0, < 0.17.0)
@@ -34,16 +34,16 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.648.0)
-    aws-sdk-core (3.162.0)
+    aws-partitions (1.660.0)
+    aws-sdk-core (3.167.0)
       aws-eventstream (~> 1, >= 1.0.2)
-      aws-partitions (~> 1, >= 1.525.0)
-      aws-sigv4 (~> 1.1)
+      aws-partitions (~> 1, >= 1.651.0)
+      aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.58.0)
-      aws-sdk-core (~> 3, >= 3.127.0)
+    aws-sdk-kms (1.59.0)
+      aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.115.0)
+    aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
@@ -53,6 +53,8 @@ GEM
     aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
+    bcrypt_pbkdf (1.1.0-x64-mingw32)
+    bcrypt_pbkdf (1.1.0-x86-mingw32)
     berkshelf (8.0.0)
       chef (>= 15.7.32)
       chef-config
