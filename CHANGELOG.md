@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.184 -->
-## [v18.0.184](https://github.com/chef/chef/tree/v18.0.184) (2022-11-15)
+<!-- latest_release 18.0.185 -->
+## [v18.0.185](https://github.com/chef/chef/tree/v18.0.185) (2022-11-15)
 
 #### Merged Pull Requests
-- Add allowed_actions for each package type [#13166](https://github.com/chef/chef/pull/13166) ([gene1wood](https://github.com/gene1wood))
+- Add recipients of Awesome Chef Awards 2021/2022 [#13285](https://github.com/chef/chef/pull/13285) ([tnir](https://github.com/tnir))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.169 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add recipients of Awesome Chef Awards 2021/2022 [#13285](https://github.com/chef/chef/pull/13285) ([tnir](https://github.com/tnir)) <!-- 18.0.185 -->
 - Add allowed_actions for each package type [#13166](https://github.com/chef/chef/pull/13166) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.184 -->
 - Adding TLS for Habitat-test.ps1 under Windows PowerShell [#13361](https://github.com/chef/chef/pull/13361) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.183 -->
 - fix bug in chef_client_config resource [#13349](https://github.com/chef/chef/pull/13349) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.182 -->
