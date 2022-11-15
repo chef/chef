@@ -20,6 +20,14 @@ The Lifetime Community Chef Award is a recognition of years of investment by a m
 
 Each year at ChefConf, a number of individuals are awarded the Awesome Community Chef award. The Awesome Community Chef awards are a way for the community to recognize a few of the individuals who have made a dramatic impact and have helped further the cause.
 
+- [2022](https://www.chef.io/blog/chefconf-22-recap-product-announcements-key-takeaways)
+  - [Lance Albertson](https://github.com/ramereth)
+  - [Brittany Woods](https://github.com/bnwoods)
+  - [Takuya Noguchi](https://github.com/tnir)
+- [2021](https://www.chef.io/blog/21-awesome-chef-awards)
+  - [Jeff Brimager](https://github.com/sam1el)
+  - [Ben Hughes](https://github.com/bmhughes)
+  - [Lamont Granquist](https://github.com/lamont-granquist)
 - [2020](https://blog.chef.io/congratulations-awesome-community-chefs-2020/)
   - [Bastien Jove](https://github.com/tensibai)
   - [Lance Albertson](https://github.com/ramereth)
@@ -61,6 +69,8 @@ Each year at ChefConf, a number of individuals are awarded the Awesome Community
   - [Bryan Berry](https://github.com/bryanwb)
   - [Fletcher Nichol](https://github.com/fnichol)
   - [Jamie Winsor](https://github.com/reset)
+
+Full list is also available at [https://www.awesomechefawards.com/](https://www.awesomechefawards.com/) as well.
 
 ## Hall of Fame
 
