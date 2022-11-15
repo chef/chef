@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.182 -->
-## [v18.0.182](https://github.com/chef/chef/tree/v18.0.182) (2022-11-11)
+<!-- latest_release 18.0.183 -->
+## [v18.0.183](https://github.com/chef/chef/tree/v18.0.183) (2022-11-15)
 
 #### Merged Pull Requests
-- fix bug in chef_client_config resource [#13349](https://github.com/chef/chef/pull/13349) ([Stromweld](https://github.com/Stromweld))
+- Adding TLS for Habitat-test.ps1 under Windows PowerShell [#13361](https://github.com/chef/chef/pull/13361) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.169 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adding TLS for Habitat-test.ps1 under Windows PowerShell [#13361](https://github.com/chef/chef/pull/13361) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.183 -->
 - fix bug in chef_client_config resource [#13349](https://github.com/chef/chef/pull/13349) ([Stromweld](https://github.com/Stromweld)) <!-- 18.0.182 -->
 - Updating the Hab installer and gems [#13340](https://github.com/chef/chef/pull/13340) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.181 -->
 - Update GitHub Actions to address deprecated actions in workflows [#13344](https://github.com/chef/chef/pull/13344) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.180 -->
