@@ -109,6 +109,8 @@ class Chef
         ```
       DOC
 
+      allowed_actions :install, :upgrade, :remove, :purge, :lock, :unlock
+
       # XXX: the coercions here are due to the provider promiscuously updating the properties on the
       # new_resource which causes immutable modification exceptions when passed an immutable node array.
       #

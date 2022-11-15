@@ -57,6 +57,8 @@ class Chef
         ```
       DOC
 
+      allowed_actions :install
+
       property :app, String,
         description: "The name of the application as it appears in the `/Volumes` directory if it differs from the resource block's name.",
         name_property: true
