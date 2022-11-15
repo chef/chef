@@ -1,0 +1,10 @@
+---
+banner: knife org create ORG_SHORT_NAME ORG_FULL_NAME (options)
+association_user:
+  long: "--association_user USERNAME"
+  short: "-a USERNAME"
+  description: Invite USERNAME to the new organization after creation
+filename:
+  long: "--filename FILENAME"
+  short: "-f FILENAME"
+  description: Write validator private key to FILENAME rather than STDOUT

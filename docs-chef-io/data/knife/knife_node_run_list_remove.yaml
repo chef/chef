@@ -1,0 +1,2 @@
+---
+banner: knife node run_list remove [NODE] [ENTRY [ENTRY]] (options)

@@ -1,0 +1,6 @@
+---
+banner: knife user reregister USER (options)
+file:
+  short: "-f FILE"
+  long: "--file FILE"
+  description: Write the private key to a file.

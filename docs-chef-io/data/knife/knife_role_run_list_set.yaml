@@ -1,0 +1,2 @@
+---
+banner: knife role run_list set [ROLE] [ENTRIES] (options)

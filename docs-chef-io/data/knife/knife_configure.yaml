@@ -1,0 +1,26 @@
+---
+banner: knife configure (options)
+admin_client_key:
+  long: "--admin-client-key PATH"
+  description: The path to the private key used by the client, typically a file named
+    admin.pem.
+admin_client_name:
+  long: "--admin-client-name NAME"
+  description: The name of the client, typically the name of the admin client.
+initial:
+  short: "-i"
+  long: "--initial"
+  boolean: true
+  description: Use to create a API client, typically an administrator client on a
+    freshly-installed server.
+repository:
+  short: "-r REPO"
+  long: "--repository REPO"
+  description: The path to the chef-repo.
+validation_client_name:
+  long: "--validation-client-name NAME"
+  description: The name of the validation client, typically a client named chef-validator.
+validation_key:
+  long: "--validation-key PATH"
+  description: The path to the validation key used by the client, typically a file
+    named validation.pem.

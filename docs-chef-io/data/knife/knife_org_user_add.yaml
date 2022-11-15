@@ -1,0 +1,6 @@
+---
+banner: knife org user add ORG_NAME USER_NAME
+admin:
+  long: "--admin"
+  short: "-a"
+  description: Add user to admin group

@@ -1,0 +1,6 @@
+---
+banner: knife client bulk delete REGEX (options)
+delete_validators:
+  short: "-D"
+  long: "--delete-validators"
+  description: Force deletion of clients if they're validators.

@@ -1,0 +1,3 @@
+---
+banner: knife role env_run_list replace [ROLE] [ENVIRONMENT] [OLD_ENTRY] [NEW_ENTRY]
+  (options)

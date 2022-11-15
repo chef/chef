@@ -1,0 +1,14 @@
+---
+banner: knife client key list CLIENT (options)
+only_expired:
+  short: "-e"
+  long: "--only-expired"
+  description: Only show expired keys.
+only_non_expired:
+  short: "-n"
+  long: "--only-non-expired"
+  description: Only show non-expired keys.
+with_details:
+  short: "-w"
+  long: "--with-details"
+  description: Show corresponding URIs and whether the key has expired or not.

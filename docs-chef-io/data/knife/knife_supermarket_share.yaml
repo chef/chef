@@ -1,0 +1,18 @@
+---
+banner: knife supermarket share COOKBOOK [CATEGORY] (options)
+cookbook_path:
+  short: "-o PATH:PATH"
+  long: "--cookbook-path PATH:PATH"
+  description: A colon-separated path to look for cookbooks in.
+  proc: !ruby/object:Proc {}
+dry_run:
+  long: "--dry-run"
+  short: "-n"
+  boolean: true
+  default: false
+  description: Don't take action, only print what files will be uploaded to Supermarket.
+supermarket_site:
+  short: "-m SUPERMARKET_SITE"
+  long: "--supermarket-site SUPERMARKET_SITE"
+  description: The URL of the Supermarket site.
+  default: https://supermarket.chef.io

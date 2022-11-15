@@ -1,0 +1,10 @@
+---
+banner: knife org list
+all_orgs:
+  long: "--all-orgs"
+  short: "-a"
+  description: Show auto-generated hidden orgs in output
+with_uri:
+  long: "--with-uri"
+  short: "-w"
+  description: Show corresponding URIs

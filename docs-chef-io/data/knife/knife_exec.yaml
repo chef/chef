@@ -1,0 +1,11 @@
+---
+banner: knife exec [SCRIPT] (options)
+exec:
+  short: "-E CODE"
+  long: "--exec CODE"
+  description: A string of Chef Infra Client code to execute.
+script_path:
+  short: "-p PATH:PATH"
+  long: "--script-path PATH:PATH"
+  description: A colon-separated path to look for scripts in.
+  proc: !ruby/object:Proc {}

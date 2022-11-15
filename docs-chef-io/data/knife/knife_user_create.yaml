@@ -1,0 +1,36 @@
+---
+banner: knife user create USERNAME --email EMAIL --password PASSWORD (options)
+email:
+  long: "--email EMAIL"
+  description: Email for the user
+file:
+  short: "-f FILE"
+  long: "--file FILE"
+  description: Write the private key to a file if the server generated one.
+first_name:
+  long: "--first-name FIRST_NAME"
+  description: First name for the user
+last_name:
+  long: "--last-name LAST_NAME"
+  description: Last name for the user
+orgname:
+  long: "--orgname ORGNAME"
+  short: "-o ORGNAME"
+  description: Associate new user to an organization matching ORGNAME
+password:
+  long: "--password PASSWORD"
+  description: Password for the user
+passwordprompt:
+  long: "--prompt-for-password"
+  short: "-p"
+  description: Prompt for user password
+prevent_keygen:
+  short: "-k"
+  long: "--prevent-keygen"
+  description: API V1 (Chef Infra Server 12.1+) only. Prevent server from generating
+    a default key pair for you. Cannot be passed with --user-key.
+  boolean: true
+user_key:
+  long: "--user-key FILENAME"
+  description: Set the initial default key for the user from a file on disk (cannot
+    pass with --prevent-keygen).

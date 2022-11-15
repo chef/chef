@@ -1,0 +1,7 @@
+---
+banner: knife cookbook bulk delete REGEX (options)
+purge:
+  short: "-p"
+  long: "--purge"
+  boolean: true
+  description: Permanently remove files from backing data store.

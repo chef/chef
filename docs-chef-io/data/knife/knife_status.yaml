@@ -1,0 +1,25 @@
+---
+banner: knife status QUERY (options)
+hide_by_mins:
+  long: "--hide-by-mins MINS"
+  description: Hide nodes that have run chef-client in the last MINS minutes
+long_output:
+  short: "-l"
+  long: "--long"
+  boolean: true
+  default: false
+  description: Include all attributes in the output
+medium_output:
+  short: "-m"
+  long: "--medium"
+  boolean: true
+  default: false
+  description: Include normal attributes in the output
+run_list:
+  short: "-r"
+  long: "--run-list"
+  description: Show the run list
+sort_reverse:
+  short: "-s"
+  long: "--sort-reverse"
+  description: Sort the status list by last run time descending

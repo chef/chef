@@ -1,0 +1,39 @@
+---
+banner: knife list [-dfR1p] [PATTERN1 ... PATTERNn] (options)
+bare_directories:
+  short: "-d"
+  boolean: true
+  description: When directories match the pattern, do not show the directories' children.
+chef_repo_path:
+  long: "--chef-repo-path PATH"
+  description: Overrides the location of Chef Infra Client repo. Default is specified
+    by chef_repo_path in the config
+concurrency:
+  long: "--concurrency THREADS"
+  description: 'Maximum number of simultaneous requests to send (default: 10)'
+flat:
+  short: "-f"
+  long: "--flat"
+  boolean: true
+  description: Show a list of filenames rather than the prettified ls-like output
+    normally produced.
+local:
+  long: "--local"
+  boolean: true
+  description: List local directory instead of remote.
+one_column:
+  short: "-1"
+  boolean: true
+  description: Show only one column of results.
+recursive:
+  short: "-R"
+  boolean: true
+  description: List directories recursively.
+repo_mode:
+  long: "--repo-mode MODE"
+  description: 'Specifies the local repository layout.  Values: static, everything,
+    hosted_everything.  Default: everything/hosted_everything'
+trailing_slashes:
+  short: "-p"
+  boolean: true
+  description: Show trailing slashes after directories.

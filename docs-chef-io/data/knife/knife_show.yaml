@@ -1,0 +1,17 @@
+---
+banner: knife show [PATTERN1 ... PATTERNn] (options)
+chef_repo_path:
+  long: "--chef-repo-path PATH"
+  description: Overrides the location of Chef Infra Client repo. Default is specified
+    by chef_repo_path in the config
+concurrency:
+  long: "--concurrency THREADS"
+  description: 'Maximum number of simultaneous requests to send (default: 10)'
+local:
+  long: "--local"
+  boolean: true
+  description: Show local files instead of remote.
+repo_mode:
+  long: "--repo-mode MODE"
+  description: 'Specifies the local repository layout.  Values: static, everything,
+    hosted_everything.  Default: everything/hosted_everything'

@@ -1,0 +1,6 @@
+---
+banner: knife role run_list add [ROLE] [ENTRY [ENTRY]] (options)
+after:
+  short: "-a ITEM"
+  long: "--after ITEM"
+  description: Place the ENTRY in the run list after ITEM.

@@ -1,0 +1,11 @@
+---
+banner: knife user delete USER (options)
+no_disassociate_user:
+  long: "--no-disassociate-user"
+  short: "-d"
+  description: Don't disassociate the user first
+remove_from_admin_groups:
+  long: "--remove-from-admin-groups"
+  short: "-R"
+  description: If the user is a member of any org admin groups, attempt to remove
+    from those groups. Ignored if --no-disassociate-user is set.

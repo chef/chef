@@ -1,0 +1,16 @@
+---
+banner: knife cookbook download COOKBOOK [VERSION] (options)
+download_directory:
+  short: "-d DOWNLOAD_DIRECTORY"
+  long: "--dir DOWNLOAD_DIRECTORY"
+  description: The directory to download the cookbook into.
+  default: "/Users/maddaus/code/chef"
+force:
+  short: "-f"
+  long: "--force"
+  description: Force download over the download directory if it exists.
+latest:
+  short: "-N"
+  long: "--latest"
+  description: The version of the cookbook to download.
+  boolean: true

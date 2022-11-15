@@ -1,0 +1,2 @@
+---
+banner: knife acl bulk remove MEMBER_TYPE MEMBER_NAME OBJECT_TYPE REGEX PERMS

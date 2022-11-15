@@ -1,0 +1,22 @@
+---
+banner: knife client create CLIENTNAME (options)
+file:
+  short: "-f FILE"
+  long: "--file FILE"
+  description: Write the private key to a file if the Chef Infra Server generated
+    one.
+prevent_keygen:
+  short: "-k"
+  long: "--prevent-keygen"
+  description: Prevent Chef Infra Server from generating a default key pair for you.
+    Cannot be passed with --public-key.
+  boolean: true
+public_key:
+  short: "-p FILE"
+  long: "--public-key"
+  description: Set the initial default key for the client from a file on disk (cannot
+    pass with --prevent-keygen).
+validator:
+  long: "--validator"
+  description: Create the client as a validator.
+  boolean: true

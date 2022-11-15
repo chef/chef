@@ -1,0 +1,2 @@
+---
+banner: knife acl add MEMBER_TYPE MEMBER_NAME OBJECT_TYPE OBJECT_NAME PERMS

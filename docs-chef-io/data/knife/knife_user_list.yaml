@@ -1,0 +1,6 @@
+---
+banner: knife user list (options)
+with_uri:
+  short: "-w"
+  long: "--with-uri"
+  description: Show corresponding URIs.

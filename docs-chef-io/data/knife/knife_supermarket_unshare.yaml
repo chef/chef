@@ -1,0 +1,7 @@
+---
+banner: knife supermarket unshare COOKBOOK
+supermarket_site:
+  short: "-m SUPERMARKET_SITE"
+  long: "--supermarket-site SUPERMARKET_SITE"
+  description: The URL of the Supermarket site.
+  default: https://supermarket.chef.io

@@ -1,0 +1,32 @@
+---
+banner: knife node show NODE (options)
+attribute:
+  short: "-a ATTR1 [-a ATTR2]"
+  long: "--attribute ATTR1 [--attribute ATTR2] "
+  description: Show one or more attributes
+  proc: !ruby/object:Proc {}
+environment:
+  short: "-E"
+  long: "--environment"
+  description: Show only the Chef Infra Client environment.
+field_separator:
+  short: "-S SEPARATOR"
+  long: "--field-separator SEPARATOR"
+  description: Character separator used to delineate nesting in --attribute filters
+    (default ".")
+long_output:
+  short: "-l"
+  long: "--long"
+  boolean: true
+  default: false
+  description: Include all attributes in the output
+medium_output:
+  short: "-m"
+  long: "--medium"
+  boolean: true
+  default: false
+  description: Include normal attributes in the output
+run_list:
+  short: "-r"
+  long: "--run-list"
+  description: Show only the run list.

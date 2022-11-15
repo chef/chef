@@ -1,0 +1,388 @@
+---
+banner: knife bootstrap [PROTOCOL://][USER@]FQDN (options)
+auth_timeout:
+  long: "--max-wait SECONDS"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -W/--max-wait instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :max_wait
+  value_mapper: !ruby/object:Proc {}
+bootstrap_curl_options:
+  long: "--bootstrap-curl-options OPTIONS"
+  description: Add options to curl when install Chef Infra Client.
+bootstrap_install_command:
+  long: "--bootstrap-install-command COMMANDS"
+  description: Custom command to install Chef Infra Client.
+bootstrap_no_proxy:
+  long: "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]"
+  description: Do not proxy locations for the node being bootstrapped
+bootstrap_preinstall_command:
+  long: "--bootstrap-preinstall-command COMMANDS"
+  description: Custom commands to run before installing Chef Infra Client.
+bootstrap_product:
+  long: "--bootstrap-product PRODUCT"
+  description: Product to install.
+  default: chef
+bootstrap_proxy:
+  long: "--bootstrap-proxy PROXY_URL"
+  description: The proxy server for the node being bootstrapped.
+bootstrap_proxy_pass:
+  long: "--bootstrap-proxy-pass PROXY_PASS"
+  description: The proxy authentication password for the node being bootstrapped.
+bootstrap_proxy_user:
+  long: "--bootstrap-proxy-user PROXY_USER"
+  description: The proxy authentication username for the node being bootstrapped.
+bootstrap_template:
+  short: "-t TEMPLATE"
+  long: "--bootstrap-template TEMPLATE"
+  description: Bootstrap Chef Infra Client using a built-in or custom template. Set
+    to the full path of an erb template or use one of the built-in templates.
+bootstrap_url:
+  long: "--bootstrap-url URL"
+  description: URL to a custom installation script.
+bootstrap_vault_file:
+  long: "--bootstrap-vault-file VAULT_FILE"
+  description: A JSON file with a list of vault(s) and item(s) to be updated.
+bootstrap_vault_item:
+  long: "--bootstrap-vault-item VAULT_ITEM"
+  description: A single vault and item to update as "vault:item".
+  proc: !ruby/object:Proc {}
+bootstrap_vault_json:
+  long: "--bootstrap-vault-json VAULT_JSON"
+  description: A JSON string with the vault(s) and item(s) to be updated.
+bootstrap_version:
+  long: "--bootstrap-version VERSION"
+  description: The version of Chef Infra Client to install.
+bootstrap_wget_options:
+  long: "--bootstrap-wget-options OPTIONS"
+  description: Add options to wget when installing Chef Infra Client.
+ca_trust_file:
+  short: "-f CA_TRUST_PATH"
+  long: "--ca-trust-file CA_TRUST_PATH"
+  description: The Certificate Authority (CA) trust file used for SSL transport.
+channel:
+  long: "--channel CHANNEL"
+  description: Install from the given channel. Default is 'stable'.
+  default: stable
+  in:
+  - stable
+  - current
+  - unstable
+chef_license:
+  long: "--chef-license ACCEPTANCE"
+  description: Accept the license for this product and any contained products ('accept',
+    'accept-no-persist', or 'accept-silent')
+  required: false
+chef_node_name:
+  short: "-N NAME"
+  long: "--node-name NAME"
+  description: The node name for your new node.
+cl_secret:
+  long: "--secret SECRET"
+  description: The secret key to use to encrypt data bag item values. Can also be
+    defaulted in your config with the key 'secret'.
+cl_secret_file:
+  long: "--secret-file SECRET_FILE"
+  description: A file containing the secret key to use to encrypt data bag item values.
+    Can also be defaulted in your config with the key 'secret_file'.
+connection_password:
+  short: "-P PASSWORD"
+  long: "--connection-password PASSWORD"
+  description: Authenticate to the target host with this password.
+connection_port:
+  short: "-p PORT"
+  long: "--connection-port PORT"
+  description: The port on the target node to connect to.
+connection_protocol:
+  short: "-o PROTOCOL"
+  long: "--connection-protocol PROTOCOL"
+  description: The protocol to use to connect to the target node.
+  in:
+  - ssh
+  - winrm
+connection_user:
+  short: "-U USERNAME"
+  long: "--connection-user USERNAME"
+  description: Authenticate to the target host with this user account.
+encrypt:
+  long: "--encrypt"
+  description: If 'secret' or 'secret_file' is present in your config, then encrypt
+    data bags using it.
+  boolean: true
+  default: false
+first_boot_attributes:
+  short: "-j JSON_ATTRIBS"
+  long: "--json-attributes"
+  description: A JSON string to be added to the first run of chef-client.
+  proc: !ruby/object:Proc {}
+  default:
+first_boot_attributes_from_file:
+  long: "--json-attribute-file FILE"
+  description: A JSON file to be used to the first run of chef-client.
+  proc: !ruby/object:Proc {}
+  default:
+forward_agent:
+  long: "--forward-agent"
+  short:
+  boolean: true
+  description: This flag is deprecated. Use -A/--ssh-forward-agent instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :ssh_forward_agent
+  value_mapper: !ruby/object:Proc {}
+hints:
+  long: "--hint HINT_NAME[=HINT_FILE]"
+  description: Specify an Ohai hint to be set on the bootstrap target. Use multiple
+    --hint options to specify multiple hints.
+  proc: !ruby/object:Proc {}
+host_key_verify:
+  long: "--[no-]host-key-verify"
+  short:
+  boolean: true
+  description: This flag is deprecated. Use --ssh-verify-host-key instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :ssh_verify_host_key
+  value_mapper: !ruby/object:Proc {}
+kerberos_realm:
+  short: "-R KERBEROS_REALM"
+  long: "--kerberos-realm KERBEROS_REALM"
+  description: The Kerberos realm used for authentication.
+kerberos_service:
+  short: "-S KERBEROS_SERVICE"
+  long: "--kerberos-service KERBEROS_SERVICE"
+  description: The Kerberos service used for authentication.
+max_wait:
+  short: "-W SECONDS"
+  long: "--max-wait SECONDS"
+  description: The maximum time to wait for the initial connection to be established.
+msi_url:
+  short: "-m URL"
+  long: "--msi-url URL"
+  description: Location of the Chef Infra Client MSI. The default templates will prefer
+    to download from this location. The MSI will be downloaded from https://chef.io
+    if not provided (Windows).
+  default: ''
+node_ssl_verify_mode:
+  long: "--node-ssl-verify-mode [peer|none]"
+  description: Whether or not to verify the SSL cert for all HTTPS requests.
+  proc: !ruby/object:Proc {}
+node_verify_api_cert:
+  long: "--[no-]node-verify-api-cert"
+  description: Verify the SSL cert for HTTPS requests to the Chef Infra Server API.
+  boolean: true
+policy_group:
+  long: "--policy-group POLICY_GROUP"
+  description: Policy group name to use (--policy-name must also be given).
+  default:
+policy_name:
+  long: "--policy-name POLICY_NAME"
+  description: Policyfile name to use (--policy-group must also be given).
+  default:
+prerelease:
+  long: "--prerelease"
+  short:
+  boolean: true
+  description: This flag is deprecated. Use --channel instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :channel
+  value_mapper: !ruby/object:Proc {}
+preserve_home:
+  long: "--sudo-preserve-home"
+  description: Preserve non-root user HOME environment variable with sudo.
+  boolean: true
+run_list:
+  short: "-r RUN_LIST"
+  long: "--run-list RUN_LIST"
+  description: Comma separated list of roles/recipes to apply.
+  proc: !ruby/object:Proc {}
+  default: []
+session_timeout:
+  long: "--session-timeout SECONDS"
+  description: The number of seconds to wait for each connection operation to be acknowledged
+    while running bootstrap.
+  default: 60
+ssh_forward_agent:
+  short: "-A"
+  long: "--ssh-forward-agent"
+  description: Enable SSH agent forwarding.
+  boolean: true
+ssh_gateway:
+  short: "-G GATEWAY"
+  long: "--ssh-gateway GATEWAY"
+  description: The SSH gateway.
+ssh_gateway_identity:
+  long: "--ssh-gateway-identity SSH_GATEWAY_IDENTITY"
+  description: The SSH identity file used for gateway authentication.
+ssh_identity_file:
+  short: "-i IDENTITY_FILE"
+  long: "--ssh-identity-file IDENTITY_FILE"
+  description: The SSH identity file used for authentication.
+ssh_password:
+  long: "--ssh-password PASSWORD"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -P/--connection-password instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :connection_password
+  value_mapper: !ruby/object:Proc {}
+ssh_port:
+  long: "--ssh-port PASSWORD"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -p/--connection-port instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :connection_port
+  value_mapper: !ruby/object:Proc {}
+ssh_user:
+  long: "--ssh-user USERNAME"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -U/--connection-user instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :connection_user
+  value_mapper: !ruby/object:Proc {}
+ssh_verify_host_key:
+  long: "--ssh-verify-host-key VALUE"
+  description: Verify host key. Default is 'always'.
+  in:
+  - always
+  - accept_new
+  - accept_new_or_local_tunnel
+  - never
+  default: always
+ssl_peer_fingerprint:
+  long: "--ssl-peer-fingerprint FINGERPRINT"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use --winrm-ssl-peer-fingerprint instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :winrm_ssl_peer_fingerprint
+  value_mapper: !ruby/object:Proc {}
+su_password:
+  long: "--su-password PASSWORD"
+  description: The su USER password for authentication.
+su_user:
+  long: "--su-user NAME"
+  description: The su - USER name to perform bootstrap command using a non-root user.
+tags:
+  long: "--tags TAGS"
+  description: Comma separated list of tags to apply to the node.
+  proc: !ruby/object:Proc {}
+  default: []
+use_sudo:
+  long: "--sudo"
+  description: Execute the bootstrap via sudo.
+  boolean: true
+use_sudo_password:
+  long: "--use-sudo-password"
+  description: Execute the bootstrap via sudo with password.
+  boolean: false
+winrm_auth_method:
+  short: "-w AUTH-METHOD"
+  long: "--winrm-auth-method AUTH-METHOD"
+  description: The WinRM authentication method to use.
+  in:
+  - plaintext
+  - kerberos
+  - ssl
+  - negotiate
+winrm_authentication_protocol:
+  long: "--winrm-authentication-protocol PROTOCOL"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -w/--winrm-auth-method instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :winrm_auth_method
+  value_mapper: !ruby/object:Proc {}
+winrm_basic_auth_only:
+  long: "--winrm-basic-auth-only"
+  description: For WinRM basic authentication when using the 'ssl' auth method.
+  boolean: true
+winrm_no_verify_cert:
+  long: "--winrm-no-verify-cert"
+  description: Do not verify the SSL certificate of the target node for WinRM.
+  boolean: true
+winrm_password:
+  long: "--winrm-password PASSWORD"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -P/--connection-password instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :connection_password
+  value_mapper: !ruby/object:Proc {}
+winrm_port:
+  long: "--winrm-port PORT"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use -p/--connection-port instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :connection_port
+  value_mapper: !ruby/object:Proc {}
+winrm_session_timeout:
+  long: "--winrm-session-timeout MINUTES"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use --session-timeout instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :session_timeout
+  value_mapper: !ruby/object:Proc {}
+winrm_ssl:
+  long: "--winrm-ssl"
+  description: Use SSL in the WinRM connection.
+winrm_ssl_peer_fingerprint:
+  long: "--winrm-ssl-peer-fingerprint FINGERPRINT"
+  description: SSL certificate fingerprint expected from the target.
+winrm_ssl_verify_mode:
+  long: "--winrm-ssl-verify-mode MODE"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use --winrm-no-verify-cert instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :winrm_no_verify_cert
+  value_mapper: !ruby/object:Proc {}
+winrm_transport:
+  long: "--winrm-transport TRANSPORT"
+  short:
+  boolean: false
+  description: This flag is deprecated. Use --winrm-ssl instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :winrm_ssl
+  value_mapper: !ruby/object:Proc {}
+winrm_user:
+  long: "--winrm-user USERNAME"
+  short: "-x USERNAME"
+  boolean: false
+  description: This flag is deprecated. Use -U/--connection-user instead.
+  'on': :tail
+  deprecated: true
+  keep: true
+  replacement: :connection_user
+  value_mapper: !ruby/object:Proc {}

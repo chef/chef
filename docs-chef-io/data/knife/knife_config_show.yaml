@@ -1,0 +1,14 @@
+---
+banner: |-
+  knife config show [OPTION...] (options)
+  Displays the value of Chef::Config[OPTION] (or all config values)
+all:
+  short: "-a"
+  long: "--all"
+  description: Include options that are not set in the configuration.
+  default: false
+raw:
+  short: "-r"
+  long: "--raw"
+  description: Display a each value with no formatting.
+  default: false

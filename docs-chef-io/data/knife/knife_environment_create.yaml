@@ -1,0 +1,6 @@
+---
+banner: knife environment create ENVIRONMENT (options)
+description:
+  short: "-d DESCRIPTION"
+  long: "--description DESCRIPTION"
+  description: The environment description.

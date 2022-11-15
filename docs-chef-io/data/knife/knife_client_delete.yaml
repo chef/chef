@@ -1,0 +1,6 @@
+---
+banner: knife client delete [CLIENT [CLIENT]] (options)
+delete_validators:
+  short: "-D"
+  long: "--delete-validators"
+  description: Force deletion of client if it's a validator.

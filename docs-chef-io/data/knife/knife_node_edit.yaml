@@ -1,0 +1,7 @@
+---
+banner: knife node edit NODE (options)
+all_attributes:
+  short: "-a"
+  long: "--all"
+  boolean: true
+  description: Display all attributes when editing.

@@ -1,0 +1,46 @@
+---
+banner: knife upload PATTERNS (options)
+chef_repo_path:
+  long: "--chef-repo-path PATH"
+  description: Overrides the location of Chef Infra Client repo. Default is specified
+    by chef_repo_path in the config
+concurrency:
+  long: "--concurrency THREADS"
+  description: 'Maximum number of simultaneous requests to send (default: 10)'
+diff:
+  long: "--[no-]diff"
+  boolean: true
+  default: true
+  description: Turn off to avoid uploading existing files; only new (and possibly
+    deleted) files with --no-diff.
+dry_run:
+  long: "--dry-run"
+  short: "-n"
+  boolean: true
+  default: false
+  description: Don't take action, only print what would happen.
+force:
+  long: "--[no-]force"
+  boolean: true
+  default: false
+  description: Force upload of files even if they match (quicker for many files).
+    Will overwrite frozen cookbooks.
+freeze:
+  long: "--[no-]freeze"
+  boolean: true
+  default: false
+  description: Freeze cookbooks that get uploaded.
+purge:
+  long: "--[no-]purge"
+  boolean: true
+  default: false
+  description: Delete matching local files and directories that do not exist remotely.
+recurse:
+  long: "--[no-]recurse"
+  boolean: true
+  default: true
+  description: List directories recursively.
+repo_mode:
+  long: "--repo-mode MODE"
+  description: 'Specifies the local repository layout.  Values: static, everything,
+    hosted_everything.  Default: everything/hosted_everything'

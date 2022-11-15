@@ -1,0 +1,29 @@
+---
+banner: knife delete [PATTERN1 ... PATTERNn]
+both:
+  long: "--both"
+  boolean: true
+  default: false
+  description: Delete both the local and remote copies.
+chef_repo_path:
+  long: "--chef-repo-path PATH"
+  description: Overrides the location of Chef Infra Client repo. Default is specified
+    by chef_repo_path in the config
+concurrency:
+  long: "--concurrency THREADS"
+  description: 'Maximum number of simultaneous requests to send (default: 10)'
+local:
+  long: "--local"
+  boolean: true
+  default: false
+  description: Delete the local copy (leave the remote copy).
+recurse:
+  short: "-r"
+  long: "--[no-]recurse"
+  boolean: true
+  default: false
+  description: Delete directories recursively.
+repo_mode:
+  long: "--repo-mode MODE"
+  description: 'Specifies the local repository layout.  Values: static, everything,
+    hosted_everything.  Default: everything/hosted_everything'

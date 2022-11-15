@@ -1,0 +1,53 @@
+---
+banner: knife search INDEX QUERY (options)
+attribute:
+  short: "-a ATTR1 [-a ATTR2]"
+  long: "--attribute ATTR1 [--attribute ATTR2] "
+  description: Show one or more attributes
+  proc: !ruby/object:Proc {}
+field_separator:
+  short: "-S SEPARATOR"
+  long: "--field-separator SEPARATOR"
+  description: Character separator used to delineate nesting in --attribute filters
+    (default ".")
+filter_result:
+  short: "-f FILTER"
+  long: "--filter-result FILTER"
+  description: 'Only return specific attributes of the matching objects; for example:
+    "ServerName=name, Kernel=kernel.version".'
+id_only:
+  short: "-i"
+  long: "--id-only"
+  description: Show only the ID of matching objects.
+long_output:
+  short: "-l"
+  long: "--long"
+  boolean: true
+  default: false
+  description: Include all attributes in the output
+medium_output:
+  short: "-m"
+  long: "--medium"
+  boolean: true
+  default: false
+  description: Include normal attributes in the output
+query:
+  short: "-q QUERY"
+  long: "--query QUERY"
+  description: The search query; useful to protect queries starting with -.
+rows:
+  short: "-R INT"
+  long: "--rows INT"
+  description: The number of rows to return.
+  default:
+  proc: !ruby/object:Proc {}
+run_list:
+  short: "-r"
+  long: "--run-list"
+  description: Show only the run list.
+start:
+  short: "-b ROW"
+  long: "--start ROW"
+  description: The row to start returning results at.
+  default: 0
+  proc: !ruby/object:Proc {}

@@ -1,0 +1,12 @@
+---
+banner: knife environment compare [ENVIRONMENT..] (options)
+all:
+  short: "-a"
+  long: "--all"
+  description: Show all cookbooks.
+  boolean: true
+mismatch:
+  short: "-m"
+  long: "--mismatch"
+  description: Only show mismatching versions.
+  boolean: true

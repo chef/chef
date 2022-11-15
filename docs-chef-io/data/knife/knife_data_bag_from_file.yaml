@@ -1,0 +1,20 @@
+---
+banner: knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)
+all:
+  short: "-a"
+  long: "--all"
+  description: Upload all data bags or all items for specified data bags.
+cl_secret:
+  long: "--secret SECRET"
+  description: The secret key to use to encrypt data bag item values. Can also be
+    defaulted in your config with the key 'secret'.
+cl_secret_file:
+  long: "--secret-file SECRET_FILE"
+  description: A file containing the secret key to use to encrypt data bag item values.
+    Can also be defaulted in your config with the key 'secret_file'.
+encrypt:
+  long: "--encrypt"
+  description: If 'secret' or 'secret_file' is present in your config, then encrypt
+    data bags using it.
+  boolean: true
+  default: false

@@ -1,0 +1,6 @@
+---
+banner: knife environment from file FILE [FILE..] (options)
+all:
+  short: "-a"
+  long: "--all"
+  description: Upload all environments.

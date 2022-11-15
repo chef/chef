@@ -1,0 +1,7 @@
+---
+banner: knife org user remove ORG_NAME USER_NAME
+force_remove_from_admins:
+  long: "--force"
+  short: "-f"
+  description: Force removal of user from the organization's admins and billing-admins
+    group.

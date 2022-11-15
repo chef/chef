@@ -1,0 +1,23 @@
+---
+banner: knife supermarket list (options)
+owned_by:
+  short: "-o USER"
+  long: "--owned-by USER"
+  description: Show cookbooks that are owned by the USER
+sort_by:
+  long: "--sort-by SORT"
+  description: Use to sort the records
+  in:
+  - recently_updated
+  - recently_added
+  - most_downloaded
+  - most_followed
+supermarket_site:
+  short: "-m SUPERMARKET_SITE"
+  long: "--supermarket-site SUPERMARKET_SITE"
+  description: The URL of the Supermarket site.
+  default: https://supermarket.chef.io
+with_uri:
+  short: "-w"
+  long: "--with-uri"
+  description: Show corresponding URIs.

@@ -1,0 +1,23 @@
+---
+banner: knife user key create USER (options)
+expiration_date:
+  short: "-e DATE"
+  long: "--expiration-date DATE"
+  description: 'Optionally pass the expiration date for the key in ISO 8601 formatted
+    string: YYYY-MM-DDTHH:MM:SSZ e.g. 2013-12-24T21:00:00Z. Defaults to infinity if
+    not passed. UTC timezone assumed.'
+file:
+  short: "-f FILE"
+  long: "--file FILE"
+  description: Write the private key to a file, if you requested the server to create
+    one.
+key_name:
+  short: "-k NAME"
+  long: "--key-name NAME"
+  description: The name for your key. If you do not pass a name, you must pass --public-key,
+    and the name will default to the fingerprint of the public key passed.
+public_key:
+  short: "-p FILENAME"
+  long: "--public-key FILENAME"
+  description: Public key for newly created key. If not passed, the server will create
+    a key pair for you, but you must pass --key-name NAME in that case.

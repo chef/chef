@@ -1,0 +1,14 @@
+---
+banner: knife supermarket download COOKBOOK [VERSION] (options)
+file:
+  short: "-f FILE"
+  long: "--file FILE"
+  description: The filename to write to.
+force:
+  long: "--force"
+  description: Force download deprecated version.
+supermarket_site:
+  short: "-m SUPERMARKET_SITE"
+  long: "--supermarket-site SUPERMARKET_SITE"
+  description: The URL of the Supermarket site.
+  default: https://supermarket.chef.io

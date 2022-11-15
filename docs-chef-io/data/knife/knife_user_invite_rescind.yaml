@@ -1,0 +1,6 @@
+---
+banner: knife user invite rescind [USERNAMES] (options)
+all:
+  short: "-a"
+  long: "--all"
+  description: Rescind all invites!

@@ -1,0 +1,21 @@
+---
+banner: knife raw REQUEST_PATH (options)
+input:
+  long: "--input FILE"
+  short: "-i FILE"
+  description: Name of file to use for PUT or POST.
+method:
+  long: "--method METHOD"
+  short: "-m METHOD"
+  default: GET
+  description: 'Request method (GET, POST, PUT or DELETE). Default: GET.'
+pretty:
+  long: "--[no-]pretty"
+  boolean: true
+  default: true
+  description: 'Pretty-print JSON output. Default: true.'
+proxy_auth:
+  long: "--proxy-auth"
+  boolean: true
+  default: false
+  description: Use webui proxy authentication. Client key must be the webui key.

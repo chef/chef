@@ -1,0 +1,2 @@
+---
+banner: knife role env_run_list clear [ROLE] [ENVIRONMENT] (options)

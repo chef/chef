@@ -1,0 +1,7 @@
+---
+banner: knife config list (options)
+ignore_knife_rb:
+  short: "-i"
+  long: "--ignore-knife-rb"
+  description: Ignore the current config.rb/knife.rb configuration.
+  default: false

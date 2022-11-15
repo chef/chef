@@ -1,0 +1,41 @@
+---
+banner: knife cookbook upload [COOKBOOKS...] (options)
+all:
+  short: "-a"
+  long: "--all"
+  description: Upload all cookbooks, rather than just a single cookbook.
+check_dependencies:
+  boolean: true
+  long: "--[no-]check-dependencies"
+  description: Whether or not cookbook dependencies are verified before uploading
+    cookbook(s) to Chef Infra Server. You shouldn't disable this unless you really
+    know what you're doing.
+  default: true
+concurrency:
+  long: "--concurrency NUMBER_OF_THREADS"
+  description: How many concurrent threads will be used.
+  default: 10
+  proc: !ruby/object:Proc {}
+cookbook_path:
+  short: "-o 'PATH:PATH'"
+  long: "--cookbook-path 'PATH:PATH'"
+  description: A delimited path to search for cookbooks. On Unix the delimiter is
+    ':', on Windows it is ';'.
+  proc: !ruby/object:Proc {}
+depends:
+  short: "-d"
+  long: "--include-dependencies"
+  description: Also upload cookbook dependencies.
+environment:
+  short: "-E"
+  long: "--environment ENVIRONMENT"
+  description: Set ENVIRONMENT's version dependency match the version you're uploading.
+  default:
+force:
+  long: "--force"
+  boolean: true
+  description: Update cookbook versions even if they have been frozen.
+freeze:
+  long: "--freeze"
+  description: Freeze this version of the cookbook so that it cannot be overwritten.
+  boolean: true

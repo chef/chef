@@ -1,0 +1,6 @@
+---
+banner: knife role create ROLE (options)
+description:
+  short: "-d DESC"
+  long: "--description DESC"
+  description: The role description.

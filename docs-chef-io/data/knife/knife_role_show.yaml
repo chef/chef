@@ -1,0 +1,12 @@
+---
+banner: knife role show ROLE (options)
+attribute:
+  short: "-a ATTR1 [-a ATTR2]"
+  long: "--attribute ATTR1 [--attribute ATTR2] "
+  description: Show one or more attributes
+  proc: !ruby/object:Proc {}
+field_separator:
+  short: "-S SEPARATOR"
+  long: "--field-separator SEPARATOR"
+  description: Character separator used to delineate nesting in --attribute filters
+    (default ".")

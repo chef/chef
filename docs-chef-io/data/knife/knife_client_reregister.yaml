@@ -1,0 +1,6 @@
+---
+banner: knife client reregister CLIENT (options)
+file:
+  short: "-f FILE"
+  long: "--file FILE"
+  description: Write the key to a file.

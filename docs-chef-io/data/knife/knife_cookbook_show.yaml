@@ -1,0 +1,18 @@
+---
+banner: knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)
+fqdn:
+  short: "-f FQDN"
+  long: "--fqdn FQDN"
+  description: The FQDN of the host to see the file for.
+platform:
+  short: "-p PLATFORM"
+  long: "--platform PLATFORM"
+  description: The platform to see the file for.
+platform_version:
+  short: "-V VERSION"
+  long: "--platform-version VERSION"
+  description: The platform version to see the file for.
+with_uri:
+  short: "-w"
+  long: "--with-uri"
+  description: Show corresponding URIs.

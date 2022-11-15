@@ -1,0 +1,25 @@
+---
+banner: knife deps PATTERN1 [PATTERNn]
+chef_repo_path:
+  long: "--chef-repo-path PATH"
+  description: Overrides the location of Chef Infra Client repo. Default is specified
+    by chef_repo_path in the config
+concurrency:
+  long: "--concurrency THREADS"
+  description: 'Maximum number of simultaneous requests to send (default: 10)'
+recurse:
+  long: "--[no-]recurse"
+  boolean: true
+  description: 'List dependencies recursively (default: true). Only works with --tree.'
+remote:
+  long: "--remote"
+  boolean: true
+  description: List dependencies on the server instead of the local filesystem.
+repo_mode:
+  long: "--repo-mode MODE"
+  description: 'Specifies the local repository layout.  Values: static, everything,
+    hosted_everything.  Default: everything/hosted_everything'
+tree:
+  long: "--tree"
+  boolean: true
+  description: Show dependencies in a visual tree. May show duplicates.
