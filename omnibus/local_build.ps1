@@ -63,8 +63,8 @@ $env:OMNIBUS_FIPS_MODE="true"
 $mePath=$env:PATH
 $env:PATH="C:\Program Files\7-Zip;C:\Ruby31-x64\msys64\usr\bin;C:\Ruby31-x64\msys64\ucrt64\bin;$env:MSYS2_INSTALL_DIR\usr\bin;C:\Program Files\git\bin;$mePath"
 
-$env:OMNIBUS_GITHUB_BRANCH="tp/debug-fips-locally"
-$env:OMNIBUS_SOFTWARE_GITHUB_BRANCH="tp/debug-fips-locally"
+#$env:OMNIBUS_GITHUB_BRANCH="tp/debug-fips-locally"
+$env:OMNIBUS_SOFTWARE_GITHUB_BRANCH="tp/INFC-289-final"
 
 cd omnibus
 bundle config set --local without development
