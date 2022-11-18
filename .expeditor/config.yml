@@ -3,65 +3,65 @@
 
 # The name of the product keys for this product (from mixlib-install)
 product_key:
-  - chef
+  - chef-releng-fork
 
 # Slack channel in Chef Software slack to send notifications about build failures, etc
-slack:
-  notify_channel: chef-infra-notify
+# slack:
+  # notify_channel: chef-infra-notify
 
 # Which Ruby Gems, built when the Omnibus package is built, to publish to rubygems.org
 # This publish is triggered by the `built_in:publish_rubygems` artifact_action.
-rubygems:
-  - chef
-  - chef-config
-  - chef-bin
-  - chef-utils
+# rubygems:
+#   - chef
+#   - chef-config
+#   - chef-bin
+#   - chef-utils
 
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
-schedules:
-  - name: nightly_build_main
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "0 6 * * *"
-  - name: nightly_build_chef_17
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "30 9 * * 2,4"
-  - name: nightly_build_chef_16
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "30 2 * * 2"
+# schedules:
+#   - name: nightly_build_main
+#     description: "Run a nightly build in the Buildkite pipeline"
+#     cronline: "0 6 * * *"
+#   - name: nightly_build_chef_17
+#     description: "Run a nightly build in the Buildkite pipeline"
+#     cronline: "30 9 * * 2,4"
+#   - name: nightly_build_chef_16
+#     description: "Run a nightly build in the Buildkite pipeline"
+#     cronline: "30 2 * * 2"
 
 pipelines:
   - verify:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems. 
-  - docker/build:
-      definition: .expeditor/docker-build.pipeline.yml
-      trigger: default
-  - habitat/build
-  - habitat/test:
-      definition: .expeditor/habitat-test.pipeline.yml
-      trigger: default
-  - omnibus/release:
-      env:
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  - omnibus/adhoc:
-      definition: .expeditor/release.omnibus.yml
-      env:
-        - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - docker/build:
+  #     definition: .expeditor/docker-build.pipeline.yml
+  #     trigger: default
+  # - habitat/build
+  # - habitat/test:
+      # definition: .expeditor/habitat-test.pipeline.yml
+      # trigger: default
+  # - omnibus/release:
+  #     env:
+  #       - IGNORE_CACHE: true # caching causes constant build failures
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - omnibus/adhoc:
+  #     definition: .expeditor/release.omnibus.yml
+  #     env:
+  #       - ADHOC: true
+  #       - IGNORE_CACHE: true # caching causes constant build failures
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   # the adhoc-canary pipeline is used to test new omnibus workers
-  - omnibus/adhoc-canary:
-      canary: true
-      definition: .expeditor/adhoc-canary.omnibus.yml
-      env:
-        - ADHOC: true
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  - macos_universal_package:
-      description: Builds universal macos package using arch specific packages
-      definition: .expeditor/macos_universal_package.pipeline.yml
+  # - omnibus/adhoc-canary:
+  #     canary: true
+  #     definition: .expeditor/adhoc-canary.omnibus.yml
+  #     env:
+  #       - ADHOC: true
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - macos_universal_package:
+  #     description: Builds universal macos package using arch specific packages
+  #     definition: .expeditor/macos_universal_package.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -78,214 +78,214 @@ github:
 # Which GitHub branches to build Omnibus releases from, and what versions
 # (as determined by the value in the VERSION file) those branches are responsible
 # for building.
-release_branches:
-  - main:
-      version_constraint: 18*
-  - chef-17:
-      version_constraint: 17*
-  - chef-16:
-      version_constraint: 16*
+# release_branches:
+#   - main:
+#       version_constraint: 18*
+#   - chef-17:
+#       version_constraint: 17*
+#   - chef-16:
+#       version_constraint: 16*
 
 changelog:
   rollup_header: Changes not yet released to stable
 
 subscriptions:
   # the omnibus/docker/gem chain
-  - workload: artifact_published:unstable:chef:{{version_constraint}}
-    actions:
-      - trigger_pipeline:docker/build
-      - trigger_pipeline:macos_universal_package
-  - workload: artifact_published:current:chef:{{version_constraint}}
-    actions:
-      - bash:.expeditor/promote-docker-images.sh
-  - workload: project_promoted:{{agent_id}}:*
-    actions:
-      - built_in:promote_artifactory_artifact
-  - workload: artifact_published:stable:chef:{{version_constraint}}
-    actions:
-      - built_in:rollover_changelog
-      - bash:.expeditor/update_dockerfile.sh
-      - bash:.expeditor/promote-docker-images.sh
-      - bash:.expeditor/publish-release-notes.sh
-      - bash:.expeditor/announce-release.sh
-      - built_in:publish_rubygems
-      - built_in:promote_habitat_packages
-      - built_in:notify_chefio_slack_channels
+  # - workload: artifact_published:unstable:chef:{{version_constraint}}
+  #   actions:
+  #     - trigger_pipeline:docker/build
+  #     - trigger_pipeline:macos_universal_package
+  # - workload: artifact_published:current:chef:{{version_constraint}}
+  #   actions:
+  #     - bash:.expeditor/promote-docker-images.sh
+  # - workload: project_promoted:{{agent_id}}:*
+  #   actions:
+  #     - built_in:promote_artifactory_artifact
+  # - workload: artifact_published:stable:chef:{{version_constraint}}
+  #   actions:
+  #     - built_in:rollover_changelog
+  #     - bash:.expeditor/update_dockerfile.sh
+  #     - bash:.expeditor/promote-docker-images.sh
+  #     - bash:.expeditor/publish-release-notes.sh
+  #     - bash:.expeditor/announce-release.sh
+  #     - built_in:publish_rubygems
+  #     - built_in:promote_habitat_packages
+  #     - built_in:notify_chefio_slack_channels
 
   # These actions are taken, in order they are specified, anytime a Pull Request is merged.
-  - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
-    actions:
-      - built_in:bump_version:
-          ignore_labels:
-            - "Expeditor: Skip Version Bump"
-            - "Expeditor: Skip All"
-      - bash:.expeditor/update_version.sh:
-          only_if: built_in:bump_version
-      - built_in:update_changelog:
-          ignore_labels:
-            - "Expeditor: Skip Changelog"
-            - "Expeditor: Skip All"
-      - trigger_pipeline:habitat/build:
-          ignore_labels:
-            - "Expeditor: Skip Habitat"
-            - "Expeditor: Skip All"
-          only_if: built_in:bump_version
-      - trigger_pipeline:omnibus/release:
-          ignore_labels:
-            - "Expeditor: Skip Omnibus"
-            - "Expeditor: Skip All"
-          only_if: built_in:bump_version
+  # - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
+  #   actions:
+  #     - built_in:bump_version:
+  #         ignore_labels:
+  #           - "Expeditor: Skip Version Bump"
+  #           - "Expeditor: Skip All"
+  #     - bash:.expeditor/update_version.sh:
+  #         only_if: built_in:bump_version
+  #     - built_in:update_changelog:
+  #         ignore_labels:
+  #           - "Expeditor: Skip Changelog"
+  #           - "Expeditor: Skip All"
+  #     - trigger_pipeline:habitat/build:
+  #         ignore_labels:
+  #           - "Expeditor: Skip Habitat"
+  #           - "Expeditor: Skip All"
+  #         only_if: built_in:bump_version
+  #     - trigger_pipeline:omnibus/release:
+  #         ignore_labels:
+  #           - "Expeditor: Skip Omnibus"
+  #           - "Expeditor: Skip All"
+  #         only_if: built_in:bump_version
 
   # the habitat chain
-  - workload: buildkite_hab_build_group_published:{{agent_id}}:*
-    actions:
-      # when all of the hab package publish to the unstable channel, test and promote them
-      - trigger_pipeline:habitat/test
+  # - workload: buildkite_hab_build_group_published:{{agent_id}}:*
+  #   actions:
+  #     # when all of the hab package publish to the unstable channel, test and promote them
+  #     - trigger_pipeline:habitat/test
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
-  - workload: ruby_gem_published:corefoundation-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:mixlib-archive-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:mixlib-authentication-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:mixlib-cli-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:mixlib-log-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:mixlib-shellout-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:chef-vault-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:chef-zero-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:ohai-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:inspec-core-bin-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:train-core-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-process-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-service-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-taskscheduler-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-certstore-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-event-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-mutex-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-eventlog-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:win32-api-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:ffi-yajl-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:libyajl2-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:cheffish-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:license-acceptance-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:ffi-libarchive-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:plist-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:ffi-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:net-ssh-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:tty-prompt-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:tty-screen-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:tty-table-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:pastel-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:erubis-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:bcrypt_pbkdf-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:ed25519-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:addressable-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:proxifier-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:syslog-logger-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:uuidtools-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:iniparse-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:net-sftp-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:fauxhai-ng-*
-    actions:
-      - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:corefoundation-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:mixlib-archive-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:mixlib-authentication-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:mixlib-cli-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:mixlib-log-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:mixlib-shellout-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:chef-vault-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:chef-zero-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:ohai-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:inspec-core-bin-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:train-core-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-process-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-service-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-taskscheduler-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-certstore-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-event-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-mutex-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-eventlog-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:win32-api-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:ffi-yajl-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:libyajl2-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:cheffish-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:license-acceptance-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:ffi-libarchive-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:plist-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:ffi-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:net-ssh-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:tty-prompt-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:tty-screen-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:tty-table-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:pastel-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:erubis-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:bcrypt_pbkdf-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:ed25519-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:addressable-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:proxifier-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:syslog-logger-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:uuidtools-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:iniparse-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:net-sftp-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:fauxhai-ng-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
   # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
-  - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
-    actions:
-      - bash:.expeditor/update_bundler_dep.sh
+  # - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
+  #   actions:
+  #     - bash:.expeditor/update_bundler_dep.sh
   # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
-  - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
-    actions:
-      - bash:.expeditor/update_bundler_dep.sh
-  - workload: ruby_gem_published:train-rest-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:train-winrm-*
-    actions:
-      - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
-  - workload: schedule_triggered:chef/chef:chef-17:nightly_build_chef_17:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
-  - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
+  # - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
+  #   actions:
+  #     - bash:.expeditor/update_bundler_dep.sh
+  # - workload: ruby_gem_published:train-rest-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: ruby_gem_published:train-winrm-*
+  #   actions:
+  #     - bash:.expeditor/update_dep.sh
+  # - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
+  #   actions:
+  #     - trigger_pipeline:omnibus/adhoc
+  # - workload: schedule_triggered:chef/chef:chef-17:nightly_build_chef_17:*
+  #   actions:
+  #     - trigger_pipeline:omnibus/adhoc
+  # - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
+  #   actions:
+  #     - trigger_pipeline:omnibus/adhoc
