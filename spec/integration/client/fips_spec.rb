@@ -1,5 +1,8 @@
 describe "chef-client fips", :windows_only do
+  def enable_fips_if_supported
+    OpenSSL.fips_mode = true if ENV["OMNIBUS_FIPS_MODE"]
+  end
   it "Should not error on enabling fips_mode" do
-    expect { OpenSSL.fips_mode = true }.not_to raise_error
+    expect { enable_fips_if_supported }.not_to raise_error
   end
 end
