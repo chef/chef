@@ -307,7 +307,7 @@ class Chef
     #
     def required?(action = nil)
       if !action.nil? && options[:required].is_a?(Array)
-        options[:required].include?(action)
+        (options[:required] & Array(action)).any?
       else
         !!options[:required]
       end
@@ -426,7 +426,7 @@ class Chef
         end
       end
 
-      if value.nil? && required?
+      if value.nil? && required?(resource_action(resource))
         raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
       else
         value
@@ -455,7 +455,7 @@ class Chef
         Chef.deprecated(:property, options[:deprecated])
       end
 
-      if value.nil? && required?
+      if value.nil? && required?(resource_action(resource))
         raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
       else
         value
@@ -767,6 +767,11 @@ class Chef
         obj
       end
       visitor.call(value)
+    end
+
+    # action from resource, if available
+    def resource_action(resource)
+      resource.action if resource.respond_to?(:action)
     end
   end
 end
