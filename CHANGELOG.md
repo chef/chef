@@ -1,10 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 18.0.186 -->
+## [v18.0.186](https://github.com/chef/chef/tree/v18.0.186) (2022-11-22)
+
+#### Merged Pull Requests
+-     Res validation should be aware of action prop reqs. [#13069](https://github.com/chef/chef/pull/13069) ([sabat](https://github.com/sabat))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=18.0.185 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+-     Res validation should be aware of action prop reqs. [#13069](https://github.com/chef/chef/pull/13069) ([sabat](https://github.com/sabat)) <!-- 18.0.186 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
