@@ -13,7 +13,7 @@ jobs:
     env:
       BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7
@@ -24,7 +24,7 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: carlosperate/download-file-action@v1.0.3
         id: download-custom-dictionary
         with:
