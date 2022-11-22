@@ -1,4 +1,4 @@
-describe "chef-client fips", :windows_only do
+describe "chef-client fips" do
   def enable_fips_if_supported
     OpenSSL.fips_mode = true if ENV["OMNIBUS_FIPS_MODE"]
   end
