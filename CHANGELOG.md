@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.15 -->
-## [v16.18.15](https://github.com/chef/chef/tree/v16.18.15) (2022-11-02)
+<!-- latest_release 16.18.16 -->
+## [v16.18.16](https://github.com/chef/chef/tree/v16.18.16) (2022-11-22)
 
 #### Merged Pull Requests
-- [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.16 -->
 - [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.15 -->
 - [chef-16] Fix windows functional test ruby activation failure under verify pipeline  [#13262](https://github.com/chef/chef/pull/13262) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.14 -->
 - [chef-16] Fix hab package failures under windows plan in verify pipeline [#13251](https://github.com/chef/chef/pull/13251) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.13 -->
