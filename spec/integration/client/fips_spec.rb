@@ -5,6 +5,9 @@ describe "chef-client fips" do
     OpenSSL.fips_mode = true
   end
 
+  # All tests assume fips mode is off at present
+  after { OpenSSL.fips_mode = false }
+
   # For non-FIPS OSes/builds of Ruby, enabling FIPS should error
   example "Error enabling fips_mode if FIPS not linked", fips_mode: false do
     expect { enable_fips }.to raise_error(OpenSSL::OpenSSLError)
