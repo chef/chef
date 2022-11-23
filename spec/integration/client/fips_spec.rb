@@ -1,4 +1,5 @@
-require 'spec_helper'
+require "spec_helper"
+
 describe "chef-client fips" do
   def enable_fips
     OpenSSL.fips_mode = true
