@@ -223,8 +223,8 @@ def aes_256_gcm?
   OpenSSL::Cipher.ciphers.include?("aes-256-gcm")
 end
 
-def omnibus_fips_mode_build?
-  ENV["OMNIBUS_FIPS_MODE"].to_s.downcase == "true"
+def fips_mode_build?
+  OpenSSL::OPENSSL_FIPS
 end
 
 def fips?
