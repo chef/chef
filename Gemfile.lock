@@ -27,12 +27,6 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw-ucrt)
-      ffi (~> 1.15)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
 
 GIT
   remote: https://github.com/chef/ruby-proxifier
@@ -40,6 +34,13 @@ GIT
   branch: lcg/ruby-3
   specs:
     proxifier (1.0.3)
+
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
 
 PATH
   remote: .
@@ -436,7 +437,8 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
-   2.3.17
+   2.3.18
