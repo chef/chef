@@ -18,7 +18,7 @@ jobs:
     - run: ruby -v
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.1"
+        ruby-version: "3.1.2"
         bundler-cache: false
     - run: which ruby
     - run: ruby -v
