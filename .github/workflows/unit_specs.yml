@@ -9,7 +9,7 @@ name: unit_specs
 
 jobs:
   unit:
-    runs-on: macos-11
+    runs-on: macos-12/20221027.1
     steps:
     - uses: actions/checkout@v3
       with:
