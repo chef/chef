@@ -318,6 +318,9 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When a proper curve is given" do
       it "Generates an ec key object" do
+        puts RUBY_VERSION
+        puts OpenSSL::VERSION
+        puts OpenSSL::OPENSSL_FIPS
         expect(instance.gen_ec_priv_key("prime256v1")).to be_kind_of(OpenSSL::PKey::EC)
       end
     end
