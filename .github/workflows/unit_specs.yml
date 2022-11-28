@@ -9,15 +9,19 @@ name: unit_specs
 
 jobs:
   unit:
-    runs-on: macos-12/20221027.1
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
       with:
         clean: true
+    - run: which ruby
+    - run: ruby -v
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: "3.1"
         bundler-cache: false
+    - run: which ruby
+    - run: ruby -v
     - run: bundle update --bundler
     - run: bundle install
     - run: bundle exec rake spec:unit
