@@ -14,6 +14,7 @@ provisioner:
     diff_disabled: true
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
+  clean_dokken_sandbox: false
 
 lifecycle:
   pre_converge:
