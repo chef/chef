@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.191 -->
-## [v18.0.191](https://github.com/chef/chef/tree/v18.0.191) (2022-11-29)
+<!-- latest_release 18.0.192 -->
+## [v18.0.192](https://github.com/chef/chef/tree/v18.0.192) (2022-11-29)
 
 #### Merged Pull Requests
-- Update deprecated &quot;hab sup status&quot; call (do not merge until hab / test pipeline is green again) [#13314](https://github.com/chef/chef/pull/13314) ([gene1wood](https://github.com/gene1wood))
+- Chef-16 does not appear to have a &#39;current&#39; channel, falling back to … [#13362](https://github.com/chef/chef/pull/13362) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.185 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef-16 does not appear to have a &#39;current&#39; channel, falling back to … [#13362](https://github.com/chef/chef/pull/13362) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.192 -->
 - Update deprecated &quot;hab sup status&quot; call (do not merge until hab / test pipeline is green again) [#13314](https://github.com/chef/chef/pull/13314) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.191 -->
 - New launchd key for associating a bundle identifier with Login Items [#13288](https://github.com/chef/chef/pull/13288) ([chilcote](https://github.com/chilcote)) <!-- 18.0.190 -->
 - Lock ruby to 3.1.2 for GitHub Actions unit specs [#13393](https://github.com/chef/chef/pull/13393) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.189 -->
