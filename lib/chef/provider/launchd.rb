@@ -153,6 +153,7 @@ class Chef
           "program" => "Program",
           "program_arguments" => "ProgramArguments",
           "abandon_process_group" => "AbandonProcessGroup",
+          "associated_bundle_identifiers" => "AssociatedBundleIdentifiers",
           "debug" => "Debug",
           "disabled" => "Disabled",
           "enable_globbing" => "EnableGlobbing",
