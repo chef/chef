@@ -149,7 +149,7 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-powershell (1.0.12)
+    chef-powershell (1.0.13)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
