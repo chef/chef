@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.192 -->
-## [v18.0.192](https://github.com/chef/chef/tree/v18.0.192) (2022-11-29)
+<!-- latest_release 18.0.193 -->
+## [v18.0.193](https://github.com/chef/chef/tree/v18.0.193) (2022-12-01)
 
 #### Merged Pull Requests
-- Chef-16 does not appear to have a &#39;current&#39; channel, falling back to … [#13362](https://github.com/chef/chef/pull/13362) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Gem versions - specifically updating Chef for omnibus [#13391](https://github.com/chef/chef/pull/13391) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.185 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating Gem versions - specifically updating Chef for omnibus [#13391](https://github.com/chef/chef/pull/13391) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.193 -->
 - Chef-16 does not appear to have a &#39;current&#39; channel, falling back to … [#13362](https://github.com/chef/chef/pull/13362) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.192 -->
 - Update deprecated &quot;hab sup status&quot; call (do not merge until hab / test pipeline is green again) [#13314](https://github.com/chef/chef/pull/13314) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.191 -->
 - New launchd key for associating a bundle identifier with Login Items [#13288](https://github.com/chef/chef/pull/13288) ([chilcote](https://github.com/chilcote)) <!-- 18.0.190 -->
