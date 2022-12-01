@@ -15,4 +15,12 @@ Write-Output "--- bundle install"
 bundle config set --local without 'omnibus_package'
 bundle install --jobs=3 --retry=3
 $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
-bundle exec ruby .\.expeditor\scripts\more_basic_powershell.rb
+
+Write-Output "--- pwsh"
+bundle exec ruby .\.expeditor\scripts\more_basic_powershell.rb pwsh
+
+Write-Output "--- default"
+bundle exec ruby .\.expeditor\scripts\more_basic_powershell.rb default
+
+Write-Output "--- object"
+bundle exec ruby .\.expeditor\scripts\more_basic_powershell.rb object
