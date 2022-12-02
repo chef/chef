@@ -2,17 +2,26 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.8 -->
-## [v16.18.8](https://github.com/chef/chef/tree/v16.18.8) (2022-10-19)
+<!-- latest_release 16.18.17 -->
+## [v16.18.17](https://github.com/chef/chef/tree/v16.18.17) (2022-11-29)
 
 #### Merged Pull Requests
-- [Chef-16] Fix solaris build and test failures in adhoc pipeline [#13240](https://github.com/chef/chef/pull/13240) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.17 -->
+- [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.16 -->
+- [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.15 -->
+- [chef-16] Fix windows functional test ruby activation failure under verify pipeline  [#13262](https://github.com/chef/chef/pull/13262) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.14 -->
+- [chef-16] Fix hab package failures under windows plan in verify pipeline [#13251](https://github.com/chef/chef/pull/13251) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.13 -->
+- Revert &quot;Bump train-core to 3.10.7&quot; [#13294](https://github.com/chef/chef/pull/13294) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.12 -->
+- [chef-16] Update ncurses to 6.3 to fix build failures in adhoc pipeline on FreeBSD12 [#13267](https://github.com/chef/chef/pull/13267) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.11 -->
+- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13272](https://github.com/chef/chef/pull/13272) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.10 -->
+- Bump train-core to 3.10.7 [#13269](https://github.com/chef/chef/pull/13269) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.9 -->
 - [Chef-16] Fix solaris build and test failures in adhoc pipeline [#13240](https://github.com/chef/chef/pull/13240) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.8 -->
 - [chef-16]Fix windows build failures in adhoc pipeline throwing error &#39;SignTool Error: No certificates were found that met all the given criteria&#39; by updating the msi&#39; [#13241](https://github.com/chef/chef/pull/13241) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.7 -->
 - [Chef-16] Fix OpenSUSE failures in verify pipeline [#13239](https://github.com/chef/chef/pull/13239) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.6 -->
