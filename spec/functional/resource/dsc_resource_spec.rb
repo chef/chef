@@ -53,7 +53,8 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
 
     context "with a valid dsc resource" do
       let(:tmp_file_name) { Dir::Tmpname.create("tmpfile") {} }
-      let(:test_text) { "'\"!@#$%^&*)(}{][\u2713~n" }
+      # let(:test_text) { "'\"!@#$%^&*)(}{][\u2713~n" }
+      let(:test_text) { "test text" }
 
       before do
         new_resource.resource :File
