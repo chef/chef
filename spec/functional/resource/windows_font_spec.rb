@@ -31,6 +31,7 @@ describe Chef::Resource::WindowsFont, :windows_only do
     Chef::RunContext.new(node, {}, events)
   end
 
+  before { skip }
   subject do
     resource = Chef::Resource::WindowsFont.new(resource_name, run_context)
     resource.source resource_source
