@@ -50,7 +50,7 @@ describe Chef::Util::DSC::LocalConfigurationManager do
   end
 
   let(:powershell) do
-    double("Chef::PowerShell", errors: lcm_errors, error?: !lcm_errors.empty?, result: lcm_result)
+    double("ChefPowerShell::PowerShell", errors: lcm_errors, error?: !lcm_errors.empty?, result: lcm_result)
   end
 
   describe "test_configuration method invocation" do
@@ -185,7 +185,7 @@ describe Chef::Util::DSC::LocalConfigurationManager do
     context "when invalid dsc script is given" do
       it "raises exception" do
         configuration_document = "invalid-config"
-        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true) }.to raise_error(Chef::PowerShell::CommandFailed)
+        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true) }.to raise_error(ChefPowerShell::PowerShellExceptions::PowerShellCommandFailed)
       end
     end
   end

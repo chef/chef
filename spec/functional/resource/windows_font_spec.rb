@@ -18,7 +18,8 @@
 
 require "spec_helper"
 
-describe Chef::Resource::WindowsFont, :windows_only do
+# these tests hang on Buildkite on Chef 16 Verify pipeline
+describe Chef::Resource::WindowsFont, :windows_only, :broken do
   let(:resource_name) { "Playmaker.ttf" }
   let(:resource_source) { "https://www.wfonts.com/download/data/2020/05/06/playmaker/Playmaker.ttf" }
 
