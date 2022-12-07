@@ -165,7 +165,7 @@ class Chef
 
       def self.get_cert_password
         @win32registry = Chef::Win32::Registry.new
-        path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        path = "HKEY_CURRENT_USER\\Software\\Progress\\Authentication"
         # does the registry key even exist?
         present = @win32registry.get_values(path)
         if present.nil? || present.empty?
@@ -184,7 +184,7 @@ class Chef
       rescue Chef::Exceptions::Win32RegKeyMissing
         # if we don't have a password, log that and generate one
         Chef::Log.warn "Authentication Hive and values not present in registry, creating them now"
-        new_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        new_path = "HKEY_CURRENT_USER\\Software\\Progress\\Authentication"
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
