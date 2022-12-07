@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.17 -->
-## [v16.18.17](https://github.com/chef/chef/tree/v16.18.17) (2022-11-29)
+<!-- latest_release 16.18.18 -->
+## [v16.18.18](https://github.com/chef/chef/tree/v16.18.18) (2022-12-07)
 
 #### Merged Pull Requests
-- [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Correct the rake task to pull in omnibus dependencies [#13304](https://github.com/chef/chef/pull/13304) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-16] Correct the rake task to pull in omnibus dependencies [#13304](https://github.com/chef/chef/pull/13304) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.18 -->
 - [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.17 -->
 - [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.16 -->
 - [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.15 -->
