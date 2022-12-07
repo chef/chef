@@ -15,7 +15,7 @@ jobs:
         os: [windows-2022, windows-2019]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
@@ -59,7 +59,7 @@ jobs:
         os: [macos-11] # Github has deprecated macos-10.15 runner https://github.com/actions/runner-images/issues/5583
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
@@ -113,7 +113,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
