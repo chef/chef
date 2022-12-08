@@ -61,7 +61,6 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
@@ -96,10 +95,10 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        bundle exec rake install --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
         if (-not $?) {
             Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install --verbose # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            bundle exec rake install --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
             if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
