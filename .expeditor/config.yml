@@ -38,6 +38,7 @@ pipelines:
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
+        - IGNORE_CACHE: true # caching causes build failures ever since Chef16 build env started using ruby31
         - ADHOC: true
 
 github:
