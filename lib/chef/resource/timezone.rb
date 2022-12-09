@@ -103,12 +103,12 @@ class Chef
       end
 
       load_current_value do
-        if systemd?
+        if systemd? || node["platform_family"] == "amazon"
           timezone current_systemd_tz
         else
           case node["platform_family"]
           # Old version of RHEL < 7 and Amazon 201X
-          when "rhel", "amazon"
+          when "rhel"#, "amazon"
             timezone current_rhel_tz
           when "mac_os_x"
             timezone current_macos_tz
