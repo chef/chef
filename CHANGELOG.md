@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.195 -->
-## [v18.0.195](https://github.com/chef/chef/tree/v18.0.195) (2022-12-09)
+<!-- latest_release 18.0.196 -->
+## [v18.0.196](https://github.com/chef/chef/tree/v18.0.196) (2022-12-09)
 
 #### Merged Pull Requests
-- Remove redundant code for chef16/17 nightlies from main branch [#13405](https://github.com/chef/chef/pull/13405) ([neha-p6](https://github.com/neha-p6))
+- Bump omnibus-software from `57fbed5` to `a4f5cff` in /omnibus [#13418](https://github.com/chef/chef/pull/13418) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.185 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `57fbed5` to `a4f5cff` in /omnibus [#13418](https://github.com/chef/chef/pull/13418) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.196 -->
 - Remove redundant code for chef16/17 nightlies from main branch [#13405](https://github.com/chef/chef/pull/13405) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.195 -->
 - Switch main back to current for kitchen [#13397](https://github.com/chef/chef/pull/13397) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.194 -->
 - Updating Gem versions - specifically updating Chef for omnibus [#13391](https://github.com/chef/chef/pull/13391) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.193 -->
