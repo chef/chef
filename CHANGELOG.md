@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.21 -->
-## [v16.18.21](https://github.com/chef/chef/tree/v16.18.21) (2022-12-09)
+<!-- latest_release 16.18.22 -->
+## [v16.18.22](https://github.com/chef/chef/tree/v16.18.22) (2022-12-09)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `e9632cb` to `f2e9a99` in /omnibus [#13410](https://github.com/chef/chef/pull/13410) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [Chef-16] Add nightly adhoc builds for chef-16 [#13406](https://github.com/chef/chef/pull/13406) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-16] Add nightly adhoc builds for chef-16 [#13406](https://github.com/chef/chef/pull/13406) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.22 -->
 - Bump omnibus-software from `e9632cb` to `f2e9a99` in /omnibus [#13410](https://github.com/chef/chef/pull/13410) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.21 -->
 - Chef-16: Functional tests under verify pipeline get timed out [#13403](https://github.com/chef/chef/pull/13403) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.20 -->
 - Bump omnibus from `d1fe3bb` to `52b6d2e` in /omnibus [#13370](https://github.com/chef/chef/pull/13370) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.19 -->
