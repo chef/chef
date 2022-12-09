@@ -108,7 +108,7 @@ class Chef
         else
           case node["platform_family"]
           # Old version of RHEL < 7 and Amazon 201X
-          when "rhel"#, "amazon"
+          when "rhel"
             timezone current_rhel_tz
           when "mac_os_x"
             timezone current_macos_tz
