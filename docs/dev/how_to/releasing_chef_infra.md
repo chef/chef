@@ -2,11 +2,13 @@
 
 ## Steps to validate that we are ready to ship
 
-  1. Has the version number been bumped for releasing? This can be done by merging in a PR that has the "Expeditor: Bump Version Minor" label applied.
-  2. Are there any outstanding community PRs that should be merged? Ideally we don't make a community member wait multiple months for a code contribution to ship. Merge anything that's been reviewed.
-  3. Are new resource "introduced" fields using the correct version? From time to time, we incorrectly merge a PR that has the wrong "introduced" version in a new resource or new resource property. If we added new resources or properties, make sure these fields match the version we are about to ship.
-  4. Have any changes in Ohai been shipped to rubygems?
-  5. Do we have a build in the `current` channel? If not, you might wanna fix that.
+    1. Has the version number been bumped for releasing? This can be done by merging in a PR that has the "Expeditor: Bump Version Minor" label applied.
+    2. Are there any outstanding community PRs that should be merged? Ideally we don't make a community member wait multiple months for a code contribution to ship. Merge anything that's been reviewed.
+    3. Are new resource "introduced" fields using the correct version? From time to time, we incorrectly merge a PR that has the wrong "introduced" version in a new resource or new resource property. If we added new resources or properties, make sure these fields match the version we are about to ship.
+    4. Have any changes in Ohai been shipped to rubygems?
+         1. Keep in mind that if you are releasing a new version (chef 18 over chef 17, for example) you will need to ship updated versions of Ohai, Chef-Utils, Chef-Config and Knife to Rubygems.org BEFORE you ship Chef
+
+    5. Do we have a build in the `current` channel? If not, you might wanna fix that.
 
 ## Prepare the Release
 
@@ -29,9 +31,17 @@ If there are any new or updated resources, the docs site will need to be updated
 #### Resource Documentation Automation
 
 1. Run `rake docs_site:resources` to generate content to a `docs_site` directory
+   1. WARNING: Any resource that inherits it's basic structure from a parent resource is likely to commingle settings from both when you run that command. For example, there are 17-20 resources that consume the basic package.rb resource file. As a consequence, ALL of the children will most likely have pulled in properties and actions that do not apply to them. You have to be careful here.
+
 2. Compare the relevant generated files to the content in the `content/resources` directory within the [chef-web-docs repo](https://github.com/chef/chef-web-docs/). The generated files are missing some content, such as action descriptions, and don't have perfect formatting, so this is a bit of an art form.
+   1. This will take time - expect to use 2-4 days of going through the new docs to ensure you aren't accidentally overwriting things or ignoring important updates
+   2. One tool you can use to help yourself is Beyond Compare. If you have to buy it, it's like $20
+   3. You'll end up using a combo of the old docs, the new docs, what Beyond Compare shows you and your intuition.
+
 
 ## Release Chef Infra Client
+
+The docs are the most time-consuming aspect of the release.
 
 ### Promote the build
 
@@ -45,7 +55,7 @@ or for a previous release branch:
 
 ### Announce the Build
 
-Also, make sure to announce the build on any social media platforms that you occupy if you feel comfortable doing so. It's great to make an announcement in `#sous-chefs` and `#general` in Community Slack, as well as on Twitter, where we tend to get a good response.
+Also, make sure to announce the build on any social media platforms that you occupy if you feel comfortable doing so. It's great to make an announcement in `#sous-chefs` and `#general` in Community Slack, where we tend to get a good response.
 
 ### Update homebrew Content
 
@@ -53,14 +63,21 @@ Many of our users consume Chef via Homebrew using our casks. Expeditor will crea
 
 ### Update Chocolatey Packages
 
-Many Windows users consume our packages via Chocolatey. Make sure to update the various version strings and sha checksums here: https://github.com/chef/chocolatey-packages
+Many Windows users consume our packages via Chocolatey. Here's how you get a new build out for them
 
-Once this is updated, you'll need to build / push the artifact to the Chocolatey site from a Windows host:
+From a Windows host:
 
-  1. `choco pack .\chef-client\chef-client.nuspec`
-  2. `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
+  1. Clone this repo locally : https://github.com/chef/chocolatey-packages
+  2. Update the version strings and sha checksums in the chef.nuspec and chocolateyinstall.ps1 files
+  3. Contact the Build Systems team to get the password for the choco account if you don't have it already. The user is 'chef-ci'
+  4. Logon to the chocolatey and go to the account page
+  5. Grab the API key from there.
+  6. Run `choco pack .\chef\chef-client.nuspec`
+     1. Note: If your nupkg file looks like this: `chef-client:15.1.9.nupkg` (note the colon), change the colon to a period. Choco push will fail on the colon
+  7. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
+  8. Once the nupkg file is pushed to Chocolatey, then push your changes to the local repo back to github
 
-Note: In order to push the artifact, you will need to be added as a maintainer on [Chocolatey.org](https://chocolatey.org/).
+Note: You may need to be added as a maintainer on [Chocolatey.org](https://chocolatey.org/).
 
 ### Cookstyle Verification
 Please make sure cookstyle is working properly & auto correcting detected offenses for any of the cookbooks you are trying to test against the newer version of Chef Infra Client
