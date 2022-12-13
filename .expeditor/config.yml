@@ -39,6 +39,7 @@ pipelines:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
+        - IGNORE_CACHE: true
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -237,6 +238,6 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
-   - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
+  - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
     actions:
       - trigger_pipeline:omnibus/adhoc
