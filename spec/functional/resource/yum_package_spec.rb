@@ -57,6 +57,12 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test, not
         baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
         enable=1
         gpgcheck=0
+        [chef-yum-empty]
+        name=Chef DNF spec empty repo
+        baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo-empty
+        enable=1
+        gpgcheck=0
+
       EOF
     end
     # ensure we don't have any stray chef_rpms installed
@@ -1093,6 +1099,16 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test, not
           options "--nogpgcheck --enablerepo=chef-yum-localtesting"
           action :install
         end.should_not_be_updated
+      end
+
+      it "should work to disable a repo" do
+        flush_cache
+        expect {
+          yum_package "chef_rpm" do
+            options "--disablerepo=chef-yum-localtesting --enablerepo=chef-yum-empty"
+            action :install
+          end
+        }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
       it "when an idempotent install action is run, does not leave repos disabled" do
