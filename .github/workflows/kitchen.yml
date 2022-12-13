@@ -143,31 +143,15 @@ jobs:
       run: |
         echo "This is the installed version of Ruby:"
         brew info ruby
-    - name: 'Install Chef/Ohai from Omnitruck'
+    - name: 'Install Chef Foundation from Omnitruck'
       id: install_chef
       run: |
         brew install coreutils
-        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
-        /opt/chef/bin/chef-client -v
-        /opt/chef/bin/ohai -v
-        /opt/chef/embedded/bin/rake --version
-        # echo "Updating Bundler"
-        # gem install bundler:2.3.18
-        # echo "finished updating Bundler, now getting the version"
-        # /opt/chef/embedded/bin/bundle -v
-        # echo "finished getting the bundler version"
+        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P "chef-foundation"
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
-        brew install rbenv ruby-build
-        touch ~/.zshrc
-        export PATH="$HOME/.rbenv/bin:$PATH"
-        export HOMEBREW_NO_ENV_HINTS="true"
-        echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
-        source ~/.zshrc
-        rbenv install 3.1.2
-        rbenv global 3.1.2
-        gem install bundler:2.3.18
+        export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
         echo "which bundler are we using?"
         which bundle
         echo "what version is that?"
