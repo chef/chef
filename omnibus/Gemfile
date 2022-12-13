@@ -1,4 +1,8 @@
-source "https://rubygems.org"
+if ENV.fetch("OMNIBUS_USE_INTERNAL_SOURCES", false)
+  source "https://artifactory-internal.ps.chef.co/artifactory/rubygems-proxy"
+else
+  source "https://rubygems.org"
+end
 
 gem "omnibus", github: ENV.fetch("OMNIBUS_GITHUB_REPO", "chef/omnibus"), branch: ENV.fetch("OMNIBUS_GITHUB_BRANCH", "main")
 

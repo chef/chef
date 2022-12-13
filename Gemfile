@@ -1,4 +1,8 @@
-source "https://rubygems.org"
+if ENV.fetch("OMNIBUS_USE_INTERNAL_SOURCES", false)
+  source "https://artifactory-internal.ps.chef.co/artifactory/rubygems-proxy"
+else
+  source "https://rubygems.org"
+end
 
 gem "chef", path: "."
 
