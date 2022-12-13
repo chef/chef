@@ -16,6 +16,7 @@ rubygems:
   - chef-config
   - chef-bin
   - chef-utils
+  - knife
 
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
@@ -28,7 +29,7 @@ pipelines:
   - verify:
       public: true
       env:
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems. 
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
