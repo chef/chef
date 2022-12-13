@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.200 -->
-## [v18.0.200](https://github.com/chef/chef/tree/v18.0.200) (2022-12-13)
+<!-- latest_release 18.0.201 -->
+## [v18.0.201](https://github.com/chef/chef/tree/v18.0.201) (2022-12-13)
 
 #### Merged Pull Requests
-- Fix indentation of condition for disabling repos [#13327](https://github.com/chef/chef/pull/13327) ([darnaut](https://github.com/darnaut))
+- macos_userdefaults: Use string for property deprecated message [#13350](https://github.com/chef/chef/pull/13350) ([jweyer8](https://github.com/jweyer8))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.185 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- macos_userdefaults: Use string for property deprecated message [#13350](https://github.com/chef/chef/pull/13350) ([jweyer8](https://github.com/jweyer8)) <!-- 18.0.201 -->
 - Fix indentation of condition for disabling repos [#13327](https://github.com/chef/chef/pull/13327) ([darnaut](https://github.com/darnaut)) <!-- 18.0.200 -->
 - Updated post Chef-18 to clarify how to release [#13428](https://github.com/chef/chef/pull/13428) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.199 -->
 - Patch for CVE-2022-29181 and CVS-2022-24836 [#13398](https://github.com/chef/chef/pull/13398) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.198 -->
