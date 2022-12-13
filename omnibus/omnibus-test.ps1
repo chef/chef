@@ -1,14 +1,37 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+# install choco as necessary
+function installChoco {
+
+  if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
+    Write-Output "Chocolatey is not installed, proceeding to install"
+    try {
+      write-output "installing in 3..2..1.."
+      Set-ExecutionPolicy Bypass -Scope Process -Force
+      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+      iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    }
+
+    catch {
+      Write-Error $_.Exception.Message
+    }
+  }
+  else {
+    Write-Output "Chocolatey is already installed"
+  }
+}
+
+installChoco
 
 # install powershell core
-Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
-Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+  $TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
+  [System.Net.ServicePointManager]::SecurityProtocol = $TLS12Protocol
+  Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/PowerShell-7.3.0-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
+  Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
+}
+
 $env:path += ";C:\Program Files\PowerShell\7"
 
 # We don't want to add the embedded bin dir to the main PATH as this
