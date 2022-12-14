@@ -363,9 +363,13 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":habicat::windows: Windows plan"
+- label: ":habicat: Windows plan"
   commands:
     - ./.expeditor/scripts/verify-plan.ps1
   timeout_in_minutes: 0
-  agents:
-    queue: default-windows-2019
+  expeditor:
+    executor:
+      windows:
+        privileged: true
+        single-use: true
+        shell: ["powershell", "-Command"]
