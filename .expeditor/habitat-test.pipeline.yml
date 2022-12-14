@@ -37,7 +37,7 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - /workdir/.expeditor/scripts/habitat-test.ps1
+    - .expeditor/scripts/habitat-test.ps1
   expeditor:
     executor:
       windows:
