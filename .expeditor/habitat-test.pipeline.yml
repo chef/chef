@@ -39,7 +39,7 @@ steps:
   commands:
     - ./.expeditor/scripts/habitat-test.ps1
   agents:
-    queue: default-windows-2019
+    queue: default-windows-2019-privileged
 
 # Wait for the package testing to succeed before promoting whatever was tested.
 - wait
