@@ -226,6 +226,10 @@ def fips?
   ENV["CHEF_FIPS"] == "1"
 end
 
+def fips_mode_build?
+   OpenSSL::OPENSSL_FIPS
+ end
+
 class HttpHelper
   extend Ohai::Mixin::HttpHelper
   def self.logger
