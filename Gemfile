@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 # 1.15+ is required for M1 mac builds
 gem "ffi", ">=1.15"
-
+gem "rest-client", git: "https://github.com/chef/rest-client"#, branch: "jfm/ucrt_update1"
 # Note we do not use the gemspec DSL which restricts to the
 # gemspec for the current platform and filters out other platforms
 # during a bundle lock operation. We actually want dependencies from
