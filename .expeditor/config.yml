@@ -22,7 +22,7 @@ rubygems:
 schedules:
   - name: nightly_build_chef_16
     description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "30 2 * * 2,4"
+    cronline: "30 2 * * *"
 
 pipelines:
   - verify:
@@ -237,6 +237,6 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
-   - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
+  - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
     actions:
       - trigger_pipeline:omnibus/adhoc
