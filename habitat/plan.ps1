@@ -85,9 +85,11 @@ function Invoke-Build {
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
+                Write-Output "We are here: $PWD"
+                Write-Output "Here is my gem : $git_gem"
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-                rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                rake install --verbose # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
