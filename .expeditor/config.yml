@@ -22,7 +22,7 @@ rubygems:
 schedules:
   - name: nightly_build_chef_16
     description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "30 2 * * 2,4"
+    cronline: "30 2 * * *"
 
 pipelines:
   - verify:
