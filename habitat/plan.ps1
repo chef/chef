@@ -76,7 +76,7 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
-        $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
+        $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
@@ -84,23 +84,33 @@ function Invoke-Build {
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
-                Write-Output "We are here: $PWD"
-                Write-Output "Here is my gem : $git_gem"
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
-                rake install --verbose # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
-                if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
+                # The rest client doesn't have an 'Install' task so it bombs out when we call Rake Install for it
+                # Happily, its Rakefile ultimately calls 'gem build' to build itself with. We're doing that here.
+                if ($git_gem -match "rest-client"){
+                    $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
+                    gem build $gemspec_path
+                    $gem_path = $git_gem.ToString() + "\rest-client*.gem"
+                    gem install $gem_path
+                }
+                else {
+                    rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                }
+                if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
             } finally {
                 Pop-Location
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        if (-not $?) {
-            Write-Warning " -- That didn't work. Let's try again."
-            bundle exec rake install --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-            if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
-        }
+        $install_attempt = 0
+        do {
+            Start-Sleep -Seconds 5
+            $install_attempt++
+            Write-BuildLine "Install attempt $install_attempt"
+            bundle exec rake install:local --trace=stdout
+        } while ((-not $?) -and ($install_attempt -lt 5))
+
     } finally {
         Pop-Location
     }
