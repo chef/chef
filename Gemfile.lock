@@ -299,6 +299,7 @@ GEM
     rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.6.1)
+<<<<<<< Updated upstream
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -316,6 +317,8 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+=======
+>>>>>>> Stashed changes
     rexml (3.2.5)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)

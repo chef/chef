@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 52b6d2e08bc2c90592b99da41a1728fb1629f673
+  revision: 831437387f5496c2d9b9ba1e3ba283dd01bda147
   branch: main
   specs:
-    omnibus (9.0.12)
+    omnibus (9.0.14)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -34,7 +34,11 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
+<<<<<<< Updated upstream
     aws-partitions (1.680.0)
+=======
+    aws-partitions (1.681.0)
+>>>>>>> Stashed changes
     aws-sdk-core (3.168.4)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
@@ -47,7 +51,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.67.0)
+    aws-sdk-secretsmanager (1.68.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.2)
@@ -240,7 +244,7 @@ GEM
     iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
-    kitchen-vagrant (1.12.1)
+    kitchen-vagrant (1.13.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -289,8 +293,8 @@ GEM
     multipart-post (2.2.3)
     net-scp (4.0.0)
       net-ssh (>= 2.6.5, < 8.0.0)
-    net-sftp (4.0.0.rc1)
-      net-ssh (>= 5.0.0, < 8.0.0)
+    net-sftp (2.1.2)
+      net-ssh (>= 2.6.5)
     net-ssh (7.0.1)
     net-ssh-gateway (2.0.0)
       net-ssh (>= 4.0.0)
@@ -465,9 +469,8 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw
-  x64-mingw-ucrt
   x64-mingw32
+  x64-unknown
   x86-mingw32
 
 DEPENDENCIES
