@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.203 -->
-## [v18.0.203](https://github.com/chef/chef/tree/v18.0.203) (2022-12-20)
+<!-- latest_release 18.0.204 -->
+## [v18.0.204](https://github.com/chef/chef/tree/v18.0.204) (2022-12-21)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `a4f5cff` to `2be3816` in /omnibus [#13448](https://github.com/chef/chef/pull/13448) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Added or Corrected spelling and corrected a Python exception handler … [#13454](https://github.com/chef/chef/pull/13454) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.185 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Added or Corrected spelling and corrected a Python exception handler … [#13454](https://github.com/chef/chef/pull/13454) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.204 -->
 - Bump omnibus-software from `a4f5cff` to `2be3816` in /omnibus [#13448](https://github.com/chef/chef/pull/13448) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.203 -->
 - Correcting the habitat pipeline issue for Windows [#13440](https://github.com/chef/chef/pull/13440) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.202 -->
 - macos_userdefaults: Use string for property deprecated message [#13350](https://github.com/chef/chef/pull/13350) ([jweyer8](https://github.com/jweyer8)) <!-- 18.0.201 -->
