@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-11] # Github has deprecated macos-10.15 runner https://github.com/actions/runner-images/issues/5583
+        os: [macos-12] # Github has deprecated macos-10.15 runner https://github.com/actions/runner-images/issues/5583
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
         ruby: ['2.7']
     runs-on: ${{ matrix.os }}
