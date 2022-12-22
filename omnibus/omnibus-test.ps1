@@ -146,4 +146,4 @@ If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-Throw $exit
+If ($exit -ne 0) { Throw $exit }
