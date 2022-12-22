@@ -131,7 +131,7 @@ $env:Path = $p
 # desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
 $exit = 0
 
-$format=progress
+$format="progress"
 
 # use $Env:FORMAT if defined
 If ($Env:OMNIBUS_TEST_FORMAT) {
