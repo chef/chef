@@ -32,7 +32,7 @@ env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_
 windows_arch env_omnibus_windows_arch
 
 # chef16 is now built using ruby 3.1. The artifacts get built when we disable caching for git and s3.
-use_git_caching false
+use_git_caching true
 
 # Enable S3 asset caching
 # ------------------------------
