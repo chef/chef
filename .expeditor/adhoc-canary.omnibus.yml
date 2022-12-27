@@ -3,6 +3,7 @@ project-name: chef
 config: omnibus/omnibus.rb
 test-path: omnibus/omnibus-test.sh
 test-path-windows: omnibus/omnibus-test.ps1
+zypper: omnibus/zypper.sh
 fips-platforms:
   - el-*-x86_64
   - el-*-ppc64*
