@@ -1,8 +1,8 @@
 PATH
   remote: ..
   specs:
-    chef (18.0.205)
-    chef (18.0.205-x64-mingw-ucrt)
+    chef (18.0.208)
+    chef (18.0.208-x64-mingw-ucrt)
 
 PLATFORMS
   ruby
@@ -15,7 +15,7 @@ DEPENDENCIES
   chef-config!
   chef-utils!
   chef-vault
-  cheffish (>= 17)
+  cheffish (>= 17.1.5)
   chefstyle
   ed25519 (~> 1.2)
   fauxhai-ng
