@@ -18,6 +18,10 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "16-stable"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
+# gems below are added here for Chef-16 compat. Their modern versions don't support Ruby 2.6
+gem "semverse", "= 3.0.0"
+gem "train-core", "= 3.2"
+
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
@@ -26,7 +30,8 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", ">= 14"
+# gem "cheffish", ">= 14"
+gem "cheffish", "= 16.0.26"
 
 gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 
@@ -37,14 +42,15 @@ group(:omnibus_package) do
   gem "chef-vault"
 end
 
-group(:omnibus_package, :pry) do
-  # Locked because pry-byebug is broken with 13+
-  # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
-  gem "pry", "= 0.13.0"
-  # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM =~ /freebsd/i
-  gem "pry-stack_explorer"
-end
+# Why are we installing debugging tools? DENIED.... commenting out because of version conflicts
+# group(:omnibus_package, :pry) do
+#   # Locked because pry-byebug is broken with 13+
+#   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
+#   gem "pry", "= 0.13.0"
+#   # byebug does not install on freebsd on ruby 3.0
+#   gem "pry-byebug" unless RUBY_PLATFORM =~ /freebsd/i
+#   gem "pry-stack_explorer"
+# end
 
 # Everything except AIX
 group(:ruby_prof) do
