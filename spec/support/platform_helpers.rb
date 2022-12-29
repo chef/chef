@@ -227,8 +227,8 @@ def fips?
 end
 
 def fips_mode_build?
-   OpenSSL::OPENSSL_FIPS
- end
+  OpenSSL::OPENSSL_FIPS
+end
 
 class HttpHelper
   extend Ohai::Mixin::HttpHelper
