@@ -131,17 +131,24 @@ $env:Path = $p
 # desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
 $exit = 0
 
-bundle exec rspec -f progress --profile -- ./spec/unit
+$format="progress"
+
+# use $Env:OMNIBUS_TEST_FORMAT if defined
+If ($Env:OMNIBUS_TEST_FORMAT) {
+  $format = $Env:OMNIBUS_TEST_FORMAT
+}
+
+bundle exec rspec -f $format --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f progress --profile -- ./spec/functional
+bundle exec rspec -f $format --profile -- ./spec/functional
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f progress --profile -- ./spec/integration
+bundle exec rspec -f $format --profile -- ./spec/integration
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
