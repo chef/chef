@@ -133,7 +133,7 @@ $exit = 0
 
 $format="progress"
 
-# use $Env:FORMAT if defined
+# use $Env:OMNIBUS_TEST_FORMAT if defined
 If ($Env:OMNIBUS_TEST_FORMAT) {
   $format = $Env:OMNIBUS_TEST_FORMAT
 }
