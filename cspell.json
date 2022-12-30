@@ -1,14 +1,13 @@
 // cSpell Settings
 {
-  // Version of the setting file.  Always 0.1
-  "version": "0.1",
+  "version": "0.2",
   // language - current active spelling language
   "language": "en",
   "dictionaryDefinitions": [
     {
-        "name": "chef",
-        "file": "./chef_dictionary.txt",
-        "description": "Custom Chef Dictionary"
+      "name": "chef",
+      "path": "https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt",
+      "description": "Custom Chef Dictionary"
     }
   ],
   "dictionaries": ["chef"],
@@ -1552,9 +1551,7 @@
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
   // For example "hte" should be "the"
-  "flagWords": [
-    "hte"
-  ],
+  "flagWords": ["hte"],
   "ignorePaths": [
     "CHEF_MVPS.md",
     "CHANGELOG.md",

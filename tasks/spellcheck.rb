@@ -20,32 +20,10 @@ namespace :spellcheck do
     sh 'cspell lint --no-progress "**/*"'
   end
 
-  task prereqs: %i{curl_check cspell_check config_check fetch_common}
-
-  task :curl_check do
-    curl_version = begin
-                     `curl --version`
-                   rescue
-                     nil
-                   end
-
-    curl_version.is_a?(String) || abort(<<~INSTALL_CURL)
-      curl is not available, cannot download chef_dictionary.txt
-    INSTALL_CURL
-  end
-
-  task :fetch_common do
-    sh "curl -s https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt -o chef_dictionary.txt"
-  end
+  task prereqs: %i{cspell_check config_check}
 
   task :config_check do
     require "json"
-
-    chef_dictionary = "chef_dictionary.txt"
-
-    unless File.readable?(chef_dictionary)
-      abort "Dictionary file '#{chef_dictionary}' not found, skipping spellcheck"
-    end
 
     config_file = "cspell.json"
 
