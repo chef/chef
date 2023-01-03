@@ -68,6 +68,10 @@ describe Chef::Resource::YumRepository do
     expect(resource.make_cache).to eql(true)
   end
 
+  it "makecache_fast property defaults to false" do
+    expect(resource.makecache_fast).to eql(false)
+  end
+
   it "mode property defaults to '0644'" do
     expect(resource.mode).to eql("0644")
   end
