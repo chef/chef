@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.205 -->
-## [v18.0.205](https://github.com/chef/chef/tree/v18.0.205) (2022-12-21)
+<!-- latest_release 18.0.206 -->
+## [v18.0.206](https://github.com/chef/chef/tree/v18.0.206) (2023-01-03)
 
 #### Merged Pull Requests
-- Bump test-kitchen from 3.4.0 to 3.5.0 in /omnibus [#13444](https://github.com/chef/chef/pull/13444) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `8314373` to `f7386ad` in /omnibus [#13463](https://github.com/chef/chef/pull/13463) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.0.185 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `8314373` to `f7386ad` in /omnibus [#13463](https://github.com/chef/chef/pull/13463) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.206 -->
 - Bump test-kitchen from 3.4.0 to 3.5.0 in /omnibus [#13444](https://github.com/chef/chef/pull/13444) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.205 -->
 - Added or Corrected spelling and corrected a Python exception handler … [#13454](https://github.com/chef/chef/pull/13454) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.204 -->
 - Bump omnibus-software from `a4f5cff` to `2be3816` in /omnibus [#13448](https://github.com/chef/chef/pull/13448) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.203 -->
