@@ -33,7 +33,6 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-
 GIT
   remote: https://github.com/chef/ruby-shadow
   revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
@@ -201,7 +200,7 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (17.0.0)
+    cheffish (17.1.5)
       chef-utils (>= 17.0)
       chef-zero (>= 14.0)
       net-ssh
