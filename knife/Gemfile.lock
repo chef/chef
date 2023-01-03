@@ -15,7 +15,7 @@ DEPENDENCIES
   chef-config!
   chef-utils!
   chef-vault
-  cheffish (>= 17)
+  cheffish (>= 17.1.5)
   chefstyle
   ed25519 (~> 1.2)
   fauxhai-ng

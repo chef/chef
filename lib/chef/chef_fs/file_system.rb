@@ -140,17 +140,18 @@ class Chef
       def self.copy_to(pattern, src_root, dest_root, recurse_depth, options, ui = nil, format_path = nil)
         found_result = false
         error = false
+        result = {}
         list_pairs(pattern, src_root, dest_root).parallel_each do |src, dest|
           found_result = true
           new_dest_parent = get_or_create_parent(dest, options, ui, format_path)
-          child_error = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
+          child_error, result = copy_entries(src, dest, new_dest_parent, recurse_depth, options, ui, format_path)
           error ||= child_error
         end
         if !found_result && pattern.exact_path
           ui.error "#{pattern}: No such file or directory on remote or local" if ui
           error = true
         end
-        error
+        [error, result]
       end
 
       # Yield entries for children that are in either +a_root+ or +b_root+, with
@@ -275,6 +276,7 @@ class Chef
           # case we shouldn't waste time trying PUT if we know the file doesn't
           # exist.
           # Will need to decide how that works with checksums, though.
+          result = { "total" => 0, "success_count" => 0, "failed" => [] }
           error = false
           begin
             dest_path = format_path.call(dest_entry) if ui
@@ -290,6 +292,8 @@ class Chef
                       dest_entry.delete(true)
                       ui.output "Deleted extra entry #{dest_path} (purge is on)" if ui
                     rescue Chef::ChefFS::FileSystem::NotFoundError
+                      failure = { "src_path" => src_path, "reason" => "Entry #{dest_path} does not exist" }
+                      result["failed"].append(failure)
                       ui.output "Entry #{dest_path} does not exist. Nothing to do. (purge is on)" if ui
                     end
                   end
@@ -323,7 +327,7 @@ class Chef
                   if recurse_depth != 0
                     src_entry.children.parallel_each do |src_child|
                       new_dest_child = new_dest_dir.child(src_child.name)
-                      child_error = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
+                      child_error, result = copy_entries(src_child, new_dest_child, new_dest_dir, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                       error ||= child_error
                     end
                   end
@@ -339,14 +343,15 @@ class Chef
 
             else
               # Both exist.
-
               # If the entry can do a copy directly, do that.
               if dest_entry.respond_to?(:copy_from)
                 if options[:force] || compare(src_entry, dest_entry)[0] == false
                   if options[:dry_run]
                     ui.output "Would update #{dest_path}" if ui
                   else
+                    result["total"] += 1
                     dest_entry.copy_from(src_entry, options)
+                    result["success_count"] += 1
                     ui.output "Updated #{dest_path}" if ui
                   end
                 end
@@ -359,7 +364,7 @@ class Chef
                   # If both are directories, recurse into their children
                   if recurse_depth != 0
                     child_pairs(src_entry, dest_entry).parallel_each do |src_child, dest_child|
-                      child_error = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
+                      child_error, result = copy_entries(src_child, dest_child, dest_entry, recurse_depth ? recurse_depth - 1 : recurse_depth, options, ui, format_path)
                       error ||= child_error
                     end
                   end
@@ -373,7 +378,6 @@ class Chef
                   ui.error("File #{src_path} is a regular file while file #{dest_path} is a directory\n") if ui
                   return
                 else
-
                   # Both are files!  Copy them unless we're sure they are the same.'
                   if options[:diff] == false
                     should_copy = false
@@ -389,7 +393,9 @@ class Chef
                       ui.output "Would update #{dest_path}" if ui
                     else
                       src_value = src_entry.read if src_value.nil?
+                      result["total"] += 1
                       dest_entry.write(src_value)
+                      result["success_count"] += 1
                       ui.output "Updated #{dest_path}" if ui
                     end
                   end
@@ -397,17 +403,25 @@ class Chef
               end
             end
           rescue RubyFileError => e
+            failure = { "src_path" => src_path, "reason" => e.reason }
+            result["failed"].append(failure)
             ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
           rescue DefaultEnvironmentCannotBeModifiedError => e
+            failure = { "src_path" => src_path, "reason" => e.reason }
+            result["failed"].append(failure)
             ui.warn "#{format_path.call(e.entry)} #{e.reason}." if ui
           rescue OperationFailedError => e
+            failure = { "src_path" => src_path, "reason" => e.reason }
+            result["failed"].append(failure)
             ui.error "#{format_path.call(e.entry)} failed to #{e.operation}: #{e.message}" if ui
             error = true
           rescue OperationNotAllowedError => e
+            failure = { "src_path" => src_path, "reason" => e.reason }
+            result["failed"].append(failure)
             ui.error "#{format_path.call(e.entry)} #{e.reason}." if ui
             error = true
           end
-          error
+          [error, result]
         end
 
         def get_or_create_parent(entry, options, ui, format_path)
