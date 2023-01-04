@@ -86,7 +86,7 @@ class Chef
       # @return [String] timezone id
       def current_systemd_tz
         tz_shellout = shell_out(["/usr/bin/timedatectl", "status"])
-        raise "There was an error running the timedatectl command error: #{tz_shellout.error.inspect}" if tz_shellout.error?
+        raise "There was an error running the timedatectl command error: #{tz_shellout.format_for_exception}" if tz_shellout.error?
 
         # https://rubular.com/r/eV68MX9XXbyG4k
         /Time zone: (.*) \(.*/.match(tz_shellout.stdout)[1]
