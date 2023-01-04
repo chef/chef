@@ -46,7 +46,7 @@ verifier:
 platforms:
 - name: amazonlinux-2
   driver:
-    image: amazonlinux:2
+    image: dokken/amazonlinux-2
     pid_one_command: /usr/lib/systemd/systemd
     privileged: true
     tmpfs:
