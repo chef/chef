@@ -55,7 +55,7 @@ platforms:
     cap_add:
       - SYS_ADMIN
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
