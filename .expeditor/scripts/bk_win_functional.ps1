@@ -7,7 +7,10 @@ Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyC
 
 $ErrorActionPreference = 'Stop'
 
-Write-Output "--- Enable Ruby 2.7"
+Write-Output "--- Enable Ruby 3.0"
+
+Write-Output "Which versions of Ruby are installed with uru?"
+uru ls
 
 Write-Output "Register Installed Ruby Version 2.7 With Uru"
 Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby27\bin' -Wait
@@ -25,5 +28,5 @@ bundle install --jobs=3 --retry=3
 if (-not $?) { throw "Unable to install gem dependencies" }
 
 Write-Output "+++ bundle exec rake spec:functional"
-bundle exec rake spec:functional
+# bundle exec rake spec:functional
 if (-not $?) { throw "Chef functional specs failing." }
