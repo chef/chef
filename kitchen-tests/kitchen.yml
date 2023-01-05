@@ -55,8 +55,9 @@ platforms:
     cap_add:
       - SYS_ADMIN
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup
-      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro
+      - /etc/ntpd.conf:/etc/ntpd.conf:ro
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
