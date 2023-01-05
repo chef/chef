@@ -47,6 +47,8 @@ platforms:
   driver:
     image: dokken/amazonlinux-2
     pid_one_command: /usr/lib/systemd/systemd
+    privileged: true
+    binds: /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
