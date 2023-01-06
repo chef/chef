@@ -1,14 +1,37 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+# install choco as necessary
+function installChoco {
+
+  if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
+    Write-Output "Chocolatey is not installed, proceeding to install"
+    try {
+      write-output "installing in 3..2..1.."
+      Set-ExecutionPolicy Bypass -Scope Process -Force
+      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+      iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    }
+
+    catch {
+      Write-Error $_.Exception.Message
+    }
+  }
+  else {
+    Write-Output "Chocolatey is already installed"
+  }
+}
+
+installChoco
 
 # install powershell core
-Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
-Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+  $TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
+  [System.Net.ServicePointManager]::SecurityProtocol = $TLS12Protocol
+  Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/PowerShell-7.3.0-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
+  Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
+}
+
 $env:path += ";C:\Program Files\PowerShell\7"
 
 # We don't want to add the embedded bin dir to the main PATH as this
@@ -108,19 +131,26 @@ $env:Path = $p
 # desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
 $exit = 0
 
-bundle exec rspec -f progress --profile -- ./spec/unit
+$format="progress"
+
+# use $Env:OMNIBUS_TEST_FORMAT if defined
+If ($Env:OMNIBUS_TEST_FORMAT) {
+  $format = $Env:OMNIBUS_TEST_FORMAT
+}
+
+bundle exec rspec -f $format --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f progress --profile -- ./spec/functional
+bundle exec rspec -f $format --profile -- ./spec/functional
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f progress --profile -- ./spec/integration
+bundle exec rspec -f $format --profile -- ./spec/integration
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-Throw $exit
+If ($exit -ne 0) { Throw $exit }

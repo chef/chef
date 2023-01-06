@@ -2,17 +2,23 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.17 -->
-## [v16.18.17](https://github.com/chef/chef/tree/v16.18.17) (2022-11-29)
+<!-- latest_release 16.18.23 -->
+## [v16.18.23](https://github.com/chef/chef/tree/v16.18.23) (2022-12-29)
 
 #### Merged Pull Requests
-- [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6))
+- INFC-373 Disable 32-bit Windows for Chef 16 [#13458](https://github.com/chef/chef/pull/13458) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- INFC-373 Disable 32-bit Windows for Chef 16 [#13458](https://github.com/chef/chef/pull/13458) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.23 -->
+- [Chef-16] Add nightly adhoc builds for chef-16 [#13406](https://github.com/chef/chef/pull/13406) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.22 -->
+- Bump omnibus-software from `e9632cb` to `f2e9a99` in /omnibus [#13410](https://github.com/chef/chef/pull/13410) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.21 -->
+- Chef-16: Functional tests under verify pipeline get timed out [#13403](https://github.com/chef/chef/pull/13403) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.20 -->
+- Bump omnibus from `d1fe3bb` to `52b6d2e` in /omnibus [#13370](https://github.com/chef/chef/pull/13370) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.19 -->
+- [Chef-16] Correct the rake task to pull in omnibus dependencies [#13304](https://github.com/chef/chef/pull/13304) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.18 -->
 - [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.17 -->
 - [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.16 -->
 - [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.15 -->

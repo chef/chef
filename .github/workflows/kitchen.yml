@@ -15,11 +15,11 @@ jobs:
         os: [windows-2022, windows-2019]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current -v 16
+        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel stable -v 16
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
         ohai -v
@@ -56,15 +56,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15] # macos-11.0 is not public for now
+        os: [macos-12] # Github has deprecated macos-10.15 runner https://github.com/actions/runner-images/issues/5583
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
         brew install coreutils
-        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -v 16
+        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c stable -v 16
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
         /opt/chef/embedded/bin/rake --version
@@ -113,7 +113,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
