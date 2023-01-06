@@ -19,6 +19,7 @@ jobs:
     - name: 'Upgrade Ruby Devkit on Windows'
       id: upgrade_ruby
       run: |
+        Write-Output "Installing Ruby 3.0 if needed"
         $pkg_version="3.0.5"
         $pkg_revision="1"
         $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
