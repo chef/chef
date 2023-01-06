@@ -16,6 +16,9 @@ $ErrorActionPreference = 'Stop'
 # ruby -v
 # if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 
+Write-Output "--- configure ruby items"
+gem install bundler:2.3.7
+
 Write-Output "--- configure winrm"
 winrm quickconfig -q
 
