@@ -129,13 +129,13 @@ steps:
         image: rubydistros/centos-7:2.7
 
 - label: "Integration openSUSE 15 :ruby: 2.7"
-  run: |
-    /workdir/.expeditor/scripts/bk_container_prep.sh
-    /workdir/.expeditor/scripts/zypper_prep.sh
-    zypper install -y cron insserv-compat
-    cd /workdir; bundle config set --local without omnibus_package
-    cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    bundle exec rake spec:integration
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/zypper_prep.sh
+    - zypper install -y cron insserv-compat
+    - cd /workdir; bundle config set --local without omnibus_package
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    - bundle exec rake spec:integration
   expeditor:
     executor:
       docker:
