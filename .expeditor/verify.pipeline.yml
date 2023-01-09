@@ -129,13 +129,17 @@ steps:
         image: rubydistros/centos-7:2.7
 
 - label: "Integration openSUSE 15 :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
-    - zypper install -y cron insserv-compat
-    - cd /workdir; bundle config set --local without omnibus_package
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle
-    - bundle exec rake spec:integration
+  run: |
+    /workdir/.expeditor/scripts/bk_container_prep.sh
+    VERSION_STRING=$(cat /etc/os-release | grep '^VERSION=' | sed 's/VERSION=\"\([0-9]\+\).*/\1/')
+    if [[ $VERSION_STRING == "15" ]];
+      zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
+      zypper --gpg-auto-import-keys ref
+    fi
+    zypper install -y cron insserv-compat
+    cd /workdir; bundle config set --local without omnibus_package
+    cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle
+    bundle exec rake spec:integration
   expeditor:
     executor:
       docker:
