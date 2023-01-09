@@ -28,7 +28,7 @@ The importance of our release notes cannot be understated. As developers, we und
 
 If there are any new or updated resources, the docs site will need to be updated. This is a `partially` automated process. If you are making a single resource update or changing wording, it may just be easier to do it by hand.
 
-`publish-release-notes.sh` pushes to S3 and then Netlify site needs to be rebuilt, so the Docs Site may not immediately. Reach out to the Docs team to trigger an update.
+`publish-release-notes.sh` pushes to S3 and then Netlify site needs to be rebuilt, so the Docs Site may not immediately reflect the Release notes related updates. The way to rebuild Netlify is manually or by merging a PR in chef-web-docs repository. Reach out to the Docs team to trigger an update.
 
 #### Resource Documentation Automation
 
