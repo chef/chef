@@ -7,6 +7,15 @@ set -eu
 
 docker ps || true
 
+# Get chef foundation version from the json file
+CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
+export CHEF_FOUNDATION_VERSION
+echo $CHEF_FOUNDATION_VERSION
+
+OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolchain')
+export OMNIBUS_TOOLCHAIN_VERSION
+echo $OMNIBUS_TOOLCHAIN_VERSION
+
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
 # Fetching it here hopefully will prevent this situation.
