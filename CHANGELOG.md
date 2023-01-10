@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.23 -->
-## [v16.18.23](https://github.com/chef/chef/tree/v16.18.23) (2022-12-29)
+<!-- latest_release 16.18.24 -->
+## [v16.18.24](https://github.com/chef/chef/tree/v16.18.24) (2023-01-10)
 
 #### Merged Pull Requests
-- INFC-373 Disable 32-bit Windows for Chef 16 [#13458](https://github.com/chef/chef/pull/13458) ([tpowell-progress](https://github.com/tpowell-progress))
+- Rewriting the zypper code to run only on openSUSE 15 [#13486](https://github.com/chef/chef/pull/13486) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Rewriting the zypper code to run only on openSUSE 15 [#13486](https://github.com/chef/chef/pull/13486) ([johnmccrae](https://github.com/johnmccrae)) <!-- 16.18.24 -->
 - INFC-373 Disable 32-bit Windows for Chef 16 [#13458](https://github.com/chef/chef/pull/13458) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.23 -->
 - [Chef-16] Add nightly adhoc builds for chef-16 [#13406](https://github.com/chef/chef/pull/13406) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.22 -->
 - Bump omnibus-software from `e9632cb` to `f2e9a99` in /omnibus [#13410](https://github.com/chef/chef/pull/13410) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.21 -->
