@@ -19,3 +19,9 @@ catch {
 }
 Write-Host "--- :habicat: Refreshing the Path"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+Write-Host "--- :habicat: Finding Habitat using Get-Command"
+Get-Command hab
+
+Write-Host "--- :habicat: Finding Habitat using Get-ChildItem"
+Get-ChildItem -Path c:\ -Name hab.exe -Recurse
