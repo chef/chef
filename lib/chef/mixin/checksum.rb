@@ -31,6 +31,12 @@ class Chef
 
         checksum.slice(0, 6)
       end
+
+      def checksum_match?(ref_checksum, diff_checksum)
+        return false if ref_checksum.nil? || diff_checksum.nil?
+
+        ref_checksum.casecmp?(diff_checksum)
+      end
     end
   end
 end
