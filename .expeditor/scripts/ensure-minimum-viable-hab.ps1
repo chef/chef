@@ -18,10 +18,4 @@ catch {
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
 }
 Write-Host "--- :habicat: Refreshing the Path"
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-Write-Host "--- :habicat: Finding Habitat using Get-Command"
-Get-Command hab
-
-Write-Host "--- :habicat: Finding Habitat using Get-ChildItem"
-Get-ChildItem -Path c:\ -Name hab.exe -Recurse
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + ";C:\ProgramData\Habitat;"
