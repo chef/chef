@@ -1,3 +1,4 @@
+Write-Host "--- :habicat: Verifying that Hab is installed and updating as necessary"
 try {
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]"0.85.0" ) {
@@ -16,5 +17,5 @@ catch {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
 }
-
+Write-Host "--- :habicat: Refreshing the Path"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
