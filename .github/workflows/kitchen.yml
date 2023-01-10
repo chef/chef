@@ -199,7 +199,7 @@ jobs:
           - 'ubuntu-2004'
           - 'ubuntu-2204'
         ruby: ['3.1']
-    runs-on: ubuntu:20.04
+    runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
