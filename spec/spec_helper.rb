@@ -138,9 +138,9 @@ RSpec.configure do |config|
 
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
-  config.filter_run_excluding fips_mode: !fips_mode_build? unless opensuse?
-  # RubyDistros OpenSUSE docker images have a broken fips
-  config.filter_run_excluding :fips_mode if opensuse?
+  config.filter_run_excluding fips_mode: !fips_mode_build? unless windows?
+  # Skip fips on windows
+  config.filter_run_excluding :fips_mode if windows?
 
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
