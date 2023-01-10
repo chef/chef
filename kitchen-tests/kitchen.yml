@@ -2,8 +2,11 @@
 driver:
   name: dokken
   privileged: true
+  cgroupns_host: true
   chef_image: chef/chef
   chef_version: current
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
 transport:
   name: dokken
