@@ -31,7 +31,7 @@ done
 win_test_platforms=("windows-2019:windows-2019")
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"{{matrix}} ${platform#*:}\" :windows:"
+  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
   echo "  agents:"
   echo "    queue: default-${platform%:*}-privileged"
   echo "  matrix:"
@@ -52,7 +52,7 @@ for platform in ${win_test_platforms[@]}; do
 done
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"Functional ${platform#*:}\" :windows:"
+  echo "- label: \"Functional ${platform#*:} :windows:\""
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  agents:"
