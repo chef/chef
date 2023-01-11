@@ -19,7 +19,7 @@ describe "launchd" do
     let(:chef_run) do
       ChefSpec::SoloRunner.new(platform: "amazon", version: "2") do |node|
         node.normal["launchd"]["label"] = "io.chef.testing.fake"
-        node.normal["launchd"]["program_arguments"] = "/usr/local/bin/abinary"
+        node.normal["launchd"]["program_arguments"] = "/usr/local/bin/binary"
         node.normal["launchd"]["run_at_load"] = true
         node.normal["launchd"]["associated_bundle_identifiers"] = [
           "io.chef.testing.fake",
