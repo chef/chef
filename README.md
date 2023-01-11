@@ -13,7 +13,7 @@
 **Pull Request [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/main/repo-management/repo-states.md)**: 14 days
 
 ## Getting Started
-
+#
 Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure.
 
 ### Want to try Chef Infra?
