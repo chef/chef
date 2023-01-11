@@ -20,7 +20,7 @@ class Chef
 
       provides :selinux_permissive
 
-      description "Use **selinux_permissive** resource to allows some types to misbehave without stopping them. Not as good as specific policies, but better than disabling SELinux entirely."
+      description "Use the **selinux_permissive** resource to allow some domains to misbehave without stopping them. This is not as good as setting specific policies, but better than disabling SELinux entirely."
       introduced "18.0"
       examples <<~DOC
       **Disable enforcement on Apache**:

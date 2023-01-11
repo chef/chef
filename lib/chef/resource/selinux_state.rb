@@ -56,7 +56,7 @@ class Chef
 
       property :persistent, [true, false],
                 default: true,
-                description: "Persist status update to the selinux configuration file."
+                description: "Set the status update in the SELinux configuration file."
 
       property :policy, String,
                 default: lazy { default_policy_platform },
