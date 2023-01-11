@@ -62,7 +62,7 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd" unless fedora? # fedora 34+ doesn't have nscd
+include_recipe "nscd" unless platform_family?("fedora", "amazon")
 
 logrotate_package "logrotate"
 
