@@ -16,6 +16,18 @@ OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolc
 export OMNIBUS_TOOLCHAIN_VERSION
 echo $OMNIBUS_TOOLCHAIN_VERSION
 
+if [ $BUILDKITE_STEP_KEY == "build-windows-2019" ]
+then
+  TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/default-windows-2019-privileged-chef-canary-Role)
+  AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
+  export AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
+  export AWS_SECRET_ACCESS_KEY
+  AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
+  export AWS_SESSION_TOKEN
+fi
+
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
 # Fetching it here hopefully will prevent this situation.
