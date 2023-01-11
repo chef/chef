@@ -68,6 +68,12 @@ logrotate_package "logrotate"
 
 include_recipe "git"
 
+## Throwing this in before the tests that fail...
+launchd "io.chef.testing.fake" do
+  source "io.chef.testing.fake.plist"
+  action "enable"
+end
+
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
   cookbook_file File.join(Chef::Config[:file_cache_path], archive) do

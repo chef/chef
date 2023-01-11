@@ -21,7 +21,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class Launchd < Chef::Resource
-      provides :launchd
+      provides :launchd, os: "darwin"
 
       description "Use the **launchd** resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
       introduced "12.8"
