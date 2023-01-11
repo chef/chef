@@ -2,11 +2,8 @@
 driver:
   name: dokken
   privileged: true
-  cgroupns_host: true
   chef_image: chef/chef
   chef_version: current
-  volumes:
-    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 
 transport:
   name: dokken
@@ -51,9 +48,14 @@ platforms:
   driver:
     image: dokken/amazonlinux-2
     pid_one_command: /usr/lib/systemd/systemd
+    cgroupns_host: true
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro
+    tmpfs:
+      - /run
 - name: debian-9
   driver:
     image: dokken/debian-9
