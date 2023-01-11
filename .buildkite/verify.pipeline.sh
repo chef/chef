@@ -219,7 +219,7 @@ echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
 echo "  key: test-windows-2019"
 echo '  label: ":mag::windows: windows-2019"'
 echo "  agents:"
-echo "    queue: omnibus-windows-2019"
+echo "    queue: default-windows-2019-privileged"
 echo "  commands:"
 echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
 echo "    - ./omnibus/omnibus-test.ps1"
