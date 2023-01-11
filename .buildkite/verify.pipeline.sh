@@ -162,6 +162,7 @@ for platform in ${omnibus_build_platforms[@]}; do
   echo "      privileged: true"
   echo "      propagate-environment: true"
   echo "      environment:"
+  echo "        - RPM_SIGNING_KEY"
   echo "        - CHEF_FOUNDATION_VERSION"
   echo "  commands:"
   echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
