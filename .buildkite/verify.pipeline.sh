@@ -31,7 +31,7 @@ done
 win_test_platforms=("windows-2019:windows-2019")
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"{{matrix}} ${platform#*:}\""
+  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
   echo "  agents:"
   echo "    queue: default-${platform%:*}-privileged"
   echo "  matrix:"
@@ -52,7 +52,7 @@ for platform in ${win_test_platforms[@]}; do
 done
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"Functional ${platform#*:}\""
+  echo "- label: \"Functional ${platform#*:} :windows:\""
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  agents:"
@@ -162,6 +162,7 @@ for platform in ${omnibus_build_platforms[@]}; do
   echo "      privileged: true"
   echo "      propagate-environment: true"
   echo "      environment:"
+  echo "        - RPM_SIGNING_KEY"
   echo "        - CHEF_FOUNDATION_VERSION"
   echo "  commands:"
   echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
@@ -170,7 +171,7 @@ done
 win_omnibus_build_platforms=("windows-2019")
 
 for platform in ${win_omnibus_build_platforms[@]}; do
-  echo "- label: \"Build Omnibus $platform\""
+  echo "- label: \":hammer_and_wrench::windows: $platform\""
   echo "  key: build-$platform"
   echo "  agents:"
   echo "    queue: default-$platform-privileged"
@@ -183,6 +184,12 @@ for platform in ${win_omnibus_build_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
+  echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
+  echo "        - AWS_ACCESS_KEY_ID"
+  echo "        - AWS_SECRET_ACCESS_KEY"
+  echo "        - AWS_SESSION_TOKEN"
+  echo "      volumes:"
+  echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
   echo "  commands:"
   echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
 done
@@ -206,3 +213,13 @@ for platform in ${omnibus_test_platforms[@]}; do
   echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
   echo "    - omnibus/omnibus-test.sh"
 done
+
+echo "- env:"
+echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
+echo "  key: test-windows-2019"
+echo '  label: ":mag::windows: windows-2019"'
+echo "  agents:"
+echo "    queue: default-windows-2019-privileged"
+echo "  commands:"
+echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
+echo "    - ./omnibus/omnibus-test.ps1"

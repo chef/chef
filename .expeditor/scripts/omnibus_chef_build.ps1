@@ -11,7 +11,7 @@ else
   $windows_certificate_json = "windows-package-signing-certificate.json"
   $windows_certificate_pfx = "windows-package-signing-certificate.pfx"
   
-  aws ssm get-parameter --name "windows-package-signing-cert" --with-decryption --query Parameter.Value --output text | Set-Content -Path $windows_certificate_json
+  aws ssm get-parameter --name "windows-package-signing-cert" --with-decryption --region "us-west-1" --query Parameter.Value --output text | Set-Content -Path $windows_certificate_json
   If ($lastexitcode -ne 0) { Throw $lastexitcode }
   
   $cert_passphrase = Get-Content $windows_certificate_json | ConvertFrom-Json | Select-Object -ExpandProperty cert_passphrase | ConvertTo-SecureString -asplaintext -force
@@ -22,6 +22,7 @@ else
   $thumb = "13B510D1CF1B3467856A064F1BEA12D0884D2528"
 }
 
+Write-Output "THUMB=$thumb"
 
 $env:ARTIFACTORY_BASE_PATH="com/getchef"
 $env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
@@ -30,6 +31,7 @@ $env:ARTIFACTORY_USERNAME="buildkite"
 Write-Output "--- Install Chef Foundation"
 . { iwr -useb https://omnitruck.chef.io/chef/install.ps1 } | iex; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
 
+$env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
 $env:HOMEDRIVE = "C:"
 $env:HOMEPATH = "\buildkite-agent"
 $env:OMNIBUS_TOOLCHAIN_INSTALL_DIR = "C:\opscode\omnibus-toolchain"
@@ -55,10 +57,10 @@ Write-Output "--- Building Chef"
 bundle exec omnibus build chef -l internal --override append_timestamp:false
 
 Write-Output "--- Uploading package to BuildKite"
-buildkite-agent artifact upload "pkg/*.msi*"
+C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
 
-if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
-{
-  Write-Output "--- Publishing package to Artifactory"
-  bundle exec ruby "${SCRIPT_DIR}/omnibus_chef_publish.rb"
-}
+# if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
+# {
+#   Write-Output "--- Publishing package to Artifactory"
+#   bundle exec ruby "${SCRIPT_DIR}/omnibus_chef_publish.rb"
+# }

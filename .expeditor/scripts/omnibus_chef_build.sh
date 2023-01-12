@@ -12,14 +12,22 @@ export PATH="/opt/omnibus-toolchain/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yaml"
 
-# The key used to sign RPM packages is passphrase-less
-# export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
-
 echo "--- Installing Chef Foundation"
 curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
 
 if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
   export SSL_CERT_FILE="/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem"
+fi
+
+if [[ "$BUILDKITE_LABEL" =~ rhel|sles|centos ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+  export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
+
+  echo "$RPM_SIGNING_KEY" | gpg --import
+
+  cat <<-EOF > ~/.rpmmacros
+    %_signature gpg
+    %_gpg_name  Opscode Packages
+EOF
 fi
 
 echo "--- Running bundle install for Omnibus"
