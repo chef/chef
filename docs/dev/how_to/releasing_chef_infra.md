@@ -58,6 +58,8 @@ or for a previous release branch:
 
 :warning: Do not `gem push` the ruby gem manually... this will prevent promotion of habitat packages to stable and will block notifications to chef.io slack channels.
 
+:information_source: the promotion of habitat packages can also be blocked if the Linux and Linux2 packages somehow have the same timestamp.
+
 ### Announce the Build
 
 Also, make sure to announce the build on any social media platforms that you occupy if you feel comfortable doing so. It's great to make an announcement in `#sous-chefs` and `#general` in Community Slack, where we tend to get a good response.
