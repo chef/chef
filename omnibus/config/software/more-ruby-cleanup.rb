@@ -24,7 +24,7 @@ license :project_license
 
 source path: "#{project.files_path}/#{name}"
 
-dependency "ruby" 
+# dependency "ruby" 
 
 build do
   block "Removing console and setup binaries" do
