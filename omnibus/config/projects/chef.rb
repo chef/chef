@@ -45,7 +45,7 @@ override :chef, version: "local_source"
 overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
 instance_eval(IO.read(overrides_path), overrides_path)
 
-dependency "chef-gem"
+dependency "chef-local-source"
 
 # further gem cleanup other projects might not yet want to use
 dependency "more-ruby-cleanup"
