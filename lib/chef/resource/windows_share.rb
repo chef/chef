@@ -70,17 +70,17 @@ class Chef
       # Specifies which accounts are granted full permission to access the share. Use a comma-separated list to specify multiple accounts. An account may not be specified more than once in the FullAccess, ChangeAccess, or ReadAccess parameter lists, but may be specified once in the FullAccess, ChangeAccess, or ReadAccess parameter list and once in the NoAccess parameter list.
       property :full_users, Array,
         description: "The users that should have 'Full control' permissions on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| u.sort }
+        default: lazy { [] }, coerce: proc { |u| add_hostname(u).sort }
 
       # Specifies which users are granted modify permission to access the share
       property :change_users, Array,
         description: "The users that should have 'modify' permission on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| u.sort }
+        default: lazy { [] }, coerce: proc { |u| add_hostname(u).sort }
 
       # Specifies which users are granted read permission to access the share. Multiple users can be specified by supplying a comma-separated list.
       property :read_users, Array,
         description: "The users that should have 'read' permission on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| u.sort }
+        default: lazy { [] }, coerce: proc { |u| add_hostname(u).sort }
 
       # Specifies the lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer. By default, new SMB shares are persistent, and non-temporary.
       property :temporary, [TrueClass, FalseClass],
@@ -177,44 +177,41 @@ class Chef
           next unless perm["AccessControlType"] == 0 # allow
 
           case perm["AccessRight"]
-          when 0 then f_users << stripped_account(perm["AccountName"]) # 0 full control
-          when 1 then c_users << stripped_account(perm["AccountName"]) # 1 == change
-          when 2 then r_users << stripped_account(perm["AccountName"]) # 2 == read
+          when 0 then f_users << perm["AccountName"] # 0 full control
+          when 1 then c_users << perm["AccountName"] # 1 == change
+          when 2 then r_users << perm["AccountName"] # 2 == read
           end
         end
         [f_users, c_users, r_users]
       end
 
-      # local names are returned from Get-SmbShareAccess in the full format MACHINE\\NAME
-      # but users of this resource would simply say NAME so we need to strip the values for comparison
-      def stripped_account(name)
-        name.slice!("#{node["hostname"]}\\")
-        name
-      end
-
       action :create do
         description "Create and modify Windows shares."
-
+        new_resource_users
         # we do this here instead of requiring the property because :delete doesn't need path set
         raise "No path property set" unless new_resource.path
 
-        converge_if_changed do
-          # you can't actually change the path so you have to delete the old share first
-          if different_path?
-            Chef::Log.debug("The path has changed so we will delete and recreate share")
-            delete_share
-            create_share
-          elsif current_resource.nil?
-            # powershell cmdlet for create is different than updates
-            Chef::Log.debug("The current resource is nil so we will create a new share")
-            create_share
-          else
-            Chef::Log.debug("The current resource was not nil so we will update an existing share")
-            update_share
-          end
+        unless current_resource.nil? || users_changed? || different_path?
+          logger.debug("Skipping update of #{new_resource}: has not changed any of the specified properties.")
+        else
+          converge_by("create #{new_resource}") do
+            # you can't actually change the path so you have to delete the old share first
+            if different_path?
+              Chef::Log.debug("The path has changed so we will delete and recreate share")
+              delete_share
+              create_share
+            elsif current_resource.nil?
+              # powershell cmdlet for create is different than updates
+              Chef::Log.debug("The current resource is nil so we will create a new share")
+              create_share
+            else
+              Chef::Log.debug("The current resource was not nil so we will update an existing share")
+              update_share
+            end
 
-          # creating the share does not set permissions so we need to update
-          update_permissions
+            # creating the share does not set permissions so we need to update
+            update_permissions
+          end
         end
       end
 
@@ -337,6 +334,34 @@ class Chef
         def bool_string(bool)
           # bool ? 1 : 0
           bool ? "$true" : "$false"
+        end
+
+        # Grant-SmbShareAccess sets only one permission to one user so we need to remove from the lower permission access
+        # For change_users remove common full_users from it
+        # For read_users remove common full_users as well as change_users
+        def new_resource_users
+          @full_users = new_resource.full_users
+          @change_users = new_resource.change_users - new_resource.full_users
+          @read_users = new_resource.read_users - (new_resource.full_users + new_resource.change_users)
+        end
+
+        # Compare the full_users, change_users and read_users from current_resource and new_resource
+        # @returns boolean True/False
+        def users_changed?
+          !(current_resource.full_users == @full_users && current_resource.change_users == @change_users && current_resource.read_users == @read_users)
+        end
+      end
+
+      # local names are returned from Get-SmbShareAccess in the full format MACHINE\\NAME
+      # but users of this resource would simply say NAME so we need to add hostname for comparison
+      # If hostname is not present in front of user then add hostname from node
+
+      # @input_params [Array]
+      # @returns [Array]
+      def add_hostname(users)
+        users.map do |user|
+          user = "#{node["hostname"]}\\" + user unless user.include?("\\")
+          user.downcase
         end
       end
 
