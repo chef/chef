@@ -11,6 +11,9 @@ test_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "ubuntu-160
 
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-privileged"
   echo "  matrix:"
@@ -26,12 +29,16 @@ for platform in ${test_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
+  echo "  timeout_in_minutes: 60"
 done
 
 win_test_platforms=("windows-2019:windows-2019")
 
 for platform in ${win_test_platforms[@]}; do
   echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-${platform%:*}-privileged"
   echo "  matrix:"
@@ -48,11 +55,15 @@ for platform in ${win_test_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "  timeout_in_minutes: 60"
 
 done
 
 for platform in ${win_test_platforms[@]}; do
   echo "- label: \"Functional ${platform#*:} :windows:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  agents:"
@@ -60,12 +71,16 @@ for platform in ${win_test_platforms[@]}; do
   echo "  env:"
   echo "  - CHEF_FOUNDATION_VERSION"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "  timeout_in_minutes: 60"
 done
 
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
 
 for gem in ${external_gems[@]}; do
   echo "- label: \"$gem gem :ruby:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default"
   echo "  plugins:"
@@ -83,6 +98,7 @@ for gem in ${external_gems[@]}; do
   echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
   echo "      cached_folders:"
   echo "      - vendor"
+  echo "  timeout_in_minutes: 60"
   echo "  commands:"
   echo "    - .expeditor/scripts/bk_container_prep.sh"
   if [ $gem == "berkshelf" ]
@@ -124,6 +140,9 @@ habitat_plans=("linux" "linux-kernel2" "windows")
 
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  agents:"
   if [ $plan == "windows" ]
   then
@@ -136,6 +155,7 @@ for plan in ${habitat_plans[@]}; do
   echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
   echo "      cached_folders:"
   echo "      - vendor"
+  echo "  timeout_in_minutes: 60"
   echo "  commands:"
   if [ $plan == "windows" ]
   then
@@ -153,6 +173,9 @@ omnibus_build_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "u
 
 for platform in ${omnibus_build_platforms[@]}; do
   echo "- label: \":hammer_and_wrench::docker: $platform\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  key: build-$platform"
   echo "  agents:"
   echo "    queue: default-privileged"
@@ -166,12 +189,16 @@ for platform in ${omnibus_build_platforms[@]}; do
   echo "        - CHEF_FOUNDATION_VERSION"
   echo "  commands:"
   echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
+  echo "  timeout_in_minutes: 60"
 done
 
 win_omnibus_build_platforms=("windows-2019")
 
 for platform in ${win_omnibus_build_platforms[@]}; do
   echo "- label: \":hammer_and_wrench::windows: $platform\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  key: build-$platform"
   echo "  agents:"
   echo "    queue: default-$platform-privileged"
@@ -192,6 +219,7 @@ for platform in ${win_omnibus_build_platforms[@]}; do
   echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
   echo "  commands:"
   echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
+  echo "  timeout_in_minutes: 60"
 done
 
 echo "- wait: ~"
@@ -202,6 +230,9 @@ for platform in ${omnibus_test_platforms[@]}; do
   echo "- env:"
   echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
   echo "  label: \":mag::docker: ${platform%:*}\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-privileged"
   echo "  plugins:"
@@ -212,14 +243,19 @@ for platform in ${omnibus_test_platforms[@]}; do
   echo "  commands:"
   echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
   echo "    - omnibus/omnibus-test.sh"
+  echo "  timeout_in_minutes: 60"
 done
 
 echo "- env:"
 echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
 echo "  key: test-windows-2019"
 echo '  label: ":mag::windows: windows-2019"'
+echo "  retry:"
+echo "    automatic:"
+echo "      limit: 1"
 echo "  agents:"
 echo "    queue: default-windows-2019-privileged"
 echo "  commands:"
 echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
 echo "    - ./omnibus/omnibus-test.ps1"
+echo "  timeout_in_minutes: 60"
