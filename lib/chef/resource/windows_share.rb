@@ -309,6 +309,10 @@ class Chef
         def permissions_need_update?(type)
           property_name = "#{type}_users"
 
+          puts " ==== Logging for property #{type}_users"
+          puts " ==== When using send: #{new_resource.send(property_name)}"
+          puts " ==== When using instance var:", instance_variable_get("@#{property_name}")
+
           # brand new share, but nothing to set
           return false if current_resource.nil? && new_resource.send(property_name).empty?
 
