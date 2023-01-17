@@ -22,6 +22,11 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   puts "re-installing #{gem_name}..."
 
+  if gem_name == "ohai"
+    system("gem install chef-utils -v 17.10.25") or raise "gem build failed"
+    system("gem install chef-config -v 17.10.25") or raise "gem build failed"
+  end
+
   Dir.chdir(gempath) do
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
     system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
