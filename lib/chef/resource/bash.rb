@@ -42,7 +42,20 @@ class Chef
         EOH
       end
       ```
-
+      
+      **Beware escape characters**
+      
+      The interpreter here uses up the required find command escape character, so we have to preserve it with double escape characters:
+      
+      ```ruby
+      bash 'delete some archives ' do
+        code <<-EOH
+          find ./ -name "*.tar.Z" -mtime +180 -exec rm -f {} \\;
+        EOH
+        ignore_failure true
+      end
+      ```
+      
       **Install a file from a remote location**
 
       The following is an example of how to install the foo123 module for Nginx. This module adds shell-style functionality to an Nginx configuration file and does the following:
