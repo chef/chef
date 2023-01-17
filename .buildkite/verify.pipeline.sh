@@ -14,6 +14,9 @@ test_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "ubuntu-160
 for platform in ${test_platforms[@]}; do
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: "{{matrix}} $platform :ruby:"
+    retry:
+      automatic:
+        limit: 1
     agents:
       queue: default-privileged
     matrix:
@@ -29,6 +32,7 @@ for platform in ${test_platforms[@]}; do
         propagate-environment: true
     commands:
       - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -37,6 +41,9 @@ win_test_platforms=("windows-2019:windows-2019")
 for platform in ${win_test_platforms[@]}; do
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: "{{matrix}} ${platform#*:} :windows:"
+    retry:
+      automatic:
+        limit: 1
     agents:
       queue: default-${platform%:*}-privileged
     matrix:
@@ -53,12 +60,16 @@ for platform in ${win_test_platforms[@]}; do
         propagate-environment: true
     commands:
       - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}
+    timeout_in_minutes: 60
 SCRIPT
 done
 
 for platform in ${win_test_platforms[@]}; do
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: "Functional ${platform#*:} :windows:"
+    retry:
+      automatic:
+        limit: 1
     commands:
       - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional
     agents:
@@ -66,6 +77,7 @@ for platform in ${win_test_platforms[@]}; do
     env:
     - CHEF_FOUNDATION_VERSION
       - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -132,6 +144,9 @@ SCRIPT
   # The entire YAML entry
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: "$gem gem :ruby:"
+    retry:
+      automatic:
+        limit: 1
     agents:
       queue: default
     plugins:
@@ -148,6 +163,7 @@ SCRIPT
       - .expeditor/scripts/bk_container_prep.sh$gem_commands
       - bundle install --jobs=3 --retry=3
       $exec_command
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -182,6 +198,9 @@ SCRIPT
   # The entire YAML entry
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: ":habicat: $plan plan"
+    retry:
+      automatic:
+        limit: 1
     agents:
       queue: $verify_agent
     plugins:
@@ -190,6 +209,7 @@ SCRIPT
         cached_folders:
         - vendor
     commands:$verify_script
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -203,6 +223,9 @@ omnibus_build_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "u
 for platform in ${omnibus_build_platforms[@]}; do
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: ":hammer_and_wrench::docker: $platform"
+    retry:
+      automatic:
+        limit: 1
     key: build-$platform
     agents:
       queue: default-privileged
@@ -216,6 +239,7 @@ for platform in ${omnibus_build_platforms[@]}; do
           - CHEF_FOUNDATION_VERSION
     commands:
       - ./.expeditor/scripts/omnibus_chef_build.sh
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -224,6 +248,9 @@ win_omnibus_build_platforms=("windows-2019")
 for platform in ${win_omnibus_build_platforms[@]}; do
   cat << SCRIPT | sed -r 's/^ {2}//'
   - label: ":hammer_and_wrench::windows: $platform"
+    retry:
+      automatic:
+        limit: 1
     key: build-$platform
     agents:
       queue: default-$platform-privileged
@@ -244,6 +271,7 @@ for platform in ${win_omnibus_build_platforms[@]}; do
           - "c:\\\\buildkite-agent:c:\\\\buildkite-agent"
     commands:
       - ./.expeditor/scripts/omnibus_chef_build.ps1
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -256,6 +284,9 @@ for platform in ${omnibus_test_platforms[@]}; do
   - env:
       OMNIBUS_BUILDER_KEY: build-${platform#*:}
     label: ":mag::docker: ${platform%:*}"
+    retry:
+      automatic:
+        limit: 1
     agents:
       queue: default-privileged
     plugins:
@@ -266,6 +297,7 @@ for platform in ${omnibus_test_platforms[@]}; do
     commands:
       - ./.expeditor/scripts/download_built_omnibus_pkgs.sh
       - omnibus/omnibus-test.sh
+    timeout_in_minutes: 60
 SCRIPT
 done
 
@@ -274,9 +306,13 @@ cat << SCRIPT
     OMNIBUS_BUILDER_KEY: build-windows-2019
   key: test-windows-2019
   label: ":mag::windows: windows-2019"
+  retry:
+    automatic:
+      limit: 1
   agents:
-    queue: omnibus-windows-2019
+    queue: default-windows-2019-privileged
   commands:
     - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1
     - ./omnibus/omnibus-test.ps1
+  timeout_in_minutes: 60
 SCRIPT
