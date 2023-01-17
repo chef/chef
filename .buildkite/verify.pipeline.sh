@@ -3,223 +3,248 @@
 # exit immediately on failure, or if an undefined variable is used
 set -eu
 
-echo "---"
-echo "steps:"
-echo ""
+cat << SCRIPT | sed -r 's/^ {2}//'
+  ---
+  steps:
+
+SCRIPT
 
 test_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "ubuntu-1604" "sles-15")
 
 for platform in ${test_platforms[@]}; do
-  echo "- label: \"{{matrix}} $platform :ruby:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
-  echo "    queue: default-privileged"
-  echo "  matrix:"
-  echo "    - \"Unit\""
-  echo "    - \"Integration\""
-  echo "    - \"Functional\""
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      privileged: true"
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
-  echo "      propagate-environment: true"
-  echo "  commands:"
-  echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
-  echo "  timeout_in_minutes: 60"
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: "{{matrix}} $platform :ruby:"
+    agents:
+      queue: default-privileged
+    matrix:
+      - "Unit"
+      - "Integration"
+      - "Functional"
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION
+        privileged: true
+        environment:
+          - CHEF_FOUNDATION_VERSION
+        propagate-environment: true
+    commands:
+      - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}
+SCRIPT
 done
 
 win_test_platforms=("windows-2019:windows-2019")
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
-  echo "    queue: default-${platform%:*}-privileged"
-  echo "  matrix:"
-  echo "    - \"Unit\""
-  echo "    - \"Integration\""
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      shell:"
-  echo "      - powershell"
-  echo "      - \"-Command\""
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
-  echo "      propagate-environment: true"
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 60"
-
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: "{{matrix}} ${platform#*:} :windows:"
+    agents:
+      queue: default-${platform%:*}-privileged
+    matrix:
+      - "Unit"
+      - "Integration"
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION
+        shell:
+        - powershell
+        - "-Command"
+        environment:
+          - CHEF_FOUNDATION_VERSION
+        propagate-environment: true
+    commands:
+      - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}
+SCRIPT
 done
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"Functional ${platform#*:} :windows:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
-  echo "  agents:"
-  echo "    queue: single-use-windows-2019-privileged"
-  echo "  env:"
-  echo "  - CHEF_FOUNDATION_VERSION"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 60"
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: "Functional ${platform#*:} :windows:"
+    commands:
+      - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional
+    agents:
+      queue: single-use-windows-2019-privileged
+    env:
+    - CHEF_FOUNDATION_VERSION
+      - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}
+SCRIPT
 done
 
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
 
 for gem in ${external_gems[@]}; do
-  echo "- label: \"$gem gem :ruby:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
-  echo "    queue: default"
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
-  if [ $gem == "chef-zero" ] 
+  # If Gem is Chef-Zero
+  if [ $gem == "chef-zero" ]
   then
-    echo "        - PEDANT_OPTS=--skip-oc_id"
-    echo "        - CHEF_FS=true"
+    chef_zero_envs=$(cat <<-SCRIPT
+
+          - PEDANT_OPTS=--skip-oc_id
+          - CHEF_FS=true
+SCRIPT
+)
+  else
+    chef_zero_envs=''
   fi
-  echo "      propagate-environment: true"
-  echo "  - chef/cache#v1.5.0:"
-  echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
-  echo "      cached_folders:"
-  echo "      - vendor"
-  echo "  timeout_in_minutes: 60"
-  echo "  commands:"
-  echo "    - .expeditor/scripts/bk_container_prep.sh"
+
+  # If Gem is Berkshelf
   if [ $gem == "berkshelf" ]
   then
-    echo "    - export PATH=\"/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}\""
-    echo "    - apt-get update -y"
-    echo "    - apt-get install -y graphviz"
-    echo "    - bundle config set --local without omnibus_package"
+    gem_commands=$(cat <<-SCRIPT
+
+      - export PATH="/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}"
+      - apt-get update -y
+      - apt-get install -y graphviz
+      - bundle config set --local without omnibus_package
+SCRIPT
+)
   else
-    echo "    - export PATH=\"/opt/chef/bin:${PATH}\""
-    echo "    - bundle config set --local without omnibus_package"
-    echo "    - bundle config set --local path 'vendor/bundle'"
+    gem_commands=$(cat <<-SCRIPT
+
+      - export PATH="/opt/chef/bin:${PATH}"
+      - bundle config set --local without omnibus_package
+      - bundle config set --local path 'vendor/bundle'
+SCRIPT
+)
   fi
-  echo "    - bundle install --jobs=3 --retry=3"
+
+  # Configure correct bundle exec per Gem
   case $gem in 
     "chef-zero")
-      echo "    - bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant"
+      exec_command="- bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant"
       ;;
     "cheffish")
-      echo "    - bundle exec tasks/bin/run_external_test chef/cheffish main rake spec"
+      exec_command="- bundle exec tasks/bin/run_external_test chef/cheffish main rake spec"
       ;;
     "chefspec")
-      echo "    - bundle exec tasks/bin/run_external_test chefspec/chefspec main rake"
+      exec_command="- bundle exec tasks/bin/run_external_test chefspec/chefspec main rake"
       ;;
     "knife-windows")
-      echo "    - bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec"
+      exec_command="- bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec"
       ;;
     "berkshelf")
-      echo "    - bundle exec tasks/bin/run_external_test chef/berkshelf main rake"
+      exec_command="- bundle exec tasks/bin/run_external_test chef/berkshelf main rake"
       ;;
     *)
       echo -e "\n Gem $gem is not valid\n" >&2
       exit 1
       ;;
   esac
+
+  # The entire YAML entry
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: "$gem gem :ruby:"
+    agents:
+      queue: default
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION
+        environment:
+          - CHEF_FOUNDATION_VERSION$chef_zero_envs
+        propagate-environment: true
+    - chef/cache#v1.5.0:
+        s3_bucket: core-buildkite-cache-chef-oss-prod
+        cached_folders:
+        - vendor
+    commands:
+      - .expeditor/scripts/bk_container_prep.sh$gem_commands
+      - bundle install --jobs=3 --retry=3
+      $exec_command
+SCRIPT
 done
 
 habitat_plans=("linux" "linux-kernel2" "windows")
 
 for plan in ${habitat_plans[@]}; do
-  echo "- label: \":habicat: $plan plan\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
+  # Use correct agent
   if [ $plan == "windows" ]
   then
-    echo "    queue: single-use-windows-2019-privileged"
+    verify_agent="single-use-windows-2019-privileged"
   else
-    echo "    queue: single-use-privileged"
+    verify_agent="single-use-privileged"
   fi
-  echo "  plugins:"
-  echo "  - chef/cache#v1.5.0:"
-  echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
-  echo "      cached_folders:"
-  echo "      - vendor"
-  echo "  timeout_in_minutes: 60"
-  echo "  commands:"
+
+  # Use correct verify script(s)
   if [ $plan == "windows" ]
   then
-    echo "    - ./.expeditor/scripts/verify-plan.ps1"
+    verify_script=$(cat <<-SCRIPT
+
+      - ./.expeditor/scripts/verify-plan.ps1
+SCRIPT
+)
   else
-    echo "    - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
-    echo "    - sudo ./.expeditor/scripts/verify-plan.sh"
+    verify_script=$(cat <<-SCRIPT
+
+      - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'
+      - sudo ./.expeditor/scripts/verify-plan.sh
+SCRIPT
+)
   fi
+
+  # The entire YAML entry
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: ":habicat: $plan plan"
+    agents:
+      queue: $verify_agent
+    plugins:
+    - chef/cache#v1.5.0:
+        s3_bucket: core-buildkite-cache-chef-oss-prod
+        cached_folders:
+        - vendor
+    commands:$verify_script
+SCRIPT
 done
 
-echo "- block: Build & Test Omnibus Packages"
-echo "  prompt: Continue to run omnibus package build and tests for applicable platforms?"
+cat << SCRIPT | sed -r 's/^ {2}//'
+  - block: Build & Test Omnibus Packages"
+    prompt: Continue to run omnibus package build and tests for applicable platforms?"
+SCRIPT
 
 omnibus_build_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "ubuntu-1604" "sles-15")
 
 for platform in ${omnibus_build_platforms[@]}; do
-  echo "- label: \":hammer_and_wrench::docker: $platform\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  key: build-$platform"
-  echo "  agents:"
-  echo "    queue: default-privileged"
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      privileged: true"
-  echo "      propagate-environment: true"
-  echo "      environment:"
-  echo "        - RPM_SIGNING_KEY"
-  echo "        - CHEF_FOUNDATION_VERSION"
-  echo "  commands:"
-  echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
-  echo "  timeout_in_minutes: 60"
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: ":hammer_and_wrench::docker: $platform"
+    key: build-$platform
+    agents:
+      queue: default-privileged
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION
+        privileged: true
+        propagate-environment: true
+        environment:
+          - RPM_SIGNING_KEY
+          - CHEF_FOUNDATION_VERSION
+    commands:
+      - ./.expeditor/scripts/omnibus_chef_build.sh
+SCRIPT
 done
 
 win_omnibus_build_platforms=("windows-2019")
 
 for platform in ${win_omnibus_build_platforms[@]}; do
-  echo "- label: \":hammer_and_wrench::windows: $platform\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  key: build-$platform"
-  echo "  agents:"
-  echo "    queue: default-$platform-privileged"
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      shell:"
-  echo "      - powershell"
-  echo "      - \"-Command\""
-  echo "      propagate-environment: true"
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
-  echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
-  echo "        - AWS_ACCESS_KEY_ID"
-  echo "        - AWS_SECRET_ACCESS_KEY"
-  echo "        - AWS_SESSION_TOKEN"
-  echo "      volumes:"
-  echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
-  echo "  commands:"
-  echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
-  echo "  timeout_in_minutes: 60"
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - label: ":hammer_and_wrench::windows: $platform"
+    key: build-$platform
+    agents:
+      queue: default-$platform-privileged
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION
+        shell:
+        - powershell
+        - "-Command"
+        propagate-environment: true
+        environment:
+          - CHEF_FOUNDATION_VERSION
+          - BUILDKITE_AGENT_ACCESS_TOKEN
+          - AWS_ACCESS_KEY_ID
+          - AWS_SECRET_ACCESS_KEY
+          - AWS_SESSION_TOKEN
+        volumes:
+          - "c:\\\\buildkite-agent:c:\\\\buildkite-agent"
+    commands:
+      - ./.expeditor/scripts/omnibus_chef_build.ps1
+SCRIPT
 done
 
 echo "- wait: ~"
@@ -227,35 +252,31 @@ echo "- wait: ~"
 omnibus_test_platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15")
 
 for platform in ${omnibus_test_platforms[@]}; do
-  echo "- env:"
-  echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
-  echo "  label: \":mag::docker: ${platform%:*}\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
-  echo "    queue: default-privileged"
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      privileged: true"
-  echo "      propagate-environment: true"
-  echo "  commands:"
-  echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
-  echo "    - omnibus/omnibus-test.sh"
-  echo "  timeout_in_minutes: 60"
+  cat << SCRIPT | sed -r 's/^ {2}//'
+  - env:
+      OMNIBUS_BUILDER_KEY: build-${platform#*:}
+    label: ":mag::docker: ${platform%:*}"
+    agents:
+      queue: default-privileged
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION
+        privileged: true
+        propagate-environment: true
+    commands:
+      - ./.expeditor/scripts/download_built_omnibus_pkgs.sh
+      - omnibus/omnibus-test.sh
+SCRIPT
 done
 
-echo "- env:"
-echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
-echo "  key: test-windows-2019"
-echo '  label: ":mag::windows: windows-2019"'
-echo "  retry:"
-echo "    automatic:"
-echo "      limit: 1"
-echo "  agents:"
-echo "    queue: default-windows-2019-privileged"
-echo "  commands:"
-echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
-echo "    - ./omnibus/omnibus-test.ps1"
-echo "  timeout_in_minutes: 60"
+cat << SCRIPT
+- env:
+    OMNIBUS_BUILDER_KEY: build-windows-2019
+  key: test-windows-2019
+  label: ":mag::windows: windows-2019"
+  agents:
+    queue: omnibus-windows-2019
+  commands:
+    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1
+    - ./omnibus/omnibus-test.ps1
+SCRIPT
