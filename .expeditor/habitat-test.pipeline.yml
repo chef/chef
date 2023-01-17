@@ -35,15 +35,13 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - powershell -File ./.expeditor/scripts/ensure-minimum-viable-hab.ps1
-    - 'Write-Host "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"'
-    - hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
-    - powershell -File ./habitat/tests/test.ps1 -PackageIdentifier $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
+    - .expeditor/scripts/habitat-test.ps1
   expeditor:
     executor:
       windows:
         privileged: true
         single-use: true
+        shell: ["powershell", "-Command"]
 
 # Wait for the package testing to succeed before promoting whatever was tested.
 - wait
