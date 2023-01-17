@@ -30,6 +30,17 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - verify/release:
+      definition: .expeditor/verify.pipeline.yml
+      env:
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  - verify/adhoc:
+      definition: .expeditor/verify.adhoc.pipeline.yml
+      env:
+        - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
@@ -57,12 +68,6 @@ pipelines:
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
-  - verify/adhoc:
-      definition: .expeditor/verify.adhoc.pipeline.yml
-      env:
-        - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -131,7 +136,7 @@ subscriptions:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      - trigger_pipeline:omnibus/release:
+      - trigger_pipeline:verify/release:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
