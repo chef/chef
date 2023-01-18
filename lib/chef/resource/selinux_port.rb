@@ -21,7 +21,7 @@ class Chef
 
       provides :selinux_port
 
-      description "Use **selinux_port** resource to allows assigning a network port to a certain SELinux context, e.g. for running a webserver on a non-standard port."
+      description "Use the **selinux_port** resource to assign a network port to a specific SELinux context. For example, running a web server on a non-standard port."
       introduced "18.0"
       examples <<~DOC
       **Allow nginx/apache to bind to port 5678 by giving it the http_port_t context**:

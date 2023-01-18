@@ -23,12 +23,14 @@ class Chef
     class WindowsUserPrivilege < Chef::Resource
 
       provides :windows_user_privilege
-      description "The windows_user_privilege resource allows to add a privilege to a principal or (User/Group).\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
+      description "Use the **windows_user_privilege** resource to set privileges for a principal, user, or group.\n See [Microsoft's user rights assignment documentation](https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment) for more information."
 
       introduced "16.0"
 
       examples <<~DOC
-      **Set the SeNetworkLogonRight Privilege for the Builtin Administrators Group and Authenticated Users**:
+      **Set the SeNetworkLogonRight privilege for the Builtin Administrators and Authenticated Users groups**:
+
+      The `:set` action will add this privilege for these two groups and remove this privilege from all other groups or users.
 
       ```ruby
       windows_user_privilege 'Network Logon Rights' do
@@ -38,7 +40,9 @@ class Chef
       end
       ```
 
-      **Provide only the Builtin Guests and Administrator Groups with the SeCreatePageFile Privilege**:
+      **Set the SeCreatePagefilePrivilege privilege for the Builtin Guests and Administrator groups**:
+
+      The `:set` action will add this privilege for these two groups and remove this privilege from all other groups or users.
 
       ```ruby
       windows_user_privilege 'Create Pagefile' do
@@ -48,7 +52,7 @@ class Chef
       end
       ```
 
-      **Add the SeDenyRemoteInteractiveLogonRight Privilege to the 'Remote interactive logon' principal**:
+      **Add the SeDenyRemoteInteractiveLogonRight privilege to the 'Remote interactive logon' principal**:
 
       ```ruby
       windows_user_privilege 'Remote interactive logon' do
@@ -57,7 +61,7 @@ class Chef
       end
       ```
 
-      **Add to the Builtin Guests Group the SeCreatePageFile Privilege**:
+      **Add the SeCreatePageFilePrivilege privilege to the Builtin Guests group**:
 
       ```ruby
       windows_user_privilege 'Guests add Create Pagefile' do
@@ -67,7 +71,7 @@ class Chef
       end
       ```
 
-      **Remove the SeCreatePageFile Privilege from the Builtin Guests Group**:
+      **Remove the SeCreatePageFilePrivilege privilege from the Builtin Guests group**:
 
       ```ruby
       windows_user_privilege 'Create Pagefile' do
@@ -77,7 +81,7 @@ class Chef
       end
       ```
 
-      **Clear all users from the SeDenyNetworkLogonRight Privilege**:
+      **Clear the SeDenyNetworkLogonRight privilege from all users**:
 
       ```ruby
       windows_user_privilege 'Allow any user the Network Logon right' do
@@ -135,15 +139,15 @@ class Chef
                           }.freeze
 
       property :principal, String,
-               description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a User/Group or one of special identities found here Ref: https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities",
+               description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a user, group, or [special identity](https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities).",
                name_property: true
 
       property :users, [Array, String],
-               description: "An optional property to set the privilege for given users. Use only with set action.",
+               description: "An optional property to set the privilege for the specified users. Use only with `:set` action",
                coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
-               description: "One or more privileges to set for principal or users/groups. For more information on what each privilege does Ref: https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment",
+               description: "One or more privileges to set for principal or users/groups. For more information, see [Microsoft's documentation on what each privilege does](https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment).",
                required: true,
                coerce: proc { |v| Array(v) },
                callbacks: {
