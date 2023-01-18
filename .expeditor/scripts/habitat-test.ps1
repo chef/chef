@@ -1,5 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
+$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS=$args[0]
+
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
 # . ./scripts/ensure-minimum-viable-hab.ps1
