@@ -22,7 +22,7 @@ name "more-ruby-cleanup"
 skip_transitive_dependency_licensing true
 license :project_license
 
-source path: "#{project.files_path}/#{name}" 
+source path: "#{project.files_path}/#{name}"
 
 build do
   block "Removing console and setup binaries" do

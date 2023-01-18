@@ -93,9 +93,13 @@ build do
   end
 
   block do
+    # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "inspec-core-bin", without: excluded_groups, env: env
+    # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "chef-bin", without: excluded_groups, env: env
+    # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "chef", without: excluded_groups, env: env
+    # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "ohai", without: excluded_groups, env: env
   end
 

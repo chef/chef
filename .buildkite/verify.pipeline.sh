@@ -105,6 +105,7 @@ for gem in ${external_gems[@]}; do
   then
     echo "    - export PATH=\"/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}\""
     echo "    - apt-get update -y"
+    # cspell:disable-next-line
     echo "    - apt-get install -y graphviz"
     echo "    - bundle config set --local without omnibus_package"
   else
