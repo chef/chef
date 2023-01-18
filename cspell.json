@@ -541,6 +541,7 @@
     "indentable",
     "INET",
     "inet",
+    "infc",
     "INFLOOP",
     "iniparse",
     "Inout",
