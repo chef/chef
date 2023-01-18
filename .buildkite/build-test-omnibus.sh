@@ -1,5 +1,7 @@
-echo "- block: Build & Test Omnibus Packages"
-echo "  prompt: Continue to run omnibus package build and tests for applicable platforms?"
+if [[ $BUILDKITE_ORGANIZATION_SLUG == "chef-oss" ]]; then
+  echo "- block: Build & Test Omnibus Packages"
+  echo "  prompt: Continue to run omnibus package build and tests for applicable platforms?"
+fi
 
 FILTER="${OMNIBUS_FILTER:=*}"
 
