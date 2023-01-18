@@ -41,6 +41,13 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - verify/adhoc-canary:
+      canary: true
+      definition: .expeditor/verify.adhoc.pipeline.yml
+      env:
+        - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
@@ -134,6 +141,11 @@ subscriptions:
       - trigger_pipeline:habitat/build:
           ignore_labels:
             - "Expeditor: Skip Habitat"
+            - "Expeditor: Skip All"
+          only_if: built_in:bump_version
+      - trigger_pipeline:omnibus/release:
+          ignore_labels:
+            - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
       - trigger_pipeline:verify/release:
