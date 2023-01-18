@@ -1,6 +1,5 @@
 $ErrorActionPreference = 'Stop'
 
-$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS = 'chef/chef-infra-client/18.0.179/20221109104144'
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
 # . ./scripts/ensure-minimum-viable-hab.ps1
