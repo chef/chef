@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.2 -->
-## [v18.1.2](https://github.com/chef/chef/tree/v18.1.2) (2023-01-18)
+<!-- latest_release 18.1.3 -->
+## [v18.1.3](https://github.com/chef/chef/tree/v18.1.3) (2023-01-18)
 
 #### Merged Pull Requests
-- Rewriting the zypper code to run only on openSUSE 15 [#13490](https://github.com/chef/chef/pull/13490) ([johnmccrae](https://github.com/johnmccrae))
+- Docs and release details [#13484](https://github.com/chef/chef/pull/13484) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Docs and release details [#13484](https://github.com/chef/chef/pull/13484) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.3 -->
 - Rewriting the zypper code to run only on openSUSE 15 [#13490](https://github.com/chef/chef/pull/13490) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.1.2 -->
 - Edit resources description text [#13495](https://github.com/chef/chef/pull/13495) ([IanMadd](https://github.com/IanMadd)) <!-- 18.1.1 -->
 <!-- release_rollup -->
