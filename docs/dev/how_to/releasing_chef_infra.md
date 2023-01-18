@@ -28,22 +28,25 @@ The importance of our release notes cannot be understated. As developers, we und
 
 If there are any new or updated resources, the docs site will need to be updated. This is a `partially` automated process. If you are making a single resource update or changing wording, it may just be easier to do it by hand.
 
+`publish-release-notes.sh` pushes to S3 and then Netlify site needs to be rebuilt, so the Docs Site may not immediately reflect the Release notes related updates. The way to rebuild Netlify is manually or by merging a PR in chef-web-docs repository. Reach out to the Docs team to trigger an update.
+
 #### Resource Documentation Automation
 
 1. Run `rake docs_site:resources` to generate content to a `docs_site` directory
    1. WARNING: Any resource that inherits it's basic structure from a parent resource is likely to commingle settings from both when you run that command. For example, there are 17-20 resources that consume the basic package.rb resource file. As a consequence, ALL of the children will most likely have pulled in properties and actions that do not apply to them. You have to be careful here.
 
 2. Compare the relevant generated files to the content in the `content/resources` directory within the [chef-web-docs repo](https://github.com/chef/chef-web-docs/). The generated files are missing some content, such as action descriptions, and don't have perfect formatting, so this is a bit of an art form.
-   1. This will take time - expect to use 2-4 days of going through the new docs to ensure you aren't accidentally overwriting things or ignoring important updates
+   1. This will take time - expect to use 2-4 days of going through the new docs to ensure you aren't accidentally overwriting things or ignoring important updates.
    2. One tool you can use to help yourself is Beyond Compare. If you have to buy it, it's like $20
    3. You'll end up using a combo of the old docs, the new docs, what Beyond Compare shows you and your intuition.
-
 
 ## Release Chef Infra Client
 
 The docs are the most time-consuming aspect of the release.
 
 ### Promote the build
+
+:warning: Be sure to update the appropriate version of Pending Release Notes in the [wiki](https://github.com/chef/chef/wiki)! Failure to do so will cause the `git commit` step in [`publish-release-notes.sh`](https://github.com/chef/chef/blob/main/.expeditor/publish-release-notes.sh#L30) to fail.
 
 Chef employees can promote a build to stable from Slack. This is done with expeditor using a chatops command in the following format:
 
@@ -52,6 +55,10 @@ Chef employees can promote a build to stable from Slack. This is done with exped
 or for a previous release branch:
 
 `/expeditor promote chef/chef:chef-16 16.13.9`
+
+:warning: Do not `gem push` the ruby gem manually... this will prevent promotion of habitat packages to stable and will block notifications to chef.io slack channels.
+
+:information_source: the promotion of habitat packages can also be blocked if the Linux and Linux2 packages somehow have the same timestamp.
 
 ### Announce the Build
 
