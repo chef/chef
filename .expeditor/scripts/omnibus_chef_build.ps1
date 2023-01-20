@@ -29,7 +29,7 @@ $env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME="buildkite"
 
 Write-Output "--- Install Chef Foundation"
-. { iwr -useb https://omnitruck.chef.io/chef/install.ps1 } | iex; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
 
 $env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
 $env:HOMEDRIVE = "C:"
