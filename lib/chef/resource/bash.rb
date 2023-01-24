@@ -55,7 +55,7 @@ class Chef
         ignore_failure true
       end
       ```
-      
+
       **Install a file from a remote location**
 
       The following is an example of how to install the foo123 module for Nginx. This module adds shell-style functionality to an Nginx configuration file and does the following:
