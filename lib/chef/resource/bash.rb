@@ -42,11 +42,11 @@ class Chef
         EOH
       end
       ```
-      
-      **Beware escape characters**
-      
-      The interpreter here uses up the required find command escape character, so we have to preserve it with double escape characters:
-      
+
+      **Using escape characters in a string of code**
+
+      In the following example, the `find` command uses an escape character (`\`). Use a second escape character (`\\`) to preserve the escape character in the code string:
+
       ```ruby
       bash 'delete some archives ' do
         code <<-EOH
