@@ -34,7 +34,7 @@ class Chef
         resource in #{ChefUtils::Dist::Infra::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important
         task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{ChefUtils::Dist::Infra::PRODUCT} recipe.
 
-        Warning: The **dsc_script** resource may not be used with the 32 bit Chef Infra client. It must be executed from a 64 bit Chef Infra client.
+        Warning: The **dsc_script** resource is only available on 64-bit Chef Infra Client.
       DESC
 
       default_action :run

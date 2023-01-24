@@ -20,12 +20,18 @@ We have a 3 step process for contributions:
 2. Create a GitHub Pull Request for your change, following the instructions in the pull request template.
 3. Perform a [Code Review](#code-review-process) with the project maintainers on the pull request.
 
+### Branching
+
+* If branching within `chef/chef` repo, prefix your initials such as `tp/branch-name` to help delineate at a glance who created the branch.
+* (for internal teams) Please include a ticket number for JIRA (e.g., `tp/infc-399-branch-short-desc`) if possible to help JIRA link back to the branch and subsequent PR.
+
 ### Pull Request Requirements
 
 Chef Projects are built to last. We strive to ensure high quality throughout the experience. In order to ensure this, we require that all pull requests to Chef projects meet these specifications:
 
 1. **Tests:** To ensure high quality code and protect against future regressions, we require all the code in Chef Projects to have at least unit test coverage. We use [RSpec](http://rspec.info/) for unit testing.
 2. **Green CI Tests:** We use [Buildkite](https://buildkite.com/chef-oss) to test all pull requests. We require these test runs to succeed on every pull request before being merged.
+3. **Rebase** `git rebase {target-branch}` prior to merging. :no_entry: Avoid pulling in the target branch, as mixing and matching with `rebase` can easily make a mess of the commit history :sob:... You will likely need to `git push -f {remote-branch}` after rebasing.
 
 ### Code Review Process
 
@@ -120,6 +126,10 @@ Date:   Wed Sep 18 11:44:40 2015 -0700
 
 ------------------------------------------------------------------------
 ```
+
+### Merging
+1. Use `[Squash and Merge]` and edit down the commit history to a clear description of what the changes were with the "TL;DR" bits in the first 60 characters of the commit message. Update the PR title if necessary.
+2. Add the changes to the [Pending Release Notes](https://github.com/chef/chef/wiki) for the appropriate release version.
 
 ## Release Cycles
 

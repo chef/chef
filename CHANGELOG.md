@@ -1,43 +1,55 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.0.208 -->
-## [v18.0.208](https://github.com/chef/chef/tree/v18.0.208) (2023-01-03)
+<!-- latest_release 18.1.6 -->
+## [v18.1.6](https://github.com/chef/chef/tree/v18.1.6) (2023-01-24)
 
 #### Merged Pull Requests
-- Adds &#39;makecache_fast&#39; property to `yum_repository` minimise cached repodata [#12915](https://github.com/chef/chef/pull/12915) ([lanky](https://github.com/lanky))
+- Example of bash resource doubled escape characters [#13509](https://github.com/chef/chef/pull/13509) ([sean-horn](https://github.com/sean-horn))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.0.185 -->
+<!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Adds &#39;makecache_fast&#39; property to `yum_repository` minimise cached repodata [#12915](https://github.com/chef/chef/pull/12915) ([lanky](https://github.com/lanky)) <!-- 18.0.208 -->
-- updating file_system to send back the copy status [#13107](https://github.com/chef/chef/pull/13107) ([vinay-satish](https://github.com/vinay-satish)) <!-- 18.0.207 -->
-- Bump omnibus from `8314373` to `f7386ad` in /omnibus [#13463](https://github.com/chef/chef/pull/13463) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.206 -->
-- Bump test-kitchen from 3.4.0 to 3.5.0 in /omnibus [#13444](https://github.com/chef/chef/pull/13444) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.205 -->
-- Added or Corrected spelling and corrected a Python exception handler … [#13454](https://github.com/chef/chef/pull/13454) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.204 -->
-- Bump omnibus-software from `a4f5cff` to `2be3816` in /omnibus [#13448](https://github.com/chef/chef/pull/13448) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.203 -->
-- Correcting the habitat pipeline issue for Windows [#13440](https://github.com/chef/chef/pull/13440) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.202 -->
-- macos_userdefaults: Use string for property deprecated message [#13350](https://github.com/chef/chef/pull/13350) ([jweyer8](https://github.com/jweyer8)) <!-- 18.0.201 -->
-- Fix indentation of condition for disabling repos [#13327](https://github.com/chef/chef/pull/13327) ([darnaut](https://github.com/darnaut)) <!-- 18.0.200 -->
-- Updated post Chef-18 to clarify how to release [#13428](https://github.com/chef/chef/pull/13428) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.199 -->
-- Patch for CVE-2022-29181 and CVS-2022-24836 [#13398](https://github.com/chef/chef/pull/13398) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.198 -->
-- Jfm/chef18 version bumps [#13421](https://github.com/chef/chef/pull/13421) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.197 -->
-- Bump omnibus-software from `57fbed5` to `a4f5cff` in /omnibus [#13418](https://github.com/chef/chef/pull/13418) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.0.196 -->
-- Remove redundant code for chef16/17 nightlies from main branch [#13405](https://github.com/chef/chef/pull/13405) ([neha-p6](https://github.com/neha-p6)) <!-- 18.0.195 -->
-- Switch main back to current for kitchen [#13397](https://github.com/chef/chef/pull/13397) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.194 -->
-- Updating Gem versions - specifically updating Chef for omnibus [#13391](https://github.com/chef/chef/pull/13391) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.193 -->
-- Chef-16 does not appear to have a &#39;current&#39; channel, falling back to … [#13362](https://github.com/chef/chef/pull/13362) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.0.192 -->
-- Update deprecated &quot;hab sup status&quot; call (do not merge until hab / test pipeline is green again) [#13314](https://github.com/chef/chef/pull/13314) ([gene1wood](https://github.com/gene1wood)) <!-- 18.0.191 -->
-- New launchd key for associating a bundle identifier with Login Items [#13288](https://github.com/chef/chef/pull/13288) ([chilcote](https://github.com/chilcote)) <!-- 18.0.190 -->
-- Lock ruby to 3.1.2 for GitHub Actions unit specs [#13393](https://github.com/chef/chef/pull/13393) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.189 -->
-- Added option to set release version when using activation keys [#13352](https://github.com/chef/chef/pull/13352) ([ianl678](https://github.com/ianl678)) <!-- 18.0.188 -->
-- Update omnibus-software for FIPS issues [#13375](https://github.com/chef/chef/pull/13375) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.0.187 -->
--     Res validation should be aware of action prop reqs. [#13069](https://github.com/chef/chef/pull/13069) ([sabat](https://github.com/sabat)) <!-- 18.0.186 -->
+- Example of bash resource doubled escape characters [#13509](https://github.com/chef/chef/pull/13509) ([sean-horn](https://github.com/sean-horn)) <!-- 18.1.6 -->
+- Update expired certificate used in kitchen tests [#13527](https://github.com/chef/chef/pull/13527) ([neha-p6](https://github.com/neha-p6)) <!-- 18.1.5 -->
+- update verify pipeline and omnibus build/test to use containers [#13489](https://github.com/chef/chef/pull/13489) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.4 -->
+- Docs and release details [#13484](https://github.com/chef/chef/pull/13484) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.3 -->
+- Rewriting the zypper code to run only on openSUSE 15 [#13490](https://github.com/chef/chef/pull/13490) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.1.2 -->
+- Edit resources description text [#13495](https://github.com/chef/chef/pull/13495) ([IanMadd](https://github.com/IanMadd)) <!-- 18.1.1 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.1.0](https://github.com/chef/chef/tree/v18.1.0) (2023-01-05)
+
+#### Merged Pull Requests
+-     Res validation should be aware of action prop reqs. [#13069](https://github.com/chef/chef/pull/13069) ([sabat](https://github.com/sabat))
+- Update omnibus-software for FIPS issues [#13375](https://github.com/chef/chef/pull/13375) ([tpowell-progress](https://github.com/tpowell-progress))
+- Added option to set release version when using activation keys [#13352](https://github.com/chef/chef/pull/13352) ([ianl678](https://github.com/ianl678))
+- Lock ruby to 3.1.2 for GitHub Actions unit specs [#13393](https://github.com/chef/chef/pull/13393) ([tpowell-progress](https://github.com/tpowell-progress))
+- New launchd key for associating a bundle identifier with Login Items [#13288](https://github.com/chef/chef/pull/13288) ([chilcote](https://github.com/chilcote))
+- Update deprecated &quot;hab sup status&quot; call (do not merge until hab / test pipeline is green again) [#13314](https://github.com/chef/chef/pull/13314) ([gene1wood](https://github.com/gene1wood))
+- Chef-16 does not appear to have a &#39;current&#39; channel, falling back to … [#13362](https://github.com/chef/chef/pull/13362) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Gem versions - specifically updating Chef for omnibus [#13391](https://github.com/chef/chef/pull/13391) ([johnmccrae](https://github.com/johnmccrae))
+- Switch main back to current for kitchen [#13397](https://github.com/chef/chef/pull/13397) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove redundant code for chef16/17 nightlies from main branch [#13405](https://github.com/chef/chef/pull/13405) ([neha-p6](https://github.com/neha-p6))
+- Bump omnibus-software from `57fbed5` to `a4f5cff` in /omnibus [#13418](https://github.com/chef/chef/pull/13418) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Jfm/chef18 version bumps [#13421](https://github.com/chef/chef/pull/13421) ([johnmccrae](https://github.com/johnmccrae))
+- Patch for CVE-2022-29181 and CVS-2022-24836 [#13398](https://github.com/chef/chef/pull/13398) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updated post Chef-18 to clarify how to release [#13428](https://github.com/chef/chef/pull/13428) ([johnmccrae](https://github.com/johnmccrae))
+- Fix indentation of condition for disabling repos [#13327](https://github.com/chef/chef/pull/13327) ([darnaut](https://github.com/darnaut))
+- macos_userdefaults: Use string for property deprecated message [#13350](https://github.com/chef/chef/pull/13350) ([jweyer8](https://github.com/jweyer8))
+- Correcting the habitat pipeline issue for Windows [#13440](https://github.com/chef/chef/pull/13440) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus-software from `a4f5cff` to `2be3816` in /omnibus [#13448](https://github.com/chef/chef/pull/13448) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Added or Corrected spelling and corrected a Python exception handler … [#13454](https://github.com/chef/chef/pull/13454) ([johnmccrae](https://github.com/johnmccrae))
+- Bump test-kitchen from 3.4.0 to 3.5.0 in /omnibus [#13444](https://github.com/chef/chef/pull/13444) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus from `8314373` to `f7386ad` in /omnibus [#13463](https://github.com/chef/chef/pull/13463) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- updating file_system to send back the copy status [#13107](https://github.com/chef/chef/pull/13107) ([vinay-satish](https://github.com/vinay-satish))
+- Adds &#39;makecache_fast&#39; property to `yum_repository` minimise cached repodata [#12915](https://github.com/chef/chef/pull/12915) ([lanky](https://github.com/lanky))
+- Updating Zypper to overcome repository errors [#13470](https://github.com/chef/chef/pull/13470) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v18.0.185](https://github.com/chef/chef/tree/v18.0.185) (2022-11-17)
 
 #### Merged Pull Requests
@@ -57,7 +69,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Adding TLS for Habitat-test.ps1 under Windows PowerShell [#13361](https://github.com/chef/chef/pull/13361) ([johnmccrae](https://github.com/johnmccrae))
 - Add allowed_actions for each package type [#13166](https://github.com/chef/chef/pull/13166) ([gene1wood](https://github.com/gene1wood))
 - Add recipients of Awesome Chef Awards 2021/2022 [#13285](https://github.com/chef/chef/pull/13285) ([tnir](https://github.com/tnir))
-<!-- latest_stable_release -->
 
 ## [v18.0.169](https://github.com/chef/chef/tree/v18.0.169) (2022-10-27)
 

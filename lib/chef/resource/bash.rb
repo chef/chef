@@ -43,6 +43,19 @@ class Chef
       end
       ```
 
+      **Using escape characters in a string of code**
+
+      In the following example, the `find` command uses an escape character (`\`). Use a second escape character (`\\`) to preserve the escape character in the code string:
+
+      ```ruby
+      bash 'delete some archives ' do
+        code <<-EOH
+          find ./ -name "*.tar.Z" -mtime +180 -exec rm -f {} \\;
+        EOH
+        ignore_failure true
+      end
+      ```
+
       **Install a file from a remote location**
 
       The following is an example of how to install the foo123 module for Nginx. This module adds shell-style functionality to an Nginx configuration file and does the following:

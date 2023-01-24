@@ -22,7 +22,7 @@ class Chef
 
       provides :selinux_fcontext
 
-      description "Use **selinux_fcontext** resource to set the SELinux context of files with semanage fcontext."
+      description "Use the **selinux_fcontext** resource to set the SELinux context of files using the `semanage fcontext` command."
       introduced "18.0"
       examples <<~DOC
       **Allow http servers (e.g. nginx/apache) to modify moodle files**:
