@@ -3,7 +3,7 @@
 set -eu
 
 # Only execute in the verify pipeline
-[[ "$BUILDKITE_PIPELINE_NAME" =~ verify$ ]] || exit 0
+[[ "$BUILDKITE_PIPELINE_NAME" =~ verify$ ]] || [[ "$BUILDKITE_PIPELINE_NAME" =~ verify/release$ ]] || [[ "$BUILDKITE_PIPELINE_NAME" =~ verify/adhoc$ ]]  || [[ "$BUILDKITE_PIPELINE_NAME" =~ verify/adhoc-canary$ ]] || exit 0
 
 docker ps || true
 
