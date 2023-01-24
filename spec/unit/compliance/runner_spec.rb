@@ -48,7 +48,7 @@ describe Chef::Compliance::Runner do
 
       expect(runner).not_to be_enabled
     end
-    
+
     it "is false if the node attributes have audit profiles and the audit cookbook is present, and the complince mode attribute is false" do
       stub_const("::Reporter::ChefAutomate", true)
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
