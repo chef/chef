@@ -98,7 +98,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#e2f53c53f28bc3db242b83ec4e4b7eba2bfd1129:"
+    echo "  - chef/omnibus#ef877eb0befa3dea74a77ced88a5264f2950d847:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
