@@ -168,6 +168,6 @@ echo ""
 # done
 
 # include build and test omnibus pipeline
-# DIR="${BASH_SOURCE%/*}"
-# if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-# source "$DIR/build-test-omnibus.sh"
+DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+source "$DIR/build-test-omnibus.sh"
