@@ -4,6 +4,8 @@
 set -eu
 
 echo "---"
+echo "env:"
+echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "steps:"
 echo ""
 
