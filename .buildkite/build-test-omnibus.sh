@@ -68,7 +68,7 @@ for platform in ${omnibus_build_platforms[@]}; do
     echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
     echo "  commands:"
     echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
-    echo "  timeout_in_minutes: 60"
+    echo "  timeout_in_minutes: 120"
   fi
 done
 
@@ -106,7 +106,7 @@ for platform in ${omnibus_test_platforms[@]}; do
     echo "  commands:"
     echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
     echo "    - ./omnibus/omnibus-test.ps1"
-    echo "  timeout_in_minutes: 60"
+    echo "  timeout_in_minutes: 120"
   fi
 done
 

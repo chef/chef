@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.5 -->
-## [v18.1.5](https://github.com/chef/chef/tree/v18.1.5) (2023-01-24)
+<!-- latest_release 18.1.7 -->
+## [v18.1.7](https://github.com/chef/chef/tree/v18.1.7) (2023-01-25)
 
 #### Merged Pull Requests
-- Update expired certificate used in kitchen tests [#13527](https://github.com/chef/chef/pull/13527) ([neha-p6](https://github.com/neha-p6))
+- revert chef-foundation changes in chef omnibus config [#13528](https://github.com/chef/chef/pull/13528) ([evanahlberg](https://github.com/evanahlberg))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- revert chef-foundation changes in chef omnibus config [#13528](https://github.com/chef/chef/pull/13528) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.7 -->
+- Example of bash resource doubled escape characters [#13509](https://github.com/chef/chef/pull/13509) ([sean-horn](https://github.com/sean-horn)) <!-- 18.1.6 -->
 - Update expired certificate used in kitchen tests [#13527](https://github.com/chef/chef/pull/13527) ([neha-p6](https://github.com/neha-p6)) <!-- 18.1.5 -->
 - update verify pipeline and omnibus build/test to use containers [#13489](https://github.com/chef/chef/pull/13489) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.4 -->
 - Docs and release details [#13484](https://github.com/chef/chef/pull/13484) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.3 -->
