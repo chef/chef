@@ -82,6 +82,15 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 843938DF228D22F7B3742BC0D94AA3F0EFE21092}
   end
 
+  let(:apt_public_keys) do
+    %w{
+      pub:-:1024:17:40976EAF437D05B5:2004-09-12
+      pub:-:1024:17:46181433FBB75451:2004-12-30
+      pub:-:4096:1:3B4FE6ACC0B21F32:2012-05-11
+      pub:-:4096:1:D94AA3F0EFE21092:2012-05-11
+    }
+  end
+
   it "responds to load_current_resource" do
     expect(provider).to respond_to(:load_current_resource)
   end
@@ -113,6 +122,18 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
+  describe "#extract_public_keys_from_cmd" do
+    it "runs the desired command" do
+      expect(provider).to receive(:shell_out).and_return(apt_key_finger)
+      provider.extract_public_keys_from_cmd(*apt_key_finger_cmd)
+    end
+
+    it "returns a list of key fingerprints" do
+      expect(provider).to receive(:shell_out).and_return(apt_key_finger)
+      expect(provider.extract_public_keys_from_cmd(*apt_key_finger_cmd)).to eql(apt_public_keys)
+    end
+  end
+
   describe "#cookbook_name" do
     it "returns 'test' when the cookbook property is set" do
       new_resource.cookbook("test")
@@ -122,22 +143,22 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 
   describe "#no_new_keys?" do
     before do
-      allow(provider).to receive(:extract_fingerprints_from_cmd).with(*apt_key_finger_cmd).and_return(apt_fingerprints)
+      allow(provider).to receive(:extract_public_keys_from_cmd).with(*apt_key_finger_cmd).and_return(apt_public_keys)
     end
 
     let(:file) { "/tmp/remote-gpg-keyfile" }
 
     it "matches a set of keys" do
-      allow(provider).to receive(:extract_fingerprints_from_cmd)
+      allow(provider).to receive(:extract_public_keys_from_cmd)
         .with("gpg", "--with-fingerprint", "--with-colons", file)
-        .and_return(Array(apt_fingerprints.first))
+        .and_return([apt_public_keys.first])
       expect(provider.no_new_keys?(file)).to be_truthy
     end
 
     it "notices missing keys" do
-      allow(provider).to receive(:extract_fingerprints_from_cmd)
+      allow(provider).to receive(:extract_public_keys_from_cmd)
         .with("gpg", "--with-fingerprint", "--with-colons", file)
-        .and_return(%w{ F36A89E33CC1BD0F71079007327574EE02A818DD })
+        .and_return(%w{pub:-:4096:1:871920D1991BC93C:1537196506})
       expect(provider.no_new_keys?(file)).to be_falsey
     end
   end

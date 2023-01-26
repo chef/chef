@@ -187,6 +187,24 @@ class Chef
           end.compact
         end
 
+        # run the specified command and extract the public key ids
+        # accepts the command so it can be used to extract both the current keys
+        # and the new keys
+        # @param [Array<String>] cmd the command to run
+        #
+        # @return [Array] an array of key ids
+        def extract_public_keys_from_cmd(*cmd)
+          so = shell_out(*cmd)
+          # Sample output
+          # pub:-:4096:1:D94AA3F0EFE21092:1336774248:::-:::scSC::::::23::0:
+          so.stdout.split(/\n/).map do |t|
+            if t.match(/^pub:/)
+              f = t.split(":")
+              f.slice(0, 6).join(":")
+            end
+          end.compact
+        end
+
         # validate the key against the apt keystore to see if that version is expired
         # @param [String] key
         #
@@ -222,8 +240,8 @@ class Chef
         def no_new_keys?(file)
           # Now we are using the option --with-colons that works across old os versions
           # as well as the latest (16.10). This for both `apt-key` and `gpg` commands
-          installed_keys = extract_fingerprints_from_cmd(*LIST_APT_KEY_FINGERPRINTS)
-          proposed_keys = extract_fingerprints_from_cmd("gpg", "--with-fingerprint", "--with-colons", file)
+          installed_keys = extract_public_keys_from_cmd(*LIST_APT_KEY_FINGERPRINTS)
+          proposed_keys = extract_public_keys_from_cmd("gpg", "--with-fingerprint", "--with-colons", file)
           (installed_keys & proposed_keys).sort == proposed_keys.sort
         end
 
