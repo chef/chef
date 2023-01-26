@@ -93,7 +93,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - 'amazonlinux-2'
           - 'centos-6'
           - 'centos-7'
           - 'centos-8'
@@ -102,12 +101,35 @@ jobs:
           - 'debian-11'
           - 'fedora-latest'
           - 'opensuse-leap-15'
-          - 'oraclelinux-7'
           - 'oraclelinux-8'
           - 'ubuntu-1804'
           - 'ubuntu-2004'
           - 'ubuntu-2204'
     runs-on: ubuntu-latest
+    env:
+      FORCE_FFI_YAJL: ext
+      CHEF_LICENSE: accept-no-persist
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+          bundler-cache: true
+          working-directory: kitchen-tests
+      - name: Run Test Kitchen
+        working-directory: kitchen-tests
+        run:  |
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
+  linux-2004-host:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'amazonlinux-2'
+          - 'oraclelinux-7'
+    runs-on: ubuntu-20.04
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
