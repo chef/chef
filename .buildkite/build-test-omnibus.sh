@@ -75,7 +75,7 @@ FILTER="${OMNIBUS_FILTER:=*}"
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
 
-  esoteric_build_platforms=("freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" )
+  esoteric_build_platforms=("freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "aix-7.1-powerpc" "solaris2-5.11-i386" "solaris2-5.11-sparc")
   
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
@@ -98,7 +98,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#84a5b5db8c7e3a55371c685c67f398ce9913ab06:"
+    echo "  - chef/omnibus#f9793bccb7c547a8f2bc98b4d0ea01e028276cf0:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
