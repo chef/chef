@@ -171,7 +171,7 @@ echo "- wait: ~"
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
 
-  esoteric_test_platforms=("freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc")
+  esoteric_test_platforms=("aix-7.1-powerpc:aix-7.1-powerpc:" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc")
   
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)
