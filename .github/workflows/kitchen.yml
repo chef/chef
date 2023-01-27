@@ -122,6 +122,8 @@ jobs:
         working-directory: kitchen-tests
         run:  |
           bundle exec kitchen test end-to-end-${{ matrix.os }}
+  # Amazon Linux 2 and Oracle Linux 7 dokken images have systemctl issues
+  # on Ubuntu 22.04 host platforms and later. Pin these to Ubuntu 20.04
   linux-2004-host:
     strategy:
       fail-fast: false
