@@ -38,6 +38,7 @@ pipelines:
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
+        - IGNORE_CACHE: true
         - ADHOC: true
 
 github:
