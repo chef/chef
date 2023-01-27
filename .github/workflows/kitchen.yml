@@ -223,6 +223,9 @@ jobs:
           cd /home/runner/work/chef/chef/kitchen-tests
           bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
+  # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
+  # if dokken container hosted on Ubuntu 22.04 or later. Lock to Ubuntu 20.04
+  # for now.
   linux-2004-host:
     strategy:
       fail-fast: false
