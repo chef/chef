@@ -115,19 +115,19 @@ then
     fi
   done
 
-  echo "- key: notarize-macos"
-  echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
-  echo "  agents:"
-  echo "    queue: omnibus-mac_os_x-12-x86_64"
-  echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.81:"
-  echo "      config: omnibus/omnibus.rb"
-  echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
-  echo "      notarize-macos-package: chef"
-  echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
-  echo "  depends_on:"
-  echo "  - build-mac_os_x-10_15-x86_64"
-  echo "  - build-mac_os_x-11-arm64"
+  # echo "- key: notarize-macos"
+  # echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
+  # echo "  agents:"
+  # echo "    queue: omnibus-mac_os_x-12-x86_64"
+  # echo "  plugins:"
+  # echo "  - chef/omnibus#v0.2.81:"
+  # echo "      config: omnibus/omnibus.rb"
+  # echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
+  # echo "      notarize-macos-package: chef"
+  # echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
+  # echo "  depends_on:"
+  # echo "  - build-mac_os_x-10_15-x86_64"
+  # echo "  - build-mac_os_x-11-arm64"
 fi
 
 echo "- wait: ~"
