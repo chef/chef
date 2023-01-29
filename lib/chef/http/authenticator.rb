@@ -167,20 +167,14 @@ class Chef
         @win32registry = Chef::Win32::Registry.new
         path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
         # does the registry key even exist?
-        present = @win32registry.get_values(path)
-        if present.nil? || present.empty?
+        password_blob = @win32registry.get_values(path)
+        if password_blob.nil? || password_blob.empty?
           raise Chef::Exceptions::Win32RegKeyMissing
         end
 
-        present.each do |secret|
-          if secret[:name] == "PfxPass"
-            password = decrypt_pfx_pass(secret[:data])
-            return password
-          end
-        end
-
-        raise Chef::Exceptions::Win32RegKeyMissing
-
+        # if output from the decrypt_pfx_pass is not null, it's an array of the password, key and iv - in that order
+        password = decrypt_pfx_pass(password_blob)
+        password
       rescue Chef::Exceptions::Win32RegKeyMissing
         # if we don't have a password, log that and generate one
         Chef::Log.warn "Authentication Hive and values not present in registry, creating them now"
@@ -191,28 +185,57 @@ class Chef
         require "securerandom" unless defined?(SecureRandom)
         size = 14
         password = SecureRandom.alphanumeric(size)
-        encrypted_pass = encrypt_pfx_pass(password)
-        values = { name: "PfxPass", type: :string, data: encrypted_pass }
-        @win32registry.set_value(new_path, values)
+        Chef::Log.warn("New Password is : #{password}")
+        encrypted_blob = encrypt_pfx_pass(password)
+        encrypted_password = encrypted_blob[0]
+        key = encrypted_blob[1]
+        vector = encrypted_blob[2]
+        values = [
+                  { name: "PfxPass", type: :string, data: encrypted_password },
+                  { name: "PfxKey", type: :string, data: key },
+                  { name: "PfxIV", type: :string, data: vector },
+                ]
+        values.each do |i|
+          @win32registry.set_value(new_path, i)
+        end
         password
       end
 
       def self.encrypt_pfx_pass(password)
         powershell_code = <<~CODE
-          $encrypted_string = ConvertTo-SecureString "#{password}" -AsPlainText -Force
-          $secure_string = ConvertFrom-SecureString $encrypted_string
-          return $secure_string
+          $AES = [System.Security.Cryptography.Aes]::Create()
+          $key_temp = [System.Convert]::ToBase64String($AES.Key)
+          $iv_temp = [System.Convert]::ToBase64String($AES.IV)
+          $encryptor = $AES.CreateEncryptor()
+          [System.Byte[]]$Bytes =  [System.Text.Encoding]::Unicode.GetBytes("#{password}")
+          $EncryptedBytes = $encryptor.TransformFinalBlock($Bytes,0,$bytes.Length)
+          $EncryptedBase64String = [System.Convert]::ToBase64String($EncryptedBytes)
+          # create array of encrypted pass, key, iv
+          $password_blob = @($EncryptedBase64String, $key_temp, $iv_temp)
+          return $password_blob
         CODE
         powershell_exec!(powershell_code).result
       end
 
-      def self.decrypt_pfx_pass(password)
+      def self.decrypt_pfx_pass(password_blob)
+        raw_data = password_blob.map { |x| x[:data] }
+        password = raw_data[0]
+        key = raw_data[1]
+        vector = raw_data[2]
+
         powershell_code = <<~CODE
-          $secure_string = "#{password}" | ConvertTo-SecureString
-          $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
-          return $string
+          $KeyBytes = [System.Convert]::FromBase64String("#{key}")
+          $IVBytes = [System.Convert]::FromBase64String("#{vector}")
+          $aes = [System.Security.Cryptography.Aes]::Create()
+          $aes.Key = $KeyBytes
+          $aes.IV = $IVBytes
+          $EncryptedBytes = [System.Convert]::FromBase64String("#{password}")
+          $Decryptor = $aes.CreateDecryptor()
+          $DecryptedBytes = $Decryptor.TransformFinalBlock($EncryptedBytes,0,$EncryptedBytes.Length)
+          $DecryptedString = [System.Text.Encoding]::Unicode.GetString($DecryptedBytes)
+          return $DecryptedString
         CODE
-        powershell_exec!(powershell_code).result
+        results = powershell_exec!(powershell_code).result
       end
 
       def self.retrieve_certificate_key(client_name)
