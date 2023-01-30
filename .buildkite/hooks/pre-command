@@ -57,9 +57,18 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
   fi
 fi
 
-# Only execute if on RHEL/CentOS/SLES
-if [[ "$BUILDKITE_LABEL" =~ rhel|sles|centos ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+# Only if on chef-canary or chef org
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+
   export VAULT_ADDR="https://vault.ps.chef.co"
-  export VAULT_TOKEN="$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)"
-  export RPM_SIGNING_KEY="$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)"
+  export VAULT_TOKEN=$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)
+
+  lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text)
+  export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
+  export ARTIFACTORY_PASSWORD=$(vault kv get -field password account/static/artifactory/buildkite)
+
+  # Only if on RPM-based Linux distros
+  if [[ "$BUILDKITE_LABEL" =~ rhel|sles|centos ]]; then
+    export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)
+  fi
 fi

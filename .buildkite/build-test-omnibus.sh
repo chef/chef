@@ -1,6 +1,9 @@
-if [[ $BUILDKITE_ORGANIZATION_SLUG == "chef-oss" ]]; then
+if [ -z $BUILDKITE_BUILD_CREATOR_TEAMS ]
+then
   echo "- block: Build & Test Omnibus Packages"
   echo "  prompt: Continue to run omnibus package build and tests for applicable platforms?"
+else
+  echo "- wait: ~"
 fi
 
 FILTER="${OMNIBUS_FILTER:=*}"
@@ -38,6 +41,8 @@ FILTER="${OMNIBUS_FILTER:=*}"
 #     echo "      privileged: true"
 #     echo "      propagate-environment: true"
 #     echo "      environment:"
+#     echo "        - ARTIFACTORY_PASSWORD"
+#     echo "        - ARTIFACTORY_API_KEY"
 #     echo "        - RPM_SIGNING_KEY"
 #     echo "        - CHEF_FOUNDATION_VERSION"
 #     echo "  commands:"
@@ -61,6 +66,8 @@ FILTER="${OMNIBUS_FILTER:=*}"
 #     echo "      environment:"
 #     echo "        - CHEF_FOUNDATION_VERSION"
 #     echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
+#     echo "        - ARTIFACTORY_PASSWORD"
+#     echo "        - ARTIFACTORY_API_KEY"
 #     echo "        - AWS_ACCESS_KEY_ID"
 #     echo "        - AWS_SECRET_ACCESS_KEY"
 #     echo "        - AWS_SESSION_TOKEN"
