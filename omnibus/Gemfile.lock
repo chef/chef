@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: f7386ad375212a406dc11cd4050b10cbd77f7a42
-  branch: main
+  revision: aa6e2afcc3a3672be29efcfa0440150a597f810b
+  branch: debug-mac-signing
   specs:
     omnibus (9.0.14)
       aws-sdk-s3 (~> 1.116.0)
@@ -465,7 +465,7 @@ GEM
     vault (0.17.0)
       aws-sigv4
     webrick (1.7.0)
-    win32-api (1.10.1-universal-mingw32)
+    win32-api (1.10.1)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
       ffi
