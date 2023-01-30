@@ -75,7 +75,9 @@ FILTER="${OMNIBUS_FILTER:=*}"
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
 
-  esoteric_build_platforms=("aix-7.1-powerpc" "el-7-ppc64" "el-7-ppc64le" "el-7-s390x" "freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "solaris2-5.11-i386" "solaris2-5.11-sparc" "sles-12-s390x")
+  # esoteric_build_platforms=("aix-7.1-powerpc" "el-7-ppc64" "el-7-ppc64le" "el-7-s390x" "freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "solaris2-5.11-i386" "solaris2-5.11-sparc" "sles-12-s390x")
+
+  esoteric_build_platforms=("mac_os_x-10.15-x86_64" "mac_os_x-11-arm64")
   
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
@@ -115,19 +117,19 @@ then
     fi
   done
 
-  # echo "- key: notarize-macos"
-  # echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
-  # echo "  agents:"
-  # echo "    queue: omnibus-mac_os_x-12-x86_64"
-  # echo "  plugins:"
-  # echo "  - chef/omnibus#v0.2.81:"
-  # echo "      config: omnibus/omnibus.rb"
-  # echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
-  # echo "      notarize-macos-package: chef"
-  # echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
-  # echo "  depends_on:"
+  echo "- key: notarize-macos"
+  echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
+  echo "  agents:"
+  echo "    queue: omnibus-mac_os_x-12-x86_64"
+  echo "  plugins:"
+  echo "  - chef/omnibus#v0.2.81:"
+  echo "      config: omnibus/omnibus.rb"
+  echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
+  echo "      notarize-macos-package: chef"
+  echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
+  echo "  depends_on:"
   # echo "  - build-mac_os_x-10_15-x86_64"
-  # echo "  - build-mac_os_x-11-arm64"
+  echo "  - build-mac_os_x-11-arm64"
 fi
 
 echo "- wait: ~"
@@ -171,7 +173,9 @@ echo "- wait: ~"
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
 
-  esoteric_test_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+  # esoteric_test_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+
+  esoteric_test_platforms=("mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64")
   
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)
