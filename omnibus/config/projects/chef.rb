@@ -48,6 +48,8 @@ instance_eval(IO.read(overrides_path), overrides_path)
 # dependency "preparation"
 dependency "chef-local-source"
 
+lib_dirs ["/opt/chef/embedded/lib","/opt/chef/embedded/lib/ruby/gems/3.1.0/extensions/arm64-darwin-20/3.1.0"]
+
 # dependency "chef"
 
 # #
