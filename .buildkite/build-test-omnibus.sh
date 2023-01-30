@@ -75,7 +75,7 @@ FILTER="${OMNIBUS_FILTER:=*}"
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
 
-  esoteric_build_platforms=("freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "aix-7.1-powerpc" "solaris2-5.11-i386" "solaris2-5.11-sparc")
+  esoteric_build_platforms=("aix-7.1-powerpc" "el-7-ppc64" "el-7-ppc64le" "el-7-s390x" "freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "solaris2-5.11-i386" "solaris2-5.11-sparc" "sles-12-s390x")
   
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
