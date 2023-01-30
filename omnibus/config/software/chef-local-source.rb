@@ -27,6 +27,8 @@ license_file "NOTICE"
 
 skip_transitive_dependency_licensing true
 
+lib_dirs ["/opt/chef/embedded/lib","/opt/chef/embedded/lib/ruby/gems/3.1.0/extensions/arm64-darwin-20/3.1.0"]
+
 # For the specific super-special version "local_source", build the source from
 # the local git checkout. This is what you'd want to occur by default if you
 # just ran omnibus build locally.
