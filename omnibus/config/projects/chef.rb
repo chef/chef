@@ -58,7 +58,7 @@ dependency "chef-local-source"
 # # FIXME?: might make sense to move dependencies below into the omnibus-software chef
 # #  definition or into a chef-complete definition added to omnibus-software.
 # dependency "gem-permissions"
-dependency "shebang-cleanup"
+dependency "shebang-shecleanup"
 # dependency "version-manifest"
 # dependency "openssl-customization"
 
