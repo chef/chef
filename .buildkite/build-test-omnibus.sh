@@ -8,84 +8,99 @@ fi
 
 FILTER="${OMNIBUS_FILTER:=*}"
 
-# platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
+platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
 
-# omnibus_build_platforms=()
-# omnibus_test_platforms=()
+esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
-# # build build array and test array based on filter
-# for platform in ${platforms[@]}; do
-#     case ${platform%:*} in
-#         $FILTER)
-#             omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
-#             omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
-#             ;;
-#     esac
-# done
+omnibus_build_platforms=()
+omnibus_test_platforms=()
 
-# # remove duplicates from build array
-# omnibus_build_platforms=($(printf "%s\n" "${omnibus_build_platforms[@]}" | sort -u | tr '\n' ' '))
+# build build array and test array based on filter
+for platform in ${platforms[@]}; do
+    case ${platform%:*} in
+        $FILTER)
+            omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
+            omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
+            ;;
+    esac
+done
 
-# for platform in ${omnibus_build_platforms[@]}; do
-#   if [[ $platform != *"windows"* ]]; then
-#     echo "- label: \":hammer_and_wrench::docker: $platform\""
-#     echo "  retry:"
-#     echo "    automatic:"
-#     echo "      limit: 1"
-#     echo "  key: build-$platform"
-#     echo "  agents:"
-#     echo "    queue: default-privileged"
-#     echo "  plugins:"
-#     echo "  - docker#v3.5.0:"
-#     echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
-#     echo "      privileged: true"
-#     echo "      propagate-environment: true"
-#     echo "      environment:"
-#     echo "        - ARTIFACTORY_PASSWORD"
-#     echo "        - ARTIFACTORY_API_KEY"
-#     echo "        - RPM_SIGNING_KEY"
-#     echo "        - CHEF_FOUNDATION_VERSION"
-#     echo "  commands:"
-#     echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
-#     echo "  timeout_in_minutes: 60"
-#   else 
-#     echo "- label: \":hammer_and_wrench::windows: $platform\""
-#     echo "  retry:"
-#     echo "    automatic:"
-#     echo "      limit: 1"
-#     echo "  key: build-$platform"
-#     echo "  agents:"
-#     echo "    queue: default-$platform-privileged"
-#     echo "  plugins:"
-#     echo "  - docker#v3.5.0:"
-#     echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
-#     echo "      shell:"
-#     echo "      - powershell"
-#     echo "      - \"-Command\""
-#     echo "      propagate-environment: true"
-#     echo "      environment:"
-#     echo "        - CHEF_FOUNDATION_VERSION"
-#     echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
-#     echo "        - ARTIFACTORY_PASSWORD"
-#     echo "        - ARTIFACTORY_API_KEY"
-#     echo "        - AWS_ACCESS_KEY_ID"
-#     echo "        - AWS_SECRET_ACCESS_KEY"
-#     echo "        - AWS_SESSION_TOKEN"
-#     echo "      volumes:"
-#     echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
-#     echo "  commands:"
-#     echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
-#     echo "  timeout_in_minutes: 120"
-#   fi
-# done
+## add esoteric platforms in chef/chef-canary
+if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
+then
+  esoteric_build_platforms=()
+  esoteric_test_platforms=()
+
+  # build build array and test array based on filter
+  for platform in ${esoteric_platforms[@]}; do
+    case ${platform%:*} in
+        $FILTER)
+            esoteric_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
+            esoteric_test_platforms[${#omnibus_test_platforms[@]}]=$platform
+            ;;
+    esac
+done
+fi
+
+# remove duplicates from build array
+omnibus_build_platforms=($(printf "%s\n" "${omnibus_build_platforms[@]}" | sort -u | tr '\n' ' '))
+
+for platform in ${omnibus_build_platforms[@]}; do
+  if [[ $platform != *"windows"* ]]; then
+    echo "- label: \":hammer_and_wrench::docker: $platform\""
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  key: build-$build_key"
+    echo "  agents:"
+    echo "    queue: default-privileged"
+    echo "  plugins:"
+    echo "  - docker#v3.5.0:"
+    echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "      privileged: true"
+    echo "      propagate-environment: true"
+    echo "      environment:"
+    echo "        - ARTIFACTORY_PASSWORD"
+    echo "        - ARTIFACTORY_API_KEY"
+    echo "        - RPM_SIGNING_KEY"
+    echo "        - CHEF_FOUNDATION_VERSION"
+    echo "  commands:"
+    echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
+    echo "  timeout_in_minutes: 60"
+  else 
+    echo "- label: \":hammer_and_wrench::windows: $platform\""
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  key: build-$platform"
+    echo "  agents:"
+    echo "    queue: default-$platform-privileged"
+    echo "  plugins:"
+    echo "  - docker#v3.5.0:"
+    echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "      shell:"
+    echo "      - powershell"
+    echo "      - \"-Command\""
+    echo "      propagate-environment: true"
+    echo "      environment:"
+    echo "        - CHEF_FOUNDATION_VERSION"
+    echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
+    echo "        - ARTIFACTORY_PASSWORD"
+    echo "        - ARTIFACTORY_API_KEY"
+    echo "        - AWS_ACCESS_KEY_ID"
+    echo "        - AWS_SECRET_ACCESS_KEY"
+    echo "        - AWS_SESSION_TOKEN"
+    echo "      volumes:"
+    echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
+    echo "  commands:"
+    echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
+    echo "  timeout_in_minutes: 120"
+  fi
+done
 
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
 
-  # esoteric_build_platforms=("aix-7.1-powerpc" "el-7-ppc64" "el-7-ppc64le" "el-7-s390x" "freebsd-12-amd64" "mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "solaris2-5.11-i386" "solaris2-5.11-sparc" "sles-12-s390x")
-
-  esoteric_build_platforms=("mac_os_x-10.15-x86_64" "mac_os_x-11-arm64" "solaris2-5.11-i386" "solaris2-5.11-sparc")
-  
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
     build_key=$(echo $platform | tr . _)
@@ -141,48 +156,44 @@ fi
 
 echo "- wait: ~"
 
-# for platform in ${omnibus_test_platforms[@]}; do
-#   if [[ $platform != *"windows"* ]]; then
-#     echo "- env:"
-#     echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
-#     echo "  label: \":mag::docker: ${platform%:*}\""
-#     echo "  retry:"
-#     echo "    automatic:"
-#     echo "      limit: 1"
-#     echo "  agents:"
-#     echo "    queue: default-privileged"
-#     echo "  plugins:"
-#     echo "  - docker#v3.5.0:"
-#     echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
-#     echo "      privileged: true"
-#     echo "      propagate-environment: true"
-#     echo "  commands:"
-#     echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
-#     echo "    - omnibus/omnibus-test.sh"
-#     echo "  timeout_in_minutes: 60"
-#   else
-#     echo "- env:"
-#     echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
-#     echo "  key: test-windows-2019"
-#     echo '  label: ":mag::windows: windows-2019"'
-#     echo "  retry:"
-#     echo "    automatic:"
-#     echo "      limit: 1"
-#     echo "  agents:"
-#     echo "    queue: default-windows-2019-privileged"
-#     echo "  commands:"
-#     echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
-#     echo "    - ./omnibus/omnibus-test.ps1"
-#     echo "  timeout_in_minutes: 120"
-#   fi
-# done
+for platform in ${omnibus_test_platforms[@]}; do
+  if [[ $platform != *"windows"* ]]; then
+    echo "- env:"
+    echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
+    echo "  label: \":mag::docker: ${platform%:*}\""
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  agents:"
+    echo "    queue: default-privileged"
+    echo "  plugins:"
+    echo "  - docker#v3.5.0:"
+    echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "      privileged: true"
+    echo "      propagate-environment: true"
+    echo "  commands:"
+    echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
+    echo "    - omnibus/omnibus-test.sh"
+    echo "  timeout_in_minutes: 60"
+  else
+    echo "- env:"
+    echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
+    echo "  key: test-windows-2019"
+    echo '  label: ":mag::windows: windows-2019"'
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  agents:"
+    echo "    queue: default-windows-2019-privileged"
+    echo "  commands:"
+    echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
+    echo "    - ./omnibus/omnibus-test.ps1"
+    echo "  timeout_in_minutes: 120"
+  fi
+done
 
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
-
-  # esoteric_test_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
-
-  esoteric_test_platforms=("mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc")
   
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)

@@ -143,11 +143,11 @@ subscriptions:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      - trigger_pipeline:omnibus/release:
-          ignore_labels:
-            - "Expeditor: Skip Omnibus"
-            - "Expeditor: Skip All"
-          only_if: built_in:bump_version
+      # - trigger_pipeline:omnibus/release:
+      #     ignore_labels:
+      #       - "Expeditor: Skip Omnibus"
+      #       - "Expeditor: Skip All"
+      #     only_if: built_in:bump_version
       - trigger_pipeline:validate/release:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
