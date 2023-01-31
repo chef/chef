@@ -25,6 +25,9 @@ for platform in ${platforms[@]}; do
     esac
 done
 
+# remove duplicates from build array
+omnibus_build_platforms=($(printf "%s\n" "${omnibus_build_platforms[@]}" | sort -u | tr '\n' ' '))
+
 ## add esoteric platforms in chef/chef-canary
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
@@ -43,7 +46,7 @@ done
 fi
 
 # remove duplicates from build array
-omnibus_build_platforms=($(printf "%s\n" "${omnibus_build_platforms[@]}" | sort -u | tr '\n' ' '))
+esoteric_build_platforms=($(printf "%s\n" "${esoteric_build_platforms[@]}" | sort -u | tr '\n' ' '))
 
 for platform in ${omnibus_build_platforms[@]}; do
   if [[ $platform != *"windows"* ]]; then
@@ -51,7 +54,7 @@ for platform in ${omnibus_build_platforms[@]}; do
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  key: build-$build_key"
+    echo "  key: build-$platform"
     echo "  agents:"
     echo "    queue: default-privileged"
     echo "  plugins:"
