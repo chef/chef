@@ -118,7 +118,9 @@ describe "chef-client" do
       tempfile.close
       @path = tempfile.path
       Chef::Config.validation_key = @path
-      create_registry_key
+      if ChefUtils.windows?
+        create_registry_key
+      end
 
       file "config/client.rb", <<~EOM
        local_mode true
