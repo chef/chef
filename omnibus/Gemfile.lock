@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: ab0afc4a658b63708f166f96576f3015376a0810
+  revision: db8acc3fa5baaee33eeefc0ae47c11d9cf0be2b5
   branch: main
   specs:
-    omnibus-software (23.1.274)
+    omnibus-software (23.1.280)
       omnibus (>= 9.0.0)
 
 GIT
@@ -34,8 +34,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.695.0)
-    aws-sdk-core (3.169.0)
+    aws-partitions (1.701.0)
+    aws-sdk-core (3.170.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -174,7 +174,7 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.3)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.0)
     contracts (0.16.1)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
@@ -299,7 +299,7 @@ GEM
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
-    multipart-post (2.2.3)
+    multipart-post (2.3.0)
     net-ftp (0.2.0)
       net-protocol
       time
