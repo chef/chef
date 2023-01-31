@@ -58,6 +58,8 @@ gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
 bin_dirs bin_dirs.concat ["#{gem_dir}/gems/*/bin/**"]
 lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
 
+dependency "chef-foundation"
+
 relative_path "chef"
 
 build do
