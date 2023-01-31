@@ -137,6 +137,8 @@ user_ulimit "tomcat" do
   maxlogins_soft_limit 5
   maxlogins_hard_limit 10
   memory_limit 1024
+  msgqueue_soft_limit 2048
+  msgqueue_hard_limit 4096
   core_limit 2048
   core_soft_limit 1024
   core_hard_limit "unlimited"
