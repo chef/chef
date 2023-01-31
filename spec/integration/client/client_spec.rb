@@ -38,12 +38,6 @@ describe "chef-client" do
   def install_certificate_in_store(client_name)
     if ChefUtils.windows?
       powershell_exec! <<~EOH
-        # if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
-        #   New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}" 
-        # }
-        # else {
-        #   New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
-        # }
         $date = (Get-Date).AddYears(5)
         $certSplat = @{
           Subject = '#{client_name}'
