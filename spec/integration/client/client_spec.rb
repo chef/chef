@@ -38,12 +38,25 @@ describe "chef-client" do
   def install_certificate_in_store(client_name)
     if ChefUtils.windows?
       powershell_exec! <<~EOH
-        if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
-          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}"
+        # if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
+        #   New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}" 
+        # }
+        # else {
+        #   New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
+        # }
+        $date = (Get-Date).AddYears(5)
+        $certSplat = @{
+          Subject = '#{client_name}'
+          FriendlyName = '#{client_name}'
+          KeyExportPolicy = 'Exportable'
+          KeyUsage = @('KeyEncipherment','DigitalSignature')
+          CertStoreLocation = 'Cert:\\LocalMachine\\My'
+          TextExtension = @("2.5.29.37={text}1.3.6.1.5.5.7.3.2,1.3.6.1.5.5.7.3.1")
+        };
+        if ([string]$date -as [DateTime]) {
+          $certSplat.add('NotAfter', $date)
         }
-        else {
-          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
-        }
+        New-SelfSignedCertificate @certSplat
       EOH
     end
   end
@@ -111,6 +124,7 @@ describe "chef-client" do
       tempfile.close
       @path = tempfile.path
       Chef::Config.validation_key = @path
+      create_registry_key
 
       file "config/client.rb", <<~EOM
        local_mode true
@@ -208,7 +222,7 @@ describe "chef-client" do
 
         after do
           remove_certificate_from_store
-          remove_registry_key
+          # remove_registry_key
         end
 
         it "should verify that the cert is loaded in the LocalMachine\\My" do
