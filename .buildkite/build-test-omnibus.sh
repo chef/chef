@@ -43,10 +43,10 @@ then
             ;;
     esac
 done
-fi
 
 # remove duplicates from build array
 esoteric_build_platforms=($(printf "%s\n" "${esoteric_build_platforms[@]}" | sort -u | tr '\n' ' '))
+fi
 
 for platform in ${omnibus_build_platforms[@]}; do
   if [[ $platform != *"windows"* ]]; then
