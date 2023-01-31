@@ -35,8 +35,8 @@ then
   for platform in ${esoteric_platforms[@]}; do
     case ${platform%:*} in
         $FILTER)
-            esoteric_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
-            esoteric_test_platforms[${#omnibus_test_platforms[@]}]=$platform
+            esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
+            esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
             ;;
     esac
 done
