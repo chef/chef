@@ -110,17 +110,6 @@ class Chef
         self.class.decrypt_pfx_pass_with_vector
       end
 
-      def decrypt_pfx_pass_with_password
-        self.decrypt_pfx_pass_with_password
-      end
-
-      def migrate_pass_to_use_vector
-        self.migrate_pass_to_use_vector
-      end
-
-      def create_and_store_new_password
-        self.create_and_store_new_password
-      end
       # Detects if a private key exists in a certificate repository like Keychain (macOS) or Certificate Store (Windows)
       #
       # @param client_name - we're using the node name to store and retrieve any keys
@@ -183,6 +172,7 @@ class Chef
         if password_blob.nil? || password_blob.empty?
           raise Chef::Exceptions::Win32RegKeyMissing
         end
+
         # Did someone have just the password stored in the registry?
         raw_data = password_blob.map { |x| x[:data] }
         vector = raw_data[2]
@@ -285,7 +275,7 @@ class Chef
         values.each do |i|
           @win32registry.set_value(path, i)
         end
-        return password
+        password
       end
 
       def self.retrieve_certificate_key(client_name)
