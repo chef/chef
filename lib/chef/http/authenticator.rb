@@ -184,7 +184,7 @@ class Chef
           if !!decrypted_password
             migrate_pass_to_use_vector
           else
-            Chef::Log.error("Failed to retreive certificate password")
+            Chef::Log.error("Failed to retrieve certificate password")
           end
         end
         decrypted_password
