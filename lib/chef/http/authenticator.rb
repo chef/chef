@@ -106,10 +106,21 @@ class Chef
         self.class.encrypt_pfx_pass
       end
 
-      def decrypt_pfx_pass
-        self.class.decrypt_pfx_pass
+      def decrypt_pfx_pass_with_vector
+        self.class.decrypt_pfx_pass_with_vector
       end
 
+      def decrypt_pfx_pass_with_password
+        self.decrypt_pfx_pass_with_password
+      end
+
+      def migrate_pass_to_use_vector
+        self.migrate_pass_to_use_vector
+      end
+
+      def create_and_store_new_password
+        self.create_and_store_new_password
+      end
       # Detects if a private key exists in a certificate repository like Keychain (macOS) or Certificate Store (Windows)
       #
       # @param client_name - we're using the node name to store and retrieve any keys
@@ -167,14 +178,26 @@ class Chef
         @win32registry = Chef::Win32::Registry.new
         path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
         # does the registry key even exist?
+        # password_blob should be an array of hashes
         password_blob = @win32registry.get_values(path)
         if password_blob.nil? || password_blob.empty?
           raise Chef::Exceptions::Win32RegKeyMissing
         end
-
-        # if output from the decrypt_pfx_pass is not null, it's an array of the password, key and iv - in that order
-        password = decrypt_pfx_pass(password_blob)
-        password
+        # Did someone have just the password stored in the registry?
+        raw_data = password_blob.map { |x| x[:data] }
+        vector = raw_data[2]
+        if !!vector
+          decrypted_password = decrypt_pfx_pass_with_vector(password_blob)
+        else
+          Chef::Log.warn("Attempting to decrypt with only password")
+          decrypted_password = decrypt_pfx_pass_with_password(password_blob)
+          if !!decrypted_password
+            migrate_pass_to_use_vector
+          else
+            Chef::Log.error("Failed to retreive certificate password")
+          end
+        end
+        decrypted_password
       rescue Chef::Exceptions::Win32RegKeyMissing
         # if we don't have a password, log that and generate one
         Chef::Log.warn "Authentication Hive and values not present in registry, creating them now"
@@ -182,22 +205,7 @@ class Chef
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
-        require "securerandom" unless defined?(SecureRandom)
-        size = 14
-        password = SecureRandom.alphanumeric(size)
-        Chef::Log.warn("New Password is : #{password}")
-        encrypted_blob = encrypt_pfx_pass(password)
-        encrypted_password = encrypted_blob[0]
-        key = encrypted_blob[1]
-        vector = encrypted_blob[2]
-        values = [
-                  { name: "PfxPass", type: :string, data: encrypted_password },
-                  { name: "PfxKey", type: :string, data: key },
-                  { name: "PfxIV", type: :string, data: vector },
-                ]
-        values.each do |i|
-          @win32registry.set_value(new_path, i)
-        end
+        password = create_and_store_new_password
         password
       end
 
@@ -208,7 +216,7 @@ class Chef
           $iv_temp = [System.Convert]::ToBase64String($AES.IV)
           $encryptor = $AES.CreateEncryptor()
           [System.Byte[]]$Bytes =  [System.Text.Encoding]::Unicode.GetBytes("#{password}")
-          $EncryptedBytes = $encryptor.TransformFinalBlock($Bytes,0,$bytes.Length)
+          $EncryptedBytes = $encryptor.TransformFinalBlock($Bytes,0,$Bytes.Length)
           $EncryptedBase64String = [System.Convert]::ToBase64String($EncryptedBytes)
           # create array of encrypted pass, key, iv
           $password_blob = @($EncryptedBase64String, $key_temp, $iv_temp)
@@ -217,7 +225,7 @@ class Chef
         powershell_exec!(powershell_code).result
       end
 
-      def self.decrypt_pfx_pass(password_blob)
+      def self.decrypt_pfx_pass_with_vector(password_blob)
         raw_data = password_blob.map { |x| x[:data] }
         password = raw_data[0]
         key = raw_data[1]
@@ -236,6 +244,48 @@ class Chef
           return $DecryptedString
         CODE
         results = powershell_exec!(powershell_code).result
+      end
+
+      def self.decrypt_pfx_pass_with_password(password_blob)
+        password = ""
+        password_blob.each do |secret|
+          password = secret[:data]
+        end
+        powershell_code = <<~CODE
+          $secure_string = "#{password}" | ConvertTo-SecureString
+          $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
+          return $string
+        CODE
+        powershell_exec!(powershell_code).result
+      end
+
+      def self.migrate_pass_to_use_vector
+        powershell_code = <<~CODE
+          Remove-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfXPass"
+        CODE
+        powershell_exec!(powershell_code)
+        create_and_store_new_password
+      end
+
+      def self.create_and_store_new_password
+        @win32registry = Chef::Win32::Registry.new
+        path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        require "securerandom" unless defined?(SecureRandom)
+        size = 14
+        password = SecureRandom.alphanumeric(size)
+        encrypted_blob = encrypt_pfx_pass(password)
+        encrypted_password = encrypted_blob[0]
+        key = encrypted_blob[1]
+        vector = encrypted_blob[2]
+        values = [
+                  { name: "PfxPass", type: :string, data: encrypted_password },
+                  { name: "PfxKey", type: :string, data: key },
+                  { name: "PfxIV", type: :string, data: vector },
+                ]
+        values.each do |i|
+          @win32registry.set_value(path, i)
+        end
+        return password
       end
 
       def self.retrieve_certificate_key(client_name)
