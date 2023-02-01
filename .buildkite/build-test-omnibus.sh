@@ -126,6 +126,10 @@ then
     echo "    IGNORE_CACHE: true"
     echo "  key: build-$build_key"
     echo "  label: \":hammer_and_wrench: $platform\""
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  timeout_in_minutes: 60"
     echo "  agents:"
     echo "    queue: omnibus-$platform"
     if [[ $platform == mac_os_x* ]]
@@ -164,8 +168,12 @@ then
     echo "      notarize-macos-package: chef"
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     echo "  depends_on:"
-    echo "  - build-mac_os_x-10_15-x86_64"
-    echo "  - build-mac_os_x-11-arm64"
+    for platform in ${esoteric_build_platforms[@]}; do
+      if [[ $platform =~ mac_os_x ]]
+      then
+        echo "  - $platform"
+      fi
+    done
   fi
 fi
 
@@ -226,6 +234,10 @@ then
     echo "    OMNIBUS_BUILDER_KEY: build-${build_key}"
     echo "  key: test-${test_key}"
     echo "  label: \":mag: ${platform%:*}\""
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  timeout_in_minutes: 90"
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
     if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
