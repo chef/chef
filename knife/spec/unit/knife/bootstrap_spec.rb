@@ -715,7 +715,7 @@ describe Chef::Knife::Bootstrap do
         end
       end
 
-      context "and invalid proctocols are still revused" do
+      context "and invalid proctocols are still refused" do
         let(:connection_protocol) { "rfc6216" }
         it "accepts the transport as protocol" do
           expect(knife.ui).to receive(:error).with(/Unsupported protocol '#{connection_protocol}'/)

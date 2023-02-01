@@ -54,7 +54,7 @@ class Chef
       option :connection_protocol,
         short: "-o PROTOCOL",
         long: "--connection-protocol PROTOCOL",
-        description: "The protocol to use to connect to the target node."
+        description: "The protocol to use to connect to the target node. Examples: ssh, winrm"
 
       option :max_wait,
         short: "-W SECONDS",
