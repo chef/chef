@@ -218,7 +218,6 @@ describe "chef-client" do
 
         after do
           remove_certificate_from_store
-          # remove_registry_key
         end
 
         it "should verify that the cert is loaded in the LocalMachine\\My" do
