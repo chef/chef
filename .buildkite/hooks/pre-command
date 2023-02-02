@@ -19,7 +19,10 @@ echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 if [ $BUILDKITE_STEP_KEY == "build-windows-2019" ] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/core-default-windows-2019-privileged-$BUILDKITE_ORGANIZATION_SLUG-Role)
+  ROLE_RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/info)
+  ROLE_ARN=$(echo $ROLE_RESPONSE | jq -r '.InstanceProfileArn')
+  ROLE="${ROLE_ARN#*/}"
+  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
   AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
   export AWS_ACCESS_KEY_ID
   AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
