@@ -177,8 +177,7 @@ then
   fi
 fi
 
-
-if [ $BUILDKITE_PIPELINE_SLUG != "chef-chef-main-validate-release" ]
+if [ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]
 then
   echo "- wait: ~"
   echo "- key: create-build-record"
