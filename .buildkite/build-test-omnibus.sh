@@ -177,6 +177,17 @@ then
   fi
 fi
 
+
+if [ $BUILDKITE_PIPELINE_SLUG != "chef-chef-main-validate-release" ]
+then
+  echo "- wait: ~"
+  echo "- key: create-build-record"
+  echo "  label: \":artifactory: Create Build Record\""
+  echo "  plugins:"
+  echo "  - chef/omnibus#v0.2.83:"
+  echo "    create-build-record: chef"
+fi
+
 echo "- wait: ~"
 
 if [[ ! -z "${omnibus_test_platforms:-}" ]]
