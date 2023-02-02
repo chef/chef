@@ -39,7 +39,7 @@ describe "chef-client" do
     if ChefUtils.windows?
       powershell_exec! <<~EOH
         if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
-          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}" 
+          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}"
         }
         else {
           New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
