@@ -275,3 +275,13 @@ then
     fi
   done
 fi
+
+if [ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]
+then
+  echo "- wait: ~"
+  echo "- key: promote"
+  echo "  label: \":artifactory: Promote to Current\""
+  echo "  plugins:"
+  echo "  - chef/omnibus#v0.2.83:"
+  echo "    promote: chef"
+fi
