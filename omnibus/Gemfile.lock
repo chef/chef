@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: c66e97c211a60296e58da100d79d048974e13904
-  branch: main
+  revision: 06528967316af6dfae9b32074f36068f19b3580c
+  branch: justingruber/omnibus-metadata
   specs:
     omnibus (9.0.14)
       aws-sdk-s3 (~> 1.116.0)
