@@ -829,7 +829,7 @@ class Chef
       else
         win32certstore = ::Win32::Certstore.open("MY")
       end
-      store.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
+      win32certstore.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
       tempfile.unlink
     end
 
