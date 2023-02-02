@@ -1,4 +1,4 @@
-if [ -z $BUILDKITE_BUILD_CREATOR_TEAMS ]
+if [[ -z "${BUILDKITE_BUILD_CREATOR_TEAMS:-}" ]]
 then
   echo "- block: Build & Test Omnibus Packages"
   echo "  prompt: Continue to run omnibus package build and tests for applicable platforms?"
