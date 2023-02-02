@@ -51,8 +51,9 @@ end
 
 # In order to pass notarization we need to sign any binaries and libraries included in the package.
 # This makes sure we include and bins and libs that are brought in by gems.
-semver = Gem::Version.create("3.1.2").segments
-ruby_mmv = "#{semver[0..1].join(".")}.0"
+ruby_version = `#{install_dir}/embedded/bin/ruby -v`
+ruby_version = ruby_version.split(" ")[1][0..2]
+ruby_mmv = "#{ruby_version}.0"
 ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"
 gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
 bin_dirs bin_dirs.concat ["#{gem_dir}/gems/*/bin/**"]
