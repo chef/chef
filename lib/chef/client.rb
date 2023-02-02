@@ -675,8 +675,15 @@ class Chef
     # In the brave new world of No Certs On Disk, we want to put the pem file into Keychain or the Certstore
     # But is it already there?
     def check_certstore_for_key(cert_name)
+      # certstore 65536 == CurrentUser
+      # certstore 131072 == LocalMachine
+      # Reference: https://github.com/chef/win32-certstore/blob/main/lib/win32/certstore/mixin/crypto.rb#L90
       require "win32-certstore"
-      win32certstore = ::Win32::Certstore.open("MY")
+      if Chef::Config[:auth_key_registry_type] == "user"
+        win32certstore = ::Win32::Certstore.open("MY", store_location: 65536)
+      else
+        win32certstore = ::Win32::Certstore.open("MY")
+      end
       win32certstore.search("#{cert_name}")
     end
 
@@ -783,8 +790,6 @@ class Chef
       require "time" unless defined?(Time)
       autoload :URI, "uri"
 
-      # KeyMigration.instance.key_migrated = true
-
       node = Chef::Config[:node_name]
       d = Time.now
       if d.month == 10 || d.month == 11 || d.month == 12
@@ -818,8 +823,12 @@ class Chef
       require "win32-certstore"
       tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
       File.open(tempfile, "wb") { |f| f.print new_pfx.to_der }
-
-      store = ::Win32::Certstore.open("MY")
+      # Need to determine where to store the key
+      if Chef::Config[:auth_key_registry_type] == "user"
+        win32certstore = ::Win32::Certstore.open("MY", store_location: 65536)
+      else
+        win32certstore = ::Win32::Certstore.open("MY")
+      end
       store.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
       tempfile.unlink
     end

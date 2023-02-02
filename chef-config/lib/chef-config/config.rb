@@ -783,8 +783,8 @@ module ChefConfig
     # this node, we need a means to separate the private keys of each user. Alternately, if an Admin
     # configures the node and then relies on a system account to run chef afterward, we need a second
     # method for that. Setting this in the chef.rb file with a "user" flag will cause chef to create
-    # and manage separate private keys
-    default :auth_key_registry_type, "machine"
+    # and manage separate private keys. We look for this flag to be set to "user" to manage distinct users keys with
+    default :auth_key_registry_type, nil
 
     # When registering the client, should we allow the client key location to
     # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem

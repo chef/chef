@@ -124,8 +124,9 @@ class Chef
       end
 
       def self.check_certstore_for_key(client_name)
+        Chef::Config[:auth_key_registry_type] == "user" ? store = "CurrentUser" : store = "LocalMachine"
         powershell_code = <<~CODE
-          $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "chef-#{client_name}" } -ErrorAction Stop
+          $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse -Force  | Where-Object { $_.Subject -Match "chef-#{client_name}" } -ErrorAction Stop
           if (($cert.HasPrivateKey -eq $true) -and ($cert.PrivateKey.Key.ExportPolicy -ne "NonExportable")) {
             return $true
           }
@@ -315,10 +316,11 @@ class Chef
       end
 
       def self.get_the_key_ps(client_name, password)
+        Chef::Config[:auth_key_registry_type] == "user" ? store = "CurrentUser" : store = "LocalMachine"
         powershell_code = <<~CODE
             Try {
               $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
-              $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
+              $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
               $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
               Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
             }
@@ -329,8 +331,9 @@ class Chef
       end
 
       def self.delete_old_key_ps(client_name)
+        Chef::Config[:auth_key_registry_type] == "user" ? store = "CurrentUser" : store = "LocalMachine"
         powershell_code = <<~CODE
-          Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } | Remove-Item -ErrorAction Stop;
+          Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } | Remove-Item -ErrorAction Stop;
         CODE
       end
 
