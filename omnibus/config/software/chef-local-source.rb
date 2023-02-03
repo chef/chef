@@ -25,7 +25,7 @@ license_file "LICENSE"
 # So that Open4/deep_merge/diff-lcs disclaimers are present in Omnibus LICENSES tree.
 license_file "NOTICE"
 
-skip_transitive_dependency_licensing true
+skip_transitive_dependency_licensing false
 
 # For the specific super-special version "local_source", build the source from
 # the local git checkout. This is what you'd want to occur by default if you
