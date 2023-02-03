@@ -8,17 +8,19 @@ license_file "NOTICE"
 
 skip_transitive_dependency_licensing true
 
-if windows?
-  source path: "c:/opscode/chef"
-else
-  source path: "/opt/chef"
-end
+source_path = if windows?
+                "c:/opscode/chef"
+              else
+                 "/opt/chef"
+              end
+
+source path: source_path
 
 relative_path "chef-foundation"
 
 # In order to pass notarization we need to sign any binaries and libraries included in the package.
 # This makes sure we include and bins and libs that are brought in by gems.
-ruby_version = `#{project_dir}/embedded/bin/ruby -v`
+ruby_version = `#{source_path}/embedded/bin/ruby -v`
 ruby_version = ruby_version.split(" ")[1][0..2]
 ruby_mmv = "#{ruby_version}.0"
 ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"

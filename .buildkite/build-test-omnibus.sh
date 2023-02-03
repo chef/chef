@@ -171,7 +171,7 @@ then
     for platform in ${esoteric_build_platforms[@]}; do
       if [[ $platform =~ mac_os_x ]]
       then
-        echo "  - $platform"
+        echo "  - $(echo $platform | tr . _)"
       fi
     done
   fi
