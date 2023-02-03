@@ -8,15 +8,17 @@ fi
 
 FILTER="${OMNIBUS_FILTER:=*}"
 
-platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
+# array of all container platforms in the format test-platform:build-platform
+container_platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
 
+# array of all esoteric platforms in the format test-platform:build-platform
 esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
 
 # build build array and test array based on filter
-for platform in ${platforms[@]}; do
+for platform in ${container_platforms[@]}; do
     case ${platform%:*} in
         $FILTER)
             omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
