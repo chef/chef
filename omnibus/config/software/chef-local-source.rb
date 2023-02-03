@@ -49,16 +49,6 @@ if version != "local_source"
   source git: "https://github.com/chef/chef.git"
 end
 
-# In order to pass notarization we need to sign any binaries and libraries included in the package.
-# This makes sure we include and bins and libs that are brought in by gems.
-ruby_version = `#{install_dir}/embedded/bin/ruby -v`
-ruby_version = ruby_version.split(" ")[1][0..2]
-ruby_mmv = "#{ruby_version}.0"
-ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"
-gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
-bin_dirs bin_dirs.concat ["#{gem_dir}/gems/*/bin/**"]
-lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems/extensions/**", "#{gem_dir}/bundler/gems/*", "#{gem_dir}/bundler/gems/*/lib/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
-
 dependency "chef-foundation"
 
 relative_path "chef"
