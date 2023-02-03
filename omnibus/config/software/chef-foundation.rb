@@ -8,11 +8,11 @@ license_file "NOTICE"
 
 skip_transitive_dependency_licensing true
 
-source_path = if windows?
-                "c:/opscode/chef"
-              else
-                 "/opt/chef"
-              end
+if windows?
+  source path: "c:/opscode/chef"
+else
+  source path: "/opt/chef"
+end
 
 relative_path "chef-foundation"
 
