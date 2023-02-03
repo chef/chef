@@ -6,8 +6,6 @@ license_file "LICENSE"
 # So that Open4/deep_merge/diff-lcs disclaimers are present in Omnibus LICENSES tree.
 license_file "NOTICE"
 
-skip_transitive_dependency_licensing true
-
 source_path = if windows?
                 "c:/opscode/chef"
               else
