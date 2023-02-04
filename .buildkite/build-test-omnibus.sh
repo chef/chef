@@ -131,7 +131,7 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  timeout_in_minutes: 60"
+    echo "  timeout_in_minutes: 120"
     echo "  agents:"
     echo "    queue: omnibus-$platform"
     if [[ $platform == mac_os_x* ]]
