@@ -778,6 +778,16 @@ module ChefConfig
     # Then the public key from the new cert is pushed to Chef Server for authentication
     default :migrate_key_to_keystore, false
 
+    # When we move certs into the certstore, we need to manage multi-user scenarios.
+    # This flag is used in conjunction with 'migrate_key_to_keystore'. If 2 users, Bob and Terri, are using
+    # this node, we need a means to separate the private keys of each user. Alternately, if an Admin
+    # configures the node and then relies on a system account to run chef afterward, we need a second
+    # method for that. Setting this in the client.rb file with a "user" flag will cause chef to create
+    # and manage separate private keys. We look for this flag to be set to "user" to manage distinct users keys with,
+    # However, if that key is set to anything else, we assume that keys are to be stored in the LocalMachine store.
+    # Leaving this key omitted has the same effect as setting it to anything other than "user"
+    default :auth_key_registry_type, nil
+
     # When registering the client, should we allow the client key location to
     # be a symlink?  eg: /etc/chef/client.pem -> /etc/chef/prod-client.pem
     # If the path of the key goes through a directory like /tmp this should
