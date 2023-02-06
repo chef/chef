@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: ab0afc4a658b63708f166f96576f3015376a0810
+  revision: db8acc3fa5baaee33eeefc0ae47c11d9cf0be2b5
   branch: main
   specs:
-    omnibus-software (23.1.274)
+    omnibus-software (23.1.280)
       omnibus (>= 9.0.0)
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 52b6d2e08bc2c90592b99da41a1728fb1629f673
+  revision: c66e97c211a60296e58da100d79d048974e13904
   branch: main
   specs:
-    omnibus (9.0.12)
+    omnibus (9.0.14)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -34,8 +34,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.695.0)
-    aws-sdk-core (3.169.0)
+    aws-partitions (1.704.0)
+    aws-sdk-core (3.170.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -47,7 +47,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.67.0)
+    aws-sdk-secretsmanager (1.72.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.2)
@@ -170,13 +170,13 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.3)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.0)
     contracts (0.16.1)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     diff-lcs (1.5.0)
     ed25519 (1.3.0)
-    erubi (1.11.0)
+    erubi (1.12.0)
     erubis (2.7.0)
     faraday (1.4.3)
       faraday-em_http (~> 1.0)
@@ -240,7 +240,7 @@ GEM
     iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
-    kitchen-vagrant (1.12.1)
+    kitchen-vagrant (1.13.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -248,7 +248,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.3)
+    license_scout (1.3.4)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -266,7 +266,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-install (3.12.20)
+    mixlib-install (3.12.27)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -286,7 +286,7 @@ GEM
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
-    multipart-post (2.2.3)
+    multipart-post (2.3.0)
     net-scp (4.0.0)
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0.rc1)
@@ -323,11 +323,11 @@ GEM
       zhexdump (>= 0.0.2)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.14.1)
+    pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (5.0.1)
-    rack (2.2.4)
+    rack (2.2.6.2)
     rainbow (3.1.1)
     retryable (3.0.5)
     rexml (3.2.5)
@@ -366,7 +366,7 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    test-kitchen (3.4.0)
+    test-kitchen (3.5.0)
       bcrypt_pbkdf (~> 1.0)
       chef-utils (>= 16.4.35)
       ed25519 (~> 1.2)
@@ -413,12 +413,12 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unicode-display_width (2.3.0)
+    unicode-display_width (2.4.2)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webrick (1.7.0)
+    webrick (1.8.1)
     win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)

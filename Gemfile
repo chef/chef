@@ -42,15 +42,15 @@ group(:omnibus_package) do
   gem "chef-vault"
 end
 
-# Why are we installing debugging tools? DENIED.... commenting out because of version conflicts
-# group(:omnibus_package, :pry) do
-#   # Locked because pry-byebug is broken with 13+
-#   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
-#   gem "pry", "= 0.13.0"
-#   # byebug does not install on freebsd on ruby 3.0
-#   gem "pry-byebug" unless RUBY_PLATFORM =~ /freebsd/i
-#   gem "pry-stack_explorer"
-# end
+group(:omnibus_package, :pry) do
+  # Locked because pry-byebug is broken with 13+
+  # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
+  gem "pry", "= 0.13.0"
+  # byebug does not install on freebsd on ruby 3.0
+  # This is the last version compatible for ruby2.6, which is used at linting step
+  gem "pry-byebug", "~> 3.9.0" unless RUBY_PLATFORM =~ /freebsd/i
+  gem "pry-stack_explorer"
+end
 
 # Everything except AIX
 group(:ruby_prof) do
