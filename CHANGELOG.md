@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.27 -->
-## [v16.18.27](https://github.com/chef/chef/tree/v16.18.27) (2023-01-10)
+<!-- latest_release 16.18.28 -->
+## [v16.18.28](https://github.com/chef/chef/tree/v16.18.28) (2023-02-06)
 
 #### Merged Pull Requests
-- Bugfix/backport chef16 checksum validation [#13322](https://github.com/chef/chef/pull/13322) ([decoyjoe](https://github.com/decoyjoe))
+- [Chef-16]Update dependencies for chef and chef/omnibus [#13550](https://github.com/chef/chef/pull/13550) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-16]Update dependencies for chef and chef/omnibus [#13550](https://github.com/chef/chef/pull/13550) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.28 -->
 - Bugfix/backport chef16 checksum validation [#13322](https://github.com/chef/chef/pull/13322) ([decoyjoe](https://github.com/decoyjoe)) <!-- 16.18.27 -->
 - [chef-16] INFC-303 - Backport changes from v18 to v16 for documentation [#13270](https://github.com/chef/chef/pull/13270) ([Stromweld](https://github.com/Stromweld)) <!-- 16.18.26 -->
 - backport to 16: flush package cache after registering or unregistering with rhsm_register [#12908](https://github.com/chef/chef/pull/12908) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.18.25 -->
