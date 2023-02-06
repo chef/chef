@@ -104,12 +104,12 @@ function Invoke-Build {
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
         $install_attempt = 0
-        do {
-            Start-Sleep -Seconds 5
-            $install_attempt++
-            Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+        bundle exec rake install --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        if (-not $?) {
+            Write-Warning " -- That didn't work. Let's try again."
+            bundle exec rake install --trace=stdout # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
+        }
 
     } finally {
         Pop-Location

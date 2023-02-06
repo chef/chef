@@ -50,6 +50,12 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
         enable=1
         gpgcheck=0
+        [chef-yum-empty]
+        name=Chef DNF spec empty repo
+        baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo-empty
+        enable=1
+        gpgcheck=0
+
       EOF
     end
     shell_out!("rpm -qa --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep chef_rpm | xargs -r rpm -e")
@@ -631,6 +637,12 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         yum_package.run_action(:install)
         expect(yum_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
+      end
+
+      it "should work to disable a repo" do
+        flush_cache
+        yum_package.options("--disablerepo=chef-yum-localtesting --enablerepo=chef-yum-empty")
+        expect { yum_package.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
       end
 
       it "when an idempotent install action is run, does not leave repos disabled" do
