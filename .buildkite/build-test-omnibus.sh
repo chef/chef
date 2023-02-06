@@ -164,7 +164,7 @@ then
     echo "  agents:"
     echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.81:"
+    echo "  - chef/omnibus#v0.2.83:"
     echo "      config: omnibus/omnibus.rb"
     echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
     echo "      notarize-macos-package: chef"
@@ -258,7 +258,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.81:"
+    echo "  - chef/omnibus#v0.2.83:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
