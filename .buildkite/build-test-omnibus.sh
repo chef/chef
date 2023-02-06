@@ -50,12 +50,16 @@ then
   done
 
   # remove duplicates from build array
+  # using shell paramater expansion this checks to make sure the esoteric_build_platforms array isnt empty if OMNIBUS_FILTER is only container platforms 
+  # prevents esoteric_build_platforms unbound variable error 
   if [[ ! -z "${esoteric_build_platforms:-}" ]]
   then
     esoteric_build_platforms=($(printf "%s\n" "${esoteric_build_platforms[@]}" | sort -u | tr '\n' ' '))
   fi
 fi
 
+# using shell paramater expansion this checks to make sure the omniubs_build_platforms array isnt empty if OMNIBUS_FILTER is only esoteric platforms 
+# prevents omnibus_build_platforms unbound variable error 
 if [[ ! -z "${omnibus_build_platforms:-}" ]]
 then
   for platform in ${omnibus_build_platforms[@]}; do
@@ -191,6 +195,8 @@ fi
 
 echo "- wait: ~"
 
+# using shell paramater expansion this checks to make sure the omnibus_test_platforms array isnt empty if OMNIBUS_FILTER is only esoteric platforms 
+# prevents omnibus_test_platforms unbound variable error 
 if [[ ! -z "${omnibus_test_platforms:-}" ]]
 then
   for platform in ${omnibus_test_platforms[@]}; do
@@ -230,6 +236,8 @@ then
   done
 fi
 
+# using shell paramater expansion this checks to make sure the esoteric_test_platforms array isnt empty if OMNIBUS_FILTER is only container platforms
+# prevents esoteric_test_platforms unbound variable error 
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ] && [[ ! -z "${esoteric_test_platforms:-}" ]]
 then
   
