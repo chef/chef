@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.12 -->
-## [v18.1.12](https://github.com/chef/chef/tree/v18.1.12) (2023-02-04)
+<!-- latest_release 18.1.13 -->
+## [v18.1.13](https://github.com/chef/chef/tree/v18.1.13) (2023-02-07)
 
 #### Merged Pull Requests
-- Updating gems [#13551](https://github.com/chef/chef/pull/13551) ([johnmccrae](https://github.com/johnmccrae))
+- add esoteric platforms to validate adhoc/release pipelines [#13546](https://github.com/chef/chef/pull/13546) ([evanahlberg](https://github.com/evanahlberg))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- add esoteric platforms to validate adhoc/release pipelines [#13546](https://github.com/chef/chef/pull/13546) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.13 -->
 - Updating gems [#13551](https://github.com/chef/chef/pull/13551) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.1.12 -->
 - Fix for missing S3 region if run with EC2 instance profile [#13525](https://github.com/chef/chef/pull/13525) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 18.1.11 -->
 - Bumping gems to pull in a valid license_scout version [#13547](https://github.com/chef/chef/pull/13547) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.1.10 -->
