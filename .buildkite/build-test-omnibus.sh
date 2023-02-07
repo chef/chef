@@ -190,7 +190,7 @@ then
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
   echo "  - chef/omnibus#v0.2.83:"
-  echo "    create-build-record: chef"
+  echo "      create-build-record: chef"
 fi
 
 echo "- wait: ~"
@@ -293,5 +293,5 @@ then
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
   echo "  - chef/omnibus#v0.2.83:"
-  echo "    promote: chef"
+  echo "      promote: chef"
 fi
