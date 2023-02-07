@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# Perform necessary universal-package setup steps
+# after package is installed.
+#
+
+PROGNAME=`basename $0`
+chef_client_version="18.0.185"
+
+error_exit()
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+if [ `uname -m` == 'x86_64' ]
+then
+  installer -pkg /opt/universal-package/chef-${chef_client_version}-1.x86_64.pkg -target LocalSystem -verbose
+elif [ `uname -m` == 'arm64' ]
+then
+  installer -pkg /opt/universal-package/chef-${chef_client_version}-1.arm64.pkg -target LocalSystem -verbose
+fi
+
+echo "Thank you for installing universal-package!"
+
+exit 0

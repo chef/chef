@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Perform necessary universal-package removal steps
+# after package is uninstalled.
+#
+
+echo "universal-package has been uninstalled!"
+
+exit 0
