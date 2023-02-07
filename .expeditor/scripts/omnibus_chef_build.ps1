@@ -31,9 +31,11 @@ $env:ARTIFACTORY_USERNAME="buildkite"
 Write-Output "--- Install Chef Foundation"
 . { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
 
+$env:PROJECT_NAME="chef"
+$env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yaml"
 $env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
 $env:HOMEDRIVE = "C:"
-$env:HOMEPATH = "\buildkite-agent"
+$env:HOMEPATH = "\Users\ContainerAdministrator"
 $env:OMNIBUS_TOOLCHAIN_INSTALL_DIR = "C:\opscode\omnibus-toolchain"
 $env:SSL_CERT_FILE = "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\ssl\certs\cacert.pem"
 $env:MSYS2_INSTALL_DIR = "C:\msys64"
@@ -59,8 +61,11 @@ bundle exec omnibus build chef -l internal --override append_timestamp:false
 Write-Output "--- Uploading package to BuildKite"
 C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
 
-# if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
-# {
-#   Write-Output "--- Publishing package to Artifactory"
-#   bundle exec ruby "${SCRIPT_DIR}/omnibus_chef_publish.rb"
-# }
+if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
+{
+  Write-Output "--- Setting up Gem API Key"
+  $env:GEM_HOST_API_KEY = "Basic ${env:ARTIFACTORY_API_KEY}"
+
+  Write-Output "--- Publishing package to Artifactory"
+  bundle exec ruby "${ScriptDir}/omnibus_chef_publish.rb"
+}

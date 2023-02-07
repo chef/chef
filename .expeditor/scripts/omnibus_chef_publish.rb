@@ -87,7 +87,7 @@ if (project_name == "chef") && (ENV['ADHOC'] != 'true')
     # This mimics the behavior of the gem command line, and is a public api:
     # http://docs.seattlerb.org/rubygems/Gem/Command.html
     gem_pusher = Gem::Commands::PushCommand.new
-    gem_pusher.handle_options [gem_path, '--host', artifactory_endpoint, '--key', 'artifactory_api_key', '--verbose']
+    gem_pusher.handle_options [gem_path, '--host', artifactory_endpoint, '--verbose']
     gem_pusher.execute
   end
 end
