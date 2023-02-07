@@ -10,7 +10,5 @@
 INSTALLER_DIR=/opt/chef
 if [ -e $INSTALLER_DIR ]; then
   echo "removing $INSTALLER_DIR..."
-  # ignore errors which must be EBUSY issues, this may crate some litter, which may
-  # be unavoidable
-  rm -rf $INSTALLER_DIR || true
+  rm -rf $INSTALLER_DIR || exit 1
 fi
