@@ -10,5 +10,17 @@
 INSTALLER_DIR=/opt/chef
 if [ -e $INSTALLER_DIR ]; then
   echo "removing $INSTALLER_DIR..."
-  rm -rf $INSTALLER_DIR || exit 1
+
+  # have to do this dance of moving /opt/chef to a tmp dir since files may be in use
+  tmp_dir="/opt/.chef.$$"
+  if [ ! -z $CHEF_UPGRADE_TEMP_DIR ]; then
+    tmp_dir="$CHEF_UPGRADE_TEMP_DIR/chef.$$"
+  fi
+  # if we can't create the tmp_dir then fail hard to prevent any possible security hole
+  (umask 077 && mkdir -p $tmp_dir) || exit 1
+  # now we can clean up the tmp_dir we created safely
+  mv $INSTALLER_DIR $tmp_dir
+  # ignore errors which must be EBUSY issues, this may crate some litter, which may
+  # be unavoidable
+  rm -rf $tmp_dir || true
 fi
