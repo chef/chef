@@ -17,6 +17,7 @@ switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
     "Integration"   {[string[]]$RakeTest = "spec:integration"; break}
     "Functional"    {[string[]]$RakeTest = "spec:functional"; break}
+    "Chocolatey"    {[string[]]$RakeTest = "chocolatey_package_spec"; break}
     default         {throw "TestType $TestType not valid"}
 }
 
