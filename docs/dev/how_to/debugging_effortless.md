@@ -45,6 +45,8 @@ In a separate Powershell console, run as administrator:
     hab svc load <origin>/<service> 
 ``` 
 
+This will output to `c:\hab\svc\<service>\...`
+
 ## Observe
 
 ### Timing 
@@ -69,3 +71,7 @@ You can see the loop that runs this in `c:\hab\pkgs\<origin>\<service>\...\hooks
 The `hab sup run` window will display any output from the service run. If an error occurs that results in a stacktrace,
 the stacktrace will be output to the `sup` window, such as `C:/hab/svc/<service>/data/cache/cache/chef-stacktrace.out`
 
+## Altering the service run
+If you want to make changes to the service, `hab svc unload <origin>/<service>` and make changes to the files in the `c:\hab\pkgs\<origin>\<service>` directory,
+
+Then, `hab svc load <origin>/<service>` to start the service again.
