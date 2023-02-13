@@ -26,7 +26,7 @@ if [ -e $INSTALLER_DIR ]; then
 
   # have to do this dance of moving /opt/chef to a tmp dir since files may be in use
   tmp_dir="/opt/.chef.$$"
-  if [ ! -z $CHEF_UPGRADE_TEMP_DIR ]; then
+  if [ -n "$CHEF_UPGRADE_TEMP_DIR" ]; then
     tmp_dir="$CHEF_UPGRADE_TEMP_DIR/chef.$$"
   fi
   # if we can't create the tmp_dir then fail hard to prevent any possible security hole
