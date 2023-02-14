@@ -23,7 +23,8 @@ execute "sensitive sleep" do
   sensitive true
 end
 
-timezone "America/Los_Angeles"
+# This line is causing the knife action to fail on Amazon Linux 2.
+# timezone "America/Los_Angeles"
 
 include_recipe "::_yum" if platform_family?("rhel")
 
