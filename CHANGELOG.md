@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.15 -->
-## [v18.1.15](https://github.com/chef/chef/tree/v18.1.15) (2023-02-07)
+<!-- latest_release 18.1.16 -->
+## [v18.1.16](https://github.com/chef/chef/tree/v18.1.16) (2023-02-14)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `db8acc3` to `b83f579` in /omnibus [#13556](https://github.com/chef/chef/pull/13556) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add rest of windows platforms to be tested on; Fixing syntax issue in build-test-omnibus [#13565](https://github.com/chef/chef/pull/13565) ([jesseprieur](https://github.com/jesseprieur))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add rest of windows platforms to be tested on; Fixing syntax issue in build-test-omnibus [#13565](https://github.com/chef/chef/pull/13565) ([jesseprieur](https://github.com/jesseprieur)) <!-- 18.1.16 -->
 - Bump omnibus-software from `db8acc3` to `b83f579` in /omnibus [#13556](https://github.com/chef/chef/pull/13556) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.1.15 -->
 - fix(apt_repository): Detect changes to expiration in key [#13535](https://github.com/chef/chef/pull/13535) ([tmccombs](https://github.com/tmccombs)) <!-- 18.1.14 -->
 - add esoteric platforms to validate adhoc/release pipelines [#13546](https://github.com/chef/chef/pull/13546) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.13 -->
