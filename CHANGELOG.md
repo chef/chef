@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.19 -->
-## [v18.1.19](https://github.com/chef/chef/tree/v18.1.19) (2023-02-14)
+<!-- latest_release 18.1.20 -->
+## [v18.1.20](https://github.com/chef/chef/tree/v18.1.20) (2023-02-14)
 
 #### Merged Pull Requests
-- Update pre-install cleanup [#13562](https://github.com/chef/chef/pull/13562) ([vkarve-chef](https://github.com/vkarve-chef))
+- launchd - array instead of a hash for Apple&#39;s associated_bundle_ident… [#13477](https://github.com/chef/chef/pull/13477) ([Arequ](https://github.com/Arequ))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- launchd - array instead of a hash for Apple&#39;s associated_bundle_ident… [#13477](https://github.com/chef/chef/pull/13477) ([Arequ](https://github.com/Arequ)) <!-- 18.1.20 -->
 - Update pre-install cleanup [#13562](https://github.com/chef/chef/pull/13562) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.1.19 -->
 - hab debugging doc [#13571](https://github.com/chef/chef/pull/13571) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.18 -->
 - fixing the path here [#13573](https://github.com/chef/chef/pull/13573) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.1.17 -->
