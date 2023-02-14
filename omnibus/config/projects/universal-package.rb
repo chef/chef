@@ -18,7 +18,6 @@ dependency "preparation"
 dependency "package-creator"
 
 # universal-package dependencies/components
-# dependency "somedep"
 
 exclude "**/.git"
 exclude "**/bundler/git"
