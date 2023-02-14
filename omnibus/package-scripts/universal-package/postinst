@@ -5,7 +5,7 @@
 #
 
 PROGNAME=`basename $0`
-chef_client_version="18.0.185"
+chef_client_version="${EXPEDITOR_VERSION}"
 
 error_exit()
 {
