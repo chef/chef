@@ -7,7 +7,8 @@ echo "${EXPEDITOR_PRODUCT_NAME}"
 echo "${EXPEDITOR_PRODUCT_KEY}"
 # end temporary
 
-chef_client_version="18.0.185"
+#chef_client_version="18.0.185"
+chef_client_version="${EXPEDITOR_VERSION}"
 
 mkdir stage
 
