@@ -101,7 +101,7 @@ build do
   # Always deploy the powershell modules in the correct place.
   if windows?
     mkdir "#{install_dir}/modules/chef"
-    copy "distro/powershell/chef/*", "#{install_dir}/modules/chef"
+    copy "distro/templates/powershell/chef/*", "#{install_dir}/modules/chef"
   end
 
   block do
