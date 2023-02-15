@@ -2,50 +2,48 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.30 -->
-## [v16.18.30](https://github.com/chef/chef/tree/v16.18.30) (2023-02-14)
-
-#### Merged Pull Requests
-- [Chef-16] Fix habitat test pipeline windows [#13566](https://github.com/chef/chef/pull/13566) ([neha-p6](https://github.com/neha-p6))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.18.0 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- [Chef-16] Fix habitat test pipeline windows [#13566](https://github.com/chef/chef/pull/13566) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.30 -->
-- [Chef-16] [Backport #13327 ]Fix indentation of condition for disabling repos [#13529](https://github.com/chef/chef/pull/13529) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.29 -->
-- [Chef-16]Update dependencies for chef and chef/omnibus [#13550](https://github.com/chef/chef/pull/13550) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.28 -->
-- Bugfix/backport chef16 checksum validation [#13322](https://github.com/chef/chef/pull/13322) ([decoyjoe](https://github.com/decoyjoe)) <!-- 16.18.27 -->
-- [chef-16] INFC-303 - Backport changes from v18 to v16 for documentation [#13270](https://github.com/chef/chef/pull/13270) ([Stromweld](https://github.com/Stromweld)) <!-- 16.18.26 -->
-- backport to 16: flush package cache after registering or unregistering with rhsm_register [#12908](https://github.com/chef/chef/pull/12908) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.18.25 -->
-- Rewriting the zypper code to run only on openSUSE 15 [#13486](https://github.com/chef/chef/pull/13486) ([johnmccrae](https://github.com/johnmccrae)) <!-- 16.18.24 -->
-- INFC-373 Disable 32-bit Windows for Chef 16 [#13458](https://github.com/chef/chef/pull/13458) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.23 -->
-- [Chef-16] Add nightly adhoc builds for chef-16 [#13406](https://github.com/chef/chef/pull/13406) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.22 -->
-- Bump omnibus-software from `e9632cb` to `f2e9a99` in /omnibus [#13410](https://github.com/chef/chef/pull/13410) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.21 -->
-- Chef-16: Functional tests under verify pipeline get timed out [#13403](https://github.com/chef/chef/pull/13403) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.20 -->
-- Bump omnibus from `d1fe3bb` to `52b6d2e` in /omnibus [#13370](https://github.com/chef/chef/pull/13370) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.19 -->
-- [Chef-16] Correct the rake task to pull in omnibus dependencies [#13304](https://github.com/chef/chef/pull/13304) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.18 -->
-- [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.17 -->
-- [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.16 -->
-- [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.15 -->
-- [chef-16] Fix windows functional test ruby activation failure under verify pipeline  [#13262](https://github.com/chef/chef/pull/13262) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.14 -->
-- [chef-16] Fix hab package failures under windows plan in verify pipeline [#13251](https://github.com/chef/chef/pull/13251) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.13 -->
-- Revert &quot;Bump train-core to 3.10.7&quot; [#13294](https://github.com/chef/chef/pull/13294) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.12 -->
-- [chef-16] Update ncurses to 6.3 to fix build failures in adhoc pipeline on FreeBSD12 [#13267](https://github.com/chef/chef/pull/13267) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.11 -->
-- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13272](https://github.com/chef/chef/pull/13272) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.10 -->
-- Bump train-core to 3.10.7 [#13269](https://github.com/chef/chef/pull/13269) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.9 -->
-- [Chef-16] Fix solaris build and test failures in adhoc pipeline [#13240](https://github.com/chef/chef/pull/13240) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.8 -->
-- [chef-16]Fix windows build failures in adhoc pipeline throwing error &#39;SignTool Error: No certificates were found that met all the given criteria&#39; by updating the msi&#39; [#13241](https://github.com/chef/chef/pull/13241) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.7 -->
-- [Chef-16] Fix OpenSUSE failures in verify pipeline [#13239](https://github.com/chef/chef/pull/13239) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.6 -->
-- [chef-16] Fix github actions multiple failures [#13238](https://github.com/chef/chef/pull/13238) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.5 -->
-- Backport to 16: Stop executing locale-gen on every chef run [#12904](https://github.com/chef/chef/pull/12904) ([hrak](https://github.com/hrak)) <!-- 16.18.4 -->
-- Bump berkshelf from 7.2.2 to 8.0.0 in /omnibus [#12835](https://github.com/chef/chef/pull/12835) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.3 -->
-- Bump omnibus-software from `88438e8` to `ff4c902` in /omnibus [#12853](https://github.com/chef/chef/pull/12853) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.2 -->
-- Bump omnibus-software from `50d05bc` to `88438e8` in /omnibus [#12845](https://github.com/chef/chef/pull/12845) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.18.30](https://github.com/chef/chef/tree/v16.18.30) (2023-02-15)
+
+#### Merged Pull Requests
+- Bump omnibus-software from `50d05bc` to `88438e8` in /omnibus [#12845](https://github.com/chef/chef/pull/12845) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus-software from `88438e8` to `ff4c902` in /omnibus [#12853](https://github.com/chef/chef/pull/12853) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump berkshelf from 7.2.2 to 8.0.0 in /omnibus [#12835](https://github.com/chef/chef/pull/12835) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Backport to 16: Stop executing locale-gen on every chef run [#12904](https://github.com/chef/chef/pull/12904) ([hrak](https://github.com/hrak))
+- [chef-16] Fix github actions multiple failures [#13238](https://github.com/chef/chef/pull/13238) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Fix OpenSUSE failures in verify pipeline [#13239](https://github.com/chef/chef/pull/13239) ([neha-p6](https://github.com/neha-p6))
+- [chef-16]Fix windows build failures in adhoc pipeline throwing error &#39;SignTool Error: No certificates were found that met all the given criteria&#39; by updating the msi&#39; [#13241](https://github.com/chef/chef/pull/13241) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Fix solaris build and test failures in adhoc pipeline [#13240](https://github.com/chef/chef/pull/13240) ([neha-p6](https://github.com/neha-p6))
+- Bump train-core to 3.10.7 [#13269](https://github.com/chef/chef/pull/13269) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus from `5bc091a` to `d1fe3bb` in /omnibus [#13272](https://github.com/chef/chef/pull/13272) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-16] Update ncurses to 6.3 to fix build failures in adhoc pipeline on FreeBSD12 [#13267](https://github.com/chef/chef/pull/13267) ([neha-p6](https://github.com/neha-p6))
+- Revert &quot;Bump train-core to 3.10.7&quot; [#13294](https://github.com/chef/chef/pull/13294) ([neha-p6](https://github.com/neha-p6))
+- [chef-16] Fix hab package failures under windows plan in verify pipeline [#13251](https://github.com/chef/chef/pull/13251) ([neha-p6](https://github.com/neha-p6))
+- [chef-16] Fix windows functional test ruby activation failure under verify pipeline  [#13262](https://github.com/chef/chef/pull/13262) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16]Update expired SSL cert for self-signed.badssl.com used in kitchen tests [#13318](https://github.com/chef/chef/pull/13318) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Disable caching for s3 and git to successfully build aritifacts using ruby31 [#13279](https://github.com/chef/chef/pull/13279) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Fix kitchen test failure on ubuntu2204 [#13384](https://github.com/chef/chef/pull/13384) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Correct the rake task to pull in omnibus dependencies [#13304](https://github.com/chef/chef/pull/13304) ([neha-p6](https://github.com/neha-p6))
+- Bump omnibus from `d1fe3bb` to `52b6d2e` in /omnibus [#13370](https://github.com/chef/chef/pull/13370) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Chef-16: Functional tests under verify pipeline get timed out [#13403](https://github.com/chef/chef/pull/13403) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `e9632cb` to `f2e9a99` in /omnibus [#13410](https://github.com/chef/chef/pull/13410) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [Chef-16] Add nightly adhoc builds for chef-16 [#13406](https://github.com/chef/chef/pull/13406) ([neha-p6](https://github.com/neha-p6))
+- INFC-373 Disable 32-bit Windows for Chef 16 [#13458](https://github.com/chef/chef/pull/13458) ([tpowell-progress](https://github.com/tpowell-progress))
+- Rewriting the zypper code to run only on openSUSE 15 [#13486](https://github.com/chef/chef/pull/13486) ([johnmccrae](https://github.com/johnmccrae))
+- backport to 16: flush package cache after registering or unregistering with rhsm_register [#12908](https://github.com/chef/chef/pull/12908) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- [chef-16] INFC-303 - Backport changes from v18 to v16 for documentation [#13270](https://github.com/chef/chef/pull/13270) ([Stromweld](https://github.com/Stromweld))
+- Bugfix/backport chef16 checksum validation [#13322](https://github.com/chef/chef/pull/13322) ([decoyjoe](https://github.com/decoyjoe))
+- [Chef-16]Update dependencies for chef and chef/omnibus [#13550](https://github.com/chef/chef/pull/13550) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] [Backport #13327 ]Fix indentation of condition for disabling repos [#13529](https://github.com/chef/chef/pull/13529) ([neha-p6](https://github.com/neha-p6))
+- [Chef-16] Fix habitat test pipeline windows [#13566](https://github.com/chef/chef/pull/13566) ([neha-p6](https://github.com/neha-p6))
+<!-- latest_stable_release -->
+
 ## [v16.18.0](https://github.com/chef/chef/tree/v16.18.0) (2022-04-28)
 
 #### Merged Pull Requests
@@ -58,7 +56,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Fix attribute performance issues in node.read (Chef-16) [#12744](https://github.com/chef/chef/pull/12744) ([lamont-granquist](https://github.com/lamont-granquist))
 - Fix chef_client_config template rendering [#12827](https://github.com/chef/chef/pull/12827) ([jasonwbarnett](https://github.com/jasonwbarnett))
 - Updated EOL for Chef 16 [#12821](https://github.com/chef/chef/pull/12821) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v16.17.51](https://github.com/chef/chef/tree/v16.17.51) (2022-02-17)
 
