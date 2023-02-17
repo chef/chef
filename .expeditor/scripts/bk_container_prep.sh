@@ -2,8 +2,10 @@
 
 echo "--- Container Config..."
 
-source /etc/os-release
-echo $PRETTY_NAME
+# Install Chef Foundation
+echo "--- Installing Chef Foundation"
+curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+export PATH="/opt/chef/bin:${PATH}"
 
 echo "ruby version:"
 ruby -v
