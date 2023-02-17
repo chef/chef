@@ -20,6 +20,26 @@ rubygems:
 pipelines:
   - verify:
       public: true
+      env:
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - validate/release:
+      definition: .expeditor/verify.pipeline.yml
+      env:
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  - validate/adhoc:
+      definition: .expeditor/verify.adhoc.pipeline.yml
+      env:
+        - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - validate/adhoc-canary:
+      canary: true
+      definition: .expeditor/verify.adhoc.pipeline.yml
+      env:
+        - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
@@ -107,7 +127,7 @@ subscriptions:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      - trigger_pipeline:omnibus/release:
+      - trigger_pipeline:validate/release:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
