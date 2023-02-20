@@ -29,6 +29,10 @@
 env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
 env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
 
+# Disable health check, as there are no libraries to scan
+# ------------------------------
+health_check false
+
 windows_arch env_omnibus_windows_arch
 
 use_git_caching true
