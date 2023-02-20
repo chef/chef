@@ -95,10 +95,10 @@ for gem in ${external_gems[@]}; do
     echo "        - CHEF_FS=true"
   fi
   echo "      propagate-environment: true"
-  echo "  - chef/cache#v1.5.0:"
-  echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
-  echo "      cached_folders:"
-  echo "      - vendor"
+  # echo "  - chef/cache#v1.5.0:"
+  # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
+  # echo "      cached_folders:"
+  # echo "      - vendor"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   echo "    - .expeditor/scripts/bk_container_prep.sh"
@@ -152,11 +152,11 @@ for plan in ${habitat_plans[@]}; do
   else
     echo "    queue: single-use-privileged"
   fi
-  echo "  plugins:"
-  echo "  - chef/cache#v1.5.0:"
-  echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
-  echo "      cached_folders:"
-  echo "      - vendor"
+  # echo "  plugins:"
+  # echo "  - chef/cache#v1.5.0:"
+  # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
+  # echo "      cached_folders:"
+  # echo "      - vendor"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   if [ $plan == "windows" ]
