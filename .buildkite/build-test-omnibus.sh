@@ -210,6 +210,7 @@ then
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
       echo "  label: \":mag::docker: ${platform%:*}\""
+      echo "  key: test-${platform%:*}"
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
@@ -226,14 +227,19 @@ then
       echo "  timeout_in_minutes: 60"
     else
       echo "- env:"
-      echo "    OMNIBUS_BUILDER_KEY: build-windows-2019"
-      echo "  key: test-windows-2019"
-      echo '  label: ":mag::windows: windows-2019"'
+      echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
+      echo "  label: \":mag::windows: ${platform%:*}\""
+      echo "  key: test-${platform%:*}"
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
       echo "  agents:"
-      echo "    queue: default-windows-2019-privileged"
+      if [ $BUILDKITE_ORGANIZATION_SLUG == "chef-oss" ]
+      then
+        echo "    queue: default-${platform%:*}-privileged"
+      else
+        echo "    queue: omnibus-${platform%:*}-x86_64"
+      fi
       echo "  commands:"
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
       echo "    - ./omnibus/omnibus-test.ps1"
