@@ -12,8 +12,8 @@ echo "--- Ensure 'chef-client' command works"
 
 FORK_OWNER="chef"
 REPO_NAME="chef.git"
-#TAG_NAME="v18.0.185"
-TAG_NAME="v${EXPEDITOR_VERSION}"
+TAG_NAME="v18.1.15"
+#TAG_NAME="v${EXPEDITOR_VERSION}"
 echo "--- Getting $FORK_OWNER/$REPO_NAME repository cloning ---"
 # git clone -b [tag_name] [repository_url]
 git clone -b  $TAG_NAME https://github.com/$FORK_OWNER/$REPO_NAME
