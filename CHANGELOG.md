@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.21 -->
-## [v18.1.21](https://github.com/chef/chef/tree/v18.1.21) (2023-02-20)
+<!-- latest_release 18.1.22 -->
+## [v18.1.22](https://github.com/chef/chef/tree/v18.1.22) (2023-02-21)
 
 #### Merged Pull Requests
-- Updating Omnibus [#13590](https://github.com/chef/chef/pull/13590) ([johnmccrae](https://github.com/johnmccrae))
+- Add more details about releasing chocolatey package [#13577](https://github.com/chef/chef/pull/13577) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add more details about releasing chocolatey package [#13577](https://github.com/chef/chef/pull/13577) ([neha-p6](https://github.com/neha-p6)) <!-- 18.1.22 -->
 - Updating Omnibus [#13590](https://github.com/chef/chef/pull/13590) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.1.21 -->
 - launchd - array instead of a hash for Apple&#39;s associated_bundle_ident… [#13477](https://github.com/chef/chef/pull/13477) ([Arequ](https://github.com/Arequ)) <!-- 18.1.20 -->
 - Update pre-install cleanup [#13562](https://github.com/chef/chef/pull/13562) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.1.19 -->
