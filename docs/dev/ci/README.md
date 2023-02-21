@@ -110,7 +110,7 @@ There are three ways to trigger chef's `verify` pipeline.
 
 1. **Via opening a pull-request or pushing a commit to a pull-request branch.** 
 2. **Via the Buildkite UI.** Triggering a verify build [via the Buildkite UI](https://buildkite.com/docs/tutorials/getting-started#create-your-first-build) is useful when there may have been a transient failure or a failure due to a problem with the buildkite platform.
-3. **Via the Buildkite CLI.** If you have the [Buildkite CLI]() configured, you can trigger a verify pipeline manually using the `bk build create` command.
+3. **Via the Buildkite CLI.** If you have the [Buildkite CLI](https://expeditor.chef.io/docs/getting-started/integrations/#buildkite-cli) configured, you can trigger a verify pipeline manually using the `bk build create` command.
 
 ```bash
 bk build create --pipeline=chef-oss/chef-main-verify
@@ -122,7 +122,7 @@ There are three ways to trigger chef's `validate/release` pipeline.
 
 1. **Via the trigger_pipeline:validate/release action** The pipeline is automatically executed on a commit to the main branch.
 2. **Via the Buildkite UI.** Triggering a release build [via the Buildkite UI](https://buildkite.com/docs/tutorials/getting-started#create-your-first-build) is useful when you need to trigger a fresh build out of band of a code change to your project.
-3. **Via the Buildkite CLI.** If you have the [Buildkite CLI]() configured, you can trigger a release pipeline manually using the `bk build create` command.
+3. **Via the Buildkite CLI.** If you have the [Buildkite CLI](https://expeditor.chef.io/docs/getting-started/integrations/#buildkite-cli) configured, you can trigger a release pipeline manually using the `bk build create` command.
 
 ```bash
 bk build create --pipeline=chef/chef-main-validate-release
@@ -133,7 +133,7 @@ bk build create --pipeline=chef/chef-main-validate-release
 There are two ways we recommend to trigger you `validate/adhoc` pipeline.
 
 1. **Via the Buildkite UI.** Triggering an adhoc build [via the Buildkite UI](https://buildkite.com/docs/tutorials/getting-started#create-your-first-build) is useful when you need test that an omnibus build & test of your branch will succeed on esoteric platforms.
-2. **Via the Buildkite CLI.** If you have the [Buildkite CLI]({{< ref "/docs/getting-started/integrations.md" >}}) configured, you can trigger a release pipeline manually using the `bk build create` command.
+2. **Via the Buildkite CLI.** If you have the [Buildkite CLI](https://expeditor.chef.io/docs/getting-started/integrations/#buildkite-cli) configured, you can trigger a release pipeline manually using the `bk build create` command.
 
 ```bash
 bk build create --pipeline=chef/chef-main-validate-adhoc
