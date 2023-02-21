@@ -75,14 +75,26 @@ Many Windows users consume our packages via Chocolatey. Here's how you get a new
 From a Windows host:
 
   1. Clone this repo locally : https://github.com/chef/chocolatey-packages
-  2. Update the version strings and sha checksums in the chef.nuspec and chocolateyinstall.ps1 files
-  3. Contact the Build Systems team to get the password for the choco account if you don't have it already. The user is 'chef-ci'
-  4. Logon to the chocolatey and go to the account page
-  5. Grab the API key from there.
-  6. Run `choco pack .\chef\chef-client.nuspec`
+  2. There is no separate branch being maintained for each version of chef. Make your PR for `main` branch only.
+  3. Getting the SHA256 checksum for windows artifact:
+      There are two ways we can do this:
+      * Since we have already promoted latest version of chef, the artifacts will be available on download site.
+        Visit https://www.chef.io/downloads/tools/infra-client?os=windows, select the intended Infra Client version and grab the SHA256 checksum for `Windows 2012r2` OS. 
+        In case this url changes or not accessible, use below method:
+      * Go to the buildkite release pipeline which you are promoting to stable.
+      * Go to the `windows-2012r2-x86_64` builder and download the artifact
+        (NOTE: On a mac system, if the `msi` file gets downloaded as an `exe`, do this from a windows machine, since they are different files and not the intended file for which we are creating the chocolatey package.)
+      * Run `shasum -a 256 {path_to_your_downloaded_artifact}`
+      * This will output the SHA256 checksum for the file
+  4. Update the version strings and sha checksums in the chef.nuspec and chocolateyinstall.ps1 files and create the PR.
+  5. Contact the Build Systems team to get the password for the choco account if you don't have it already. The user is 'chef-ci'.
+  6. Logon to the chocolatey and go to the account page
+  7. Grab the API key from there.
+  8. Run `choco pack .\chef\chef.nuspec`
      1. Note: If your nupkg file looks like this: `chef-client:15.1.9.nupkg` (note the colon), change the colon to a period. Choco push will fail on the colon
-  7. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
-  8. Once the nupkg file is pushed to Chocolatey, then push your changes to the local repo back to github
+  9. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
+  10. Once the nupkg file is pushed to Chocolatey, then merge your PR (e.g PR [here](https://github.com/chef/chocolatey-packages/pull/29))
+
 
 Note: You may need to be added as a maintainer on [Chocolatey.org](https://chocolatey.org/).
 
