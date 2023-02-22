@@ -1,4 +1,4 @@
-name "chef-foundation"
+name "chef-foundation1"
 license "Apache-2.0"
 license_file "LICENSE"
 
