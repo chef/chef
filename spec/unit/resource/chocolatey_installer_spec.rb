@@ -98,6 +98,6 @@ describe Chef::Resource::ChocolateyInstaller do
       [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
       iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     CODE
-    powershell_exec!(powershell_code)
+    powershell_exec(powershell_code)
   end
 end
