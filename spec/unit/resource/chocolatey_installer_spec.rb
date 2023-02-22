@@ -16,7 +16,10 @@
 #
 
 require "spec_helper"
-require "chef-powershell"
+begin
+  require "chef-powershell"
+rescue LoadError
+end
 
 describe Chef::Resource::ChocolateyInstaller do
   include RecipeDSLHelper
