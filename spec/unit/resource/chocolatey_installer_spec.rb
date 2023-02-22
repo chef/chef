@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "chef-powershell"
 
 describe Chef::Resource::ChocolateyInstaller do
   include RecipeDSLHelper
