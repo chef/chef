@@ -39,7 +39,7 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-override :chef, version: "local_source"
+override :chef1, version: "local_source"
 
 dependency "chef-local-source"
 dependency "shebang-cleanup"

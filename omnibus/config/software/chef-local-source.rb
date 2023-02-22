@@ -15,7 +15,7 @@
 #
 # expeditor/ignore: no version pinning
 
-name "chef"
+name "chef1"
 default_version "main"
 
 license "Apache-2.0"
