@@ -300,4 +300,4 @@ subscriptions:
       - bash:.expeditor/update_dep.sh
   - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
     actions:
-      - trigger_pipeline:omnibus/adhoc
+      - trigger_pipeline:validate/adhoc
