@@ -49,14 +49,16 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
   main=$(git show-ref -s --abbrev origin/main)
   pr_head=$(git show-ref -s --abbrev HEAD)
   github="https://github.com/chef/chef/commit/"
-  if git rebase origin/main >/dev/null; then
-    buildkite-agent annotate --style success --context "rebase-pr-branch-${main}" \
-      "Rebased onto main ([${main}](${github}${main}))."
-  else
-    git rebase --abort
-    buildkite-agent annotate --style warning --context "rebase-pr-branch-${main}" \
-      "Couldn't rebase onto main ([${main}](${github}${main})), building PR HEAD ([${pr_head}](${github}${pr_head}))."
-  fi
+
+  git checkout "$BUILDKITE_BRANCH"
+  # if git rebase origin/main >/dev/null; then
+  #   buildkite-agent annotate --style success --context "rebase-pr-branch-${main}" \
+  #     "Rebased onto main ([${main}](${github}${main}))."
+  # else
+  #   git rebase --abort
+  #   buildkite-agent annotate --style warning --context "rebase-pr-branch-${main}" \
+  #     "Couldn't rebase onto main ([${main}](${github}${main})), building PR HEAD ([${pr_head}](${github}${pr_head}))."
+  # fi
 fi
 
 # Only if on chef-canary or chef org
