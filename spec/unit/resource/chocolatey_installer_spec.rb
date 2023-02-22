@@ -23,19 +23,19 @@ describe Chef::Resource::ChocolateyInstaller do
   let(:resource) { Chef::Resource::ChocolateyInstaller.new("fakey_fakerton") }
   let(:config) do
     <<-CONFIG
-  <?xml version="1.0" encoding="utf-8"?>
-  <chocolatey xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <config>
-      <add key="containsLegacyPackageInstalls" value="true" description="Install has packages installed prior to 0.9.9 series." />
-    </config>
-    <sources>
-      <source id="chocolatey" value="https://chocolatey.org/api/v2/" disabled="false" bypassProxy="false" selfService="false" adminOnly="false" priority="0" />
-    </sources>
-    <features>
-      <feature name="checksumFiles" enabled="true" setExplicitly="false" description="Checksum files when pulled in from internet (based on package)." />
-    </features>
-    <apiKeys />
-  </chocolatey>
+      <?xml version="1.0" encoding="utf-8"?>
+      <chocolatey xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <config>
+          <add key="containsLegacyPackageInstalls" value="true" description="Install has packages installed prior to 0.9.9 series." />
+        </config>
+        <sources>
+          <source id="chocolatey" value="https://chocolatey.org/api/v2/" disabled="false" bypassProxy="false" selfService="false" adminOnly="false" priority="0" />
+        </sources>
+        <features>
+          <feature name="checksumFiles" enabled="true" setExplicitly="false" description="Checksum files when pulled in from internet (based on package)." />
+        </features>
+        <apiKeys />
+      </chocolatey>
     CONFIG
   end
 
@@ -100,36 +100,4 @@ describe Chef::Resource::ChocolateyInstaller do
     CODE
     powershell_exec!(powershell_code)
   end
-
-
-
-    # it "install a single feature" do
-    #   resource.feature_name "snmp"
-    #   expect { resource.action :install }.not_to raise_error
-    # end
-
-  #   it "bypass_proxy property defaults to false" do
-  #     expect { resource.bypass_proxy.to be_false }
-  #   end
-
-  #   describe "#fetch_config_element" do
-  #     it "raises and error if the config file cannot be found" do
-  #       allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\config\chocolatey.config').and_return(false)
-  #       expect { resource.fetch_config_element("foo") }.to raise_error(RuntimeError)
-  #     end
-
-  #     it "returns the value if present in the config file" do
-  #       allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\config\chocolatey.config').and_return(true)
-  #       allow(::File).to receive(:read).with('C:\ProgramData\chocolatey\config\chocolatey.config').and_return(config)
-  #       expect(resource.fetch_config_element("containsLegacyPackageInstalls")).to eq("true")
-  #       expect { resource.fetch_config_element("foo") }.not_to raise_error
-  #     end
-
-  #     it "returns nil if the element is not present in the config file" do
-  #       allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\config\chocolatey.config').and_return(true)
-  #       allow(::File).to receive(:read).with('C:\ProgramData\chocolatey\config\chocolatey.config').and_return(config)
-  #       expect(resource.fetch_config_element("foo")).to be_nil
-  #       expect { resource.fetch_config_element("foo") }.not_to raise_error
-  #     end
-  #   end
 end

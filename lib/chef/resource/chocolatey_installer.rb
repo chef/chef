@@ -103,7 +103,7 @@ class Chef
       end
 
       action :uninstall, description: "Uninstall Chocolatey package manager" do
-        converge_by("Uinstall Choco") do
+        converge_by("Uninstall Choco") do
           path = 'c:\programdata\chocolatey\bin' # rubocop:disable Style/StringLiterals
           powershell_code = <<~CODE
             Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
@@ -121,7 +121,7 @@ class Chef
                 'Machine'
             )
           CODE
-          powershell_exec!(powershell_code).result
+          powershell_exec(powershell_code).result
         end
       end
     end
