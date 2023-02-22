@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+
 begin
   require "chef-powershell"
 rescue LoadError
@@ -97,8 +98,7 @@ describe Chef::Resource::ChocolateyInstaller do
   end
 
   def install_choco
-    require "chef/mixin/powershell_exec"
-    extend Chef::Mixin::PowershellExec
+    include ChefPowerShell::ChefPowerShellModule::PowerShellExec
     powershell_code = <<-CODE
       Set-ExecutionPolicy Bypass -Scope Process -Force;
       [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
