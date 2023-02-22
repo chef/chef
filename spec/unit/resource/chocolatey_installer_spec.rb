@@ -17,11 +17,6 @@
 
 require "spec_helper"
 
-begin
-  require "chef-powershell"
-rescue LoadError
-end
-
 describe Chef::Resource::ChocolateyInstaller do
   include RecipeDSLHelper
 
@@ -56,48 +51,57 @@ describe Chef::Resource::ChocolateyInstaller do
   end
 
   describe "basic chocolatey settings" do
-    it "has a resource name of :chocolatey_installer" do
-      expect(resource.resource_name).to eql(:chocolatey_installer)
-    end
+    context "on windows", :windows_only do
+      it "has a resource name of :chocolatey_installer" do
+        expect(resource.resource_name).to eql(:chocolatey_installer)
+      end
 
-    it "sets the default action as :install" do
-      expect(resource.action).to eql([:install])
-    end
+      it "sets the default action as :install" do
+        expect(resource.action).to eql([:install])
+      end
 
-    it "supports :install and :uninstall actions" do
-      expect { resource.action :install }.not_to raise_error
-      expect { resource.action :uninstall }.not_to raise_error
+      it "supports :install and :uninstall actions" do
+        expect { resource.action :install }.not_to raise_error
+        expect { resource.action :uninstall }.not_to raise_error
+      end
     end
   end
 
   describe "installing chocolatey" do
-    it "can install Chocolatey with parameters" do
-      expect { resource.action :install }.not_to raise_error
-    end
+    context "on windows", :windows_only do
+      it "can install Chocolatey with parameters" do
+        expect { resource.action :install }.not_to raise_error
+      end
 
-    it "returns false if a chocolatey install cannot be found" do
-      allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
-      expect(resource.fetch_choco_installer).to eql(false)
+      it "returns false if a chocolatey install cannot be found" do
+        allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
+        expect(resource.fetch_choco_installer).to eql(false)
+      end
     end
   end
 
   describe "chocolatey is idempotent because it" do
-    it "does not install choco again if it is already installed" do
-      install_choco
-      chocolatey_installer "install" do
-        action :install
-      end.should_not_be_updated
+    context "on windows", :windows_only do
+      it "does not install choco again if it is already installed" do
+        install_choco
+        chocolatey_installer "install" do
+          action :install
+        end.should_not_be_updated
+      end
     end
   end
 
   describe "uinstalling chocolatey" do
-    it "doesn't error out uninstalling chocolatey if chocolatey is not installed" do
-      allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
-      expect { resource.action :uninstall }.not_to raise_error
+    context "on windows", :windows_only do
+      it "doesn't error out uninstalling chocolatey if chocolatey is not installed" do
+        allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
+        expect { resource.action :uninstall }.not_to raise_error
+      end
     end
   end
 
   def install_choco
+    require "chef-powershell"
     include ChefPowerShell::ChefPowerShellModule::PowerShellExec
     powershell_code = <<-CODE
       Set-ExecutionPolicy Bypass -Scope Process -Force;
