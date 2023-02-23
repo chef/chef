@@ -82,3 +82,5 @@ end
 package :appx do
   skip_packager true
 end
+
+runtime_dependency "coreutils" if rhel?
