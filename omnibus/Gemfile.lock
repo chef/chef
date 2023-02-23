@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: b83f579f6a108786d34ee07e792333451a80d300
+  revision: 225e3576c48fcd0155f6049cb032b2370eccf29a
   branch: main
   specs:
-    omnibus-software (23.2.281)
+    omnibus-software (23.2.286)
       omnibus (>= 9.0.0)
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 72753d73f0984ba8fc32964072cfba9a7b6f495f
+  revision: cf9761311577e24819625aa1d932f828740e33b4
   branch: main
   specs:
-    omnibus (9.0.15)
+    omnibus (9.0.17)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -34,7 +34,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.704.0)
+    aws-partitions (1.715.0)
     aws-sdk-core (3.170.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
@@ -235,12 +235,12 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    iostruct (0.0.4)
+    iostruct (0.0.5)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
-    kitchen-vagrant (1.13.0)
+    kitchen-vagrant (1.14.1)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -321,7 +321,7 @@ GEM
       multipart-post (>= 2.0.0)
       rainbow
       zhexdump (>= 0.0.2)
-    plist (3.6.0)
+    plist (3.7.0)
     proxifier (1.0.3)
     pry (0.14.2)
       coderay (~> 1.1)

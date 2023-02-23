@@ -8,7 +8,6 @@ expeditor:
           limit: 1
 
 steps:
-
 - label: ":linux: Validate Linux"
   commands:
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
@@ -35,7 +34,7 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - .expeditor/scripts/habitat-test.ps1 $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
+    - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
   expeditor:
     executor:
       windows:
