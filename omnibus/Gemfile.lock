@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 499c66e30dab6c0ca772a5c552438586bd21b171
+  revision: 225e3576c48fcd0155f6049cb032b2370eccf29a
   branch: main
   specs:
-    omnibus-software (23.2.282)
+    omnibus-software (23.2.286)
       omnibus (>= 9.0.0)
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 72753d73f0984ba8fc32964072cfba9a7b6f495f
+  revision: cf9761311577e24819625aa1d932f828740e33b4
   branch: main
   specs:
-    omnibus (9.0.15)
+    omnibus (9.0.17)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -34,7 +34,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.711.0)
+    aws-partitions (1.715.0)
     aws-sdk-core (3.170.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
@@ -155,7 +155,7 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-powershell (1.0.13)
+    chef-powershell (1.0.14)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
@@ -163,7 +163,7 @@ GEM
       concurrent-ruby (~> 1.0)
     chef-utils (17.10.0)
       concurrent-ruby
-    chef-vault (4.1.10)
+    chef-vault (4.1.11)
     chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
@@ -185,21 +185,12 @@ GEM
     ed25519 (1.3.0)
     erubi (1.12.0)
     erubis (2.7.0)
-    faraday (1.4.3)
-      faraday-em_http (~> 1.0)
-      faraday-em_synchrony (~> 1.0)
-      faraday-excon (~> 1.1)
-      faraday-net_http (~> 1.0)
-      faraday-net_http_persistent (~> 1.1)
-      multipart-post (>= 1.2, < 3)
+    faraday (2.7.4)
+      faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
-    faraday-em_http (1.0.0)
-    faraday-em_synchrony (1.0.0)
-    faraday-excon (1.1.0)
-    faraday-net_http (1.0.1)
-    faraday-net_http_persistent (1.2.0)
-    faraday_middleware (1.2.0)
-      faraday (~> 1.0)
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
+    faraday-net_http (3.0.2)
     ffi (1.15.5)
     ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
@@ -245,12 +236,12 @@ GEM
       train-core (~> 3.10)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    iostruct (0.0.4)
+    iostruct (0.0.5)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
-    kitchen-vagrant (1.14.0)
+    kitchen-vagrant (1.14.1)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -269,7 +260,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2022.0105)
+    mime-types-data (3.2023.0218.1)
     minitar (0.9)
     mixlib-archive (1.1.7)
       mixlib-log
@@ -287,6 +278,11 @@ GEM
     mixlib-shellout (3.2.7)
       chef-utils
     mixlib-shellout (3.2.7-universal-mingw32)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    mixlib-shellout (3.2.7-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
@@ -335,7 +331,7 @@ GEM
       multipart-post (>= 2.0.0)
       rainbow
       zhexdump (>= 0.0.2)
-    plist (3.6.0)
+    plist (3.7.0)
     proxifier (1.0.3)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -414,7 +410,7 @@ GEM
     thor (1.2.1)
     time (0.2.1)
       date
-    timeout (0.3.1)
+    timeout (0.3.2)
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
@@ -507,6 +503,7 @@ GEM
 PLATFORMS
   ruby
   x64-mingw
+  x64-mingw-ucrt
   x64-mingw32
   x86-mingw32
 
