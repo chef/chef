@@ -265,7 +265,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2022.0105)
+    mime-types-data (3.2023.0218.1)
     mixlib-archive (1.1.7)
       mixlib-log
     mixlib-archive (1.1.7-universal-mingw32)
@@ -302,7 +302,7 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    plist (3.6.0)
+    plist (3.7.0)
     proxifier (1.0.3)
     pry (0.13.0)
       coderay (~> 1.1)
