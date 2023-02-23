@@ -1,17 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.29 -->
-## [v17.10.29](https://github.com/chef/chef/tree/v17.10.29) (2022-12-06)
+<!-- latest_release 17.10.32 -->
+## [v17.10.32](https://github.com/chef/chef/tree/v17.10.32) (2023-02-23)
 
 #### Merged Pull Requests
-- [chef-17] Pipeline fixes [#13399](https://github.com/chef/chef/pull/13399) ([Stromweld](https://github.com/Stromweld))
+- Bump kitchen-vagrant from 1.11.0 to 1.14.1 in /omnibus [#13602](https://github.com/chef/chef/pull/13602) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump kitchen-vagrant from 1.11.0 to 1.14.1 in /omnibus [#13602](https://github.com/chef/chef/pull/13602) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.32 -->
+- Bump plist to 3.7.0 [#13595](https://github.com/chef/chef/pull/13595) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.10.31 -->
+- Bump omnibus-software from `a63bd71` to `87f418b` in /omnibus [#13607](https://github.com/chef/chef/pull/13607) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.30 -->
 - [chef-17] Pipeline fixes [#13399](https://github.com/chef/chef/pull/13399) ([Stromweld](https://github.com/Stromweld)) <!-- 17.10.29 -->
 - Fix chef-17 pipelines [#13253](https://github.com/chef/chef/pull/13253) ([jaymzh](https://github.com/jaymzh)) <!-- 17.10.28 -->
 - [chef-17] Update omnibus version to fix read_shared_libs to fix solaris adhoc pipeline issue [#13243](https://github.com/chef/chef/pull/13243) ([blabade](https://github.com/blabade)) <!-- 17.10.27 -->
