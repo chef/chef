@@ -30,6 +30,10 @@ for platform in ${test_platforms[@]}; do
   echo "        - CHEF_FOUNDATION_VERSION"
   echo "      propagate-environment: true"
   echo "  commands:"
+  if [ $platform == "rhel-9" ]
+  then
+    echo "    - yum install libxcrypt-compat -y"
+  fi
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
   echo "  timeout_in_minutes: 60"
 done
