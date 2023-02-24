@@ -50,7 +50,7 @@ describe Chef::Resource::ChocolateyInstaller do
     ENV.update(@original_env)
   end
 
-  describe "basic chocolatey settings" do
+  describe "Basic chocolatey settings" do
     context "on windows", :windows_only do
       it "has a resource name of :chocolatey_installer" do
         expect(resource.resource_name).to eql(:chocolatey_installer)
@@ -64,10 +64,14 @@ describe Chef::Resource::ChocolateyInstaller do
         expect { resource.action :install }.not_to raise_error
         expect { resource.action :uninstall }.not_to raise_error
       end
+
+      it "does not support bologna install options" do
+        expect { resource.action :foo }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
     end
   end
 
-  describe "installing chocolatey" do
+  describe "Installing chocolatey" do
     context "on windows", :windows_only do
       it "can install Chocolatey with parameters" do
         expect { resource.action :install }.not_to raise_error
@@ -80,7 +84,21 @@ describe Chef::Resource::ChocolateyInstaller do
     end
   end
 
-  describe "chocolatey is idempotent because it" do
+  describe "Installing chocolatey with broken parameters" do
+    let(:resource) do
+      resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton")
+      resource.instance_variable_set(:@proxy_user, "steveb@microsoft.com")
+      resource.instance_variable_set(:@proxy_password, "")
+      resource
+    end
+    it "should error out if both a proxy user and proxy password are not specified" do
+      # require "pry"
+      # binding.pry
+      expect { resource.action :install }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe "Chocolatey is idempotent because it" do
     context "on windows", :windows_only do
       it "does not install choco again if it is already installed" do
         install_choco
@@ -91,7 +109,7 @@ describe Chef::Resource::ChocolateyInstaller do
     end
   end
 
-  describe "uinstalling chocolatey" do
+  describe "Uinstalling chocolatey" do
     context "on windows", :windows_only do
       it "doesn't error out uninstalling chocolatey if chocolatey is not installed" do
         allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)

@@ -21,13 +21,14 @@ class Chef
           action :uninstall
         end
         ```
+
         **Install Chocolatey with Parameters**
 
         ```ruby
         chocolatey_installer 'latest' do
           action :install
           download_url "https://www.contoso.com/foo"
-          chocolatey_version 2.12.24
+          chocolatey_version '2.12.24'
         end
         ```
       DOC
@@ -65,6 +66,18 @@ class Chef
         ::File.exist?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe")
       end
 
+      def define_resource_requirements
+        [ new_resource.proxy_user, new_resource.proxy_password ].each do
+          requirements.assert(:install) do |a|
+            a.assertion do
+              (!new_resource.proxy_user.nil? && new_resource.proxy_password.nil?) || (new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?)
+            end
+            a.failure_message(Chef::Exceptions::ValidationFailed, "You must specify both a proxy_user and a proxy_password")
+            a.whyrun("Assuming that if you have configured a 'proxy_user' you must also supply a 'proxy_password'")
+          end
+        end
+      end
+
       action :install, description: "Installs Chocolatey package manager" do
         unless new_resource.download_url.nil?
           "Set-Item -path env:chocolateyDownloadUrl -Value #{new_resource.download_url}"
@@ -88,11 +101,12 @@ class Chef
 
         if !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
           "Set-Item -path env:chocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:chocolateyProxyPassword -Value #{new_resource.proxy_password}"
-        elsif (!new_resource.proxy_user.nil? && new_resource.proxy_password.nil?) || (new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?)
-          Chef::Log.error("Both a Proxy User and a Proxy Password must be set or neither can be set")
+        # elsif (!new_resource.proxy_user.nil? && new_resource.proxy_password.nil?) || (new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?)
+        #   Chef::Log.error("Both a Proxy User and a Proxy Password must be set or neither can be set")
         end
 
         converge_if_changed do
+          # the '-bor' parameter below is a Bitwise Or of 2 bytes that is used to create the correct Security Protocol offset with and results in creating TLS 1.2
           powershell_code = <<-CODE
             Set-ExecutionPolicy Bypass -Scope Process -Force;
             [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
