@@ -51,7 +51,7 @@ end
 
 # In order to pass notarization we need to sign any binaries and libraries included in the package.
 # This makes sure we include and bins and libs that are brought in by gems.
-ruby_version = "3.1.2"
+ruby_version = "2.7.6"
 ruby_version = ruby_version.split(".")[0..1].join(".")
 ruby_mmv = "#{ruby_version}.0"
 ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"
