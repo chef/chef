@@ -5,7 +5,7 @@ param(
 
 ruby -v
 
-. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -version $env:CHEF_FOUNDATION_VERSION
 
 ruby -v
 
@@ -18,7 +18,7 @@ if ($TestType -eq 'Functional') {
 ruby -v
 
 Write-Output "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3 
+bundle install --jobs=3 --retry=3
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}

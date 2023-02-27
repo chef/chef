@@ -76,8 +76,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "  agents:"
   echo "    queue: single-use-windows-2019-privileged"
   echo "  env:"
-  echo "  - CHEF_FOUNDATION_VERSION"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "    - CHEF_FOUNDATION_VERSION"
   echo "  timeout_in_minutes: 60"
 done
 
