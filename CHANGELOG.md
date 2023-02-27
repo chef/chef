@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.25 -->
-## [v18.1.25](https://github.com/chef/chef/tree/v18.1.25) (2023-02-23)
+<!-- latest_release 18.1.26 -->
+## [v18.1.26](https://github.com/chef/chef/tree/v18.1.26) (2023-02-27)
 
 #### Merged Pull Requests
-- Bump kitchen-vagrant from 1.14.0 to 1.14.1 in /omnibus [#13599](https://github.com/chef/chef/pull/13599) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Force errors after bundler in omnibus_chef_build [#13613](https://github.com/chef/chef/pull/13613) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Force errors after bundler in omnibus_chef_build [#13613](https://github.com/chef/chef/pull/13613) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.26 -->
 - Bump kitchen-vagrant from 1.14.0 to 1.14.1 in /omnibus [#13599](https://github.com/chef/chef/pull/13599) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.1.25 -->
 - Bump omnibus-software from `6c14e85` to `87f418b` in /omnibus [#13605](https://github.com/chef/chef/pull/13605) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.1.24 -->
 - Tp/infc 437 nightlies [#13604](https://github.com/chef/chef/pull/13604) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.23 -->
