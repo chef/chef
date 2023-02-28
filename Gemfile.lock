@@ -35,12 +35,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.10.33)
+    chef (17.10.34)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.33)
-      chef-utils (= 17.10.33)
+      chef-config (= 17.10.34)
+      chef-utils (= 17.10.34)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -66,13 +66,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.10.33-universal-mingw32)
+    chef (17.10.34-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.33)
+      chef-config (= 17.10.34)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 17.10.33)
+      chef-utils (= 17.10.34)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -113,15 +113,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.10.33)
-      chef (= 17.10.33)
+    chef-bin (17.10.34)
+      chef (= 17.10.34)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.10.33)
+    chef-config (17.10.34)
       addressable
-      chef-utils (= 17.10.33)
+      chef-utils (= 17.10.34)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -130,7 +130,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.10.33)
+    chef-utils (17.10.34)
       concurrent-ruby
 
 GEM
@@ -143,13 +143,13 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.715.0)
+    aws-partitions (1.718.0)
     aws-sdk-core (3.170.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.62.0)
+    aws-sdk-kms (1.63.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.119.1)
@@ -165,7 +165,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
+    chef-powershell (1.0.19)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
@@ -291,7 +291,7 @@ GEM
     net-scp (4.0.0)
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
-      net-ssh (>= 5, <8.0.0)
+      net-ssh (>= 5.0.0, < 8.0.0)
     net-ssh (7.0.1)
     nori (2.6.0)
     parallel (1.22.1)
@@ -471,4 +471,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.24
+   2.3.18
