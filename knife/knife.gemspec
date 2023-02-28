@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
+  s.add_dependency "train-core", "~> 3.10" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 17.0"
   s.add_dependency "ffi", ">= 1.15" # 1.14 versions are broken on i386 windows
   s.add_dependency "ffi-yajl", "~> 2.2"
-  s.add_dependency "net-ssh", ">= 5.1", "< 7"
+  s.add_dependency "net-ssh", ">= 5.1", "< 8"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
   # disabling this until we get get it to compile on RHEL 7
