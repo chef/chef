@@ -29,25 +29,26 @@ $env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME="buildkite"
 
 Write-Output "--- Install Chef Foundation"
-. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -version $CHEF_FOUNDATION_VERSION
 
 $env:PROJECT_NAME="chef"
 $env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yaml"
 $env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
 $env:HOMEDRIVE = "C:"
 $env:HOMEPATH = "\Users\ContainerAdministrator"
+$env:CHEF_FOUNDATION_INSTALL_DIR = "C:\opscode\chef"
 $env:OMNIBUS_TOOLCHAIN_INSTALL_DIR = "C:\opscode\omnibus-toolchain"
 $env:SSL_CERT_FILE = "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\ssl\certs\cacert.pem"
 $env:MSYS2_INSTALL_DIR = "C:\msys64"
 $env:BASH_ENV = "${env:MSYS2_INSTALL_DIR}\etc\bash.bashrc"
 $env:OMNIBUS_WINDOWS_ARCH = "x64"
 $env:MSYSTEM = "MINGW64"
-$omnibus_toolchain_msystem = & "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin\ruby" -e "puts RUBY_PLATFORM"
+$omnibus_toolchain_msystem = & "${env:CHEF_FOUNDATION_INSTALL_DIR}\embedded\bin\ruby" -e "puts RUBY_PLATFORM"
 If ($omnibus_toolchain_msystem -eq "x64-mingw-ucrt") {
   $env:MSYSTEM = "UCRT64"
 }
 $original_path = $env:PATH
-$env:PATH = "${env:MSYS2_INSTALL_DIR}\$env:MSYSTEM\bin;${env:MSYS2_INSTALL_DIR}\usr\bin;${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin;C:\wix;C:\Program Files (x86)\Windows Kits\8.1\bin\x64;${original_path}"
+$env:PATH = "${env:MSYS2_INSTALL_DIR}\$env:MSYSTEM\bin;${env:MSYS2_INSTALL_DIR}\usr\bin;${env:CHEF_FOUNDATION_INSTALL_DIR}\embedded\bin;C:\wix;C:\Program Files (x86)\Windows Kits\8.1\bin\x64;${original_path}"
 Write-Output "env:PATH = $env:PATH"
 
 Write-Output "--- Running bundle install for Omnibus"

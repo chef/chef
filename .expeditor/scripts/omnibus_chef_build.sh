@@ -8,7 +8,7 @@ export ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory
 export ARTIFACTORY_USERNAME="buildkite"
 
 export PROJECT_NAME="chef"
-export PATH="/opt/omnibus-toolchain/bin:${PATH}"
+export PATH="/opt/chef/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yaml"
 
