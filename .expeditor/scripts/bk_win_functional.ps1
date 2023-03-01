@@ -12,7 +12,7 @@ Write-Output "--- Enable Ruby 3.0`r"
 Write-Output  "Installing Ruby 3.0 and refreshing the path"
 
 if (-not(Test-Path -Path "C:\ProgramData\chocolatey\bin\choco.exe")){
-    Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('http://internal/odata/repo/ChocolateyInstall.ps1'))
+  Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 
 choco install ruby --version=3.0.5.1 --package-parameters="'/InstallDir:C:\ruby30'" -y
