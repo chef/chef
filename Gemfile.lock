@@ -105,7 +105,7 @@ PATH
       net-sftp (>= 2.1.2, < 5.0)
       ohai (~> 18.0)
       plist (~> 3.2)
-      proxifier (~> 1.0)
+      proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
       train-core (~> 3.10)
       train-rest (>= 0.4.1)

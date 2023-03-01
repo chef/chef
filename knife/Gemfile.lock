@@ -22,7 +22,6 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5)
   ohai!
-  proxifier!
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
