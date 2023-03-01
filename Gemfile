@@ -17,6 +17,8 @@ end
 
 gem "cheffish", "~> 17.0"
 
+gem "json"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
