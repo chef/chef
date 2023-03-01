@@ -16,7 +16,7 @@ Remove-Item -path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction Silen
 
 Write-Output "`r Now verifying the \Programdata directory"
 $output = Get-ChildItem -Path "C:\ProgramData"
-Write-Output $output
+foreach($dir in $output){Write-Output $dir}
 Write-Output "`r`n"
 
 Write-Output "`r Forcing an installation"
