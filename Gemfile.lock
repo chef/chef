@@ -434,6 +434,7 @@ GEM
     wmi-lite (1.0.7)
 
 PLATFORMS
+  x86_64-linux
   ruby
   x64-mingw32
   x86-mingw32
