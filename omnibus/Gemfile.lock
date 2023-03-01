@@ -332,7 +332,7 @@ GEM
       rainbow
       zhexdump (>= 0.0.2)
     plist (3.7.0)
-    proxifier2 (~> 1.1)
+    proxifier2 (1.1.0)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
