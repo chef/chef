@@ -46,7 +46,7 @@ end
 # This is the behavior the transitive omnibus software deps such as chef-dk
 # expect.
 if version != "local_source"
-  source git: "https://github.com/chef/chef.git", branch: "vkarve/v17-chef-foundation-dep"
+  source git: "https://github.com/chef/chef.git", branch: "chef-17"
 end
 
 # In order to pass notarization we need to sign any binaries and libraries included in the package.
