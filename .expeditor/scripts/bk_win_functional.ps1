@@ -11,11 +11,11 @@ Write-Output "--- Enable Ruby 3.0`r"
 
 Write-Output  "Installing Ruby 3.0 and refreshing the path"
 
+Write-Output "`r Removing the old Choco directory with Force!"
 Remove-Item -path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue
 
-if (-not(Test-Path -Path "C:\ProgramData\chocolatey\bin\choco.exe")){
-  Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-}
+Write-Output "`r Forcing an installation"
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 Write-Output "Is fucking Choco installed or Not?"
 Get-Command -Name choco
