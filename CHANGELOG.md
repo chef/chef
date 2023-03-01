@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.35 -->
-## [v17.10.35](https://github.com/chef/chef/tree/v17.10.35) (2023-02-28)
+<!-- latest_release 17.10.36 -->
+## [v17.10.36](https://github.com/chef/chef/tree/v17.10.36) (2023-03-01)
 
 #### Merged Pull Requests
-- Fix rubygem tests for 17 [#13615](https://github.com/chef/chef/pull/13615) ([jaymzh](https://github.com/jaymzh))
+- [chef-17] INFC-303 - Backport changes from v18 to v17 for documentation and mis… [#13254](https://github.com/chef/chef/pull/13254) ([Stromweld](https://github.com/Stromweld))
+
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-17] INFC-303 - Backport changes from v18 to v17 for documentation and mis… [#13254](https://github.com/chef/chef/pull/13254) ([Stromweld](https://github.com/Stromweld)) <!-- 17.10.36 -->
 - Fix rubygem tests for 17 [#13615](https://github.com/chef/chef/pull/13615) ([jaymzh](https://github.com/jaymzh)) <!-- 17.10.35 -->
 - [chef-17] backport Bump deps for net-ssh 7.x for RHEL 9 and Ubuntu 22.04 ssh [#13332](https://github.com/chef/chef/pull/13332) ([Stromweld](https://github.com/Stromweld)) <!-- 17.10.34 -->
 - Bump chef-vault to 4.1.11 [#13583](https://github.com/chef/chef/pull/13583) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.10.33 -->
