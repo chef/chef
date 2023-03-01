@@ -11,11 +11,16 @@ Write-Output "--- Enable Ruby 3.0`r"
 
 Write-Output  "Installing Ruby 3.0 and refreshing the path"
 
-SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + "$env:ALLUSERSPROFILE\chocolatey\bin"
+$download_file = [System.IO.Path]::GetTempPath() + "rubyinstaller.exe"
+Invoke-WebRequest -Uri "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.5-1/rubyinstaller-devkit-3.0.5-1-x64.exe" -OutFile $download_file
 
-choco install ruby --version=3.0.5.1 --package-parameters="'/InstallDir:C:\ruby30'" -y
-refreshenv
+$Params = "/VerySilent"
+& "$download_file" $Params
+
+#  "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.0.5-1/rubyinstaller-devkit-3.0.5-1-x64.exe" /VerySilent
+
+Start-Sleep -Seconds 360
+
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") +  ";C:\Ruby30\bin"
 ruby -v
 
