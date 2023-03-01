@@ -15,6 +15,14 @@ if (-not(Test-Path -Path "C:\ProgramData\chocolatey\bin\choco.exe")){
   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 
+Write-Output "Is fucking Choco installed or Not?"
+Get-Command -Name choco
+Write-Output "`r`n"
+
+Write-Output "here's my path :`r`n"
+Write-Output $env:path
+Write-Output "`r`n"
+
 choco install ruby --version=3.0.5.1 --package-parameters="'/InstallDir:C:\ruby30'" -y
 refreshenv
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") +  ";C:\Ruby30\bin"
