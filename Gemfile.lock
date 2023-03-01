@@ -277,11 +277,6 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.3.0)
     net-scp (4.0.0)
@@ -457,6 +452,7 @@ DEPENDENCIES
   ed25519 (~> 1.2)
   fauxhai-ng
   inspec-core-bin (>= 4.24)
+  json
   ohai!
   pry (= 0.13.0)
   pry-byebug
