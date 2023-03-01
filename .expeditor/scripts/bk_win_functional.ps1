@@ -14,6 +14,11 @@ Write-Output  "Installing Ruby 3.0 and refreshing the path"
 Write-Output "`r Removing the old Choco directory with Force!"
 Remove-Item -path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue
 
+Write-Output "`r Now verifying the \Programdata directory"
+$output = Get-ChildItem -Path "C:\ProgramData"
+Write-Output $output
+Write-Output "`r`n"
+
 Write-Output "`r Forcing an installation"
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
