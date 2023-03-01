@@ -11,24 +11,8 @@ Write-Output "--- Enable Ruby 3.0`r"
 
 Write-Output  "Installing Ruby 3.0 and refreshing the path"
 
-Write-Output "`r Removing the old Choco directory with Force!"
-Remove-Item -path "C:\ProgramData\chocolatey" -Recurse -Force -ErrorAction SilentlyContinue
-
-Write-Output "`r Now verifying the \Programdata directory"
-$output = Get-ChildItem -Path "C:\ProgramData"
-foreach($dir in $output){Write-Output $dir}
-Write-Output "`r`n"
-
-Write-Output "`r Forcing an installation"
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
-Write-Output "Is fucking Choco installed or Not?"
-Get-Command -Name choco
-Write-Output "`r`n"
-
-Write-Output "here's my path :`r`n"
-Write-Output $env:path
-Write-Output "`r`n"
+SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User") + "$env:ALLUSERSPROFILE\chocolatey\bin"
 
 choco install ruby --version=3.0.5.1 --package-parameters="'/InstallDir:C:\ruby30'" -y
 refreshenv
