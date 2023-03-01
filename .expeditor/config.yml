@@ -266,7 +266,7 @@ subscriptions:
   - workload: ruby_gem_published:addressable-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:proxifier-*
+  - workload: ruby_gem_published:proxifier2-*
     actions:
       - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:syslog-logger-*
