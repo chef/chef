@@ -40,13 +40,6 @@ GIT
   specs:
     ruby-shadow (2.5.0)
 
-GIT
-  remote: https://github.com/chef/ruby-proxifier
-  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
-  branch: lcg/ruby-3
-  specs:
-    proxifier (1.0.3)
-
 PATH
   remote: .
   specs:
@@ -76,7 +69,7 @@ PATH
       net-sftp (>= 2.1.2, < 5.0)
       ohai (~> 18.0)
       plist (~> 3.2)
-      proxifier (~> 1.0)
+      proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
       train-core (~> 3.10)
       train-rest (>= 0.4.1)
@@ -327,6 +320,7 @@ GEM
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.6.0)
+    proxifier2 (1.1.0)
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -496,7 +490,6 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5)
   ohai!
-  proxifier!
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
