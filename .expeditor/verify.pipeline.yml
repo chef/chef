@@ -264,7 +264,7 @@ steps:
       docker:
         image: rubydistros/fedora-latest:3.0
 
-- label: "Functional Windows :ruby: 2.7"
+- label: "Functional Windows :ruby: 3.0"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
