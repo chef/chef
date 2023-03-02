@@ -18,6 +18,9 @@
 
 require "spec_helper"
 require "chef/http/authenticator"
+require "chef/mixin/powershell_exec"
+
+require_relative "../../../lib/chef/win32/registry"
 
 describe Chef::HTTP::Authenticator, :windows_only do
   let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test") }
@@ -28,7 +31,7 @@ describe Chef::HTTP::Authenticator, :windows_only do
   let(:node_name) { "test" }
   let(:passwrd) { "some_insecure_password" }
 
-  before do
+  before(:each) do
     Chef::Config[:node_name] = node_name
     cert_name = "chef-#{node_name}"
     d = Time.now
@@ -36,6 +39,7 @@ describe Chef::HTTP::Authenticator, :windows_only do
     end_date = end_date.utc.iso8601
 
     my_client = Chef::Client.new
+    class_instance.get_cert_password
     pfx = my_client.generate_pfx_package(cert_name, end_date)
     my_client.import_pfx_to_store(pfx)
   end
@@ -47,10 +51,21 @@ describe Chef::HTTP::Authenticator, :windows_only do
     delete_certificate(cert_name)
   end
 
-  context "when retrieving a certificate from the certificate store" do
+  context "when retrieving a certificate from the certificate store it" do
+    it "properly creates the password hive in the registry when it doesn't exist" do
+      delete_registry_hive
+      class_instance.get_cert_password
+      win32registry = Chef::Win32::Registry.new
+      expected_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+      path_created = win32registry.key_exists?(expected_path)
+      expect(path_created).to be(true)
+    end
+
     it "retrieves a certificate password from the registry when the hive does not already exist" do
       delete_registry_hive
+      password = class_instance.get_cert_password
       expect { class_instance.get_cert_password }.not_to raise_error
+      expect(password).not_to be(nil)
     end
 
     it "should return a password of at least 14 characters in length" do
@@ -58,11 +73,58 @@ describe Chef::HTTP::Authenticator, :windows_only do
       expect(password.length).to eql(14)
     end
 
-    it "correctly retrieves a valid certificate in pem format from the certstore" do
+    it "will retrieve a password from a partial registry hive and upgrades it while using the old decryptor" do
+      delete_registry_hive
+      load_partial_registry_hive
+      password = class_instance.get_cert_password
+      expect(password).to eql(passwrd)
+    end
+
+    it "verifies that the new password is now using a vector" do
+      win32registry = Chef::Win32::Registry.new
+      path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+      password_blob = win32registry.get_values(path)
+      if password_blob.nil? || password_blob.empty?
+        raise Chef::Exceptions::Win32RegKeyMissing
+      end
+
+      raw_data = password_blob.map { |x| x[:data] }
+      vector = raw_data[2]
+      expect(vector).not_to be(nil)
+    end
+
+    it "correctly retrieves a valid certificate in pem format from the LocalMachine certstore" do
       require "openssl"
       certificate = class_instance.retrieve_certificate_key(node_name)
       cert_object = OpenSSL::PKey::RSA.new(certificate)
       expect(cert_object.to_s).to match(/BEGIN RSA PRIVATE KEY/)
+    end
+  end
+
+  def load_partial_registry_hive
+    extend Chef::Mixin::PowershellExec
+    password = "some_insecure_password"
+    powershell_code = <<~CODE
+      $encrypted_string = ConvertTo-SecureString "#{password}" -AsPlainText -Force
+      $secure_string = ConvertFrom-SecureString $encrypted_string
+      return $secure_string
+    CODE
+    encrypted_pass = powershell_exec!(powershell_code).result
+    Chef::Config[:auth_key_registry_type] == "user" ? store = "HKEY_CURRENT_USER" : store = "HKEY_LOCAL_MACHINE"
+    hive_path = "#{store}\\Software\\Progress\\Authentication"
+    win32registry = Chef::Win32::Registry.new
+    unless win32registry.key_exists?(hive_path)
+      win32registry.create_key(hive_path, true)
+    end
+    values = { name: "PfxPass", type: :string, data: encrypted_pass }
+    win32registry.set_value(hive_path, values)
+  end
+
+  def delete_registry_hive
+    win32registry = Chef::Win32::Registry.new
+    hive_path = "HKEY_LOCAL_MACHINE\\Software\\Progress"
+    if win32registry.key_exists?(hive_path)
+      win32registry.delete_key(hive_path, true)
     end
   end
 
@@ -71,15 +133,6 @@ describe Chef::HTTP::Authenticator, :windows_only do
       Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "#{cert_name}" } | Remove-item
     CODE
     powershell_exec!(powershell_code)
-  end
-
-  def delete_registry_hive
-    @win32registry = Chef::Win32::Registry.new
-    path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
-    present = @win32registry.get_values(path)
-    unless present.nil? || present.empty?
-      @win32registry.delete_key(path, true)
-    end
   end
 end
 
