@@ -27,6 +27,7 @@ class Chef
       extend Chef::ReservedNames::Win32::API::Process
 
       def initialize(handle)
+        @caller = caller
         @handle = handle
         ObjectSpace.define_finalizer(self, Handle.close_handle_finalizer(handle))
       end
@@ -45,6 +46,9 @@ class Chef
         return if handle == GetCurrentProcess()
 
         unless CloseHandle(handle)
+          puts ">>==Error closing handle #{handle} created by<<="
+          puts @caller
+
           Chef::ReservedNames::Win32::Error.raise!
         end
       end
