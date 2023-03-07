@@ -54,7 +54,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-vault" # chef-vault resources and helpers
 
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, osx_profile and plist resources
-  s.add_dependency "proxifier2", , '~> 1.1'
+  s.add_dependency "proxifier2", '~> 1.1'
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
