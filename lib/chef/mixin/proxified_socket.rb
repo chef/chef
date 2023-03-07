@@ -41,9 +41,3 @@ class Chef
     end
   end
 end
-
-
-# require "proxifier/proxy"
-
-# proxy = Proxifier::Proxy("socks://localhost")
-# socket = proxy.open("www.google.com", 80)
