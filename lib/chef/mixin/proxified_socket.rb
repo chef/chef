@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "proxifier"
+require "proxifier2"
 require "chef-config/mixin/fuzzy_hostname_matcher"
 
 class Chef
