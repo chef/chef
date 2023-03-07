@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "proxifier2"
+require "proxifier/proxy"
 require "chef-config/mixin/fuzzy_hostname_matcher"
 
 class Chef
@@ -31,7 +31,8 @@ class Chef
         proxy = ENV["https_proxy"] || ENV["http_proxy"] || false
 
         if proxy && !fuzzy_hostname_match_any?(host, ENV["no_proxy"])
-          Proxifier.Proxy(proxy).open(host, port)
+          Proxifier::Proxy(proxy).open(host, port)
+          # Proxifier.Proxy(proxy).open(host, port)
         else
           TCPSocket.new(host, port)
         end
@@ -40,3 +41,9 @@ class Chef
     end
   end
 end
+
+
+# require "proxifier/proxy"
+
+# proxy = Proxifier::Proxy("socks://localhost")
+# socket = proxy.open("www.google.com", 80)
