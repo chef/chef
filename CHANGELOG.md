@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.32 -->
-## [v18.1.32](https://github.com/chef/chef/tree/v18.1.32) (2023-03-09)
+<!-- latest_release 18.1.33 -->
+## [v18.1.33](https://github.com/chef/chef/tree/v18.1.33) (2023-03-10)
 
 #### Merged Pull Requests
-- Update chef-foundation for proxifier2  [#13623](https://github.com/chef/chef/pull/13623) ([vkarve-chef](https://github.com/vkarve-chef))
+- Update test certificates  [#13625](https://github.com/chef/chef/pull/13625) ([vkarve-chef](https://github.com/vkarve-chef))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update test certificates  [#13625](https://github.com/chef/chef/pull/13625) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.1.33 -->
 - Update chef-foundation for proxifier2  [#13623](https://github.com/chef/chef/pull/13623) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.1.32 -->
 - set default values for user and host on userdefaults [#12791](https://github.com/chef/chef/pull/12791) ([rishichawda](https://github.com/rishichawda)) <!-- 18.1.31 -->
 - Add selinux_user and selinux_login resources [#13511](https://github.com/chef/chef/pull/13511) ([wheatevo](https://github.com/wheatevo)) <!-- 18.1.30 -->
