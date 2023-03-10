@@ -58,7 +58,7 @@ class Chef
       end
 
       action :remount do
-        if current_resource.mounted
+        if current_resource.mounted && remount_require?
           if new_resource.supports[:remount]
             converge_by("remount #{current_resource.device}") do
               remount_fs

@@ -80,6 +80,13 @@ class Chef
           end
           @current_resource.mounted(mounted)
         end
+        def remount_require?
+          remount_require = true
+          real_mount_point = shell_out("findmnt --kernel #{@new_resource.device}| tail -1 | awk '{print$4}'").stdout.split(",")
+          new_options = @new_resource.options
+          remount_require = false if (new_options - real_mount_point).empty?
+          remount_require
+        end
       end
     end
   end
