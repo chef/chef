@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.35 -->
-## [v16.18.35](https://github.com/chef/chef/tree/v16.18.35) (2023-02-23)
+<!-- latest_release 16.18.36 -->
+## [v16.18.36](https://github.com/chef/chef/tree/v16.18.36) (2023-03-10)
 
 #### Merged Pull Requests
-- Bump plist to 3.7.0 [#13596](https://github.com/chef/chef/pull/13596) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- adding new testing certs from digicert [#13627](https://github.com/chef/chef/pull/13627) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.30 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- adding new testing certs from digicert [#13627](https://github.com/chef/chef/pull/13627) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 16.18.36 -->
 - Bump plist to 3.7.0 [#13596](https://github.com/chef/chef/pull/13596) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.35 -->
 - Bump chef-vault to 4.1.11 [#13582](https://github.com/chef/chef/pull/13582) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.34 -->
 - Bump omnibus-software from `db8acc3` to `225e357` in /omnibus [#13609](https://github.com/chef/chef/pull/13609) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.33 -->
