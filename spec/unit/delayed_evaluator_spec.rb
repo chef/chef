@@ -1,8 +1,4 @@
 #
-# Author:: Adam Jacob (<adam@chef.io>)
-# Author:: Christopher Walters (<cw@chef.io>)
-# Author:: Tim Hinderliter (<tim@chef.io>)
-# Author:: Seth Chisamore (<schisamo@chef.io>)
 # Copyright:: Copyright (c) Progress Software Inc.
 # License:: Apache License, Version 2.0
 #
