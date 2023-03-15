@@ -9,9 +9,9 @@ fips-platforms:
   - ubuntu-*-x86_64
   - windows-*
 builder-to-testers-map:
-  aix-7.1-powerpc:
-    - aix-7.1-powerpc
-    - aix-7.2-powerpc
+  # aix-7.1-powerpc:
+  #   - aix-7.1-powerpc
+  #   - aix-7.2-powerpc
   debian-9-x86_64:
     - debian-9-x86_64
     - debian-10-x86_64
