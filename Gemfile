@@ -16,7 +16,21 @@ else
 end
 
 gem "cheffish", "~> 17.0.0"
-gem "chef-powershell", "~> 1.0.13"
+
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+  gem "win32-api", "~> 1.5.5"
+  gem "win32-event", "~> 0.6.1"
+  gem "win32-eventlog", "0.6.3"
+  gem "win32-mmap", "~> 0.4.1"
+  gem "win32-mutex", "~> 0.4.2"
+  gem "win32-process", "~> 0.9"
+  gem "win32-service", ">= 2.1.5", "< 3.0"
+  gem "wmi-lite", "~> 1.0"
+  gem "win32-taskscheduler", "~> 2.0"
+  gem "iso8601", ">= 0.12.1", "< 0.14"
+  gem "win32-certstore", "~> 1.6.15"
+  gem "chef-powershell", "~> 1.0.13"
+end
 
 group(:omnibus_package) do
   gem "appbundler"
