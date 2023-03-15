@@ -956,7 +956,7 @@ class Chef
         opts
       end
 
-      #checks the ~/.ssh/config file to check RequestTTY is set to yes
+      # checks the ~/.ssh/config file to check RequestTTY is set to yes
       def ssh_config_tty
         if File.exists?(File.join(Dir.home, ".ssh/config"))
           ssh_config_file = File.open(File.join(Dir.home, ".ssh/config")).read
@@ -966,7 +966,7 @@ class Chef
             return true if tty_value == "yes"
           end
         end
-        return false
+        false
       end
 
       def ssh_identity_opts
