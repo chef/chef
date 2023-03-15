@@ -40,7 +40,7 @@ namespace :pre_install do
     %w{chef-utils chef-config}.each do |gem|
       path = ::File.join(::File.dirname(__FILE__), gem)
       Dir.chdir(path) do
-        sh("rake install")
+        system "rake install"
       end
     end
   end
