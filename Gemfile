@@ -16,6 +16,7 @@ else
 end
 
 gem "cheffish", "~> 17.0.0"
+gem "chef-powershell", "~> 1.0.13"
 
 group(:omnibus_package) do
   gem "appbundler"
