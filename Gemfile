@@ -18,7 +18,7 @@ end
 gem "cheffish", "~> 17.0.0"
 
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-  gem "win32-api", "~> 1.5.5"
+  gem "win32-api", "~> 1.10.1"
   gem "win32-event", "~> 0.6.1"
   gem "win32-eventlog", "0.6.3"
   gem "win32-mmap", "~> 0.4.1"
