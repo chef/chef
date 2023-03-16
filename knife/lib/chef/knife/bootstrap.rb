@@ -950,7 +950,7 @@ class Chef
         opts = {}
         return opts if winrm?
 
-        ssh_config_tty ? opts[:non_interactive] = false : opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
+        opts[:non_interactive] = ssh_config_tty ? false : true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config[:ssh_forward_agent] === true)
         opts[:connection_timeout] = session_timeout
         opts
