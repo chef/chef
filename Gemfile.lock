@@ -406,7 +406,7 @@ GEM
     win32-api (1.10.1)
     win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.6.15)
-      chef-powershell (>= 1.0.13)
+      chef-powershell (>= 1.0.12)
       ffi
     win32-event (0.6.3)
       win32-ipc (>= 0.6.0)
