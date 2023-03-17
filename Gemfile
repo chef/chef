@@ -28,7 +28,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   gem "wmi-lite", "~> 1.0"
   gem "win32-taskscheduler", "~> 2.0"
   gem "iso8601", ">= 0.12.1", "< 0.14"
-  gem "win32-certstore", "~> 1.6.15"
+  gem "win32-certstore", "~> 0.6.15"
   gem "chef-powershell", "~> 1.0.13"
 end
 
