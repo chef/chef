@@ -33,6 +33,7 @@ describe Chef::Provider::Mount do
     new_resource.name        "/tmp/foo"
     new_resource.mount_point "/tmp/foo"
     new_resource.fstype      "ext3"
+    new_resource.options %w{nodev nosuid}
     new_resource
   end
 
@@ -90,9 +91,10 @@ describe Chef::Provider::Mount do
       new_resource.supports[:remount] = true
     end
 
-    it "should remount the filesystem if it is mounted" do
+    it "should remount the filesystem if it is mounted and remount_require? is true" do
       allow(current_resource).to receive(:mounted).and_return(true)
-      expect(provider).to receive(:remount_fs).and_return(true)
+      allow(provider).to receive(:remount_require?).and_return(true)
+      expect(provider).to receive(:remount_fs)
       provider.run_action(:remount)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -111,7 +113,10 @@ describe Chef::Provider::Mount do
       allow(current_resource).to receive(:mounted).and_return(true)
     end
 
-    it "should try a umount/remount of the filesystem" do
+    it "should try a umount and mount of the filesystem if it is mounted and remount_require? is true" do
+      allow(current_resource).to receive(:mounted).and_return(true)
+      allow(provider).to receive(:remount_require?).and_return(true)
+      expect(provider).not_to receive(:remount_fs)
       expect(provider).to receive(:umount_fs)
       expect(provider).to receive(:mounted?).and_return(true, false)
       expect(provider).to receive(:mount_fs)
@@ -123,7 +128,40 @@ describe Chef::Provider::Mount do
       provider.unmount_retries = 1
       expect(provider).to receive(:umount_fs)
       expect(provider).to receive(:mounted?).and_return(true, true)
+      expect(provider).to receive(:remount_require?).and_return(true)
       expect { provider.run_action(:remount) }.to raise_error(Chef::Exceptions::Mount)
+    end
+  end
+
+  describe "when the filesystem should not be remounted" do
+    it "should remount the filesystem if it is mounted is false and remount_require? is false" do
+      allow(current_resource).to receive(:mounted).and_return(false)
+      allow(provider).to receive(:remount_require?).and_return(false)
+      expect(provider).not_to receive(:remount_fs)
+      expect(provider).not_to receive(:umount_fs)
+      expect(provider).not_to receive(:mount_fs)
+      provider.run_action(:remount)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should remount the filesystem if it is mounted is false and remount_require? is true" do
+      allow(current_resource).to receive(:mounted).and_return(false)
+      allow(provider).to receive(:remount_require?).and_return(true)
+      expect(provider).not_to receive(:remount_fs)
+      expect(provider).not_to receive(:umount_fs)
+      expect(provider).not_to receive(:mount_fs)
+      provider.run_action(:remount)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
+
+    it "should remount the filesystem if it is mounted is true and remount_require? is false" do
+      allow(current_resource).to receive(:mounted).and_return(true)
+      allow(provider).to receive(:remount_require?).and_return(false)
+      expect(provider).not_to receive(:remount_fs)
+      expect(provider).not_to receive(:umount_fs)
+      expect(provider).not_to receive(:mount_fs)
+      provider.run_action(:remount)
+      expect(new_resource).not_to be_updated_by_last_action
     end
   end
 

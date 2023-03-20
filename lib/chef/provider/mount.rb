@@ -118,6 +118,11 @@ class Chef
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
       end
 
+      # should actually check if the filesystem is mounted and new resource have any difference (not just return current_resource) and return true/false
+      def remount_require?
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #remount_require?"
+      end
+
       # It's entirely plausible that a site might prefer UUIDs or labels, so
       # we need to be able to update fstab to conform with their wishes
       # without necessarily needing to remount the device.

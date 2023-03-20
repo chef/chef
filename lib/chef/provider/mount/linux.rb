@@ -80,6 +80,8 @@ class Chef
           end
           @current_resource.mounted(mounted)
         end
+
+        # should actually check if the filesystem is mounted and new resource have any difference (not just return current_resource) and return true/false
         def remount_require?
           remount_require = true
           real_mount_point = shell_out("findmnt --kernel #{@new_resource.device}| tail -1 | awk '{print$4}'").stdout.split(",")
