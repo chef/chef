@@ -18,7 +18,7 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=("el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
@@ -56,16 +56,16 @@ then
   done
 
   # remove duplicates from build array
-  # using shell parameter expansion this checks to make sure the esoteric_build_platforms array isn't empty if OMNIBUS_FILTER is only container platforms 
-  # prevents esoteric_build_platforms unbound variable error 
+  # using shell parameter expansion this checks to make sure the esoteric_build_platforms array isn't empty if OMNIBUS_FILTER is only container platforms
+  # prevents esoteric_build_platforms unbound variable error
   if [[ ! -z "${esoteric_build_platforms:-}" ]]
   then
     esoteric_build_platforms=($(printf "%s\n" "${esoteric_build_platforms[@]}" | sort -u | tr '\n' ' '))
   fi
 fi
 
-# using shell parameter expansion this checks to make sure the omnibus_build_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms 
-# prevents omnibus_build_platforms unbound variable error 
+# using shell parameter expansion this checks to make sure the omnibus_build_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms
+# prevents omnibus_build_platforms unbound variable error
 if [[ ! -z "${omnibus_build_platforms:-}" ]]
 then
   for platform in ${omnibus_build_platforms[@]}; do
@@ -90,7 +90,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
       echo "  timeout_in_minutes: 60"
-    else 
+    else
       echo "- label: \":hammer_and_wrench::windows: $platform\""
       echo "  retry:"
       echo "    automatic:"
@@ -201,8 +201,8 @@ fi
 
 echo "- wait: ~"
 
-# using shell parameter expansion this checks to make sure the omnibus_test_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms 
-# prevents omnibus_test_platforms unbound variable error 
+# using shell parameter expansion this checks to make sure the omnibus_test_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms
+# prevents omnibus_test_platforms unbound variable error
 if [[ ! -z "${omnibus_test_platforms:-}" ]]
 then
   for platform in ${omnibus_test_platforms[@]}; do
@@ -249,10 +249,10 @@ then
 fi
 
 # using shell parameter expansion this checks to make sure the esoteric_test_platforms array isn't empty if OMNIBUS_FILTER is only container platforms
-# prevents esoteric_test_platforms unbound variable error 
+# prevents esoteric_test_platforms unbound variable error
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ] && [[ ! -z "${esoteric_test_platforms:-}" ]]
 then
-  
+
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)
     test_key=$(echo ${platform%:*} | tr . _)
