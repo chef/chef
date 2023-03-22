@@ -3,7 +3,7 @@
 set -eux
 
 # Only execute in the verify pipeline
-# [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]]
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary)|habitat/build)$ ]]
 
 docker ps || true
 
