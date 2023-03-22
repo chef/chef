@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.35 -->
-## [v18.1.35](https://github.com/chef/chef/tree/v18.1.35) (2023-03-21)
+<!-- latest_release 18.1.36 -->
+## [v18.1.36](https://github.com/chef/chef/tree/v18.1.36) (2023-03-22)
 
 #### Merged Pull Requests
-- FIx kitchen test failures in windows boxes due to dependency issue in proxifier [#13644](https://github.com/chef/chef/pull/13644) ([neha-p6](https://github.com/neha-p6))
+- Sean simmons progress/bugfix/precommand [#13646](https://github.com/chef/chef/pull/13646) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Sean simmons progress/bugfix/precommand [#13646](https://github.com/chef/chef/pull/13646) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.1.36 -->
 - FIx kitchen test failures in windows boxes due to dependency issue in proxifier [#13644](https://github.com/chef/chef/pull/13644) ([neha-p6](https://github.com/neha-p6)) <!-- 18.1.35 -->
 - Temporarily build 18.2 without AIX and without Windows 10/11 testers [#13642](https://github.com/chef/chef/pull/13642) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.34 -->
 - Update test certificates  [#13625](https://github.com/chef/chef/pull/13625) ([vkarve-chef](https://github.com/vkarve-chef)) <!-- 18.1.33 -->
