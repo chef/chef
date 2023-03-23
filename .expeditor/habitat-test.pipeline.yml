@@ -14,6 +14,7 @@ steps:
     - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.179/20221109103645"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
     - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
+    - echo "--- What is my pkg_ident_or_artifact - " env
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
     - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
   expeditor:
