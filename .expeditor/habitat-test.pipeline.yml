@@ -11,11 +11,7 @@ steps:
 
 - label: ":linux: Validate Linux"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.2.0/20230323102446"
-    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
-    - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
-    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
-    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
+    - ./.expeditor/scripts/habitat-preplinux.sh
   expeditor:
     executor:
       linux:
@@ -24,11 +20,7 @@ steps:
 
 - label: ":linux: Validate Linux (kernel2)"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.2.0/20230323102435"
-    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux-kernel2
-    - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
-    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
-    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
+    - ./.expeditor/scripts/habitat-preplinux2.sh
   expeditor:
     executor:
       linux:
