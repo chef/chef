@@ -11,11 +11,9 @@ steps:
 
 - label: ":linux: Validate Linux"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.179/20221109103645"
+    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.2.0/20230323102446"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
     - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
-    - echo "--- What is my pkg_ident_or_artifact - "
-    - env
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
     - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
   expeditor:
@@ -26,7 +24,7 @@ steps:
 
 - label: ":linux: Validate Linux (kernel2)"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.179/20221109103648"
+    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.2.0/20230323102446"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux-kernel2
     - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
