@@ -142,7 +142,6 @@ fi
 if [[ ! -z "${omnibus_build_platforms_arm64:-}" ]]
 then
   for platform in ${omnibus_build_platforms_arm64[@]}; do
-    if [[ $platform != *"windows"* ]]; then
       echo "- label: \":hammer_and_wrench::docker: $platform\""
       echo "  retry:"
       echo "    automatic:"
