@@ -11,7 +11,6 @@ steps:
 
 - label: ":linux: Validate Linux"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.179/20221109103645"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
     - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
@@ -24,7 +23,6 @@ steps:
 
 - label: ":linux: Validate Linux (kernel2)"
   commands:
-    - export EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX="chef/chef-infra-client/18.0.179/20221109103648"
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux-kernel2
     - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
     - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
@@ -37,7 +35,7 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - .expeditor/scripts/habitat-test.ps1
+    - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
   expeditor:
     executor:
       windows:
