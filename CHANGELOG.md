@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.0 -->
-## [v18.2.0](https://github.com/chef/chef/tree/v18.2.0) (2023-03-23)
+<!-- latest_release 18.2.1 -->
+## [v18.2.1](https://github.com/chef/chef/tree/v18.2.1) (2023-03-27)
 
 #### Merged Pull Requests
-- Update bundled dependencies for both chef and chef/omnibus [#13643](https://github.com/chef/chef/pull/13643) ([neha-p6](https://github.com/neha-p6))
+- Fix issues in habitat/test pipeline [#13649](https://github.com/chef/chef/pull/13649) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix issues in habitat/test pipeline [#13649](https://github.com/chef/chef/pull/13649) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.1 -->
 - Update bundled dependencies for both chef and chef/omnibus [#13643](https://github.com/chef/chef/pull/13643) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.0 -->
 - Sean simmons progress/bugfix/precommand [#13646](https://github.com/chef/chef/pull/13646) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.1.36 -->
 - FIx kitchen test failures in windows boxes due to dependency issue in proxifier [#13644](https://github.com/chef/chef/pull/13644) ([neha-p6](https://github.com/neha-p6)) <!-- 18.1.35 -->
