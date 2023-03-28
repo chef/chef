@@ -12,8 +12,13 @@ export PATH="/opt/omnibus-toolchain/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
 
-echo "--- Installing Chef Foundation"
-curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+if [[ "$BUILDKITE_STEP_KEY" = "build-sles-15-arm"]]; then
+    echo "--- Installing Chef Foundation for sles-15-arm"
+    curl -fsSL https://artifactory-internal.ps.chef.co/artifactory/omnibus-current-local/com/getchef/chef-foundation/3.0.6/sles/15/chef-foundation-3.0.6-1.sles15.aarch64.rpm | rpm -i chef-foundation-3.0.6-1.sles15.aarch64.rpm 
+  else
+    echo "--- Installing Chef Foundation"
+    curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+fi
 
 if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
   export SSL_CERT_FILE="/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem"
