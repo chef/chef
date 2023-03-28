@@ -179,7 +179,7 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (17.0.0)
+    cheffish (17.1.5)
       chef-utils (>= 17.0)
       chef-zero (>= 14.0)
       net-ssh
@@ -203,6 +203,7 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
+    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
