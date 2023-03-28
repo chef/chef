@@ -368,7 +368,8 @@ then
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
       echo "    - omnibus/omnibus-test.sh"
       echo "  timeout_in_minutes: 60"
-fi   
+  done
+fi
 
 if [ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]
 then
