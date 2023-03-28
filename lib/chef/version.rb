@@ -23,7 +23,11 @@ require_relative "version_string"
 
 class Chef
   CHEF_ROOT = File.expand_path("..", __dir__)
+<<<<<<< HEAD
   VERSION = Chef::VersionString.new("17.10.39")
+=======
+  VERSION = Chef::VersionString.new("17.10.37")
+>>>>>>> 65aa462241 (Updating Ruby Versions now too)
 end
 
 #
