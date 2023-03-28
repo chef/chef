@@ -249,33 +249,6 @@ fi
 
 echo "- wait: ~"
 
-
-
-if [[ ! -z "${omnibus_test_platforms_arm64:-}" ]]
-then
-  for platform in ${omnibus_test_platforms_arm64[@]}; do
-    if [[ $platform != *"windows"* ]]; then
-      echo "- env:"
-      echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}-arm"
-      echo "  label: \":mag::docker: ${platform%:*}-arm\""
-      echo "  key: test-${platform%:*}-arm"
-      echo "  retry:"
-      echo "    automatic:"
-      echo "      limit: 1"
-      echo "  agents:"
-      echo "    queue: docker-linux-arm64"
-      echo "  plugins:"
-      echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
-      echo "      privileged: true"
-      echo "      propagate-environment: true"
-      echo "  commands:"
-      echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
-      echo "    - omnibus/omnibus-test.sh"
-      echo "  timeout_in_minutes: 60"
-    done
-fi    
-
 # using shell parameter expansion this checks to make sure the omnibus_test_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms
 # prevents omnibus_test_platforms unbound variable error
 if [[ ! -z "${omnibus_test_platforms:-}" ]]
@@ -372,6 +345,31 @@ then
     fi
   done
 fi
+
+if [[ ! -z "${omnibus_test_platforms_arm64:-}" ]]
+then
+  for platform in ${omnibus_test_platforms_arm64[@]}; do
+    if [[ $platform != *"windows"* ]]; then
+      echo "- env:"
+      echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}-arm"
+      echo "  label: \":mag::docker: ${platform%:*}-arm\""
+      echo "  key: test-${platform%:*}-arm"
+      echo "  retry:"
+      echo "    automatic:"
+      echo "      limit: 1"
+      echo "  agents:"
+      echo "    queue: docker-linux-arm64"
+      echo "  plugins:"
+      echo "  - docker#v3.5.0:"
+      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
+      echo "      privileged: true"
+      echo "      propagate-environment: true"
+      echo "  commands:"
+      echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
+      echo "    - omnibus/omnibus-test.sh"
+      echo "  timeout_in_minutes: 60"
+    done
+fi   
 
 if [ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]
 then
