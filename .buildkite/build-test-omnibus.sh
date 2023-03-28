@@ -13,7 +13,7 @@ FILTER="${OMNIBUS_FILTER:=*}"
 # array of all container platforms in the format test-platform:build-platform
 container_platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
 
-container_platforms_arm64=("ubuntu-1804-arm:ubuntu-1804" "ubuntu-2004-arm:ubuntu-2004" "ubuntu-2204-arm:ubuntu-2204" "sles-15-arm:sles-12" "centos-7-arm:centos-7" "centos-8-arm:centos-8" "rhel-9-arm:rhel-9" "amazon-2-arm:amazon-2")
+container_platforms_arm64=("ubuntu-1804-arm:ubuntu-1804" "ubuntu-2004-arm:ubuntu-2004" "ubuntu-2204-arm:ubuntu-2204" "centos-7-arm:centos-7" "centos-8-arm:centos-8" "rhel-9-arm:rhel-9" "amazon-2-arm:amazon-2")
 
 # add rest of windows platforms to tests, if not on chef-oss org
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
