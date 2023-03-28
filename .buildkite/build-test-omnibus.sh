@@ -146,11 +146,11 @@ fi
 if [[ ! -z "${omnibus_build_platforms_arm64:-}" ]]
 then
   for platform in ${omnibus_build_platforms_arm64[@]}; do
-      echo "- label: \":hammer_and_wrench::docker::muscle: $platform-arm\""
+      echo "- label: \":hammer_and_wrench::docker::muscle: $platform\""
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
-      echo "  key: build-$platform-arm"
+      echo "  key: build-$platform"
       echo "  agents:"
       echo "    queue: docker-linux-arm64"
       echo "  plugins:"
