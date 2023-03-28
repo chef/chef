@@ -23,8 +23,9 @@ fi
 esoteric_platforms=("el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
-omnibus_build_platforms_arm64=()
 omnibus_test_platforms=()
+omnibus_build_platforms_arm64=()
+omnibus_test_platforms_arm64=()
 
 # build build array and test array based on filter
 for platform in ${container_platforms[@]}; do
