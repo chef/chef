@@ -146,7 +146,7 @@ fi
 if [[ ! -z "${omnibus_build_platforms_arm64:-}" ]]
 then
   for platform in ${omnibus_build_platforms_arm64[@]}; do
-      echo "- label: \":hammer_and_wrench::docker: $platform\""
+      echo "- label: \":hammer_and_wrench::docker: $platform-arm\""
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
