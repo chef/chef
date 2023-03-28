@@ -15,7 +15,7 @@ steps:
   # Tests Ruby 2.6
 #########################################################################
 
-- label: "chef-utils Unit :ruby: 2.6"
+- label: "chef-utils Unit :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd chef-utils
@@ -26,7 +26,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:3.0
 
 - label: "chef-config Unit :ruby: 2.6"
   commands:
@@ -39,7 +39,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:3.0
 
 #########################################################################
   # Tests Ruby 3.0
@@ -263,7 +263,7 @@ steps:
       docker:
         image: rubydistros/fedora-latest:3.0
 
-- label: "Functional Windows :ruby: 2.7"
+- label: "Functional Windows :ruby: 3.0"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
