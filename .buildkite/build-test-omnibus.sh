@@ -9,16 +9,29 @@ fi
 FILTER="${OMNIBUS_FILTER:=*}"
 
 # array of all container platforms in the format test-platform:build-platform
-container_platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
+container_platforms=( "amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8"
+"rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9"
+"ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604"
+"sles-15:sles-15" "windows-2019:windows-2019" )
 
 # add rest of windows platforms to tests, if not on chef-oss org
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
 then
-  container_platforms=( "${container_platforms[@]}" "windows-2012:windows-2019" "windows-2012r2:windows-2019" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
+  container_platforms=( "${container_platforms[@]}"
+  "windows-2012:windows-2019" "windows-2012r2:windows-2019" "windows-2016:windows-2019"
+  "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=( "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x"
+"freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64"
+"mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64"
+"mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64"
+"solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc"
+"sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x" "sles-15-aarch64:sles-15-aarch64"
+"debian-10-aarch64:debian-10-aarch64" "debian-11-aarch64:debian-10-aarch64"
+"el-7-aarch64:el-7-aarch64" "el-8-aarch64:el-8-aarch64" "el-9-aarch64:el-9-aarch64"
+"ubuntu-18.04-aarch64:ubuntu-18.04-aarch64" "ubuntu-20.04-aarch64:ubuntu-18.04-aarch64" "ubuntu-22.04-aarch64:ubuntu-18.04-aarch64" )
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
