@@ -226,7 +226,7 @@ class Chef
                   "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
                 end
               else
-                versions_by_cookbook
+                versions_by_cookbook.sort.to_h
             end
           end
         end
