@@ -1,4 +1,4 @@
-set -ex
+set -ex pipefail
 
 if [[ -z "${BUILDKITE_BUILD_CREATOR_TEAMS:-}" ]]
 then
@@ -11,7 +11,7 @@ fi
 FILTER="${OMNIBUS_FILTER:=*}"
 
 # array of all container platforms in the format test-platform:build-platform
-container_platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
+container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-6:centos-6" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "sles-15:sles-15" "windows-2019:windows-2019")
 
 # container_platforms_arm64=("ubuntu-1804-arm:ubuntu-1804" "ubuntu-2004:ubuntu-2004" "ubuntu-2204:ubuntu-2204" "centos-7-arm:centos-7" "centos-8-arm:centos-8" "sles-15-arm:sles-15" "rhel-9-arm:rhel-9" "amazon-2-arm:amazon-2")
 
@@ -87,6 +87,8 @@ fi
 
 # using shell parameter expansion this checks to make sure the omnibus_build_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms
 # prevents omnibus_build_platforms unbound variable error
+container_platforms=("centos-7:centos-7" "centos-7-arm:centos-7-arm")
+
 if [[ ! -z "${omnibus_build_platforms:-}" ]]
 then
   for platform in ${omnibus_build_platforms[@]}; do
@@ -97,32 +99,18 @@ then
       echo "      limit: 1"
       echo "  key: build-$platform"
       echo "  agents:"
-      echo "    queue: default-privileged"
+      if [[ $platform == *"arm"* ]]; then
+        echo "    queue: docker-linux-arm64"
+      else
+        echo "    queue: default-privileged"
+      fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
-      echo "      privileged: true"
-      echo "      propagate-environment: true"
-      echo "      environment:"
-      echo "        - ARTIFACTORY_PASSWORD"
-      echo "        - ARTIFACTORY_API_KEY"
-      echo "        - RPM_SIGNING_KEY"
-      echo "        - CHEF_FOUNDATION_VERSION"
-      echo "  commands:"
-      echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
-      echo "  timeout_in_minutes: 60"
-    else
-    if [[ $platform != *"windows"* ]]; then
-      echo "- label: \":hammer_and_wrench::docker::muscle: $platform\""
-      echo "  retry:"
-      echo "    automatic:"
-      echo "      limit: 1"
-      echo "  key: build-$platform"
-      echo "  agents:"
-      echo "    queue: docker-linux-arm64"
-      echo "  plugins:"
-      echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+      if [[ $platform == *"arm"* ]]; then
+        echo "      image: chefes/omnibus-toolchain-{$platform::-4}:$OMNIBUS_TOOLCHAIN_VERSION"
+      else
+        echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+      fi
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "      environment:"
@@ -161,7 +149,6 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
       echo "  timeout_in_minutes: 120"
-    fi
     fi
   done
 fi
@@ -297,26 +284,6 @@ then
       echo "    - omnibus/omnibus-test.sh"
       echo "  timeout_in_minutes: 60"
     else
-    if [[ $platform != *"windows"* ]]; then
-      echo "- env:"
-      echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
-      echo "  label: \":mag::docker::muscle: ${platform%:*}\""
-      echo "  key: test-${platform%:*}"
-      echo "  retry:"
-      echo "    automatic:"
-      echo "      limit: 1"
-      echo "  agents:"
-      echo "    queue: docker-linux-arm64"
-      echo "  plugins:"
-      echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
-      echo "      privileged: true"
-      echo "      propagate-environment: true"
-      echo "  commands:"
-      echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
-      echo "    - omnibus/omnibus-test.sh"
-      echo "  timeout_in_minutes: 60"
-    else    
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
       echo "  label: \":mag::windows: ${platform%:*}\""
