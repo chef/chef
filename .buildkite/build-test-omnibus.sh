@@ -235,7 +235,11 @@ then
       echo "    automatic:"
       echo "      limit: 1"
       echo "  agents:"
-      echo "    queue: default-privileged"
+      if [[ $platform == *"arm"* ]]; then
+        echo "    queue: docker-linux-arm64"
+      else
+        echo "    queue: default-privileged"
+      fi      
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
