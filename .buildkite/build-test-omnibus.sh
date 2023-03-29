@@ -107,7 +107,8 @@ then
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       if [[ $platform == *"arm"* ]]; then
-        echo "      image: chefes/omnibus-toolchain-{$platform::-4}:$OMNIBUS_TOOLCHAIN_VERSION"
+        echo "- label: \":hammer_and_wrench::docker::muscle: $platform\""
+        echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
       else
         echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
       fi
