@@ -133,7 +133,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
       echo "  timeout_in_minutes: 60"
-    else    
+    else
       echo "- label: \":hammer_and_wrench::windows: $platform\""
       echo "  retry:"
       echo "    automatic:"
@@ -161,6 +161,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
       echo "  timeout_in_minutes: 120"
+    fi
     fi
   done
 fi
