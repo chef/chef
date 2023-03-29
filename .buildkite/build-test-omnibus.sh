@@ -25,8 +25,8 @@ esoteric_platforms=("el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s3
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
-omnibus_build_platforms_arm64=()
-omnibus_test_platforms_arm64=()
+# omnibus_build_platforms_arm64=()
+# omnibus_test_platforms_arm64=()
 
 # build build array and test array based on filter
 for platform in ${container_platforms[@]}; do
@@ -44,20 +44,20 @@ then
   omnibus_build_platforms=($(printf "%s\n" "${omnibus_build_platforms[@]}" | sort -u | tr '\n' ' '))
 fi
 
-for platform in ${container_platforms_arm64[@]}; do
-    case ${platform%:*} in
-        $FILTER)
-            omnibus_build_platforms_arm64[${#omnibus_build_platforms_arm64[@]}]=${platform#*:}
-            omnibus_test_platforms_arm64[${#omnibus_test_platforms_arm64[@]}]=$platform
-            ;;
-    esac
-done
+# for platform in ${container_platforms_arm64[@]}; do
+#     case ${platform%:*} in
+#         $FILTER)
+#             omnibus_build_platforms_arm64[${#omnibus_build_platforms_arm64[@]}]=${platform#*:}
+#             omnibus_test_platforms_arm64[${#omnibus_test_platforms_arm64[@]}]=$platform
+#             ;;
+#     esac
+# done
 
 # remove duplicates from build array
-if [[ ! -z "${omnibus_build_platforms_arm64:-}" ]]
-then
-  omnibus_build_platforms_arm64=($(printf "%s\n" "${omnibus_build_platforms_arm64[@]}" | sort -u | tr '\n' ' '))
-fi
+# if [[ ! -z "${omnibus_build_platforms_arm64:-}" ]]
+# then
+#   omnibus_build_platforms_arm64=($(printf "%s\n" "${omnibus_build_platforms_arm64[@]}" | sort -u | tr '\n' ' '))
+# fi
 
 ## add esoteric platforms in chef/chef-canary
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
