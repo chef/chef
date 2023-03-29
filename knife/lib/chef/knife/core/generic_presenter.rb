@@ -222,10 +222,11 @@ class Chef
           else
             case parse_format_option
               when :summary
-                key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
+                cookbooks = {}
                 versions_by_cookbook.map do |cookbook, versions|
-                  "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
+                  cookbooks[cookbook] = versions.join(" ")
                 end
+                cookbooks
               else
                 versions_by_cookbook
               end
