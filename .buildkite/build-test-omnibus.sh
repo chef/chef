@@ -226,9 +226,9 @@ then
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
       if [[ $platform == *"arm"* ]]; then
-        echo "- label: \":mag::docker::muscle: ${platform%:*}\""
+        echo "  label: \":mag::docker::muscle: ${platform%:*}\""
       else
-        echo "- label: \":mag::docker: ${platform%:*}\""
+        echo "  label: \":mag::docker: ${platform%:*}\""
       fi
       echo "  key: test-${platform%:*}"
       echo "  retry:"
