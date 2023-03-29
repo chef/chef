@@ -29,19 +29,19 @@ class Chef
         def self.included(includer)
           includer.class_eval do
             option :field_separator,
-              short: "-S SEPARATOR",
-              long: "--field-separator SEPARATOR",
-              description: "Character separator used to delineate nesting in --attribute filters (default \".\")"
+                   short: "-S SEPARATOR",
+                   long: "--field-separator SEPARATOR",
+                   description: "Character separator used to delineate nesting in --attribute filters (default \".\")"
 
             option :attribute,
-              short: "-a ATTR1 [-a ATTR2]",
-              long: "--attribute ATTR1 [--attribute ATTR2] ",
-              description: "Show one or more attributes",
-              proc: Proc.new { |arg, accumulator|
-                accumulator ||= []
-                accumulator << arg
-                accumulator
-              }
+                   short: "-a ATTR1 [-a ATTR2]",
+                   long: "--attribute ATTR1 [--attribute ATTR2] ",
+                   description: "Show one or more attributes",
+                   proc: Proc.new { |arg, accumulator|
+                     accumulator ||= []
+                     accumulator << arg
+                     accumulator
+                   }
           end
         end
       end
@@ -67,10 +67,10 @@ class Chef
         # to produce invalid JSON output.
         def interchange?
           case parse_format_option
-          when :json, :yaml
-            true
-          else
-            false
+            when :json, :yaml
+              true
+            else
+              false
           end
         end
 
@@ -80,26 +80,26 @@ class Chef
         # `config[:format]` setting.
         def format(data)
           case parse_format_option
-          when :summary
-            summarize(data)
-          when :text
-            text_format(data)
-          when :json
-            Chef::JSONCompat.to_json_pretty(data)
-          when :yaml
-            require "yaml" unless defined?(YAML)
-            YAML.dump(data)
-          when :pp
-            require "stringio" unless defined?(StringIO)
-            # If you were looking for some attribute and there is only one match
-            # just dump the attribute value
-            if config[:attribute] && data.length == 1
-              data.values[0]
-            else
-              out = StringIO.new
-              PP.pp(data, out)
-              out.string
-            end
+            when :summary
+              summarize(data)
+            when :text
+              text_format(data)
+            when :json
+              Chef::JSONCompat.to_json_pretty(data)
+            when :yaml
+              require "yaml" unless defined?(YAML)
+              YAML.dump(data)
+            when :pp
+              require "stringio" unless defined?(StringIO)
+              # If you were looking for some attribute and there is only one match
+              # just dump the attribute value
+              if config[:attribute] && data.length == 1
+                data.values[0]
+              else
+                out = StringIO.new
+                PP.pp(data, out)
+                out.string
+              end
           end
         end
 
@@ -112,18 +112,18 @@ class Chef
         # determined from the value of `config[:format]`
         def parse_format_option
           case config[:format]
-          when "summary", /^s/, nil
-            :summary
-          when "text", /^t/
-            :text
-          when "json", /^j/
-            :json
-          when "yaml", /^y/
-            :yaml
-          when "pp", /^p/
-            :pp
-          else
-            raise ArgumentError, "Unknown output format #{config[:format]}"
+            when "summary", /^s/, nil
+              :summary
+            when "text", /^t/
+              :text
+            when "json", /^j/
+              :json
+            when "yaml", /^y/
+              :yaml
+            when "pp", /^p/
+              :pp
+            else
+              raise ArgumentError, "Unknown output format #{config[:format]}"
           end
         end
 
@@ -202,7 +202,7 @@ class Chef
               end
           end
           # necessary (?) for coercing objects (the run_list object?) to hashes
-          ( !data.is_a?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
+          (!data.is_a?(Array) && data.respond_to?(:to_hash)) ? data.to_hash : data
         end
 
         def format_cookbook_list_for_display(item)
@@ -215,14 +215,20 @@ class Chef
               collected
             end
           else
-            versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
+            versions_by_cookbook = item.inject({}) do |collected, (cookbook, versions)|
               collected[cookbook] = versions["versions"].map { |v| v["version"] }
               collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
-            versions_by_cookbook.sort.map do |cookbook, versions|
-              "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
+            case parse_format_option
+              when :text, :summary
+                key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
+                versions_by_cookbook.sort.map do |cookbook, versions|
+                  "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
+                end
+              else
+                versions_by_cookbook
             end
+
           end
         end
 
