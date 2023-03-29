@@ -229,7 +229,7 @@ class Chef
                 cookbooks
               else
                 versions_by_cookbook
-              end
+            end
           end
         end
       end
