@@ -93,7 +93,11 @@ if [[ ! -z "${omnibus_build_platforms:-}" ]]
 then
   for platform in ${omnibus_build_platforms[@]}; do
     if [[ $platform != *"windows"* ]]; then
-      echo "- label: \":hammer_and_wrench::docker: $platform\""
+      if [[ $platform == *"arm"* ]]; then
+        echo "- label: \":hammer_and_wrench::docker::muscle: $platform\""
+      else
+        echo "- label: \":hammer_and_wrench::docker: $platform\""
+      fi
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
