@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ueox pipefail
+set -ueo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -11,11 +11,6 @@ export PROJECT_NAME="chef"
 export PATH="/opt/omnibus-toolchain/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
-
-## hard code for sles-aarch64 here
-## condition statement that looks at the slug, then do the hard coding to 
-#https://artifactory-internal.ps.chef.co/artifactory/omnibus-current-local/com/getchef/chef-foundation/3.0.6/sles/15/chef-foundation-3.0.6-1.sles15.aarch64.rpm
-
 
 echo "--- Installing Chef Foundation"
 curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
