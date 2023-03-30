@@ -1,3 +1,5 @@
+set -e pipefail
+
 if [[ -z "${BUILDKITE_BUILD_CREATOR_TEAMS:-}" ]]
 then
   echo "- block: Build & Test Omnibus Packages"
@@ -9,7 +11,7 @@ fi
 FILTER="${OMNIBUS_FILTER:=*}"
 
 # array of all container platforms in the format test-platform:build-platform
-container_platforms=("amazon-2:centos-7" "centos-6:centos-6" "centos-7:centos-7" "centos-8:centos-8" "rhel-9:rhel-9" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "sles-15:sles-15" "windows-2019:windows-2019")
+container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-6:centos-6" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "sles-15:sles-15" "windows-2019:windows-2019")
 
 # add rest of windows platforms to tests, if not on chef-oss org
 if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
@@ -66,20 +68,34 @@ fi
 
 # using shell parameter expansion this checks to make sure the omnibus_build_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms
 # prevents omnibus_build_platforms unbound variable error
+container_platforms=("centos-7:centos-7" "centos-7-arm:centos-7-arm")
+
 if [[ ! -z "${omnibus_build_platforms:-}" ]]
 then
   for platform in ${omnibus_build_platforms[@]}; do
     if [[ $platform != *"windows"* ]]; then
-      echo "- label: \":hammer_and_wrench::docker: $platform\""
+      if [[ $platform == *"arm"* ]]; then
+        echo "- label: \":hammer_and_wrench::docker::muscle: $platform\""
+      else
+        echo "- label: \":hammer_and_wrench::docker: $platform\""
+      fi
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
       echo "  key: build-$platform"
       echo "  agents:"
-      echo "    queue: default-privileged"
+      if [[ $platform == *"arm"* ]]; then
+        echo "    queue: docker-linux-arm64"
+      else
+        echo "    queue: default-privileged"
+      fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+      if [[ $platform == *"arm"* ]]; then
+        echo "      image: chefes/omnibus-toolchain-${platform%????}:$OMNIBUS_TOOLCHAIN_VERSION"
+      else
+        echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+      fi
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "      environment:"
@@ -209,13 +225,21 @@ then
     if [[ $platform != *"windows"* ]]; then
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
-      echo "  label: \":mag::docker: ${platform%:*}\""
+      if [[ $platform == *"arm"* ]]; then
+        echo "  label: \":mag::docker::muscle: ${platform%:*}\""
+      else
+        echo "  label: \":mag::docker: ${platform%:*}\""
+      fi
       echo "  key: test-${platform%:*}"
       echo "  retry:"
       echo "    automatic:"
       echo "      limit: 1"
       echo "  agents:"
-      echo "    queue: default-privileged"
+      if [[ $platform == *"arm"* ]]; then
+        echo "    queue: docker-linux-arm64"
+      else
+        echo "    queue: default-privileged"
+      fi      
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"

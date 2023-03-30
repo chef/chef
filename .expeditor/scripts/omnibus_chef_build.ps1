@@ -32,7 +32,7 @@ Write-Output "--- Install Chef Foundation"
 . { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
 
 $env:PROJECT_NAME="chef"
-$env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yaml"
+$env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
 $env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
 $env:HOMEDRIVE = "C:"
 $env:HOMEPATH = "\Users\ContainerAdministrator"
