@@ -124,11 +124,11 @@ class Chef
       end
 
       def self.get_cert_user
-        Chef::Config[:auth_key_registry_type] == "user" ? store = "CurrentUser" : store = "LocalMachine"
+        Chef::Config[:auth_key_registry_type] == "user" ? "CurrentUser" : "LocalMachine"
       end
 
       def self.get_registry_user
-        Chef::Config[:auth_key_registry_type] == "user" ? store = "HKEY_CURRENT_USER" : store = "HKEY_LOCAL_MACHINE"
+        Chef::Config[:auth_key_registry_type] == "user" ? "HKEY_CURRENT_USER" : "HKEY_LOCAL_MACHINE"
       end
 
       def self.check_certstore_for_key(client_name)
