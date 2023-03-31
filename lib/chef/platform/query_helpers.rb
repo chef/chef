@@ -23,6 +23,8 @@ class Chef
   class Platform
 
     class << self
+      include Chef::Mixin::PowershellExec
+
       def windows?
         ChefUtils.windows?
       end
