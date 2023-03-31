@@ -17,6 +17,7 @@
 #
 
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require_relative "../mixin/powershell_exec"
 
 class Chef
   class Platform
@@ -58,8 +59,7 @@ class Chef
       end
 
       def dsc_refresh_mode_disabled?(node)
-        require_relative "../powershell"
-        exec = Chef::PowerShell.new("Get-DscLocalConfigurationManager")
+        exec = powershell_exec!("Get-DscLocalConfigurationManager")
         exec.error!
         exec.result["RefreshMode"] == "Disabled"
       end
