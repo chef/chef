@@ -45,8 +45,8 @@ class Chef
         default: true
 
       property :homebrew_path, String,
-        description: "The path to the homebrew binary.",
-        default: node["kernel"]["machine"].eql?('arm64') ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
+        description: "The path to the Homebrew binary.",
+        default: RbConfig::CONFIG["host_cpu"].eql?("aarch64") ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
 
       property :owner, [String, Integer],
         description: "The owner of the Homebrew installation.",
