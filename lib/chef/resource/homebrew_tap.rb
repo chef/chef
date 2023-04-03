@@ -41,8 +41,8 @@ class Chef
         description: "The URL of the tap."
 
       property :homebrew_path, String,
-               description: "The path to the Homebrew binary.",
-               default: RbConfig::CONFIG["host_cpu"].eql?("aarch64") ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
+        description: "The path to the Homebrew binary.",
+        default: RbConfig::CONFIG["host_cpu"].eql?("aarch64") ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
 
       property :owner, String,
         description: "The owner of the Homebrew installation.",
@@ -75,8 +75,9 @@ class Chef
       #
       # @return [Boolean]
       def tapped?(name)
+        base_path = RbConfig::CONFIG["host_cpu"].eql?("aarch64") ? "/opt/homebrew/Library/Taps" : "/usr/local/Homebrew/Library/Taps"
         tap_dir = name.gsub("/", "/homebrew-")
-        ::File.directory?("#{new_resource.homebrew_path}/#{tap_dir}")
+        ::File.directory?("#{base_path}/#{tap_dir}")
       end
     end
   end
