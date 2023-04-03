@@ -408,7 +408,7 @@ GEM
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
     thor (1.2.1)
-    time (0.2.1)
+    time (0.2.2)
       date
     timeout (0.3.2)
     toml-rb (2.2.0)
