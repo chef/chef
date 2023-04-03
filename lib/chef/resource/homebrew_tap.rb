@@ -75,7 +75,7 @@ class Chef
       #
       # @return [Boolean]
       def tapped?(name)
-        base_path = RbConfig::CONFIG["host_cpu"].eql?("aarch64") ? "/opt/homebrew/Library/Taps" : "/usr/local/Homebrew/Library/Taps"
+        base_path = RbConfig::CONFIG["host_cpu"].eql?("arm64") ? "/opt/homebrew/Library/Taps" : "/usr/local/Homebrew/Library/Taps"
         tap_dir = name.gsub("/", "/homebrew-")
         ::File.directory?("#{base_path}/#{tap_dir}")
       end
