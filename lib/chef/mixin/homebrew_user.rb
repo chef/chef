@@ -60,7 +60,7 @@ class Chef
       private
 
       def calculate_owner
-        default_brew_path = RbConfig::CONFIG['host_cpu'].eql?("aarch64") ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
+        default_brew_path = RbConfig::CONFIG["host_cpu"].eql?("aarch64") ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
         if ::File.exist?(default_brew_path)
           # By default, this follows symlinks which is what we want
           owner = ::File.stat(default_brew_path).uid
