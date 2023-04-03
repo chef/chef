@@ -34,6 +34,13 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
+
 PATH
   remote: .
   specs:
@@ -71,6 +78,52 @@ PATH
       unf_ext (>= 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
+    chef (18.2.5-x64-mingw-ucrt)
+      addressable
+      aws-sdk-s3 (~> 1.91)
+      aws-sdk-secretsmanager (~> 1.46)
+      chef-config (= 18.2.5)
+      chef-powershell (~> 1.0.12)
+      chef-utils (= 18.2.5)
+      chef-vault
+      chef-zero (>= 14.0.11)
+      corefoundation (~> 0.3.4)
+      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      erubis (~> 2.7)
+      ffi (>= 1.15.5)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
+      ffi-yajl (~> 2.2)
+      iniparse (~> 1.4)
+      inspec-core (>= 5)
+      iso8601 (>= 0.12.1, < 0.14)
+      license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
+      mixlib-authentication (>= 2.1, < 4)
+      mixlib-cli (>= 2.1.1, < 3.0)
+      mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
+      net-ftp
+      net-sftp (>= 2.1.2, < 5.0)
+      ohai (~> 18.0)
+      plist (~> 3.2)
+      proxifier2 (~> 1.1)
+      syslog-logger (~> 1.6)
+      train-core (~> 3.10)
+      train-rest (>= 0.4.1)
+      train-winrm (>= 0.2.5)
+      unf_ext (>= 0.0.8.2)
+      uuidtools (>= 2.1.5, < 3.0)
+      vault (~> 0.16)
+      win32-api (~> 1.10.0)
+      win32-certstore (~> 0.6.15)
+      win32-event (~> 0.6.1)
+      win32-eventlog (= 0.6.3)
+      win32-mmap (~> 0.4.1)
+      win32-mutex (~> 0.4.2)
+      win32-process (~> 0.9)
+      win32-service (>= 2.1.5, < 3.0)
+      win32-taskscheduler (~> 2.0)
+      wmi-lite (~> 1.0)
 
 PATH
   remote: chef-bin
@@ -127,6 +180,9 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
+    chef-powershell (1.0.13)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -213,6 +269,7 @@ GEM
     inspec-core-bin (5.21.29)
       inspec-core (= 5.21.29)
     ipaddress (0.8.3)
+    iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
     libyajl2 (2.1.0)
@@ -319,6 +376,7 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
     time (0.2.2)
@@ -372,8 +430,28 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
+    win32-api (1.10.1)
+    win32-certstore (0.6.15)
+      chef-powershell (>= 1.0.12)
+      ffi
+    win32-event (0.6.3)
+      win32-ipc (>= 0.6.0)
+    win32-eventlog (0.6.3)
+      ffi
+    win32-ipc (0.7.0)
+      ffi
+    win32-mmap (0.4.2)
+      ffi
+    win32-mutex (0.4.3)
+      win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
+    win32-service (2.3.2)
+      ffi
+      ffi-win32-extensions
+    win32-taskscheduler (2.0.4)
+      ffi
+      structured_warnings
     winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
@@ -420,6 +498,7 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
