@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.6 -->
-## [v18.2.6](https://github.com/chef/chef/tree/v18.2.6) (2023-04-03)
+<!-- latest_release 18.2.7 -->
+## [v18.2.7](https://github.com/chef/chef/tree/v18.2.7) (2023-04-04)
 
 #### Merged Pull Requests
-- minor gem update to get the version bumped [#13668](https://github.com/chef/chef/pull/13668) ([johnmccrae](https://github.com/johnmccrae))
+- &quot;FFI Yajl&quot; fix [#13662](https://github.com/chef/chef/pull/13662) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- &quot;FFI Yajl&quot; fix [#13662](https://github.com/chef/chef/pull/13662) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.7 -->
 - minor gem update to get the version bumped [#13668](https://github.com/chef/chef/pull/13668) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.2.6 -->
 - fixing one small missed step [#13661](https://github.com/chef/chef/pull/13661) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.2.5 -->
 - Sean simmons progress/bugfix/build docker image [#13657](https://github.com/chef/chef/pull/13657) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.2.4 -->
