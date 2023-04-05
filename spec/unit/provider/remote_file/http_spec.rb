@@ -251,7 +251,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       end
 
       context "and the response has no Date or Last-Modified header" do
-        let(:last_response) { { "date" => nil, "last_modified" => nil } }
+        let(:last_response) { { "date" => nil, "last-modified" => nil } }
         it "does not set an mtime in the result" do
           # RFC 2616 suggests that servers that do not set a Date header do not
           # have a reliable clock, so no use in making them deal with dates.
@@ -265,19 +265,19 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the response has a Last-Modified header" do
         let(:last_response) do
           # Last-Modified should be preferred to Date if both are set
-          { "date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => "Fri, 17 May 2013 11:11:11 GMT" }
+          { "date" => "Fri, 17 May 2013 23:23:23 GMT", "last-modified" => "Fri, 17 May 2013 11:11:11 GMT" }
         end
 
         it "sets the mtime to the Last-Modified time in the response" do
           fetcher.fetch
           expect(cache_control_data.etag).to be_nil
-          expect(cache_control_data.mtime).to eq(last_response["last_modified"])
+          expect(cache_control_data.mtime).to eq(last_response["last-modified"])
         end
       end
 
       context "and the response has a Date header but no Last-Modified header" do
         let(:last_response) do
-          { "date" => "Fri, 17 May 2013 23:23:23 GMT", "last_modified" => nil }
+          { "date" => "Fri, 17 May 2013 23:23:23 GMT", "last-modified" => nil }
         end
 
         it "sets the mtime to the Date in the response" do
