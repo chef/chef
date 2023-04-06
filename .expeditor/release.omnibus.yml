@@ -15,7 +15,7 @@ builder-to-testers-map:
   aix-7.1-powerpc:
    - aix-7.1-powerpc
   #  - aix-7.2-powerpc
-  #  - aix-7.3-powerpc
+   - aix-7.3-powerpc
       #  amazon-2022-aarch64:
       #    - amazon-2022-aarch64
       #  amazon-2022-x86_64:
