@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.8 -->
-## [v18.2.8](https://github.com/chef/chef/tree/v18.2.8) (2023-04-05)
+<!-- latest_release 18.2.9 -->
+## [v18.2.9](https://github.com/chef/chef/tree/v18.2.9) (2023-04-06)
 
 #### Merged Pull Requests
-- Correcting a typo in the resource [#13663](https://github.com/chef/chef/pull/13663) ([johnmccrae](https://github.com/johnmccrae))
+- Adding files for onboarding the project to SonarQubes [#13672](https://github.com/chef/chef/pull/13672) ([vinay-satish](https://github.com/vinay-satish))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adding files for onboarding the project to SonarQubes [#13672](https://github.com/chef/chef/pull/13672) ([vinay-satish](https://github.com/vinay-satish)) <!-- 18.2.9 -->
 - Correcting a typo in the resource [#13663](https://github.com/chef/chef/pull/13663) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.2.8 -->
 <!-- release_rollup -->
 
