@@ -203,7 +203,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
-    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
