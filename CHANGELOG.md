@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.39 -->
-## [v16.18.39](https://github.com/chef/chef/tree/v16.18.39) (2023-03-30)
+<!-- latest_release 16.18.40 -->
+## [v16.18.40](https://github.com/chef/chef/tree/v16.18.40) (2023-04-11)
 
 #### Merged Pull Requests
-- [Chef-16] Update ssl cert used in kitchen tests [#13659](https://github.com/chef/chef/pull/13659) ([neha-p6](https://github.com/neha-p6))
+- Bump addressable to 2.8.4 [#13675](https://github.com/chef/chef/pull/13675) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.30 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump addressable to 2.8.4 [#13675](https://github.com/chef/chef/pull/13675) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.40 -->
 - [Chef-16] Update ssl cert used in kitchen tests [#13659](https://github.com/chef/chef/pull/13659) ([neha-p6](https://github.com/neha-p6)) <!-- 16.18.39 -->
 - Bump omnibus-software from `225e357` to `6a1c889` in /omnibus [#13637](https://github.com/chef/chef/pull/13637) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.38 -->
 - Bump omnibus from `cf97613` to `a1ed55c` in /omnibus [#13630](https://github.com/chef/chef/pull/13630) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.37 -->
