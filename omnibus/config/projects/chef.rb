@@ -41,34 +41,8 @@ end
 
 override :chef, version: "local_source"
 
-# Load dynamically updated overrides
-overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
-instance_eval(IO.read(overrides_path), overrides_path)
-
-dependency "preparation"
-
-dependency "chef"
-
-#
-# addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
-#
-dependency "nokogiri" # (nokogiri cannot go in the Gemfile, see wall of text in the software defn)
-
-# FIXME?: might make sense to move dependencies below into the omnibus-software chef
-#  definition or into a chef-complete definition added to omnibus-software.
-dependency "gem-permissions"
+dependency "chef-local-source"
 dependency "shebang-cleanup"
-dependency "version-manifest"
-dependency "openssl-customization"
-
-# devkit needs to come dead last these days so we do not use it to compile any gems
-if windows?
-  override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows_arch_i386?
-  dependency "ruby-windows-devkit"
-  dependency "ruby-windows-devkit-bash"
-end
-
-dependency "ruby-cleanup"
 
 # further gem cleanup other projects might not yet want to use
 dependency "more-ruby-cleanup"
@@ -98,8 +72,8 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "AF21BA8C9E50AE20DA9907B6E2D4B0CC3306CA03", machine_store: true
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
+  signing_identity ENV.fetch("OMNIBUS_SIGNING_IDENTITY", "13B510D1CF1B3467856A064F1BEA12D0884D2528"), machine_store: true
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-x64-mingw-ucrt/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 

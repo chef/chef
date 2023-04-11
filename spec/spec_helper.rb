@@ -138,12 +138,17 @@ RSpec.configure do |config|
 
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
+  config.filter_run_excluding fips_mode: !fips_mode_build?
+  # Skip fips on windows
+  # config.filter_run_excluding :fips_mode if windows?
+
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_macos: true if macos?
   config.filter_run_excluding macos_only: true unless macos?
   config.filter_run_excluding not_macos_gte_11: true if macos_gte_11?
   config.filter_run_excluding not_supported_on_aix: true if aix?
+  config.filter_run_excluding not_supported_on_freebsd_gte_12_3: true if freebsd_gte_12_3?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
   config.filter_run_excluding win2012r2_only: true unless windows_2012r2?
