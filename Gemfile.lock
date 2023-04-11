@@ -179,7 +179,7 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (17.1.5)
+    cheffish (17.0.0)
       chef-utils (>= 17.0)
       chef-zero (>= 14.0)
       net-ssh
@@ -447,7 +447,7 @@ DEPENDENCIES
   chef-config!
   chef-utils!
   chef-vault
-  cheffish (~> 17.0)
+  cheffish (~> 17.0.0)
   chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
