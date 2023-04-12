@@ -17,11 +17,7 @@
 class Chef
   class Knife
     KNIFE_ROOT = File.expand_path("../..", __dir__)
-<<<<<<< HEAD
     VERSION = "17.10.39".freeze
-=======
-    VERSION = "17.10.37".freeze
->>>>>>> 65aa462241 (Updating Ruby Versions now too)
   end
 end
 
