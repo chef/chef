@@ -8,11 +8,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 5bc091ab3ed4ab002ef85dad3923914c25bb3dcd
+  revision: a1ed55c2e0fdeb06b3c3f3041fe4d0c563233ba4
   branch: main
   specs:
-    omnibus (9.0.8)
-      aws-sdk-s3 (~> 1)
+    omnibus (9.0.18)
+      aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
       contracts (>= 0.16.0, < 0.17.0)
@@ -20,7 +20,7 @@ GIT
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
-      ohai (>= 15, < 18)
+      ohai (>= 16, < 19)
       pedump
       rexml (~> 3.2)
       ruby-progressbar (~> 1.7)
@@ -43,8 +43,8 @@ GEM
     aws-sdk-kms (1.62.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.119.1)
-      aws-sdk-core (~> 3, >= 3.165.0)
+    aws-sdk-s3 (1.116.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
     aws-sdk-secretsmanager (1.61.0)
@@ -53,9 +53,7 @@ GEM
     aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
-    bcrypt_pbkdf (1.1.0-x64-mingw32)
-    bcrypt_pbkdf (1.1.0-x86-mingw32)
-    berkshelf (8.0.1)
+    berkshelf (8.0.5)
       chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
@@ -475,4 +473,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.5
+   2.3.26
