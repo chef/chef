@@ -361,7 +361,7 @@ steps:
     - apt-get install -y graphviz
     - bundle config set --local without omnibus_package
     - bundle install --jobs=3 --retry=3
-    - bundle exec tasks/bin/run_external_test berkshelf/berkshelf main rake
+    - bundle exec tasks/bin/run_external_test chef/berkshelf main rake
   expeditor:
     executor:
       docker:
