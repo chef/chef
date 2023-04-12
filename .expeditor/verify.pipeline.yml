@@ -12,10 +12,10 @@ expeditor:
 steps:
 
 #########################################################################
-  # Tests Ruby 2.6
+  # Tests Ruby 2.7
 #########################################################################
 
-- label: "chef-utils Unit :ruby: 3.0"
+- label: "chef-utils Unit :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd chef-utils
@@ -26,9 +26,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:2.7
 
-- label: "chef-config Unit :ruby: 2.6"
+- label: "chef-config Unit :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd chef-config
@@ -39,7 +39,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:3.0
+        image: rubydistros/ubuntu-18.04:2.7
 
 #########################################################################
   # Tests Ruby 3.0
