@@ -74,6 +74,7 @@ class Chef
         if new_resource.source.nil? && new_resource.file.nil?
           raise "Must provide either a file or source property for macos_pkg resources."
         end
+
         if current_resource.nil?
           if new_resource.source
             remote_file pkg_file do
