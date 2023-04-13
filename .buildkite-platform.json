@@ -1,5 +1,5 @@
 {
   "chef_foundation": "2.0.0",
-  "omnibus_toolchain": "3.0.8",
+  "omnibus_toolchain": "3.0.0",
   "omnibus_plugin_version": "0.2.86"
 }
