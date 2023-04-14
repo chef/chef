@@ -80,6 +80,7 @@ class Chef
 
         Vault.address = config[:vault_addr]
         Vault.namespace = config[:namespace] unless config[:namespace].nil?
+        Vault.ssl_ca_cert = config[:ssl_ca_cert] unless config[:ssl_ca_cert].nil?
 
         case config[:auth_method]
         when :approle
