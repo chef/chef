@@ -23,7 +23,7 @@ class Chef
     class MacosPkg < Chef::Resource
       provides(:macos_pkg) { true }
 
-      description "Use the **macos_pkg** resource to install a macOS `.pkg` file, optionally downloading it from a remote source. A `package_id` propery must be provided for idempotency. Either a `file` or `source` property is required."
+      description "Use the **macos_pkg** resource to install a macOS `.pkg` file, optionally downloading it from a remote source. A `package_id` property must be provided for idempotency. Either a `file` or `source` property is required."
       introduced "18.1"
       examples <<~DOC
         **Install osquery**:

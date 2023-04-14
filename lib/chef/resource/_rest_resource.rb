@@ -351,7 +351,7 @@ action_class do
     Chef.run_context.transport.connection
   end
 
-  # Remove all empty keys (recusively) from Hash.
+  # Remove all empty keys (recursively) from Hash.
   # @see https://stackoverflow.com/questions/56457020/#answer-56458673
   def deep_compact!(hsh)
     raise TypeError unless hsh.is_a? Hash
