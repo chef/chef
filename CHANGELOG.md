@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.10 -->
-## [v18.2.10](https://github.com/chef/chef/tree/v18.2.10) (2023-04-13)
+<!-- latest_release 18.2.11 -->
+## [v18.2.11](https://github.com/chef/chef/tree/v18.2.11) (2023-04-14)
 
 #### Merged Pull Requests
-- Bump time from 0.2.1 to 0.2.2 in /omnibus [#13664](https://github.com/chef/chef/pull/13664) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Avoid Invalid Memory Object error [#13677](https://github.com/chef/chef/pull/13677) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Avoid Invalid Memory Object error [#13677](https://github.com/chef/chef/pull/13677) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.11 -->
 - Bump time from 0.2.1 to 0.2.2 in /omnibus [#13664](https://github.com/chef/chef/pull/13664) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.10 -->
 - Adding files for onboarding the project to SonarQubes [#13672](https://github.com/chef/chef/pull/13672) ([vinay-satish](https://github.com/vinay-satish)) <!-- 18.2.9 -->
 - Correcting a typo in the resource [#13663](https://github.com/chef/chef/pull/13663) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.2.8 -->
