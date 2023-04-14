@@ -722,12 +722,12 @@ class Chef
           Chef::ReservedNames::Win32::Error.raise!
         end
 
-        # Handle.new(_non handle value_) is not ideal because the finalizer for Handle
-        # was silently failing when comparing the parameter with the return from
-        # `GetCurrentProcess()`. In this case, the value is an FFI::Pointer, but the logic
-        # for Token.new works the same otherwise, so I'm leaving this as is and guarding against
-        # trying to treat an FFI::Pointer as a Win32 handle in the finalizer.
-        Token.new(Handle.new(token.read_pointer))
+        # originally this was .read_pointer, but that is interpreted as a non-primitive
+        # class (FFI::Pointer) and causes an ArgumentError (Invalid Memory Object) when
+        # compared to GetCurrentProcess(), which returns a HANDLE (void *). Since a
+        # HANDLE is not a pointer to allocated memory that Ruby C extensions can understand,
+        # the Invalid Memory Object error is raised.
+        Token.new(Handle.new(token.read_ulong))
       end
 
       def self.test_and_raise_lsa_nt_status(result)

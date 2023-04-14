@@ -42,10 +42,7 @@ class Chef
         # to close the pseudo handle returned by the GetCurrentProcess function.  The docs also say that it doesn't hurt to call
         # CloseHandle on it. However, doing so from inside of Ruby always seems to produce an invalid handle error.
         # The recommendation is to use GetCurrentProcess instead of the const (HANDLE)-1, to ensure we're making the correct comparison.
-
-        # Chef::ReservedNames::Win32::Security.logon_user() creates a token with a handle this is an FFI::Pointer
-        # and not a valid handle.
-        return if handle.is_a?(FFI::Pointer) || handle == GetCurrentProcess()
+        return handle == GetCurrentProcess()
 
         unless CloseHandle(handle)
           Chef::ReservedNames::Win32::Error.raise!
