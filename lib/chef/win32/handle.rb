@@ -42,7 +42,7 @@ class Chef
         # to close the pseudo handle returned by the GetCurrentProcess function.  The docs also say that it doesn't hurt to call
         # CloseHandle on it. However, doing so from inside of Ruby always seems to produce an invalid handle error.
         # The recommendation is to use GetCurrentProcess instead of the const (HANDLE)-1, to ensure we're making the correct comparison.
-        return handle == GetCurrentProcess()
+        return if handle == GetCurrentProcess()
 
         unless CloseHandle(handle)
           Chef::ReservedNames::Win32::Error.raise!
