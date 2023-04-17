@@ -11,7 +11,7 @@ GIT
   revision: a1ed55c2e0fdeb06b3c3f3041fe4d0c563233ba4
   branch: main
   specs:
-    omnibus (9.0.18)
+    omnibus (9.0.17)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
