@@ -46,7 +46,7 @@ class Chef
 
       property :homebrew_path, String,
         description: "The path to the Homebrew binary.",
-        default: RbConfig::CONFIG["host_cpu"].eql?("arm64") ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
+        default: [which('brew'), '/opt/homebrew/bin/brew', '/usr/local/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew'].uniq.select { |x| ::File.exist?(x) }.first
 
       property :owner, [String, Integer],
         description: "The owner of the Homebrew installation.",
