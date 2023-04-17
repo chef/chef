@@ -40,7 +40,7 @@ namespace :pre_install do
     %w{chef-utils chef-config}.each do |gem|
       path = ::File.join(::File.dirname(__FILE__), gem)
       Dir.chdir(path) do
-        sh("rake install --debug")
+        sh("rake install")
       end
     end
   end
@@ -70,7 +70,7 @@ Bundler::GemHelper.install_tasks name: gemspec
 task :install do
   chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
   Dir.chdir(chef_bin_path) do
-    system "rake install:force --debug"
+    system "rake install:force"
   end
 end
 
@@ -80,7 +80,7 @@ namespace :install do
   task :local do
     chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
     Dir.chdir(chef_bin_path) do
-      system "rake install:local --debug"
+      system "rake install:local"
     end
   end
 end
