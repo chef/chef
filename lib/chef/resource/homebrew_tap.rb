@@ -42,7 +42,7 @@ class Chef
 
       property :homebrew_path, String,
         description: "The path to the Homebrew binary.",
-        default: [which('brew'), '/opt/homebrew/bin/brew', '/usr/local/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew'].uniq.select { |x| File.exist?(x) }.first
+        default: [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| File.exist?(x) }.first
 
       property :owner, String,
         description: "The owner of the Homebrew installation.",
@@ -75,7 +75,7 @@ class Chef
       #
       # @return [Boolean]
       def tapped?(name)
-        base_path = ["#{::File.dirname(which('brew'))}../homebrew/Library/Taps", '/opt/homebrew/Library/Taps', '/usr/local/Homebrew/Library/Taps', '/home/linuxbrew/.linuxbrew/Library/Taps'].uniq.select { |x| Dir.exist?(x) }.first
+        base_path = ["#{::File.dirname(which("brew"))}../homebrew/Library/Taps", "/opt/homebrew/Library/Taps", "/usr/local/Homebrew/Library/Taps", "/home/linuxbrew/.linuxbrew/Library/Taps"].uniq.select { |x| Dir.exist?(x) }.first
         tap_dir = name.gsub("/", "/homebrew-")
         ::File.directory?("#{base_path}/#{tap_dir}")
       end
