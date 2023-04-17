@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::WindowsFont, :windows_only, :broken do # these tests hang on Chef-16 and Chef-17 in the verify-pipline. 
+describe Chef::Resource::WindowsFont, :windows_only, :broken do # these tests hang on Chef-16 and Chef-17 in the verify-pipline.
   let(:resource_name) { "Playmaker.ttf" }
   let(:resource_source) { "https://www.wfonts.com/download/data/2020/05/06/playmaker/Playmaker.ttf" }
 
