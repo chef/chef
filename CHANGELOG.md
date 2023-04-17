@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.39 -->
-## [v17.10.39](https://github.com/chef/chef/tree/v17.10.39) (2023-04-12)
+<!-- latest_release 17.10.40 -->
+## [v17.10.40](https://github.com/chef/chef/tree/v17.10.40) (2023-04-17)
 
 #### Merged Pull Requests
-- Fix berkshelf on chef 17 [#13679](https://github.com/chef/chef/pull/13679) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus from `5bc091a` to `a1ed55c` in /omnibus [#13632](https://github.com/chef/chef/pull/13632) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `5bc091a` to `a1ed55c` in /omnibus [#13632](https://github.com/chef/chef/pull/13632) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.40 -->
 - Fix berkshelf on chef 17 [#13679](https://github.com/chef/chef/pull/13679) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.39 -->
 - Bump addressable to 2.8.4 [#13674](https://github.com/chef/chef/pull/13674) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.10.38 -->
 - [Chef-17] Update ssl cert used in kitchen tests [#13660](https://github.com/chef/chef/pull/13660) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.37 -->
