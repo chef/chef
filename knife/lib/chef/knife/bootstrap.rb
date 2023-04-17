@@ -67,6 +67,10 @@ class Chef
         description: "The number of seconds to wait for each connection operation to be acknowledged while running bootstrap.",
         default: 60
 
+      option :request_tty,
+        long: "--request-tty",
+        description: "Setting the non_interactive to false when request-tty is true",
+
       # WinRM Authentication
       option :winrm_ssl_peer_fingerprint,
         long: "--winrm-ssl-peer-fingerprint FINGERPRINT",
@@ -950,23 +954,10 @@ class Chef
         opts = {}
         return opts if winrm?
 
-        opts[:non_interactive] = ssh_config_tty ? false : true # Prevent password prompts from underlying net/ssh
+        opts[:non_interactive] = config[:request_tty] ? false : true # Prevent password prompts from underlying net/ssh if request_tty is false
         opts[:forward_agent] = (config[:ssh_forward_agent] === true)
         opts[:connection_timeout] = session_timeout
         opts
-      end
-
-      # checks the ~/.ssh/config file to check RequestTTY is set to yes
-      def ssh_config_tty
-        if File.exists?(File.join(Dir.home, ".ssh/config"))
-          ssh_config_file = File.open(File.join(Dir.home, ".ssh/config")).read
-          if ssh_config_file.include?("RequestTTY")
-            tty_key_index = ssh_config_file.index("RequestTTY")
-            tty_value = ssh_config_file[tty_key_index...].split[1].downcase
-            return true if tty_value == "yes"
-          end
-        end
-        false
       end
 
       def ssh_identity_opts
