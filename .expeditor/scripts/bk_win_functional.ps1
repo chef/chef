@@ -50,5 +50,5 @@ bundle install --jobs=3 --retry=3
 if (-not $?) { throw "Unable to install gem dependencies" }
 
 Write-Output "+++ bundle exec rake spec:functional"
-bundle exec rake spec:functional
+bundle exec rake spec:functional SPEC_OPTS='--format documentation'
 if (-not $?) { throw "Chef functional specs failing." }

@@ -143,7 +143,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.747.0)
+    aws-partitions (1.748.0)
     aws-sdk-core (3.171.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
@@ -307,7 +307,7 @@ GEM
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.7.0)
+    regexp_parser (2.8.0)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -437,7 +437,6 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
-  x86_64-darwin-19
 
 DEPENDENCIES
   appbundler
@@ -462,4 +461,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.18
+   2.2.32
