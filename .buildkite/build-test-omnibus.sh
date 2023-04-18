@@ -293,11 +293,7 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    if [[ $platform == *"aix"* ]];
-      echo "  timeout_in_minutes: 120"
-    else
-      echo "  timeout_in_minutes: 90"
-    fi
+    echo "  timeout_in_minutes: 120"
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
     if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
