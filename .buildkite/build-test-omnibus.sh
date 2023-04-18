@@ -293,7 +293,7 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    if [ $BUILDKITE_STEP_KEY == "test-aix*" ]
+    if [[ $platform == *"aix"* ]];
       echo "  timeout_in_minutes: 120"
     else
       echo "  timeout_in_minutes: 90"
