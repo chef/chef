@@ -14,7 +14,7 @@ FILTER="${OMNIBUS_FILTER:=*}"
 container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-6:centos-6" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "sles-15:sles-15" "windows-2019:windows-2019")
 
 # add rest of windows platforms to tests, if not on chef-oss org
-if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
 then
   container_platforms=( "${container_platforms[@]}" "windows-2012:windows-2019" "windows-2012r2:windows-2019" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
 fi
@@ -42,7 +42,7 @@ then
 fi
 
 ## add esoteric platforms in chef/chef-canary
-if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
 then
   esoteric_build_platforms=()
   esoteric_test_platforms=()
@@ -138,7 +138,7 @@ then
   done
 fi
 
-if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ] && [[ ! -z "${esoteric_build_platforms:-}" ]]
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && [[ ! -z "${esoteric_build_platforms:-}" ]]
 then
 
   for platform in ${esoteric_build_platforms[@]}; do
@@ -205,7 +205,7 @@ then
   fi
 fi
 
-if [ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]
+if [[ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]]
 then
   echo "- wait: ~"
   echo "- key: create-build-record"
@@ -258,7 +258,7 @@ then
       echo "    automatic:"
       echo "      limit: 1"
       echo "  agents:"
-      if [ $BUILDKITE_ORGANIZATION_SLUG == "chef-oss" ]
+      if [[ $BUILDKITE_ORGANIZATION_SLUG == "chef-oss" ]]
       then
         echo "    queue: default-${platform%:*}-privileged"
       else
@@ -274,7 +274,7 @@ fi
 
 # using shell parameter expansion this checks to make sure the esoteric_test_platforms array isn't empty if OMNIBUS_FILTER is only container platforms
 # prevents esoteric_test_platforms unbound variable error
-if [ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ] && [[ ! -z "${esoteric_test_platforms:-}" ]]
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && [[ ! -z "${esoteric_test_platforms:-}" ]]
 then
 
   for platform in ${esoteric_test_platforms[@]}; do
@@ -293,7 +293,11 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  timeout_in_minutes: 120"
+    if [[ $platform == *"aix"* ]]; then
+      echo "  timeout_in_minutes: 120"
+    else
+      echo "  timeout_in_minutes: 90"
+    fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
     if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
@@ -322,7 +326,7 @@ then
   done
 fi
 
-if [ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]
+if [[ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]]
 then
   echo "- wait: ~"
   echo "- key: promote"
