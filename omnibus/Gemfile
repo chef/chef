@@ -6,14 +6,15 @@ gem "artifactory"
 
 gem "pedump"
 
+# Use Berkshelf for resolving cookbook dependencies
+# Using a branch here that calls out a berkshelf version for chef-17
+gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "jfm/chef17_berkshelf_tweak"
+
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
 # the Test Kitchen-based build lab. You can skip these unnecessary dependencies
 # by running `bundle config set --local without development && bundle install` to speed up build times.
 group :development do
-  # Use Berkshelf for resolving cookbook dependencies
-  gem "berkshelf", ">= 7.0"
-
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen", ">= 1.23"
   gem "kitchen-vagrant", ">= 1.3.1"
