@@ -69,7 +69,8 @@ class Chef
 
       option :request_tty,
         long: "--request-tty",
-        description: "Setting the non_interactive to false when request-tty is true",
+        description: "Enable interactive SSH terminal to allow for password prompts.",
+        boolean: false
 
       # WinRM Authentication
       option :winrm_ssl_peer_fingerprint,
