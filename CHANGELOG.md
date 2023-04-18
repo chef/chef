@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.42 -->
-## [v17.10.42](https://github.com/chef/chef/tree/v17.10.42) (2023-04-18)
+<!-- latest_release 17.10.43 -->
+## [v17.10.43](https://github.com/chef/chef/tree/v17.10.43) (2023-04-18)
 
 #### Merged Pull Requests
-- [Chef-17] 4 of X - Updating the Rakefile [#13696](https://github.com/chef/chef/pull/13696) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 5 of X - Updating CSpell [#13697](https://github.com/chef/chef/pull/13697) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] 5 of X - Updating CSpell [#13697](https://github.com/chef/chef/pull/13697) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.43 -->
 - [Chef-17] 4 of X - Updating the Rakefile [#13696](https://github.com/chef/chef/pull/13696) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.42 -->
 - [Chef-17] 3 of X - Updating Cheffish version [#13695](https://github.com/chef/chef/pull/13695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.41 -->
 - Bump omnibus from `5bc091a` to `a1ed55c` in /omnibus [#13632](https://github.com/chef/chef/pull/13632) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.40 -->
