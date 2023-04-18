@@ -6,7 +6,7 @@ gem "artifactory"
 
 gem "pedump"
 
-gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "jfm/chef17_berkshelf_tweak"
+gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "main"
 
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
