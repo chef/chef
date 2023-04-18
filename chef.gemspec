@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.6.0"
+  s.required_ruby_version = ">= 2.7.0"
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
