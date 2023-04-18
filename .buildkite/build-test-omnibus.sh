@@ -293,7 +293,11 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  timeout_in_minutes: 90"
+    if [ $BUILDKITE_STEP_KEY == "test-aix*" ]
+      echo "  timeout_in_minutes: 120"
+    else
+      echo "  timeout_in_minutes: 90"
+    fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
     if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
