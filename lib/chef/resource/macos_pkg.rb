@@ -85,7 +85,7 @@ class Chef
           end
 
           converge_by "install #{pkg_file}" do
-            install_cmd = "sudo installer -pkg #{pkg_file} -target #{new_resource.target}"
+            install_cmd = "installer -pkg #{pkg_file} -target #{new_resource.target}"
 
             execute install_cmd do
               action :run
