@@ -166,7 +166,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#852c8f81fb6dd12ff3471a8d825ec20a1168c4c4:"
+    echo "  - chef/omnibus#v0.2.86:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
@@ -190,7 +190,7 @@ then
     echo "  agents:"
     echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.83:"
+    echo "  - chef/omnibus#v0.2.86:"
     echo "      config: omnibus/omnibus.rb"
     echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
     echo "      notarize-macos-package: chef"
@@ -211,7 +211,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.83:"
+  echo "  - chef/omnibus#v0.2.86:"
   echo "      create-build-record: chef"
 fi
 
@@ -306,7 +306,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.83:"
+    echo "  - chef/omnibus#v0.2.86:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -332,6 +332,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.83:"
+  echo "  - chef/omnibus#v0.2.86:"
   echo "      promote: chef"
 fi
