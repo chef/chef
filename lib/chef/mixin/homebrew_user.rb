@@ -60,7 +60,7 @@ class Chef
       private
 
       def calculate_owner
-        default_brew_path = "/usr/local/bin/brew"
+        default_brew_path = arm? ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew"
         if ::File.exist?(default_brew_path)
           # By default, this follows symlinks which is what we want
           owner = ::File.stat(default_brew_path).uid
@@ -68,7 +68,7 @@ class Chef
           owner = ::File.stat(brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-            'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
+            "Could not find the 'brew' executable at #{default_brew_path} or anywhere in PATH."
         end
 
         Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"

@@ -29,6 +29,14 @@ class Chef
       description "Use the **homebrew_tap** resource to add additional formula repositories to the Homebrew package manager."
       introduced "14.0"
 
+      examples <<~DOC
+      **Tap a repository**:
+
+      ```ruby
+      homebrew_tap 'petere/postgresql'
+      ```
+      DOC
+
       include Chef::Mixin::HomebrewUser
 
       property :tap_name, String,
@@ -42,7 +50,7 @@ class Chef
 
       property :homebrew_path, String,
         description: "The path to the Homebrew binary.",
-        default: "/usr/local/bin/brew"
+        default: lazy { arm? ? "/opt/homebrew/bin/brew" : "/usr/local/bin/brew" }
 
       property :owner, String,
         description: "The owner of the Homebrew installation.",
@@ -71,12 +79,13 @@ class Chef
         end
       end
 
-      # Is the passed tap already tapped
+      # Check if the passed tap is already tapped
       #
       # @return [Boolean]
       def tapped?(name)
+        base_path = arm? ? "/opt/homebrew" : "/usr/local/Homebrew"
         tap_dir = name.gsub("/", "/homebrew-")
-        ::File.directory?("/usr/local/Homebrew/Library/Taps/#{tap_dir}")
+        ::File.directory?("#{base_path}/Library/Taps/#{tap_dir}")
       end
     end
   end
