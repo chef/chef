@@ -294,7 +294,7 @@ then
     echo "    automatic:"
     echo "      limit: 1"
     if [[ $platform == *"aix"* ]]; then
-      echo "  timeout_in_minutes: 120"
+      echo "  timeout_in_minutes: 180"
     else
       echo "  timeout_in_minutes: 90"
     fi
