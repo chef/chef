@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.45 -->
-## [v17.10.45](https://github.com/chef/chef/tree/v17.10.45) (2023-04-19)
+<!-- latest_release 17.10.46 -->
+## [v17.10.46](https://github.com/chef/chef/tree/v17.10.46) (2023-04-20)
 
 #### Merged Pull Requests
-- [Chef-17] 2 of X - Removing i386 support [#13694](https://github.com/chef/chef/pull/13694) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 8 of X - Updating ncurses [#13700](https://github.com/chef/chef/pull/13700) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-17] 8 of X - Updating ncurses [#13700](https://github.com/chef/chef/pull/13700) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.46 -->
 - [Chef-17] 2 of X - Removing i386 support [#13694](https://github.com/chef/chef/pull/13694) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.45 -->
 - [Chef-17] 1 of X - Updating Ruby versions [#13693](https://github.com/chef/chef/pull/13693) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.44 -->
 - [Chef-17] 5 of X - Updating CSpell [#13697](https://github.com/chef/chef/pull/13697) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.43 -->
