@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.47 -->
-## [v17.10.47](https://github.com/chef/chef/tree/v17.10.47) (2023-04-20)
+<!-- latest_release 17.10.48 -->
+## [v17.10.48](https://github.com/chef/chef/tree/v17.10.48) (2023-04-20)
 
 #### Merged Pull Requests
-- [Chef-17] 6 of X - Updating Git version for end_to_end testing [#13698](https://github.com/chef/chef/pull/13698) ([johnmccrae](https://github.com/johnmccrae))
+- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13690](https://github.com/chef/chef/pull/13690) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13690](https://github.com/chef/chef/pull/13690) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.48 -->
 - [Chef-17] 6 of X - Updating Git version for end_to_end testing [#13698](https://github.com/chef/chef/pull/13698) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.47 -->
 - [chef-17] 8 of X - Updating ncurses [#13700](https://github.com/chef/chef/pull/13700) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.46 -->
 - [Chef-17] 2 of X - Removing i386 support [#13694](https://github.com/chef/chef/pull/13694) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.45 -->
