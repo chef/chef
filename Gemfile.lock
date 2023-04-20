@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 3eb0b2f3d5a45aec4593b5eb5b103918836302d5
+  revision: c756b22eeb0424956ba32d04016c886fe7902304
   branch: 17-stable
   specs:
     ohai (17.9.1)
@@ -285,7 +285,7 @@ GEM
       net-ssh (>= 5.0.0, < 8.0.0)
     net-ssh (7.1.0)
     nori (2.6.0)
-    parallel (1.22.1)
+    parallel (1.23.0)
     parser (3.2.2.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
@@ -307,7 +307,7 @@ GEM
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.7.0)
+    regexp_parser (2.8.0)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -437,7 +437,6 @@ PLATFORMS
   ruby
   x64-mingw32
   x86-mingw32
-  x86_64-darwin-19
 
 DEPENDENCIES
   appbundler
@@ -462,4 +461,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.18
+   2.2.33
