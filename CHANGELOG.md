@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.13 -->
-## [v18.2.13](https://github.com/chef/chef/tree/v18.2.13) (2023-04-19)
+<!-- latest_release 18.2.14 -->
+## [v18.2.14](https://github.com/chef/chef/tree/v18.2.14) (2023-04-20)
 
 #### Merged Pull Requests
-- Add documentation for running a cookbook as hab+effortless package [#13692](https://github.com/chef/chef/pull/13692) ([neha-p6](https://github.com/neha-p6))
+- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13689](https://github.com/chef/chef/pull/13689) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13689](https://github.com/chef/chef/pull/13689) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.14 -->
 - Add documentation for running a cookbook as hab+effortless package [#13692](https://github.com/chef/chef/pull/13692) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.13 -->
 - zypper_package: Fix idempotency issue [#13691](https://github.com/chef/chef/pull/13691) ([ramereth](https://github.com/ramereth)) <!-- 18.2.12 -->
 - Avoid Invalid Memory Object error [#13677](https://github.com/chef/chef/pull/13677) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.11 -->
