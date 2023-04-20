@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.49 -->
-## [v17.10.49](https://github.com/chef/chef/tree/v17.10.49) (2023-04-20)
+<!-- latest_release 17.10.50 -->
+## [v17.10.50](https://github.com/chef/chef/tree/v17.10.50) (2023-04-20)
 
 #### Merged Pull Requests
-- [Chef-17] 7 of X - Updating Berkshelf version [#13704](https://github.com/chef/chef/pull/13704) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 9 of X - Updating opscode.com pem file [#13707](https://github.com/chef/chef/pull/13707) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] 9 of X - Updating opscode.com pem file [#13707](https://github.com/chef/chef/pull/13707) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.50 -->
 - [Chef-17] 7 of X - Updating Berkshelf version [#13704](https://github.com/chef/chef/pull/13704) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.49 -->
 - Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13690](https://github.com/chef/chef/pull/13690) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.48 -->
 - [Chef-17] 6 of X - Updating Git version for end_to_end testing [#13698](https://github.com/chef/chef/pull/13698) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.47 -->
