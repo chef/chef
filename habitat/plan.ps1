@@ -1,3 +1,8 @@
+
+# debugging - jfm
+$ErrorActionPreference = 'Continue'
+# /debugging
+
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
@@ -30,7 +35,7 @@ function Invoke-Begin {
 function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
-    Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
+    Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATHwindows
     Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
     Set-RuntimeEnv -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
