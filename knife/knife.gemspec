@@ -13,11 +13,11 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io" # These seem a bit out of date, and this address probably doesn't go anywhere anymore?
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.7.0"
+  s.required_ruby_version = ">= 2.7.0", "< 3.1"
 
-  s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
+  s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}", "< 18.0"
+  s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}", "< 18.0"
+  s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}", "< 18.0"
   s.add_dependency "train-core", "~> 3.10" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
