@@ -49,6 +49,8 @@ jobs:
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Run end_to_end::default recipe'
       id: run
+      with:
+        bundler-cache: false
       run: |
         cd kitchen-tests
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
