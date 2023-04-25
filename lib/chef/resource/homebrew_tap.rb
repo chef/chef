@@ -41,8 +41,7 @@ class Chef
         description: "The URL of the tap."
 
       property :homebrew_path, String,
-        description: "The path to the Homebrew binary.",
-        default: [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| File.exist?(x) }.first
+        description: "The path to the Homebrew binary."
 
       property :owner, String,
         description: "The owner of the Homebrew installation.",
@@ -52,7 +51,7 @@ class Chef
       action :tap, description: "Add a Homebrew tap." do
         unless tapped?(new_resource.tap_name)
           converge_by("tap #{new_resource.tap_name}") do
-            shell_out!("#{new_resource.homebrew_path} tap #{new_resource.tap_name} #{new_resource.url || ""}",
+            shell_out!("#{homebrew_bin_path} tap #{new_resource.tap_name} #{new_resource.url || ""}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))
@@ -63,7 +62,7 @@ class Chef
       action :untap, description: "Remove a Homebrew tap." do
         if tapped?(new_resource.tap_name)
           converge_by("untap #{new_resource.tap_name}") do
-            shell_out!("#{new_resource.homebrew_path} untap #{new_resource.tap_name}",
+            shell_out!("#{homebrew_bin_path} untap #{new_resource.tap_name}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))
@@ -75,9 +74,18 @@ class Chef
       #
       # @return [Boolean]
       def tapped?(name)
-        base_path = ["#{::File.dirname(which("brew"))}../homebrew/Library/Taps", "/opt/homebrew/Library/Taps", "/usr/local/Homebrew/Library/Taps", "/home/linuxbrew/.linuxbrew/Library/Taps"].uniq.select { |x| Dir.exist?(x) }.first
+        base_path = ["#{::File.dirname(which("brew"))}../homebrew", "#{::File.dirname(which("brew"))}../Homebrew", "/opt/homebrew", "/usr/local/Homebrew", "/home/linuxbrew/.linuxbrew"].uniq.select { |x| Dir.exist?(x) }.first
         tap_dir = name.gsub("/", "/homebrew-")
-        ::File.directory?("#{base_path}/#{tap_dir}")
+        ::File.directory?("#{base_path}/Library/Taps/#{tap_dir}")
+      end
+
+      def homebrew_bin_path
+        if new_resource.homebrew_path
+          new_resource.homebrew_path
+        else
+          brew_bin_path = [which('brew'), '/opt/homebrew/bin/brew', '/usr/local/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew'].uniq.select { |x| ::File.exist?(x) }.first
+          brew_bin_path == false ? nil : brew_bin_path
+        end
       end
     end
   end

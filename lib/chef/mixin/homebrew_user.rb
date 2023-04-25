@@ -59,9 +59,18 @@ class Chef
 
       private
 
+      def homebrew_bin_path
+        if new_resource.homebrew_path
+          new_resource.homebrew_path
+        else
+          brew_bin_path = [which('brew'), '/opt/homebrew/bin/brew', '/usr/local/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew'].uniq.select { |x| ::File.exist?(x) }.first
+          brew_bin_path == false ? nil : brew_bin_path
+        end
+      end
+
       def calculate_owner
-        default_brew_path = [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| ::File.exist?(x) }.first
-        if ::File.exist?(default_brew_path)
+        default_brew_path = homebrew_bin_path
+        if default_brew_path
           # By default, this follows symlinks which is what we want
           owner = ::File.stat(default_brew_path).uid
         elsif (brew_path = shell_out("which brew").stdout.strip) && !brew_path.empty?
