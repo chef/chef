@@ -103,15 +103,6 @@ class Chef
             env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
             cwd: ::Dir.home(new_resource.owner)).stdout.split.include?(unscoped_name)
         end
-
-        def homebrew_bin_path
-          if new_resource.homebrew_path
-            new_resource.homebrew_path
-          else
-            brew_bin_path = [which('brew'), '/opt/homebrew/bin/brew', '/usr/local/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew'].uniq.select { |x| ::File.exist?(x) }.first
-            brew_bin_path == false ? nil : brew_bin_path
-          end
-        end
       end
     end
   end

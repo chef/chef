@@ -74,18 +74,9 @@ class Chef
       #
       # @return [Boolean]
       def tapped?(name)
-        base_path = ["#{::File.dirname(which("brew"))}../homebrew", "#{::File.dirname(which("brew"))}../Homebrew", "/opt/homebrew", "/usr/local/Homebrew", "/home/linuxbrew/.linuxbrew"].uniq.select { |x| Dir.exist?(x) }.first
+        base_path = ["#{::File.dirname(which("brew"))}/../homebrew", "#{::File.dirname(which("brew"))}/../Homebrew", "/opt/homebrew", "/usr/local/Homebrew", "/home/linuxbrew/.linuxbrew"].uniq.select { |x| Dir.exist?(x) }.first
         tap_dir = name.gsub("/", "/homebrew-")
         ::File.directory?("#{base_path}/Library/Taps/#{tap_dir}")
-      end
-
-      def homebrew_bin_path
-        if new_resource.homebrew_path
-          new_resource.homebrew_path
-        else
-          brew_bin_path = [which('brew'), '/opt/homebrew/bin/brew', '/usr/local/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew'].uniq.select { |x| ::File.exist?(x) }.first
-          brew_bin_path == false ? nil : brew_bin_path
-        end
       end
     end
   end
