@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.15 -->
-## [v18.2.15](https://github.com/chef/chef/tree/v18.2.15) (2023-04-20)
+<!-- latest_release 18.2.16 -->
+## [v18.2.16](https://github.com/chef/chef/tree/v18.2.16) (2023-04-25)
 
 #### Merged Pull Requests
-- Sean simmons progress/18.2 enable aix [#13702](https://github.com/chef/chef/pull/13702) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- Add ruby-cleanup to clear the bundler/gems and cache folder [#13676](https://github.com/chef/chef/pull/13676) ([poorndm](https://github.com/poorndm))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add ruby-cleanup to clear the bundler/gems and cache folder [#13676](https://github.com/chef/chef/pull/13676) ([poorndm](https://github.com/poorndm)) <!-- 18.2.16 -->
 - Sean simmons progress/18.2 enable aix [#13702](https://github.com/chef/chef/pull/13702) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.2.15 -->
 - Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13689](https://github.com/chef/chef/pull/13689) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.14 -->
 - Add documentation for running a cookbook as hab+effortless package [#13692](https://github.com/chef/chef/pull/13692) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.13 -->
