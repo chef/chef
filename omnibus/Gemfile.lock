@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 6a1c8896edf6c5606facc83b75ecaacf22019e2b
+  revision: 8e242c1b616744701471495db261d3774b11cbdf
   branch: main
   specs:
-    omnibus-software (23.3.287)
+    omnibus-software (23.4.288)
       omnibus (>= 9.0.0)
 
 GIT
@@ -325,7 +325,7 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    pedump (0.6.5)
+    pedump (0.6.6)
       awesome_print
       iostruct (>= 0.0.4)
       multipart-post (>= 2.0.0)
@@ -408,7 +408,7 @@ GEM
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
     thor (1.2.1)
-    time (0.2.1)
+    time (0.2.2)
       date
     timeout (0.3.2)
     toml-rb (2.2.0)
