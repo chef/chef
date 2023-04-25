@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.16 -->
-## [v18.2.16](https://github.com/chef/chef/tree/v18.2.16) (2023-04-25)
+<!-- latest_release 18.2.17 -->
+## [v18.2.17](https://github.com/chef/chef/tree/v18.2.17) (2023-04-25)
 
 #### Merged Pull Requests
-- Add ruby-cleanup to clear the bundler/gems and cache folder [#13676](https://github.com/chef/chef/pull/13676) ([poorndm](https://github.com/poorndm))
+- [launchd] Force string values for program_arguments property [#13682](https://github.com/chef/chef/pull/13682) ([gbatye](https://github.com/gbatye))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [launchd] Force string values for program_arguments property [#13682](https://github.com/chef/chef/pull/13682) ([gbatye](https://github.com/gbatye)) <!-- 18.2.17 -->
 - Add ruby-cleanup to clear the bundler/gems and cache folder [#13676](https://github.com/chef/chef/pull/13676) ([poorndm](https://github.com/poorndm)) <!-- 18.2.16 -->
 - Sean simmons progress/18.2 enable aix [#13702](https://github.com/chef/chef/pull/13702) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.2.15 -->
 - Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13689](https://github.com/chef/chef/pull/13689) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.14 -->
