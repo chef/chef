@@ -1,8 +1,3 @@
-
-# debugging - jfm
-# $ErrorActionPreference = 'Continue'
-# /debugging
-
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
