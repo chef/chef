@@ -1,6 +1,7 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
+
 <!-- latest_release 17.10.54 -->
 ## [v17.10.54](https://github.com/chef/chef/tree/v17.10.54) (2023-04-26)
 
