@@ -4,6 +4,7 @@
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef/blob/master/docs/dev/design_documents/client_release_cadence.md)
 
+
 **Umbrella Project**: [Chef Infra](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md)
 
 **Project State**: [Active](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#active)
