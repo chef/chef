@@ -1,6 +1,6 @@
 
 # debugging - jfm
-$ErrorActionPreference = 'Continue'
+# $ErrorActionPreference = 'Continue'
 # /debugging
 
 $pkg_name="chef-infra-client"
