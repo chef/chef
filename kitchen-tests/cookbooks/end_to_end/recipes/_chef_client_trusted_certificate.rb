@@ -10,6 +10,8 @@ out = Mixlib::ShellOut.new(
 
 cert = Mixlib::ShellOut.new(%w{openssl x509}, input: out).run_command.stdout
 
+puts "CERT ------> #{cert}"
+
 chef_client_trusted_certificate "self-signed.badssl.com" do
   certificate cert
 end
