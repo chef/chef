@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.10.53 -->
-## [v17.10.53](https://github.com/chef/chef/tree/v17.10.53) (2023-04-25)
+
+<!-- latest_release 17.10.54 -->
+## [v17.10.54](https://github.com/chef/chef/tree/v17.10.54) (2023-04-26)
 
 #### Merged Pull Requests
-- Updating the badssl cert again [#13713](https://github.com/chef/chef/pull/13713) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
 - Updating the badssl cert again [#13713](https://github.com/chef/chef/pull/13713) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.53 -->
 - [Chef-17] 10 of X - Updating gem dependencies [#13708](https://github.com/chef/chef/pull/13708) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.52 -->
 - [Chef-17] 11 of X - Updating windows_font_spec [#13709](https://github.com/chef/chef/pull/13709) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.51 -->
