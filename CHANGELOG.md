@@ -6,13 +6,14 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## [v17.10.54](https://github.com/chef/chef/tree/v17.10.54) (2023-04-26)
 
 #### Merged Pull Requests
-- [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 13 of X - Updated Knife for Chef-17 [#13715](https://github.com/chef/chef/pull/13715) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] 13 of X - Updated Knife for Chef-17 [#13715](https://github.com/chef/chef/pull/13715) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
 - [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
 - Updating the badssl cert again [#13713](https://github.com/chef/chef/pull/13713) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.53 -->
 - [Chef-17] 10 of X - Updating gem dependencies [#13708](https://github.com/chef/chef/pull/13708) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.52 -->
