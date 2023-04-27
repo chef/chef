@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.55 -->
-## [v17.10.55](https://github.com/chef/chef/tree/v17.10.55) (2023-04-27)
+<!-- latest_release 17.10.56 -->
+## [v17.10.56](https://github.com/chef/chef/tree/v17.10.56) (2023-04-27)
 
 #### Merged Pull Requests
-- [chef-17] 14 of X - Correcting the build cert SHA [#13720](https://github.com/chef/chef/pull/13720) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 15 of X - Correcting Pagefile spec errors in AdHoc [#13722](https://github.com/chef/chef/pull/13722) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-17] 15 of X - Correcting Pagefile spec errors in AdHoc [#13722](https://github.com/chef/chef/pull/13722) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.56 -->
 - [chef-17] 14 of X - Correcting the build cert SHA [#13720](https://github.com/chef/chef/pull/13720) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.55 -->
 - [Chef-17] 13 of X - Updated Knife for Chef-17 [#13715](https://github.com/chef/chef/pull/13715) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
 - [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
