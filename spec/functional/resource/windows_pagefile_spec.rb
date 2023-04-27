@@ -40,18 +40,45 @@ describe Chef::Resource::WindowsPagefile, :windows_only do
     new_resource
   end
 
+  def set_automatic_managed_to_false
+    powershell_code = <<~EOH
+      $computersys = Get-WmiObject Win32_ComputerSystem -EnableAllPrivileges;
+      $computersys.AutomaticManagedPagefile = $False;
+      $computersys.Put();
+    EOH
+    powershell_exec!(powershell_code)
+  end
+
+  def set_automatic_managed_to_true
+    powershell_code = <<~EOH
+      $computersys = Get-WmiObject Win32_ComputerSystem -EnableAllPrivileges;
+      $computersys.AutomaticManagedPagefile = $True;
+      $computersys.Put();
+    EOH
+    powershell_exec!(powershell_code)
+  end
+
   describe "Setting Up Pagefile Management" do
     context "Disable Automatic Management" do
-      it "Disables Automatic Management" do
+      it "Verifies Automatic Management is Disabled" do
+        set_automatic_managed_to_false
         subject.path c_path
         subject.automatic_managed false
         subject.run_action(:set)
-        expect(subject).to be_updated_by_last_action
+        expect(subject).not_to be_updated_by_last_action
       end
 
       it "Enable Automatic Management " do
         subject.path c_path
         subject.automatic_managed true
+        subject.run_action(:set)
+        expect(subject).to be_updated_by_last_action
+      end
+
+      it "Disables Automatic Management" do
+        set_automatic_managed_to_true
+        subject.path c_path
+        subject.automatic_managed false
         subject.run_action(:set)
         expect(subject).to be_updated_by_last_action
       end
@@ -69,8 +96,8 @@ describe Chef::Resource::WindowsPagefile, :windows_only do
     context "Update a pagefile" do
       it "Changes a pagefile to use custom sizes" do
         subject.path c_path
-        subject.initial_size 20000
-        subject.maximum_size 80000
+        subject.initial_size 128
+        subject.maximum_size 512
         subject.run_action(:set)
         expect(subject).to be_updated_by_last_action
       end

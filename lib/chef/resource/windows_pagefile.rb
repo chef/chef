@@ -88,7 +88,7 @@ class Chef
         if automatic_managed
           set_automatic_managed unless automatic_managed?
         elsif automatic_managed == false
-          unset_automatic_managed if automatic_managed?
+          unset_automatic_managed
         else
           pagefile = clarify_pagefile_name
           initial_size = new_resource.initial_size
@@ -149,10 +149,12 @@ class Chef
         def exists?(pagefile)
           @exists ||= begin
             logger.trace("Checking if #{pagefile} exists by running: Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($pagefile)} ")
-            cmd =  "$page_file_name = '#{pagefile}';"
-            cmd << "$pagefile = Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($page_file_name)};"
-            cmd << "if ([string]::IsNullOrEmpty($pagefile)) { return $false } else { return $true }"
-            powershell_exec!(cmd).result
+            powershell_code = <<~CODE
+              $page_file_name = '#{pagefile}';
+              $pagefile = Get-CimInstance Win32_PagefileSetting | Where-Object { $_.name -eq $($page_file_name)}
+              if ([string]::IsNullOrEmpty($pagefile)) { return $false } else { return $true }
+            CODE
+            powershell_exec!(powershell_code).result
           end
         end
 
@@ -164,13 +166,17 @@ class Chef
         # @return [Boolean]
         def max_and_min_set?(pagefile, min, max)
           logger.trace("Checking if #{pagefile} has max and initial disk size values set")
-          cmd =  "$page_file = '#{pagefile}';"
-          cmd << "$driveLetter = $page_file.split(':')[0];"
-          cmd << "$page_file_settings = Get-CimInstance -ClassName Win32_PageFileSetting -Filter \"SettingID='pagefile.sys @ $($driveLetter):'\" -Property * -ErrorAction Stop;"
-          cmd << "if ($page_file_settings.InitialSize -eq #{min} -and $page_file_settings.MaximumSize -eq #{max})"
-          cmd << "{ return $true }"
-          cmd << "else { return $false }"
-          powershell_exec!(cmd).result
+
+          powershell_code = <<-CODE
+            $page_file = '#{pagefile}';
+            $driveLetter = $page_file.split(':')[0];
+            $page_file_settings = Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -Property * -ErrorAction Stop;
+            if ($page_file_settings.InitialSize -eq #{min} -and $page_file_settings.MaximumSize -eq #{max})
+              { return $true }
+            else
+              { return $false }
+          CODE
+          powershell_exec!(powershell_code).result
         end
 
         # create a pagefile
@@ -225,12 +231,14 @@ class Chef
 
         # turn off automatic management of all pagefiles by Windows
         def unset_automatic_managed
-          converge_by("Turn off Automatically Managed on pagefiles") do
-            logger.trace("Running Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru")
-            powershell_exec! <<~EOH
-              $sys = Get-CimInstance Win32_ComputerSystem -Property *
-              Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru
-            EOH
+          if automatic_managed?
+            converge_by("Turn off Automatically Managed on pagefiles") do
+              logger.trace("Running Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru")
+              powershell_exec! <<~EOH
+                $sys = Get-CimInstance Win32_ComputerSystem -Property *
+                Set-CimInstance -InputObject $sys -Property @{AutomaticManagedPagefile=$false} -PassThru
+              EOH
+            end
           end
         end
 
@@ -240,14 +248,13 @@ class Chef
         # @param [String] min the minimum size of the pagefile
         # @param [String] max the minimum size of the pagefile
         def set_custom_size(pagefile, min, max)
+          unset_automatic_managed
           converge_by("set #{pagefile} to InitialSize=#{min} & MaximumSize=#{max}") do
             logger.trace("Set-CimInstance -Property @{InitialSize = #{min} MaximumSize = #{max}")
             powershell_exec! <<~EOD
               $page_file = "#{pagefile}"
               $driveLetter = $page_file.split(':')[0]
-              Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop | Set-CimInstance -Property @{
-              InitialSize = #{min}
-              MaximumSize = #{max}}
+              Get-CimInstance -ClassName Win32_PageFileSetting -Filter "SettingID='pagefile.sys @ $($driveLetter):'" -ErrorAction Stop | Set-CimInstance -Property @{InitialSize = #{min}; MaximumSize = #{max};}
             EOD
           end
         end
