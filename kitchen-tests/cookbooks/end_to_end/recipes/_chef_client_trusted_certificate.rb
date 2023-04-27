@@ -1,33 +1,18 @@
+# First grab the cert. While this wouldn't ordinarily be secure, this isn't
+# trying to secure something, we simply want to make sure that if we
+# have said a certificate is trusted, it will be trusted. So lets grab it, trust
+# it, and then try to use it.
+
+# First, grab it
+out = Mixlib::ShellOut.new(
+  %w{openssl s_client -showcerts -connect self-signed.badssl.com:443}
+).run_command.stdout
+
+cert = Mixlib::ShellOut.new(%w{openssl x509}, input: out).run_command.stdout
+
+# Second trust it
 chef_client_trusted_certificate "self-signed.badssl.com" do
-  certificate <<~CERT
------BEGIN CERTIFICATE-----
-MIIEnTCCAoWgAwIBAgIJAI7EiWecd+VOMA0GCSqGSIb3DQEBCwUAMH4xCzAJBgNV
-BAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNp
-c2NvMQ8wDQYDVQQKDAZCYWRTU0wxMTAvBgNVBAMMKEJhZFNTTCBDbGllbnQgUm9v
-dCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMjMwNDI0MDAwMTQ0WhcNMjUwNDIz
-MDAwMTQ0WjBvMQswCQYDVQQGEwJVUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQG
-A1UEBwwNU2FuIEZyYW5jaXNjbzEPMA0GA1UECgwGQmFkU1NMMSIwIAYDVQQDDBlC
-YWRTU0wgQ2xpZW50IENlcnRpZmljYXRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
-MIIBCgKCAQEAxzdfEeseTs/rukjly6MSLHM+Rh0enA3Ai4Mj2sdl31x3SbPoen08
-utVhjPmlxIUdkiMG4+ffe7N+JtDLG75CaxZp9CxytX7kywooRBJsRnQhmQPca8MR
-WAJBIz+w/L+3AFkTIqWBfyT+1VO8TVKPkEpGdLDovZOmzZAASi9/sj+j6gM7AaCi
-DeZTf2ES66abA5pOp60Q6OEdwg/vCUJfarhKDpi9tj3P6qToy9Y4DiBUhOct4MG8
-w5XwmKAC+Vfm8tb7tMiUoU0yvKKOcL6YXBXxB2kPcOYxYNobXavfVBEdwSrjQ7i/
-s3o6hkGQlm9F7JPEuVgbl/Jdwa64OYIqjQIDAQABoy0wKzAJBgNVHRMEAjAAMBEG
-CWCGSAGG+EIBAQQEAwIHgDALBgNVHQ8EBAMCBeAwDQYJKoZIhvcNAQELBQADggIB
-ACa+9LOj2+z3iKIxJDoKxwPu0oUjQCHI2Gj7Kk5pdh7r1Lc8R9gusKbkMNjuRXmq
-S1XI516A4iccw5riZXLSo/tiVJGyQySbXmtKbvRfIHCQ9NttZc8fPXf2Y85k1h/B
-nGxzmNI+iEBi1FJ55W9dNC6EBXb2DTj8e2+FwRrH7B4yfcLWXhj2mufoZasiSjtY
-LRKIh8NPH9FdJp9kWeRIEtm7dFBBfRGrPdB8QuBq00n3YYBU/aIegHUPYAVxcXdE
-CTVIAPtkvyh7XzB9h4/3Sc9pL6z8vmNR1DCzM2X3ojkFFEgTjHR5vpMyIWWE49y5
-FMU9yHQD14P9URTtAaeESmw46/+2SbQisNkl7lhxzKRf5Wlza2QMS28G9FY4tEsv
-l/aM+rW8FXkP7uWDY0TPOlR9LQoz4oqWYuZCwD9Q4PcCWqR1CfQ74Geo4j7OFqJj
-XkVN10jurG9m1xG7rqOVmNRFoVhgDlFeao+5LySXG+rJl//0FVKHoR9VeX/52nhs
-OPTL5EbpWvDmIoBGus7jHE04YSOMAJ7/9H88EjH5Qusf+c1MlUXbDGkcub5NG8S6
-eyoz/w+I2xeAmd5llIj5hA34W1YHkT5mHNa4ekJCvLHxyaNrCACd0mzizSKOBxcw
-Ea8zQ5JbgtfAfJ5Arikxey3B3qFtHxkJ7rgSIH4+kohL
------END CERTIFICATE-----
-  CERT
+  certificate cert
 end
 
 # see if we can fetch from our new trusted domain
