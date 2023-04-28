@@ -246,33 +246,43 @@ C5986B4F1257FFA86632CBA746181433FBB75451
   describe "#build_repo" do
     it "creates a repository string" do
       target = "deb      http://test/uri unstable main\n"
-      expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil)).to eql(target)
+      expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, [])).to eql(target)
     end
 
     it "creates a repository string with spaces" do
       target = "deb      http://test/uri%20with%20spaces unstable main\n"
-      expect(provider.build_repo("http://test/uri with spaces", "unstable", "main", false, nil)).to eql(target)
+      expect(provider.build_repo("http://test/uri with spaces", "unstable", "main", false, nil, [])).to eql(target)
     end
 
     it "creates a repository string with no distribution" do
       target = "deb      http://test/uri main\n"
-      expect(provider.build_repo("http://test/uri", nil, "main", false, nil)).to eql(target)
+      expect(provider.build_repo("http://test/uri", nil, "main", false, nil, [])).to eql(target)
     end
 
     it "creates a repository string with source" do
       target = "deb      http://test/uri unstable main\ndeb-src  http://test/uri unstable main\n"
-      expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, true)).to eql(target)
+      expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, [], true)).to eql(target)
     end
 
-    it "creates a repository string with options" do
+    it "creates a repository string with trusted" do
       target = "deb      [trusted=yes] http://test/uri unstable main\n"
-      expect(provider.build_repo("http://test/uri", "unstable", "main", true, nil)).to eql(target)
+      expect(provider.build_repo("http://test/uri", "unstable", "main", true, nil, [])).to eql(target)
+    end
+
+    it "creates a repository string with custom options" do
+      target = "deb      [by-hash=no] http://test/uri unstable main\n"
+      expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, ["by-hash=no"])).to eql(target)
+    end
+
+    it "creates a repository string with trusted, arch, and custom options" do
+      target = "deb      [arch=amd64 trusted=yes by-hash=no] http://test/uri unstable main\n"
+      expect(provider.build_repo("http://test/uri", "unstable", "main", true, "amd64", ["by-hash=no"])).to eql(target)
     end
 
     it "handles a ppa repo" do
       target = "deb      http://ppa.launchpad.net/chef/main/ubuntu unstable main\n"
       expect(provider).to receive(:make_ppa_url).with("ppa:chef/main").and_return("http://ppa.launchpad.net/chef/main/ubuntu")
-      expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
+      expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil, [])).to eql(target)
     end
   end
 end
