@@ -32,7 +32,7 @@ describe "knife cookbook show", :workstation do
     end
 
     it "knife cookbook show x shows all the versions" do
-      knife("cookbook show x").should_succeed "x   1.0.0  0.6.5\n"
+      knife("cookbook show x").should_succeed "x: 1.0.0 0.6.5\n"
     end
 
     # rubocop:disable Layout/TrailingWhitespace

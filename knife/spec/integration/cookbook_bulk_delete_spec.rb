@@ -55,8 +55,8 @@ describe "knife cookbook bulk delete", :workstation do
       knife("cookbook bulk delete ^fo.*", input: "Y").should_succeed(stderr: stderr, stdout: stdout)
 
       knife("cookbook list -a").should_succeed <<~EOM
-        fax   0.6.0
-        zfa   0.6.5
+        fax: 0.6.0
+        zfa: 0.6.5
       EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
