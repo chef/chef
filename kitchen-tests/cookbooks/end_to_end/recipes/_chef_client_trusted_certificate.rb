@@ -1,27 +1,18 @@
+# First grab the cert. While this wouldn't ordinarily be secure, this isn't
+# trying to secure something, we simply want to make sure that if we
+# have said a certificate is trusted, it will be trusted. So lets grab it, trust
+# it, and then try to use it.
+
+# First, grab it
+out = Mixlib::ShellOut.new(
+  %w{openssl s_client -servername self-signed.badssl.com -showcerts -connect self-signed.badssl.com:443}
+).run_command.stdout
+
+cert = Mixlib::ShellOut.new(%w{openssl x509}, input: out).run_command.stdout
+
+# Second trust it
 chef_client_trusted_certificate "self-signed.badssl.com" do
-  certificate <<~CERT
------BEGIN CERTIFICATE-----
-MIIDeTCCAmGgAwIBAgIJAK31pnMwlr+TMA0GCSqGSIb3DQEBCwUAMGIxCzAJBgNV
-BAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNp
-c2NvMQ8wDQYDVQQKDAZCYWRTU0wxFTATBgNVBAMMDCouYmFkc3NsLmNvbTAeFw0y
-MzAzMjgyMjExMjlaFw0yNTAzMjcyMjExMjlaMGIxCzAJBgNVBAYTAlVTMRMwEQYD
-VQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMQ8wDQYDVQQK
-DAZCYWRTU0wxFTATBgNVBAMMDCouYmFkc3NsLmNvbTCCASIwDQYJKoZIhvcNAQEB
-BQADggEPADCCAQoCggEBAMIE7PiM7gTCs9hQ1XBYzJMY61yoaEmwIrX5lZ6xKyx2
-PmzAS2BMTOqytMAPgLaw+XLJhgL5XEFdEyt/ccRLvOmULlA3pmccYYz2QULFRtMW
-hyefdOsKnRFSJiFzbIRMeVXk0WvoBj1IFVKtsyjbqv9u/2CVSndrOfEk0TG23U3A
-xPxTuW1CrbV8/q71FdIzSOciccfCFHpsKOo3St/qbLVytH5aohbcabFXRNsKEqve
-ww9HdFxBIuGa+RuT5q0iBikusbpJHAwnnqP7i/dAcgCskgjZjFeEU4EFy+b+a1SY
-QCeFxxC7c3DvaRhBB0VVfPlkPz0sw6l865MaTIbRyoUCAwEAAaMyMDAwCQYDVR0T
-BAIwADAjBgNVHREEHDAaggwqLmJhZHNzbC5jb22CCmJhZHNzbC5jb20wDQYJKoZI
-hvcNAQELBQADggEBAB0wBgQ+U7ULnZd0JOxTUDUPtnUYQhKLx02yhCBuvSBfM+t0
-NYBk00hgzrzdJrr2mpn35y7hfKBzYztaADPqiE/n52D1D/aYbUv+VFJYPYJbsokT
-0ECaNk0uiW5cPm/ylW+oAA+o15ninMQUJJn/93ZhlkNj8ISP2awHXN9dSUfXBAbh
-jA+0SBJ7szXha0sElaPEFkieLhETR+CzSt311U8h1sGVMdkGqamwuj/TqlHhW8Np
-8F1Nk4DGHmJVoYDzHr+dgdpSUMfrvfWyegr1IOYZQBSxNnVjWvsS8EK5i1/EAqIt
-tSaKKu926MPPIQT/EX9tB8epAtTbyqgBABmAU6Y=
------END CERTIFICATE-----
-  CERT
+  certificate cert
 end
 
 # see if we can fetch from our new trusted domain
