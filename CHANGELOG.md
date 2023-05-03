@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.19 -->
-## [v18.2.19](https://github.com/chef/chef/tree/v18.2.19) (2023-05-03)
+<!-- latest_release 18.2.20 -->
+## [v18.2.20](https://github.com/chef/chef/tree/v18.2.20) (2023-05-03)
 
 #### Merged Pull Requests
-- Update SSL cert used in kitchen tests [#13714](https://github.com/chef/chef/pull/13714) ([neha-p6](https://github.com/neha-p6))
+- feat(apt_repository): Allow specifying arbitrary options [#13728](https://github.com/chef/chef/pull/13728) ([tmccombs](https://github.com/tmccombs))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- feat(apt_repository): Allow specifying arbitrary options [#13728](https://github.com/chef/chef/pull/13728) ([tmccombs](https://github.com/tmccombs)) <!-- 18.2.20 -->
 - Update SSL cert used in kitchen tests [#13714](https://github.com/chef/chef/pull/13714) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.19 -->
 - Fix output of cookbook list/show [#13654](https://github.com/chef/chef/pull/13654) ([aknarts](https://github.com/aknarts)) <!-- 18.2.18 -->
 - [launchd] Force string values for program_arguments property [#13682](https://github.com/chef/chef/pull/13682) ([gbatye](https://github.com/gbatye)) <!-- 18.2.17 -->
