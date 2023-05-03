@@ -143,7 +143,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
-      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems2.org")).to be_nil
+      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems2.org")).to be_kind_of(Gem::Version)
     end
   end
 
