@@ -5,7 +5,7 @@
 
 # First, grab it
 out = Mixlib::ShellOut.new(
-  %w{openssl s_client -showcerts -connect self-signed.badssl.com:443}
+  %w{openssl s_client -servername self-signed.badssl.com -showcerts -connect self-signed.badssl.com:443}
 ).run_command.stdout
 
 cert = Mixlib::ShellOut.new(%w{openssl x509}, input: out).run_command.stdout
