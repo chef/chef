@@ -189,7 +189,6 @@ jobs:
           - 'centos-6'
           - 'centos-7'
           - 'almalinux-8'
-          - 'debian-9'
           - 'debian-10'
           - 'debian-11'
           - 'fedora-latest'
