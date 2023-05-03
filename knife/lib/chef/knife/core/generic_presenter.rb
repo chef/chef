@@ -206,26 +206,32 @@ class Chef
         end
 
         def format_cookbook_list_for_display(item)
-          if config[:with_uri]
-            item.inject({}) do |collected, (cookbook, versions)|
+          versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
+            if config[:with_uri]
               collected[cookbook] = {}
               versions["versions"].each do |ver|
                 collected[cookbook][ver["version"]] = ver["url"]
               end
-              collected
-            end
-          else
-            versions_by_cookbook = item.inject({}) do |collected, ( cookbook, versions )|
+            else
               collected[cookbook] = versions["versions"].map { |v| v["version"] }
-              collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
-            versions_by_cookbook.sort.map do |cookbook, versions|
-              "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
+            collected.sort.to_h
+          end
+          if config[:with_uri]
+            versions_by_cookbook
+          else
+            case parse_format_option
+              when :summary
+                cookbooks = {}
+                versions_by_cookbook.map do |cookbook, versions|
+                  cookbooks[cookbook] = versions.join(" ")
+                end
+                cookbooks
+              else
+                versions_by_cookbook
             end
           end
         end
-
       end
     end
   end
