@@ -59,9 +59,13 @@ class Chef
 
       private
 
-      def homebrew_bin_path
-        brew_bin_path = [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| ::File.exist?(x) && ::File.executable?(x) }.first
-        brew_bin_path == false ? nil : brew_bin_path
+      def homebrew_bin_path(brew_bin_path = nil)
+        if brew_bin_path
+          brew_bin_path
+        else
+          brew_bin_path = [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| ::File.exist?(x) && ::File.executable?(x) }.first
+          brew_bin_path == false ? nil : brew_bin_path
+        end
       end
 
       def calculate_owner
