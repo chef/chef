@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.61 -->
-## [v17.10.61](https://github.com/chef/chef/tree/v17.10.61) (2023-05-04)
+<!-- latest_release 17.10.62 -->
+## [v17.10.62](https://github.com/chef/chef/tree/v17.10.62) (2023-05-04)
 
 #### Merged Pull Requests
-- Remove deprecated Debian 9 [#13738](https://github.com/chef/chef/pull/13738) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef-17] 21 of X - Updating Windows Functional Spec [#13737](https://github.com/chef/chef/pull/13737) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] 21 of X - Updating Windows Functional Spec [#13737](https://github.com/chef/chef/pull/13737) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.62 -->
 - Remove deprecated Debian 9 [#13738](https://github.com/chef/chef/pull/13738) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.61 -->
 - [chef-17] 19 of X - Refactoring the badssl.com code [#13734](https://github.com/chef/chef/pull/13734) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.60 -->
 - [chef-17] 18 of X - Refactoring the badssl.com code [#13726](https://github.com/chef/chef/pull/13726) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.59 -->
