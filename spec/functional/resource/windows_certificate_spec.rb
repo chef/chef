@@ -56,10 +56,34 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
   let(:store) { "Chef-Functional-Test" }
   let(:store_name) { "MY" }
   let(:store_location) { "LocalMachine" }
-  let(:download_cert_url) { "https://testingchef.blob.core.windows.net/files/test.cer" }
+  let(:test_cert_body) do
+    <<~CERT
+-----BEGIN CERTIFICATE-----
+MIIDQTCCAimgAwIBAgIQX3zqNCJbsKlEvzCz3Z9aNDANBgkqhkiG9w0BAQsFADAh
+MR8wHQYDVQQDDBZ3d3cuZHVtbXljaGVmdGVzdHMuY29tMCAXDTIwMDMwNTEwMjcw
+NVoYDzIxMjAwMzA1MTAzNzA2WjAhMR8wHQYDVQQDDBZ3d3cuZHVtbXljaGVmdGVz
+dHMuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtuYKDb6woWIH
+HPPOrcVpgJFVxbkjgk+tsYwbIiqR9jtRaKE6nM/awOgn9/dFF4k8KB8Em0sUx7Vq
+J3YhK2N2cAacgP2Frqqf5znpNBBOg968RoZzGx0EiXFvLsqC4y8ggApWTbMXPRk4
+1a7GlpUpSqI3y5cLeEbzwGQKu8I1I+v7P2fTlnJPHarM7sBbL8bieukkFHYu78iV
+u1wpKOCCfs5DTmJu8WN+z1Mar9vyrWMBlt2wBBgNHPz5mcXUzJHTzaI/D9RGgBgF
+V0IkNqISx/IzR62jjj2g6MgTH4G/0mM6O5sxduM4yGmWZNZpVzh0yMLgH619MZlj
+SMQIN3U/SQIDAQABo3MwcTAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB
+BQUHAwIGCCsGAQUFBwMBMCEGA1UdEQQaMBiCFnd3dy5kdW1teWNoZWZ0ZXN0cy5j
+b20wHQYDVR0OBBYEFHwS3gs03m6RcpR+66u4OqGiZdYnMA0GCSqGSIb3DQEBCwUA
+A4IBAQCFHqMjHUfBZahIsKHQIcFCbC1NFh1ZHlJKZzrRBRwRzX19OttHGMyLpDd6
+tM9Ac6LLR8S4QIWg+HF3IrkN+vfTRDZAccj+tIwBRstmdsEz/rAJ79Vb/00mXZQx
+0FPiBDR3hE7On2oo24DU8kJP3v6TrunwtIomVGqrrkwZzvxqyW+WJMB2shGNFw5J
+mKYBiiXsHl4Bi7V4zhXssrLp877sqpNLeXloXBmAlT39SwQTP9ImZaV5R6udqlvo
+Gfgm5PH/WeK6MV3n5ik0v1rS0LwR2o82WlIB6a4iSEbzY3qSLsWOwt8o5QjAVzCR
+tNdbdS3U8nrG73iA2clmF57ARQWC
+-----END CERTIFICATE-----
+    CERT
+  end
   let(:cert_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.cer") }
   let(:pfx_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.pfx") }
   let(:key_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.key") }
+  let(:download_cert_url) { "https://testingchef.blob.core.windows.net/files/test.cer" }
   let(:cer_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.cer") }
   let(:base64_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "base64_test.cer") }
   let(:pem_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.pem") }
@@ -128,6 +152,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
     end
 
     it "can add a certificate from a valid url" do
+      stub_request(:get, download_cert_url).to_return(body: test_cert_body)
       resource.source = download_cert_url
       resource.run_action(:create)
 
