@@ -83,6 +83,7 @@ tNdbdS3U8nrG73iA2clmF57ARQWC
   let(:cert_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.cer") }
   let(:pfx_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.pfx") }
   let(:key_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.key") }
+  let(:download_cert_url) {""}
   let(:cer_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.cer") }
   let(:base64_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "base64_test.cer") }
   let(:pem_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.pem") }
