@@ -5,7 +5,7 @@ require "net/http"
 # ruby waits for IPv4 request to timeout first, then makes IPv6 request. This increased response time.
 # NOTE 1: This already reverted https://github.com/ruby/ruby/commit/f88bff770578583a708093f4a0d8b1483a1d2039 but under ruby 3.2.2
 # NOTE 2: This patch will not be needed for ruby 3.2.2
-
+puts "*************** Loading patch from chef *******************"
 module Net
     class HTTP < Protocol
       def connect
