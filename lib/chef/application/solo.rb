@@ -22,6 +22,7 @@ require_relative "client"
 require "fileutils" unless defined?(FileUtils)
 require "pathname" unless defined?(Pathname)
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require "chef/monkey_patches/net-http"
 
 # DO NOT MAKE EDITS, see Chef::Application::Base
 #
