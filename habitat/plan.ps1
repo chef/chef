@@ -1,5 +1,5 @@
-$pkg_name="patched_chef18"
-$pkg_origin="np-test"
+$pkg_name="chef-infra-client"
+$pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
 $pkg_maintainer="The Chef Maintainers <maintainers@chef.io>"
