@@ -52,7 +52,7 @@ class Chef
         "Windows Server 2022" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number >= 20348 } },
         "Windows Server 2019" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number >= 17763 && build_number < 20348 } },
         "Windows 11" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION && build_number >= 22000 } },
-        "Windows 10" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
+        "Windows 10" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION && build_number >= 19044 && build_number < 22000 } },
         "Windows Server 2016" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number <= 14393 } },
         "Windows 8.1" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION } },
         "Windows Server 2012 R2" => { major: 6, minor: 3, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION } },
