@@ -17,6 +17,21 @@ end
 
 gem "cheffish", "~> 17.0.0"
 
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+  gem "win32-api", "~> 1.10.1"
+  gem "win32-event", "~> 0.6.1"
+  gem "win32-eventlog", "0.6.3"
+  gem "win32-mmap", "~> 0.4.1"
+  gem "win32-mutex", "~> 0.4.2"
+  gem "win32-process", "~> 0.9"
+  gem "win32-service", ">= 2.1.5", "< 3.0"
+  gem "wmi-lite", "~> 1.0"
+  gem "win32-taskscheduler", "~> 2.0"
+  gem "iso8601", ">= 0.12.1", "< 0.14"
+  gem "win32-certstore", "~> 0.6.15"
+  gem "chef-powershell", "~> 1.0.13"
+end
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
@@ -36,7 +51,7 @@ end
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
+  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby unless RUBY_PLATFORM == "x64-mingw-ucrt"
 end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
