@@ -68,6 +68,11 @@ describe Chef::Resource::AptRepository do
     expect(resource.key).to eql(["key1"])
   end
 
+  it "allows setting options to a String and coerces it to an Array" do
+    resource.options = "by-hash=no"
+    expect(resource.options).to eql(["by-hash=no"])
+  end
+
   it "fails if the user provides a repo_name with a forward slash" do
     expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
   end
