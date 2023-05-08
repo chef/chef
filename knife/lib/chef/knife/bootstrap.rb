@@ -1187,7 +1187,7 @@ class Chef
 
         connection&.connection&.transport_options&.merge! opts
       end
-      
+
       # List Train transports available (but not loaded) on system.
       #
       # Will filter out train-core, API transports, and other incompatible ones.
@@ -1198,7 +1198,7 @@ class Chef
         train_gems.delete_if { |spec| TRANSPORTS_BLACKLIST.include? spec.name }
         train_gems.map { |spec| spec.name.delete_prefix "train-" }
       end
-      
+
       # Return all supported connection types, classical and Train-based
       #
       # @return [Array] connection types supported
