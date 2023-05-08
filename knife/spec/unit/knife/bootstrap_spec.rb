@@ -681,8 +681,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "and the protocol is supported" do
-
-      Chef::Knife::Bootstrap::SUPPORTED_CONNECTION_PROTOCOLS.each do |proto|
+      %w{winrm ssh}.each do |proto|
         let(:connection_protocol) { proto }
         it "returns true for #{proto}" do
           expect(knife.validate_protocol!).to eq true
@@ -695,6 +694,18 @@ describe Chef::Knife::Bootstrap do
       it "outputs an error and exits" do
         expect(knife.ui).to receive(:error).with(/Unsupported protocol '#{connection_protocol}'/)
         expect { knife.validate_protocol! }.to raise_error SystemExit
+      end
+    end
+    
+    context "when additional Train transports are present" do
+      before do
+        Gem::Specification.new do |spec|
+          spec.name = "train-rfc2549"
+          spec.version = "0.0.1"
+          spec.summary = "Train transport to use IPoAC"
+        end.activate
+
+        Gem.refresh
       end
     end
   end
