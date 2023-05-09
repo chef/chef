@@ -336,7 +336,7 @@ class Chef
       end
 
       def do_validate_content
-        if new_resource.checksum && tempfile && ( new_resource.checksum != tempfile_checksum )
+        if new_resource.checksum && tempfile && !checksum_match?(new_resource.checksum, tempfile_checksum)
           raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
         end
 
@@ -450,7 +450,7 @@ class Chef
 
       def contents_changed?
         logger.trace "calculating checksum of #{tempfile.path} to compare with #{current_resource.checksum}"
-        tempfile_checksum != current_resource.checksum
+        !checksum_match?(tempfile_checksum, current_resource.checksum)
       end
 
       def tempfile

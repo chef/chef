@@ -51,4 +51,32 @@ describe Chef::Mixin::Checksum do
     end
   end
 
+  describe "checksum_match?" do
+    context "when checksum cases match" do
+      it "returns true" do
+        expect(@checksum_user.checksum_match?("u7ghbxikk3i9blsimmy2y2ionmxx", "u7ghbxikk3i9blsimmy2y2ionmxx")).to be true
+      end
+    end
+
+    context "when one checksum is uppercase and other is lowercase" do
+      it "returns true" do
+        expect(@checksum_user.checksum_match?("U7GHBXIKK3I9BLSIMMY2Y2IONMXX", "u7ghbxikk3i9blsimmy2y2ionmxx")).to be true
+      end
+    end
+
+    context "when checksums do not match" do
+      it "returns false" do
+        expect(@checksum_user.checksum_match?("u7ghbxikk3i9blsimmy2y2ionmxx", "09ee9c8cc70501763563bcf9c218")).to be false
+      end
+    end
+
+    context "when checksum is nil" do
+      it "returns false" do
+        expect(@checksum_user.checksum_match?("u7ghbxikk3i9blsimmy2y2ionmxx", nil)).to be false
+        expect(@checksum_user.checksum_match?(nil, "09ee9c8cc70501763563bcf9c218")).to be false
+        expect(@checksum_user.checksum_match?(nil, nil)).to be false
+      end
+    end
+  end
+
 end
