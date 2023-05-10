@@ -67,11 +67,6 @@ class Chef
         description: "The number of seconds to wait for each connection operation to be acknowledged while running bootstrap.",
         default: 60
 
-      option :request_tty,
-        long: "--request-tty",
-        description: "Enable interactive SSH terminal to allow for password prompts.",
-        boolean: false
-
       # WinRM Authentication
       option :winrm_ssl_peer_fingerprint,
         long: "--winrm-ssl-peer-fingerprint FINGERPRINT",
@@ -657,7 +652,7 @@ class Chef
           EOM
           # FIXME: this should save the key to known_hosts but doesn't appear to be
           config[:ssh_verify_host_key] = :accept_new
-          conn_opts = connection_opts(reset: true)
+          conn_opts = connection_opts(reset: true, sudo_pass: opts[:password])
           opts.merge! conn_opts
           retry
         elsif (ssh? && e.cause && e.cause.class == Net::SSH::AuthenticationFailed) || (ssh? && e.class == Train::ClientError && e.reason == :no_ssh_password_or_key_available)
@@ -904,14 +899,14 @@ class Chef
 
       # @return a configuration hash suitable for connecting to the remote
       # host via train
-      def connection_opts(reset: false)
+      def connection_opts(reset: false, sudo_pass: nil )
         return @connection_opts unless @connection_opts.nil? || reset == true
 
         @connection_opts = {}
         @connection_opts.merge! base_opts
         @connection_opts.merge! host_verify_opts
         @connection_opts.merge! gateway_opts
-        @connection_opts.merge! sudo_opts
+        @connection_opts.merge! sudo_opts(sudo_pass)
         @connection_opts.merge! winrm_opts
         @connection_opts.merge! ssh_opts
         @connection_opts.merge! ssh_identity_opts
@@ -955,7 +950,7 @@ class Chef
         opts = {}
         return opts if winrm?
 
-        opts[:non_interactive] = config[:request_tty] ? false : true # Prevent password prompts from underlying net/ssh if request_tty is false
+        opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
         opts[:forward_agent] = (config[:ssh_forward_agent] === true)
         opts[:connection_timeout] = session_timeout
         opts
@@ -1023,14 +1018,14 @@ class Chef
       # --sudo-command COMMAND sudo command other than sudo
       # REVIEW NOTE: knife bootstrap did not pull sudo values from Chef::Config,
       #              should we change that for consistency?
-      def sudo_opts
+      def sudo_opts(sudo_pass)
         return {} if winrm?
 
         opts = { sudo: false }
         if config[:use_sudo]
           opts[:sudo] = true
           if config[:use_sudo_password]
-            opts[:sudo_password] = config[:connection_password]
+            opts[:sudo_password] = !config[:connection_password].nil? ? config[:connection_password] : sudo_pass
           end
           if config[:preserve_home]
             opts[:sudo_options] = "-H"
