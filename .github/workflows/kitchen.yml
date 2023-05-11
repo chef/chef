@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, windows-2019]
+        os: [windows-2022, windows-2019, windows-2016]
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
