@@ -309,7 +309,7 @@ describe Chef::Client do
   end
 
   describe "eol release warning" do
-    it "warns when running an EOL release" do 
+    it "warns when running an EOL release" do
       stub_const("Chef::VERSION", 15)
       # added a call to client because Time.now gets invoked multiple times during instantiation. Don't mock Time until after client initialized
       client
