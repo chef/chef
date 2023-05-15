@@ -340,7 +340,7 @@ class Chef
     end
 
     def eol_override
-      # If you want to override the exisitn EOL date, add a file in the root of Chef
+      # If you want to override the existing EOL date, add a file in the root of Chef
       # put a date in it in the form of YYYY-DD-MM.
       override_file = "EOL_override"
       if File.exist?(override_file)
