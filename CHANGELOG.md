@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.65 -->
-## [v17.10.65](https://github.com/chef/chef/tree/v17.10.65) (2023-05-09)
+<!-- latest_release 17.10.66 -->
+## [v17.10.66](https://github.com/chef/chef/tree/v17.10.66) (2023-05-15)
 
 #### Merged Pull Requests
-- [chef-17] 25 of X - Backport Checksum Validation [#13750](https://github.com/chef/chef/pull/13750) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 26 of X - Updating EOL Support [#13753](https://github.com/chef/chef/pull/13753) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-17] 26 of X - Updating EOL Support [#13753](https://github.com/chef/chef/pull/13753) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.66 -->
 - [chef-17] 25 of X - Backport Checksum Validation [#13750](https://github.com/chef/chef/pull/13750) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.65 -->
 - [Chef-17] 23 of X - Updating the windows versions [#13743](https://github.com/chef/chef/pull/13743) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.64 -->
 - [Chef-17] 22 of X - Updating Libxslt, but surgically [#13741](https://github.com/chef/chef/pull/13741) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.63 -->
