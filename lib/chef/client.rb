@@ -336,7 +336,7 @@ class Chef
 
       return if Time.now < cut_off_date
 
-      logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on #{cut_off_date.strftime('%b %d, %Y')}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on #{cut_off_date.strftime("%b %d, %Y")}. Please update to a supported release to receive new features, bug fixes, and security updates.")
     end
 
     def eol_override
