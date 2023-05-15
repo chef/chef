@@ -326,12 +326,32 @@ class Chef
     def warn_if_eol
       require_relative "version"
 
+      # New Date format is YYYY-MM-DD
+      new_date = eol_override?
+
       # We make a release every year so take the version you're on + 2006 and you get
       # the year it goes EOL
       eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
 
-      if Time.now > Time.new(eol_year, 5, 01)
+      if !!new_date
+        new_eol_date = new_date.split("-")
+        year = new_eol_date[0]
+        month = Date::MONTHNAMES[new_eol_date[1].to_i]
+        day = new_eol_date[2]
+        logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on #{month} #{day} #{year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      else Time.now > Time.new(eol_year, 5, 01)
         logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      end
+    end
+
+    def eol_override?
+      # If you want to override the exisitn EOL date, add a file in the root of Chef
+      # put a date in it in the form of YYYY-DD-MM.
+      override_file = "EOL_override"
+      if File.exist?(override_file)
+        File.read(File.expand_path(override_file)).strip
+      else
+        false
       end
     end
 

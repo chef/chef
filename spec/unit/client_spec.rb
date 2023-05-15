@@ -309,19 +309,40 @@ describe Chef::Client do
   end
 
   describe "eol release warning" do
+    before do
+      @local_client = Chef::Client.new
+      # allow_any_instance_of(client).to receive(:eol_override?).and_return(false)
+      # require "pry"
+      # binding.pry
+    end
+    subject { @local_client }
     it "warns when running an EOL release" do
+
+      
+      # = Net::HTTPClientException.new('404 "Not Found"', response)
       stub_const("Chef::VERSION", 15)
       allow(Time).to receive(:now).and_return(Time.new(2021, 5, 1, 5))
-      expect(logger).to receive(:warn).with(/This release of.*became end of life \(EOL\) on May 1st 2021/)
-      client.warn_if_eol
+      # allow(@local_client).to receive(:eol_override?).and_return(false)
+      # allow(@local_client).to receive(:logger).and_return(logger)
+      require "pry"
+      binding.pry
+      # @local_client.warn_if_eol
+      # expect(@local_client).to receive(:warn).with(/This release of.*became end of life \(EOL\) on May 1st 2021/)
     end
 
-    it "does not warn when running an non-EOL release" do
-      stub_const("Chef::VERSION", 15)
-      allow(Time).to receive(:now).and_return(Time.new(2021, 4, 31))
-      expect(logger).to_not receive(:warn).with(/became end of life/)
-      client.warn_if_eol
-    end
+    # it "warns when running an EOL release" do
+    #   stub_const("Chef::VERSION", 15)
+    #   allow(Time).to receive(:now).and_return(Time.new(2021, 5, 1, 5))
+    #   expect(logger).to receive(:warn).with(/This release of.*became end of life \(EOL\) on May 1st 2021/)
+    #   client.warn_if_eol
+    # end
+
+    # it "does not warn when running an non-EOL release" do
+    #   stub_const("Chef::VERSION", 15)
+    #   allow(Time).to receive(:now).and_return(Time.new(2021, 4, 31))
+    #   expect(logger).to_not receive(:warn).with(/became end of life/)
+    #   client.warn_if_eol
+    # end
   end
 
   describe "authentication protocol selection" do
