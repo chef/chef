@@ -324,6 +324,7 @@
     "eckey",
     "ecparam",
     "edir",
+    "efivarfs",
     "egid",
     "egrep",
     "ELOOP",
