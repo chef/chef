@@ -60,7 +60,7 @@ class Chef
       private
 
       def homebrew_bin_path(brew_bin_path = nil)
-        if ::File.exist?(brew_bin_path)
+        if brew_bin_path && ::File.exist?(brew_bin_path)
           brew_bin_path
         else
           brew_bin_path = [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| ::File.exist?(x) && ::File.executable?(x) }.first
@@ -75,7 +75,7 @@ class Chef
           owner = ::File.stat(default_brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-                "Could not find the 'brew' executable in #{default_brew_path} or anywhere on the path."
+                'Could not find the "brew" executable anywhere on the path.'
         end
 
         Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"
