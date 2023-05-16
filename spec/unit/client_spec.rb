@@ -321,9 +321,7 @@ describe Chef::Client do
 
     it "does not warn when running an non-EOL release" do
       stub_const("Chef::VERSION", 15)
-      # added a call to client because Time.now gets invoked multiple times during instantiation. Don't mock Time until after client initialized
-      client
-      allow(Time).to receive(:now).and_return(Time.new(2021, 4, 31))
+      allow(Time).to receive(:now).and_return(Time.new(2021, 4, 30))
       expect(logger).to_not receive(:warn).with(/became end of life/)
       client.warn_if_eol
     end
