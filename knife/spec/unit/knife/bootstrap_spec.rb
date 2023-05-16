@@ -1439,11 +1439,11 @@ describe Chef::Knife::Bootstrap do
           end
 
           context "when sudo_pass is passed" do
-            let(:sudo_pass) { "opscode" }
+            let(:sudo_pass) { "progress" }
             it "includes :connection_password value in a sudo-enabled configuration" do
               expect(knife.sudo_opts(sudo_pass)).to eq({
                 sudo: true,
-                sudo_password: "opscode",
+                sudo_password: "progress",
               })
             end
           end
