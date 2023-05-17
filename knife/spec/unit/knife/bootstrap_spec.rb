@@ -1438,7 +1438,10 @@ describe Chef::Knife::Bootstrap do
             })
           end
 
-          context "when sudo_pass is passed" do
+          context "when sudo_pass is set, connection_password is not set" do
+            before do
+              knife.config[:connection_password] = nil
+            end
             let(:sudo_pass) { "progress" }
             it "includes :connection_password value in a sudo-enabled configuration" do
               expect(knife.sudo_opts(sudo_pass)).to eq({
@@ -1447,6 +1450,47 @@ describe Chef::Knife::Bootstrap do
               })
             end
           end
+
+          context "when connection_password is set, sudo_pass is not set" do
+            before do
+              knife.config[:connection_password] = "opscode"
+            end
+            let(:sudo_pass) { nil }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: "opscode",
+              })
+            end
+          end
+
+          context "when connection_password is not set, sudo_pass is not set" do
+            before do
+              knife.config[:connection_password] = nil
+            end
+            let(:sudo_pass) { nil }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: nil,
+              })
+            end
+          end
+
+          # connection_password will take precedence here  
+          context "when connection_password is  set, sudo_pass is  set" do
+            before do
+              knife.config[:connection_password] = "opscode"
+            end
+            let(:sudo_pass) { "progress" }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: "opscode",
+              })
+            end
+          end
+
         end
 
         context "when preserve_home is set" do
