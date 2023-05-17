@@ -32,13 +32,16 @@ class Chef
       end
 
       def convert_value(value)
+        # The order in this case statement is *important*.
+        # ImmutableMash and ImmutableArray should be tested first,
+        # as this saves unnecessary creation of intermediate objects
         case value
+        when ImmutableMash, ImmutableArray
+          value
         when Hash
           ImmutableMash.new(value, __root__, __node__, __precedence__)
         when Array
           ImmutableArray.new(value, __root__, __node__, __precedence__)
-        when ImmutableMash, ImmutableArray
-          value
         else
           safe_dup(value).freeze
         end
