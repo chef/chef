@@ -1477,7 +1477,7 @@ describe Chef::Knife::Bootstrap do
             end
           end
 
-          # connection_password will take precedence here  
+          # connection_password will take precedence here
           context "when connection_password is  set, sudo_pass is  set" do
             before do
               knife.config[:connection_password] = "opscode"
