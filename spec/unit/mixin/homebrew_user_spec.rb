@@ -74,9 +74,9 @@ describe Chef::Mixin::HomebrewUser do
       end
 
       it "returns the owner of the brew executable when it is not at a default location" do
-        allow_any_instance_of(ExampleHomebrewUser).to receive(:which).and_return('/foo')
-        false_unless_specific_value(File, :exist?, '/foo')
-        false_unless_specific_value(File, :executable?, '/foo')
+        allow_any_instance_of(ExampleHomebrewUser).to receive(:which).and_return("/foo")
+        false_unless_specific_value(File, :exist?, "/foo")
+        false_unless_specific_value(File, :executable?, "/foo")
         allow(homebrew_user).to receive_message_chain(:shell_out, :stdout, :strip).and_return("/foo")
         allow(File).to receive(:stat).with("/foo").and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
