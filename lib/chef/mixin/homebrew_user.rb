@@ -75,7 +75,7 @@ class Chef
           owner = ::File.stat(default_brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-                'Could not find the "brew" executable anywhere on the path.'
+            'Could not find the "brew" executable anywhere on the path.'
         end
 
         Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"

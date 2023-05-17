@@ -289,7 +289,7 @@ GEM
     mixlib-archive (1.1.7)
       mixlib-log
     mixlib-archive (1.1.7-universal-mingw32)
-          mixlib-log
+      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
