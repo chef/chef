@@ -1,5 +1,6 @@
 if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
-  require "net/http"
+  require "net/http" unless defined?(Net::HTTP)
+  puts "*********** LOading patch *************"
   # This is monkey-patch for ruby 3.1.x
   # Due to change https://github.com/ruby/net-http/pull/10, when making net/http requests to a url which supports only IPv6 and not IPv4,
   # ruby waits for IPv4 request to timeout first, then makes IPv6 request. This increased response time.
@@ -7,7 +8,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
   # NOTE 2: We are patching action `connect` from here https://github.com/ruby/ruby/blob/f88bff770578583a708093f4a0d8b1483a1d2039/lib/net/http.rb#L1000
 
   module Net
-    class HTTP < Protocol
+    class HTTP
       def connect
         if use_ssl?
           # reference early to load OpenSSL before connecting,
