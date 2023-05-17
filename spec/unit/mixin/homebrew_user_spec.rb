@@ -61,16 +61,24 @@ describe Chef::Mixin::HomebrewUser do
         expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(name: "name"))
       end
 
+      def false_unless_specific_value(object, method, value)
+        allow(object).to receive(method).and_return(false)
+        allow(object).to receive(method).with(value).and_return(true)
+      end
+
       it "returns the owner of the brew executable when it is at a default location" do
-        expect(File).to receive(:exist?).and_return(true).at_least(:once)
-        expect(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
+        false_unless_specific_value(File, :exist?, default_brew_path)
+        false_unless_specific_value(File, :executable?, default_brew_path)
+        allow(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
       it "returns the owner of the brew executable when it is not at a default location" do
-        expect(File).to receive(:exist?).with(default_brew_path).and_return(false)
+        allow_any_instance_of(ExampleHomebrewUser).to receive(:which).and_return('/foo')
+        false_unless_specific_value(File, :exist?, '/foo')
+        false_unless_specific_value(File, :executable?, '/foo')
         allow(homebrew_user).to receive_message_chain(:shell_out, :stdout, :strip).and_return("/foo")
-        expect(File).to receive(:stat).with("/foo").and_return(stat_double)
+        allow(File).to receive(:stat).with("/foo").and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
