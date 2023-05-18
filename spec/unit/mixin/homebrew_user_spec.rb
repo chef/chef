@@ -76,14 +76,14 @@ describe Chef::Mixin::HomebrewUser do
       it "returns the owner of the brew executable when it is at a default location for arm machines" do
         false_unless_specific_value(File, :exist?, default_brew_path_arm)
         false_unless_specific_value(File, :executable?, default_brew_path_arm)
-        allow(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
+        allow(File).to receive(:stat).with(default_brew_path_arm).and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
       it "returns the owner of the brew executable when it is at a default location for linux machines" do
         false_unless_specific_value(File, :exist?, default_brew_path_linux)
         false_unless_specific_value(File, :executable?, default_brew_path_linux)
-        allow(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
+        allow(File).to receive(:stat).with(default_brew_path_linux).and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
