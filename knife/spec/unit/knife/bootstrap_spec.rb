@@ -1403,6 +1403,7 @@ describe Chef::Knife::Bootstrap do
 
   context "#sudo_opts" do
     let(:connection_protocol) { nil }
+    let(:sudo_pass) { nil }
     before do
       allow(knife).to receive(:connection_protocol).and_return connection_protocol
     end
@@ -1410,7 +1411,7 @@ describe Chef::Knife::Bootstrap do
     context "for winrm" do
       let(:connection_protocol) { "winrm" }
       it "returns an empty hash" do
-        expect(knife.sudo_opts).to eq({})
+        expect(knife.sudo_opts(sudo_pass)).to eq({})
       end
     end
 
@@ -1422,7 +1423,7 @@ describe Chef::Knife::Bootstrap do
         end
 
         it "returns a config that enables sudo" do
-          expect(knife.sudo_opts).to eq( { sudo: true } )
+          expect(knife.sudo_opts(sudo_pass)).to eq( { sudo: true } )
         end
 
         context "when use_sudo_password is also set" do
@@ -1431,11 +1432,65 @@ describe Chef::Knife::Bootstrap do
             knife.config[:connection_password] = "opscode"
           end
           it "includes :connection_password value in a sudo-enabled configuration" do
-            expect(knife.sudo_opts).to eq({
+            expect(knife.sudo_opts(sudo_pass)).to eq({
               sudo: true,
               sudo_password: "opscode",
             })
           end
+
+          context "when sudo_pass is set, connection_password is not set" do
+            before do
+              knife.config[:connection_password] = nil
+            end
+            let(:sudo_pass) { "progress" }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: "progress",
+              })
+            end
+          end
+
+          context "when connection_password is set, sudo_pass is not set" do
+            before do
+              knife.config[:connection_password] = "opscode"
+            end
+            let(:sudo_pass) { nil }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: "opscode",
+              })
+            end
+          end
+
+          context "when connection_password is not set, sudo_pass is not set" do
+            before do
+              knife.config[:connection_password] = nil
+            end
+            let(:sudo_pass) { nil }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: nil,
+              })
+            end
+          end
+
+          # connection_password will take precedence here
+          context "when connection_password is  set, sudo_pass is  set" do
+            before do
+              knife.config[:connection_password] = "opscode"
+            end
+            let(:sudo_pass) { "progress" }
+            it "includes :connection_password value in a sudo-enabled configuration" do
+              expect(knife.sudo_opts(sudo_pass)).to eq({
+                sudo: true,
+                sudo_password: "opscode",
+              })
+            end
+          end
+
         end
 
         context "when preserve_home is set" do
@@ -1443,7 +1498,7 @@ describe Chef::Knife::Bootstrap do
             knife.config[:preserve_home] = true
           end
           it "enables sudo with sudo_option to preserve home" do
-            expect(knife.sudo_opts).to eq({
+            expect(knife.sudo_opts(sudo_pass)).to eq({
               sudo_options: "-H",
               sudo: true,
             })
@@ -1457,7 +1512,7 @@ describe Chef::Knife::Bootstrap do
           knife.config[:preserve_home] = true
         end
         it "returns configuration for sudo off, ignoring other related options" do
-          expect(knife.sudo_opts).to eq( { sudo: false } )
+          expect(knife.sudo_opts(sudo_pass)).to eq( { sudo: false } )
         end
       end
     end
