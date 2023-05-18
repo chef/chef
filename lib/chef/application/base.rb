@@ -24,6 +24,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "../daemon"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
+require "chef/monkey_patches/net-http"
+
 module Mixlib
   autoload :Archive, "mixlib/archive"
 end
