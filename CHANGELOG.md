@@ -2,89 +2,87 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.68 -->
-## [v17.10.68](https://github.com/chef/chef/tree/v17.10.68) (2023-05-16)
-
-#### Merged Pull Requests
-- [chef-17] 27 of X - Tweaking EOL Support [#13756](https://github.com/chef/chef/pull/13756) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=17.10.0 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- [chef-17] 27 of X - Tweaking EOL Support [#13756](https://github.com/chef/chef/pull/13756) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.68 -->
-- [chef-17] 27 of X - Updating EOL Support, Again [#13755](https://github.com/chef/chef/pull/13755) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.67 -->
-- [chef-17] 26 of X - Updating EOL Support [#13753](https://github.com/chef/chef/pull/13753) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.66 -->
-- [chef-17] 25 of X - Backport Checksum Validation [#13750](https://github.com/chef/chef/pull/13750) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.65 -->
-- [Chef-17] 23 of X - Updating the windows versions [#13743](https://github.com/chef/chef/pull/13743) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.64 -->
-- [Chef-17] 22 of X - Updating Libxslt, but surgically [#13741](https://github.com/chef/chef/pull/13741) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.63 -->
-- [Chef-17] 21 of X - Updating Windows Functional Spec [#13737](https://github.com/chef/chef/pull/13737) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.62 -->
-- Remove deprecated Debian 9 [#13738](https://github.com/chef/chef/pull/13738) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.61 -->
-- [chef-17] 19 of X - Refactoring the badssl.com code [#13734](https://github.com/chef/chef/pull/13734) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.60 -->
-- [chef-17] 18 of X - Refactoring the badssl.com code [#13726](https://github.com/chef/chef/pull/13726) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.59 -->
-- [chef-17] 17 of X - Correcting Omnibus test error handling [#13725](https://github.com/chef/chef/pull/13725) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.58 -->
-- [chef-17] 16 of X - Updating Windows Version Strings [#13723](https://github.com/chef/chef/pull/13723) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.57 -->
-- [chef-17] 15 of X - Correcting Pagefile spec errors in AdHoc [#13722](https://github.com/chef/chef/pull/13722) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.56 -->
-- [chef-17] 14 of X - Correcting the build cert SHA [#13720](https://github.com/chef/chef/pull/13720) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.55 -->
-- [Chef-17] 13 of X - Updated Knife for Chef-17 [#13715](https://github.com/chef/chef/pull/13715) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
-- [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.54 -->
-- Updating the badssl cert again [#13713](https://github.com/chef/chef/pull/13713) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.53 -->
-- [Chef-17] 10 of X - Updating gem dependencies [#13708](https://github.com/chef/chef/pull/13708) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.52 -->
-- [Chef-17] 11 of X - Updating windows_font_spec [#13709](https://github.com/chef/chef/pull/13709) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.51 -->
-- [Chef-17] 9 of X - Updating opscode.com pem file [#13707](https://github.com/chef/chef/pull/13707) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.50 -->
-- [Chef-17] 7 of X - Updating Berkshelf version [#13704](https://github.com/chef/chef/pull/13704) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.49 -->
-- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13690](https://github.com/chef/chef/pull/13690) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.48 -->
-- [Chef-17] 6 of X - Updating Git version for end_to_end testing [#13698](https://github.com/chef/chef/pull/13698) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.47 -->
-- [chef-17] 8 of X - Updating ncurses [#13700](https://github.com/chef/chef/pull/13700) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.46 -->
-- [Chef-17] 2 of X - Removing i386 support [#13694](https://github.com/chef/chef/pull/13694) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.45 -->
-- [Chef-17] 1 of X - Updating Ruby versions [#13693](https://github.com/chef/chef/pull/13693) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.44 -->
-- [Chef-17] 5 of X - Updating CSpell [#13697](https://github.com/chef/chef/pull/13697) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.43 -->
-- [Chef-17] 4 of X - Updating the Rakefile [#13696](https://github.com/chef/chef/pull/13696) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.42 -->
-- [Chef-17] 3 of X - Updating Cheffish version [#13695](https://github.com/chef/chef/pull/13695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.41 -->
-- Bump omnibus from `5bc091a` to `a1ed55c` in /omnibus [#13632](https://github.com/chef/chef/pull/13632) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.40 -->
-- Fix berkshelf on chef 17 [#13679](https://github.com/chef/chef/pull/13679) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.39 -->
-- Bump addressable to 2.8.4 [#13674](https://github.com/chef/chef/pull/13674) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.10.38 -->
-- [Chef-17] Update ssl cert used in kitchen tests [#13660](https://github.com/chef/chef/pull/13660) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.37 -->
-- [chef-17] INFC-303 - Backport changes from v18 to v17 for documentation and mis… [#13254](https://github.com/chef/chef/pull/13254) ([Stromweld](https://github.com/Stromweld)) <!-- 17.10.36 -->
-- Fix rubygem tests for 17 [#13615](https://github.com/chef/chef/pull/13615) ([jaymzh](https://github.com/jaymzh)) <!-- 17.10.35 -->
-- [chef-17] backport Bump deps for net-ssh 7.x for RHEL 9 and Ubuntu 22.04 ssh [#13332](https://github.com/chef/chef/pull/13332) ([Stromweld](https://github.com/Stromweld)) <!-- 17.10.34 -->
-- Bump chef-vault to 4.1.11 [#13583](https://github.com/chef/chef/pull/13583) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.10.33 -->
-- Bump kitchen-vagrant from 1.11.0 to 1.14.1 in /omnibus [#13602](https://github.com/chef/chef/pull/13602) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.32 -->
-- Bump plist to 3.7.0 [#13595](https://github.com/chef/chef/pull/13595) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.10.31 -->
-- Bump omnibus-software from `a63bd71` to `87f418b` in /omnibus [#13607](https://github.com/chef/chef/pull/13607) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.30 -->
-- [chef-17] Pipeline fixes [#13399](https://github.com/chef/chef/pull/13399) ([Stromweld](https://github.com/Stromweld)) <!-- 17.10.29 -->
-- Fix chef-17 pipelines [#13253](https://github.com/chef/chef/pull/13253) ([jaymzh](https://github.com/jaymzh)) <!-- 17.10.28 -->
-- [chef-17] Update omnibus version to fix read_shared_libs to fix solaris adhoc pipeline issue [#13243](https://github.com/chef/chef/pull/13243) ([blabade](https://github.com/blabade)) <!-- 17.10.27 -->
-- [Chef-17] Correcting for Hab not being installed [#13266](https://github.com/chef/chef/pull/13266) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.26 -->
-- Bump omnibus from `83d8428` to `d1fe3bb` in /omnibus [#13274](https://github.com/chef/chef/pull/13274) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.25 -->
-- [Chef-17] Backporting the fix from Chef-18 to get uru to work correctly [#13261](https://github.com/chef/chef/pull/13261) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.24 -->
-- [Chef-17] Backporting a fix for the Linux testers that fixes a resolver_conf issue [#13257](https://github.com/chef/chef/pull/13257) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.23 -->
-- [Chef-17] Backporting a fix for the Linux testers that fixes an issue with nscd… [#13258](https://github.com/chef/chef/pull/13258) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.22 -->
-- [Chef-17] Adding a new Zypper repo with a higher priority [#13255](https://github.com/chef/chef/pull/13255) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.21 -->
-- Update self-signed.badssl.com cert for chef-17 [#13231](https://github.com/chef/chef/pull/13231) ([blabade](https://github.com/blabade)) <!-- 17.10.20 -->
-- Backport to 17: Stop executing locale-gen on every chef run [#12905](https://github.com/chef/chef/pull/12905) ([hrak](https://github.com/hrak)) <!-- 17.10.19 -->
-- backport-17: Fix error &#39;error validating X-Vault-AWS-IAM-Server-ID header: missing header X-Vault-AWS-IAM-Server-ID&#39; in Hashi Vault secret manager for AWS IAM auth method  [#12957](https://github.com/chef/chef/pull/12957) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.18 -->
-- Backport to 17: Add rubygems_url property to chef_client_config resource [#12978](https://github.com/chef/chef/pull/12978) ([DecoyJoe](https://github.com/DecoyJoe)) <!-- 17.10.17 -->
-- Chef 17: Use dist constant when invoking knife configure [#12927](https://github.com/chef/chef/pull/12927) ([ramereth](https://github.com/ramereth)) <!-- 17.10.16 -->
-- backport to 17: flush package cache after registering or unregistering with rhsm_register [#12909](https://github.com/chef/chef/pull/12909) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.15 -->
-- backport Windows Certificate fixes to Chef-17 [#12912](https://github.com/chef/chef/pull/12912) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.14 -->
-- Handling compliance phase error [#12872](https://github.com/chef/chef/pull/12872) ([i5pranay93](https://github.com/i5pranay93)) <!-- 17.10.13 -->
-- Backport #12140 to chef-17 [#12856](https://github.com/chef/chef/pull/12856) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.12 -->
-- Fix chef_client_config template rendering [#12826](https://github.com/chef/chef/pull/12826) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.10.11 -->
-- Chef 17: Update all dependencies with bundle update [#12799](https://github.com/chef/chef/pull/12799) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.10 -->
-- Fix pem generation when user created [#12772](https://github.com/chef/chef/pull/12772) ([sanjain-progress](https://github.com/sanjain-progress)) <!-- 17.10.9 -->
--  pin libxml2 to 2.9.13 and libxslt to 1.1.34 on windows [#12768](https://github.com/chef/chef/pull/12768) ([jayashrig158](https://github.com/jayashrig158)) <!-- 17.10.8 -->
-- Fix attribute performance issues in node.read (Chef-17) [#12743](https://github.com/chef/chef/pull/12743) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.10.7 -->
-- Updating Gemfile.locks to corroborate the libxml2 version update [#12741](https://github.com/chef/chef/pull/12741) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.6 -->
-- Removed Windows Server 2016 from testing per Github [#12740](https://github.com/chef/chef/pull/12740) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.5 -->
-- update libxml2 to 2.9.12 - CHEF17 [#12731](https://github.com/chef/chef/pull/12731) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.4 -->
-- Bump omnibus-software from `5947560` to `769445f` in /omnibus [#12720](https://github.com/chef/chef/pull/12720) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.3 -->
-- Package resource was calling a non-existent error method [#12721](https://github.com/chef/chef/pull/12721) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.2 -->
-- Minor fix to conditional in promote-docker-images.sh [#12701](https://github.com/chef/chef/pull/12701) ([jeremiahsnapp](https://github.com/jeremiahsnapp)) <!-- 17.10.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.10.68](https://github.com/chef/chef/tree/v17.10.68) (2023-05-18)
+
+#### Merged Pull Requests
+- Minor fix to conditional in promote-docker-images.sh [#12701](https://github.com/chef/chef/pull/12701) ([jeremiahsnapp](https://github.com/jeremiahsnapp))
+- Package resource was calling a non-existent error method [#12721](https://github.com/chef/chef/pull/12721) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus-software from `5947560` to `769445f` in /omnibus [#12720](https://github.com/chef/chef/pull/12720) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- update libxml2 to 2.9.12 - CHEF17 [#12731](https://github.com/chef/chef/pull/12731) ([johnmccrae](https://github.com/johnmccrae))
+- Removed Windows Server 2016 from testing per Github [#12740](https://github.com/chef/chef/pull/12740) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Gemfile.locks to corroborate the libxml2 version update [#12741](https://github.com/chef/chef/pull/12741) ([johnmccrae](https://github.com/johnmccrae))
+- Fix attribute performance issues in node.read (Chef-17) [#12743](https://github.com/chef/chef/pull/12743) ([lamont-granquist](https://github.com/lamont-granquist))
+-  pin libxml2 to 2.9.13 and libxslt to 1.1.34 on windows [#12768](https://github.com/chef/chef/pull/12768) ([jayashrig158](https://github.com/jayashrig158))
+- Fix pem generation when user created [#12772](https://github.com/chef/chef/pull/12772) ([sanjain-progress](https://github.com/sanjain-progress))
+- Chef 17: Update all dependencies with bundle update [#12799](https://github.com/chef/chef/pull/12799) ([neha-p6](https://github.com/neha-p6))
+- Fix chef_client_config template rendering [#12826](https://github.com/chef/chef/pull/12826) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Backport #12140 to chef-17 [#12856](https://github.com/chef/chef/pull/12856) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Handling compliance phase error [#12872](https://github.com/chef/chef/pull/12872) ([i5pranay93](https://github.com/i5pranay93))
+- backport Windows Certificate fixes to Chef-17 [#12912](https://github.com/chef/chef/pull/12912) ([johnmccrae](https://github.com/johnmccrae))
+- backport to 17: flush package cache after registering or unregistering with rhsm_register [#12909](https://github.com/chef/chef/pull/12909) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Chef 17: Use dist constant when invoking knife configure [#12927](https://github.com/chef/chef/pull/12927) ([ramereth](https://github.com/ramereth))
+- Backport to 17: Add rubygems_url property to chef_client_config resource [#12978](https://github.com/chef/chef/pull/12978) ([DecoyJoe](https://github.com/DecoyJoe))
+- backport-17: Fix error &#39;error validating X-Vault-AWS-IAM-Server-ID header: missing header X-Vault-AWS-IAM-Server-ID&#39; in Hashi Vault secret manager for AWS IAM auth method  [#12957](https://github.com/chef/chef/pull/12957) ([neha-p6](https://github.com/neha-p6))
+- Backport to 17: Stop executing locale-gen on every chef run [#12905](https://github.com/chef/chef/pull/12905) ([hrak](https://github.com/hrak))
+- Update self-signed.badssl.com cert for chef-17 [#13231](https://github.com/chef/chef/pull/13231) ([blabade](https://github.com/blabade))
+- [Chef-17] Adding a new Zypper repo with a higher priority [#13255](https://github.com/chef/chef/pull/13255) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Backporting a fix for the Linux testers that fixes an issue with nscd… [#13258](https://github.com/chef/chef/pull/13258) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Backporting a fix for the Linux testers that fixes a resolver_conf issue [#13257](https://github.com/chef/chef/pull/13257) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Backporting the fix from Chef-18 to get uru to work correctly [#13261](https://github.com/chef/chef/pull/13261) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus from `83d8428` to `d1fe3bb` in /omnibus [#13274](https://github.com/chef/chef/pull/13274) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [Chef-17] Correcting for Hab not being installed [#13266](https://github.com/chef/chef/pull/13266) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] Update omnibus version to fix read_shared_libs to fix solaris adhoc pipeline issue [#13243](https://github.com/chef/chef/pull/13243) ([blabade](https://github.com/blabade))
+- Fix chef-17 pipelines [#13253](https://github.com/chef/chef/pull/13253) ([jaymzh](https://github.com/jaymzh))
+- [chef-17] Pipeline fixes [#13399](https://github.com/chef/chef/pull/13399) ([Stromweld](https://github.com/Stromweld))
+- Bump omnibus-software from `a63bd71` to `87f418b` in /omnibus [#13607](https://github.com/chef/chef/pull/13607) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump plist to 3.7.0 [#13595](https://github.com/chef/chef/pull/13595) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump kitchen-vagrant from 1.11.0 to 1.14.1 in /omnibus [#13602](https://github.com/chef/chef/pull/13602) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump chef-vault to 4.1.11 [#13583](https://github.com/chef/chef/pull/13583) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- [chef-17] backport Bump deps for net-ssh 7.x for RHEL 9 and Ubuntu 22.04 ssh [#13332](https://github.com/chef/chef/pull/13332) ([Stromweld](https://github.com/Stromweld))
+- Fix rubygem tests for 17 [#13615](https://github.com/chef/chef/pull/13615) ([jaymzh](https://github.com/jaymzh))
+- [chef-17] INFC-303 - Backport changes from v18 to v17 for documentation and mis… [#13254](https://github.com/chef/chef/pull/13254) ([Stromweld](https://github.com/Stromweld))
+- [Chef-17] Update ssl cert used in kitchen tests [#13660](https://github.com/chef/chef/pull/13660) ([neha-p6](https://github.com/neha-p6))
+- Bump addressable to 2.8.4 [#13674](https://github.com/chef/chef/pull/13674) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix berkshelf on chef 17 [#13679](https://github.com/chef/chef/pull/13679) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus from `5bc091a` to `a1ed55c` in /omnibus [#13632](https://github.com/chef/chef/pull/13632) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [Chef-17] 3 of X - Updating Cheffish version [#13695](https://github.com/chef/chef/pull/13695) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 4 of X - Updating the Rakefile [#13696](https://github.com/chef/chef/pull/13696) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 5 of X - Updating CSpell [#13697](https://github.com/chef/chef/pull/13697) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 1 of X - Updating Ruby versions [#13693](https://github.com/chef/chef/pull/13693) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 2 of X - Removing i386 support [#13694](https://github.com/chef/chef/pull/13694) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 8 of X - Updating ncurses [#13700](https://github.com/chef/chef/pull/13700) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 6 of X - Updating Git version for end_to_end testing [#13698](https://github.com/chef/chef/pull/13698) ([johnmccrae](https://github.com/johnmccrae))
+- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13690](https://github.com/chef/chef/pull/13690) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [Chef-17] 7 of X - Updating Berkshelf version [#13704](https://github.com/chef/chef/pull/13704) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 9 of X - Updating opscode.com pem file [#13707](https://github.com/chef/chef/pull/13707) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 11 of X - Updating windows_font_spec [#13709](https://github.com/chef/chef/pull/13709) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 10 of X - Updating gem dependencies [#13708](https://github.com/chef/chef/pull/13708) ([johnmccrae](https://github.com/johnmccrae))
+- Updating the badssl cert again [#13713](https://github.com/chef/chef/pull/13713) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 12 of X - Correcting Windows Verify Plan failures [#13710](https://github.com/chef/chef/pull/13710) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 13 of X - Updated Knife for Chef-17 [#13715](https://github.com/chef/chef/pull/13715) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 14 of X - Correcting the build cert SHA [#13720](https://github.com/chef/chef/pull/13720) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 15 of X - Correcting Pagefile spec errors in AdHoc [#13722](https://github.com/chef/chef/pull/13722) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 16 of X - Updating Windows Version Strings [#13723](https://github.com/chef/chef/pull/13723) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 17 of X - Correcting Omnibus test error handling [#13725](https://github.com/chef/chef/pull/13725) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 18 of X - Refactoring the badssl.com code [#13726](https://github.com/chef/chef/pull/13726) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 19 of X - Refactoring the badssl.com code [#13734](https://github.com/chef/chef/pull/13734) ([johnmccrae](https://github.com/johnmccrae))
+- Remove deprecated Debian 9 [#13738](https://github.com/chef/chef/pull/13738) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef-17] 21 of X - Updating Windows Functional Spec [#13737](https://github.com/chef/chef/pull/13737) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 22 of X - Updating Libxslt, but surgically [#13741](https://github.com/chef/chef/pull/13741) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] 23 of X - Updating the windows versions [#13743](https://github.com/chef/chef/pull/13743) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 25 of X - Backport Checksum Validation [#13750](https://github.com/chef/chef/pull/13750) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 26 of X - Updating EOL Support [#13753](https://github.com/chef/chef/pull/13753) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 27 of X - Updating EOL Support, Again [#13755](https://github.com/chef/chef/pull/13755) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] 27 of X - Tweaking EOL Support [#13756](https://github.com/chef/chef/pull/13756) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v17.10.0](https://github.com/chef/chef/tree/v17.10.0) (2022-03-22)
 
 #### Merged Pull Requests
@@ -98,7 +96,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Chef-17 backport: Fix multiple regressions in yum_package provider [#12662](https://github.com/chef/chef/pull/12662) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump omnibus-software from `aa90acf` to `5947560` in /omnibus [#12671](https://github.com/chef/chef/pull/12671) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Updating win32.gemspec and releasing a new build [#12688](https://github.com/chef/chef/pull/12688) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v17.9.52](https://github.com/chef/chef/tree/v17.9.52) (2022-02-18)
 
