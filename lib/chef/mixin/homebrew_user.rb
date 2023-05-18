@@ -69,8 +69,8 @@ class Chef
       end
 
       def calculate_owner
-        default_brew_path = homebrew_bin_path
-        if default_brew_path
+        brew_path = homebrew_bin_path
+        if brew_path
           # By default, this follows symlinks which is what we want
           owner = ::File.stat(default_brew_path).uid
         else
