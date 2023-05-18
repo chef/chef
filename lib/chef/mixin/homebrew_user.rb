@@ -72,7 +72,7 @@ class Chef
         brew_path = homebrew_bin_path
         if brew_path
           # By default, this follows symlinks which is what we want
-          owner = ::File.stat(default_brew_path).uid
+          owner = ::File.stat(brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
             'Could not find the "brew" executable anywhere on the path.'
