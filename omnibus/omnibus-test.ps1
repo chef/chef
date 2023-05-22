@@ -107,6 +107,14 @@ $env:Path = $p
 # desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
 $exit = 0
 
+
+Write-Output "Where's Bundler?"
+$(Get-Command bundle).Path
+Write-Output "Where's RSpec?"
+$(Get-Command rspec).Path
+Write-Output "Where's Ruby?"
+$(Get-Command ruby).Path
+
 bundle exec rspec -f progress --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
@@ -117,7 +125,7 @@ If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f progress --profile -- ./spec/integration
+bundle exec rspec -f documentation --profile -- ./spec/integration
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
