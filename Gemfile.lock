@@ -35,12 +35,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.10.68)
+    chef (17.10.69)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.68)
-      chef-utils (= 17.10.68)
+      chef-config (= 17.10.69)
+      chef-utils (= 17.10.69)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -66,13 +66,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.10.68-universal-mingw32)
+    chef (17.10.69-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.68)
+      chef-config (= 17.10.69)
       chef-powershell (~> 1.0.12)
-      chef-utils (= 17.10.68)
+      chef-utils (= 17.10.69)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -113,15 +113,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.10.68)
-      chef (= 17.10.68)
+    chef-bin (17.10.69)
+      chef (= 17.10.69)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.10.68)
+    chef-config (17.10.69)
       addressable
-      chef-utils (= 17.10.68)
+      chef-utils (= 17.10.69)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -130,7 +130,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.10.68)
+    chef-utils (17.10.69)
       concurrent-ruby
 
 GEM
@@ -143,8 +143,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.764.0)
-    aws-sdk-core (3.172.0)
+    aws-partitions (1.767.0)
+    aws-sdk-core (3.173.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -156,7 +156,7 @@ GEM
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.74.0)
+    aws-sdk-secretsmanager (1.75.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.2)
