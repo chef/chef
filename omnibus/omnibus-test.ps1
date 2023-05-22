@@ -115,6 +115,8 @@ $(Get-Command rspec).Path
 Write-Output "Where's Ruby?"
 $(Get-Command ruby).Path
 
+Get-FileHash $(Get-Command ruby).Path
+
 ruby -e "require 'openssl'"
 if ( $? -eq $false ) {
   Write-Output "OpenSSL is not working"
