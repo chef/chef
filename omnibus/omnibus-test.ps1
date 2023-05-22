@@ -115,6 +115,12 @@ $(Get-Command rspec).Path
 Write-Output "Where's Ruby?"
 $(Get-Command ruby).Path
 
+ruby -e "require 'openssl'"
+if ( $? -eq $false ) {
+  Write-Output "OpenSSL is not working"
+  Throw "OpenSSL is not working"
+}
+
 bundle exec rspec -f progress --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
@@ -125,7 +131,7 @@ If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f documentation --profile -- ./spec/integration
+bundle exec rspec -f progress --profile -- ./spec/integration
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
