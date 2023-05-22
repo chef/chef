@@ -117,6 +117,8 @@ $(Get-Command ruby).Path
 
 Get-FileHash $(Get-Command ruby).Path
 
+Get-FileHash "C:/opscode/chef/embedded/lib/ruby/3.0.0/x64-mingw32/openssl.so"
+
 ruby -e "require 'openssl'"
 if ( $? -eq $false ) {
   Write-Output "OpenSSL is not working"
