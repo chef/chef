@@ -130,6 +130,12 @@ if ( $? -eq $false ) {
   Throw "OpenSSL is not working"
 }
 
+Write-Output "Path:"
+Write-Output "-----"
+Write-Output $Env:PATH
+
+Write-Output "Opscode tree:"
+Write-Output "-------------"
 tree c:\opscode /f
 
 bundle exec rspec -f progress --profile -- ./spec/unit
