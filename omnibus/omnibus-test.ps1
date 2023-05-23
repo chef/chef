@@ -120,6 +120,7 @@ Get-FileHash $(Get-Command ruby).Path
 Get-FileHash "C:/opscode/chef/embedded/lib/ruby/3.0.0/x64-mingw32/openssl.so"
 
 Get-ChildItem c:\ -recurse 'ruby.exe' -ErrorAction SilentlyContinue
+Get-ChildItem -Recurse 'ruby.exe' | ForEach-Object { Invoke-Expression "Write-Output $_; $_ -e 'require %!openssl!'" }
 Get-ChildItem c:\ -recurse '*ssl*.so' -ErrorAction SilentlyContinue
 
 ruby -e "require 'openssl'"
