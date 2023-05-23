@@ -124,10 +124,13 @@ Get-ChildItem c:\ -Recurse 'ruby.exe' | ForEach-Object { Invoke-Expression "Writ
 Get-ChildItem c:\ -recurse '*ssl*.so' -ErrorAction SilentlyContinue
 
 ruby -e "require 'openssl'"
+
 if ( $? -eq $false ) {
   Write-Output "OpenSSL is not working"
   Throw "OpenSSL is not working"
 }
+
+tree c:\opscode /f
 
 bundle exec rspec -f progress --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
