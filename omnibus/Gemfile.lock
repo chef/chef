@@ -106,7 +106,7 @@ GEM
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.10.0-universal-mingw32)
+    chef (17.10.0-x64-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -417,6 +417,7 @@ GEM
     vault (0.17.0)
       aws-sigv4
     webrick (1.8.1)
+    win32-api (1.5.3)
     win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
@@ -464,6 +465,7 @@ GEM
 PLATFORMS
   ruby
   x64-mingw
+  x64-mingw-ucrt
   x64-mingw32
   x86-mingw32
 
