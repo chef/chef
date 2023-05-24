@@ -6,10 +6,6 @@ gem "artifactory"
 
 gem "pedump"
 
-# Use Berkshelf for resolving cookbook dependencies
-# Using a branch here that calls out a berkshelf version for chef-17
-gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "main"
-
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
 # the Test Kitchen-based build lab. You can skip these unnecessary dependencies
