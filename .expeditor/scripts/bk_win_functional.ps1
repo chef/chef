@@ -7,10 +7,10 @@ Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyC
 
 $ErrorActionPreference = 'Stop'
 
-Write-Output "--- Enable Ruby 3.0"
+Write-Output "--- Enable Ruby 3.0.6"
 
 # Ruby is not installed at this point for some reason. Installing it now
-$pkg_version="3.0.3"
+$pkg_version="3.0.6"
 $pkg_revision="1"
 $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
 
@@ -21,7 +21,7 @@ else {
     $old_version = $null
 }
   
-if(-not($old_version -match "3.0")){
+if(-not($old_version -match "3.0.6")){
     Write-Output "Downloading Ruby + DevKit";
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
     $package_destination = "$env:temp\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe"
