@@ -32,6 +32,13 @@ GIT
   specs:
     ruby-shadow (2.5.0)
 
+GEM
+  remote: https://rubygems.org/
+  specs:
+    chef-powershell (1.0.13)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
+
 PATH
   remote: .
   specs:
