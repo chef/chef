@@ -9,13 +9,13 @@ puts "fixing bundle installed gems in #{gem_home}"
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
 #
 Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
-  matches = File.basename(gempath).match(/(.*)-[A-Fa-f0-9]{12}/)
+  matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
-  gem_name = matches[1]
+  gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
   next unless gem_name
 
-  next if gem_name == "chef"
+  next if %w{chef chef-universal-mingw-ucrt}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
