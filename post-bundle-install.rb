@@ -15,7 +15,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
   next unless gem_name
 
-  next if %w{chef chef-universal-mingw-ucrt}.include?(gem_name)
+  next if %w{chef chef-universal-mingw-ucrt chef-universal-mingw32}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
