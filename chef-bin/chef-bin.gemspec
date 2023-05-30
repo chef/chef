@@ -14,7 +14,11 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "chef", "= #{ChefBin::VERSION}"
+  if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+    spec.add_dependency "chef-#{ChefBin::VERSION}-x64-mingw-ucrt", "= #{ChefBin::VERSION}"
+  else
+    spec.add_dependency "chef", "= #{ChefBin::VERSION}"
+  end
   spec.add_development_dependency "rake"
 
   spec.files = %w{Gemfile Rakefile LICENSE} + Dir.glob("*.gemspec") +
