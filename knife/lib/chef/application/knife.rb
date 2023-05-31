@@ -19,6 +19,9 @@ require "chef/application"
 require_relative "../knife"
 require "mixlib/log"
 require "ohai/config"
+require "chef-licensing"
+require "chef/utils/licensing_config"
+require "chef/knife/core/ui"
 module Net
   autoload :HTTP, "net/http"
 end
@@ -161,12 +164,28 @@ class Chef::Application::Knife < Chef::Application
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
+    validate_license_and_entitlement
     quiet_traps
     Chef::Knife.run(ARGV, options)
     exit 0
   end
 
   private
+
+  def validate_license_and_entitlement
+    begin
+    @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
+    ChefLicensing.check_software_entitlement!
+    rescue ChefLicensing::SoftwareNotEntitled
+      Chef::Log.error "License is not entitled to use Knife."
+      @ui.error "Software not entitled"
+      exit(1)
+    rescue ChefLicensing::Error => e
+      Chef::Log.warn "No license keys found on disk"
+      @ui.output "Please generate license first by running chef license command"
+      exit(1)
+    end
+  end
 
   def quiet_traps
     trap("TERM") do
