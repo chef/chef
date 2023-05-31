@@ -173,18 +173,16 @@ class Chef::Application::Knife < Chef::Application
   private
 
   def validate_license_and_entitlement
-    begin
     @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
     ChefLicensing.check_software_entitlement!
-    rescue ChefLicensing::SoftwareNotEntitled
-      Chef::Log.error "License is not entitled to use Knife."
-      @ui.error "Software not entitled"
-      exit(1)
-    rescue ChefLicensing::Error => e
-      Chef::Log.warn "No license keys found on disk"
-      @ui.output "Please generate license first by running chef license command"
-      exit(1)
-    end
+  rescue ChefLicensing::SoftwareNotEntitled
+    Chef::Log.error "License is not entitled to use Knife."
+    @ui.error "Software not entitled"
+    exit(1)
+  rescue ChefLicensing::Error => e
+    Chef::Log.warn "No license keys found on disk"
+    @ui.output "Please generate license first by running chef license command"
+    exit(1)
   end
 
   def quiet_traps
