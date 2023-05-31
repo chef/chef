@@ -22,7 +22,7 @@ GIT
   revision: 1f094e7422509715b6e4b5b49800c7f8c53601a6
   branch: vkarve/ssl-tweak
   specs:
-    omnibus-software (23.5.289)
+    omnibus-software (23.5.290)
       omnibus (>= 9.0.0)
 
 GIT
@@ -478,4 +478,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.5
+   2.3.7
