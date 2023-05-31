@@ -1,6 +1,5 @@
 if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
   require "net/http" unless defined?(Net::HTTP)
-  require "resolv" unless defined?(Resolv)
   # This is monkey-patch for ruby 3.1.x
   # Due to change https://github.com/ruby/net-http/pull/10, when making net/http requests to a url which supports only IPv6 and not IPv4,
   # ruby waits for IPv4 request to timeout first, then makes IPv6 request. This increased response time.
@@ -79,7 +78,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
 
           # Server Name Indication (SNI) RFC 3546/6066
           case @address
-          when Resolv::IPv4::Regex, Resolv::IPv6::Regex
+          when ::Resolv::IPv4::Regex, ::Resolv::IPv6::Regex
             # don't set SNI, as IP addresses in SNI is not valid
             # per RFC 6066, section 3.
 
