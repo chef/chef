@@ -76,7 +76,10 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           # to IP address
           verify_hostname = @ssl_context.verify_hostname
 
+          # requiring 'resolv' near the top of the file causes registry.rb monkey patch to fail
+          # Windows 2012 R2 somehow fails to have Resolv defined unless we require it manually
           require "resolv" unless defined?(Resolv)
+
           # Server Name Indication (SNI) RFC 3546/6066
           case @address
           when ::Resolv::IPv4::Regex, ::Resolv::IPv6::Regex
