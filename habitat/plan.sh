@@ -71,7 +71,7 @@ do_prepare() {
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
   set_runtime_env LD_LIBRARY_PATH "$LD_RUN_PATH"
-  
+  bundle config --local build.ffi "--with-ldflags=-Wl,-rpath=${LD_RUN_PATH}"
 
   ( cd "$CACHE_PATH"
     bundle config --local build.nokogiri "--use-system-libraries \
