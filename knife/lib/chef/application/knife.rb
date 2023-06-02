@@ -164,13 +164,30 @@ class Chef::Application::Knife < Chef::Application
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
-    validate_license_and_entitlement
+    validate_license_and_entitlement if check_license_flag
     quiet_traps
     Chef::Knife.run(ARGV, options)
     exit 0
   end
 
   private
+
+  def check_license_flag
+    license_feature = File.join(Dir.home, ".chef/license_feature.json")
+    if ARGV.length > 0 && ARGV[0] != "license"
+      File.exist?(license_feature) ? true : false
+      # puts "Please enable license to use it - knife license enable true"
+    elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "true"
+      File.open(File.join(Dir.home, ".chef/license_feature.json"), 'w') {|f| f.write("true") }
+      puts "Now you can use knife with the license feature"
+      exit 0
+    elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "false"
+      File.exist?(license_feature) ? File.delete(license_feature) : (puts "Unable to disable the license feature")
+      exit 0
+    else
+      return false
+    end
+  end
 
   def validate_license_and_entitlement
     @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
