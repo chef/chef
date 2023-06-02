@@ -7,6 +7,14 @@ GIT
       rubocop (= 1.25.1)
 
 GIT
+  remote: https://github.com/chef/ffi-libarchive.git
+  revision: 3b795d03f5403e83aa1dbd014cf077f2ded905ec
+  branch: jfm/ffi-libarchive
+  specs:
+    ffi-libarchive (1.1.9-universal-mingw)
+      ffi (~> 1.15)
+
+GIT
   remote: https://github.com/chef/ohai.git
   revision: c756b22eeb0424956ba32d04016c886fe7902304
   branch: 17-stable
@@ -447,6 +455,7 @@ DEPENDENCIES
   chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
+  ffi-libarchive!
   inspec-core-bin (>= 4.24)
   ohai!
   pry (= 0.13.0)
