@@ -34,12 +34,14 @@ pipelines:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
+        - MSYSTEM: MINGW64
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
       definition: .expeditor/adhoc-canary.omnibus.yml
       env:
         - ADHOC: true
+        - MSYSTEM: MINGW64
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
