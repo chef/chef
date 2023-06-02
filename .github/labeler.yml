@@ -4,4 +4,4 @@ documentation:
   - 'CONTRIBUTING.md'
   - 'lib/chef/resource/**/*'
 'Status: Waiting on Contributor':
-  - '_do_not_use_this'
+  - '_do_not_use_this_again'
