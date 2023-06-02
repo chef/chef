@@ -178,14 +178,14 @@ class Chef::Application::Knife < Chef::Application
       File.exist?(license_feature) ? true : false
       # puts "Please enable license to use it - knife license enable true"
     elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "true"
-      File.open(File.join(Dir.home, ".chef/license_feature.json"), 'w') {|f| f.write("true") }
+      File.open(File.join(Dir.home, ".chef/license_feature.json"), "w") { |f| f.write("true") }
       puts "Now you can use knife with the license feature"
       exit 0
     elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "false"
       File.exist?(license_feature) ? File.delete(license_feature) : (puts "Unable to disable the license feature")
       exit 0
     else
-      return false
+      false
     end
   end
 
