@@ -82,6 +82,7 @@ do_prepare() {
     bundle config --local shebang "$(pkg_path_for "$_chef_client_ruby")/bin/ruby"
     bundle config --local retry 5
     bundle config --local silence_root_warning 1
+    bundle config --local build.ffi "--with-ldflags=-Wl,-rpath=${LD_RUN_PATH}"
   )
 
   build_line "Setting link for /usr/bin/env to 'coreutils'"
@@ -97,6 +98,7 @@ do_build() {
     build_line "Installing gems from git repos properly ..."
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
+    fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" ruby
     bundle exec rake install:local
   )
 }
@@ -105,7 +107,6 @@ do_install() {
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     build_line "** fixing binstub shebangs"
-    fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
