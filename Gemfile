@@ -9,6 +9,7 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 
 gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "jfm/ffi-libarchive"
 gem "win32-process", git: "https://github.com/chef/win32-process.git", branch: "jfm/chef17-openssl" if RUBY_PLATFORM == "x64-mingw32"
+gem "mixlib-shellout", git: "https://github.com/chef/mixlib-shellout.git", branch: "jfm/chef17_openssl"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
