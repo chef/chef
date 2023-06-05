@@ -55,7 +55,13 @@ class Chef
       action :install, description: "Install an application that is packaged as a Homebrew cask." do
         if new_resource.install_cask
           homebrew_tap "homebrew/cask" do
-            homebrew_path homebrew_bin_path(new_resource.homebrew_path)
+            begin
+              homebrew_path homebrew_bin_path(new_resource.homebrew_path)
+            rescue => e
+              STDERR.puts "Error: #{e}"
+              STDERR.puts "Error: #{e.backtrace}"
+              raise
+            end
             owner new_resource.owner
           end
         end
