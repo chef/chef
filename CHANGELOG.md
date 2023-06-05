@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.29 -->
-## [v18.2.29](https://github.com/chef/chef/tree/v18.2.29) (2023-05-23)
+<!-- latest_release 18.2.31 -->
+## [v18.2.31](https://github.com/chef/chef/tree/v18.2.31) (2023-06-02)
 
 #### Merged Pull Requests
-- add arm64 support for default binary path [#13669](https://github.com/chef/chef/pull/13669) ([Stromweld](https://github.com/Stromweld))
+- 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.31 -->
+- Attempt to explicitly include Resolv [#13771](https://github.com/chef/chef/pull/13771) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.30 -->
 - add arm64 support for default binary path [#13669](https://github.com/chef/chef/pull/13669) ([Stromweld](https://github.com/Stromweld)) <!-- 18.2.29 -->
 - [Chef-18] Monkey patch ruby for net/http  [#13745](https://github.com/chef/chef/pull/13745) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.28 -->
 - Setting the sudo_password to fix the sudo_missing_terminal error for latest versions of EL8 [#13636](https://github.com/chef/chef/pull/13636) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.2.27 -->
