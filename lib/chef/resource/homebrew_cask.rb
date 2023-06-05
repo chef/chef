@@ -58,9 +58,7 @@ class Chef
             begin
               homebrew_path homebrew_bin_path(new_resource.homebrew_path)
             rescue => e
-              STDERR.puts "Error: #{e}"
-              STDERR.puts "Error: #{e.backtrace}"
-              raise
+              raise "Error: #{e.inspect} #{e.backtrace}"
             end
             owner new_resource.owner
           end
