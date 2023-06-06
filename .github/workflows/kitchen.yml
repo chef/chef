@@ -179,6 +179,9 @@ jobs:
         sudo gem install kitchen
         sudo gem install berkshelf --no-doc
         sudo berks vendor cookbooks
+        echo "============"
+        sudo /opt/chef/bin/chef-client -v
+        echo "============"
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
 
   linux:
