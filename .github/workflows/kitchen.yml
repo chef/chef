@@ -131,7 +131,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        os: [macos-12]
         ruby: ["3.1"] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
