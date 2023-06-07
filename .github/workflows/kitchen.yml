@@ -175,10 +175,15 @@ jobs:
         cd /Users/runner/work/chef/chef
         sudo bundle install
         cd kitchen-tests
+        echo ">>> bundle install"
         sudo bundle install --jobs=3 --retry=3
+        echo ">>> gem install kitchen"
         sudo gem install kitchen
+        echo ">>> gem install berkshelf"
         sudo gem install berkshelf --no-doc
+        echo ">>> berks vendor cookbooks"
         sudo berks vendor cookbooks
+        echo ">>> chef-client -z"
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
 
   linux:
