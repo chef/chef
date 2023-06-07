@@ -1,0 +1,50 @@
+{
+  "name": "end_to_end",
+  "description": "Installs/Configures base",
+  "long_description": "",
+  "maintainer": "",
+  "maintainer_email": "",
+  "license": "Apache-2.0",
+  "platforms": {
+    "ubuntu": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "centos": ">= 0.0.0",
+    "opensuseleap": ">= 0.0.0",
+    "fedora": ">= 0.0.0",
+    "amazon": ">= 0.0.0"
+  },
+  "dependencies": {
+    "logrotate": ">= 0.0.0",
+    "multipackage": ">= 0.0.0",
+    "nscd": ">= 0.0.0",
+    "ntp": ">= 0.0.0",
+    "openssh": ">= 0.0.0",
+    "resolver": ">= 0.0.0",
+    "users": "< 7.1",
+    "git": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "1.0.0",
+  "source_url": "https://github.com/chef/chef",
+  "issues_url": "https://github.com/chef/chef/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 16"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+    [
+      "chef-sugar"
+    ]
+  ],
+  "eager_load_libraries": true
+}

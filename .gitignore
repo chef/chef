@@ -47,6 +47,8 @@ Vagrantfile
 kitchen-tests/nodes/*
 kitchen-tests/Gemfile.lock
 kitchen-tests/Berksfile.lock
+kitchen-tests/cookbooks/*
+!kitchen-tests/cookbooks/end_to_end
 
 # Temporary files present during spec runs
 spec/data/test-dir
