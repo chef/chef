@@ -186,12 +186,7 @@ jobs:
 
         cd /Users/runner/work/chef/chef/kitchen-tests
         sudo berks vendor cookbooks
-        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
-    - name: 'Dump stacktrace if failure'
-      id: dump_stacktrace
-      if: ${{ failure() }}
-      run: |
-        sudo cat /Users/runner/.chef/local-mode-cache/cache/chef-stacktrace.out
+        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist || sudo cat /Users/runner/.chef/local-mode-cache/cache/chef-stacktrace.out
 
   linux:
     strategy:
