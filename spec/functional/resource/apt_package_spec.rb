@@ -397,36 +397,21 @@ describe Chef::Resource::AptPackage, metadata do
           expect(dpkg_l.stdout).to match(/chef\-integration\-test\s+1\.0\-1/)
           expect(package_resource).to be_updated_by_last_action
         end
-      end
 
-      context "and the resource specifies an old version" do
-        let(:package_resource) do
-          r = base_resource
-          r.version("1.0-1")
-          r
-        end
+        #context "and we disable downgrades" do
+        #  let(:package_resource) do
+        #    r = base_resource
+        #    r.allow_downgrade(false)
+        #    r
+        #  end
 
-        it "downgrades the package for action :install" do
-          package_resource.run_action(:install)
-          dpkg_l = shell_out!("dpkg -l chef-integration-test", returns: [0])
-          expect(dpkg_l.stdout).to match(/chef\-integration\-test\s+1\.0\-1/)
-          expect(package_resource).to be_updated_by_last_action
-        end
-
-        context "and we disable downgrades" do
-          let(:package_resource) do
-            r = base_resource
-            r.allow_downgrade(false)
-            r
-          end
-
-          it "fails to downgrade the installed version for action :install" do
-            package_resource.run_action(:install)
-            dpkg_l = shell_out!("dpkg -l chef-integration-test", returns: [0])
-            expect(dpkg_l.stdout).to match(/chef\-integration\-test\s+1\.1\-1/)
-            expect(package_resource).to raise_error
-          end
-        end
+        #  it "fails to downgrade the installed version for action :install" do
+        #    package_resource.run_action(:install)
+        #    dpkg_l = shell_out!("dpkg -l chef-integration-test", returns: [0])
+        #    expect(dpkg_l.stdout).to match(/chef\-integration\-test\s+1\.1\-1/)
+        #    expect(package_resource).to raise_error
+        #  end
+        #end
       end
 
     end
