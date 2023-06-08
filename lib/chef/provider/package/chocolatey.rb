@@ -225,7 +225,7 @@ class Chef
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list", "-r", pkg ]
+                cmd = [ "search", "-r", pkg ]
                 cmd += common_options
                 cmd.push( new_resource.list_options ) if new_resource.list_options
 
