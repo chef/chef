@@ -174,7 +174,8 @@ jobs:
         bundle --version
         cd /Users/runner/work/chef/chef
         bundle install
-        # otherwise we only use rubygems
+
+        # some dependencies aren't on RubyGems
         bundle exec rake install:local
         cd kitchen-tests
         bundle install --jobs=3 --retry=3
@@ -184,7 +185,9 @@ jobs:
         git clone https://github.com/chef/berkshelf
 
         cd berkshelf
-        rake install
+
+        # use the chef we just installed instead of network install
+        bundle install rake install:local
 
         cd /Users/runner/work/chef/chef/kitchen-tests
         berks vendor cookbooks
