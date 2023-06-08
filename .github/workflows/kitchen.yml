@@ -185,7 +185,7 @@ jobs:
         git clone https://github.com/chef/berkshelf
 
         cd berkshelf
-
+        bundle install
         # use the chef we just installed instead of network install
         bundle exec rake install:local
 
