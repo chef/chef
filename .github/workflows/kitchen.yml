@@ -93,7 +93,7 @@ jobs:
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        gem install ffi-yajl #explicitly
+        gem install ffi-yajl
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
@@ -188,10 +188,10 @@ jobs:
         cd berkshelf
         bundle install
         # use the chef we just installed instead of network install
-        bundle exec rake install:local
+        sudo bundle exec rake install:local
 
         cd /Users/runner/work/chef/chef/kitchen-tests
-        berks vendor cookbooks
+        sudo berks vendor cookbooks
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
   linux:
     strategy:
