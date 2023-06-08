@@ -173,21 +173,21 @@ jobs:
         echo "what version is that?"
         bundle --version
         cd /Users/runner/work/chef/chef
-        sudo bundle install
+        bundle install
         # otherwise we only use rubygems
-        sudo rake install:local
+        bundle exec rake install:local
         cd kitchen-tests
-        sudo bundle install --jobs=3 --retry=3
-        sudo gem install kitchen
+        bundle install --jobs=3 --retry=3
+        gem install kitchen
 
         cd /Users/runner/work/chef
         git clone https://github.com/chef/berkshelf
 
         cd berkshelf
-        sudo rake install
+        rake install
 
         cd /Users/runner/work/chef/chef/kitchen-tests
-        sudo berks vendor cookbooks
+        berks vendor cookbooks
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
   linux:
     strategy:
