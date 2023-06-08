@@ -93,6 +93,7 @@ jobs:
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        echo $env:GITHUB_SHA
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
