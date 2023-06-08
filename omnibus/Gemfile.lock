@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 34058b79316f31cbea540ee181b78a3511145ac5
+  revision: 39d34f042b51c538a6072e3d27dd738794119e18
   branch: vkarve/ssl-tweak
   specs:
     omnibus-software (23.5.290)
