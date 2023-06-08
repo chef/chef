@@ -75,6 +75,10 @@ class Chef
         description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
         default: {}, desired_state: false
 
+      property :allow_downgrade, [ TrueClass, FalseClass ],
+        description: "Allow downgrading a package to satisfy requested version requirements. Requires apt >= 1.1.0.",
+        default: true,
+        desired_state: false
     end
   end
 end

@@ -387,6 +387,16 @@ describe Chef::Provider::Package::Apt do
         @new_resource.options('--force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew"')
         @provider.install_package(["irssi"], ["0.8.12-7"])
       end
+
+      it "should run apt-get install without --allow-downgrades when disabled" do
+        expect(@provider).to receive(:shell_out_compacted!). with(
+          "apt-get", "-q", "-y", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
+          env: { "DEBIAN_FRONTEND" => "noninteractive" },
+          timeout: @timeout
+        )
+        @new_resource.allow_downgrade(false)
+        @provider.install_package(["irssi"], ["0.8.12-7"])
+      end
     end
 
     describe "install_package with old apt-get" do
