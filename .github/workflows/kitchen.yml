@@ -191,12 +191,13 @@ jobs:
         git clone https://github.com/chef/berkshelf
 
         cd berkshelf
-        # bundle install
+        # bundle install # this is grabbing 17.10.* Chef, which also breaks the test
         gem list chef # debug
         # use the chef we just installed instead of network install
         bundle exec rake build
 
         gem install ohai # because we're doing a local install
+        gem install aruba -v "0.14.14" # because we didn't bundle berkshelf
         gem list chef # debug
         gem install --local `ls pkg/*.gem`
         gem list chef # debug
