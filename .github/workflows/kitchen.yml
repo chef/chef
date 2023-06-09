@@ -93,7 +93,6 @@ jobs:
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        gem install ffi-yajl
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
@@ -195,13 +194,13 @@ jobs:
         git clone https://github.com/chef/berkshelf
 
         cd berkshelf
+        gem install ohai # because we're doing a local install
+        gem install aruba -v "0.14.14" # because we didn't bundle berkshelf
         # bundle install # this is grabbing 17.10.* Chef, which also breaks the test
         # gem list chef # debug the aftermath of bundle install
         # use the chef we just installed instead of network install
         bundle exec rake build
 
-        gem install ohai # because we're doing a local install
-        gem install aruba -v "0.14.14" # because we didn't bundle berkshelf
         gem list chef # debug
         echo "post gem install ohai / aruba"
         gem install --local `ls pkg/*.gem`
