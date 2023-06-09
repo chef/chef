@@ -207,9 +207,9 @@ jobs:
         gem list chef | grep "chef " | sed 's/^.*(\(.*\)).*$/\1/' | awk 'BEGIN {RS=", "} {if(NR>1) {print $0}}' | xargs -I {} gem uninstall chef -Ixv {}
         # gem list chef # debug the aftermath of bundle install
         # use the chef we just installed instead of network install
-        bundle exec rake build
+        #bundle exec rake build
 
-        gem list chef # debug
+        #gem list chef # debug
         echo "post gem install ohai / aruba"
         gem install --local `ls pkg/*.gem`
         gem list chef # debug
