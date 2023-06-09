@@ -106,7 +106,7 @@ GEM
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 18.1.29)
-      chef-powershell (~> 1.0.12)
+      chef-powershell (~> 18.0.3)
       chef-utils (= 18.1.29)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -155,9 +155,9 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-powershell (1.0.13)
+    chef-powershell (18.0.3)
       ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
+      ffi-yajl (~> 2.5)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
