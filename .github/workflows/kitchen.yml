@@ -175,23 +175,31 @@ jobs:
         bundle --version
         cd /Users/runner/work/chef/chef
         bundle install
+        gem list chef # debug
 
         # some dependencies aren't on RubyGems
         bundle exec rake install:local
+        gem list chef
         cd kitchen-tests
         bundle install --jobs=3 --retry=3
+        gem list chef # debug
         gem install kitchen
+        gem list chef # debug
+
 
         cd /Users/runner/work/chef
         git clone https://github.com/chef/berkshelf
 
         cd berkshelf
         bundle install
+        gem list chef # debug
         # use the chef we just installed instead of network install
         bundle exec rake build
 
         gem install ohai # because we're doing a local install
+        gem list chef # debug
         gem install --local `ls pkg/*.gem`
+        gem list chef # debug
         cd /Users/runner/work/chef/chef/kitchen-tests
         berks vendor cookbooks
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
