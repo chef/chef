@@ -190,6 +190,7 @@ jobs:
         # use the chef we just installed instead of network install
         bundle exec rake build
 
+        gem install ohai # because we're doing a local install
         gem install --local `ls pkg/*.gem`
         cd /Users/runner/work/chef/chef/kitchen-tests
         berks vendor cookbooks
