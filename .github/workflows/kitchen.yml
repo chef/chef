@@ -204,7 +204,6 @@ jobs:
         mv *.gem pkg/
 
         # just remove all but the most recent chefs
-        gem list chef | grep "chef " | sed 's/^.*(\(.*\)).*$/\1/' | awk 'BEGIN {RS=", "} {if(NR>1) {print $0}}' | xargs -I {} gem uninstall chef -Ixv {}
         # gem list chef # debug the aftermath of bundle install
         # use the chef we just installed instead of network install
         #bundle exec rake build
@@ -215,6 +214,8 @@ jobs:
         gem list chef # debug
         cd /Users/runner/work/chef/chef/kitchen-tests
         berks vendor cookbooks
+        gem list chef # debug
+        gem list chef | grep "chef " | sed 's/^.*(\(.*\)).*$/\1/' | awk 'BEGIN {RS=", "} {if(NR>1) {print $0}}' | xargs -I {} gem uninstall chef -Ixv {}
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
   linux:
     strategy:
