@@ -198,7 +198,7 @@ jobs:
         # gem install aruba -v "0.14.14" # because we didn't bundle berkshelf
         # gem install cucumber -v "3.1.0" # because we didn't bundle berkshelf
         # bundle install # this is grabbing 17.10.* Chef, which also breaks the test
-        gem build berkshelf.gem spec
+        gem build berkshelf.gemspec
         mv *.gem pkg/
 
         # just remove all but the most recent chefs
