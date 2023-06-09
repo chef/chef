@@ -194,7 +194,7 @@ jobs:
         gem install --local `ls pkg/*.gem`
         cd /Users/runner/work/chef/chef/kitchen-tests
         berks vendor cookbooks
-        /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
   linux:
     strategy:
       fail-fast: false
