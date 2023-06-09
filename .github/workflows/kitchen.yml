@@ -196,6 +196,7 @@ jobs:
         cd berkshelf
         gem install ohai # because we're doing a local install
         gem install aruba -v "0.14.14" # because we didn't bundle berkshelf
+        gem install cucumber -v "3.1.0" # because we didn't bundle berkshelf
         # bundle install # this is grabbing 17.10.* Chef, which also breaks the test
         # gem list chef # debug the aftermath of bundle install
         # use the chef we just installed instead of network install
