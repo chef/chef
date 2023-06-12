@@ -147,7 +147,7 @@ class Chef
         def choco_cmd(action)
           cmd = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco source #{action} -n \"#{new_resource.source_name}\""
           if action == "add"
-            cmd << " --source=\"#{new_resource.source}\" --priority=#{new_resource.priority}"
+            cmd << " -source \"#{new_resource.source}\" --priority=#{new_resource.priority}"
             cmd << " --bypassproxy" if new_resource.bypass_proxy
             cmd << " --allowselfservice" if new_resource.allow_self_service
             cmd << " --adminonly" if new_resource.admin_only
