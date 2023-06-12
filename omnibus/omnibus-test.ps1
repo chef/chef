@@ -3,6 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # install chocolatey
 function installChoco {
+  $env:chocolateyVersion = "1.4.0"
 
   if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
       Write-Output "Chocolatey is not installed, proceeding to install"
