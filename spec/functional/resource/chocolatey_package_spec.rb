@@ -58,6 +58,13 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     after { remove_package }
 
     it "installs the latest version" do
+      choco_version = Chef::ShellOut.new("choco --version")
+      choco_version.run_command
+      # If all went well, the results are on +stdout+
+      puts""
+      puts "We are using choco version: #{choco_version.stdout.chomp}"
+      puts""
+      # puts find.stdout
       subject.run_action(:install)
       expect(package_list.call).to eq("#{package_name}|2.0")
     end
