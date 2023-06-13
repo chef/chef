@@ -27,10 +27,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: ae855f306015f1779684f490932a633055ececa6
+  revision: 15122f2565b4d80f81d4658dfabdf751aaa990ca
   branch: main
   specs:
-    omnibus (9.0.19)
+    omnibus (9.0.20)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -53,14 +53,14 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.760.0)
-    aws-sdk-core (3.171.1)
+    aws-partitions (1.778.0)
+    aws-sdk-core (3.174.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.64.0)
-      aws-sdk-core (~> 3, >= 3.165.0)
+    aws-sdk-kms (1.66.0)
+      aws-sdk-core (~> 3, >= 3.174.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
@@ -251,7 +251,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.5)
+    license_scout (1.3.6)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -378,7 +378,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.2.1)
+    thor (1.2.2)
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
