@@ -88,7 +88,7 @@ if ($agentService -and $agentService.Status -eq 'Running') {
 }
 # TODO: add other services here
 
-Remove-Item -Path $env:ChocolateyInstall -Recurse -Force -WhatIf
+Remove-Item -Path $env:ChocolateyInstall -Recurse -Force 
 
 'ChocolateyInstall', 'ChocolateyLastPathUpdate' | ForEach-Object {
     foreach ($scope in 'User', 'Machine') {
