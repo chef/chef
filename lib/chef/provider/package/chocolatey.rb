@@ -274,7 +274,7 @@ class Chef
 
         def common_options(include_source: true)
           args = []
-          args.push( [ "-source", new_resource.source ] ) if new_resource.source && include_source
+          args.push( [ "--source=", new_resource.source ] ) if new_resource.source && include_source
           args.push( [ "--user", new_resource.user ] ) if new_resource.user
           args.push( [ "--password", new_resource.password ]) if new_resource.password
           args
