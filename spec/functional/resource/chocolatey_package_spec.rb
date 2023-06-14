@@ -69,17 +69,17 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     end
 
     it "installs version given" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
       expect(package_list.call).to eq("#{package_name}|1.0.0")
     end
 
     it "installs new version if one is already installed" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
       expect(package_list.call).to eq("#{package_name}|1.0.0")
 
-      subject.version "2.0"
+      subject.version "2.0.0"
       subject.run_action(:install)
       expect(package_list.call).to eq("#{package_name}|2.0.0")
     end
