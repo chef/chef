@@ -61,9 +61,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     remote_list_obj = double(stdout: remote_list_stdout)
     package_names.each do |pkg|
       if args
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "search", "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       else
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "search", "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       end
     end
   end
@@ -150,7 +150,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       new_resource.package_name("package-does-not-exist")
       new_resource.returns([0])
       allow(provider).to receive(:shell_out_compacted!)
-        .with(choco_exe, "list", "-r", new_resource.package_name.first, { returns: new_resource.returns, timeout: timeout })
+        .with(choco_exe, "search", "-r", new_resource.package_name.first, { returns: new_resource.returns, timeout: timeout })
         .and_raise(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
       expect { provider.send(:available_packages) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
     end
