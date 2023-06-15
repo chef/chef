@@ -189,8 +189,8 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   def reset_chocolatey
     powershell_cmd = <<~EOH
     function install_choco{
-      Set-ExecutionPolicy Bypass -Scope Process -Force; 
-      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
+      Set-ExecutionPolicy Bypass -Scope Process -Force;
+      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
       iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
     }
     $result = Invoke-Expression -Command "choco --version"
