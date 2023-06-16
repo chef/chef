@@ -140,11 +140,11 @@ jobs:
         with:
             clean: true
       - name: 'Setup Ruby'
-          uses: ruby/setup-ruby@v1
-          with:
-            ruby-version: "3.1"
-            bundler-cache: false
-            working-directory: kitchen-tests
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: false
+          working-directory: kitchen-tests
       - name: 'Install Chef/Ohai from Omnitruck'
         id: install_chef
         run: |
