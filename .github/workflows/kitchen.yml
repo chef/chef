@@ -156,6 +156,15 @@ jobs:
         # echo "finished updating Bundler, now getting the version"
         # /opt/chef/embedded/bin/bundle -v
         # echo "finished getting the bundler version"
+    - name: 'Upgrade Chef/Ohai via Appbundler'
+      id: upgrade
+      run: |
+        gem install appbundler appbundle-updater --no-doc
+        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+        echo "Installed Chef:"
+        chef-client -v
+        echo "Ohai release:"
+        ohai -v
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
