@@ -160,7 +160,7 @@ jobs:
       id: upgrade
       run: |
         gem install appbundler appbundle-updater --no-doc
-        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+        sudo appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         echo "Installed Chef:"
         chef-client -v
         echo "Ohai release:"
