@@ -138,11 +138,12 @@ jobs:
     - uses: actions/checkout@v3
       with:
         clean: true
-    - name: 'Upgrade Ruby Devkit on Macos'
-      id: upgrade_ruby
-      run: |
-        echo "This is the installed version of Ruby:"
-        brew info ruby
+    - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: false
+          working-directory: kitchen-tests
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
