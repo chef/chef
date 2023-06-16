@@ -135,9 +135,10 @@ jobs:
         ruby: ["3.1"] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
-      with:
-        clean: true
+    - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          clean: true
     - name: 'Setup Ruby'
         uses: ruby/setup-ruby@v1
         with:
