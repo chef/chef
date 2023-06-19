@@ -711,7 +711,19 @@ describe Chef::Knife::Bootstrap do
       context "and their usage is supported" do
         let(:connection_protocol) { "rfc2549" }
         it "accepts the transport as protocol" do
-          expect(knife.validate_protocol!).to eq true
+          # While the Gem mocking above will work in native RSpec, it will
+          # fail when executed as part of the test suite via Bundler.
+          #
+          # Reason for this is, that Bundler effectively replaces the whole
+          # gem loading architecture. Mocking the Gem inside of Bundler will
+          # have to reach deep into its internal implementation and make
+          # the test tighly-coupled and brittle.
+          #
+          # During the discussion on PR 13534, it was decided to skip the
+          # test as a result and add this explanation for future reference.
+
+          # expect(knife.validate_protocol!).to eq true
+          skip
         end
       end
 
