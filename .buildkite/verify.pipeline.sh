@@ -2,6 +2,7 @@
 
 # exit immediately on failure, or if an undefined variable is used
 set -eu
+echo "# Hello my name is Sean"
 
 echo "---"
 echo "env:"
