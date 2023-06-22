@@ -660,7 +660,8 @@ class Chef
       text << "#{resource_name}(\"#{name}\") do\n"
 
       all_props = {}
-      self.class.state_properties.map do |p|
+
+      self.class.sensitive_properties.map do |p|
 
         all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
       rescue Chef::Exceptions::ValidationFailed
