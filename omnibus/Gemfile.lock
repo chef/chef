@@ -3,7 +3,7 @@ GIT
   revision: 9c9c99e6e8a1fe52d92e2e51c2d227d97f8d50c0
   branch: jfm/chef-17-berkshelf
   specs:
-    berkshelf (8.0.7)
+    berkshelf (8.0.6)
       chef (~> 17.0)
       chef-config
       cleanroom (~> 1.0)
@@ -19,10 +19,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 88169e3905268d413f3611425cdeb36c9a919746
+  revision: f06bbea744458f2cb63c98e6891f9cfb904a1f90
   branch: main
   specs:
-    omnibus-software (23.6.292)
+    omnibus-software (23.5.289)
       omnibus (>= 9.0.0)
 
 GIT
@@ -53,21 +53,21 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.781.0)
-    aws-sdk-core (3.175.0)
+    aws-partitions (1.750.0)
+    aws-sdk-core (3.171.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.67.0)
-      aws-sdk-core (~> 3, >= 3.174.0)
+    aws-sdk-kms (1.63.0)
+      aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.77.0)
-      aws-sdk-core (~> 3, >= 3.174.0)
+    aws-sdk-secretsmanager (1.74.0)
+      aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -254,7 +254,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.6)
+    license_scout (1.3.5)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -333,7 +333,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (5.0.1)
-    rack (2.2.7)
+    rack (2.2.6.4)
     rainbow (3.1.1)
     retryable (3.0.5)
     rexml (3.2.5)
@@ -386,7 +386,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.2.2)
+    thor (1.2.1)
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
