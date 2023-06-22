@@ -173,12 +173,12 @@ class Chef::Application::Knife < Chef::Application
   private
 
   def check_license_flag
-    license_feature = File.join(Dir.home, ".chef/license_feature.json")
+    license_feature = File.join(Dir.home, ".chef/fbffb2ea48910514676e1b7a51c7248290ea958c")
     if ARGV.length > 0 && ARGV[0] != "license"
       File.exist?(license_feature) ? true : false
       # puts "Please enable license to use it - knife license enable true"
     elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "true"
-      File.open(File.join(Dir.home, ".chef/license_feature.json"), "w") { |f| f.write("true") }
+      File.open(File.join(Dir.home, ".chef/fbffb2ea48910514676e1b7a51c7248290ea958c"), "w") { |f| f.write("true") }
       puts "Now you can use knife with the license feature"
       exit 0
     elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "false"
