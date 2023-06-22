@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.31 -->
-## [v18.2.31](https://github.com/chef/chef/tree/v18.2.31) (2023-06-02)
+<!-- latest_release 18.2.32 -->
+## [v18.2.32](https://github.com/chef/chef/tree/v18.2.32) (2023-06-22)
 
 #### Merged Pull Requests
-- 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress))
+- Make action homebrew_bin_path public which is used in other hombrew resources [#13810](https://github.com/chef/chef/pull/13810) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make action homebrew_bin_path public which is used in other hombrew resources [#13810](https://github.com/chef/chef/pull/13810) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.32 -->
 - 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.31 -->
 - Attempt to explicitly include Resolv [#13771](https://github.com/chef/chef/pull/13771) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.30 -->
 - add arm64 support for default binary path [#13669](https://github.com/chef/chef/pull/13669) ([Stromweld](https://github.com/Stromweld)) <!-- 18.2.29 -->
