@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/chef/berkshelf.git
-  revision: 602dd4b29a73140149b0b90c78ab1ab1ad0b1f63
-  branch: main
+  revision: bf02e2e167fd7fd18818aa048c5ec9b67d8f2eb0
+  branch: jfm/chef-17-berkshelf
   specs:
     berkshelf (8.0.7)
       chef (~> 17.0)
