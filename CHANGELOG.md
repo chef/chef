@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.71 -->
-## [v17.10.71](https://github.com/chef/chef/tree/v17.10.71) (2023-06-13)
+<!-- latest_release 17.10.72 -->
+## [v17.10.72](https://github.com/chef/chef/tree/v17.10.72) (2023-06-23)
 
 #### Merged Pull Requests
-- Revert &quot;Ensuring a version of choco &lt; 2.0 is installed&quot; [#13802](https://github.com/chef/chef/pull/13802) ([johnmccrae](https://github.com/johnmccrae))
+- Backporting a chef-18 fix for sensitive properties [#13817](https://github.com/chef/chef/pull/13817) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backporting a chef-18 fix for sensitive properties [#13817](https://github.com/chef/chef/pull/13817) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.72 -->
 - Revert &quot;Ensuring a version of choco &lt; 2.0 is installed&quot; [#13802](https://github.com/chef/chef/pull/13802) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.71 -->
 - Ensuring a version of choco &lt; 2.0 is installed [#13801](https://github.com/chef/chef/pull/13801) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.70 -->
 - Bump omnibus from `a1ed55c` to `ae855f3` in /omnibus [#13748](https://github.com/chef/chef/pull/13748) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.69 -->
