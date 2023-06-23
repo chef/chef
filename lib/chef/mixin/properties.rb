@@ -274,6 +274,12 @@ class Chef
           result
         end
 
+        # This method returns list of sensitive properties
+        # @return [Array<Property>] All sensitive properties.
+        def sensitive_properties
+          properties.values.empty? ? [] : properties.values.select(&:sensitive?)
+        end
+
         # Returns the name of the name property.  Returns nil if there is no name property.
         #
         # @return [Symbol] the name property for this resource
