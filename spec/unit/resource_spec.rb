@@ -388,7 +388,7 @@ describe Chef::Resource do
         resource.foo = "some value"
         expect(resource.to_text).to match(/foo "\*#{sensitive_property_masked_value}\*"/)
       end
-      
+
       it "suppresses that properties value irrespective of desired state (false) " do
         resource_class = Class.new(Chef::Resource) {
           property :suppressed_content, String, sensitive: true, desired_state: false

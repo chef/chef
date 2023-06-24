@@ -17,9 +17,11 @@
 #
 require "spec_helper"
 require "chef/mixin/shell_out"
+require "chef/mixin/powershell_exec"
 
 describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   include Chef::Mixin::ShellOut
+  include Chef::Mixin::PowershellExec
 
   let(:package_name) { "test-A" }
   let(:package_list) { proc { shell_out!("choco list -lo -r #{Array(package_name).join(" ")}").stdout.chomp } }
@@ -52,6 +54,8 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   #
   before(:all) do
     ENV["Path"] = ENV.delete("Path")
+    # June 2023 - Choco v2 has new features that break testing, reverting to choco 1.4.0 for now
+    reset_chocolatey
   end
 
   context "installing a package" do
@@ -178,5 +182,33 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     pkg_to_remove = Chef::Resource::ChocolateyPackage.new(package_name, run_context)
     pkg_to_remove.source = package_source
     pkg_to_remove.run_action(:remove)
+  end
+
+  private
+
+  def reset_chocolatey
+    powershell_cmd = <<~EOH
+    function install_choco{
+      Set-ExecutionPolicy Bypass -Scope Process -Force;
+      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
+      iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    }
+    $result = Invoke-Expression -Command "choco --version"
+    if(($null -ne $result ) -and ($result -ge "2.0.0"))
+      {
+        Remove-Item -path $env:ChocolateyInstall -Recurse -Force
+        Remove-Item env:ChocolateyInstall
+        if(Test-Path env:ChocolateyVersion){
+          Remove-Item env:ChocolateyVersion
+        }
+        $env:ChocolateyVersion = "1.4.0"
+        install_choco
+      }
+    elseif($null -ne $result){
+      $env:ChocolateyVersion = "1.4.0"
+      install_choco
+    }
+    EOH
+    powershell_exec!(powershell_cmd)
   end
 end
