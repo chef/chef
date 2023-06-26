@@ -32,8 +32,11 @@ namespace :dependencies do
     task task_name do
       Dir.chdir(dir) do
         Bundler.with_unbundled_env do
+          platform_list = "ruby x64-mingw32 x86-mingw32"
+          # chef-17 is now built using ruby31 with omnibus hence we need `x64-mingw-ucrt` platform ONLY for omnibus. The ruby version packaged inside chef continues to be ruby 3.0.x (or as per omnibus_overrides.rb)
+          platform_list += " x64-mingw-ucrt" if dir == "omnibus"
           rm_f "#{dir}/Gemfile.lock"
-          sh "bundle lock --update --add-platform ruby x64-mingw32 x86-mingw32"
+          sh "bundle lock --update --add-platform #{platform_list}"
         end
       end
     end

@@ -27,10 +27,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 15122f2565b4d80f81d4658dfabdf751aaa990ca
+  revision: 9c0643a3a44f3e7119789c2093bfc8edd78c74ff
   branch: main
   specs:
-    omnibus (9.0.20)
+    omnibus (9.0.21)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -390,7 +390,7 @@ GEM
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.10.7)
+    train-core (3.10.8)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -472,6 +472,7 @@ GEM
 PLATFORMS
   ruby
   x64-mingw
+  x64-mingw-ucrt
   x64-mingw32
   x86-mingw32
 
@@ -486,4 +487,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.5
+   2.3.18
