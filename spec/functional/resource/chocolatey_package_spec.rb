@@ -196,7 +196,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     $result = Invoke-Expression -Command "choco --version"
     if(($null -ne $result ) -and ($result -ge "2.0.0"))
       {
-        Remove-Item -path $env:ChocolateyInstall -Recurse -Force
+        Get-ChildItem $env:ChocolateyInstall -Recurse | Remove-Item -Force
         Remove-Item env:ChocolateyInstall
         if(Test-Path env:ChocolateyVersion){
           Remove-Item env:ChocolateyVersion
