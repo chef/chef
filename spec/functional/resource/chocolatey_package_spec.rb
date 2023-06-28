@@ -196,17 +196,16 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     $result = Invoke-Expression -Command "choco --version"
     if(($null -ne $result ) -and ($result -ge "2.0.0"))
       {
-        Get-ChildItem $env:ChocolateyInstall -Recurse | Remove-Item -Force
+        Remove-Item -Force -Recurse -Path "$env:ChocolateyInstall\*"
         Remove-Item env:ChocolateyInstall
         if(Test-Path env:ChocolateyVersion){
           Remove-Item env:ChocolateyVersion
         }
         $env:ChocolateyVersion = "1.4.0"
         install_choco
-      }
-    elseif($null -ne $result){
-      $env:ChocolateyVersion = "1.4.0"
-      install_choco
+      }elseif($null -ne $result){
+        $env:ChocolateyVersion = "1.4.0"
+        install_choco
     }
     EOH
     powershell_exec!(powershell_cmd)
