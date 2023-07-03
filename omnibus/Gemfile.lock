@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 6a1c8896edf6c5606facc83b75ecaacf22019e2b
+  revision: 4b08f0bc0688f750bc55a49b8103b2d12815399e
   branch: main
   specs:
-    omnibus-software (23.3.287)
+    omnibus-software (23.7.293)
       omnibus (>= 9.0.0)
 
 GIT
@@ -29,19 +29,19 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.1)
+    addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.727.0)
-    aws-sdk-core (3.170.0)
+    aws-partitions (1.782.0)
+    aws-sdk-core (3.176.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.63.0)
-      aws-sdk-core (~> 3, >= 3.165.0)
+    aws-sdk-kms (1.68.0)
+      aws-sdk-core (~> 3, >= 3.176.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
@@ -50,7 +50,7 @@ GEM
     aws-sdk-secretsmanager (1.72.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.5.2)
+    aws-sigv4 (1.6.0)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
@@ -194,9 +194,6 @@ GEM
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
     ffi (1.15.5)
-    ffi (1.15.5-x64-mingw-ucrt)
-    ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -248,7 +245,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.5)
+    license_scout (1.3.6)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -298,7 +295,7 @@ GEM
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
-    ohai (17.9.0)
+    ohai (17.9.1)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -380,11 +377,11 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.2.1)
+    thor (1.2.2)
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.10.7)
+    train-core (3.10.8)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
