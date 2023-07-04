@@ -21,6 +21,8 @@ require_relative "data_bag_secret_options"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
 require "chef/json_compat" unless defined?(Chef::JSONCompat) # can't be lazy loaded since it's used in options
+require "chef/utils/licensing_config"
+require "chef/utils/licensing_handler"
 
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
@@ -442,7 +444,7 @@ class Chef
 
       # Determine if we need to accept the Chef Infra license locally in order to successfully bootstrap
       # the remote node. Remote 'chef-client' run will fail if it is >= 15 and the license is not accepted locally.
-      def check_license
+      def check_eula_license
         Chef::Log.debug("Checking if we need to accept Chef license to bootstrap node")
         version = config[:bootstrap_version] || Chef::VERSION.split(".").first
         acceptor = LicenseAcceptance::Acceptor.new(logger: Chef::Log, provided: Chef::Config[:chef_license])
@@ -462,7 +464,7 @@ class Chef
         if connection.windows?
           "windows-chef-client-msi"
         else
-          "chef-full"
+          "chef-#{config[:license_id] && config[:license_url] ? 'license' : 'full'}"
         end
       end
 
@@ -550,7 +552,8 @@ class Chef
       end
 
       def run
-        check_license if ChefUtils::Dist::Org::ENFORCE_LICENSE
+        check_eula_license if ChefUtils::Dist::Org::ENFORCE_LICENSE
+        fetch_license if Chef::Utils::LicensingHandler.feature_enabled?
 
         plugin_setup!
         validate_name_args!
@@ -1187,6 +1190,13 @@ class Chef
         return unless opts.is_a?(Hash) || !opts.empty?
 
         connection&.connection&.transport_options&.merge! opts
+      end
+
+      # Fetch the workstation license stored in the system
+      def fetch_license
+        license = Chef::Utils::LicensingHandler.validate!
+        config[:license_url] = license.omnitruck_url
+        config[:license_id] = license.license_key
       end
     end
   end

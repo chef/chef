@@ -20,6 +20,7 @@ require "run_list" unless defined?(Chef::RunList)
 require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 require "pathname" unless defined?(Pathname)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "mixlib/install"
 
 class Chef
   class Knife
@@ -221,6 +222,15 @@ class Chef
             attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
             attributes.merge!(tags: config[:tags]) if config[:tags] && !config[:tags].empty?
           end
+        end
+
+        def macos_dir
+          Mixlib::Install::Dist::MACOS_VOLUME
+        end
+
+        def download_url
+          format(config[:license_url], config[:channel]) + \
+            "/$project/metadata?v=$version&p=$platform&pv=$platform_version&m=$machine&license_id=#{config[:license_id]}"
         end
 
         private
