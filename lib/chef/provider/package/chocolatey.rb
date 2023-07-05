@@ -225,7 +225,7 @@ class Chef
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list", "-r", pkg ]
+                cmd = [ "search", "-r", pkg ]
                 cmd += common_options
                 cmd.push( new_resource.list_options ) if new_resource.list_options
 
@@ -244,7 +244,7 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
-          @installed_packages ||= Hash[*parse_list_output("list", "-l", "-r").flatten]
+          @installed_packages ||= Hash[*parse_list_output("search", "-l", "-r").flatten]
           @installed_packages
         end
 

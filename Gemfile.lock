@@ -34,13 +34,6 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
-
 PATH
   remote: .
   specs:
@@ -288,8 +281,6 @@ GEM
     mime-types-data (3.2023.0218.1)
     mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
@@ -432,7 +423,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
-    win32-api (1.10.1-universal-mingw32)
+    win32-api (1.10.1)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
       ffi
@@ -500,7 +491,6 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
