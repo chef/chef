@@ -197,7 +197,7 @@ class Chef::Application::Knife < Chef::Application
     @ui.error "Software not entitled"
     exit(1)
   rescue ChefLicensing::Error => e
-    Chef::Log.warn "No license keys found on disk"
+    Chef::Log.error "No license keys found on disk"
     @ui.output "Please generate license first by running chef license command"
     exit(1)
   end
