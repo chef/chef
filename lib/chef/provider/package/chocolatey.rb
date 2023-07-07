@@ -242,9 +242,11 @@ class Chef
         # Installed packages in chocolatey as a Hash of names mapped to versions
         # (names are downcased for case-insensitive matching)
         #
+        # Beginning with Choco 2.0, "list" returns local packages only while "search" returns packages from external package sources
+        #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
-          @installed_packages ||= Hash[*parse_list_output("search", "-l", "-r").flatten]
+          @installed_packages ||= Hash[*parse_list_output("list", "-l", "-r").flatten]
           @installed_packages
         end
 
