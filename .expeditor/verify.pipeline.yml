@@ -7,6 +7,7 @@ expeditor:
           limit: 1
       timeout_in_minutes: 60
 
+# Run basic verification tests
 steps:
   - command: .buildkite/verify.pipeline.sh | buildkite-agent pipeline upload
     label: ":pipeline: Upload"
