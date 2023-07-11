@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.35 -->
-## [v18.2.35](https://github.com/chef/chef/tree/v18.2.35) (2023-07-11)
+<!-- latest_release 18.2.36 -->
+## [v18.2.36](https://github.com/chef/chef/tree/v18.2.36) (2023-07-11)
 
 #### Merged Pull Requests
-- Prevent TypeError to be raised in condition evaluation [#13830](https://github.com/chef/chef/pull/13830) ([chouetz](https://github.com/chouetz))
+- Adding double-quotes around path for Windows &#39;secedit&#39; command line [#13809](https://github.com/chef/chef/pull/13809) ([jwdean](https://github.com/jwdean))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adding double-quotes around path for Windows &#39;secedit&#39; command line [#13809](https://github.com/chef/chef/pull/13809) ([jwdean](https://github.com/jwdean)) <!-- 18.2.36 -->
 - Prevent TypeError to be raised in condition evaluation [#13830](https://github.com/chef/chef/pull/13830) ([chouetz](https://github.com/chouetz)) <!-- 18.2.35 -->
 - Update for chef-foundation version to pick openssl-1.0.2ze [#13807](https://github.com/chef/chef/pull/13807) ([poorndm](https://github.com/poorndm)) <!-- 18.2.34 -->
 - Optimize Chef::CookbookSynchronizer#remove_deleted_files [#13766](https://github.com/chef/chef/pull/13766) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.33 -->
