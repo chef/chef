@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.38 -->
-## [v18.2.38](https://github.com/chef/chef/tree/v18.2.38) (2023-07-11)
+<!-- latest_release 18.2.39 -->
+## [v18.2.39](https://github.com/chef/chef/tree/v18.2.39) (2023-07-11)
 
 #### Merged Pull Requests
-- Add support for recursive, in-cookbook resource partials [#13092](https://github.com/chef/chef/pull/13092) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- StateTracking#send_reset_cache - Remove redundant nil check [#13838](https://github.com/chef/chef/pull/13838) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- StateTracking#send_reset_cache - Remove redundant nil check [#13838](https://github.com/chef/chef/pull/13838) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.39 -->
 - Add support for recursive, in-cookbook resource partials [#13092](https://github.com/chef/chef/pull/13092) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 18.2.38 -->
 - update ::File.exists? to ::File.exist? [#13770](https://github.com/chef/chef/pull/13770) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.2.37 -->
 - Adding double-quotes around path for Windows &#39;secedit&#39; command line [#13809](https://github.com/chef/chef/pull/13809) ([jwdean](https://github.com/jwdean)) <!-- 18.2.36 -->
