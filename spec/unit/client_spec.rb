@@ -119,8 +119,8 @@ shared_context "a client run" do
     #   Make sure Client#register thinks the client key doesn't
     #   exist, so it tries to register and create one.
     allow(Chef::HTTP::Authenticator).to receive(:detect_certificate_key).with(fqdn).and_return(false)
-    allow(File).to receive(:exists?).and_call_original
-    expect(File).to receive(:exists?)
+    allow(File).to receive(:exist?).and_call_original
+    expect(File).to receive(:exist?)
       .with(Chef::Config[:client_key])
       .exactly(:once)
       .and_return(api_client_exists?)
