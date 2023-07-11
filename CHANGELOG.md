@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.34 -->
-## [v18.2.34](https://github.com/chef/chef/tree/v18.2.34) (2023-07-04)
+<!-- latest_release 18.2.35 -->
+## [v18.2.35](https://github.com/chef/chef/tree/v18.2.35) (2023-07-11)
 
 #### Merged Pull Requests
-- Update for chef-foundation version to pick openssl-1.0.2ze [#13807](https://github.com/chef/chef/pull/13807) ([poorndm](https://github.com/poorndm))
+- Prevent TypeError to be raised in condition evaluation [#13830](https://github.com/chef/chef/pull/13830) ([chouetz](https://github.com/chouetz))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Prevent TypeError to be raised in condition evaluation [#13830](https://github.com/chef/chef/pull/13830) ([chouetz](https://github.com/chouetz)) <!-- 18.2.35 -->
 - Update for chef-foundation version to pick openssl-1.0.2ze [#13807](https://github.com/chef/chef/pull/13807) ([poorndm](https://github.com/poorndm)) <!-- 18.2.34 -->
 - Optimize Chef::CookbookSynchronizer#remove_deleted_files [#13766](https://github.com/chef/chef/pull/13766) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.33 -->
 - Make action homebrew_bin_path public which is used in other hombrew resources [#13810](https://github.com/chef/chef/pull/13810) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.32 -->
