@@ -78,7 +78,7 @@ class Chef
 
         def send_reset_cache(path = nil, key = nil)
           next_path = [ path, key ].flatten.compact
-          __root__.reset_cache(next_path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache) && !next_path.nil?
+          __root__.reset_cache(next_path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache)
         end
 
         def copy_state_to(ret, next_path)
