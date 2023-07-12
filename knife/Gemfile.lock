@@ -1,8 +1,8 @@
 PATH
   remote: ..
   specs:
-    chef (18.1.7)
-    chef (18.1.7-x64-mingw-ucrt)
+    chef (18.2.39)
+    chef (18.2.39-x64-mingw-ucrt)
 
 PLATFORMS
   ruby
@@ -22,7 +22,6 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5)
   ohai!
-  proxifier!
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer

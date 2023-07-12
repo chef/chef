@@ -45,8 +45,7 @@ class Chef
         default: true
 
       property :homebrew_path, String,
-        description: "The path to the homebrew binary.",
-        default: "/usr/local/bin/brew"
+        description: "The path to the Homebrew binary."
 
       property :owner, [String, Integer],
         description: "The owner of the Homebrew installation.",
@@ -56,14 +55,14 @@ class Chef
       action :install, description: "Install an application that is packaged as a Homebrew cask." do
         if new_resource.install_cask
           homebrew_tap "homebrew/cask" do
-            homebrew_path new_resource.homebrew_path
+            homebrew_path homebrew_bin_path(new_resource.homebrew_path)
             owner new_resource.owner
           end
         end
 
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
-            shell_out!("#{new_resource.homebrew_path} install --cask #{new_resource.cask_name} #{new_resource.options}",
+            shell_out!("#{homebrew_bin_path(new_resource.homebrew_path)} install --cask #{new_resource.cask_name} #{new_resource.options}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))
@@ -74,14 +73,14 @@ class Chef
       action :remove, description: "Remove an application that is packaged as a Homebrew cask." do
         if new_resource.install_cask
           homebrew_tap "homebrew/cask" do
-            homebrew_path new_resource.homebrew_path
+            homebrew_path homebrew_bin_path(new_resource.homebrew_path)
             owner new_resource.owner
           end
         end
 
         if casked?
           converge_by("uninstall cask #{new_resource.cask_name}") do
-            shell_out!("#{new_resource.homebrew_path} uninstall --cask #{new_resource.cask_name}",
+            shell_out!("#{homebrew_bin_path(new_resource.homebrew_path)} uninstall --cask #{new_resource.cask_name}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))
@@ -99,7 +98,7 @@ class Chef
         # @return [Boolean]
         def casked?
           unscoped_name = new_resource.cask_name.split("/").last
-          shell_out!("#{new_resource.homebrew_path} list --cask 2>/dev/null",
+          shell_out!("#{homebrew_bin_path(new_resource.homebrew_path)} list --cask 2>/dev/null",
             user: new_resource.owner,
             env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
             cwd: ::Dir.home(new_resource.owner)).stdout.split.include?(unscoped_name)

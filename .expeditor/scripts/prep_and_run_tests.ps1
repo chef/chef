@@ -11,7 +11,7 @@ if ($TestType -eq 'Functional') {
 }
 
 Write-Output "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3 
+bundle install --jobs=3 --retry=3
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}

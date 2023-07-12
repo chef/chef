@@ -21,7 +21,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class Launchd < Chef::Resource
-      provides :launchd
+      provides :launchd, os: "darwin"
 
       description "Use the **launchd** resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
       introduced "12.8"
@@ -129,8 +129,8 @@ class Chef
       property :abandon_process_group, [ TrueClass, FalseClass ],
         description: "If a job dies, all remaining processes with the same process ID may be kept running. Set to true to kill all remaining processes."
 
-      property :associated_bundle_identifiers, Hash,
-        description: "This optional key indicates which bundles the **Login Items Added by Apps** panel associates with the helper executable."
+      property :associated_bundle_identifiers, Array,
+        description: "This optional key indicates which bundles the Login Items Added by Apps panel associates with the helper executable."
 
       property :debug, [ TrueClass, FalseClass ],
         description: "Sets the log mask to `LOG_DEBUG` for this job."
@@ -202,7 +202,11 @@ class Chef
         description: "The first argument of `execvp`, typically the file name associated with the file to be executed. This value must be specified if `program_arguments` is not specified, and vice-versa."
 
       property :program_arguments, Array,
-        description: "The second argument of `execvp`. If program is not specified, this property must be specified and will be handled as if it were the first argument."
+        description: "The second argument of `execvp`. If program is not specified, this property must be specified and will be handled as if it were the first argument.",
+        coerce: proc { |args|
+          # Cast all values to a string.  Launchd only supports string values
+          args.map(&:to_s)
+        }
 
       property :queue_directories, Array,
         description: "An array of non-empty directories which, if any are modified, will cause a job to be started."

@@ -25,6 +25,8 @@ license_file "LICENSE"
 # So that Open4/deep_merge/diff-lcs disclaimers are present in Omnibus LICENSES tree.
 license_file "NOTICE"
 
+skip_transitive_dependency_licensing false
+
 # For the specific super-special version "local_source", build the source from
 # the local git checkout. This is what you'd want to occur by default if you
 # just ran omnibus build locally.
@@ -46,6 +48,16 @@ end
 if version != "local_source"
   source git: "https://github.com/chef/chef.git"
 end
+
+# In order to pass notarization we need to sign any binaries and libraries included in the package.
+# This makes sure we include and bins and libs that are brought in by gems.
+ruby_version = "3.1.2"
+ruby_version = ruby_version.split(".")[0..1].join(".")
+ruby_mmv = "#{ruby_version}.0"
+ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"
+gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
+bin_dirs bin_dirs.concat ["#{gem_dir}/gems/*/bin/**"]
+lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems/extensions/**", "#{gem_dir}/bundler/gems/*", "#{gem_dir}/bundler/gems/*/lib/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
 
 dependency "chef-foundation"
 
@@ -89,7 +101,7 @@ build do
   # Always deploy the powershell modules in the correct place.
   if windows?
     mkdir "#{install_dir}/modules/chef"
-    copy "distro/powershell/chef/*", "#{install_dir}/modules/chef"
+    copy "distro/templates/powershell/chef/*", "#{install_dir}/modules/chef"
   end
 
   block do

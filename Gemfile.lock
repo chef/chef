@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: b59776be1a66db77473f729132b94085fd8fa49d
+  revision: c63a8dca74db3fd542a082c7b6626ff497904290
   branch: main
   specs:
-    ohai (18.0.26)
+    ohai (18.1.4)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -33,6 +33,7 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+
 GIT
   remote: https://github.com/chef/ruby-shadow
   revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
@@ -40,22 +41,15 @@ GIT
   specs:
     ruby-shadow (2.5.0)
 
-GIT
-  remote: https://github.com/chef/ruby-proxifier
-  revision: 8b87d0b5b469adbd93eabc0d20f3e47007aef743
-  branch: lcg/ruby-3
-  specs:
-    proxifier (1.0.3)
-
 PATH
   remote: .
   specs:
-    chef (18.1.7)
+    chef (18.2.39)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.1.7)
-      chef-utils (= 18.1.7)
+      chef-config (= 18.2.39)
+      chef-utils (= 18.2.39)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -76,7 +70,7 @@ PATH
       net-sftp (>= 2.1.2, < 5.0)
       ohai (~> 18.0)
       plist (~> 3.2)
-      proxifier (~> 1.0)
+      proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
       train-core (~> 3.10)
       train-rest (>= 0.4.1)
@@ -84,13 +78,13 @@ PATH
       unf_ext (>= 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (18.1.7-x64-mingw-ucrt)
+    chef (18.2.39-x64-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.1.7)
-      chef-powershell (~> 1.0.12)
-      chef-utils (= 18.1.7)
+      chef-config (= 18.2.39)
+      chef-powershell (~> 18.0.2)
+      chef-utils (= 18.2.39)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -112,7 +106,7 @@ PATH
       net-sftp (>= 2.1.2, < 5.0)
       ohai (~> 18.0)
       plist (~> 3.2)
-      proxifier (~> 1.0)
+      proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
       train-core (~> 3.10)
       train-rest (>= 0.4.1)
@@ -134,15 +128,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.1.7)
-      chef (= 18.1.7)
+    chef-bin (18.2.39)
+      chef (= 18.2.39)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.1.7)
+    chef-config (18.2.39)
       addressable
-      chef-utils (= 18.1.7)
+      chef-utils (= 18.2.39)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -151,33 +145,33 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.1.7)
+    chef-utils (18.2.39)
       concurrent-ruby
 
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.1)
+    addressable (2.8.2)
       public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.681.0)
-    aws-sdk-core (3.168.4)
+    aws-partitions (1.739.0)
+    aws-sdk-core (3.171.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.61.0)
+    aws-sdk-kms (1.63.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.117.2)
+    aws-sdk-s3 (1.120.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.4)
-    aws-sdk-secretsmanager (1.68.0)
+    aws-sdk-secretsmanager (1.73.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.5.2)
@@ -186,13 +180,13 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
+    chef-powershell (18.0.2)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-vault (4.1.10)
+    chef-vault (4.1.11)
     chef-zero (15.0.11)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
@@ -207,7 +201,7 @@ GEM
     chefstyle (2.2.2)
       rubocop (= 1.25.1)
     coderay (1.1.3)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.2)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (0.4.5)
@@ -218,23 +212,14 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     ed25519 (1.3.0)
-    erubi (1.11.0)
+    erubi (1.12.0)
     erubis (2.7.0)
-    faraday (1.4.3)
-      faraday-em_http (~> 1.0)
-      faraday-em_synchrony (~> 1.0)
-      faraday-excon (~> 1.1)
-      faraday-net_http (~> 1.0)
-      faraday-net_http_persistent (~> 1.1)
-      multipart-post (>= 1.2, < 3)
+    faraday (2.7.4)
+      faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
-    faraday-em_http (1.0.0)
-    faraday-em_synchrony (1.0.0)
-    faraday-excon (1.1.0)
-    faraday-net_http (1.0.1)
-    faraday-net_http_persistent (1.2.0)
-    faraday_middleware (1.2.0)
-      faraday (~> 1.0)
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
+    faraday-net_http (3.0.2)
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
@@ -258,11 +243,11 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (5.18.14)
+    inspec-core (5.21.29)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
-      faraday (>= 0.9.0, < 1.5)
-      faraday_middleware (~> 1.0)
+      faraday (>= 1, < 3)
+      faraday-follow_redirects (~> 0.3)
       hashie (>= 3.4, < 5.0)
       license-acceptance (>= 0.2.13, < 3.0)
       method_source (>= 0.8, < 2.0)
@@ -281,8 +266,8 @@ GEM
       train-core (~> 3.10)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (5.18.14)
-      inspec-core (= 5.18.14)
+    inspec-core-bin (5.21.29)
+      inspec-core (= 5.21.29)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -300,8 +285,10 @@ GEM
     method_source (1.0.0)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2022.0105)
+    mime-types-data (3.2023.0218.1)
     mixlib-archive (1.1.7)
+      mixlib-log
+    mixlib-archive (1.1.7-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
@@ -316,7 +303,7 @@ GEM
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
-    multipart-post (2.2.3)
+    multipart-post (2.3.0)
     net-ftp (0.2.0)
       net-protocol
       time
@@ -326,16 +313,17 @@ GEM
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
-    net-ssh (7.0.1)
+    net-ssh (7.1.0)
     netrc (0.11.0)
     nori (2.6.0)
     parallel (1.22.1)
-    parser (3.1.3.0)
+    parser (3.2.2.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    plist (3.6.0)
+    plist (3.7.0)
+    proxifier2 (1.1.0)
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -346,11 +334,11 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (5.0.1)
-    rack (2.2.4)
+    rack (2.2.6.4)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
-    regexp_parser (2.6.1)
+    regexp_parser (2.7.0)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -377,9 +365,9 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.24.0)
-      parser (>= 3.1.1.0)
-    ruby-progressbar (1.11.0)
+    rubocop-ast (1.28.0)
+      parser (>= 3.2.1.0)
+    ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
@@ -393,9 +381,9 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.1)
-    time (0.2.1)
+    time (0.2.2)
       date
-    timeout (0.3.1)
+    timeout (0.3.2)
     tomlrb (1.3.0)
     train-core (3.10.7)
       addressable (~> 2.5)
@@ -434,7 +422,7 @@ GEM
       unf_ext
     unf_ext (0.0.8.2)
     unf_ext (0.0.8.2-x64-mingw-ucrt)
-    unicode-display_width (2.3.0)
+    unicode-display_width (2.4.2)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
@@ -443,8 +431,8 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webrick (1.7.0)
-    win32-api (1.10.1)
+    webrick (1.8.1)
+    win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.15)
       chef-powershell (>= 1.0.12)
       ffi
@@ -505,7 +493,6 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5)
   ohai!
-  proxifier!
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -517,4 +504,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.18
+   2.3.7

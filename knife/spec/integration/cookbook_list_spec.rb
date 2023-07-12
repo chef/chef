@@ -37,17 +37,17 @@ describe "knife cookbook list", :workstation do
 
     it "knife cookbook list shows all the cookbooks" do
       knife("cookbook list").should_succeed <<~EOM
-        x   1.0.0
-        y   0.6.5
-        z   0.6.5
+        x: 1.0.0
+        y: 0.6.5
+        z: 0.6.5
       EOM
     end
 
     it "knife cookbook list -a shows all the versions of all the cookbooks" do
       knife("cookbook list -a").should_succeed <<~EOM
-        x   1.0.0  0.6.5  0.6.0
-        y   0.6.5  0.6.0
-        z   0.6.5
+        x: 1.0.0 0.6.5 0.6.0
+        y: 0.6.5 0.6.0
+        z: 0.6.5
       EOM
     end
 

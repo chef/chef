@@ -1,14 +1,13 @@
 // cSpell Settings
 {
-  // Version of the setting file.  Always 0.1
-  "version": "0.1",
+  "version": "0.2",
   // language - current active spelling language
   "language": "en",
   "dictionaryDefinitions": [
     {
-        "name": "chef",
-        "file": "./chef_dictionary.txt",
-        "description": "Custom Chef Dictionary"
+      "name": "chef",
+      "path": "https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt",
+      "description": "Custom Chef Dictionary"
     }
   ],
   "dictionaries": ["chef"],
@@ -219,6 +218,7 @@
     "cookbookname",
     "copypasta",
     "coreutils",
+    "corretto",
     "cpio",
     "Crae",
     "CREAT",
@@ -324,6 +324,7 @@
     "eckey",
     "ecparam",
     "edir",
+    "efivarfs",
     "egid",
     "egrep",
     "ELOOP",
@@ -435,6 +436,7 @@
     "getsebool",
     "getspnam",
     "gettext",
+    "gettime",
     "GETTHUMBPRINTCODE",
     "gettimezone",
     "gettype",
@@ -571,11 +573,14 @@
     "IPADDR",
     "ipaddr",
     "ipaddress",
+    "IPPROTO",
     "ireton",
     "isalnum",
     "isalpha",
     "isatty",
     "isdigit",
+    "IVNAMES",
+    "ivname",
     "Jagtap",
     "jailmode",
     "janky",
@@ -626,9 +631,11 @@
     "LGRPID",
     "LHND",
     "libselinux",
+    "linuxbrew",
     "linuxmint",
     "LISTBOX",
     "listprop",
+    "lita",
     "ljust",
     "lltstype",
     "losetup",
@@ -827,6 +834,7 @@
     "nobrowse",
     "NOCHANGES",
     "NOCOMPACT",
+    "NODELAY",
     "noconfirm",
     "Nodearray",
     "Nodename",
@@ -973,6 +981,7 @@
     "PORTVERSION",
     "POSI",
     "POST'ing",
+    "postrm",
     "POWEREVENT",
     "powershellget",
     "ppid",
@@ -1191,6 +1200,7 @@
     "setools",
     "setsebool",
     "setsid",
+    "setsockopt",
     "settimezone",
     "SETTINGCHANGE",
     "setuid",
@@ -1208,6 +1218,7 @@
     "shiftwidth",
     "shortname",
     "Shouldnotexist",
+    "showcerts",
     "SHOWDEFAULT",
     "showhold",
     "SHOWMAXIMIZED",
@@ -1414,6 +1425,7 @@
     "untampered",
     "untap",
     "untar",
+    "untarred",
     "untracked",
     "Unversioned",
     "unversioned",
@@ -1553,9 +1565,7 @@
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
   // For example "hte" should be "the"
-  "flagWords": [
-    "hte"
-  ],
+  "flagWords": ["hte"],
   "ignorePaths": [
     "CHEF_MVPS.md",
     "CHANGELOG.md",

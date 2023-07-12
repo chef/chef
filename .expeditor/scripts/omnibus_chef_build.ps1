@@ -3,17 +3,17 @@ $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 if ($env:BUILDKITE_ORGANIZATION_SLUG -eq "chef-oss" )
 {
   Write-Output "--- Generating self-signed Windows package signing certificate"
-  $thumb = (New-SelfSignedCertificate -Type Custom -Subject "CN=Chef Software, O=Progress, C=US" -KeyUsage DigitalSignature -FriendlyName "Chef Software Inc." -CertStoreLocation "Cert:\LocalMachine\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")).Thumbprint 
+  $thumb = (New-SelfSignedCertificate -Type Custom -Subject "CN=Chef Software, O=Progress, C=US" -KeyUsage DigitalSignature -FriendlyName "Chef Software Inc." -CertStoreLocation "Cert:\LocalMachine\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")).Thumbprint
 }
 else
 {
   Write-Output "--- Installing Windows package signing certificate"
   $windows_certificate_json = "windows-package-signing-certificate.json"
   $windows_certificate_pfx = "windows-package-signing-certificate.pfx"
-  
+
   aws ssm get-parameter --name "windows-package-signing-cert" --with-decryption --region "us-west-1" --query Parameter.Value --output text | Set-Content -Path $windows_certificate_json
   If ($lastexitcode -ne 0) { Throw $lastexitcode }
-  
+
   $cert_passphrase = Get-Content $windows_certificate_json | ConvertFrom-Json | Select-Object -ExpandProperty cert_passphrase | ConvertTo-SecureString -asplaintext -force
   Get-Content $windows_certificate_json | ConvertFrom-Json | Select-Object -ExpandProperty cert_content_base64 | Set-Content -Path $windows_certificate_pfx
   Remove-Item -Force $windows_certificate_json
@@ -31,9 +31,11 @@ $env:ARTIFACTORY_USERNAME="buildkite"
 Write-Output "--- Install Chef Foundation"
 . { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
 
+$env:PROJECT_NAME="chef"
+$env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
 $env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
 $env:HOMEDRIVE = "C:"
-$env:HOMEPATH = "\buildkite-agent"
+$env:HOMEPATH = "\Users\ContainerAdministrator"
 $env:OMNIBUS_TOOLCHAIN_INSTALL_DIR = "C:\opscode\omnibus-toolchain"
 $env:SSL_CERT_FILE = "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\ssl\certs\cacert.pem"
 $env:MSYS2_INSTALL_DIR = "C:\msys64"
@@ -52,15 +54,21 @@ Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"
 bundle config set --local without development
 bundle install
+if ( -not $? ) { throw "Running bundle install failed" }
 
 Write-Output "--- Building Chef"
 bundle exec omnibus build chef -l internal --override append_timestamp:false
+if ( -not $? ) { throw "omnibus build chef failed" }
 
 Write-Output "--- Uploading package to BuildKite"
 C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
 
-# if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
-# {
-#   Write-Output "--- Publishing package to Artifactory"
-#   bundle exec ruby "${SCRIPT_DIR}/omnibus_chef_publish.rb"
-# }
+if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
+{
+  Write-Output "--- Setting up Gem API Key"
+  $env:GEM_HOST_API_KEY = "Basic ${env:ARTIFACTORY_API_KEY}"
+
+  Write-Output "--- Publishing package to Artifactory"
+  bundle exec ruby "${ScriptDir}/omnibus_chef_publish.rb"
+  if ( -not $? ) { throw "chef publish failed" }
+}

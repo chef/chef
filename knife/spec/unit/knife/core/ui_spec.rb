@@ -459,8 +459,8 @@ describe Chef::Knife::UI do
       }
     end
 
-    it "should return an array of the cookbooks with versions" do
-      expected_response = [ "cookbook_name   3.0.0  2.0.0  1.0.0" ]
+    it "should return an hash of the cookbooks with versions" do
+      expected_response = { "cookbook_name" => "3.0.0 2.0.0 1.0.0" }
       response = @ui.format_cookbook_list_for_display(@item)
       expect(response).to eq(expected_response)
     end

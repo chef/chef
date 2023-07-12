@@ -23,7 +23,8 @@ execute "sensitive sleep" do
   sensitive true
 end
 
-timezone "America/Los_Angeles"
+# This line is causing the knife action to fail on Amazon Linux 2.
+# timezone "America/Los_Angeles"
 
 include_recipe "::_yum" if platform_family?("rhel")
 
@@ -32,6 +33,31 @@ if platform_family?("rhel", "fedora", "amazon")
 
   selinux_state "permissive" do
     action :permissive
+  end
+
+  user "se_map_test"
+
+  selinux_user "se_map_test_u" do
+    level "s0"
+    range "s0"
+    roles %w{sysadm_r staff_r}
+  end
+
+  selinux_login "se_map_test" do
+    user "se_map_test_u"
+    range "s0"
+  end
+
+  selinux_login "se_map_test" do
+    action :delete
+  end
+
+  selinux_user "se_map_test_u" do
+    action :delete
+  end
+
+  user "se_map_test" do
+    action :remove
   end
 end
 

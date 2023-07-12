@@ -803,6 +803,92 @@ describe Chef::Resource do
     end
   end
 
+  describe "when using resource partials" do
+    let(:resource_using_core_partial) do
+      Class.new(Chef::Resource) do
+        use "core::core_partial"
+      end
+    end
+
+    let(:resource_using_cookbook_partial) do
+      Class.new(Chef::Resource) do
+        use "my_local_partial"
+      end
+    end
+
+    let(:resource_using_nested_partials) do
+      FakeCaller = Struct.new(:label, :path, keyword_init: true)
+      NonDynamicResource = Chef::Resource.dup
+
+      # Fake a caller_locations array, as RSpec uses a different execution path
+      NonDynamicResource.define_singleton_method(:caller_locations) do
+        [
+          FakeCaller.new(label: "use", path: File.join(__dir__, "resource.rb")),
+          FakeCaller.new(label: "noise", path: File.join(__dir__, "no_file")),
+          FakeCaller.new(label: "class_from_file", path: File.join(__dir__, "_level3_partial.rb")),
+          FakeCaller.new(label: "noise", path: File.join(__dir__, "no_file")),
+          FakeCaller.new(label: "class_from_file", path: File.join(__dir__, "_level2_partial.rb")),
+          FakeCaller.new(label: "noise", path: File.join(__dir__, "no_file")),
+          FakeCaller.new(label: "class_from_file", path: File.join(__dir__, "_level1_partial.rb")),
+          FakeCaller.new(label: "noise", path: File.join(__dir__, "no_file")),
+          FakeCaller.new(label: "class_from_file", path: File.join(__dir__, "_level0_partial.rb")),
+        ]
+      end
+
+      Class.new(NonDynamicResource) do
+        use "level3_partial"
+      end
+    end
+
+    it "correcly includes a core partial" do
+      expected_path = File.expand_path(File.join(__dir__, "../..", "lib/chef", "resource/_core_partial.rb"))
+      partial = "property :addon_property, default: true"
+
+      expect(IO).to receive(:read).with(expected_path).and_return(partial)
+      expect(resource_using_core_partial.properties.keys).to include(:addon_property)
+    end
+
+    it "correctly includes a cookbook partial" do
+      expected_path = File.expand_path(File.join(__dir__, "_my_local_partial.rb"))
+      partial = "property :addon_property, default: true"
+
+      expect(IO).to receive(:read).with(expected_path).and_return(partial)
+      expect(resource_using_cookbook_partial.properties.keys).to include(:addon_property)
+    end
+
+    it "correctly includes nested partials" do
+      level0_path = File.expand_path(File.join(__dir__, "_level0_partial.rb"))
+      level0_partial = "property :level0_property, default: true"
+      expect(IO).to receive(:read).with(level0_path).and_return(level0_partial)
+
+      level1_path = File.expand_path(File.join(__dir__, "_level1_partial.rb"))
+      level1_partial = <<-EOF
+        use 'level0_partial'
+        property :level1_property, default: true
+      EOF
+      expect(IO).to receive(:read).with(level1_path).and_return(level1_partial)
+
+      level2_path = File.expand_path(File.join(__dir__, "_level2_partial.rb"))
+      level2_partial = <<-EOF
+        use 'level1_partial'
+        property :level2_property, default: true
+      EOF
+      expect(IO).to receive(:read).with(level2_path).and_return(level2_partial)
+
+      level3_path = File.expand_path(File.join(__dir__, "_level3_partial.rb"))
+      level3_partial = <<-EOF
+        use 'level2_partial'
+        property :level3_property, default: true
+      EOF
+      expect(IO).to receive(:read).with(level3_path).and_return(level3_partial)
+
+      expect(resource_using_nested_partials.properties.keys).to include(:level0_property)
+      expect(resource_using_nested_partials.properties.keys).to include(:level1_property)
+      expect(resource_using_nested_partials.properties.keys).to include(:level2_property)
+      expect(resource_using_nested_partials.properties.keys).to include(:level3_property)
+    end
+  end
+
   describe "should_skip?" do
     before do
       resource = Chef::Resource::Cat.new("sugar", run_context)

@@ -10,7 +10,7 @@ export ARTIFACTORY_USERNAME="buildkite"
 export PROJECT_NAME="chef"
 export PATH="/opt/omnibus-toolchain/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
-export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yaml"
+export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
 
 echo "--- Installing Chef Foundation"
 curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
@@ -45,5 +45,10 @@ do
   buildkite-agent artifact upload "pkg/*.${ext}*"
 done
 
-# echo "--- Publishing package to Artifactory"
-# bundle exec ruby "${SCRIPT_DIR}/omnibus_chef_publish.rb"
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+  echo "--- Setting up Gem credentials"
+  export GEM_HOST_API_KEY="Basic ${ARTIFACTORY_API_KEY}"
+
+  echo "--- Publishing package to Artifactory"
+  bundle exec ruby "${SCRIPT_DIR}/omnibus_chef_publish.rb"
+fi

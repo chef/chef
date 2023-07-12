@@ -102,12 +102,12 @@ class Chef
         self.class.get_cert_password
       end
 
-      def encrypt_pfx_pass
-        self.class.encrypt_pfx_pass
+      def encrypt_pfx_pass_with_vector
+        self.class.encrypt_pfx_pass_with_vector
       end
 
-      def decrypt_pfx_pass
-        self.class.decrypt_pfx_pass
+      def decrypt_pfx_pass_with_vector
+        self.class.decrypt_pfx_pass_with_vector
       end
 
       # Detects if a private key exists in a certificate repository like Keychain (macOS) or Certificate Store (Windows)
@@ -123,9 +123,18 @@ class Chef
         end
       end
 
+      def self.get_cert_user
+        Chef::Config[:auth_key_registry_type] == "user" ? "CurrentUser" : "LocalMachine"
+      end
+
+      def self.get_registry_user
+        Chef::Config[:auth_key_registry_type] == "user" ? "HKEY_CURRENT_USER" : "HKEY_LOCAL_MACHINE"
+      end
+
       def self.check_certstore_for_key(client_name)
+        store = get_cert_user
         powershell_code = <<~CODE
-          $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse -Force  | Where-Object { $_.Subject -Match "chef-#{client_name}" } -ErrorAction Stop
+          $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse -Force  | Where-Object { $_.Subject -Match "chef-#{client_name}" } -ErrorAction Stop
           if (($cert.HasPrivateKey -eq $true) -and ($cert.PrivateKey.Key.ExportPolicy -ne "NonExportable")) {
             return $true
           }
@@ -164,49 +173,86 @@ class Chef
       end
 
       def self.get_cert_password
+        store = get_registry_user
         @win32registry = Chef::Win32::Registry.new
-        path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        path = "#{store}\\Software\\Progress\\Authentication"
         # does the registry key even exist?
-        present = @win32registry.get_values(path)
-        if present.nil? || present.empty?
+        # password_blob should be an array of hashes
+        password_blob = @win32registry.get_values(path)
+        if password_blob.nil? || password_blob.empty?
           raise Chef::Exceptions::Win32RegKeyMissing
         end
 
-        present.each do |secret|
-          if secret[:name] == "PfxPass"
-            password = decrypt_pfx_pass(secret[:data])
-            return password
+        # Did someone have just the password stored in the registry?
+        raw_data = password_blob.map { |x| x[:data] }
+        vector = raw_data[2]
+        if !!vector
+          decrypted_password = decrypt_pfx_pass_with_vector(password_blob)
+        else
+          decrypted_password = decrypt_pfx_pass_with_password(password_blob)
+          if !!decrypted_password
+            migrate_pass_to_use_vector(decrypted_password)
+          else
+            Chef::Log.error("Failed to retrieve certificate password")
           end
         end
-
-        raise Chef::Exceptions::Win32RegKeyMissing
-
+        decrypted_password
       rescue Chef::Exceptions::Win32RegKeyMissing
         # if we don't have a password, log that and generate one
-        Chef::Log.warn "Authentication Hive and values not present in registry, creating them now"
-        new_path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
+        store = get_registry_user
+        new_path = "#{store}\\Software\\Progress\\Authentication"
         unless @win32registry.key_exists?(new_path)
           @win32registry.create_key(new_path, true)
         end
-        require "securerandom" unless defined?(SecureRandom)
-        size = 14
-        password = SecureRandom.alphanumeric(size)
-        encrypted_pass = encrypt_pfx_pass(password)
-        values = { name: "PfxPass", type: :string, data: encrypted_pass }
-        @win32registry.set_value(new_path, values)
-        password
+        create_and_store_new_password
       end
 
-      def self.encrypt_pfx_pass(password)
+      def self.encrypt_pfx_pass_with_vector(password)
         powershell_code = <<~CODE
-          $encrypted_string = ConvertTo-SecureString "#{password}" -AsPlainText -Force
-          $secure_string = ConvertFrom-SecureString $encrypted_string
-          return $secure_string
+          $AES = [System.Security.Cryptography.Aes]::Create()
+          $key_temp = [System.Convert]::ToBase64String($AES.Key)
+          $iv_temp = [System.Convert]::ToBase64String($AES.IV)
+          $encryptor = $AES.CreateEncryptor()
+          [System.Byte[]]$Bytes =  [System.Text.Encoding]::Unicode.GetBytes("#{password}")
+          $EncryptedBytes = $encryptor.TransformFinalBlock($Bytes,0,$Bytes.Length)
+          $EncryptedBase64String = [System.Convert]::ToBase64String($EncryptedBytes)
+          # create array of encrypted pass, key, iv
+          $password_blob = @($EncryptedBase64String, $key_temp, $iv_temp)
+          return $password_blob
         CODE
         powershell_exec!(powershell_code).result
       end
 
-      def self.decrypt_pfx_pass(password)
+      def self.decrypt_pfx_pass_with_vector(password_blob)
+        raw_data = password_blob.map { |x| x[:data] }
+        password = raw_data[0]
+        key = raw_data[1]
+        vector = raw_data[2]
+
+        powershell_code = <<~CODE
+          $KeyBytes = [System.Convert]::FromBase64String("#{key}")
+          $IVBytes = [System.Convert]::FromBase64String("#{vector}")
+          $aes = [System.Security.Cryptography.Aes]::Create()
+          $aes.Key = $KeyBytes
+          $aes.IV = $IVBytes
+          $EncryptedBytes = [System.Convert]::FromBase64String("#{password}")
+          $Decryptor = $aes.CreateDecryptor()
+          $DecryptedBytes = $Decryptor.TransformFinalBlock($EncryptedBytes,0,$EncryptedBytes.Length)
+          $DecryptedString = [System.Text.Encoding]::Unicode.GetString($DecryptedBytes)
+          return $DecryptedString
+        CODE
+        results = powershell_exec!(powershell_code).result
+      end
+
+      def self.decrypt_pfx_pass_with_password(password_blob)
+        password = ""
+        password_blob.each do |secret|
+          if secret[:name] == "PfxPass"
+            password = secret[:data]
+          else
+            Chef::Log.error("Failed to retrieve a password for the private key")
+          end
+        end
         powershell_code = <<~CODE
           $secure_string = "#{password}" | ConvertTo-SecureString
           $string = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secure_string))))
@@ -215,14 +261,49 @@ class Chef
         powershell_exec!(powershell_code).result
       end
 
-      def self.retrieve_certificate_key(client_name)
-        require "openssl" unless defined?(OpenSSL)
+      def self.migrate_pass_to_use_vector(password)
+        store = get_cert_user
+        corrected_store = (store == "CurrentUser" ? "HKCU" : "HKLM")
+        powershell_code = <<~CODE
+          Remove-ItemProperty -Path "#{corrected_store}:\\Software\\Progress\\Authentication" -Name "PfXPass"
+        CODE
+        powershell_exec!(powershell_code)
+        create_and_store_new_password(password)
+      end
 
+      # This method name is a bit of a misnomer. We call it to legit create a new password using the vector format.
+      # But we also call it with a password that needs to be migrated to use the vector format too.
+      def self.create_and_store_new_password(password = nil)
+        @win32registry = Chef::Win32::Registry.new
+        store = get_registry_user
+        path = "#{store}\\Software\\Progress\\Authentication"
+        if password.nil?
+          require "securerandom" unless defined?(SecureRandom)
+          size = 14
+          password = SecureRandom.alphanumeric(size)
+        end
+        encrypted_blob = encrypt_pfx_pass_with_vector(password)
+        encrypted_password = encrypted_blob[0]
+        key = encrypted_blob[1]
+        vector = encrypted_blob[2]
+        values = [
+                  { name: "PfxPass", type: :string, data: encrypted_password },
+                  { name: "PfxKey", type: :string, data: key },
+                  { name: "PfxIV", type: :string, data: vector },
+                ]
+        values.each do |i|
+          @win32registry.set_value(path, i)
+        end
+        password
+      end
+
+      def self.retrieve_certificate_key(client_name)
         if ChefUtils.windows?
+          require "openssl" unless defined?(OpenSSL)
           password = get_cert_password
           return false unless password
 
-          if check_certstore_for_key(client_name)
+          if !!check_certstore_for_key(client_name)
             ps_blob = powershell_exec!(get_the_key_ps(client_name, password)).result
             file_path = ps_blob["PSPath"].split("::")[1]
             pkcs = OpenSSL::PKCS12.new(File.binread(file_path), password)
@@ -252,10 +333,11 @@ class Chef
       end
 
       def self.get_the_key_ps(client_name, password)
+        store = get_cert_user
         powershell_code = <<~CODE
             Try {
               $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
-              $cert = Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
+              $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
               $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
               Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
             }
@@ -266,8 +348,9 @@ class Chef
       end
 
       def self.delete_old_key_ps(client_name)
+        store = get_cert_user
         powershell_code = <<~CODE
-          Get-ChildItem -path cert:\\LocalMachine\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } | Remove-Item -ErrorAction Stop;
+          Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } | Remove-Item -ErrorAction Stop;
         CODE
       end
 

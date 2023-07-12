@@ -42,6 +42,8 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "chefstyle"
 
+  s.add_dependency "proxifier2", "~> 1.1"
+
   s.bindir       = "bin"
   s.executables  = %w{ knife }
 

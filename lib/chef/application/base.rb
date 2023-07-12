@@ -24,6 +24,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "../daemon"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
+require "chef/monkey_patches/net-http"
+
 module Mixlib
   autoload :Archive, "mixlib/archive"
 end
@@ -386,8 +388,10 @@ class Chef::Application::Base < Chef::Application
     elsif uri.scheme == "s3"
       require "aws-sdk-s3" unless defined?(Aws::S3)
 
-      s3 = Aws::S3::Client.new
-      object = s3.get_object(bucket: uri.hostname, key: uri.path[1..-1])
+      bucket_name = uri.hostname
+      s3 = Aws::S3::Client.new(region: s3_bucket_location(bucket_name))
+
+      object = s3.get_object(bucket: bucket_name, key: uri.path[1..-1])
       File.open(path, "wb") do |f|
         f.write(object.body.read)
       end
@@ -401,6 +405,20 @@ class Chef::Application::Base < Chef::Application
       Chef::Application.fatal! "You specified --recipe-url but the value is neither a valid URL, an S3 bucket nor a path to a file that exists on disk." +
         "Please confirm the location of the tarball and try again."
     end
+  end
+
+  def s3_bucket_location(bucket_name)
+    s3 = Aws::S3::Client.new(region: aws_api_region)
+
+    resp = s3.get_bucket_location(bucket: bucket_name)
+    resp.location_constraint
+  rescue Aws::S3::Errors::AccessDenied => _e
+    Chef::Log.warn("Missing s3:GetBucketLocation privilege, trying currently configured region #{aws_api_region}")
+    aws_api_region
+  end
+
+  def aws_api_region
+    ENV["AWS_REGION"] || Aws.shared_config.region || Aws::EC2Metadata.new.get("/latest/meta-data/placement/region")
   end
 
   def interval_run_chef_client

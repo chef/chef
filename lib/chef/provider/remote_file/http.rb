@@ -113,7 +113,7 @@ class Chef
         end
 
         def last_modified_time_from(response)
-          response["last_modified"] || response["date"]
+          response["last-modified"] || response["date"]
         end
 
         def etag_from(response)

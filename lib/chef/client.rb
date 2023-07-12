@@ -66,6 +66,15 @@ class Chef
   class Client
     CRYPT_EXPORTABLE = 0x00000001
 
+    # adding these
+    # certstore 65536 == 0x00010000 == CurrentUser
+    # certstore 131072 == 0x00020000 == LocalMachine
+    # Reference: https://github.com/chef/win32-certstore/blob/main/lib/win32/certstore/mixin/crypto.rb#L90
+    CERT_SYSTEM_STORE_LOCAL_MACHINE                     = 0x00020000
+    CERT_SYSTEM_STORE_CURRENT_USER                      = 0x00010000
+    CERT_SYSTEM_STORE_SERVICES                          = 0x00050000
+    CERT_SYSTEM_STORE_USERS                             = 0x00060000
+
     attr_reader :local_context
 
     extend Chef::Mixin::Deprecation
@@ -654,7 +663,7 @@ class Chef
           logger.trace("New client keys created in the Certificate Store - skipping registration")
         end
         events.skipping_registration(client_name, config)
-      elsif File.exists?(config[:client_key])
+      elsif File.exist?(config[:client_key])
         events.skipping_registration(client_name, config)
         logger.trace("Client key #{config[:client_key]} is present - skipping registration")
       else
@@ -674,9 +683,15 @@ class Chef
 
     # In the brave new world of No Certs On Disk, we want to put the pem file into Keychain or the Certstore
     # But is it already there?
+    # We're solving the multi-user scenario where both a system/admin user can run on the box but also someone without
+    # admin rights can also run correctly locally.
     def check_certstore_for_key(cert_name)
       require "win32-certstore"
-      win32certstore = ::Win32::Certstore.open("MY")
+      if Chef::Config[:auth_key_registry_type] == "user"
+        win32certstore = ::Win32::Certstore.open("MY", store_location: CERT_SYSTEM_STORE_CURRENT_USER)
+      else
+        win32certstore = ::Win32::Certstore.open("MY")
+      end
       win32certstore.search("#{cert_name}")
     end
 
@@ -783,8 +798,6 @@ class Chef
       require "time" unless defined?(Time)
       autoload :URI, "uri"
 
-      # KeyMigration.instance.key_migrated = true
-
       node = Chef::Config[:node_name]
       d = Time.now
       if d.month == 10 || d.month == 11 || d.month == 12
@@ -818,9 +831,13 @@ class Chef
       require "win32-certstore"
       tempfile = Tempfile.new("#{Chef::Config[:node_name]}.pfx")
       File.open(tempfile, "wb") { |f| f.print new_pfx.to_der }
-
-      store = ::Win32::Certstore.open("MY")
-      store.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
+      # Need to determine where to store the key
+      if Chef::Config[:auth_key_registry_type] == "user"
+        win32certstore = ::Win32::Certstore.open("MY", store_location: CERT_SYSTEM_STORE_CURRENT_USER)
+      else
+        win32certstore = ::Win32::Certstore.open("MY")
+      end
+      win32certstore.add_pfx(tempfile, password, CRYPT_EXPORTABLE)
       tempfile.unlink
     end
 
@@ -1052,7 +1069,7 @@ class Chef
     end
 
     def empty_directory?(path)
-      !File.exists?(path) || (Dir.entries(path).size <= 2)
+      !File.exist?(path) || (Dir.entries(path).size <= 2)
     end
 
     def is_last_element?(index, object)

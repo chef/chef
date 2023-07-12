@@ -41,34 +41,11 @@ end
 
 override :chef, version: "local_source"
 
-# Load dynamically updated overrides
-overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
-instance_eval(IO.read(overrides_path), overrides_path)
-
-dependency "preparation"
-# dependency "chef-local-source"
-
-dependency "chef"
-
-#
-# addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
-#
-dependency "nokogiri" # (nokogiri cannot go in the Gemfile, see wall of text in the software defn)
-
-# FIXME?: might make sense to move dependencies below into the omnibus-software chef
-#  definition or into a chef-complete definition added to omnibus-software.
-dependency "gem-permissions"
+dependency "chef-local-source"
 dependency "shebang-cleanup"
-dependency "version-manifest"
-dependency "openssl-customization"
-
-# devkit needs to come dead last these days so we do not use it to compile any gems
-dependency "ruby-msys2-devkit" if windows?
 
 dependency "ruby-cleanup"
-
 # further gem cleanup other projects might not yet want to use
-
 dependency "more-ruby-cleanup"
 
 package :rpm do

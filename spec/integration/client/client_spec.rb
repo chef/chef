@@ -35,14 +35,14 @@ describe "chef-client" do
     @server = @api = nil
   end
 
-  def install_certificate_in_store(client_name)
+  def install_certificate_in_store(client_name, store_location)
     if ChefUtils.windows?
       powershell_exec! <<~EOH
         if (-not (($PSVersionTable.PSVersion.Major -ge 5) -and ($PSVersionTable.PSVersion.Build -ge 22000)) ) {
-          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -DnsName "#{client_name}"
+          New-SelfSignedCertificate -CertStoreLocation Cert:\\#{store_location}\\My -DnsName "#{client_name}"
         }
         else {
-          New-SelfSignedCertificate -CertStoreLocation Cert:\\LocalMachine\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
+          New-SelfSignedCertificate -CertStoreLocation Cert:\\#{store_location}\\My -Subject "#{client_name}" -FriendlyName "#{client_name}" -KeyExportPolicy Exportable
         }
       EOH
     end
@@ -50,14 +50,6 @@ describe "chef-client" do
 
   def create_registry_key
     ::Chef::HTTP::Authenticator.get_cert_password
-    # @win32registry = Chef::Win32::Registry.new
-    # path = "HKEY_LOCAL_MACHINE\\Software\\Progress\\Authentication"
-    # unless @win32registry.key_exists?(path)
-    #   @win32registry.create_key(path, true)
-    # end
-    # password = SOME_CHARS.sample(1 + rand(SOME_CHARS.count)).join[0...14]
-    # values = { name: "PfxPass", type: :string, data: password }
-    # @win32registry.set_value(path, values)
   end
 
   def remove_certificate_from_store
@@ -111,6 +103,9 @@ describe "chef-client" do
       tempfile.close
       @path = tempfile.path
       Chef::Config.validation_key = @path
+      if ChefUtils.windows?
+        create_registry_key
+      end
 
       file "config/client.rb", <<~EOM
        local_mode true
@@ -201,17 +196,11 @@ describe "chef-client" do
 
     if ChefUtils.windows?
       context "and the private key is in the Windows CertStore" do
-        before do
-          install_certificate_in_store(client_name)
+
+        it "should verify that the cert is loaded in the \\LocalMachine\\My store" do
+          Chef::Config[:auth_key_registry_type] = "machine"
+          install_certificate_in_store(client_name, "LocalMachine")
           create_registry_key
-        end
-
-        after do
-          remove_certificate_from_store
-          remove_registry_key
-        end
-
-        it "should verify that the cert is loaded in the LocalMachine\\My" do
           expect(Chef::HTTP::Authenticator.check_certstore_for_key(hostname)).to eq(true)
         end
 
@@ -221,6 +210,23 @@ describe "chef-client" do
 
         it "should verify that a private key is returned to me" do
           expect(Chef::HTTP::Authenticator.retrieve_certificate_key(client_name)).not_to be nil
+          remove_certificate_from_store
+        end
+
+        it "should verify that the cert is loaded in the \\CurrentUser\\My store" do
+          Chef::Config[:auth_key_registry_type] = "user"
+          install_certificate_in_store(client_name, "CurrentUser")
+          create_registry_key
+          expect(Chef::HTTP::Authenticator.check_certstore_for_key(hostname)).to eq(true)
+        end
+
+        it "should verify that the export password for the pfx is loaded in the Registry" do
+          expect(verify_export_password_exists.result).to eq(true)
+        end
+
+        it "should verify that a private key is returned to me" do
+          expect(Chef::HTTP::Authenticator.retrieve_certificate_key(client_name)).not_to be nil
+          remove_certificate_from_store
         end
       end
     end

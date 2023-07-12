@@ -37,9 +37,6 @@ group(:omnibus_package, :pry) do
   gem "pry-stack_explorer"
 end
 
-# proxifier gem is busted on ruby 3.1 and seems abandoned so use git fork of gem
-gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/ruby-3"
-
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed

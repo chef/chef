@@ -98,6 +98,18 @@ class Chef
         end
         ```
 
+        **Add repository that needs custom options**:
+        ```ruby
+        apt_repository 'corretto' do
+          uri          'https://apt.corretto.aws'
+          arch         'amd64'
+          distribution 'stable'
+          components   ['main']
+          options      ['target-=Contents-deb']
+          key          'https://apt.corretto.aws/corretto.key'
+        end
+        ```
+
         **Remove a repository from the list**:
 
         ```ruby
@@ -159,6 +171,10 @@ class Chef
         description: "Determines whether to rebuild the APT package cache.",
         default: true, desired_state: false
 
+      property :options, [String, Array],
+        description: "Additional options to set for the repository",
+        default: [], coerce: proc { |x| Array(x) }
+
       default_action :add
       allowed_actions :add, :remove
 
@@ -183,6 +199,24 @@ class Chef
           so.stdout.split(/\n/).map do |t|
             if z = t.match(/^fpr:+([0-9A-F]+):/)
               z[1].split.join
+            end
+          end.compact
+        end
+
+        # run the specified command and extract the public key ids
+        # accepts the command so it can be used to extract both the current keys
+        # and the new keys
+        # @param [Array<String>] cmd the command to run
+        #
+        # @return [Array] an array of key ids
+        def extract_public_keys_from_cmd(*cmd)
+          so = shell_out(*cmd)
+          # Sample output
+          # pub:-:4096:1:D94AA3F0EFE21092:1336774248:::-:::scSC::::::23::0:
+          so.stdout.split(/\n/).map do |t|
+            if t.match(/^pub:/)
+              f = t.split(":")
+              f.slice(0, 6).join(":")
             end
           end.compact
         end
@@ -222,8 +256,8 @@ class Chef
         def no_new_keys?(file)
           # Now we are using the option --with-colons that works across old os versions
           # as well as the latest (16.10). This for both `apt-key` and `gpg` commands
-          installed_keys = extract_fingerprints_from_cmd(*LIST_APT_KEY_FINGERPRINTS)
-          proposed_keys = extract_fingerprints_from_cmd("gpg", "--with-fingerprint", "--with-colons", file)
+          installed_keys = extract_public_keys_from_cmd(*LIST_APT_KEY_FINGERPRINTS)
+          proposed_keys = extract_public_keys_from_cmd("gpg", "--with-fingerprint", "--with-colons", file)
           (installed_keys & proposed_keys).sort == proposed_keys.sort
         end
 
@@ -370,19 +404,21 @@ class Chef
         # @param [Array] components
         # @param [Boolean] trusted
         # @param [String] arch
+        # @param [Array] options
         # @param [Boolean] add_src
         #
         # @return [String] complete repo config text
-        def build_repo(uri, distribution, components, trusted, arch, add_src = false)
+        def build_repo(uri, distribution, components, trusted, arch, options, add_src = false)
           uri = make_ppa_url(uri) if is_ppa_url?(uri)
 
           uri = Addressable::URI.parse(uri)
           components = Array(components).join(" ")
-          options = []
-          options << "arch=#{arch}" if arch
-          options << "trusted=yes" if trusted
-          optstr = unless options.empty?
-                     "[" + options.join(" ") + "]"
+          options_list = []
+          options_list << "arch=#{arch}" if arch
+          options_list << "trusted=yes" if trusted
+          options_list += options
+          optstr = unless options_list.empty?
+                     "[" + options_list.join(" ") + "]"
                    end
           info = [ optstr, uri.normalize.to_s, distribution, components ].compact.join(" ")
           repo =  "deb      #{info}\n"
@@ -443,6 +479,7 @@ class Chef
           repo_components,
           new_resource.trusted,
           new_resource.arch,
+          new_resource.options,
           new_resource.deb_src
         )
 

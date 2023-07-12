@@ -4,6 +4,8 @@
 set -eu
 
 echo "---"
+echo "env:"
+echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "steps:"
 echo ""
 
@@ -94,10 +96,10 @@ for gem in ${external_gems[@]}; do
     echo "        - CHEF_FS=true"
   fi
   echo "      propagate-environment: true"
-  echo "  - chef/cache#v1.5.0:"
-  echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
-  echo "      cached_folders:"
-  echo "      - vendor"
+  # echo "  - chef/cache#v1.5.0:"
+  # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
+  # echo "      cached_folders:"
+  # echo "      - vendor"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   echo "    - .expeditor/scripts/bk_container_prep.sh"
@@ -151,11 +153,11 @@ for plan in ${habitat_plans[@]}; do
   else
     echo "    queue: single-use-privileged"
   fi
-  echo "  plugins:"
-  echo "  - chef/cache#v1.5.0:"
-  echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
-  echo "      cached_folders:"
-  echo "      - vendor"
+  # echo "  plugins:"
+  # echo "  - chef/cache#v1.5.0:"
+  # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
+  # echo "      cached_folders:"
+  # echo "      - vendor"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   if [ $plan == "windows" ]
@@ -167,7 +169,11 @@ for plan in ${habitat_plans[@]}; do
   fi
 done
 
-# include build and test omnibus pipeline
-# DIR="${BASH_SOURCE%/*}"
-# if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-# source "$DIR/build-test-omnibus.sh"
+#include build and test omnibus pipeline
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+  DIR="${BASH_SOURCE%/*}"
+  if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+  source "$DIR/build-test-omnibus.sh"
+else
+  echo "--- Finished with chef-oss"
+fi

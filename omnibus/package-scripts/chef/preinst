@@ -7,9 +7,22 @@
 #   this programming language.  do not touch.
 # - if you are under 40, get peer review from your elders.
 
+# This whole file exists because on some versions of RPM, during upgrades, the postrm script
+# runs AFTER the installation of the upgraded RPM. Oops. See https://github.com/chef/chef/pull/7964
+
 INSTALLER_DIR=/opt/chef
+
 if [ -e $INSTALLER_DIR ]; then
   echo "removing $INSTALLER_DIR..."
+  rm -rf $INSTALLER_DIR || true
+fi
+
+# Sometimes, on some platforms, we get an EBUSY error trying to delete this, which will cause issues
+# with the upgrades. So we move it so it won't interfere with the upgrade, then delete it, which will
+# cause the OS to free the space once it's no longer used (when the current chef run ends, or whatever
+# else is using those libs). See: https://github.com/chef/chef/pull/8046
+if [ -e $INSTALLER_DIR ]; then
+  echo "Some files failed to delete, moving them so we don't interfere with upgrades, and then removing them"
 
   # have to do this dance of moving /opt/chef to a tmp dir since files may be in use
   tmp_dir="/opt/.chef.$$"

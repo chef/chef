@@ -8,6 +8,10 @@
 
 		<string>io.chef.testing.fake</string>
 
+		<key>AssociatedBundleIdentifiers</key>
+		<array>
+			<string>io.chef.testing.fake</string>
+		</array>
 		<key>ProgramArguments</key>
 
 		<array>

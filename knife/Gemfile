@@ -2,9 +2,6 @@ source "https://rubygems.org"
 
 gem "knife", path: "."
 
-# proxifier gem is busted on ruby 3.1 and seems abandoned so use git fork of gem
-gem "proxifier", git: "https://github.com/chef/ruby-proxifier", branch: "lcg/ruby-3"
-
 group(:development, :test) do
   gem "cheffish", ">= 14" # testing only , but why didn't this need to explicit in chef?
   gem "webmock" # testing only

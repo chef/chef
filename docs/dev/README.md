@@ -10,6 +10,7 @@ A good first start is our [How Chef Infra Is Built](./design_documents/how_chef_
 - [Branching and Backporting Changes](./how_to/branching_and_backporting.md)
 - [Updating Dependencies](./how_to/updating_dependencies.md)
 - [Bumping Major and Minor Versions](./how_to/bumping_minor_or_major_versions.md)
+- [Debugging Effortless Chef from Export](./how_to/debugging_effortless.md)
 
 ## Design Documents
 

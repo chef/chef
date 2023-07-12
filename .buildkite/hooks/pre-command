@@ -3,23 +3,24 @@
 set -eu
 
 # Only execute in the verify pipeline
-[[ "$BUILDKITE_PIPELINE_NAME" =~ verify$ ]] || exit 0
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
 docker ps || true
 
 # Get chef foundation version from the json file
 CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
 export CHEF_FOUNDATION_VERSION
-echo $CHEF_FOUNDATION_VERSION
+echo "Chef Foundation Version: $CHEF_FOUNDATION_VERSION" 
 
 OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolchain')
 export OMNIBUS_TOOLCHAIN_VERSION
-echo $OMNIBUS_TOOLCHAIN_VERSION
+echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
-if [ $BUILDKITE_STEP_KEY == "build-windows-2019" ] && [ $BUILDKITE_ORGANIZATION_SLUG == "chef" ]
+if [ $BUILDKITE_STEP_KEY == "build-windows-2019" ] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/default-windows-2019-privileged-chef-Role)
+  ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
   AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
   export AWS_ACCESS_KEY_ID
   AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
@@ -57,9 +58,20 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
   fi
 fi
 
-# Only execute if on RHEL/CentOS/SLES
-if [[ "$BUILDKITE_LABEL" =~ rhel|sles|centos ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+# Only if on chef-canary or chef org
+if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+
   export VAULT_ADDR="https://vault.ps.chef.co"
-  export VAULT_TOKEN="$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)"
-  export RPM_SIGNING_KEY="$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)"
+  export VAULT_TOKEN=$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)
+
+  if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
+    lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text)
+    export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
+  fi
+  export ARTIFACTORY_PASSWORD=$(vault kv get -field password account/static/artifactory/buildkite)
+
+  # Only if on RPM-based Linux distros
+  if [[ "$BUILDKITE_LABEL" =~ rhel|sles|centos ]]; then
+    export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)
+  fi
 fi

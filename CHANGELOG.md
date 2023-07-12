@@ -1,27 +1,101 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.1.7 -->
-## [v18.1.7](https://github.com/chef/chef/tree/v18.1.7) (2023-01-25)
+<!-- latest_release 18.2.39 -->
+## [v18.2.39](https://github.com/chef/chef/tree/v18.2.39) (2023-07-11)
 
 #### Merged Pull Requests
-- revert chef-foundation changes in chef omnibus config [#13528](https://github.com/chef/chef/pull/13528) ([evanahlberg](https://github.com/evanahlberg))
+- StateTracking#send_reset_cache - Remove redundant nil check [#13838](https://github.com/chef/chef/pull/13838) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.1.0 -->
+<!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- revert chef-foundation changes in chef omnibus config [#13528](https://github.com/chef/chef/pull/13528) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.7 -->
-- Example of bash resource doubled escape characters [#13509](https://github.com/chef/chef/pull/13509) ([sean-horn](https://github.com/sean-horn)) <!-- 18.1.6 -->
-- Update expired certificate used in kitchen tests [#13527](https://github.com/chef/chef/pull/13527) ([neha-p6](https://github.com/neha-p6)) <!-- 18.1.5 -->
-- update verify pipeline and omnibus build/test to use containers [#13489](https://github.com/chef/chef/pull/13489) ([evanahlberg](https://github.com/evanahlberg)) <!-- 18.1.4 -->
-- Docs and release details [#13484](https://github.com/chef/chef/pull/13484) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.1.3 -->
-- Rewriting the zypper code to run only on openSUSE 15 [#13490](https://github.com/chef/chef/pull/13490) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.1.2 -->
-- Edit resources description text [#13495](https://github.com/chef/chef/pull/13495) ([IanMadd](https://github.com/IanMadd)) <!-- 18.1.1 -->
+- StateTracking#send_reset_cache - Remove redundant nil check [#13838](https://github.com/chef/chef/pull/13838) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.39 -->
+- Add support for recursive, in-cookbook resource partials [#13092](https://github.com/chef/chef/pull/13092) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 18.2.38 -->
+- update ::File.exists? to ::File.exist? [#13770](https://github.com/chef/chef/pull/13770) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.2.37 -->
+- Adding double-quotes around path for Windows &#39;secedit&#39; command line [#13809](https://github.com/chef/chef/pull/13809) ([jwdean](https://github.com/jwdean)) <!-- 18.2.36 -->
+- Prevent TypeError to be raised in condition evaluation [#13830](https://github.com/chef/chef/pull/13830) ([chouetz](https://github.com/chouetz)) <!-- 18.2.35 -->
+- Update for chef-foundation version to pick openssl-1.0.2ze [#13807](https://github.com/chef/chef/pull/13807) ([poorndm](https://github.com/poorndm)) <!-- 18.2.34 -->
+- Optimize Chef::CookbookSynchronizer#remove_deleted_files [#13766](https://github.com/chef/chef/pull/13766) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.33 -->
+- Make action homebrew_bin_path public which is used in other hombrew resources [#13810](https://github.com/chef/chef/pull/13810) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.32 -->
+- 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.31 -->
+- Attempt to explicitly include Resolv [#13771](https://github.com/chef/chef/pull/13771) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.30 -->
+- add arm64 support for default binary path [#13669](https://github.com/chef/chef/pull/13669) ([Stromweld](https://github.com/Stromweld)) <!-- 18.2.29 -->
+- [Chef-18] Monkey patch ruby for net/http  [#13745](https://github.com/chef/chef/pull/13745) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.28 -->
+- Setting the sudo_password to fix the sudo_missing_terminal error for latest versions of EL8 [#13636](https://github.com/chef/chef/pull/13636) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.2.27 -->
+- Add efivarfs to list of non-existent mount devices [#13683](https://github.com/chef/chef/pull/13683) ([Animeshz](https://github.com/Animeshz)) <!-- 18.2.26 -->
+- Fix case statement ordering in convert_value [#13733](https://github.com/chef/chef/pull/13733) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.25 -->
+- File exists? -&gt; exist? deprecation [#13744](https://github.com/chef/chef/pull/13744) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.24 -->
+- Stub test cert body to fix tests [#13740](https://github.com/chef/chef/pull/13740) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.23 -->
+- Bump omnibus-software from `8e242c1` to `f06bbea` in /omnibus [#13731](https://github.com/chef/chef/pull/13731) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.22 -->
+- debian 9 removal from kitchen-tests [#13736](https://github.com/chef/chef/pull/13736) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.21 -->
+- feat(apt_repository): Allow specifying arbitrary options [#13728](https://github.com/chef/chef/pull/13728) ([tmccombs](https://github.com/tmccombs)) <!-- 18.2.20 -->
+- Update SSL cert used in kitchen tests [#13714](https://github.com/chef/chef/pull/13714) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.19 -->
+- Fix output of cookbook list/show [#13654](https://github.com/chef/chef/pull/13654) ([aknarts](https://github.com/aknarts)) <!-- 18.2.18 -->
+- [launchd] Force string values for program_arguments property [#13682](https://github.com/chef/chef/pull/13682) ([gbatye](https://github.com/gbatye)) <!-- 18.2.17 -->
+- Add ruby-cleanup to clear the bundler/gems and cache folder [#13676](https://github.com/chef/chef/pull/13676) ([poorndm](https://github.com/poorndm)) <!-- 18.2.16 -->
+- Sean simmons progress/18.2 enable aix [#13702](https://github.com/chef/chef/pull/13702) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.2.15 -->
+- Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13689](https://github.com/chef/chef/pull/13689) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.14 -->
+- Add documentation for running a cookbook as hab+effortless package [#13692](https://github.com/chef/chef/pull/13692) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.13 -->
+- zypper_package: Fix idempotency issue [#13691](https://github.com/chef/chef/pull/13691) ([ramereth](https://github.com/ramereth)) <!-- 18.2.12 -->
+- Avoid Invalid Memory Object error [#13677](https://github.com/chef/chef/pull/13677) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.11 -->
+- Bump time from 0.2.1 to 0.2.2 in /omnibus [#13664](https://github.com/chef/chef/pull/13664) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.2.10 -->
+- Adding files for onboarding the project to SonarQubes [#13672](https://github.com/chef/chef/pull/13672) ([vinay-satish](https://github.com/vinay-satish)) <!-- 18.2.9 -->
+- Correcting a typo in the resource [#13663](https://github.com/chef/chef/pull/13663) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.2.8 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.2.7](https://github.com/chef/chef/tree/v18.2.7) (2023-04-04)
+
+#### Merged Pull Requests
+- Edit resources description text [#13495](https://github.com/chef/chef/pull/13495) ([IanMadd](https://github.com/IanMadd))
+- Rewriting the zypper code to run only on openSUSE 15 [#13490](https://github.com/chef/chef/pull/13490) ([johnmccrae](https://github.com/johnmccrae))
+- Docs and release details [#13484](https://github.com/chef/chef/pull/13484) ([tpowell-progress](https://github.com/tpowell-progress))
+- update verify pipeline and omnibus build/test to use containers [#13489](https://github.com/chef/chef/pull/13489) ([evanahlberg](https://github.com/evanahlberg))
+- Update expired certificate used in kitchen tests [#13527](https://github.com/chef/chef/pull/13527) ([neha-p6](https://github.com/neha-p6))
+- Example of bash resource doubled escape characters [#13509](https://github.com/chef/chef/pull/13509) ([sean-horn](https://github.com/sean-horn))
+- revert chef-foundation changes in chef omnibus config [#13528](https://github.com/chef/chef/pull/13528) ([evanahlberg](https://github.com/evanahlberg))
+- Change to github commit sha. [#13507](https://github.com/chef/chef/pull/13507) ([gcs-devel](https://github.com/gcs-devel))
+- Run Amazon Linux 2 kitchen tests on ubuntu-20.04 [#13531](https://github.com/chef/chef/pull/13531) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bumping gems to pull in a valid license_scout version [#13547](https://github.com/chef/chef/pull/13547) ([johnmccrae](https://github.com/johnmccrae))
+- Fix for missing S3 region if run with EC2 instance profile [#13525](https://github.com/chef/chef/pull/13525) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- Updating gems [#13551](https://github.com/chef/chef/pull/13551) ([johnmccrae](https://github.com/johnmccrae))
+- add esoteric platforms to validate adhoc/release pipelines [#13546](https://github.com/chef/chef/pull/13546) ([evanahlberg](https://github.com/evanahlberg))
+- fix(apt_repository): Detect changes to expiration in key [#13535](https://github.com/chef/chef/pull/13535) ([tmccombs](https://github.com/tmccombs))
+- Bump omnibus-software from `db8acc3` to `b83f579` in /omnibus [#13556](https://github.com/chef/chef/pull/13556) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add rest of windows platforms to be tested on; Fixing syntax issue in build-test-omnibus [#13565](https://github.com/chef/chef/pull/13565) ([jesseprieur](https://github.com/jesseprieur))
+- fixing the path here [#13573](https://github.com/chef/chef/pull/13573) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- hab debugging doc [#13571](https://github.com/chef/chef/pull/13571) ([tpowell-progress](https://github.com/tpowell-progress))
+- Update pre-install cleanup [#13562](https://github.com/chef/chef/pull/13562) ([vkarve-chef](https://github.com/vkarve-chef))
+- launchd - array instead of a hash for Apple&#39;s associated_bundle_ident… [#13477](https://github.com/chef/chef/pull/13477) ([Arequ](https://github.com/Arequ))
+- Updating Omnibus [#13590](https://github.com/chef/chef/pull/13590) ([johnmccrae](https://github.com/johnmccrae))
+- Add more details about releasing chocolatey package [#13577](https://github.com/chef/chef/pull/13577) ([neha-p6](https://github.com/neha-p6))
+- Tp/infc 437 nightlies [#13604](https://github.com/chef/chef/pull/13604) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `6c14e85` to `87f418b` in /omnibus [#13605](https://github.com/chef/chef/pull/13605) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump kitchen-vagrant from 1.14.0 to 1.14.1 in /omnibus [#13599](https://github.com/chef/chef/pull/13599) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Force errors after bundler in omnibus_chef_build [#13613](https://github.com/chef/chef/pull/13613) ([tpowell-progress](https://github.com/tpowell-progress))
+- chore: Use the `chef_dictionary` directly. [#13467](https://github.com/chef/chef/pull/13467) ([Jason3S](https://github.com/Jason3S))
+- Updated the proxifier dependency [#13617](https://github.com/chef/chef/pull/13617) ([nikhil2611](https://github.com/nikhil2611))
+- Correcting cert retrieval issues for multiple user scenarios [#13552](https://github.com/chef/chef/pull/13552) ([johnmccrae](https://github.com/johnmccrae))
+- Add selinux_user and selinux_login resources [#13511](https://github.com/chef/chef/pull/13511) ([wheatevo](https://github.com/wheatevo))
+- set default values for user and host on userdefaults [#12791](https://github.com/chef/chef/pull/12791) ([rishichawda](https://github.com/rishichawda))
+- Update chef-foundation for proxifier2  [#13623](https://github.com/chef/chef/pull/13623) ([vkarve-chef](https://github.com/vkarve-chef))
+- Update test certificates  [#13625](https://github.com/chef/chef/pull/13625) ([vkarve-chef](https://github.com/vkarve-chef))
+- Temporarily build 18.2 without AIX and without Windows 10/11 testers [#13642](https://github.com/chef/chef/pull/13642) ([tpowell-progress](https://github.com/tpowell-progress))
+- FIx kitchen test failures in windows boxes due to dependency issue in proxifier [#13644](https://github.com/chef/chef/pull/13644) ([neha-p6](https://github.com/neha-p6))
+- Sean simmons progress/bugfix/precommand [#13646](https://github.com/chef/chef/pull/13646) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- Update bundled dependencies for both chef and chef/omnibus [#13643](https://github.com/chef/chef/pull/13643) ([neha-p6](https://github.com/neha-p6))
+- Fix issues in habitat/test pipeline [#13649](https://github.com/chef/chef/pull/13649) ([neha-p6](https://github.com/neha-p6))
+- Updating cert code to adjust user vs localmachine keys [#13651](https://github.com/chef/chef/pull/13651) ([johnmccrae](https://github.com/johnmccrae))
+- Update ssl cert used in kitchen tests [#13658](https://github.com/chef/chef/pull/13658) ([neha-p6](https://github.com/neha-p6))
+- Sean simmons progress/bugfix/build docker image [#13657](https://github.com/chef/chef/pull/13657) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- fixing one small missed step [#13661](https://github.com/chef/chef/pull/13661) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- minor gem update to get the version bumped [#13668](https://github.com/chef/chef/pull/13668) ([johnmccrae](https://github.com/johnmccrae))
+- &quot;FFI Yajl&quot; fix [#13662](https://github.com/chef/chef/pull/13662) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
 ## [v18.1.0](https://github.com/chef/chef/tree/v18.1.0) (2023-01-05)
 
 #### Merged Pull Requests
@@ -49,7 +123,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - updating file_system to send back the copy status [#13107](https://github.com/chef/chef/pull/13107) ([vinay-satish](https://github.com/vinay-satish))
 - Adds &#39;makecache_fast&#39; property to `yum_repository` minimise cached repodata [#12915](https://github.com/chef/chef/pull/12915) ([lanky](https://github.com/lanky))
 - Updating Zypper to overcome repository errors [#13470](https://github.com/chef/chef/pull/13470) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v18.0.185](https://github.com/chef/chef/tree/v18.0.185) (2022-11-17)
 
