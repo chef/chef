@@ -220,12 +220,18 @@ class Chef
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
           return @available_packages if @available_packages
+          choco_version = powershell_exec!("choco --version").result
 
           @available_packages = {}
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "search", "-r", pkg ]
+                # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
+                if choco_version.match?(/2/)
+                  cmd = [ "search", "-r", pkg ]
+                else
+                  cmd = [ "list", "-r", pkg ]
+                end
                 cmd += common_options
                 cmd.push( new_resource.list_options ) if new_resource.list_options
 
