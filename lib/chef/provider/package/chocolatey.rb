@@ -213,25 +213,26 @@ class Chef
           cmd_args
         end
 
+        # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
+        def query_command
+          choco_version = powershell_exec!("choco --version").result
+          return "list" if choco_version.match?(/^1/)
+          "search"
+        end
+
         # Available packages in chocolatey as a Hash of names mapped to versions
         # If pinning a package to a specific version, filter out all non matching versions
         # (names are downcased for case-insensitive matching)
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          return @available_packages if @available_packages
-          choco_version = powershell_exec!("choco --version").result
+          return @available_packages if @available_package   
 
           @available_packages = {}
           package_name_array.each do |pkg|
             available_versions =
               begin
-                # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
-                if choco_version.match?(/2/)
-                  cmd = [ "search", "-r", pkg ]
-                else
-                  cmd = [ "list", "-r", pkg ]
-                end
+                cmd = [ query_command, "-r", pkg ]
                 cmd += common_options
                 cmd.push( new_resource.list_options ) if new_resource.list_options
 
