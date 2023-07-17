@@ -122,7 +122,7 @@ then
       echo "      - \"-Command\""
       echo "      propagate-environment: true"
       echo "      environment:"
-      echo "        - CHEF_FOUNDATION_VERSION"
+      echo "        - CHEF_FOUNDATION_VERSION=$CHEF_FOUNDATION_VERSION"
       echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
       echo "        - ARTIFACTORY_PASSWORD"
       echo "        - ARTIFACTORY_API_KEY"
