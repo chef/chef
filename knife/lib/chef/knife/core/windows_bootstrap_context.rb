@@ -242,6 +242,15 @@ class Chef
             objADOStream.SaveToFile path
             objADOStream.Close
             Set objADOStream = Nothing
+            ElseIf objXMLHTTP.Status = 400 Then
+            errorBody = objXMLHTTP.ResponseText
+            WScript.Echo "Error: 400 BadRequest"
+            WScript.Echo "Error Body:"
+            WScript.Echo errorBody
+            Else
+            WScript.Echo "An error occurred while downloading the file:"
+            WScript.Echo "Status: " & objXMLHTTP.Status
+            WScript.Echo "Status Text: " & objXMLHTTP.StatusText
             End If
             Set objXMLHTTP = Nothing
             End If
@@ -266,7 +275,28 @@ class Chef
               $WebClient.Proxy = $WebProxy
             }
 
-            $webClient.DownloadFile($remoteUrl, $localPath);
+            try {
+              $webClient.DownloadFile($remoteUrl, $localPath);
+
+              Write-Host "Download complete. The file has been saved to $localPath."
+            } catch [System.Net.WebException] {
+              $response = $_.Exception.Response
+
+              if ($response.StatusCode -eq [System.Net.HttpStatusCode]::BadRequest) {
+                $streamReader = New-Object System.IO.StreamReader($response.GetResponseStream())
+                $errorBody = $streamReader.ReadToEnd()
+                $streamReader.Dispose()
+
+                Write-Host "Error: 400 BadRequest"
+                Write-Host "Error Body:"
+                Write-Host $errorBody
+              }
+              else {
+                Write-Host "An error occurred while downloading the file:"
+                Write-Host $_.Exception.Message
+              }
+              Exit 1
+            }
           WGET_PS
 
           escape_and_echo(win_wget_ps)
