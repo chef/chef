@@ -31,7 +31,7 @@ $env:ARTIFACTORY_USERNAME="buildkite"
 $CHEF_FOUNDATION_VERSION = $env:CHEF_FOUNDATION_VERSION
 
 Write-Output "--- Installing Chef Foundation $CHEF_FOUNDATION_VERSION"
-. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $env:$CHEF_FOUNDATION_VERSION
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
 
 $env:PROJECT_NAME="chef"
 $env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
