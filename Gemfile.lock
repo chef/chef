@@ -272,7 +272,7 @@ GEM
     iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
-    libyajl2 (2.0.1)
+    libyajl2 (2.0.2)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
       tomlrb (>= 1.2, < 3.0)
