@@ -39,6 +39,7 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           ret = super(*args, &block)
+          # TODO: use `send_reset_cache(__path__)` for all mutator methods?
           send_reset_cache
           ret
         end
@@ -46,6 +47,7 @@ class Chef
 
       def <<(obj)
         ret = super(obj)
+        # NOTE: Expecting __path__ to be top-level attribute only
         send_reset_cache(__path__)
         ret
       end

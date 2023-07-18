@@ -377,15 +377,34 @@ describe Chef::Node::AttrArray do
       expect(array[3][0]["three"].class).to eql(Chef::Node::AttrArray)
     end
 
-    it "does not send reset_cache with nil if there is a path" do
+    it "does not invalidate root DeepMergeCache if VividMash top-level key" do
+      # We're checking that __path__ is used to avoid full DeepMergeCache invalidation
       expect(root).to receive(:reset_cache).with("array")
       expect(root).not_to receive(:reset_cache).with(nil)
+
       attr_array = Chef::Node::AttrArray.new([ 0, 1, 2 ])
       vivid = Chef::Node::VividMash.new(
-        { "one" => { "two" => { "three" => "four" } }, "array" => attr_array},
+        { "one" => { "two" => { "three" => "four" } }, "array" => attr_array },
         root
       )
       vivid["array"] << 3
+    end
+
+    it "does not send reset_cache with nil if VividMashi nested key" do
+      # We're checking that __path__ is used to avoid full DeepMergeCache invalidation,
+      # and that it is invalidating the top-level key
+      expect(root).to receive(:reset_cache).with("array")
+      expect(root).not_to receive(:reset_cache).with(nil)
+
+      attr_array = Chef::Node::AttrArray.new([ 0, 1, 2 ])
+      vivid = Chef::Node::VividMash.new(
+        {
+          "one" => { "two" => { "three" => "four" } },
+          "array" => { "nested" => attr_array },
+        },
+        root
+      )
+      vivid["array"]["nested"] << 3
     end
   end
 
