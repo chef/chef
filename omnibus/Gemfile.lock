@@ -240,7 +240,7 @@ GEM
     json (2.6.3)
     kitchen-vagrant (1.14.1)
       test-kitchen (>= 1.4, < 4)
-    libyajl2 (2.0.2)
+    libyajl2 (2.0.3)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
       tomlrb (>= 1.2, < 3.0)
