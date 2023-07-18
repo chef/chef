@@ -44,6 +44,12 @@ class Chef
         end
       end
 
+      def <<(obj)
+        ret = super(obj)
+        send_reset_cache(__path__)
+        ret
+      end
+
       def delete(key, &block)
         send_reset_cache(__path__, key)
         super

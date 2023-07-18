@@ -364,20 +364,34 @@ describe Chef::Node::AttrArray do
 
   context "#<<" do
     it "converts a Hash appended with #<< to a VividMash" do
+      expect(root).to receive(:reset_cache).with(nil)
       array << { "three" => "four" }
       expect(array[3].class).to eql(Chef::Node::VividMash)
     end
 
     it "deeply converts objects appended with #<<" do
+      expect(root).to receive(:reset_cache).with(nil)
       array << [ { "three" => [ 0, 1] } ]
       expect(array[3].class).to eql(Chef::Node::AttrArray)
       expect(array[3][0].class).to eql(Chef::Node::VividMash)
       expect(array[3][0]["three"].class).to eql(Chef::Node::AttrArray)
     end
+
+    it "does not send reset_cache with nil if there is a path" do
+      expect(root).to receive(:reset_cache).with("array")
+      expect(root).not_to receive(:reset_cache).with(nil)
+      attr_array = Chef::Node::AttrArray.new([ 0, 1, 2 ])
+      vivid = Chef::Node::VividMash.new(
+        { "one" => { "two" => { "three" => "four" } }, "array" => attr_array},
+        root
+      )
+      vivid["array"] << 3
+    end
   end
 
   context "#[]=" do
     it "assigning a Hash into an array converts it to VividMash" do
+      expect(root).to receive(:reset_cache).with(nil)
       array[0] = { "zero" => "zero2" }
       expect(array[0].class).to eql(Chef::Node::VividMash)
     end
@@ -385,6 +399,7 @@ describe Chef::Node::AttrArray do
 
   context "#push" do
     it "pushing a Hash into an array converts it to VividMash" do
+      expect(root).to receive(:reset_cache).with(nil)
       array.push({ "three" => "four" })
       expect(array[3].class).to eql(Chef::Node::VividMash)
     end
@@ -392,6 +407,7 @@ describe Chef::Node::AttrArray do
 
   context "#unshift" do
     it "unshifting a Hash into an array converts it to VividMash" do
+      expect(root).to receive(:reset_cache).with(nil)
       array.unshift({ "zero" => "zero2" })
       expect(array[0].class).to eql(Chef::Node::VividMash)
     end
@@ -399,6 +415,7 @@ describe Chef::Node::AttrArray do
 
   context "#insert" do
     it "inserting a Hash into an array converts it to VividMash" do
+      expect(root).to receive(:reset_cache).with(nil)
       array.insert(1, { "zero" => "zero2" })
       expect(array[1].class).to eql(Chef::Node::VividMash)
     end
@@ -406,6 +423,7 @@ describe Chef::Node::AttrArray do
 
   context "#collect!" do
     it "converts Hashes" do
+      expect(root).to receive(:reset_cache).at_least(:once).with(nil)
       array.collect! { |x| { "zero" => "zero2" } }
       expect(array[1].class).to eql(Chef::Node::VividMash)
     end
@@ -413,6 +431,7 @@ describe Chef::Node::AttrArray do
 
   context "#map!" do
     it "converts Hashes" do
+      expect(root).to receive(:reset_cache).with(nil)
       array.map! { |x| { "zero" => "zero2" } }
       expect(array[1].class).to eql(Chef::Node::VividMash)
     end
@@ -420,6 +439,7 @@ describe Chef::Node::AttrArray do
 
   context "#compact!" do
     it "VividMashes remain VividMashes" do
+      expect(root).to receive(:reset_cache).with(nil)
       array = Chef::Node::AttrArray.new(
         [ nil, { "one" => "two" }, nil ],
         root
@@ -432,6 +452,7 @@ describe Chef::Node::AttrArray do
 
   context "#fill" do
     it "inserts VividMashes for Hashes" do
+      expect(root).to receive(:reset_cache).at_least(:once).with(nil)
       array.fill({ "one" => "two" })
       expect(array[0].class).to eql(Chef::Node::VividMash)
     end
@@ -439,6 +460,7 @@ describe Chef::Node::AttrArray do
 
   context "#flatten!" do
     it "flattens sub-arrays maintaining VividMashes in them" do
+      expect(root).to receive(:reset_cache).with(nil)
       array = Chef::Node::AttrArray.new(
         [ [ { "one" => "two" } ], [ { "one" => "two" } ] ],
         root
@@ -451,6 +473,7 @@ describe Chef::Node::AttrArray do
 
   context "#replace" do
     it "replaces the array converting hashes to mashes" do
+      expect(root).to receive(:reset_cache).with(nil)
       array.replace([ { "foo" => "bar" } ])
       expect(array[0].class).to eql(Chef::Node::VividMash)
     end
