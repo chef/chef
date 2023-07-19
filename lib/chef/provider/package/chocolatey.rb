@@ -230,7 +230,7 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          return @available_packages if @available_package
+          return @available_packages if @available_packages
 
           @available_packages = {}
           package_name_array.each do |pkg|
