@@ -90,7 +90,12 @@ jobs:
 
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
         Move-Item -Path $output.FullName -Destination $target_path
+
+        # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
+        # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
+        # libyajl2 build if already present. gem install seems to build anyway.
         gem uninstall -I libyajl2
+
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
