@@ -78,6 +78,18 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     end
   end
 
+  describe "choco searches change with the version" do
+    it "Choco V1 uses List" do
+      allow(provider).to receive(:get_choco_version).and_return("1.4.0")
+      expect(provider.query_command).to eql("list")
+    end
+
+    it "Choco V2 uses Search" do
+      allow(provider).to receive(:get_choco_version).and_return("2.1.0")
+      expect(provider.query_command).to eql("search")
+    end
+  end
+
   describe "#candidate_version" do
     it "should set the candidate_version to the latest version when not pinning" do
       allow_remote_list(["git"])

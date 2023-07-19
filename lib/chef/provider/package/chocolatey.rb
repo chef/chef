@@ -25,7 +25,7 @@ class Chef
       class Chocolatey < Chef::Provider::Package
         include Chef::ReservedNames::Win32::API::CommandLineHelper if ChefUtils.windows?
 
-        provides :chocolatey_package
+          provides :chocolatey_package
         # Declare that our arguments should be arrays
         use_multipackage_api
 
@@ -130,6 +130,17 @@ class Chef
         # install from, but like the rubygem provider's sources which are more like repos.
         def check_resource_semantics!; end
 
+        def get_choco_version
+          powershell_exec!("choco --version").result
+        end
+
+        # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
+        def query_command
+          return "list" if get_choco_version.match?(/^1/)
+
+          "search"
+        end
+
         private
 
         def version_compare(v1, v2)
@@ -213,12 +224,6 @@ class Chef
           cmd_args
         end
 
-        # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
-        def query_command
-          choco_version = powershell_exec!("choco --version").result
-          return "list" if choco_version.match?(/^1/)
-          "search"
-        end
 
         # Available packages in chocolatey as a Hash of names mapped to versions
         # If pinning a package to a specific version, filter out all non matching versions
@@ -226,7 +231,7 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          return @available_packages if @available_package   
+          return @available_packages if @available_package 
 
           @available_packages = {}
           package_name_array.each do |pkg|
