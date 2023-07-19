@@ -90,7 +90,7 @@ jobs:
 
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
         Move-Item -Path $output.FullName -Destination $target_path
-
+        gem uninstall -I libyajl2
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
