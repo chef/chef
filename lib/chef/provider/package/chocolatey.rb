@@ -131,7 +131,9 @@ class Chef
         def check_resource_semantics!; end
 
         def get_choco_version
-          powershell_exec!("choco --version").result
+          @get_choco_version ||= begin
+            powershell_exec!("choco --version").result
+          end
         end
 
         # Choco V2 uses 'Search' for remote repositories and 'List' for local packages

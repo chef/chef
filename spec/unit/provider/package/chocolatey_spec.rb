@@ -49,6 +49,10 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
   end
 
+  after(:each) do
+    @get_choco_version = nil
+  end
+
   def allow_remote_list(package_names, args = nil)
     remote_list_stdout = <<~EOF
       Chocolatey v0.9.9.11

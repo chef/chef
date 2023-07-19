@@ -54,6 +54,10 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     ENV["Path"] = ENV.delete("Path")
   end
 
+  after(:each) do
+    @get_choco_version = nil
+  end
+
   context "installing a package" do
     after { remove_package }
 
@@ -145,7 +149,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     after { remove_package }
 
     it "upgrades to a specific version" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
       expect(package_list.call).to match(/^#{package_name}|1.0.0$/)
 
