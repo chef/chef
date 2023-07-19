@@ -25,7 +25,7 @@ class Chef
       class Chocolatey < Chef::Provider::Package
         include Chef::ReservedNames::Win32::API::CommandLineHelper if ChefUtils.windows?
 
-          provides :chocolatey_package
+        provides :chocolatey_package
         # Declare that our arguments should be arrays
         use_multipackage_api
 
@@ -224,14 +224,13 @@ class Chef
           cmd_args
         end
 
-
         # Available packages in chocolatey as a Hash of names mapped to versions
         # If pinning a package to a specific version, filter out all non matching versions
         # (names are downcased for case-insensitive matching)
         #
         # @return [Hash] name-to-version mapping of available packages
         def available_packages
-          return @available_packages if @available_package 
+          return @available_packages if @available_package
 
           @available_packages = {}
           package_name_array.each do |pkg|
