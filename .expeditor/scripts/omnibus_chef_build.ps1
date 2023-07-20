@@ -50,6 +50,9 @@ $original_path = $env:PATH
 $env:PATH = "${env:MSYS2_INSTALL_DIR}\$env:MSYSTEM\bin;${env:MSYS2_INSTALL_DIR}\usr\bin;${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin;C:\wix;C:\Program Files (x86)\Windows Kits\8.1\bin\x64;${original_path}"
 Write-Output "env:PATH = $env:PATH"
 
+Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
+gem uninstall -I libyajl2
+
 Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"
 bundle config set --local without development
