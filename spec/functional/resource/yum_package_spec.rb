@@ -20,7 +20,7 @@ require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
 exclude_test = !(%w{rhel fedora amazon}.include?(OHAI_SYSTEM[:platform_family]) && !File.exist?("/usr/bin/dnf"))
-describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
+describe Chef::Resource::YumPackage, :requires_root, external: exclude_test, not_rhel6: true do
   include RecipeDSLHelper
   include Chef::Mixin::ShellOut
 
