@@ -60,6 +60,11 @@ jobs:
             Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
         }
 
+        # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
+        # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
+        # libyajl2 build if already present. gem install seems to build anyway.
+        gem uninstall -I libyajl2
+
         bundle install --jobs=3 --retry=3
         # If ($lastexitcode -ne 0) { Exit $lastexitcode }
         # The bundle install command above fails because our build on windows on ruby-3.0 is
