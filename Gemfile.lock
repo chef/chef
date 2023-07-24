@@ -143,7 +143,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.790.0)
+    aws-partitions (1.791.0)
     aws-sdk-core (3.178.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
@@ -194,7 +194,7 @@ GEM
     ed25519 (1.3.0)
     erubi (1.12.0)
     erubis (2.7.0)
-    faraday (2.7.7)
+    faraday (2.7.10)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-follow_redirects (0.3.0)
@@ -203,13 +203,14 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.15.5)
+    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.4.0)
+    ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
@@ -277,6 +278,11 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
+    mixlib-shellout (3.2.7-x64-mingw-ucrt)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.3.0)
     net-scp (4.0.0)
@@ -303,7 +309,7 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    public_suffix (5.0.1)
+    public_suffix (5.0.3)
     racc (1.7.1)
     rack (2.2.7)
     rainbow (3.1.1)
@@ -437,6 +443,7 @@ GEM
 
 PLATFORMS
   ruby
+  x64-mingw-ucrt
   x64-mingw32
   x86-mingw32
 
@@ -463,4 +470,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.18
+   2.3.26
