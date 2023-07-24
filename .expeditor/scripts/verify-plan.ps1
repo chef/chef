@@ -21,6 +21,9 @@ hab origin key generate $env:HAB_ORIGIN
 $project_root = "$(git rev-parse --show-toplevel)"
 Set-Location $project_root
 
+Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
+gem uninstall -I libyajl2
+
 Write-Host "--- :construction: Building $Plan"
 $env:DO_CHECK=$true; hab pkg build .
 if (-not $?) { throw "unable to build"}
