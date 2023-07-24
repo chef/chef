@@ -198,7 +198,6 @@ GEM
       faraday (>= 1, < 3)
     faraday-net_http (3.0.2)
     ffi (1.15.5)
-    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
     ffi (1.15.5-x86-mingw32)
     ffi-libarchive (1.1.3)
@@ -504,7 +503,6 @@ GEM
 PLATFORMS
   ruby
   x64-mingw
-  x64-mingw-ucrt
   x64-mingw32
   x86-mingw32
 
