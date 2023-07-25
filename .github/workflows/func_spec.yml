@@ -22,7 +22,9 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
-    - run: bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
+    - run: | 
+      bundle install
+      bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
     strategy:
       fail-fast: false
