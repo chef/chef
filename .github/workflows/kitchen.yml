@@ -16,12 +16,53 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
+    - name: 'Upgrade Ruby Devkit on Windows'
+      id: upgrade_ruby
+      run: |
+        $pkg_version="3.0.6"
+        $pkg_revision="1"
+        $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
+
+        $old_version = Ruby --version
+        if(-not($old_version -match "3.0")){
+          $ErrorActionPreference = 'Stop';
+          Write-Output 'Downloading Ruby + DevKit';
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+          $package_destination = "$env:temp\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe"
+          (New-Object System.Net.WebClient).DownloadFile($pkg_source, $package_destination);
+          Write-Output "Did the file download?"
+          $output = Get-ChildItem -Path $env:temp
+          Write-Output $output
+          Write-Output 'Installing Ruby + DevKit';
+          Start-Process $package_destination -ArgumentList '/verysilent /dir=C:\ruby306' -Wait ;
+          Write-Output 'Cleaning up installation';
+          Remove-Item $package_destination -Force;
+          Write-Output "Installing URU to manage Ruby Versions"
+          choco install 7zip -y
+          Write-Output "Downloading Uru Installer..."
+          New-Item -Path c:\uru_temp -Type Directory
+          # Use TLS 1.2 for Windows 2016 Server and older
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest -OutFile "c:\uru_temp\uru-0.8.5-windows-x86.7z" -Uri "https://bitbucket.org/jonforums/uru/downloads/uru-0.8.5-windows-x86.7z"
+          Write-Output "Installing Uru Ruby Switcher"
+          7z x "c:\uru_temp\uru-0.8.5-windows-x86.7z" -o"C:\Program Files (x86)\Uru"
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -WorkingDirectory "C:\Program Files (x86)\Uru\" -ArgumentList 'admin install' -Wait
+
+          Write-Output 'Updating PATH'
+          $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
+          [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
+
+          Write-Output "Register Installed Ruby Version 3.0.6 With Uru"
+          Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby306\bin' -Wait
+          uru 306
+          if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
+          ruby -v
+          if (-not $?) { throw "Can't run Ruby. Is it installed?" }
+        }
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
-        Write-Output "****************************"
-        Ruby -v
-        Write-Output "****************************"
         . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel stable -v 17
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
