@@ -24,7 +24,7 @@ jobs:
         $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
 
         $old_version = Ruby --version
-        if(-not($old_version -ge "3.0.6")){
+        if(-not($old_version -lt "3.0.6")){
           $ErrorActionPreference = 'Stop';
           Write-Output 'Downloading Ruby + DevKit';
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
