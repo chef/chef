@@ -34,7 +34,7 @@ jobs:
           $output = Get-ChildItem -Path $env:temp
           Write-Output $output
           Write-Output 'Installing Ruby + DevKit';
-          Start-Process $package_destination -ArgumentList '/verysilent /dir=C:\ruby306' -Wait ;
+          Start-Process $package_destination -ArgumentList '/verysilent /dir=C:\ruby306 /AllUsers' -Wait ;
           Write-Output 'Cleaning up installation';
           Remove-Item $package_destination -Force;
           Write-Output "Installing URU to manage Ruby Versions"
