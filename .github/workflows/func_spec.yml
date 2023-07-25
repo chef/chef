@@ -21,7 +21,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
+        bundler-cache: false
     - run: bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
     strategy:
