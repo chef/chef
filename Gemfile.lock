@@ -71,7 +71,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 17.10.76)
-      chef-powershell (~> 1.0.12)
+      chef-powershell (~> 1.0.13)
       chef-utils (= 17.10.76)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -247,8 +247,8 @@ GEM
       tty-table (~> 0.10)
     inspec-core-bin (5.22.3)
       inspec-core (= 5.22.3)
-    iso8601 (0.13.0)
     ipaddress (0.8.3)
+    iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
     libyajl2 (2.1.0)
@@ -274,6 +274,11 @@ GEM
     mixlib-shellout (3.2.7)
       chef-utils
     mixlib-shellout (3.2.7-universal-mingw32)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    mixlib-shellout (3.2.7-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
@@ -350,6 +355,7 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.2)
     tomlrb (1.3.0)
