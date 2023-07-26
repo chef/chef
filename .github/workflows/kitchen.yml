@@ -42,6 +42,7 @@ jobs:
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
         gem uninstall -I libyajl2
+        gem install ffi-yajl -v '2.6.0'
 
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
