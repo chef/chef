@@ -5,6 +5,9 @@ ohai -v
 rake --version
 bundle -v
 
+# Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+# choco install git
+
 $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
 $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
 
@@ -18,7 +21,8 @@ Move-Item -Path $output.FullName -Destination $target_path
 gem install appbundler appbundle-updater --no-doc
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+#appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+appbundle-updater chef chef tp/jfm/chef17-depends-update --github chef/chef
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
 Write-Output "Installed Chef / Ohai release:"
