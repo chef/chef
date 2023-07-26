@@ -40,6 +40,9 @@ jobs:
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
+
+        gem uninstall -I libyajl2
+
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
