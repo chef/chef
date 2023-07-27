@@ -42,6 +42,8 @@ pipelines:
       definition: .expeditor/adhoc-canary.omnibus.yml
       env:
         - ADHOC: true
+        - IGNORE_CACHE: true
+        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: aa65e14d0dbce031b40a179d3c514f676f488ec8
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
