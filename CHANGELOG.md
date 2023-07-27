@@ -1,17 +1,28 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.31 -->
-## [v18.2.31](https://github.com/chef/chef/tree/v18.2.31) (2023-06-02)
+<!-- latest_release 18.2.42 -->
+## [v18.2.42](https://github.com/chef/chef/tree/v18.2.42) (2023-07-25)
 
 #### Merged Pull Requests
-- 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress))
+- AttrArray#&lt;&lt;: Use __path__ when invalidating cache [#13844](https://github.com/chef/chef/pull/13844) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- AttrArray#&lt;&lt;: Use __path__ when invalidating cache [#13844](https://github.com/chef/chef/pull/13844) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.42 -->
+- [Chef 18] Updating Chocolatey resources to support version 2.x [#13833](https://github.com/chef/chef/pull/13833) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.2.41 -->
+- ffi-yajl 2.6 bump with patch to omnibus build to uninstall libyajl2 gem [#13847](https://github.com/chef/chef/pull/13847) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.40 -->
+- StateTracking#send_reset_cache - Remove redundant nil check [#13838](https://github.com/chef/chef/pull/13838) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.39 -->
+- Add support for recursive, in-cookbook resource partials [#13092](https://github.com/chef/chef/pull/13092) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 18.2.38 -->
+- update ::File.exists? to ::File.exist? [#13770](https://github.com/chef/chef/pull/13770) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 18.2.37 -->
+- Adding double-quotes around path for Windows &#39;secedit&#39; command line [#13809](https://github.com/chef/chef/pull/13809) ([jwdean](https://github.com/jwdean)) <!-- 18.2.36 -->
+- Prevent TypeError to be raised in condition evaluation [#13830](https://github.com/chef/chef/pull/13830) ([chouetz](https://github.com/chouetz)) <!-- 18.2.35 -->
+- Update for chef-foundation version to pick openssl-1.0.2ze [#13807](https://github.com/chef/chef/pull/13807) ([poorndm](https://github.com/poorndm)) <!-- 18.2.34 -->
+- Optimize Chef::CookbookSynchronizer#remove_deleted_files [#13766](https://github.com/chef/chef/pull/13766) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.33 -->
+- Make action homebrew_bin_path public which is used in other hombrew resources [#13810](https://github.com/chef/chef/pull/13810) ([neha-p6](https://github.com/neha-p6)) <!-- 18.2.32 -->
 - 18.0.2 chef-powershell with wcscpy_s calls [#13762](https://github.com/chef/chef/pull/13762) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.31 -->
 - Attempt to explicitly include Resolv [#13771](https://github.com/chef/chef/pull/13771) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.30 -->
 - add arm64 support for default binary path [#13669](https://github.com/chef/chef/pull/13669) ([Stromweld](https://github.com/Stromweld)) <!-- 18.2.29 -->

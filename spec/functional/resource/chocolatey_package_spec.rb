@@ -22,8 +22,8 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   include Chef::Mixin::ShellOut
 
   let(:package_name) { "test-A" }
-  let(:package_list) { proc { shell_out!("choco list -lo -r #{Array(package_name).join(" ")}").stdout.chomp } }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
+  let(:package_list) { proc { shell_out!("choco list #{Array(package_name).join(" ")}").stdout.chomp } }
 
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
@@ -54,12 +54,16 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     ENV["Path"] = ENV.delete("Path")
   end
 
+  after(:each) do
+    @get_choco_version = nil
+  end
+
   context "installing a package" do
     after { remove_package }
 
     it "installs the latest version" do
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|2.0")
+      expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
 
     it "does not install if already installed" do
@@ -69,19 +73,19 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     end
 
     it "installs version given" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|1.0")
+      expect(package_list.call).to match(/^#{package_name}|1.0.0$/)
     end
 
     it "installs new version if one is already installed" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|1.0")
+      expect(package_list.call).to match(/^#{package_name}|1.0.0$/)
 
-      subject.version "2.0"
+      subject.version "2.0.0"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|2.0")
+      expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
 
     context "installing multiple packages" do
@@ -89,7 +93,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
 
       it "installs both packages" do
         subject.run_action(:install)
-        expect(package_list.call).to eq("test-A|2.0\r\ntest-B|1.0")
+        expect(package_list.call).to match(/^test-A|2.0.0\r\ntest-B|1.0.0$/)
       end
     end
 
@@ -101,13 +105,13 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     it "installs with an option as a string" do
       subject.options "--force --confirm"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|2.0")
+      expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
 
     it "installs with multiple options as a string" do
       subject.options "--force --confirm"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|2.0")
+      expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
 
     context "when multiple options passed as string" do
@@ -137,7 +141,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     it "installs with multiple options as an array" do
       subject.options [ "--force", "--confirm" ]
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|2.0")
+      expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
   end
 
@@ -145,24 +149,24 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     after { remove_package }
 
     it "upgrades to a specific version" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|1.0")
+      expect(package_list.call).to match(/^#{package_name}|1.0.0$/)
 
-      subject.version "1.5"
+      subject.version "1.5.0"
       subject.run_action(:upgrade)
-      expect(package_list.call).to eq("#{package_name}|1.5")
+      expect(package_list.call).to match(/^#{package_name}|1.5.0$/)
     end
 
     it "upgrades to the latest version if no version given" do
-      subject.version "1.0"
+      subject.version "1.0.0"
       subject.run_action(:install)
-      expect(package_list.call).to eq("#{package_name}|1.0")
+      expect(package_list.call).to match(/^#{package_name}|1.0.0$/)
 
       subject2 = Chef::Resource::ChocolateyPackage.new("test-A", run_context)
       subject2.source package_source
       subject2.run_action(:upgrade)
-      expect(package_list.call).to eq("#{package_name}|2.0")
+      expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
   end
 
@@ -170,7 +174,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     it "removes an installed package" do
       subject.run_action(:install)
       remove_package
-      expect(package_list.call).to eq("")
+      expect(package_list.call).to match(/0 packages installed/)
     end
   end
 
