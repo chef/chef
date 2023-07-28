@@ -25,7 +25,8 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
   let(:package_list) do
     if Chef::Provider::Package::Chocolatey.query_command == "list"
-      # legacy v1 handling
+      # using result of query_command because that indicates which "search" command to use
+      # which coincides with the package list output
       proc { shell_out!("choco search -lo #{Array(package_name).join(" ")}").stdout.chomp }
     else
       proc { shell_out!("choco list #{Array(package_name).join(" ")}").stdout.chomp }
