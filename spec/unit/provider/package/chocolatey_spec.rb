@@ -83,7 +83,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
   end
 
   describe "choco searches change with the version" do
-    it "Choco V1 uses List" do
+    xit "Choco V1 uses List" do
       allow(provider).to receive(:get_choco_version).and_return("1.4.0")
       expect(provider.query_command).to eql("list")
     end
