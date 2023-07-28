@@ -23,7 +23,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
 
   let(:package_name) { "test-A" }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
-  let(:package_list) { proc { shell_out!("choco #{described_class.new.query_command} #{Array(package_name).join(" ")}").stdout.chomp } }
+  let(:package_list) { proc { shell_out!("choco search -lo #{Array(package_name).join(" ")}").stdout.chomp } }
 
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
