@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
   end
 
   after(:each) do
-    @get_choco_version = nil
+    described_class.instance_variable_set(:@get_choco_version, nil)
   end
 
   def allow_remote_list(package_names, args = nil)
@@ -84,12 +84,12 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
   describe "choco searches change with the version" do
     it "Choco V1 uses List" do
-      allow(provider).to receive(:get_choco_version).and_return("1.4.0")
+      allow(described_class).to receive(:get_choco_version).and_return("1.4.0")
       expect(provider.query_command).to eql("list")
     end
 
     it "Choco V2 uses Search" do
-      allow(provider).to receive(:get_choco_version).and_return("2.1.0")
+      allow(described_class).to receive(:get_choco_version).and_return("2.1.0")
       expect(provider.query_command).to eql("search")
     end
   end
