@@ -61,7 +61,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   end
 
   after(:each) do
-    described_class.get_choco_version = nil
+    described_class.instance_variable_set(:@get_choco_version, nil)
   end
 
   context "installing a package" do
