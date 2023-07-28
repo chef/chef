@@ -46,7 +46,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     allow(provider).to receive(:choco_install_path).and_return(choco_install_path)
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(stdout: local_list_stdout)
-    allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
+    allow(provider).to receive(:shell_out_compacted!).with(choco_exe, described_class.query_command, "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
   end
 
   after(:each) do
@@ -65,9 +65,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     remote_list_obj = double(stdout: remote_list_stdout)
     package_names.each do |pkg|
       if args
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "search", "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, described_class.query_command, "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       else
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "search", "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, described_class.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       end
     end
   end
