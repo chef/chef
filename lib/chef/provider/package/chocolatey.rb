@@ -130,7 +130,6 @@ class Chef
         # install from, but like the rubygem provider's sources which are more like repos.
         def check_resource_semantics!; end
 
-
         def self.get_choco_version
           @get_choco_version ||= powershell_exec!("choco --version").result
         end
