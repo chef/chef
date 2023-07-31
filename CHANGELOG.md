@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.2.42 -->
-## [v18.2.42](https://github.com/chef/chef/tree/v18.2.42) (2023-07-25)
+<!-- latest_release 18.2.43 -->
+## [v18.2.43](https://github.com/chef/chef/tree/v18.2.43) (2023-07-31)
 
 #### Merged Pull Requests
-- AttrArray#&lt;&lt;: Use __path__ when invalidating cache [#13844](https://github.com/chef/chef/pull/13844) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Fix choco functional test [#13861](https://github.com/chef/chef/pull/13861) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix choco functional test [#13861](https://github.com/chef/chef/pull/13861) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.43 -->
 - AttrArray#&lt;&lt;: Use __path__ when invalidating cache [#13844](https://github.com/chef/chef/pull/13844) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.2.42 -->
 - [Chef 18] Updating Chocolatey resources to support version 2.x [#13833](https://github.com/chef/chef/pull/13833) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.2.41 -->
 - ffi-yajl 2.6 bump with patch to omnibus build to uninstall libyajl2 gem [#13847](https://github.com/chef/chef/pull/13847) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.2.40 -->
