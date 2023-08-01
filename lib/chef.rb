@@ -1,3 +1,4 @@
+# This is a test
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
