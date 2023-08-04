@@ -19,10 +19,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 88169e3905268d413f3611425cdeb36c9a919746
-  branch: main
+  revision: dcbf0dcc945c3bf220df4102805036554f13aa04
+  branch: jfm/chef17-openssl-build
   specs:
-    omnibus-software (23.6.292)
+    omnibus-software (23.7.295)
       omnibus (>= 9.0.0)
 
 GIT
@@ -487,4 +487,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.18
+   2.3.7
