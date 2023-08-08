@@ -4,7 +4,7 @@ GIT
   branch: jfm/chef-17-berkshelf
   specs:
     berkshelf (8.0.7)
-      chef (~> 17.0)
+      chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 4c94f211aacf5e95ea23116bfd602fd37c04de22
+  revision: 05058d3807771c441abcf0aa1baa8d6ca53318b1
   branch: jfm/chef17-openssl-build
   specs:
     omnibus-software (23.7.295)
