@@ -5,4 +5,6 @@ documentation:
   - 'lib/chef/resource/**/*'
 'Status: Waiting on Contributor':
   - '_do_not_use_this_again'
+WIP:
+  - '_use_this_again'
 
