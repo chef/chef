@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: a1ed55c2e0fdeb06b3c3f3041fe4d0c563233ba4
-  branch: main
+  revision: 175308a60e706612c56950ff79e57a2665cd7547
+  branch: CHEF-4540-rocky-linux-package-is-creating-as-el-8-instead-of-rocky
   specs:
-    omnibus (9.0.18)
+    omnibus (9.0.21)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
