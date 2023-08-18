@@ -16,7 +16,3 @@ chef_gem gem_name do
   compile_time false
 end
 
-chef_gem 'aws-sdk-ssm' do
-  action :install
-  compile_time false
-end
