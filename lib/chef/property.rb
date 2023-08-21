@@ -332,6 +332,7 @@ class Chef
     # @return [Boolean]
     #
     def sensitive?
+      puts "in property.rb - sensitive? lin 335"
       options.fetch(:sensitive, false)
     end
 

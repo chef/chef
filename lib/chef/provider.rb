@@ -346,6 +346,7 @@ class Chef
         specified_properties = specified_properties.map(&:name).map(&:to_sym)
         modified = specified_properties.select { |p| new_resource.send(p) != current_resource.send(p) }
         if modified.empty?
+          puts "settings properties in provider.rb - current_resource - line 349"
           properties_str = if new_resource.sensitive
                              specified_properties.join(", ")
                            else
@@ -364,6 +365,7 @@ class Chef
         # Print the pretty green text and run the block
         property_size = modified.map(&:size).max
         modified.map! do |p|
+          puts "settings properties in provider.rb - current_resource - line 368"
           properties_str = if new_resource.sensitive || new_resource.class.properties[p].sensitive?
                              "(suppressed sensitive property)"
                            else
@@ -379,6 +381,7 @@ class Chef
         property_size = properties.map(&:name).map(&:to_sym).map(&:size).max
         created = properties.map do |property|
           default = " (default value)" unless property.is_set?(new_resource)
+          puts "settings properties in provider.rb - current_resource - line 384"
           properties_str = if new_resource.sensitive || property.sensitive?
                              "(suppressed sensitive property)"
                            else

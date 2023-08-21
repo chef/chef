@@ -508,6 +508,7 @@ class Chef
       state_properties = self.class.state_properties
       state_properties.each do |property|
         if property.is_set?(self)
+          puts "resource.rb - state_for_resource_reporter - line 511"
           state[property.name] = property.sensitive? ? "*sensitive value suppressed*" : send(property.name)
         end
       end
@@ -654,6 +655,7 @@ class Chef
     end
 
     def to_text
+
       return "suppressed sensitive resource output" if sensitive
 
       text = "# Declared in #{@source_line}\n\n"
@@ -661,6 +663,7 @@ class Chef
 
       all_props = {}
 
+      puts "resource.rb - to_text method - line 666"
       self.class.sensitive_properties.map do |p|
         all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
       rescue Chef::Exceptions::ValidationFailed

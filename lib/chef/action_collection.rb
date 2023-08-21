@@ -223,6 +223,7 @@ class Chef
       # XXX?: what about sensitive data in the current_resource?
       # FIXME: this needs to be display-logic
       if current_record.new_resource.sensitive
+        puts "in - action_collection.rb - resource_completed"
         klass = current_record.new_resource.class
         resource_name = current_record.new_resource.name
         current_record.new_resource = klass.new(resource_name)
