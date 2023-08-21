@@ -18,6 +18,7 @@ end
 
 chef_gem 'aws-sdk-ssm' do
   action :install
-  compile_time false
+  compile_time true
 end
 
+require 'aws-sdk-ssm'
