@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.77 -->
-## [v17.10.77](https://github.com/chef/chef/tree/v17.10.77) (2023-08-21)
+<!-- latest_release 17.10.78 -->
+## [v17.10.78](https://github.com/chef/chef/tree/v17.10.78) (2023-08-22)
 
 #### Merged Pull Requests
-- switching testing branches to current [#13877](https://github.com/chef/chef/pull/13877) ([johnmccrae](https://github.com/johnmccrae))
+- Backport: (macos_userdefaults) fix for user attr bug [#12825](https://github.com/chef/chef/pull/12825) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport: (macos_userdefaults) fix for user attr bug [#12825](https://github.com/chef/chef/pull/12825) ([rishichawda](https://github.com/rishichawda)) <!-- 17.10.78 -->
 - switching testing branches to current [#13877](https://github.com/chef/chef/pull/13877) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.77 -->
 - Add not_rhel6 to EL6 yum resource tests to disable [#13848](https://github.com/chef/chef/pull/13848) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.76 -->
 - uninstall libyajl2 to avoid kitchen-tests base image conflict (Chef 17&#39;s Version) [#13849](https://github.com/chef/chef/pull/13849) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.75 -->
