@@ -39,12 +39,12 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
       expect(resource.domain).to eq("NSGlobalDomain")
     end
 
-    it "nil for the host property" do
-      expect(resource.host).to be_nil
+    it ":all for the host property" do
+      expect(resource.host).to eq(:all)
     end
 
-    it "nil for the user property" do
-      expect(resource.user).to be_nil
+    it ":current for the user property" do
+      expect(resource.user).to eq(:current)
     end
 
     it ":write for resource action" do
