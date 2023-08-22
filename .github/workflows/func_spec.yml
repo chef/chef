@@ -37,4 +37,4 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - run: bundle exec rspec spec/functional/resource/macos_userdefaults_spec.rb
+    - run: sudo bundle exec rspec spec/functional/resource/macos_userdefaults_spec.rb
