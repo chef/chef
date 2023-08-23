@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.78 -->
-## [v17.10.78](https://github.com/chef/chef/tree/v17.10.78) (2023-08-22)
+<!-- latest_release 17.10.79 -->
+## [v17.10.79](https://github.com/chef/chef/tree/v17.10.79) (2023-08-23)
 
 #### Merged Pull Requests
-- Backport: (macos_userdefaults) fix for user attr bug [#12825](https://github.com/chef/chef/pull/12825) ([rishichawda](https://github.com/rishichawda))
+- [backport] Updating the updater [#13889](https://github.com/chef/chef/pull/13889) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [backport] Updating the updater [#13889](https://github.com/chef/chef/pull/13889) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.79 -->
 - Backport: (macos_userdefaults) fix for user attr bug [#12825](https://github.com/chef/chef/pull/12825) ([rishichawda](https://github.com/rishichawda)) <!-- 17.10.78 -->
 - switching testing branches to current [#13877](https://github.com/chef/chef/pull/13877) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.77 -->
 - Add not_rhel6 to EL6 yum resource tests to disable [#13848](https://github.com/chef/chef/pull/13848) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.76 -->
