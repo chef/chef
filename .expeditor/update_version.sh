@@ -12,6 +12,7 @@
 set -evx
 
 VERSION=$(cat VERSION)
+ORIGINAL_VERSION=$(git show chef-17:VERSION)
 
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-config/lib/chef-config/version.rb
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-bin/lib/chef-bin/version.rb
@@ -20,7 +21,10 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" knife/lib/chef/
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"${VERSION}\")/" lib/chef/version.rb
 
 # Update the version inside Gemfile.lock
-bundle update chef chef-config chef-utils --jobs=7 --conservative
+sed -i -r "s/(^\s+chef\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
+sed -i -r "s/(^\s+chef-bin\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
+sed -i -r "s/(^\s+chef-config\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
+sed -i -r "s/(^\s+chef-utils\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
 
 # Once Expeditor finishes executing this script, it will commit the changes and push
 # the commit as a new tag corresponding to the value in the VERSION file.
