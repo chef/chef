@@ -12,7 +12,7 @@
 set -evx
 
 VERSION=$(cat VERSION)
-ORIGINAL_VERSION=$(git show main:VERSION)
+ORIGINAL_VERSION=$(git show chef-17:VERSION)
 
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-config/lib/chef-config/version.rb
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-bin/lib/chef-bin/version.rb
