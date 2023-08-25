@@ -17,56 +17,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - name: 'Upgrade Ruby Devkit on Windows'
-      id: upgrade_ruby
-      run: |
-        $pkg_version="3.1.2"
-        $pkg_revision="1"
-        $pkg_source="https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-${pkg_version}-${pkg_revision}/rubyinstaller-devkit-${pkg_version}-${pkg_revision}-x64.exe"
-
-        $old_version = Ruby --version
-        if(-not($old_version -match "3.1")){
-          $ErrorActionPreference = 'Stop';
-          Write-Output 'Downloading Ruby + DevKit';
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-          $package_destination = "$env:temp\rubyinstaller-devkit-$pkg_version-$pkg_revision-x64.exe"
-          (New-Object System.Net.WebClient).DownloadFile($pkg_source, $package_destination);
-          Write-Output "Did the file download?"
-          $output = Get-ChildItem -Path $env:temp
-          Write-Output $output
-          Write-Output 'Installing Ruby + DevKit';
-          Start-Process $package_destination -ArgumentList '/verysilent /dir=C:\ruby31' -Wait ;
-          Write-Output 'Cleaning up installation';
-          Remove-Item $package_destination -Force;
-          Write-Output "Installing URU to manage Ruby Versions"
-          choco install 7zip -y
-          Write-Output "Downloading Uru Installer..."
-          New-Item -Path c:\uru_temp -Type Directory
-          # Use TLS 1.2 for Windows 2016 Server and older
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          Invoke-WebRequest -OutFile "c:\uru_temp\uru-0.8.5-windows-x86.7z" -Uri "https://bitbucket.org/jonforums/uru/downloads/uru-0.8.5-windows-x86.7z"
-          Write-Output "Installing Uru Ruby Switcher"
-          7z x "c:\uru_temp\uru-0.8.5-windows-x86.7z" -o"C:\Program Files (x86)\Uru"
-          If ($lastexitcode -ne 0) { Exit $lastexitcode }
-          Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -WorkingDirectory "C:\Program Files (x86)\Uru\" -ArgumentList 'admin install' -Wait
-
-          Write-Output 'Updating PATH'
-          $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
-          [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
-
-          Write-Output "Register Installed Ruby Version 3.1 With Uru"
-          Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby31\bin' -Wait
-          uru 312
-          if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
-          ruby -v
-          if (-not $?) { throw "Can't run Ruby. Is it installed?" }
-        }
-
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
         . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
-        $env:PATH = "C:\ruby31\bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
         ohai -v
         rake --version
@@ -109,7 +64,7 @@ jobs:
       id: run
       run: |
         cd kitchen-tests
-        $env:PATH = "C:\ruby31\bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
         # we remove thenm here.
         if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
@@ -137,19 +92,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        ruby: ["3.1"] # macos-11.0 is not public for now
+        ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
         with:
             clean: true
-      - name: 'Setup Ruby'
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.1"
-          bundler-cache: false
-          working-directory: kitchen-tests
       - name: 'Install Chef/Ohai from Omnitruck'
         id: install_chef
         run: |
@@ -206,19 +155,11 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.1"
-          bundler-cache: false
+          bundler-cache: true
           working-directory: kitchen-tests
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-          ruby -v
-          echo "Which ruby are we using?"
-          which ruby
-          cd /home/runner/work/chef/chef
-          bundle install
-          gem install kitchen
-          cd /home/runner/work/chef/chef/kitchen-tests
-          bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
   # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
   # if dokken container hosted on Ubuntu 22.04 or later. Lock to Ubuntu 20.04
@@ -241,17 +182,9 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.1"
-          bundler-cache: false
+          bundler-cache: true
           working-directory: kitchen-tests
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-          ruby -v
-          echo "Which ruby are we using?"
-          which ruby
-          cd /home/runner/work/chef/chef
-          bundle install
-          gem install kitchen
-          cd /home/runner/work/chef/chef/kitchen-tests
-          bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
