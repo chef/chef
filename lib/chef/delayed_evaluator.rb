@@ -21,5 +21,21 @@ class Chef
       # super returns a "Proc" (which seems buggy) so re-wrap it
       self.class.new(&super) # rubocop:disable Layout/SpaceAroundKeyword
     end
+    
+    def call
+      # This doesn't always store the result of `#call` due to how Chef runs.
+      @called = true
+      @call_result = super
+    end
+    
+    def inspect
+      "lazy { (evaluates to) #{call_result.inspect} }"
+    end
+ 
+  private
+    
+    def call_result
+      @called ? @call_result : call
+    end
   end
 end
