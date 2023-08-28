@@ -147,23 +147,35 @@ describe Chef::Provider::User::Linux, linux_only: true do
         expect(provider.compare_user).to eql(true)
       end
 
-      describe "when comparing users" do
+      #describe "when comparing users" do
       # let(@new_resource.password = '123Password')
       # let(@current_resource.password = '987NewPass')
 
         # The @change_desc object should hold only "password changed" if sensitive is true 
         # and the password is different
-        it "should show a blank for password if sensitive set to true" do
+        #it "should show a blank for password if sensitive set to true" do
           
-		  allow(Chef::Provider::User::Linux).to receive(:compare_user).and_return(@change_desc="foo")
-          require "pry"
-          binding.pry
-          if property == 'password'
-            provider.compare_user
-            expect(provider.change_desc).to eql("password changed")
-          end
-        end
-      end
+		  #allow(Chef::Provider::User::Linux).to receive(:compare_user).and_return(@change_desc="foo")
+          #require "pry"
+          #binding.pry
+          #if property == 'password'
+           # provider.compare_user
+          #  expect(provider.change_desc).to eql("password changed")
+         # end
+        #end
+      #end
+    end
+
+    it "should show a blank for password if sensitive set to true" do
+      @new_resource.password mapping["password"][0]
+      @current_resource.password mapping["password"][1]
+      @new_resource.sensitive true
+      @current_resource.sensitive true
+      provider.compare_user
+      #require "pry"
+      #binding.pry
+      expect(provider.change_desc).to eql(["change password from ******** to ********"])
+      #expect(provider.change_desc.to_s).not_to match(/#{mapping["password"][1]}/)
     end
 
     %w{uid gid}.each do |property|
