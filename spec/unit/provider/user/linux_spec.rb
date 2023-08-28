@@ -136,7 +136,7 @@ describe Chef::Provider::User::Linux, linux_only: true do
         "home" => ["/home/notarealuser", "/Users/notarealuser"],
         "shell" => ["/usr/bin/zsh", "/bin/bash"],
         "password" => %w{abcd 12345},
-    "sensitive" => [true],
+        "sensitive" => [true],
       }
     end
 

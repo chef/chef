@@ -53,7 +53,7 @@ class Chef
           if manage_u.exitstatus == 12 && manage_u.stderr !~ /exists/
             raise Chef::Exceptions::User, "Unable to modify home directory for #{new_resource.username}"
           end
-          
+
           manage_u.error!
         end
 
