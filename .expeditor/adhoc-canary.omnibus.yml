@@ -1,5 +1,6 @@
 ---
 project-name: chef
+queue: omnibus-windows-2012r2-x86_64-CHEF-5597-jmccrae
 config: omnibus/omnibus.rb
 test-path: omnibus/omnibus-test.sh
 test-path-windows: omnibus/omnibus-test.ps1
