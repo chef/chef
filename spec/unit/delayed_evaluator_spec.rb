@@ -19,20 +19,20 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require 'spec_helper'
 
 describe Chef::DelayedEvaluator do
-  let(:magic) { "This is magic!" }
+  let(:magic) { 'This is magic!' }
   let(:de) { Chef::DelayedEvaluator.new { magic } }
   
   describe '#inspect' do
-    it "inspects the result rather than the Proc" do
+    it 'inspects the result rather than the Proc' do
       expect(de.inspect).to eq("lazy { (evaluates to) #{magic.inspect} }")
     end
   end
 
   describe '#call' do
-    it "evaluates correctly" do
+    it 'evaluates correctly' do
       expect(de.call).to eq(magic)
     end
   end
