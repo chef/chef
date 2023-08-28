@@ -23,7 +23,7 @@ require "spec_helper"
 
 describe Chef::DelayedEvaluator do
   let(:magic) { "This is magic!" }
-  let(:de) { Chef::DelayedEvaluator { magic } }
+  let(:de) { Chef::DelayedEvaluator.new { magic } }
   
   describe '#inspect'
     it "inspects the result rather than the Proc" do
