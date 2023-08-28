@@ -60,6 +60,12 @@ class Chef
 			end
   		  end
 
+          if new_resource.sensitive
+            if @change_desc.any? { |val| /password/ =~ val }
+              @change_desc = ["change password from ******** to ********"]
+            end
+          end
+
           manage_u.error!
         end
 
