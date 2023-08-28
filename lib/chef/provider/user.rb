@@ -153,9 +153,9 @@ class Chef
           new_val = new_resource.send(user_attrib)
           cur_val = current_resource.send(user_attrib)
           if !new_val.nil? && new_val.to_s != cur_val.to_s
-			if user_attrib.to_s == 'password' && new_resource.sensitive
-			  @change_desc << "change #{user_attrib} from ******** to ********"
-			else
+            if user_attrib.to_s == "password" && new_resource.sensitive
+              @change_desc << "change #{user_attrib} from ******** to ********"
+            else
               @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
             end
           end
