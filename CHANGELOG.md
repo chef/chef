@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.0 -->
-## [v18.3.0](https://github.com/chef/chef/tree/v18.3.0) (2023-08-25)
+<!-- latest_release 18.3.1 -->
+## [v18.3.1](https://github.com/chef/chef/tree/v18.3.1) (2023-08-29)
 
 #### Merged Pull Requests
-- Pinned chef-foundation version - 1.0.2zf  CHEF-4567 [#13890](https://github.com/chef/chef/pull/13890) ([muthuja](https://github.com/muthuja))
+- Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.1 -->
 - Pinned chef-foundation version - 1.0.2zf  CHEF-4567 [#13890](https://github.com/chef/chef/pull/13890) ([muthuja](https://github.com/muthuja)) <!-- 18.3.0 -->
 - Add RockyLinux-8 [#13867](https://github.com/chef/chef/pull/13867) ([poorndm](https://github.com/poorndm)) <!-- 18.2.46 -->
 - Fix  to pick pinned  version of  chef-foundation  on windows [#13842](https://github.com/chef/chef/pull/13842) ([poorndm](https://github.com/poorndm)) <!-- 18.2.45 -->
