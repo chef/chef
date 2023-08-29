@@ -1,11 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.2 -->
-## [v18.3.2](https://github.com/chef/chef/tree/v18.3.2) (2023-08-29)
+<!-- latest_release 18.3.3 -->
+## [v18.3.3](https://github.com/chef/chef/tree/v18.3.3) (2023-08-29)
 
 #### Merged Pull Requests
-- Removing redundant ruby setup from kitchen tests [#13895](https://github.com/chef/chef/pull/13895) ([neha-p6](https://github.com/neha-p6))
+- Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
