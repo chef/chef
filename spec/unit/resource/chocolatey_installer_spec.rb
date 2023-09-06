@@ -109,7 +109,7 @@ describe Chef::Resource::ChocolateyInstaller do
     end
   end
 
-  describe "Uinstalling chocolatey" do
+  describe "Uninstalling chocolatey" do
     context "on windows", :windows_only do
       it "doesn't error out uninstalling chocolatey if chocolatey is not installed" do
         allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
