@@ -136,6 +136,7 @@ describe Chef::Provider::User::Linux, linux_only: true do
         "home" => ["/home/notarealuser", "/Users/notarealuser"],
         "shell" => ["/usr/bin/zsh", "/bin/bash"],
         "password" => %w{abcd 12345},
+        "sensitive" => [true],
       }
     end
 
@@ -145,6 +146,15 @@ describe Chef::Provider::User::Linux, linux_only: true do
         @current_resource.send(property, mapping[property][1])
         expect(provider.compare_user).to eql(true)
       end
+    end
+
+    it "should show a blank for password if sensitive set to true" do
+      @new_resource.password mapping["password"][0]
+      @current_resource.password mapping["password"][1]
+      @new_resource.sensitive true
+      @current_resource.sensitive true
+      provider.compare_user
+      expect(provider.change_desc).to eql(["change password from ******** to ********"])
     end
 
     %w{uid gid}.each do |property|
