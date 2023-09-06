@@ -19,6 +19,7 @@ gem "cheffish", "~> 17.0.0"
 
 gem "ast", "~> 2.4.2"
 gem "rubocop-ast", ">= 1.30.0"
+gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "tp/add-libarchive-a"
 
 group(:omnibus_package) do
   gem "appbundler"
