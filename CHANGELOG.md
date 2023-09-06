@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.3 -->
-## [v18.3.3](https://github.com/chef/chef/tree/v18.3.3) (2023-08-29)
+<!-- latest_release 18.3.4 -->
+## [v18.3.4](https://github.com/chef/chef/tree/v18.3.4) (2023-09-06)
 
 #### Merged Pull Requests
-- Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Correcting sensitive items being written out [#13897](https://github.com/chef/chef/pull/13897) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.2.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Correcting sensitive items being written out [#13897](https://github.com/chef/chef/pull/13897) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.4 -->
 - Removing redundant ruby setup from kitchen tests [#13895](https://github.com/chef/chef/pull/13895) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.2 -->
 - Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.1 -->
 - Pinned chef-foundation version - 1.0.2zf  CHEF-4567 [#13890](https://github.com/chef/chef/pull/13890) ([muthuja](https://github.com/muthuja)) <!-- 18.3.0 -->
