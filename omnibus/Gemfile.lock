@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/berkshelf.git
-  revision: 9c9c99e6e8a1fe52d92e2e51c2d227d97f8d50c0
+  revision: f517b1128074bda3e3eb568529954ad4e1b6dac7
   branch: jfm/chef-17-berkshelf
   specs:
     berkshelf (8.0.7)
-      chef (~> 17.0)
+      chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 3268356b2eaf80715887e452c89b36d8f86974a0
+  revision: a7904a1cae71ad42d0a705ceaa82dcc7ce377dfe
   branch: main
   specs:
     omnibus-software (23.7.295)
@@ -27,10 +27,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 9c0643a3a44f3e7119789c2093bfc8edd78c74ff
+  revision: 26c34d2e1a3dbc4a64c79d6e0411d184ed64fc1a
   branch: main
   specs:
-    omnibus (9.0.21)
+    omnibus (9.0.22)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -487,4 +487,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.18
+   2.3.7
