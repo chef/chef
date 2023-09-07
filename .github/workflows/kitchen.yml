@@ -20,7 +20,7 @@ jobs:
       id: install_chef
       run: |
         Write-Output "Is openssl.so installed before installing Chef?"
-        gci -path C:\ -file openssl.so -Recurse
+        gci -path C:\ -file openssl.so -Recurse -erroraction SilentlyContinue
         . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current -v 17
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
@@ -47,7 +47,7 @@ jobs:
 
         Write-Output "Is openssl.so installed after installing Chef and Updating it?"
         Write-Output "\n******************************************"
-        gci -path C:\ -file openssl.so -Recurse
+        gci -path C:\ -file openssl.so -Recurse -erroraction SilentlyContinue
         Write-Output "\n******************************************"
         Write-Output "Installed Chef / Ohai release:"
         chef-client -v
