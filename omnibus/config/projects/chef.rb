@@ -49,6 +49,8 @@ dependency "preparation"
 
 dependency "chef"
 
+dependency "test_libarchive"
+
 #
 # addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
 #
