@@ -17,8 +17,6 @@ end
 
 gem "cheffish", "~> 17.0.0"
 
-gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "tp/add-libarchive-a"
-
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"

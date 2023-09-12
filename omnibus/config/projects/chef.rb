@@ -49,8 +49,6 @@ dependency "preparation"
 
 dependency "chef"
 
-# dependency "test_libarchive" capture ffi exceptions first
-
 #
 # addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
 #
