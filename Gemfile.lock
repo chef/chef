@@ -7,16 +7,6 @@ GIT
       rubocop (= 1.25.1)
 
 GIT
-  remote: https://github.com/chef/ffi-libarchive.git
-  revision: a389285dcae0e518fd6cc72fb6c7d8638750aaa7
-  branch: tp/add-libarchive-a
-  specs:
-    ffi-libarchive (0.1.13)
-      ffi (~> 1.0)
-    ffi-libarchive (0.1.13-universal-mingw32)
-      ffi (~> 1.0)
-
-GIT
   remote: https://github.com/chef/ohai.git
   revision: af5657847b332bc4f227071aba6c8a5eee8994e4
   branch: 17-stable
