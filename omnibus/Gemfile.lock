@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/berkshelf.git
-  revision: f517b1128074bda3e3eb568529954ad4e1b6dac7
+  revision: 1beab0bc3c56ef23b11087b85c39bebbee8d623a
   branch: jfm/chef-17-berkshelf
   specs:
     berkshelf (8.0.7)
-      chef (>= 15.7.32)
+      chef (~> 17.0)
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
