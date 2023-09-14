@@ -21,4 +21,9 @@ chef_gem 'aws-sdk-ssm' do
   compile_time true
 end
 
+chef_gem 'aws-sdk-ec2' do
+  compile_time true
+end
+
 require 'aws-sdk-ssm'
+require 'aws-sdk-ec2'
