@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.81 -->
-## [v17.10.81](https://github.com/chef/chef/tree/v17.10.81) (2023-09-15)
+<!-- latest_release 17.10.82 -->
+## [v17.10.82](https://github.com/chef/chef/tree/v17.10.82) (2023-09-15)
 
 #### Merged Pull Requests
-- updated the test to be RFC2119 compliant [#13926](https://github.com/chef/chef/pull/13926) ([johnmccrae](https://github.com/johnmccrae))
+- [Backport] Updating Chef-17 for Choco 2.0 [#13928](https://github.com/chef/chef/pull/13928) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Backport] Updating Chef-17 for Choco 2.0 [#13928](https://github.com/chef/chef/pull/13928) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.82 -->
 - updated the test to be RFC2119 compliant [#13926](https://github.com/chef/chef/pull/13926) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.81 -->
 - Updating Chef-17 per CVE [#13911](https://github.com/chef/chef/pull/13911) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.80 -->
 - [backport] Updating the updater [#13889](https://github.com/chef/chef/pull/13889) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.79 -->
