@@ -130,6 +130,21 @@ class Chef
         # install from, but like the rubygem provider's sources which are more like repos.
         def check_resource_semantics!; end
 
+        def self.get_choco_version
+          @get_choco_version ||= powershell_exec!("choco --version").result
+        end
+
+        # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
+        def self.query_command
+          return "list" if get_choco_version.match?(/^1/)
+
+          "search"
+        end
+
+        def query_command
+          self.class.query_command
+        end
+
         private
 
         def version_compare(v1, v2)
@@ -225,7 +240,7 @@ class Chef
           package_name_array.each do |pkg|
             available_versions =
               begin
-                cmd = [ "list", "-r", pkg ]
+                cmd = [ query_command, "-r", pkg ]
                 cmd += common_options
                 cmd.push( new_resource.list_options ) if new_resource.list_options
 
@@ -241,6 +256,8 @@ class Chef
 
         # Installed packages in chocolatey as a Hash of names mapped to versions
         # (names are downcased for case-insensitive matching)
+        #
+        # Beginning with Choco 2.0, "list" returns local packages only while "search" returns packages from external package sources
         #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
