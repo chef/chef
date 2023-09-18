@@ -238,7 +238,7 @@ class Chef
             end
           end
 
-          @regexp = Regexp.new("^#{full_regexp_parts.join(Chef::ChefFS::PathUtils.regexp_path_separator)}$")
+          @regexp = Regexp.new("^#{full_regexp_parts.join(Chef::ChefFS::PathUtils::REGEXP_PATH_SEPARATOR)}$")
           @normalized_pattern = Chef::ChefFS::PathUtils.join(*normalized_parts)
           @normalized_pattern = Chef::ChefFS::PathUtils.join("", @normalized_pattern) if @is_absolute
         end
