@@ -40,13 +40,15 @@ class Chef
       # path to discover the Chef-FS root path) are handled in accordance to the rules
       # of the local file-system and OS.
 
+      REGEXP_PATH_SEPARATOR = ChefUtils.windows? ? "[\\/\\\\]" : "/"
+
       def self.join(*parts)
         return "" if parts.length == 0
 
         # Determine if it started with a slash
-        absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{regexp_path_separator}/
+        absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{REGEXP_PATH_SEPARATOR}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
-        parts = parts.map { |part| part.gsub(/^#{regexp_path_separator}+|#{regexp_path_separator}+$/, "") }
+        parts = parts.map { |part| part.gsub(/^#{REGEXP_PATH_SEPARATOR}+|#{REGEXP_PATH_SEPARATOR}+$/, "") }
         # Don't join empty bits
         result = parts.select { |part| part != "" }.join("/")
         # Put the / back on
@@ -54,16 +56,12 @@ class Chef
       end
 
       def self.split(path)
-        path.split(Regexp.new(regexp_path_separator))
-      end
-
-      def self.regexp_path_separator
-        ChefUtils.windows? ? "[\\/\\\\]" : "/"
+        path.split(Regexp.new(REGEXP_PATH_SEPARATOR))
       end
 
       # Given a server path, determines if it is absolute.
       def self.is_absolute?(path)
-        !!(path =~ /^#{regexp_path_separator}/)
+        !!(path =~ /^#{REGEXP_PATH_SEPARATOR}/)
       end
 
       # Given a path which may only be partly real (i.e. /x/y/z when only /x exists,
@@ -118,7 +116,7 @@ class Chef
 
         if ancestor.length == path.length
           ""
-        elsif /#{PathUtils.regexp_path_separator}/.match?(path[ancestor.length, 1])
+        elsif /#{PathUtils::REGEXP_PATH_SEPARATOR}/.match?(path[ancestor.length, 1])
           path[ancestor.length + 1..-1]
         else
           nil
