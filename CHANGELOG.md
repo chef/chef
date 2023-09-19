@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.5 -->
-## [v18.3.5](https://github.com/chef/chef/tree/v18.3.5) (2023-09-19)
+<!-- latest_release 18.3.6 -->
+## [v18.3.6](https://github.com/chef/chef/tree/v18.3.6) (2023-09-19)
 
 #### Merged Pull Requests
-- Use constant for ChefFS::PathUtils regexp_path_separator [#13933](https://github.com/chef/chef/pull/13933) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- adding the built in ruby gem to build the gems and push them to artif… [#13930](https://github.com/chef/chef/pull/13930) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- adding the built in ruby gem to build the gems and push them to artif… [#13930](https://github.com/chef/chef/pull/13930) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.3.6 -->
 - Use constant for ChefFS::PathUtils regexp_path_separator [#13933](https://github.com/chef/chef/pull/13933) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.5 -->
 - Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.1 -->
 - Removing redundant ruby setup from kitchen tests [#13895](https://github.com/chef/chef/pull/13895) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.2 -->
