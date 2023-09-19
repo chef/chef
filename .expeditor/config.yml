@@ -153,6 +153,8 @@ subscriptions:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
+      - built_in:build_gem:
+          only_if: built_in:bump_version
 
   # the habitat chain
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
