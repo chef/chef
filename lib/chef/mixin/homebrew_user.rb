@@ -63,7 +63,8 @@ class Chef
         else
           [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select do |x|
             next if x == false
-            ::File.exist?(x) && ::File.executable?(x) 
+
+            ::File.exist?(x) && ::File.executable?(x)
           end.first || nil
         end
       end
