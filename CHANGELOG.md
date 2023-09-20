@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.7 -->
-## [v18.3.7](https://github.com/chef/chef/tree/v18.3.7) (2023-09-19)
+<!-- latest_release 18.3.8 -->
+## [v18.3.8](https://github.com/chef/chef/tree/v18.3.8) (2023-09-20)
 
 #### Merged Pull Requests
-- Correct some UI text [#13921](https://github.com/chef/chef/pull/13921) ([IanMadd](https://github.com/IanMadd))
+- fix homebrew path when which() returns false [#13937](https://github.com/chef/chef/pull/13937) ([Stromweld](https://github.com/Stromweld))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix homebrew path when which() returns false [#13937](https://github.com/chef/chef/pull/13937) ([Stromweld](https://github.com/Stromweld)) <!-- 18.3.8 -->
 - Correct some UI text [#13921](https://github.com/chef/chef/pull/13921) ([IanMadd](https://github.com/IanMadd)) <!-- 18.3.7 -->
 - adding the built in ruby gem to build the gems and push them to artif… [#13930](https://github.com/chef/chef/pull/13930) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.3.6 -->
 - Use constant for ChefFS::PathUtils regexp_path_separator [#13933](https://github.com/chef/chef/pull/13933) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.5 -->
