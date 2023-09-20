@@ -61,8 +61,11 @@ class Chef
         if brew_bin_path && ::File.exist?(brew_bin_path)
           brew_bin_path
         else
-          brew_bin_path = [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select { |x| ::File.exist?(x) && ::File.executable?(x) }.first
-          brew_bin_path || nil
+          [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select do |x|
+            next if x == false
+
+            ::File.exist?(x) && ::File.executable?(x)
+          end.first || nil
         end
       end
 
