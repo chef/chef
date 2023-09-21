@@ -64,3 +64,12 @@ describe Chef::Resource::AptPackage, "initialize" do
     expect(resource.response_file_variables).to eql({ variables: true })
   end
 end
+
+describe Chef::Resource::AptPackage, "allow_downgrade" do
+  let(:resource) { Chef::Resource::AptPackage.new("foo") }
+
+  it "allows you to specify whether allow_downgrade is true or false" do
+    expect { resource.allow_downgrade true }.not_to raise_error
+    expect { resource.allow_downgrade false }.not_to raise_error
+  end
+end
