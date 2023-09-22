@@ -3,7 +3,7 @@ chef_client_config "Create chef-client's client.rb" do
   log_location windows? ? "C:\\chef\\log_test\\client.log" : "/var/log/chef/log_test/client.log"
   chef_license "accept"
 
-  report_handlers  << Chef::Handler::SlowReport.new
+  report_handlers  << Chef::Handler::SlowReport.new(Chef::Config[:slow_report])
   exception_handlers << Chef::Handler::ErrorReport.new
   start_handlers     << Chef::Handler::JsonFile.new
 
