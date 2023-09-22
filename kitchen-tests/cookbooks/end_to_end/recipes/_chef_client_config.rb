@@ -3,9 +3,9 @@ chef_client_config "Create chef-client's client.rb" do
   log_location windows? ? "C:\\chef\\log_test\\client.log" : "/var/log/chef/log_test/client.log"
   chef_license "accept"
 
-  report_handlers  << Chef::Handler::SlowReport.new(Chef::Config[:slow_report])
-  exception_handlers << Chef::Handler::ErrorReport.new
-  start_handlers     << Chef::Handler::JsonFile.new
+  report_handlers  << Chef::Handler::JsonFile.new(:path => '/tmp/chef_report_handler.json')
+  exception_handlers << Chef::Handler::JsonFile.new(:path => '/tmp/chef_exception_handler.json')
+  start_handlers     << Chef::Reporting::StartHandler.new
 
   ohai_optional_plugins %i{Passwd Lspci Sysctl}
   ohai_disabled_plugins %i{Sessions Interrupts}
