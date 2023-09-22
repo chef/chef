@@ -1,4 +1,10 @@
+chef_gem 'chef-reporting' do
+  action :install
+end
+
 chef_client_config "Create chef-client's client.rb" do
+  require 'chef_reporting'
+
   chef_server_url "https://localhost"
   log_location windows? ? "C:\\chef\\log_test\\client.log" : "/var/log/chef/log_test/client.log"
   chef_license "accept"
