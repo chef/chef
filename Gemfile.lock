@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: c756b22eeb0424956ba32d04016c886fe7902304
+  revision: a6f619207116ddd6c7dbe57711b285057294af54
   branch: 17-stable
   specs:
-    ohai (17.9.1)
+    ohai (17.9.4)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -136,15 +136,15 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.809.0)
-    aws-sdk-core (3.181.0)
+    aws-partitions (1.827.0)
+    aws-sdk-core (3.183.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
@@ -152,7 +152,7 @@ GEM
     aws-sdk-kms (1.71.0)
       aws-sdk-core (~> 3, >= 3.177.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.133.0)
+    aws-sdk-s3 (1.135.0)
       aws-sdk-core (~> 3, >= 3.181.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.6)
@@ -161,6 +161,7 @@ GEM
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.6.0)
       aws-eventstream (~> 1, >= 1.0.2)
+    base64 (0.1.1)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
@@ -194,7 +195,8 @@ GEM
     ed25519 (1.3.0)
     erubi (1.12.0)
     erubis (2.7.0)
-    faraday (2.7.7)
+    faraday (2.7.11)
+      base64
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-follow_redirects (0.3.0)
@@ -202,14 +204,14 @@ GEM
     faraday-net_http (3.0.2)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.15.5)
-    ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x86-mingw32)
-    ffi-libarchive (1.1.3)
+    ffi (1.16.2)
+    ffi (1.16.2-x64-mingw32)
+    ffi (1.16.2-x86-mingw32)
+    ffi-libarchive (1.1.13)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.4.0)
+    ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
@@ -283,7 +285,7 @@ GEM
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
-    net-ssh (7.1.0)
+    net-ssh (7.2.0)
     nori (2.6.0)
     parallel (1.23.0)
     parser (3.2.2.3)
@@ -303,14 +305,14 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    public_suffix (5.0.1)
+    public_suffix (5.0.3)
     racc (1.7.1)
-    rack (2.2.7)
+    rack (2.2.8)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
     regexp_parser (2.8.1)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
       rspec-expectations (~> 3.11.0)
@@ -385,9 +387,9 @@ GEM
     unicode-display_width (2.4.2)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    vault (0.17.0)
+    vault (0.18.1)
       aws-sigv4
-    webmock (3.18.1)
+    webmock (3.19.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
