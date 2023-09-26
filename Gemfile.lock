@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: c756b22eeb0424956ba32d04016c886fe7902304
+  revision: a6f619207116ddd6c7dbe57711b285057294af54
   branch: 17-stable
   specs:
-    ohai (17.9.1)
+    ohai (17.9.4)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -387,7 +387,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webmock (3.18.1)
+    webmock (3.19.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
