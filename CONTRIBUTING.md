@@ -129,11 +129,10 @@ Date:   Wed Sep 18 11:44:40 2015 -0700
 
 ### Gems
 
-When installing or updating individual gems, run the install or update commands with the `--conservative` flag.
-
-```
+When making a PR, if you need to add or remove gems, it should be done using the `--conservative` flag:
+```shell
 gem install [gem_name] --conservative
-gem update [gem_name] --conservative`
+gem update [gem_name] --conservative
 ```
 
 If a manual PR updates the `Gemfile.lock`, please include the output of your `gem update` or `gem install` command in the PR.
