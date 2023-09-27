@@ -127,6 +127,22 @@ Date:   Wed Sep 18 11:44:40 2015 -0700
 ------------------------------------------------------------------------
 ```
 
+### Gems
+
+When installing or updating individual gems, run the install or update commands with the `--conservative` flag.
+
+```
+gem install [gem_name] --conservative
+gem update [gem_name] --conservative`
+```
+
+If a manual PR updates the `Gemfile.lock`, please include the output of your `gem update` or `gem install` command in the PR.
+
+### Gem Maintenance
+
+At a minimum, once a quarter the maintainers will run a full `bundle update` to update all gems within the limits defined by the `Gemfile`.
+(This should be done preferably **after** minor release for testability)
+
 ### Merging
 1. Use `[Squash and Merge]` and edit down the commit history to a clear description of what the changes were with the "TL;DR" bits in the first 60 characters of the commit message. Update the PR title if necessary.
 2. Add the changes to the [Pending Release Notes](https://github.com/chef/chef/wiki) for the appropriate release version.
