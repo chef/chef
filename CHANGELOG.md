@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.9 -->
-## [v18.3.9](https://github.com/chef/chef/tree/v18.3.9) (2023-09-20)
+<!-- latest_release 18.3.10 -->
+## [v18.3.10](https://github.com/chef/chef/tree/v18.3.10) (2023-09-27)
 
 #### Merged Pull Requests
-- chocolatey: fix regression in calling `choco --version` [#13935](https://github.com/chef/chef/pull/13935) ([stanhu](https://github.com/stanhu))
+- Fix the latin-1 hex value for ü to \xFC [#13917](https://github.com/chef/chef/pull/13917) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix the latin-1 hex value for ü to \xFC [#13917](https://github.com/chef/chef/pull/13917) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.10 -->
 - chocolatey: fix regression in calling `choco --version` [#13935](https://github.com/chef/chef/pull/13935) ([stanhu](https://github.com/stanhu)) <!-- 18.3.9 -->
 - fix homebrew path when which() returns false [#13937](https://github.com/chef/chef/pull/13937) ([Stromweld](https://github.com/Stromweld)) <!-- 18.3.8 -->
 - Correct some UI text [#13921](https://github.com/chef/chef/pull/13921) ([IanMadd](https://github.com/IanMadd)) <!-- 18.3.7 -->
