@@ -7,7 +7,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "ffi", ">= 1.15.5"
+gem "ffi", "~> 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
