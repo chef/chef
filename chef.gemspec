@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 17.0"
   s.add_dependency "inspec-core", ">= 4.23"
 
-  s.add_dependency "ffi", ">= 1.5.0"
+  s.add_dependency "ffi", ">= 1.16.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
