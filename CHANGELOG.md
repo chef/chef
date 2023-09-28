@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.12 -->
-## [v18.3.12](https://github.com/chef/chef/tree/v18.3.12) (2023-09-28)
+<!-- latest_release 18.3.13 -->
+## [v18.3.13](https://github.com/chef/chef/tree/v18.3.13) (2023-09-28)
 
 #### Merged Pull Requests
-- Add new boolean property anchor_package_regex to resource apt_package resource [#13873](https://github.com/chef/chef/pull/13873) ([neha-p6](https://github.com/neha-p6))
+- Updating test to be RFC2119 compliant [#13968](https://github.com/chef/chef/pull/13968) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating test to be RFC2119 compliant [#13968](https://github.com/chef/chef/pull/13968) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.13 -->
 - Add new boolean property anchor_package_regex to resource apt_package resource [#13873](https://github.com/chef/chef/pull/13873) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.12 -->
 - FFI versions through 1.16.2 have a dlopen issue with macOS. Pinning to ~&gt; 1.15.5 for now [#13964](https://github.com/chef/chef/pull/13964) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.11 -->
 - Fix the latin-1 hex value for ü to \xFC [#13917](https://github.com/chef/chef/pull/13917) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.10 -->
