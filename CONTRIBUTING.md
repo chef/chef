@@ -22,8 +22,11 @@ We have a 3 step process for contributions:
 
 ### Branching
 
-* If branching within `chef/chef` repo, prefix your initials such as `tp/branch-name` to help delineate at a glance who created the branch.
-* (for internal teams) Please include a ticket number for JIRA (e.g., `tp/infc-399-branch-short-desc`) if possible to help JIRA link back to the branch and subsequent PR.
+When creating pull requests, you will need to push your branch to your own fork of the repo.
+
+For internal teams:
+* Prefix your initials such as `tp/branch-name` to help delineate at a glance who created the branch.
+* Please include a ticket number for JIRA (e.g., `tp/infc-399-branch-short-desc`) if possible to help JIRA link back to the branch and subsequent PR.
 
 ### Pull Request Requirements
 
