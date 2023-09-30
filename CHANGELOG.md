@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.16 -->
-## [v18.3.16](https://github.com/chef/chef/tree/v18.3.16) (2023-09-30)
+<!-- latest_release 18.3.17 -->
+## [v18.3.17](https://github.com/chef/chef/tree/v18.3.17) (2023-09-30)
 
 #### Merged Pull Requests
-- Update gem update protocols [#13962](https://github.com/chef/chef/pull/13962) ([steph-hickman9](https://github.com/steph-hickman9))
+- Update README.md [#13961](https://github.com/chef/chef/pull/13961) ([smcgillick](https://github.com/smcgillick))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update README.md [#13961](https://github.com/chef/chef/pull/13961) ([smcgillick](https://github.com/smcgillick)) <!-- 18.3.17 -->
 - Update gem update protocols [#13962](https://github.com/chef/chef/pull/13962) ([steph-hickman9](https://github.com/steph-hickman9)) <!-- 18.3.16 -->
 - Update slack channel name for contact to #chef-infra-dev [#13965](https://github.com/chef/chef/pull/13965) ([jstrauss](https://github.com/jstrauss)) <!-- 18.3.15 -->
 - Chef::Log.debug the puts debugs [#13970](https://github.com/chef/chef/pull/13970) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.14 -->
