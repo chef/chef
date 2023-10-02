@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.18 -->
-## [v18.3.18](https://github.com/chef/chef/tree/v18.3.18) (2023-09-30)
+<!-- latest_release 18.3.19 -->
+## [v18.3.19](https://github.com/chef/chef/tree/v18.3.19) (2023-10-02)
 
 #### Merged Pull Requests
-- Fix contribution documentation [#13963](https://github.com/chef/chef/pull/13963) ([jaymzh](https://github.com/jaymzh))
+- [WIP][Chef-18] Github actions tests to test Infra Client with FIPS enabled on windows [#13892](https://github.com/chef/chef/pull/13892) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [WIP][Chef-18] Github actions tests to test Infra Client with FIPS enabled on windows [#13892](https://github.com/chef/chef/pull/13892) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.19 -->
 - Fix contribution documentation [#13963](https://github.com/chef/chef/pull/13963) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.18 -->
 - Update README.md [#13961](https://github.com/chef/chef/pull/13961) ([smcgillick](https://github.com/smcgillick)) <!-- 18.3.17 -->
 - Update gem update protocols [#13962](https://github.com/chef/chef/pull/13962) ([steph-hickman9](https://github.com/steph-hickman9)) <!-- 18.3.16 -->
