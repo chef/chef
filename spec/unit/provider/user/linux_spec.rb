@@ -70,4 +70,59 @@ describe Chef::Provider::User::Linux do
       expect( provider.useradd_options ).to eql(["-m"])
     end
   end
+
+  describe "compare_user_linux" do
+    before(:each) do
+      @new_resource = Chef::Resource::User::LinuxUser.new("notarealuser")
+      @current_resource = Chef::Resource::User::LinuxUser.new("notarealuser")
+    end
+
+    let(:mapping) do
+      {
+        "username" => %w{notarealuser notarealuser},
+        "comment" => ["Nota Realuser", "Not a Realuser"],
+        "uid" => [1000, 1001],
+        "gid" => [1000, 1001],
+        "home" => ["/home/notarealuser", "/Users/notarealuser"],
+        "shell" => ["/usr/bin/zsh", "/bin/bash"],
+        "password" => %w{abcd 12345},
+        "sensitive" => [true],
+      }
+    end
+
+    %w{uid gid comment home shell password}.each do |property|
+      it "should return true if #{property} doesn't match" do
+        @new_resource.send(property, mapping[property][0])
+        @current_resource.send(property, mapping[property][1])
+        expect(provider.compare_user).to eql(true)
+      end
+    end
+
+    it "should show a blank for password if sensitive set to true" do
+      @new_resource.password mapping["password"][0]
+      @current_resource.password mapping["password"][1]
+      @new_resource.sensitive true
+      @current_resource.sensitive true
+      provider.compare_user
+      expect(provider.change_desc).to eql(["change password from ******** to ********"])
+    end
+
+    %w{uid gid}.each do |property|
+      it "should return false if string #{property} matches fixnum" do
+        @new_resource.send(property, "100")
+        @current_resource.send(property, 100)
+        expect(provider.compare_user).to eql(false)
+      end
+    end
+
+    it "should return false if the objects are identical" do
+      expect(provider.compare_user).to eql(false)
+    end
+
+    it "should ignore differences in trailing slash in home paths" do
+      @new_resource.home "/home/notarealuser"
+      @current_resource.home "/home/notarealuser/"
+      expect(provider.compare_user).to eql(false)
+    end
+  end
 end
