@@ -18,7 +18,6 @@ require_relative "../util/threaded_job_queue"
 require_relative "../server_api"
 require "singleton" unless defined?(Singleton)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
-require "set" unless defined?(Set)
 
 class Chef
 
@@ -240,8 +239,8 @@ class Chef
       @cookbooks_by_name.each_key do |cookbook_name|
         cache_file_hash[cookbook_name].each_key do |segment|
           manifest_segment = cookbook_segment(cookbook_name, segment)
-          manifest_record_paths = manifest_segment.map { |manifest_record| manifest_record["path"] }.to_set
-          to_be_removed = cache_file_hash[cookbook_name][segment].keys.to_set - manifest_record_paths
+          manifest_record_paths = manifest_segment.map { |manifest_record| manifest_record["path"] }
+          to_be_removed = cache_file_hash[cookbook_name][segment].keys - manifest_record_paths
           to_be_removed.each do |path|
             cache_file = cache_file_hash[cookbook_name][segment][path]
 
