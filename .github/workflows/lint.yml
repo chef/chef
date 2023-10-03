@@ -1,7 +1,7 @@
 ---
 name: lint
 
-"on":
+on:
   pull_request:
   push:
     branches:
@@ -13,15 +13,15 @@ jobs:
     env:
       BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
-    - uses: actions/checkout@v3
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1
-        bundler-cache: false
-    - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
-    - run: |
-        gem install chefstyle
-        chefstyle -c .rubocop.yml
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler-cache: false
+      - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
+      - run: |
+          gem install chefstyle
+          chefstyle -c .rubocop.yml
 
   spellcheck:
     runs-on: ubuntu-latest
@@ -33,3 +33,31 @@ jobs:
           file-url: 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt'
           file-name: 'chef_dictionary.txt'
       - uses: streetsidesoftware/cspell-action@v2.12.0
+
+  danger:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v2
+      # Note this step not needed once we switch to the pre-canned action
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+      - run: gem install danger
+      - run: |
+          danger --verbose 2>&1 | tee danger.out || true
+          if grep -q 'Danger has failed this build' danger.out; then
+            exit 1
+          else
+            exit 0
+          fi
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# The pre-canned danger Action doesn't work on forks. Filed
+# https://github.com/danger/danger/issues/1462
+# against it
+#     - uses: danger/danger@master
+#       env:
+#         DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
