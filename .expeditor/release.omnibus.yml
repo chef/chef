@@ -1,5 +1,5 @@
 # This pipeline is currently under development.
-project-name: universal-package
+project-name: chef
 config: omnibus/omnibus.rb
 test-path: omnibus/omnibus-test-universal.sh
 builder-to-testers-map:
