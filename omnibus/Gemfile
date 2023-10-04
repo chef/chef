@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
-# gem "omnibus", github: ENV.fetch("OMNIBUS_GITHUB_REPO", "chef/omnibus"), branch: ENV.fetch("OMNIBUS_GITHUB_BRANCH", "main")
-gem "omnibus", git: "https://github.com/chef/omnibus.git", branch: "ss/signing-cmd-requires-admin-privileges"
+gem "omnibus", github: ENV.fetch("OMNIBUS_GITHUB_REPO", "chef/omnibus"), branch: ENV.fetch("OMNIBUS_GITHUB_BRANCH", "main")
+# uncomment for testing a specifc test
+# gem "omnibus", git: "https://github.com/chef/omnibus.git", branch: "ss/signing-cmd-requires-admin-privileges"
 gem "omnibus-software", github: ENV.fetch("OMNIBUS_SOFTWARE_GITHUB_REPO", "chef/omnibus-software"), branch: ENV.fetch("OMNIBUS_SOFTWARE_GITHUB_BRANCH", "main")
 gem "artifactory"
 

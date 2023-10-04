@@ -26,8 +26,8 @@ GIT
       omnibus (>= 9.0.0)
 
 GIT
-  revision: b634c4deda6e07bf08504e4456b0b7bb5c20c076
-  branch: ss/signing-cmd-requires-admin-privileges
+  remote: https://github.com/chef/omnibus.git
+  revision: 82dae896a066542f1b66dc866186f856f37e518e
   branch: main
   specs:
     omnibus (9.0.23)
