@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.20 -->
-## [v18.3.20](https://github.com/chef/chef/tree/v18.3.20) (2023-10-03)
+<!-- latest_release 18.3.21 -->
+## [v18.3.21](https://github.com/chef/chef/tree/v18.3.21) (2023-10-04)
 
 #### Merged Pull Requests
-- Chef::CookbookSynchronizer#remove_deleted_files: Use Array instead of Set [#13941](https://github.com/chef/chef/pull/13941) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Don&#39;t try to run SonarQube on forked-based PRs [#13983](https://github.com/chef/chef/pull/13983) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t try to run SonarQube on forked-based PRs [#13983](https://github.com/chef/chef/pull/13983) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.21 -->
 - Chef::CookbookSynchronizer#remove_deleted_files: Use Array instead of Set [#13941](https://github.com/chef/chef/pull/13941) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.20 -->
 - [WIP][Chef-18] Github actions tests to test Infra Client with FIPS enabled on windows [#13892](https://github.com/chef/chef/pull/13892) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.19 -->
 - Fix contribution documentation [#13963](https://github.com/chef/chef/pull/13963) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.18 -->
