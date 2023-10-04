@@ -331,6 +331,7 @@
     "EMBEDDEDNT",
     "EMBEDDEDSERVER",
     "ENABLEDELAYEDEXPANSION",
+    "enableable",
     "enablegroups",
     "enablement",
     "enablerepo",
