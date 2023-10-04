@@ -430,6 +430,11 @@ describe Chef::Knife::UI do
           expect(@ui.format_for_display(input)).to eq({ nil => { "keys;with spaces;open;doors;with many.dots" => "when asked" } })
         end
       end
+
+      it "should return field separator in attribute_field_separator" do
+        @ui.config[:field_separator] = ";"
+        expect(@ui.attribute_field_separator).to eq(";")
+      end
     end
 
     describe "with --run-list passed" do
