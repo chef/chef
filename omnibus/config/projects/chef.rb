@@ -93,15 +93,24 @@ compress :dmg
 
 msi_upgrade_code = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 project_location_dir = name
+# package :msi do
+#   fast_msi true
+#   upgrade_code msi_upgrade_code
+#   wix_candle_extension "WixUtilExtension"
+#   wix_light_extension "WixUtilExtension"
+#   signing_identity "769E6AF679126F184850AAC7C5C823A80DB3ADAA", machine_store: false, keypair_alias: "key_495941360"
+#   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
+#              ProjectLocationDir: project_location_dir
+# end
 package :msi do
   fast_msi true
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
   signing_identity "769E6AF679126F184850AAC7C5C823A80DB3ADAA", machine_store: false, keypair_alias: "key_495941360"
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
-             ProjectLocationDir: project_location_dir
+  parameters ProjectLocationDir: project_location_dir
 end
+
 
 # We don't support appx builds, and they eat a lot of time.
 package :appx do
