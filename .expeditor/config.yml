@@ -43,7 +43,7 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_CACHE: true
-        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: 0388b18a712a70c6933ada3b1a69f5318fbea8c9
+        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: 6798cc15048a8b0b320fa0750ccf6c44572f0e64
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
