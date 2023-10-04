@@ -435,6 +435,10 @@ describe Chef::Knife::UI do
         @ui.config[:field_separator] = ";"
         expect(@ui.attribute_field_separator).to eq(";")
       end
+
+      it "should return the default field separator" do
+        expect(@ui.attribute_field_separator).to eq(".")
+      end
     end
 
     describe "with --run-list passed" do
