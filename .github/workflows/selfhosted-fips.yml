@@ -12,10 +12,6 @@ jobs:
       fail-fast: false
     runs-on: [self-hosted, ubuntu-2004-fips]
     steps:
-      - name: 'Self-Host clean Up'
-        id: clean_up
-        run: |
-          sudo rm -rf /home/azureuser/actions-runner/_work/*
       - name: Check out code
         uses: actions/checkout@v3
         with:
