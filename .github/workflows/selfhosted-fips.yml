@@ -19,7 +19,6 @@ jobs:
       - name: 'Install Chef/Ohai from Omnitruck'
         id: install_chef
         run: |
-          brew install coreutils
           curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -v 17
           /opt/chef/bin/chef-client -v
           /opt/chef/bin/ohai -v
