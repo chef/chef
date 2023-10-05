@@ -12,8 +12,11 @@ on:
  
 jobs:
   sonarqube:
-    # this only works on branch-based PRs
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    # this fails for all users - internal and external - with:
+    # ERROR: You're not authorized to run analysis. Please contact the project administrator.
+    #
+    # So disabling for now until someone looks into this.
+    if: ${{ false }}
     runs-on: ip-range-controlled
     steps:
     - uses: actions/checkout@v4
