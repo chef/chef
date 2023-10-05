@@ -1,0 +1,49 @@
+---
+name: selfhosted-fips
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - main
+jobs: 
+  linux:
+    strategy:
+      fail-fast: false
+    runs-on: [self-hosted, ubuntu-2004-fips]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+            clean: true
+      - name: 'Install Chef/Ohai from Omnitruck'
+        id: install_chef
+        run: |
+          brew install coreutils
+          curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -v 17
+          /opt/chef/bin/chef-client -v
+          /opt/chef/bin/ohai -v
+          /opt/chef/embedded/bin/rake --version
+      - name: 'Upgrade Chef/Ohai via Appbundler'
+        id: upgrade
+        run: |
+          OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+          sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+          sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
+          echo "Installed Chef / Ohai release:"
+          /opt/chef/bin/chef-client -v
+          /opt/chef/bin/ohai -v
+      - name: 'Run end_to_end::default recipe'
+        id: run
+        run: |
+          sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
+          sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
+          sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
+          sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+          sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
+          OUTPUT=$(cat /proc/sys/crypto/fips_enabled)
+          if [[$OUTPUT -eq 1]] then
+            echo "fips is enabled"
+          else
+            echo "fips is not enabled"
+          fi
