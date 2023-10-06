@@ -304,7 +304,7 @@ describe Chef::Node do
       end
 
       it "should let you use untag as a convince method for the tags attribute" do
-        node.normal["tags"] = %w{one two thre four}
+        node.normal["tags"] = %w{one two three four}
         node.untag("three", "four")
         expect(node["tags"]).to eq(%w{one two})
       end
