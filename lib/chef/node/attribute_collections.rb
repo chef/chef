@@ -18,6 +18,7 @@
 
 require_relative "common_api"
 require_relative "mixin/state_tracking"
+require_relative "mixin/state_tracking_array"
 require_relative "mixin/immutablize_array"
 require_relative "mixin/immutablize_hash"
 require_relative "mixin/mashy_array"
@@ -97,7 +98,7 @@ class Chef
         key
       end
 
-      prepend Chef::Node::Mixin::StateTracking
+      prepend Chef::Node::Mixin::StateTrackingArray
     end
 
     # == VividMash

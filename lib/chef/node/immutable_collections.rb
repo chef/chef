@@ -17,6 +17,7 @@
 
 require_relative "common_api"
 require_relative "mixin/state_tracking"
+require_relative "mixin/state_tracking_array"
 require_relative "mixin/immutablize_array"
 require_relative "mixin/immutablize_hash"
 require_relative "../delayed_evaluator"
@@ -119,7 +120,7 @@ class Chef
         value
       end
 
-      prepend Chef::Node::Mixin::StateTracking
+      prepend Chef::Node::Mixin::StateTrackingArray
       prepend Chef::Node::Mixin::ImmutablizeArray
     end
 
