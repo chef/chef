@@ -91,6 +91,11 @@ package :pkg do
 end
 compress :dmg
 
+# MSI Signing was updated in October 2023. There are 3 pieces that have to match
+# The first is omnibus gem. As of this writing, it must be version 9.0.23 or later
+# The second is the 'signing_identity' line below.
+# Lastly, the omnibus-buildkite-plugin must be the latest version. You automatically get the current
+# version unless you specify an override in /.expeditor/config.yml 
 msi_upgrade_code = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 project_location_dir = name
 package :msi do
