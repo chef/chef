@@ -73,17 +73,9 @@ class Chef
       run_context.node.tag(*tags)
     end
 
-    # Removes the list of tags from the node.
-    #
-    # === Parameters
-    # tags<Array>:: A list of tags
-    #
-    # === Returns
-    # tags<Array>:: The current list of run_context.node.tags
+    # This was moved to Chef::Node#untag, redirecting here for compatibility
     def untag(*tags)
-      tags.each do |tag|
-        run_context.node.tags.delete(tag)
-      end
+      run_context.node.untag(*tags)
     end
 
     def from_yaml_file(filename)
