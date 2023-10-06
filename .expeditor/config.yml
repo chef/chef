@@ -35,7 +35,7 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_CACHE: true
-        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: d640d0bf2f468903366362a72c8bc6a981d11f10
+        # - OMNIBUS_BUILDKITE_PLUGIN_VERSION: d640d0bf2f468903366362a72c8bc6a981d11f10
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
@@ -43,7 +43,7 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_CACHE: true
-        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: d640d0bf2f468903366362a72c8bc6a981d11f10
+        # - OMNIBUS_BUILDKITE_PLUGIN_VERSION: d640d0bf2f468903366362a72c8bc6a981d11f10
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
