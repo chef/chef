@@ -1,8 +1,23 @@
 # FFI and Other Native Dependencies
 
-## Diagram 
-
 ![FFI graph](ffi_graph.png)
+
+# `chef` org gems
+## `chef-powershell` gem
+
+## `ffi-libarchive` gem
+
+## `ffi-yajl` gem
+
+## `ffi-win32-extensions` gem
+
+# External dependencies of the above
+
+## `libarchive` library
+
+## `ffi` gem
+
+## `yajl` library
 
 ```text
 @startmindmap
