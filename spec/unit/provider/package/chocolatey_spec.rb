@@ -48,6 +48,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     local_list_obj = double(stdout: local_list_stdout)
     allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
     allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
+    # Mock the local file system choco queries
+    allow(provider).to receive(:get_local_pkg_dirs).and_return(%w{chocolatey ConEmu})
+    allow(provider).to receive(:fetch_package_versions_local).and_return({ "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" })
   end
 
   after(:each) do
@@ -55,6 +58,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
   end
 
   def allow_remote_list(package_names, args = nil)
+    # Ensure that when we set this, we invalidate any cache since we're changing
+    # the returned data on purpose
+    provider.invalidate_cache
     remote_list_stdout = <<~EOF
       Chocolatey v0.9.9.11
       chocolatey|0.9.9.11
@@ -64,12 +70,10 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    package_names.each do |pkg|
-      if args
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
-      else
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
-      end
+    if args
+      allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *(package_names.sort + args), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+    else
+      allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *(package_names.sort), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
     end
   end
 
@@ -92,6 +96,13 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     it "Choco V2 uses Search" do
       allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
       expect(provider.query_command).to eql("search")
+    end
+  end
+
+  describe "bulk_query changes the search behaviour" do
+    it "should respect bulk_query when getting working out what to search" do
+      new_resource.bulk_query(true)
+      expect(provider.collect_package_requests).to eql(["*"])
     end
   end
 
@@ -138,6 +149,13 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     end
   end
 
+  describe "the query cache should be invalidated if the config is clean" do
+    it "should return false to cache_is_valid? by default" do
+      provider.invalidate_cache
+      expect(provider.cache_is_valid?).to eql(false)
+    end
+  end
+
   describe "#load_current_resource" do
     it "should return a current_resource" do
       expect(provider.load_current_resource).to be_kind_of(Chef::Resource::ChocolateyPackage)
@@ -148,7 +166,16 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       expect(provider.current_resource.package_name).to eql(["git"])
     end
 
-    it "should load and downcase names in the installed_packages hash" do
+    it "should load and downcase names in the installed_packages hash (with disk provider)" do
+      new_resource.use_choco_list(false)
+      provider.load_current_resource
+      expect(provider.send(:installed_packages)).to eql(
+        { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" }
+      )
+    end
+
+    it "should load and downcase names in the installed_packages hash (with choco list provider)" do
+      new_resource.use_choco_list(true)
       provider.load_current_resource
       expect(provider.send(:installed_packages)).to eql(
         { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" }

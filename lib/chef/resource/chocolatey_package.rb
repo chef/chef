@@ -67,6 +67,14 @@ class Chef
         description: "The name of the package. Default value: the name of the resource block.",
         coerce: proc { |x| [x].flatten }
 
+      property :bulk_query, [TrueClass, FalseClass],
+        description: "Bulk query the chocolatey server?  This will cause the provider to list all packages instead of doing individual queries.",
+        default: false
+
+      property :use_choco_list, [TrueClass, FalseClass],
+        description: "Use choco list for getting the locally installed packages, rather than reading the nupkg database directly?  This defaults to false, since reading the package data is faster.",
+        default: false
+
       property :version, [String, Array],
         description: "The version of a package to be installed or upgraded.",
         coerce: proc { |x| [x].flatten }
