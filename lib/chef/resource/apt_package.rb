@@ -92,7 +92,7 @@ class Chef
 
       property :anchor_package_regex, [TrueClass, FalseClass],
         introduced: "18.3",
-        description: "A Boolean flag that indicates whether the package name, which can be a regular expression, must match the entire name of the package (true) or if the regular expression is allowed to match a subset of the name (false)."
+        description: "A Boolean flag that indicates whether the package name, which can be a regular expression, must match the entire name of the package (true) or if the regular expression is allowed to match a subset of the name (false).",
         default: false
     end
   end
