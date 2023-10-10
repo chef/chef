@@ -91,6 +91,11 @@ package :pkg do
 end
 compress :dmg
 
+# MSI Signing was updated in October 2023. There are 3 pieces that have to match
+# The first is omnibus gem. As of this writing, it must be version 9.0.23 or later
+# The second is the 'signing_identity' line below.
+# Lastly, the omnibus-buildkite-plugin must be the latest version. You automatically get the current
+# version unless you specify an override in /.expeditor/config.yml
 msi_upgrade_code = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 project_location_dir = name
 package :msi do
@@ -98,7 +103,7 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "13B510D1CF1B3467856A064F1BEA12D0884D2528", machine_store: true
+  signing_identity "769E6AF679126F184850AAC7C5C823A80DB3ADAA", machine_store: false, keypair_alias: "key_495941360"
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end

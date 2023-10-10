@@ -581,6 +581,8 @@
     "keyivgen",
     "KEYNAME",
     "keyname",
+    "keypair",
+    "keypair_alias",
     "keyscan",
     "KEYTAB",
     "keytab",
