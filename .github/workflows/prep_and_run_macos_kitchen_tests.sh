@@ -1,3 +1,4 @@
+chmod +x
 sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
 sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
 sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
