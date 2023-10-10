@@ -92,7 +92,7 @@ class Chef
 
       property :anchor_package_regex, [TrueClass, FalseClass],
         introduced: "18.3",
-        description: "A Boolean flag that allows (`false`) or prevents (`true`) apt_package from matching the named package with packages by regular expression if it can't find a package with the exact same name.",
+        description: "A Boolean flag that indicates whether the package name, which can be a regular expression, must match the entire name of the package (`true`) or if the regular expression is allowed to match a subset of the name (`false`)."
         default: false
     end
   end
