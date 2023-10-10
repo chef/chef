@@ -56,8 +56,8 @@ class Chef
       **Prevent the apt_package resource from installing packages with pattern matching names**:
 
       By default, the apt_package resource will install the named package.
-      If it can't find a package with the exact same name, it will treat the package name as regex string and match with any package that matches that regex.
-      This may lead Chef Infra Client to install one or more packages with names that match that regex.
+      If it can't find a package with the exact same name, it will treat the package name as regular expression string and match with any package that matches that regular expression.
+      This may lead Chef Infra Client to install one or more packages with names that match that regular expression.
 
       In this example, `anchor_package_regex true` prevents the apt_package resource from installing matching packages if it can't find the `lua5.3` package.
 
@@ -92,7 +92,7 @@ class Chef
 
       property :anchor_package_regex, [TrueClass, FalseClass],
         introduced: "18.3",
-        description: "A Boolean flag that allows (`false`) or prevents (`true`) apt_package from matching the named package with packages by regular expression if it can't find a package with the exact same name.",
+        description: "A Boolean flag that indicates whether the package name, which can be a regular expression, must match the entire name of the package (true) or if the regular expression is allowed to match a subset of the name (false).",
         default: false
     end
   end
