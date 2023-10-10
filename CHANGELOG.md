@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.24 -->
-## [v18.3.24](https://github.com/chef/chef/tree/v18.3.24) (2023-10-05)
+<!-- latest_release 18.3.25 -->
+## [v18.3.25](https://github.com/chef/chef/tree/v18.3.25) (2023-10-10)
 
 #### Merged Pull Requests
-- Disable SonarQube wholesale [#13985](https://github.com/chef/chef/pull/13985) ([jaymzh](https://github.com/jaymzh))
+- Add documentation review changes to apt_package resource [#13991](https://github.com/chef/chef/pull/13991) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add documentation review changes to apt_package resource [#13991](https://github.com/chef/chef/pull/13991) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.25 -->
 - Disable SonarQube wholesale [#13985](https://github.com/chef/chef/pull/13985) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.24 -->
 - Add hook to service resource for non-enable-able services [#13959](https://github.com/chef/chef/pull/13959) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.23 -->
 - Attempt to make Gemfile.lock stable [#13978](https://github.com/chef/chef/pull/13978) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.22 -->
