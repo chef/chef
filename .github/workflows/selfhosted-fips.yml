@@ -15,7 +15,7 @@ jobs:
       - name: 'Clean up any previous installs'
         id: cleanup
         run: |
-          if [[ -d "/home/azureuser/actions-runner/_work/chef"]]; then
+          if [ -d "/home/azureuser/actions-runner/_work/chef" ]; then
             sudo rm -rf /home/azureuser/actions-runner/_work/chef
           fi
       - name: Check out code
