@@ -15,8 +15,8 @@ jobs:
       - name: 'Clean up any previous installs'
         id: cleanup
         run: |
-          if [ -d "/home/azureuser/actions-runner/_work/chef/chef/*" ]; then
-            sudo rm -r /home/azureuser/actions-runner/_work/chef
+          if [ -d "/home/azureuser/actions-runner/_work/chef/chef" ]; then
+            sudo rm -r /home/azureuser/actions-runner/_work/chef/chef/*
           fi
       - name: Check out code
         uses: actions/checkout@v3
