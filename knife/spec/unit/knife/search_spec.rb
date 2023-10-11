@@ -1,5 +1,5 @@
 #
-# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Ashique Saidalavi (<ashique.saidalavi@progress.com>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
