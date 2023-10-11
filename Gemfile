@@ -48,7 +48,6 @@ group(:knife_windows_deps) do
   gem "ed25519", "~> 1.2" # ed25519 ssh key support
 end
 
-gem 'sorbet', '~> 0.5.11054'
 group(:development, :test) do
   gem "rake"
   gem "rspec"
