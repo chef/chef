@@ -176,7 +176,7 @@ class Chef
           }
 
           unit["Service"]["ConditionACPower"] = "true" unless new_resource.run_on_battery
-          unit["Service"]["CPUQuota"] = new_resource.cpu_quota if new_resource.cpu_quota
+          unit["Service"]["CPUQuota"] = "#{new_resource.cpu_quota}%" if new_resource.cpu_quota
           unit["Service"]["Environment"] = new_resource.environment.collect { |k, v| "\"#{k}=#{v}\"" } unless new_resource.environment.empty?
           unit
         end
