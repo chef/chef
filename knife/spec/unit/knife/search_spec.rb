@@ -44,7 +44,7 @@ describe Chef::Knife::Search do
     describe "run" do
       it "should be successful" do
         knife.name_args = ["node", ":"]
-        expect(query).to receive(:search).with("node", ":", {:fuzz=>true})
+        expect(query).to receive(:search).with("node", ":", { fuzz: true })
         knife.run
       end
 
@@ -59,14 +59,14 @@ describe Chef::Knife::Search do
           knife.config[:query] = ":"
 
           expect { knife.run }.to raise_error(SystemExit)
-          expect(stderr.string).to match %r{Please specify query as an argument or an option via -q, not both}im
+          expect(stderr.string).to match /Please specify query as an argument or an option via -q, not both/im
         end
 
         it "should fail if no query passed" do
           knife.name_args = []
 
           expect { knife.run }.to raise_error(SystemExit)
-          expect(stderr.string).to match %r{No query specified}im
+          expect(stderr.string).to match /No query specified/im
         end
       end
 
@@ -82,7 +82,7 @@ describe Chef::Knife::Search do
         end
 
         it "should invoke search object with correct filter" do
-          expect(query).to receive(:search).with("node", "packages:git", {:filter_result=>{:env=>["chef_environment"]}, :fuzz=>true})
+          expect(query).to receive(:search).with("node", "packages:git", { filter_result: { env: ["chef_environment"] }, fuzz: true })
           knife.run
         end
       end
@@ -100,10 +100,10 @@ describe Chef::Knife::Search do
 
         it "should invoke search query with correct filter" do
           filter_obj = {
-            :filter_result => {
+            filter_result: {
               "__display_name" => ["name"],
-              "packages.git.version" => ["packages", "git", "version"] },
-            :fuzz=>true
+              "packages.git.version" => %w{packages git version} },
+            fuzz: true,
           }
           expect(query).to receive(:search).with("node", "packages:git", filter_obj)
           knife.run
@@ -121,10 +121,10 @@ describe Chef::Knife::Search do
           end
 
           context "parsing" do
-            let(:filter_output) { {"__display_name" => ["name"], "packages.git.version" => %w[packages git version]} }
+            let(:filter_output) { { "__display_name" => ["name"], "packages.git.version" => %w{packages git version} } }
 
             before do
-              knife.name_args = %w[node packages:git]
+              knife.name_args = %w{node packages:git}
             end
 
             it "parses the attributes correctly for dot field_separator" do
