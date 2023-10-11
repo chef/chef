@@ -10,6 +10,8 @@ sudo /opt/chef/embedded/bin/gem build berkshelf.gemspec
 export BERKSHELF_GEM=$(find . -name 'berkshelf*gem')
 sudo /opt/chef/embedded/bin/gem install $BERKSHELF_GEM
 
+popd
+
 # sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
 sudo /opt/chef/embedded/bin/berks vendor cookbooks
 sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
