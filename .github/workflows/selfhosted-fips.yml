@@ -10,7 +10,7 @@ jobs:
   linux:
     strategy:
       fail-fast: false
-    runs-on: [self-hosted, ubuntu-2004-fips]
+    runs-on: [self-hosted, chef17-ubuntu-pro-fips]
     steps:
       - name: 'Clean up any previous installs'
         id: cleanup
