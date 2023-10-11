@@ -70,12 +70,12 @@ class Chef
 
     # This was moved to Chef::Node#tag, redirecting here for compatibility
     def tag(*tags)
-      run_context.node.tag(*tags)
+      node.tag(*tags)
     end
 
     # This was moved to Chef::Node#untag, redirecting here for compatibility
     def untag(*tags)
-      run_context.node.untag(*tags)
+      node.untag(*tags)
     end
 
     def from_yaml_file(filename)
