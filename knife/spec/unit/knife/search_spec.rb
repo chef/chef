@@ -121,8 +121,6 @@ describe Chef::Knife::Search do
           end
 
           context "parsing" do
-            let(:filter_output) { { "__display_name" => ["name"], "packages.git.version" => %w{packages git version} } }
-
             before do
               knife.name_args = %w{node packages:git}
             end
@@ -131,6 +129,7 @@ describe Chef::Knife::Search do
               knife.config[:field_separator] = "."
               knife.ui.config[:attribute] = ["packages.git.version"]
 
+              filter_output = { "__display_name" => ["name"], "packages.git.version" => %w{packages git version} }
               expect(knife.create_result_filter_from_attributes(["packages.git.version"], ".")).to eq(filter_output)
             end
 
@@ -138,7 +137,8 @@ describe Chef::Knife::Search do
               knife.config[:field_separator] = ":"
               knife.ui.config[:attribute] = ["packages:git:version"]
 
-              expect(knife.create_result_filter_from_attributes(["packages.git.version"], ".")).to eq(filter_output)
+              filter_output = { "__display_name" => ["name"], "packages:git:version" => %w{packages git version} }
+              expect(knife.create_result_filter_from_attributes(["packages:git:version"], ":")).to eq(filter_output)
             end
           end
         end
