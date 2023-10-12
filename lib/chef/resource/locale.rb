@@ -113,7 +113,16 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             # RHEL/CentOS type platforms don't have locale-gen
-            a.assertion { shell_out("locale-gen") }
+            a.assertion do
+              begin
+                which("locale-gen")
+              rescue => e
+                puts "EXCEPTIONEXCEPTION"
+                Chef::Log.error("EXCEPTIONEXCEPTION: #{e.inspect}"
+                p e
+                shell_out("locale-gen")
+              end
+            end
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
           end
         end
