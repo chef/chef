@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.86 -->
-## [v17.10.86](https://github.com/chef/chef/tree/v17.10.86) (2023-10-11)
+<!-- latest_release 17.10.87 -->
+## [v17.10.87](https://github.com/chef/chef/tree/v17.10.87) (2023-10-12)
 
 #### Merged Pull Requests
-- Pulling in final changes to sign pacakges and move DLL&#39;s around [#14003](https://github.com/chef/chef/pull/14003) ([johnmccrae](https://github.com/johnmccrae))
+- try fixing kitchen tests for macOS [#14008](https://github.com/chef/chef/pull/14008) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- try fixing kitchen tests for macOS [#14008](https://github.com/chef/chef/pull/14008) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.87 -->
 - Pulling in final changes to sign pacakges and move DLL&#39;s around [#14003](https://github.com/chef/chef/pull/14003) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.86 -->
 - Temporarily pinning FFI versions and adding FIPS Windows checks [#13975](https://github.com/chef/chef/pull/13975) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.85 -->
 - [Chef-17 Backport] Updating Sensitive Items [#13973](https://github.com/chef/chef/pull/13973) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.84 -->
