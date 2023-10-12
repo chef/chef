@@ -15,6 +15,7 @@ jobs:
       - name: 'If Ruby 3.1 not installed, then install it'
         id: ruby
         run: |
+          set +e
           if ! command -v ruby &> /dev/null
           then
             # sudo apt-get update
@@ -29,6 +30,7 @@ jobs:
             rbenv install 3.1.2
             rbenv global 3.1.2
           fi
+          set -e
       - name: 'Clean up any previous installs'
         id: cleanup
         run: |
