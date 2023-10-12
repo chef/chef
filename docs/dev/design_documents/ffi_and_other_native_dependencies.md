@@ -1,9 +1,21 @@
-# FFI and Other Native Dependencies
+# FFI and Other Native Dependencies 
 
 ![FFI graph](ffi_graph.png)
 
 # `chef` org gems
 ## `chef-powershell` gem
+
+Subdirectories of [chef-powershell-shim](https://github.com/chef/chef-powershell-shim) project that ultimately defines the gem:
+* `chef-powershell` is the ruby code that defines the gem
+* `Chef.PowerShell` is a C# wrapper for the .NET version of PowerShell 
+* `Chef.PowerShell.Core` is a C# wrapper for the .NET Core version of PowerShell (`pwsh`)
+* `Chef.PowerShell.Wrapper` is a C++ Wrapper for `Chef.PowerShell` and the code that `ffi` attaches to from Ruby for PowerShell
+* `Chef.PowerShell.Wrapper.Core` is a C++ Wrapper for `Chef.PowerShell.Core` and the code that `ffi` attaches to from Ruby for PowerShell Core
+
+Dependencies
+* PowerShell install
+* .NET (>= 4.0) or .NET Core
+* `ffi-yajl` to parse the 
 
 ## `ffi-libarchive` gem
 
