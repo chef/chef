@@ -12,6 +12,14 @@ jobs:
       fail-fast: false
     runs-on: [self-hosted, ubuntu-2004-fips]
     steps:
+      - name: 'If Ruby 3.1 not installed, then install it'
+        id: ruby
+        run: |
+          if ! command -v ruby &> /dev/null
+          then
+            sudo apt-get update
+            sudo apt-get install -y ruby-full=3.1.2
+          fi
       - name: 'Clean up any previous installs'
         id: cleanup
         run: |
@@ -40,7 +48,7 @@ jobs:
           echo "Installed Chef / Ohai release:"
           /opt/chef/bin/chef-client -v
           /opt/chef/bin/ohai -v
-      - name: 'Run end_to_end::default recipe'
+      - name: 'Verify FIPS is enabled'
         id: run
         run: |
           sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
