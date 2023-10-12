@@ -17,13 +17,13 @@ jobs:
         run: |
           set +e
           if [ -d "/home/azureuser/actions-runner/_work/chef/chef" ]; then
-            sudo rm -r /home/azureuser/actions-runner/_work/chef/chef/*
+            sudo rm -rf /home/azureuser/actions-runner/_work/chef/chef/*
           fi
           set -e
       - name: Check out code
         uses: actions/checkout@v3
         with:
-            clean: true
+            clean: false
       - name: 'Install Chef/Ohai from Omnitruck'
         id: install_chef
         run: |
