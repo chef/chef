@@ -16,11 +16,14 @@
 #
 
 require_relative "../resource"
+require_relative "../mixin/which"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class Locale < Chef::Resource
+      extend Chef::Mixin::Which
+
       provides :locale
 
       description "Use the **locale** resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
@@ -113,13 +116,8 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             # RHEL/CentOS type platforms don't have locale-gen
-            a.assertion { shell_out("locale-gen") }
+            a.assertion { which("locale-gen") }
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
-            begin
-              which("local-gen")
-            rescue => e
-              a.failure_message(e.class, e.inspect)
-            end
           end
         end
 
