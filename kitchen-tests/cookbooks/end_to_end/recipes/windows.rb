@@ -188,7 +188,7 @@ end
 
 locale "set system locale" do
   lang "en_US.UTF-8"
-  only_if { debian? }
+  #only_if { debian? }
 end
 
 include_recipe "::_ohai_hint"
