@@ -40,7 +40,7 @@ jobs:
           echo "Installed Chef / Ohai release:"
           /opt/chef/bin/chef-client -v
           /opt/chef/bin/ohai -v
-      - name: 'Run end_to_end::default recipe'
+      - name: 'Verify FIPS is enabled'
         id: run
         run: |
           sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
