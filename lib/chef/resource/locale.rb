@@ -118,7 +118,7 @@ class Chef
                 which("locale-gen")
               rescue => e
                 puts "EXCEPTIONEXCEPTION"
-                Chef::Log.error("EXCEPTIONEXCEPTION: #{e.inspect}"
+                Chef::Log.error("EXCEPTIONEXCEPTION: #{e.inspect}")
                 p e
                 shell_out("locale-gen")
               end
