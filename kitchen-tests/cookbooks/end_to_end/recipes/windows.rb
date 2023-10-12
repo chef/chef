@@ -187,7 +187,7 @@ include_recipe "git"
 end
 
 locale "set system locale" do
-  lang "en_US.UTF-8"
+  lang "en-us"
   #only_if { debian? }
 end
 
