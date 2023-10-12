@@ -44,7 +44,7 @@ jobs:
       - name: 'Install Chef/Ohai from Omnitruck'
         id: install_chef
         run: |
-          curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -v 17
+          curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -v 18
           /opt/chef/bin/chef-client -v
           /opt/chef/bin/ohai -v
           /opt/chef/embedded/bin/rake --version
