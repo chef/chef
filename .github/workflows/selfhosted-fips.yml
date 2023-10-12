@@ -49,7 +49,7 @@ jobs:
           sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
           sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
           OUTPUT=$(cat /proc/sys/crypto/fips_enabled)
-          if [[$OUTPUT == 1]] 
+          if [ "$OUTPUT" = "1" ]
           then
             echo "fips is enabled"
           else
