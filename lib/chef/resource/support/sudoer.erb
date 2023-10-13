@@ -1,7 +1,7 @@
 # This file is managed by <%= ChefUtils::Dist::Infra::PRODUCT %>. Changes will be overwritten.
 
 <% @command_aliases.each do |a| -%>
-Cmnd_Alias <%= a.upcase %> = <%= @commands.join(', ') %>
+Cmnd_Alias <%= a[:name].upcase %> = <%= @commands.join(', ') %>
 <% end -%>
 <% @env_keep_add.each do |env_keep| -%>
 Defaults    env_keep += "<%= env_keep %>"
