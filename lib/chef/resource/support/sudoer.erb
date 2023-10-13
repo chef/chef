@@ -1,6 +1,7 @@
 # This file is managed by <%= ChefUtils::Dist::Infra::PRODUCT %>. Changes will be overwritten.
 
 <% @command_aliases.each do |a| -%>
+<%
 Cmnd_Alias <%= a[:name].upcase %> = <%= @commands.join(', ') %>
 <% end -%>
 <% @env_keep_add.each do |env_keep| -%>
@@ -14,7 +15,7 @@ Defaults    env_keep -= "<%= env_keep %>"
 <% unless @sudoer.empty? %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %><%= command %><% end -%>
 <% end -%>
 <% else %>
-<% unless @sudoer.empty? %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %> <%= @command_aliases.join(', ') %>
+  <% unless @sudoer.empty? %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %> <%= @command_aliases[:command_list].join(', ') %>
 <% end -%>
 <% end %>
 <% unless @defaults.empty? %>
