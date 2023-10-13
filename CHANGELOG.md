@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.27 -->
-## [v18.3.27](https://github.com/chef/chef/tree/v18.3.27) (2023-10-12)
+<!-- latest_release 18.3.28 -->
+## [v18.3.28](https://github.com/chef/chef/tree/v18.3.28) (2023-10-13)
 
 #### Merged Pull Requests
-- Adding self-hosted FIPS support [#14007](https://github.com/chef/chef/pull/14007) ([johnmccrae](https://github.com/johnmccrae))
+- Move untag to the node to match tag [#13994](https://github.com/chef/chef/pull/13994) ([aknarts](https://github.com/aknarts))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move untag to the node to match tag [#13994](https://github.com/chef/chef/pull/13994) ([aknarts](https://github.com/aknarts)) <!-- 18.3.28 -->
 - Adding self-hosted FIPS support [#14007](https://github.com/chef/chef/pull/14007) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.27 -->
 - Updated the attribute splitting logic to use field_separator [#13956](https://github.com/chef/chef/pull/13956) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.3.26 -->
 - Add documentation review changes to apt_package resource [#13991](https://github.com/chef/chef/pull/13991) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.25 -->
