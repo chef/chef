@@ -115,17 +115,14 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            # RHEL/CentOS type platforms don't have locale-gen
-            a.assertion { shell_out("locale-gen") }
+            a.assertion do
+              # RHEL/CentOS type platforms don't have locale-gen
+              # Windows has locale-gen as part of the install, but not in the path
+              which("locale-gen") || windows?
+            end
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
           end
 
-          requirements.assert(:all_actions) do |a|
-            a.assertion do
-              false
-            end
-            a.failure_message(Chef::Exceptions::ProviderNotFound, "which returned #{which("locale-gen").class} #{which("locale_gen").inspect} vs. shell_out #{shell_out("locale-gen").inspect}")
-          end
         end
 
         # Generates the localization files from templates using locale-gen.
