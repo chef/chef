@@ -87,8 +87,7 @@ describe Chef::Resource::ChocolateyInstaller do
   describe "Installing chocolatey with broken parameters" do
     let(:resource) do
       resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton")
-      resource.instance_variable_set(:@proxy_user, "steveb@microsoft.com")
-      resource.instance_variable_set(:@proxy_password, "")
+      resource.instance_variable_set(:@proxy_user, "user@example.com")
       resource
     end
     it "should error out if both a proxy user and proxy password are not specified" do
