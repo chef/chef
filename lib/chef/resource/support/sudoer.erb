@@ -2,6 +2,7 @@
 
 <% @command_aliases.each do |a| -%>
 Cmnd_Alias <%= a[:name].upcase %> = <%= a[:command_list].join(', ') %>
+<% @commands.append(a[:name]) %>
 <% end -%>
 <% @env_keep_add.each do |env_keep| -%>
 Defaults    env_keep += "<%= env_keep %>"
@@ -9,8 +10,12 @@ Defaults    env_keep += "<%= env_keep %>"
 <% @env_keep_subtract.each do |env_keep| -%>
 Defaults    env_keep -= "<%= env_keep %>"
 <% end -%>
-<% @commands.each do |command| -%>
-<% unless @sudoer.empty? %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %><%= command %><% end -%>
+<%# Remove default value from commands %>
+<% unless @command_aliases.empty? %>
+<% @commands.delete("ALL") %>
+<%end%>
+<% @commands = @commands.uniq.join(', ') %>
+<% unless @sudoer.empty? %><%= @sudoer %> <%= @host %>=(<%= @runas %>) <%= 'NOEXEC:' if @noexec %><%= 'NOPASSWD:' if @nopasswd.to_s == 'true' %><%= 'SETENV:' if @setenv.to_s == 'true' %><%= @commands %>
 <% end -%>
 <% unless @defaults.empty? %>
 Defaults:<%= @sudoer %> <%= @defaults.join(',') %>
