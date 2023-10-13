@@ -119,7 +119,6 @@ class Chef
             end
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
           end
-
         end
 
         # Generates the localization files from templates using locale-gen.
