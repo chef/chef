@@ -16,14 +16,11 @@
 #
 
 require_relative "../resource"
-require_relative "../mixin/which"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class Locale < Chef::Resource
-      extend Chef::Mixin::Which
-
       provides :locale
 
       description "Use the **locale** resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
