@@ -122,15 +122,9 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion do
-              begin
-                a.instance_variable_set(:@whichoutput, which("locale-gen").inspect)
-
-              rescue => e
-                a.instance_variable_set(:@whichoutput, e.inspect)
-              end
               false
             end
-            a.failure_message(Chef::Exceptions::ProviderNotFound, "which returned #{a.instance_variable_get :@whichoutput}")
+            a.failure_message(Chef::Exceptions::ProviderNotFound, "which returned #{which("locale-gen").class} #{which("locale_gen").inspect}")
           end
         end
 
