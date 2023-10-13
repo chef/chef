@@ -182,8 +182,7 @@ include_recipe "git"
 end
 
 locale "set system locale" do
-  lang "en_US.UTF-8"
-  only_if { debian? }
+  lang "en-us"
 end
 
 include_recipe "::_ohai_hint"
