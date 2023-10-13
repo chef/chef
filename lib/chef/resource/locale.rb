@@ -121,18 +121,16 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            # RHEL/CentOS type platforms don't have locale-gen
             a.assertion do
               begin
-                which("locale-gen")
-              rescue NoMethodError => e
-                false
+                @whichoutput=which("locale-gen").inspect
+              rescue => e
+                @whichoutput=e.inspect
               end
-              true
+              false
             end
-            a.failure_message(Chef::Exceptions::ProviderNotFound, "Got a NoMethodError on which")
+            a.failure_message(Chef::Exceptions::ProviderNotFound, "which returned #{@whichoutput}")
           end
-
         end
 
         # Generates the localization files from templates using locale-gen.
