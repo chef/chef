@@ -124,7 +124,7 @@ class Chef
             a.assertion do
               false
             end
-            a.failure_message(Chef::Exceptions::ProviderNotFound, "which returned #{which("locale-gen").class} #{which("locale_gen").inspect}")
+            a.failure_message(Chef::Exceptions::ProviderNotFound, "which returned #{which("locale-gen").class} #{which("locale_gen").inspect} vs. shell_out #{shell_out("locale-gen").inspect}")
           end
         end
 
