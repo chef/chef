@@ -1,7 +1,6 @@
 # This file is managed by <%= ChefUtils::Dist::Infra::PRODUCT %>. Changes will be overwritten.
-
+<%# This template should be tested by kitchen-tests/cookbooks/end_to_end/recipes/_sudo.rb in linux kitchen-tests on GitHub Actions %>
 <% @command_aliases.each do |a| -%>
-<%
 Cmnd_Alias <%= a[:name].upcase %> = <%= @commands.join(', ') %>
 <% end -%>
 <% @env_keep_add.each do |env_keep| -%>
