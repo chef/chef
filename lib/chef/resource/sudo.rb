@@ -50,6 +50,35 @@ class Chef
         groups 'sysadmins, superusers'
       end
       ```
+      **Create Command Aliases and assign them to a group**
+      ```ruby
+        sudo 'webteam' do
+          command_aliases        [{'name':'WEBTEAM_SYSTEMD_JBOSS',
+                                   'command_list': [
+                                     '/usr/bin/systemctl start eap7-standalone.service',
+                                     '/usr/bin/systemctl start jbcs-httpd24-httpd.service', \
+                                     '/usr/bin/systemctl stop eap7-standalone.service', \
+                                     '/usr/bin/systemctl stop jbcs-httpd24-httpd.service', \
+                                     '/usr/bin/systemctl restart eap7-standalone.service', \
+                                     '/usr/bin/systemctl restart jbcs-httpd24-httpd.service', \
+                                     '/usr/bin/systemctl --full edit eap7-standalone.service', \
+                                     '/usr/bin/systemctl --full edit jbcs-httpd24-httpd.service', \
+                                     '/usr/bin/systemctl daemon-reload',
+                                    ]
+                                  },
+                                  {'name':'GENERIC_SYSTEMD',
+                                   'command_list': [
+                                     '/usr/sbin/systemctl list-unit-files',
+                                     '/usr/sbin/systemctl list-timers', \
+                                     '/usr/sbin/systemctl is-active *', \
+                                     '/usr/sbin/systemctl is-enabled *',
+                                    ]
+                                  }
+                                 ]
+          nopasswd               true
+          users                  '%webteam'
+        end
+      ```
 
       **Grant passwordless sudo privileges for specific commands**
 
