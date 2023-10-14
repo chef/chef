@@ -84,6 +84,12 @@ users_manage "sysadmin" do
   action [:create]
 end
 
+# ssh_known_hosts_entry requires ssh-keyscan binary but that one
+# is not in the OpenSUSE Leap 15.5 dokken images by default
+zypper_package 'ssh-tools' do
+  only_if { platform_family?('suse') }
+end
+
 ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
