@@ -139,10 +139,12 @@ class Chef
         default: []
 
       property :command_aliases, Array,
-        description "Command aliases that can be used as allowed commands later in the configuration." \
-                    "The object represents an array of hashes in the following format:" \
-                    "[{'name':'ALIAS1','command_list': [ 'command1', 'command2' ] }," \
-                    " {'name':'Alias2','command_list: [ 'command3', 'command4 arg1 arg2' ]}]",
+        description do
+          "Command aliases that can be used as allowed commands later in the configuration." \
+           "The object represents an array of hashes in the following format:" \
+           "[{'name':'ALIAS1','command_list': [ 'command1', 'command2' ] }," \
+           " {'name':'Alias2','command_list: [ 'command3', 'command4 arg1 arg2' ]}]"
+        end,
         default: []
 
       property :setenv, [TrueClass, FalseClass],
