@@ -99,10 +99,8 @@ class Chef
           "Set-Item -path env:chocolateyProxyLocation -Value #{new_resource.proxy_url}"
         end
 
-        if !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
+        if !new_resource.proxy_user.nil? && new_resource.proxy_password.nil? || new_resource.proxy_user.nil? && !new_resource.proxy_password.nil? || !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
           "Set-Item -path env:chocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:chocolateyProxyPassword -Value #{new_resource.proxy_password}"
-        # elsif (!new_resource.proxy_user.nil? && new_resource.proxy_password.nil?) || (new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?)
-        # Chef::Log.error("Both a Proxy User and a Proxy Password must be set or neither can be set")
         end
 
         converge_if_changed do

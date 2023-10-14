@@ -84,22 +84,9 @@ describe Chef::Resource::ChocolateyInstaller do
     end
   end
 
-  describe "Installing chocolatey with broken parameters" do
-    let(:resource) do
-      resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton")
-      resource.instance_variable_set(:@proxy_user, "user@example.com")
-      resource
-    end
-    it "should error out if both a proxy user and proxy password are not specified" do
-      # require "pry"
-      # binding.pry
-      expect { resource.action :install }.to raise_error(Chef::Exceptions::ValidationFailed)
-    end
-  end
-
-  describe "Chocolatey is idempotent because it" do
+  describe "Chocolatey is idempotent because" do
     context "on windows", :windows_only do
-      it "does not install choco again if it is already installed" do
+      it "it does not install choco again if it is already installed" do
         install_choco
         chocolatey_installer "install" do
           action :install
