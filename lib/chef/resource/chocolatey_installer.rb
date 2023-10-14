@@ -4,7 +4,7 @@ class Chef
       provides :chocolatey_installer
 
       description "Use the Chocolatey Installer resource to ensure that Choco is installed to your specification. Use the Chocolatey Feature resource to customize your install"
-      introduced "18.1"
+      introduced "18.3"
       examples <<~DOC
         **Install Chocolatey**
 
