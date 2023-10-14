@@ -163,7 +163,7 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated openssh-server # we need this for /etc/network/interfaces & ifconfig resource testing
+      - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated ssh-tools # we need this for /etc/network/interfaces & ifconfig resource testing
 
 suites:
   - name: end-to-end
