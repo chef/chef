@@ -40,6 +40,37 @@ sudo "alice" do
   commands ["STARTSSH"]
 end
 
+sudo "webteam" do
+  command_aliases [
+    {
+      "name": "WEBTEAM_SYSTEMD_JBOSS",
+      "command_list": [
+      "/usr/bin/systemctl start eap7-standalone.service",
+      "/usr/bin/systemctl start jbcs-httpd24-httpd.service", \
+      "/usr/bin/systemctl stop eap7-standalone.service", \
+      "/usr/bin/systemctl stop jbcs-httpd24-httpd.service", \
+      "/usr/bin/systemctl restart eap7-standalone.service", \
+      "/usr/bin/systemctl restart jbcs-httpd24-httpd.service", \
+      "/usr/bin/systemctl --full edit eap7-standalone.service", \
+      "/usr/bin/systemctl --full edit jbcs-httpd24-httpd.service", \
+      "/usr/bin/systemctl daemon-reload",
+      ]
+    },
+    {
+      "name": "GENERIC_SYSTEMD",
+      "command_list": [
+        "/usr/sbin/systemctl list-unit-files",
+        "/usr/sbin/systemctl list-timers", \
+        "/usr/sbin/systemctl is-active *", \
+        "/usr/sbin/systemctl is-enabled *",
+      ]
+    }
+  ]
+  nopasswd               true
+  users                  "%webteam"
+  commands %w(WEBTEAM_SYSTEMD_JBOSS GENERIC_SYSTEMD)
+end
+
 sudo "git" do
   user "git"
   runas "phabricator"
