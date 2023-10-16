@@ -57,12 +57,12 @@ class Chef
         description: "The password to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_user are set"
 
       load_current_value do
-        current_state = fetch_choco_installer
+        current_state = is_choco_installed?
         current_value_does_not_exist! if current_state == false
         current_state
       end
 
-      def fetch_choco_installer
+      def is_choco_installed?
         ::File.exist?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe")
       end
 
@@ -80,27 +80,27 @@ class Chef
 
       action :install, description: "Installs Chocolatey package manager" do
         unless new_resource.download_url.nil?
-          "Set-Item -path env:chocolateyDownloadUrl -Value #{new_resource.download_url}"
+          powershell_exec("Set-Item -path env:chocolateyDownloadUrl -Value #{new_resource.download_url}")
         end
 
         unless new_resource.chocolatey_version.nil?
-          "Set-Item -path env:chocolateyVersion -Value #{new_resource.chocolatey_version}"
+          powershell_exec("Set-Item -path env:chocolateyVersion -Value #{new_resource.chocolatey_version}")
         end
 
         if new_resource.use_native_unzip == true
-          "Set-Item -path env:chocolateyUseWindowsCompression -Value true"
+          powershell_exec("Set-Item -path env:chocolateyUseWindowsCompression -Value true")
         end
 
         if new_resource.ignore_proxy == true
-          "Set-Item -path env:chocolateyIgnoreProxy -Value true"
+          powershell_exec("Set-Item -path env:chocolateyIgnoreProxy -Value true")
         end
 
         unless new_resource.proxy_url.nil?
-          "Set-Item -path env:chocolateyProxyLocation -Value #{new_resource.proxy_url}"
+          powershell_exec("Set-Item -path env:chocolateyProxyLocation -Value #{new_resource.proxy_url}")
         end
 
         if !new_resource.proxy_user.nil? && new_resource.proxy_password.nil? || new_resource.proxy_user.nil? && !new_resource.proxy_password.nil? || !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
-          "Set-Item -path env:chocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:chocolateyProxyPassword -Value #{new_resource.proxy_password}"
+          powershell_exec("Set-Item -path env:chocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:chocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 
         converge_if_changed do
