@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.31 -->
-## [v18.3.31](https://github.com/chef/chef/tree/v18.3.31) (2023-10-13)
+<!-- latest_release 18.3.32 -->
+## [v18.3.32](https://github.com/chef/chef/tree/v18.3.32) (2023-10-16)
 
 #### Merged Pull Requests
-- Revert &quot;Update sudoer.erb (#14015)&quot; [#14021](https://github.com/chef/chef/pull/14021) ([tpowell-progress](https://github.com/tpowell-progress))
+- Update test crts for ssl_policies_spec.rb [#14025](https://github.com/chef/chef/pull/14025) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update test crts for ssl_policies_spec.rb [#14025](https://github.com/chef/chef/pull/14025) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.32 -->
 - Revert &quot;Update sudoer.erb (#14015)&quot; [#14021](https://github.com/chef/chef/pull/14021) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.31 -->
 - Fix sudoer.erb [#14015](https://github.com/chef/chef/pull/14015) ([hunter86bg](https://github.com/hunter86bg)) <!-- 18.3.30 -->
 - Fix validation on locale-gen to account for the fact that Windows install does not have it on the path. [#14014](https://github.com/chef/chef/pull/14014) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.29 -->
