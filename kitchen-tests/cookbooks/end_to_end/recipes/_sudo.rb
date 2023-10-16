@@ -54,7 +54,7 @@ sudo "webteam" do
       "/usr/bin/systemctl --full edit eap7-standalone.service", \
       "/usr/bin/systemctl --full edit jbcs-httpd24-httpd.service", \
       "/usr/bin/systemctl daemon-reload",
-      ]
+      ],
     },
     {
       "name": "GENERIC_SYSTEMD",
@@ -63,12 +63,12 @@ sudo "webteam" do
         "/usr/sbin/systemctl list-timers", \
         "/usr/sbin/systemctl is-active *", \
         "/usr/sbin/systemctl is-enabled *",
-      ]
-    }
+      ],
+    },
   ]
   nopasswd               true
   users                  "%webteam"
-  commands %w(WEBTEAM_SYSTEMD_JBOSS GENERIC_SYSTEMD)
+  commands ['WEBTEAM_SYSTEMD_JBOSS', 'GENERIC_SYSTEMD']
 end
 
 sudo "git" do
