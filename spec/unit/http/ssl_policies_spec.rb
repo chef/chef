@@ -136,7 +136,6 @@ describe "HTTP SSL Policy" do
       end
 
       it "enables verification of self-signed certificates" do
-        puts CHEF_SPEC_DATA
         path = File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt")
         self_signed_crt = OpenSSL::X509::Certificate.new(File.binread(path))
 
