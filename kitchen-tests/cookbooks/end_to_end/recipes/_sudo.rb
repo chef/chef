@@ -68,7 +68,7 @@ sudo "webteam" do
   ]
   nopasswd               true
   users                  "%webteam"
-  commands ['WEBTEAM_SYSTEMD_JBOSS', 'GENERIC_SYSTEMD']
+  commands %w(WEBTEAM_SYSTEMD_JBOSS GENERIC_SYSTEMD)
 end
 
 sudo "git" do
