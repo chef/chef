@@ -110,24 +110,28 @@ class Chef
 
       action :uninstall, description: "Uninstall Chocolatey package manager" do
         converge_by("Uninstall Choco") do
-          path = 'c:\programdata\chocolatey\bin' # rubocop:disable Style/StringLiterals
-          powershell_code = <<~CODE
-            Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
-            [Environment]::SetEnvironmentVariable("ChocolateyLastPathUpdate", $null ,"User")
-            [Environment]::SetEnvironmentVariable("ChocolateyToolsLocation", $null ,"User")
-            [Environment]::SetEnvironmentVariable("ChocolateyInstall", $null ,"Machine")
-            $path = [System.Environment]::GetEnvironmentVariable(
-                'PATH',
-                'Machine'
-            )
-            $path = ($path.Split(';') | Where-Object { $_ -ne "#{path}" }) -join ";"
-            [System.Environment]::SetEnvironmentVariable(
-                'PATH',
-                $path,
-                'Machine'
-            )
-          CODE
-          powershell_exec(powershell_code).error!
+          path = "c:\\programdata\\chocolatey\\bin"
+          if powershell_exec("Test-Path -literalpath '#{path}'").result == false
+            Chef::Log.warn("Chocolatey is already uninstalled.")
+          else
+            powershell_code = <<~CODE
+              Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
+              [Environment]::SetEnvironmentVariable("ChocolateyLastPathUpdate", $null ,"User")
+              [Environment]::SetEnvironmentVariable("ChocolateyToolsLocation", $null ,"User")
+              [Environment]::SetEnvironmentVariable("ChocolateyInstall", $null ,"Machine")
+              $path = [System.Environment]::GetEnvironmentVariable(
+                  'PATH',
+                  'Machine'
+              )
+              $path = ($path.Split(';') | Where-Object { $_ -ne "#{path}" }) -join ";"
+              [System.Environment]::SetEnvironmentVariable(
+                  'PATH',
+                  $path,
+                  'Machine'
+              )
+            CODE
+            powershell_exec(powershell_code).error!
+          end
         end
       end
     end
