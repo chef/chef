@@ -74,12 +74,13 @@ describe Chef::Resource::ChocolateyInstaller do
   describe "Installing chocolatey" do
     context "on windows", :windows_only do
       it "can install Chocolatey with parameters" do
+        resource.chocolatey_version = '1.4.0'
         expect { resource.action :install }.not_to raise_error
       end
 
       it "returns false if a chocolatey install cannot be found" do
         allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
-        expect(resource.is_choco_installed?).to eql(false)
+        expect(resource.action :uninstall).to raise_error
       end
     end
   end

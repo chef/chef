@@ -104,13 +104,7 @@ class Chef
         end
 
         converge_if_changed do
-          # the '-bor' parameter below is a Bitwise Or of 2 bytes that is used to create the correct Security Protocol offset with and results in creating TLS 1.2
-          powershell_code = <<-CODE
-            Set-ExecutionPolicy Bypass -Scope Process -Force;
-            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
-            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-          CODE
-          powershell_exec(powershell_code).result
+          powershell_exec("iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
         end
       end
 
@@ -133,7 +127,7 @@ class Chef
                 'Machine'
             )
           CODE
-          powershell_exec(powershell_code).result
+          powershell_exec(powershell_code).error!
         end
       end
     end
