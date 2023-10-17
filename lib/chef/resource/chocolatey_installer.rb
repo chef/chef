@@ -99,7 +99,7 @@ class Chef
           powershell_exec("Set-Item -path env:chocolateyProxyLocation -Value #{new_resource.proxy_url}")
         end
 
-        if !new_resource.proxy_user.nil? && new_resource.proxy_password.nil? || new_resource.proxy_user.nil? && !new_resource.proxy_password.nil? || !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
+        unless !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
           powershell_exec("Set-Item -path env:chocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:chocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 

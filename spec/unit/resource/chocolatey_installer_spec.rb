@@ -74,7 +74,7 @@ describe Chef::Resource::ChocolateyInstaller do
   describe "Installing chocolatey" do
     context "on windows", :windows_only do
       it "can install Chocolatey with parameters" do
-        resource.chocolatey_version = '1.4.0'
+        resource.chocolatey_version = "1.4.0"
         expect { resource.action :install }.not_to raise_error
       end
 
