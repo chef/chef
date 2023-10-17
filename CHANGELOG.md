@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.88 -->
-## [v17.10.88](https://github.com/chef/chef/tree/v17.10.88) (2023-10-12)
+<!-- latest_release 17.10.89 -->
+## [v17.10.89](https://github.com/chef/chef/tree/v17.10.89) (2023-10-17)
 
 #### Merged Pull Requests
-- Adding self-hosted fips testing support [#13989](https://github.com/chef/chef/pull/13989) ([johnmccrae](https://github.com/johnmccrae))
+- Update test crts for ssl_policies_spec.rb (#14025) [#14026](https://github.com/chef/chef/pull/14026) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update test crts for ssl_policies_spec.rb (#14025) [#14026](https://github.com/chef/chef/pull/14026) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.89 -->
 - Adding self-hosted fips testing support [#13989](https://github.com/chef/chef/pull/13989) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.88 -->
 - try fixing kitchen tests for macOS [#14008](https://github.com/chef/chef/pull/14008) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.87 -->
 - Pulling in final changes to sign pacakges and move DLL&#39;s around [#14003](https://github.com/chef/chef/pull/14003) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.86 -->
