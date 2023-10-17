@@ -126,7 +126,7 @@ class Chef
                 'PATH',
                 'Machine'
             )
-            $path = ($path.Split(';') | Where-Object { $_ -ne #{path} }) -join ";"
+            $path = ($path.Split(';') | Where-Object { $_ -ne "#{path}" }) -join ";"
             [System.Environment]::SetEnvironmentVariable(
                 'PATH',
                 $path,
