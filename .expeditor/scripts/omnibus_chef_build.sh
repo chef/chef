@@ -12,7 +12,7 @@ export PATH="/opt/omnibus-toolchain/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
 
-echo "--- Installing Chef Foundation" 
+echo "--- Installing Chef Foundation"
 curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
 
 if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
