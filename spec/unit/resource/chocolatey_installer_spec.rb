@@ -79,7 +79,7 @@ describe Chef::Resource::ChocolateyInstaller do
 
       it "returns false if a chocolatey install cannot be found" do
         allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
-        expect(resource.fetch_choco_installer).to eql(false)
+        expect(resource.is_choco_installed?).to eql(false)
       end
     end
   end
