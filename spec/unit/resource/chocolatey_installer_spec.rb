@@ -80,7 +80,7 @@ describe Chef::Resource::ChocolateyInstaller do
 
       it "logs a warning if a chocolatey install cannot be found" do
         allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
-        Chef::Log.warn("Chocolatey is already uninstalled.").not_to output.to_stderr
+        expect { Chef::Log.warn("Chocolatey is already uninstalled.") }.not_to output.to_stderr
       end
     end
   end
