@@ -502,7 +502,7 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (>= 17)
-  chefstyle
+  chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (~> 1.15.5)
@@ -515,6 +515,7 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  rubocop
   ruby-shadow!
   webmock
 
