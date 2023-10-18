@@ -1,3 +1,4 @@
+Set-PSDebug -Trace 2
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)

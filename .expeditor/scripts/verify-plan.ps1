@@ -2,6 +2,8 @@
 
 #Requires -Version 5
 
+Set-PSDebug -Trace 2
+
 param(
     # The name of the plan that is to be built.
     [string]$Plan
