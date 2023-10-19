@@ -1,7 +1,7 @@
 ---
 expeditor:
-  cached_folders:
-    - vendor
+  #  cached_folders:
+  #  - vendor
   defaults:
     buildkite:
       retry:
