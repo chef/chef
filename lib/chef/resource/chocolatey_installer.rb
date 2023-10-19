@@ -130,8 +130,6 @@ class Chef
       end
 
       action :upgrade, description: "Upgrades the Chocolatey package manager" do
-        require "pry"
-        binding.pry
         unless new_resource.download_url.nil?
           powershell_exec("Set-Item -path env:chocolateyDownloadUrl -Value #{new_resource.download_url}")
         end

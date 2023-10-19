@@ -111,18 +111,18 @@ describe Chef::Resource::ChocolateyInstaller do
     context "on windows", :windows_only do
       describe "when the versions do not match" do
         it "upgrades if the proposed version is newer" do
-          allow(resource).to receive(:get_choco_version).and_return(Gem::Version.new("1.2.2")) 
+          allow(resource).to receive(:get_choco_version).and_return(Gem::Version.new("1.2.2"))
           allow(resource).to receive(:chocolatey_version).and_return(Gem::Version.new("4.2.2"))
-          expect{ resource.action :upgrade }.not_to raise_error
-          allow(resource).to receive(:get_choco_version).and_return(Gem::Version.new("4.2.2")) 
+          expect { resource.action :upgrade }.not_to raise_error
+          allow(resource).to receive(:get_choco_version).and_return(Gem::Version.new("4.2.2"))
           expect(resource.get_choco_version).to eql(Gem::Version.new("4.2.2"))
         end
       end
       describe "when the versions match" do
         it "does not upgrade if the old version is identical" do
-          allow(resource).to receive(:get_choco_version).and_return(Gem::Version.new("2.2.2")) 
+          allow(resource).to receive(:get_choco_version).and_return(Gem::Version.new("2.2.2"))
           allow(resource).to receive(:chocolatey_version).and_return(Gem::Version.new("2.2.2"))
-          expect{ resource.action :upgrade }.not_to raise_error
+          expect { resource.action :upgrade }.not_to raise_error
           expect(resource).not_to be_updated
         end
       end
