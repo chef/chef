@@ -31,9 +31,18 @@ class Chef
           chocolatey_version '2.12.24'
         end
         ```
+
+        **Upgrade Chocolatey with Parameters**
+
+        ```ruby
+        chocolatey_installer 'latest' do
+          action :upgrade
+          chocolatey_version '2.12.24'
+        end
+        ```
       DOC
 
-      allowed_actions :install, :uninstall
+      allowed_actions :install, :uninstall, :upgrade
 
       property :download_url, String,
         description: "The URL to download Chocolatey from. This defaults to the value of $env:chocolateyDownloadUrl, if it is set, and otherwise falls back to the official Chocolatey community repository to download the Chocolatey package. It can be used for offline installation by providing a path to a Chocolatey.nupkg."
@@ -66,9 +75,21 @@ class Chef
         ::File.exist?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe")
       end
 
+      def get_choco_version
+        powershell_exec("choco --version").result
+      end
+
+      def existing_version
+        Gem::Version.new(get_choco_version)
+      end
+
+      def proposed_version
+        Gem::Version.new(new_resource.chocolatey_version)
+      end
+
       def define_resource_requirements
         [ new_resource.proxy_user, new_resource.proxy_password ].each do
-          requirements.assert(:install) do |a|
+          requirements.assert(:install, :upgrade).each do |a|
             a.assertion do
               (!new_resource.proxy_user.nil? && new_resource.proxy_password.nil?) || (new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?)
             end
@@ -105,6 +126,40 @@ class Chef
 
         converge_if_changed do
           powershell_exec("iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
+        end
+      end
+
+      action :upgrade, description: "Upgrades the Chocolatey package manager" do
+        require "pry"
+        binding.pry
+        unless new_resource.download_url.nil?
+          powershell_exec("Set-Item -path env:chocolateyDownloadUrl -Value #{new_resource.download_url}")
+        end
+
+        unless new_resource.chocolatey_version.nil?
+          powershell_exec("Set-Item -path env:chocolateyVersion -Value #{new_resource.chocolatey_version}")
+        end
+
+        if new_resource.use_native_unzip == true
+          powershell_exec("Set-Item -path env:chocolateyUseWindowsCompression -Value true")
+        end
+
+        if new_resource.ignore_proxy == true
+          powershell_exec("Set-Item -path env:chocolateyIgnoreProxy -Value true")
+        end
+
+        unless new_resource.proxy_url.nil?
+          powershell_exec("Set-Item -path env:chocolateyProxyLocation -Value #{new_resource.proxy_url}")
+        end
+
+        unless !new_resource.proxy_user.nil? && !new_resource.proxy_password.nil?
+          powershell_exec("Set-Item -path env:chocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:chocolateyProxyPassword -Value #{new_resource.proxy_password}")
+        end
+
+        if existing_version < proposed_version
+          converge_if_changed do
+            powershell_exec("choco upgrade chocolatey").error!
+          end
         end
       end
 
