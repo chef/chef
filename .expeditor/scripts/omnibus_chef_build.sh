@@ -19,7 +19,7 @@ if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
   export SSL_CERT_FILE="/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem"
 fi
 
-if [[ "$BUILDKITE_LABEL" =~ rhel|sles|centos ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
 
   echo "$RPM_SIGNING_KEY" | gpg --import
