@@ -55,10 +55,11 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-group(:chefstyle) do
-  # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
-end
+gem "chefstyle"
+# group(:chefstyle) do
+#   # for testing new chefstyle rules
+#   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
+# end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
