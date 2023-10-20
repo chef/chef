@@ -42,6 +42,13 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
+
 PATH
   remote: .
   specs:
@@ -495,7 +502,7 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (>= 17)
-  chefstyle
+  chefstyle!
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (~> 1.15.5)
@@ -508,6 +515,7 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
