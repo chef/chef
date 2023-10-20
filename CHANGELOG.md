@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.40 -->
-## [v18.3.40](https://github.com/chef/chef/tree/v18.3.40) (2023-10-19)
+<!-- latest_release 18.3.41 -->
+## [v18.3.41](https://github.com/chef/chef/tree/v18.3.41) (2023-10-20)
 
 #### Merged Pull Requests
-- Rocky Pkg - signing [#13997](https://github.com/chef/chef/pull/13997) ([poorndm](https://github.com/poorndm))
+- Creating a choco installer to match other resources [#14022](https://github.com/chef/chef/pull/14022) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Creating a choco installer to match other resources [#14022](https://github.com/chef/chef/pull/14022) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.41 -->
 - Rocky Pkg - signing [#13997](https://github.com/chef/chef/pull/13997) ([poorndm](https://github.com/poorndm)) <!-- 18.3.40 -->
 - Bump omnibus-software from `e3e8437` to `4fef367` in /omnibus [#14030](https://github.com/chef/chef/pull/14030) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.3.39 -->
 - Update command aliases documentation [#14024](https://github.com/chef/chef/pull/14024) ([hunter86bg](https://github.com/hunter86bg)) <!-- 18.3.38 -->
