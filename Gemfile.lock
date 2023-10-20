@@ -1,12 +1,4 @@
 GIT
-  remote: https://github.com/chef/chefstyle.git
-  revision: 71ae97744713ffd91ac8277d7a1385dabb6d570b
-  branch: main
-  specs:
-    chefstyle (2.2.2)
-      rubocop (= 1.25.1)
-
-GIT
   remote: https://github.com/chef/ohai.git
   revision: d5d03240e6ee1130ef38441c1d25a7ca08df0cab
   branch: main
@@ -199,6 +191,8 @@ GEM
       chef-utils (>= 17.0)
       chef-zero (>= 14.0)
       net-ssh
+    chefstyle (2.2.2)
+      rubocop (= 1.25.1)
     coderay (1.1.3)
     concurrent-ruby (1.2.2)
     corefoundation (0.3.13)
