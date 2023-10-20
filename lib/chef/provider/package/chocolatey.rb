@@ -32,7 +32,7 @@ class Chef
         PATHFINDING_POWERSHELL_COMMAND = "[System.Environment]::GetEnvironmentVariable('ChocolateyInstall', 'MACHINE')".freeze
         CHOCO_MISSING_MSG = <<~EOS.freeze
           Could not locate your Chocolatey install. To install chocolatey, we recommend
-          the 'chocolatey' cookbook (https://github.com/chocolatey/chocolatey-cookbook).
+          the 'chocolatey_installer' resource.
           If Chocolatey is installed, ensure that the 'ChocolateyInstall' environment
           variable is correctly set. You can verify this with the PowerShell command
           '#{PATHFINDING_POWERSHELL_COMMAND}'.
