@@ -86,7 +86,9 @@ class Chef
       def define_resource_requirements
         requirements.assert(:install, :upgrade).each do |a|
           a.assertion do
-            (new_resource.proxy_user.nil? != new_resource.proxy_password.nil?)
+            # This is an exclusive OR - XOR - we're trying to coax an error out if one, but not both, 
+            # parameters are empty.
+            new_resource.proxy_user.nil? != new_resource.proxy_password.nil?
           end
           a.failure_message(Chef::Exceptions::ValidationFailed, "You must specify both a proxy_user and a proxy_password")
           a.whyrun("Assuming that if you have configured a 'proxy_user' you must also supply a 'proxy_password'")
