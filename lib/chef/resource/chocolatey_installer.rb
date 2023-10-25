@@ -118,8 +118,10 @@ class Chef
           powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 
+        # note that Invoke-Expression is being called on the downloaded script (outer parens), 
+        # not triggering the script download (inner parens)
         converge_if_changed do
-          powershell_exec("iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
+          powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
         end
       end
 
