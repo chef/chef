@@ -86,7 +86,7 @@ class Chef
       def define_resource_requirements
         requirements.assert(:install, :upgrade).each do |a|
           a.assertion do
-            # This is an exclusive OR - XOR - we're trying to coax an error out if one, but not both, 
+            # This is an exclusive OR - XOR - we're trying to coax an error out if one, but not both,
             # parameters are empty.
             new_resource.proxy_user.nil? != new_resource.proxy_password.nil?
           end
@@ -120,7 +120,7 @@ class Chef
           powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 
-        # note that Invoke-Expression is being called on the downloaded script (outer parens), 
+        # note that Invoke-Expression is being called on the downloaded script (outer parens),
         # not triggering the script download (inner parens)
         converge_if_changed do
           powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
