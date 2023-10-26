@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.43 -->
-## [v18.3.43](https://github.com/chef/chef/tree/v18.3.43) (2023-10-20)
+<!-- latest_release 18.3.44 -->
+## [v18.3.44](https://github.com/chef/chef/tree/v18.3.44) (2023-10-26)
 
 #### Merged Pull Requests
-- Revert &quot;Creating a choco installer to match other resources&quot; [#14040](https://github.com/chef/chef/pull/14040) ([johnmccrae](https://github.com/johnmccrae))
+- Add platform  sles-x86-64 [#14044](https://github.com/chef/chef/pull/14044) ([poorndm](https://github.com/poorndm))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add platform  sles-x86-64 [#14044](https://github.com/chef/chef/pull/14044) ([poorndm](https://github.com/poorndm)) <!-- 18.3.44 -->
 - Revert &quot;Creating a choco installer to match other resources&quot; [#14040](https://github.com/chef/chef/pull/14040) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.43 -->
 - Revert &quot;Put chefstyle gem back in chefstyle group&quot; [#14038](https://github.com/chef/chef/pull/14038) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.42 -->
 - Creating a choco installer to match other resources [#14022](https://github.com/chef/chef/pull/14022) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.41 -->
