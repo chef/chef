@@ -26,8 +26,8 @@ builder-to-testers-map:
   debian-10-aarch64:
     - debian-10-aarch64
     - debian-11-aarch64
-  el-6-x86_64:
-    - el-6-x86_64
+  # el-6-x86_64:
+  #   - el-6-x86_64
   el-7-aarch64:
     - el-7-aarch64
     - amazon-2-aarch64

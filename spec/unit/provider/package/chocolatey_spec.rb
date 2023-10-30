@@ -525,7 +525,7 @@ describe "behavior when Chocolatey is not installed" do
   end
 
   let(:error_regex) do
-    /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m
+    /Could not locate.*installer.*resource.*PowerShell.*GetEnvironmentVariable/m
   end
 
   context "#choco_exe" do
