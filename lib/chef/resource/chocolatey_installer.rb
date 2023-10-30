@@ -3,7 +3,7 @@ class Chef
     class ChocolateyInstaller < Chef::Resource
       provides :chocolatey_installer
 
-      description "Use the chocolatey_installer resource to ensure that Chocolatey itself is installed to your specification. Use the Chocolatey Feature resource to customize your install. Then use the Chocolatey Package resource to install pacakges on Windows via Chocolatey."
+      description "Use the chocolatey_installer resource to ensure that Chocolatey itself is installed to your specification. Use the Chocolatey Feature resource to customize your install. Then use the Chocolatey Package resource to install packages on Windows via Chocolatey."
       introduced "18.3"
       examples <<~DOC
           **Install Chocolatey**
@@ -53,7 +53,7 @@ class Chef
       allowed_actions :install, :uninstall, :upgrade
 
       property :download_url, String,
-        description: "The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, instals falls back to the official Chocolatey community repository to download the Chocolatey package. It can also be used for offline installation by providing a path to a Chocolatey.nupkg."
+        description: "The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, Chocolatey installs fall back to the official Chocolatey community repository to download Chocolatey from. It can also be used for offline installation by providing a path to a Chocolatey.nupkg."
 
       property :chocolatey_version, String,
         description: "Specifies a target version of Chocolatey to install. By default, the latest stable version is installed. This will use the value in $env:ChocolateyVersion by default, if that environment variable is present. This parameter is ignored if download_url is set."
