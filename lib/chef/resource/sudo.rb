@@ -60,7 +60,8 @@ class Chef
       end
       ```
 
-      **Create Command Aliases and assign them to a group**
+      **Create command aliases and assign them to a group**
+
       ```ruby
       sudo 'webteam' do
         command_aliases [
@@ -113,7 +114,7 @@ class Chef
         coerce: proc { |x| coerce_groups(x) }
 
       property :commands, Array,
-        description: "An array of full paths to commands and/or Cmnd_Aliases this sudoer can execute.",
+        description: "An array of full paths to commands and/or command aliases this sudoer can execute.",
         default: ["ALL"]
 
       property :host, String,
@@ -144,7 +145,7 @@ class Chef
         default: []
 
       property :command_aliases, Array,
-        description: "Command aliases that can be used as allowed commands later in the configuration.The object represents an array of hashes in the following format: `[{'name':'ALIAS1','command_list': [ 'command1', 'command2' ] }, {'name':'Alias2','command_list: [ 'command3', 'command4 arg1 arg2' ]}]`",
+        description: "Command aliases that can be used as allowed commands later in the configuration. The object represents an array of hashes in the following format: `[{'name':'ALIAS1','command_list': [ 'command1', 'command2' ] }, {'name':'Alias2','command_list: [ 'command3', 'command4 arg1 arg2' ]}]`",
         default: []
 
       property :setenv, [TrueClass, FalseClass],
