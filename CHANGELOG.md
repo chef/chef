@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.46 -->
-## [v18.3.46](https://github.com/chef/chef/tree/v18.3.46) (2023-10-30)
+<!-- latest_release 18.3.47 -->
+## [v18.3.47](https://github.com/chef/chef/tree/v18.3.47) (2023-10-31)
 
 #### Merged Pull Requests
-- Adding a chocolatey installer [#14043](https://github.com/chef/chef/pull/14043) ([johnmccrae](https://github.com/johnmccrae))
+- Optimize chocolatey when doing large numbers of operations, by batching and caching [#13972](https://github.com/chef/chef/pull/13972) ([jaymzjulian](https://github.com/jaymzjulian))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Optimize chocolatey when doing large numbers of operations, by batching and caching [#13972](https://github.com/chef/chef/pull/13972) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.3.47 -->
 - Adding a chocolatey installer [#14043](https://github.com/chef/chef/pull/14043) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.46 -->
 - Minor text fixes for sudo resource [#14049](https://github.com/chef/chef/pull/14049) ([IanMadd](https://github.com/IanMadd)) <!-- 18.3.45 -->
 - Add platform  sles-x86-64 [#14044](https://github.com/chef/chef/pull/14044) ([poorndm](https://github.com/poorndm)) <!-- 18.3.44 -->
