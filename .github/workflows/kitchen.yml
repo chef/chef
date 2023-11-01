@@ -44,7 +44,7 @@ jobs:
         if ($output -is [Array]) { $output = $output[0] }
 
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
-        Move-Item -Path $output.FullName -Destination $target_path
+        #Move-Item -Path $output.FullName -Destination $target_path -ErrorAction SilentlyContinue
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
