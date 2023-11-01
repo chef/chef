@@ -35,6 +35,14 @@ jobs:
         # This leads to failures during testing. Moving that file to its correct position here.
         # Another example of 'bad' that needs to be corrected
         $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+
+
+        # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
+        # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
+        # making the leap that ansidecl.h isn't going to vary in a way that will fail
+        # subtly.
+        if ($output -is [Array]) { $output = $output[0] }
+
         $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
         Move-Item -Path $output.FullName -Destination $target_path
 
