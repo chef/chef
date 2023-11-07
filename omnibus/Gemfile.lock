@@ -19,10 +19,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: b3d89a4d490cef3015f9cda5f5e2ced439be3d30
+  revision: 4fef36786ead96e7f2f23e6f01f09efb71894992
   branch: main
   specs:
-    omnibus-software (23.10.300)
+    omnibus-software (23.10.302)
       omnibus (>= 9.0.0)
 
 GIT
@@ -218,7 +218,7 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.56.20)
+    inspec-core (4.56.58)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
@@ -304,7 +304,7 @@ GEM
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
-    ohai (17.9.1)
+    ohai (17.9.4)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -487,4 +487,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.3.7
+   2.3.18
