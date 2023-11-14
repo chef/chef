@@ -420,6 +420,7 @@ GEM
     zhexdump (0.0.2)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
