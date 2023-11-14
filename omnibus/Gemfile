@@ -6,6 +6,9 @@ gem "artifactory"
 
 gem "pedump"
 
+gem "inspec-core", "= 5.22.36"
+gem "inspec-core-bin", "= 5.22.36"
+
 # Use Berkshelf for resolving cookbook dependencies
 # Using a branch here that calls out a berkshelf version for chef-17
 gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "jfm/chef-17-berkshelf"
