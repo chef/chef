@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.50 -->
-## [v18.3.50](https://github.com/chef/chef/tree/v18.3.50) (2023-11-14)
+<!-- latest_release 18.3.51 -->
+## [v18.3.51](https://github.com/chef/chef/tree/v18.3.51) (2023-11-15)
 
 #### Merged Pull Requests
-- Add missing `description` to windows_service load_current_resource for idempotent check to be successful [#14064](https://github.com/chef/chef/pull/14064) ([jakauppila](https://github.com/jakauppila))
+- unf_ext-0.0.8.2 lock for no c++20 flag [#14071](https://github.com/chef/chef/pull/14071) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- unf_ext-0.0.8.2 lock for no c++20 flag [#14071](https://github.com/chef/chef/pull/14071) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.51 -->
 - Add missing `description` to windows_service load_current_resource for idempotent check to be successful [#14064](https://github.com/chef/chef/pull/14064) ([jakauppila](https://github.com/jakauppila)) <!-- 18.3.50 -->
 - Enable state tracking on mutating Array operations [#13996](https://github.com/chef/chef/pull/13996) ([Annih](https://github.com/Annih)) <!-- 18.3.49 -->
 - Add Danger CI [#13976](https://github.com/chef/chef/pull/13976) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.48 -->
