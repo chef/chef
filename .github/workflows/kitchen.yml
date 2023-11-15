@@ -161,6 +161,7 @@ jobs:
         working-directory: kitchen-tests
         run:  |
           bundle exec kitchen test end-to-end-${{ matrix.os }}
+          cat .kitchen/logs/kitchen.log
   # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
   # if dokken container hosted on Ubuntu 22.04 or later. Lock to Ubuntu 20.04
   # for now.
