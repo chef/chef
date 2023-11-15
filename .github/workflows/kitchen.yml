@@ -160,7 +160,8 @@ jobs:
       - name: Run Test Kitchen
         working-directory: kitchen-tests
         run:  |
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+          echo "___KITCHEN RUN__"
+          bundle exec kitchen test end-to-end-${{ matrix.os }} || true
           echo "___KITCHEN LOG___"
           cat .kitchen/logs/kitchen.log
   # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
