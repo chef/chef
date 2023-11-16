@@ -125,16 +125,29 @@ inspec_waiver_file_entry "fake_inspec_control_002" do
 end
 
 user_ulimit "tomcat" do
+  as_soft_limit 65535
+  as_hard_limit "unlimited"
+  cpu_soft_limit 1024
+  cpu_hard_limit 8096
   filehandle_soft_limit 8192
   filehandle_hard_limit 8192
   process_soft_limit 61504
   process_hard_limit 61504
+  locks_limit 8192
+  maxlogins_soft_limit 5
+  maxlogins_hard_limit 10
   memory_limit 1024
+  msgqueue_soft_limit 2048
+  msgqueue_hard_limit 4096
   core_limit 2048
   core_soft_limit 1024
   core_hard_limit "unlimited"
   stack_soft_limit 2048
   stack_hard_limit 2048
+  sigpending_soft_limit 2048
+  sigpending_hard_limit 2048
+  rss_soft_limit
+  rss_hard_limit
   rtprio_soft_limit 60
   rtprio_hard_limit 60
 end
