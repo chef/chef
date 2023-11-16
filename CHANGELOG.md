@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.52 -->
-## [v18.3.52](https://github.com/chef/chef/tree/v18.3.52) (2023-11-15)
+<!-- latest_release 18.3.53 -->
+## [v18.3.53](https://github.com/chef/chef/tree/v18.3.53) (2023-11-16)
 
 #### Merged Pull Requests
-- Prevent inspec 6 from being used yet [#14076](https://github.com/chef/chef/pull/14076) ([tpowell-progress](https://github.com/tpowell-progress))
+- feat(ulimits): additional ulimit options [#13394](https://github.com/chef/chef/pull/13394) ([chrisminton](https://github.com/chrisminton))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- feat(ulimits): additional ulimit options [#13394](https://github.com/chef/chef/pull/13394) ([chrisminton](https://github.com/chrisminton)) <!-- 18.3.53 -->
 - Prevent inspec 6 from being used yet [#14076](https://github.com/chef/chef/pull/14076) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.52 -->
 - unf_ext-0.0.8.2 lock for no c++20 flag [#14071](https://github.com/chef/chef/pull/14071) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.51 -->
 - Add missing `description` to windows_service load_current_resource for idempotent check to be successful [#14064](https://github.com/chef/chef/pull/14064) ([jakauppila](https://github.com/jakauppila)) <!-- 18.3.50 -->
