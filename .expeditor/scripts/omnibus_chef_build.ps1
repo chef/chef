@@ -28,8 +28,9 @@ $env:ARTIFACTORY_BASE_PATH="com/getchef"
 $env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME="buildkite"
 
-Write-Output "--- Install Chef Foundation"
-. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $CHEF_FOUNDATION_VERSION
+
+Write-Output "--- Installing Chef Foundation ${env:CHEF_FOUNDATION_VERSION}"
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v ${env:CHEF_FOUNDATION_VERSION}
 
 $env:PROJECT_NAME="chef"
 $env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
@@ -49,6 +50,9 @@ If ($omnibus_toolchain_msystem -eq "x64-mingw-ucrt") {
 $original_path = $env:PATH
 $env:PATH = "${env:MSYS2_INSTALL_DIR}\$env:MSYSTEM\bin;${env:MSYS2_INSTALL_DIR}\usr\bin;${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin;C:\wix;C:\Program Files (x86)\Windows Kits\8.1\bin\x64;${original_path}"
 Write-Output "env:PATH = $env:PATH"
+
+Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
+gem uninstall -I libyajl2
 
 Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"

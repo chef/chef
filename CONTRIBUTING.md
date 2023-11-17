@@ -22,8 +22,11 @@ We have a 3 step process for contributions:
 
 ### Branching
 
-* If branching within `chef/chef` repo, prefix your initials such as `tp/branch-name` to help delineate at a glance who created the branch.
-* (for internal teams) Please include a ticket number for JIRA (e.g., `tp/infc-399-branch-short-desc`) if possible to help JIRA link back to the branch and subsequent PR.
+When creating pull requests, you will need to push your branch to your own fork of the repo.
+
+For internal teams:
+* Prefix your initials such as `tp/branch-name` to help delineate at a glance who created the branch.
+* Please include a ticket number for JIRA (e.g., `tp/infc-399-branch-short-desc`) if possible to help JIRA link back to the branch and subsequent PR.
 
 ### Pull Request Requirements
 
@@ -126,6 +129,23 @@ Date:   Wed Sep 18 11:44:40 2015 -0700
 
 ------------------------------------------------------------------------
 ```
+
+### Gems
+
+When making a PR, if you need to add or remove gems, it should be done using the `--conservative` flag:
+```shell
+gem install [gem_name] --conservative
+gem update [gem_name] --conservative
+```
+
+If your PR includes such an update to `Gemfile.lock`, please include the output of your `gem update` or `gem install` command in the PR.
+
+### Gem Maintenance
+
+At a minimum, once a quarter the maintainers will run a full `bundle update` to update all gems within the limits defined by the `Gemfile`.
+(This should be done preferably **after** minor release for testability)
+
+At least once a year, we will also do a review of the limits in the `Gemfile`.
 
 ### Merging
 1. Use `[Squash and Merge]` and edit down the commit history to a clear description of what the changes were with the "TL;DR" bits in the first 60 characters of the commit message. Update the PR title if necessary.

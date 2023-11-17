@@ -12,9 +12,14 @@ on:
  
 jobs:
   sonarqube:
+    # this fails for all users - internal and external - with:
+    # ERROR: You're not authorized to run analysis. Please contact the project administrator.
+    #
+    # So disabling for now until someone looks into this.
+    if: ${{ false }}
     runs-on: ip-range-controlled
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0

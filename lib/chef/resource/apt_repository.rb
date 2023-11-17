@@ -98,6 +98,19 @@ class Chef
         end
         ```
 
+        **Add repository that needs custom options**:
+
+        ```ruby
+        apt_repository 'corretto' do
+          uri          'https://apt.corretto.aws'
+          arch         'amd64'
+          distribution 'stable'
+          components   ['main']
+          options      ['target-=Contents-deb']
+          key          'https://apt.corretto.aws/corretto.key'
+        end
+        ```
+
         **Remove a repository from the list**:
 
         ```ruby
@@ -158,6 +171,10 @@ class Chef
       property :cache_rebuild, [TrueClass, FalseClass],
         description: "Determines whether to rebuild the APT package cache.",
         default: true, desired_state: false
+
+      property :options, [String, Array],
+        description: "Additional options to set for the repository.",
+        default: [], coerce: proc { |x| Array(x) }
 
       default_action :add
       allowed_actions :add, :remove
@@ -388,19 +405,21 @@ class Chef
         # @param [Array] components
         # @param [Boolean] trusted
         # @param [String] arch
+        # @param [Array] options
         # @param [Boolean] add_src
         #
         # @return [String] complete repo config text
-        def build_repo(uri, distribution, components, trusted, arch, add_src = false)
+        def build_repo(uri, distribution, components, trusted, arch, options, add_src = false)
           uri = make_ppa_url(uri) if is_ppa_url?(uri)
 
           uri = Addressable::URI.parse(uri)
           components = Array(components).join(" ")
-          options = []
-          options << "arch=#{arch}" if arch
-          options << "trusted=yes" if trusted
-          optstr = unless options.empty?
-                     "[" + options.join(" ") + "]"
+          options_list = []
+          options_list << "arch=#{arch}" if arch
+          options_list << "trusted=yes" if trusted
+          options_list += options
+          optstr = unless options_list.empty?
+                     "[" + options_list.join(" ") + "]"
                    end
           info = [ optstr, uri.normalize.to_s, distribution, components ].compact.join(" ")
           repo =  "deb      #{info}\n"
@@ -461,6 +480,7 @@ class Chef
           repo_components,
           new_resource.trusted,
           new_resource.arch,
+          new_resource.options,
           new_resource.deb_src
         )
 

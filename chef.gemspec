@@ -41,9 +41,9 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
-  s.add_dependency "inspec-core", ">= 5"
+  s.add_dependency "inspec-core", ">= 5", "< 6"
 
-  s.add_dependency "ffi", ">= 1.15.5"
+  s.add_dependency "ffi", "~> 1.15.5"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
@@ -58,7 +58,7 @@ Gem::Specification.new do |s|
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
-  s.add_dependency "unf_ext", ">= 0.0.8.2" # This is ruby31 compatible ucrt gem version
+  s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier2", "~> 1.1"

@@ -21,5 +21,9 @@ class Chef
       # super returns a "Proc" (which seems buggy) so re-wrap it
       self.class.new(&super) # rubocop:disable Layout/SpaceAroundKeyword
     end
+
+    def inspect
+      "lazy { (evaluates to) #{call.inspect} }"
+    end
   end
 end

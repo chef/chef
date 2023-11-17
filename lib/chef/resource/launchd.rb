@@ -202,7 +202,11 @@ class Chef
         description: "The first argument of `execvp`, typically the file name associated with the file to be executed. This value must be specified if `program_arguments` is not specified, and vice-versa."
 
       property :program_arguments, Array,
-        description: "The second argument of `execvp`. If program is not specified, this property must be specified and will be handled as if it were the first argument."
+        description: "The second argument of `execvp`. If program is not specified, this property must be specified and will be handled as if it were the first argument.",
+        coerce: proc { |args|
+          # Cast all values to a string.  Launchd only supports string values
+          args.map(&:to_s)
+        }
 
       property :queue_directories, Array,
         description: "An array of non-empty directories which, if any are modified, will cause a job to be started."

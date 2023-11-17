@@ -52,6 +52,21 @@ class Chef
         options '--no-install-recommends'
       end
       ```
+
+      **Prevent the apt_package resource from installing packages with pattern matching names**:
+
+      By default, the apt_package resource will install the named package.
+      If it can't find a package with the exact same name, it will treat the package name as regular expression string and match with any package that matches that regular expression.
+      This may lead Chef Infra Client to install one or more packages with names that match that regular expression.
+
+      In this example, `anchor_package_regex true` prevents the apt_package resource from installing matching packages if it can't find the `lua5.3` package.
+
+      ```ruby
+      apt_package 'lua5.3' do
+        version '5.3.3-1.1ubuntu2'
+        anchor_package_regex true
+      end
+      ```
       DOC
 
       description "Use the **apt_package** resource to manage packages on Debian, Ubuntu, and other platforms that use the APT package system."
@@ -75,6 +90,10 @@ class Chef
         description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
         default: {}, desired_state: false
 
+      property :anchor_package_regex, [TrueClass, FalseClass],
+        introduced: "18.3",
+        description: "A Boolean flag that indicates whether the package name, which can be a regular expression, must match the entire name of the package (true) or if the regular expression is allowed to match a subset of the name (false).",
+        default: false
     end
   end
 end

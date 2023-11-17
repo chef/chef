@@ -47,6 +47,8 @@ describe Chef::Mixin::HomebrewUser do
     let(:user) { nil }
     let(:brew_owner) { 2001 }
     let(:default_brew_path) { "/usr/local/bin/brew" }
+    let(:default_brew_path_arm) { "/opt/homebrew/bin/brew" }
+    let(:default_brew_path_linux) { "/home/linuxbrew/.linuxbrew/bin/brew" }
     let(:stat_double) do
       d = double
       expect(d).to receive(:uid).and_return(brew_owner)
@@ -59,16 +61,38 @@ describe Chef::Mixin::HomebrewUser do
         expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(name: "name"))
       end
 
-      it "returns the owner of the brew executable when it is at a default location" do
-        expect(File).to receive(:exist?).with(default_brew_path).and_return(true)
-        expect(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
+      def false_unless_specific_value(object, method, value)
+        allow(object).to receive(method).and_return(false)
+        allow(object).to receive(method).with(value).and_return(true)
+      end
+
+      it "returns the owner of the brew executable when it is at a default location for x86_64 machines" do
+        false_unless_specific_value(File, :exist?, default_brew_path)
+        false_unless_specific_value(File, :executable?, default_brew_path)
+        allow(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
+        expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
+      end
+
+      it "returns the owner of the brew executable when it is at a default location for arm machines" do
+        false_unless_specific_value(File, :exist?, default_brew_path_arm)
+        false_unless_specific_value(File, :executable?, default_brew_path_arm)
+        allow(File).to receive(:stat).with(default_brew_path_arm).and_return(stat_double)
+        expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
+      end
+
+      it "returns the owner of the brew executable when it is at a default location for linux machines" do
+        false_unless_specific_value(File, :exist?, default_brew_path_linux)
+        false_unless_specific_value(File, :executable?, default_brew_path_linux)
+        allow(File).to receive(:stat).with(default_brew_path_linux).and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
       it "returns the owner of the brew executable when it is not at a default location" do
-        expect(File).to receive(:exist?).with(default_brew_path).and_return(false)
+        allow_any_instance_of(ExampleHomebrewUser).to receive(:which).and_return("/foo")
+        false_unless_specific_value(File, :exist?, "/foo")
+        false_unless_specific_value(File, :executable?, "/foo")
         allow(homebrew_user).to receive_message_chain(:shell_out, :stdout, :strip).and_return("/foo")
-        expect(File).to receive(:stat).with("/foo").and_return(stat_double)
+        allow(File).to receive(:stat).with("/foo").and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
@@ -78,8 +102,7 @@ describe Chef::Mixin::HomebrewUser do
   describe "when the homebrew user is not provided" do
 
     it "raises an error if no executable is found" do
-      expect(File).to receive(:exist?).with(default_brew_path).and_return(false)
-      allow(homebrew_user).to receive_message_chain(:shell_out, :stdout, :strip).and_return("")
+      expect(File).to receive(:exist?).and_return(nil).at_least(:once)
       expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::CannotDetermineHomebrewOwner)
     end
 

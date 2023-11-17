@@ -17,6 +17,7 @@
 
 require_relative "common_api"
 require_relative "mixin/state_tracking"
+require_relative "mixin/state_tracking_array"
 require_relative "mixin/immutablize_array"
 require_relative "mixin/immutablize_hash"
 require_relative "../delayed_evaluator"
@@ -32,13 +33,16 @@ class Chef
       end
 
       def convert_value(value)
+        # The order in this case statement is *important*.
+        # ImmutableMash and ImmutableArray should be tested first,
+        # as this saves unnecessary creation of intermediate objects
         case value
+        when ImmutableMash, ImmutableArray
+          value
         when Hash
           ImmutableMash.new(value, __root__, __node__, __precedence__)
         when Array
           ImmutableArray.new(value, __root__, __node__, __precedence__)
-        when ImmutableMash, ImmutableArray
-          value
         else
           safe_dup(value).freeze
         end
@@ -116,7 +120,7 @@ class Chef
         value
       end
 
-      prepend Chef::Node::Mixin::StateTracking
+      prepend Chef::Node::Mixin::StateTrackingArray
       prepend Chef::Node::Mixin::ImmutablizeArray
     end
 

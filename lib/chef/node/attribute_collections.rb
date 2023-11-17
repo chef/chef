@@ -18,6 +18,7 @@
 
 require_relative "common_api"
 require_relative "mixin/state_tracking"
+require_relative "mixin/state_tracking_array"
 require_relative "mixin/immutablize_array"
 require_relative "mixin/immutablize_hash"
 require_relative "mixin/mashy_array"
@@ -39,9 +40,17 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           ret = super(*args, &block)
+          # TODO: use `send_reset_cache(__path__)` for all mutator methods?
           send_reset_cache
           ret
         end
+      end
+
+      def <<(obj)
+        ret = super(obj)
+        # NOTE: Expecting __path__ to be top-level attribute only
+        send_reset_cache(__path__)
+        ret
       end
 
       def delete(key, &block)
@@ -89,7 +98,7 @@ class Chef
         key
       end
 
-      prepend Chef::Node::Mixin::StateTracking
+      prepend Chef::Node::Mixin::StateTrackingArray
     end
 
     # == VividMash

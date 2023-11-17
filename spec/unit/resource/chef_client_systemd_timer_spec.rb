@@ -102,7 +102,7 @@ describe Chef::Resource::ChefClientSystemdTimer do
 
     it "sets CPUQuota if cpu_quota property is set" do
       resource.cpu_quota 50
-      expect(provider.service_content["Service"]["CPUQuota"]).to eq(50)
+      expect(provider.service_content["Service"]["CPUQuota"]).to eq("50%")
     end
   end
 end

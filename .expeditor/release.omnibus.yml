@@ -12,10 +12,10 @@ skip-artifactory-platforms:
   - freebsd-13-amd64
 windows-64-msystem: UCRT64
 builder-to-testers-map:
-  #aix-7.1-powerpc:
-  #  - aix-7.1-powerpc
-  #  - aix-7.2-powerpc
-  #  - aix-7.3-powerpc
+  aix-7.1-powerpc:
+   - aix-7.1-powerpc
+   - aix-7.2-powerpc
+   - aix-7.3-powerpc
       #  amazon-2022-aarch64:
       #    - amazon-2022-aarch64
       #  amazon-2022-x86_64:
@@ -27,8 +27,8 @@ builder-to-testers-map:
   debian-10-aarch64:
     - debian-10-aarch64
     - debian-11-aarch64
-  el-6-x86_64:
-    - el-6-x86_64
+  # el-6-x86_64:
+  #   - el-6-x86_64
   el-7-aarch64:
     - el-7-aarch64
     - amazon-2-aarch64
@@ -60,6 +60,10 @@ builder-to-testers-map:
   mac_os_x-11-arm64:
     - mac_os_x-11-arm64
     - mac_os_x-12-arm64
+  rocky-8-x86_64:
+    - rocky-8-x86_64
+  rocky-9-x86_64:
+    - rocky-9-x86_64  
   sles-12-s390x:
     - sles-12-s390x
     - sles-15-s390x
