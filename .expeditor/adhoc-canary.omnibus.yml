@@ -50,10 +50,10 @@ builder-to-testers-map:
   # sles-12-s390x:
   #   - sles-12-s390x
   #   - sles-15-s390x
-  rocky-8-x86_64:
-    - rocky-8-x86_64
-  rocky-9-x86_64:
-    - rocky-9-x86_64  
+  # rocky-8-x86_64:
+  #   - rocky-8-x86_64
+  # rocky-9-x86_64:
+  #   - rocky-9-x86_64  
   sles-12-x86_64:
     - sles-12-x86_64
     - sles-15-x86_64
