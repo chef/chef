@@ -292,7 +292,8 @@ class Chef
         # keep this inside the main loop to get exception backtraces
         end_profiling
 
-        warn_if_eol
+        # We intentionally comment this out starting with build 17.10.98 because the release was so late and we had not determined a new EOL date yet. Uncomment to register an EOL date
+        # warn_if_eol
 
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
