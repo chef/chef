@@ -1,5 +1,5 @@
 # Enforce our Gemfile update policy
-if git.modified_files.include?("Gemfile.lock") && !github.pr_authr == "dependabot"
+if git.modified_files.include?("Gemfile.lock") && !github.pr_author == "dependabot"
   if git.modified_files.include?("Gemfile")
     message "PR updates Gemfile.lock, but it also updates Gemfile, so that" +
       " is probably OK - but the reviewer should check updates are solely" +
