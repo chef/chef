@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.57 -->
-## [v18.3.57](https://github.com/chef/chef/tree/v18.3.57) (2023-11-20)
+<!-- latest_release 18.3.58 -->
+## [v18.3.58](https://github.com/chef/chef/tree/v18.3.58) (2023-11-21)
 
 #### Merged Pull Requests
-- bundle update --conservative inspec-core inspec-core-bin [#14086](https://github.com/chef/chef/pull/14086) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add resource for installing .pkg files on macOS [#13685](https://github.com/chef/chef/pull/13685) ([williamtheaker](https://github.com/williamtheaker))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add resource for installing .pkg files on macOS [#13685](https://github.com/chef/chef/pull/13685) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.3.58 -->
 - bundle update --conservative inspec-core inspec-core-bin [#14086](https://github.com/chef/chef/pull/14086) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.57 -->
 - Correct pr_authr [#14085](https://github.com/chef/chef/pull/14085) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.56 -->
 - Do not use untaint [#14077](https://github.com/chef/chef/pull/14077) ([chouetz](https://github.com/chouetz)) <!-- 18.3.55 -->
