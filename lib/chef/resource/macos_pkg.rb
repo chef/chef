@@ -16,30 +16,32 @@
 # limitations under the License.
 #
 
-require_relative "../resource"
+require_relative "../provider/package"
+require_relative "package"
 
 class Chef
   class Resource
-    class MacosPkg < Chef::Resource
-      provides(:macos_pkg) { true }
+    class MacosPkg < Chef::Resource::Package
+
+      provides :macos_pkg
+      provides :package, os: "darwin"
 
       description "Use the **macos_pkg** resource to install a macOS `.pkg` file, optionally downloading it from a remote source. A `package_id` property must be provided for idempotency. Either a `file` or `source` property is required."
-      introduced "18.1"
+      introduced "18.4"
       examples <<~DOC
         **Install osquery**:
 
         ```ruby
         macos_pkg 'osquery' do
-          checksum   '1fea8ac9b603851d2e76c5fc73138a468a3075a3002c8cb1fd7fff53b889c4dd'
+          checksum   'a01d1f7da016f1e6bed54955e97982d491b7e55311433ff0fc985269160633af'
           package_id 'io.osquery.agent'
-          source     'https://pkg.osquery.io/darwin/osquery-5.8.2.pkg'
+          source     'https://pkg.osquery.io/darwin/osquery-5.10.2.pkg'
           action     :install
         end
         ```
       DOC
 
       allowed_actions :install
-      default_action  :install
 
       property :checksum, String,
         description: "The sha256 checksum of the `.pkg` file to download."
@@ -61,51 +63,6 @@ class Chef
       property :target, String,
         description: "The device to install the package on.",
         default: "/"
-
-      load_current_value do |new_resource|
-        if shell_out("pkgutil --pkg-info '#{new_resource.package_id}'").exitstatus == 0
-          Chef::Log.debug "#{new_resource.package_id} is already installed. To upgrade, try \"sudo pkgutil --forget '#{new_resource.package_id}'\""
-        else
-          current_value_does_not_exist!
-        end
-      end
-
-      action :install, description: "Installs the pkg." do
-        if new_resource.source.nil? && new_resource.file.nil?
-          raise "Must provide either a file or source property for macos_pkg resources."
-        end
-
-        if current_resource.nil?
-          if new_resource.source
-            remote_file pkg_file do
-              source new_resource.source
-              headers new_resource.headers if new_resource.headers
-              checksum new_resource.checksum if new_resource.checksum
-            end
-          end
-
-          converge_by "install #{pkg_file}" do
-            install_cmd = "installer -pkg #{pkg_file} -target #{new_resource.target}"
-
-            execute install_cmd do
-              action :run
-            end
-          end
-        end
-      end
-
-      action_class do
-        # @return [String] the path to the pkg file
-        def pkg_file
-          @pkg_file ||= if new_resource.file.nil?
-                          uri = URI.parse(new_resource.source)
-                          filename = ::File.basename(uri.path)
-                          "#{Chef::Config[:file_cache_path]}/#{filename}"
-                        else
-                          new_resource.file
-                        end
-        end
-      end
     end
   end
 end
