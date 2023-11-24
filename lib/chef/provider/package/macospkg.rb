@@ -22,26 +22,26 @@ require_relative "package"
 class Chef
   class Resource
     class MacosPkg < Chef::Provider::Package
-        provides :package, os: "darwin"
-        provides:macos_pkg
+      provides :package, os: "darwin"
+      provides:macos_pkg
 
-        def load_current_resource
-            @current_resource = Chef::Resource::Package.new(new_resource.name)
-            current_resource.package_name(new_resource.package_name)
-            current_resource.version(get_current_version)
-            logger.trace("#{new_resource} current package version: #{current_resource.version}") if current_resource.version
+      def load_current_resource
+        @current_resource = Chef::Resource::Package.new(new_resource.name)
+        current_resource.package_name(new_resource.package_name)
+        current_resource.version(get_current_version)
+        logger.trace("#{new_resource} current package version: #{current_resource.version}") if current_resource.version
 
-            download_pkg if new_resource.source
-  
-            current_resource
-          end
+        download_pkg if new_resource.source
 
-        def get_current_version
-            shell_out("pkgutil --pkg-info '#{new_resource.package_id}'").stdout.to_s[/version: (.*)/, 1]
-        end
+        current_resource
+      end
+
+      def get_current_version
+        shell_out("pkgutil --pkg-info '#{new_resource.package_id}'").stdout.to_s[/version: (.*)/, 1]
+      end
 
       def define_resource_requirements
-         requirements.assert(:install) do |a|
+        requirements.assert(:install) do |a|
           a.assertion { new_resource.source || new_resource.file }
           a.failure_message Chef::Exceptions::Package, "Must provide either a file or source property for #{new_resource.package_name} macos_pkg resource."
         end
@@ -52,7 +52,7 @@ class Chef
       end
 
       def upgrade_package(name, version)
-        shell_out("pkgutil --forget '#{new_resource.package_id}'")if current_resource.version
+        shell_out("pkgutil --forget '#{new_resource.package_id}'") if current_resource.version
         install_package(name, version)
       end
 
@@ -66,17 +66,15 @@ class Chef
         end
       end
 
-      action_class do
+      def pkg_file
         # @return [String] the path to the pkg file
-        def pkg_file
-          @pkg_file ||= if new_resource.file.nil?
-                          uri = URI.parse(new_resource.source)
-                          filename = ::File.basename(uri.path)
-                          "#{Chef::Config[:file_cache_path]}/#{filename}"
-                        else
-                          new_resource.file
-                        end
-        end
+        @pkg_file ||= if new_resource.file.nil?
+                        uri = URI.parse(new_resource.source)
+                        filename = ::File.basename(uri.path)
+                        "#{Chef::Config[:file_cache_path]}/#{filename}"
+                      else
+                        new_resource.file
+                      end
       end
     end
   end
