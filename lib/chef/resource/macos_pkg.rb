@@ -24,7 +24,6 @@ class Chef
     class MacosPkg < Chef::Resource::Package
 
       provides :macos_pkg
-      provides :package, os: "darwin"
 
       description "Use the **macos_pkg** resource to install a macOS `.pkg` file, optionally downloading it from a remote source. A `package_id` property must be provided for idempotency. Either a `file` or `source` property is required."
       introduced "18.4"
