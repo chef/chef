@@ -41,35 +41,10 @@ end
 
 override :chef, version: "local_source"
 
-# Load dynamically updated overrides
-overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
-instance_eval(IO.read(overrides_path), overrides_path)
-
-dependency "preparation"
-
-dependency "chef"
-
-#
-# addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
-#
-dependency "nokogiri" # (nokogiri cannot go in the Gemfile, see wall of text in the software defn)
-
-# FIXME?: might make sense to move dependencies below into the omnibus-software chef
-#  definition or into a chef-complete definition added to omnibus-software.
-dependency "gem-permissions"
+dependency "chef-local-source"
 dependency "shebang-cleanup"
-dependency "version-manifest"
-dependency "openssl-customization"
-
-# devkit needs to come dead last these days so we do not use it to compile any gems
-if windows?
-  override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows_arch_i386?
-  dependency "ruby-windows-devkit"
-  dependency "ruby-windows-devkit-bash"
-end
 
 dependency "ruby-cleanup"
-
 # further gem cleanup other projects might not yet want to use
 dependency "more-ruby-cleanup"
 
@@ -91,11 +66,6 @@ package :pkg do
 end
 compress :dmg
 
-# MSI Signing was updated in October 2023. There are 3 pieces that have to match
-# The first is omnibus gem. As of this writing, it must be version 9.0.23 or later
-# The second is the 'signing_identity' line below.
-# Lastly, the omnibus-buildkite-plugin must be the latest version. You automatically get the current
-# version unless you specify an override in /.expeditor/config.yml
 msi_upgrade_code = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 project_location_dir = name
 package :msi do
@@ -103,8 +73,8 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "769E6AF679126F184850AAC7C5C823A80DB3ADAA", machine_store: false, keypair_alias: "key_495941360"
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
+  signing_identity ENV.fetch("OMNIBUS_SIGNING_IDENTITY", "769E6AF679126F184850AAC7C5C823A80DB3ADAA"), machine_store: false, keypair_alias: "key_495941360"
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-x64-mingw-ucrt/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 
