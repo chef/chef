@@ -9,44 +9,49 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Temporarily remove Rocky [#14082](https://github.com/chef/chef/pull/14082) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
-<!-- release_rollup since=17.10.3 -->
+<!-- release_rollup since=17.10.95 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Temporarily remove Rocky [#14082](https://github.com/chef/chef/pull/14082) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.99 -->
-- Account for multiple ansidecl.h files found [#14058](https://github.com/chef/chef/pull/14058) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.98 -->
-- Rolling back to Ruby 3.0.3 [#14057](https://github.com/chef/chef/pull/14057) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.97 -->
 - Bump overridden Ruby version for Chef 17 to 3.0.6 [#14056](https://github.com/chef/chef/pull/14056) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.96 -->
-- Re-add solaris i386 because it exists in 18 [#14051](https://github.com/chef/chef/pull/14051) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.95 -->
-- chef17 Openssl 1.0.2zi upgrade [#14046](https://github.com/chef/chef/pull/14046) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.94 -->
-- Adding support for Rocky Linux 8 and 9 [#14048](https://github.com/chef/chef/pull/14048) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.93 -->
-- Turn off vendor cache usage in verify.pipeline.yml [#14035](https://github.com/chef/chef/pull/14035) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.92 -->
-- Fix validation on locale-gen to account for the fact that Windows ins… [#14017](https://github.com/chef/chef/pull/14017) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.91 -->
-- Fix OpenSUSE tests [#14028](https://github.com/chef/chef/pull/14028) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.90 -->
-- Update test crts for ssl_policies_spec.rb (#14025) [#14026](https://github.com/chef/chef/pull/14026) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.89 -->
-- Adding self-hosted fips testing support [#13989](https://github.com/chef/chef/pull/13989) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.88 -->
-- try fixing kitchen tests for macOS [#14008](https://github.com/chef/chef/pull/14008) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.87 -->
-- Pulling in final changes to sign pacakges and move DLL&#39;s around [#14003](https://github.com/chef/chef/pull/14003) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.86 -->
-- Temporarily pinning FFI versions and adding FIPS Windows checks [#13975](https://github.com/chef/chef/pull/13975) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.85 -->
-- [Chef-17 Backport] Updating Sensitive Items [#13973](https://github.com/chef/chef/pull/13973) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.84 -->
-- Updating Win32-certstore [#13969](https://github.com/chef/chef/pull/13969) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.83 -->
-- [Backport] Updating Chef-17 for Choco 2.0 [#13928](https://github.com/chef/chef/pull/13928) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.82 -->
-- updated the test to be RFC2119 compliant [#13926](https://github.com/chef/chef/pull/13926) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.81 -->
-- Updating Chef-17 per CVE [#13911](https://github.com/chef/chef/pull/13911) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.80 -->
-- [backport] Updating the updater [#13889](https://github.com/chef/chef/pull/13889) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.79 -->
-- Backport: (macos_userdefaults) fix for user attr bug [#12825](https://github.com/chef/chef/pull/12825) ([rishichawda](https://github.com/rishichawda)) <!-- 17.10.78 -->
-- switching testing branches to current [#13877](https://github.com/chef/chef/pull/13877) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.77 -->
-- Add not_rhel6 to EL6 yum resource tests to disable [#13848](https://github.com/chef/chef/pull/13848) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.76 -->
-- uninstall libyajl2 to avoid kitchen-tests base image conflict (Chef 17&#39;s Version) [#13849](https://github.com/chef/chef/pull/13849) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.75 -->
-- Updating omnibus to use ucrt [#13823](https://github.com/chef/chef/pull/13823) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.74 -->
-- Updating Choco for V2.0.0 by downgrading. Now with a Backport [#13818](https://github.com/chef/chef/pull/13818) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.73 -->
-- Backporting a chef-18 fix for sensitive properties [#13817](https://github.com/chef/chef/pull/13817) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.72 -->
-- Revert &quot;Ensuring a version of choco &lt; 2.0 is installed&quot; [#13802](https://github.com/chef/chef/pull/13802) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.71 -->
-- Ensuring a version of choco &lt; 2.0 is installed [#13801](https://github.com/chef/chef/pull/13801) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.70 -->
-- Bump omnibus from `a1ed55c` to `ae855f3` in /omnibus [#13748](https://github.com/chef/chef/pull/13748) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.69 -->
+- Rolling back to Ruby 3.0.3 [#14057](https://github.com/chef/chef/pull/14057) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.97 -->
+- Account for multiple ansidecl.h files found [#14058](https://github.com/chef/chef/pull/14058) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.98 -->
+- Temporarily remove Rocky [#14082](https://github.com/chef/chef/pull/14082) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.99 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.10.95](https://github.com/chef/chef/tree/v17.10.95) (2023-11-27)
+
+#### Merged Pull Requests
+- Bump omnibus from `a1ed55c` to `ae855f3` in /omnibus [#13748](https://github.com/chef/chef/pull/13748) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Ensuring a version of choco &lt; 2.0 is installed [#13801](https://github.com/chef/chef/pull/13801) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Ensuring a version of choco &lt; 2.0 is installed&quot; [#13802](https://github.com/chef/chef/pull/13802) ([johnmccrae](https://github.com/johnmccrae))
+- Backporting a chef-18 fix for sensitive properties [#13817](https://github.com/chef/chef/pull/13817) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Choco for V2.0.0 by downgrading. Now with a Backport [#13818](https://github.com/chef/chef/pull/13818) ([johnmccrae](https://github.com/johnmccrae))
+- Updating omnibus to use ucrt [#13823](https://github.com/chef/chef/pull/13823) ([johnmccrae](https://github.com/johnmccrae))
+- uninstall libyajl2 to avoid kitchen-tests base image conflict (Chef 17&#39;s Version) [#13849](https://github.com/chef/chef/pull/13849) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add not_rhel6 to EL6 yum resource tests to disable [#13848](https://github.com/chef/chef/pull/13848) ([tpowell-progress](https://github.com/tpowell-progress))
+- switching testing branches to current [#13877](https://github.com/chef/chef/pull/13877) ([johnmccrae](https://github.com/johnmccrae))
+- Backport: (macos_userdefaults) fix for user attr bug [#12825](https://github.com/chef/chef/pull/12825) ([rishichawda](https://github.com/rishichawda))
+- [backport] Updating the updater [#13889](https://github.com/chef/chef/pull/13889) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Chef-17 per CVE [#13911](https://github.com/chef/chef/pull/13911) ([johnmccrae](https://github.com/johnmccrae))
+- updated the test to be RFC2119 compliant [#13926](https://github.com/chef/chef/pull/13926) ([johnmccrae](https://github.com/johnmccrae))
+- [Backport] Updating Chef-17 for Choco 2.0 [#13928](https://github.com/chef/chef/pull/13928) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Win32-certstore [#13969](https://github.com/chef/chef/pull/13969) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17 Backport] Updating Sensitive Items [#13973](https://github.com/chef/chef/pull/13973) ([johnmccrae](https://github.com/johnmccrae))
+- Temporarily pinning FFI versions and adding FIPS Windows checks [#13975](https://github.com/chef/chef/pull/13975) ([johnmccrae](https://github.com/johnmccrae))
+- Pulling in final changes to sign pacakges and move DLL&#39;s around [#14003](https://github.com/chef/chef/pull/14003) ([johnmccrae](https://github.com/johnmccrae))
+- try fixing kitchen tests for macOS [#14008](https://github.com/chef/chef/pull/14008) ([tpowell-progress](https://github.com/tpowell-progress))
+- Adding self-hosted fips testing support [#13989](https://github.com/chef/chef/pull/13989) ([johnmccrae](https://github.com/johnmccrae))
+- Update test crts for ssl_policies_spec.rb (#14025) [#14026](https://github.com/chef/chef/pull/14026) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix OpenSUSE tests [#14028](https://github.com/chef/chef/pull/14028) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix validation on locale-gen to account for the fact that Windows ins… [#14017](https://github.com/chef/chef/pull/14017) ([tpowell-progress](https://github.com/tpowell-progress))
+- Turn off vendor cache usage in verify.pipeline.yml [#14035](https://github.com/chef/chef/pull/14035) ([tpowell-progress](https://github.com/tpowell-progress))
+- Adding support for Rocky Linux 8 and 9 [#14048](https://github.com/chef/chef/pull/14048) ([johnmccrae](https://github.com/johnmccrae))
+- chef17 Openssl 1.0.2zi upgrade [#14046](https://github.com/chef/chef/pull/14046) ([johnmccrae](https://github.com/johnmccrae))
+- Re-add solaris i386 because it exists in 18 [#14051](https://github.com/chef/chef/pull/14051) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
 ## [v17.10.68](https://github.com/chef/chef/tree/v17.10.68) (2023-05-18)
 
 #### Merged Pull Requests
@@ -119,7 +124,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - [chef-17] 26 of X - Updating EOL Support [#13753](https://github.com/chef/chef/pull/13753) ([johnmccrae](https://github.com/johnmccrae))
 - [chef-17] 27 of X - Updating EOL Support, Again [#13755](https://github.com/chef/chef/pull/13755) ([johnmccrae](https://github.com/johnmccrae))
 - [chef-17] 27 of X - Tweaking EOL Support [#13756](https://github.com/chef/chef/pull/13756) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v17.10.0](https://github.com/chef/chef/tree/v17.10.0) (2022-03-22)
 
