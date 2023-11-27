@@ -22,7 +22,6 @@ require_relative "package"
 class Chef
   class Resource
     class MacosPkg < Chef::Provider::Package
-      provides :package, os: "darwin"
       provides:macos_pkg
 
       def load_current_resource
