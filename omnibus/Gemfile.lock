@@ -238,7 +238,7 @@ GEM
     iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.6.3)
-    kitchen-vagrant (1.14.1)
+    kitchen-vagrant (1.14.2)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -267,7 +267,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-install (3.12.27)
+    mixlib-install (3.12.28)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -404,7 +404,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.2.2)
+    thor (1.3.0)
     time (0.2.2)
       date
     timeout (0.3.2)
@@ -447,7 +447,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
-    unicode-display_width (2.4.2)
+    unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)
