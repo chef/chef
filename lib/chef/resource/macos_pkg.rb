@@ -40,7 +40,7 @@ class Chef
         ```
       DOC
 
-      allowed_actions :install
+      allowed_actions :install, upgrade
 
       property :checksum, String,
         description: "The sha256 checksum of the `.pkg` file to download."
