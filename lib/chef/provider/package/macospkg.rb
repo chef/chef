@@ -20,17 +20,15 @@ require_relative "../provider/package"
 require_relative "package"
 
 class Chef
-  class Resource
+  class Provider
     class MacosPkg < Chef::Provider::Package
-      provides:macos_pkg
+      provides :macos_pkg
 
       def load_current_resource
         @current_resource = Chef::Resource::Package.new(new_resource.name)
         current_resource.package_name(new_resource.package_name)
         current_resource.version(get_current_version)
         logger.trace("#{new_resource} current package version: #{current_resource.version}") if current_resource.version
-
-        download_pkg if new_resource.source
 
         current_resource
       end
@@ -47,6 +45,7 @@ class Chef
       end
 
       def install_package(name, version)
+        download_pkg if new_resource.source
         shell_out("installer -pkg #{pkg_file} -target #{new_resource.target}")
       end
 
