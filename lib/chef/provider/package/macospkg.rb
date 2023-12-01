@@ -61,11 +61,9 @@ class Chef
       def remove_package(name, version)
         installed_files = shell_out("pkgutil --only-files --files '#{new_resource.package_id}'").stdout.split("\n")
         installed_files.each do |file|
-          begin
-            ::File.delete("/#{file}")
-          rescue Errno::ENOENT
-            false
-          end
+          ::File.delete("/#{file}")
+        rescue Errno::ENOENT
+          false
         end
         forget_package_receipt
       end
