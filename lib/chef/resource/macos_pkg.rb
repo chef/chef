@@ -22,10 +22,9 @@ require_relative "package"
 class Chef
   class Resource
     class MacosPkg < Chef::Resource::Package
-
       provides :macos_pkg
 
-      description "Use the **macos_pkg** resource to install a macOS `.pkg` file, optionally downloading it from a remote source. A `package_id` property must be provided for idempotency. Either a `file` or `source` property is required."
+      description "Use the **macos_pkg** resource to install a macOS `.pkg` file, optionally downloading it from a remote source. A `package_id` property must be provided for idempotency. Either a `file` or `source` property is required. Warning: The **macos_pkg** resource must be specified as `macos_pkg` and cannot be shortened to `package` in a recipe."
       introduced "18.4"
       examples <<~DOC
         **Install osquery**:
@@ -40,7 +39,7 @@ class Chef
         ```
       DOC
 
-      allowed_actions :install, upgrade
+      allowed_actions :install, remove, upgrade
 
       property :checksum, String,
         description: "The sha256 checksum of the `.pkg` file to download."

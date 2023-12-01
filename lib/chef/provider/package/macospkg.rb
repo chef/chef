@@ -44,14 +44,30 @@ class Chef
         end
       end
 
+      def upgrade_package(name, version)
+        forget_package_receipt if current_resource.version
+        install_package(name, version)
+      end
+
       def install_package(name, version)
         download_pkg if new_resource.source
         shell_out("installer -pkg #{pkg_file} -target #{new_resource.target}")
       end
 
-      def upgrade_package(name, version)
-        shell_out("pkgutil --forget '#{new_resource.package_id}'") if current_resource.version
-        install_package(name, version)
+      def forget_package_receipt
+        shell_out("pkgutil --forget '#{new_resource.package_id}'")
+      end
+
+      def remove_package(name, version)
+        installed_files = shell_out("pkgutil --only-files --files '#{new_resource.package_id}'").stdout.split("\n")
+        installed_files.each do |file|
+          begin
+            ::File.delete("/#{file}")
+          rescue Errno::ENOENT
+            false
+          end
+        end
+        forget_package_receipt
       end
 
       def download_pkg
