@@ -207,7 +207,7 @@ describe Chef::Mixin::Template, "render_template" do
         end
 
         it "should provide a source listing of the template around the exception" do
-          expect(exception.source_listing).to eq("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
+          expect(exception.source_listing).to eq("  3: Which includes some content\r\n  4: \r\n  5: And will fail <%= nil[] %>\r")
         end
 
         it "should provide a nice source location" do
@@ -217,7 +217,7 @@ describe Chef::Mixin::Template, "render_template" do
         it "should create a pretty output for the terminal" do
           expect(exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
           expect(exception.to_s).to match(/undefined method `\[\]' for nil:NilClass/)
-          expect(exception.to_s).to include("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
+          expect(exception.to_s).to include("  3: Which includes some content\r\n  4: \r\n  5: And will fail <%= nil[] %>\r")
           expect(exception.to_s).to include(exception.original_exception.backtrace.first)
         end
 
