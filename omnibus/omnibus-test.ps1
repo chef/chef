@@ -116,6 +116,8 @@ $Env:CHEF_LICENSE = "accept-no-persist"
 winrm quickconfig -quiet
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
+# temp fix until we figure out whats going on with this gem #
+gem install unf_ext -v 0.0.8.2 --source https://artifactory-internal.ps.chef.co/artifactory/api/gems/rubygems-proxy
 bundle
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
