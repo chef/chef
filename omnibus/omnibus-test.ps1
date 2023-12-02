@@ -117,7 +117,7 @@ winrm quickconfig -quiet
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # temp fix until we figure out whats going on with this gem #
-gem install unf_ext -v 0.0.8.2 --source https://artifactory-internal.ps.chef.co/artifactory/api/gems/rubygems-proxy
+gem install unf_ext -v 0.0.8.2 --source https://rubygems.org/gems/unf_ext
 bundle
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
