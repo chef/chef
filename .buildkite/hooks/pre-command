@@ -7,10 +7,9 @@ set -eu
 
 docker ps || true
 free -m || true
-echo "Debugging stmt :1 "
+
 # Get chef foundation version from the json file
 CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
-echo "Debugging stmt :2"
 export CHEF_FOUNDATION_VERSION
 echo "Chef Foundation Version: $CHEF_FOUNDATION_VERSION" 
 
