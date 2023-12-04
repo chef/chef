@@ -7,8 +7,8 @@ on:
 
 
 jobs:
-  triage:
-    runs-on: ubuntu-20.04
+  labeler:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/labeler@v4.3.0
         with:
