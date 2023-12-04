@@ -8,9 +8,8 @@ on:
 
 jobs:
   triage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/labeler@v4.3.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
