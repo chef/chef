@@ -6,6 +6,7 @@ set -eu
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
 docker ps || true
+free -m || true
 
 # Get chef foundation version from the json file
 CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
