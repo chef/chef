@@ -3,9 +3,10 @@
 set -eu
 
 # Only execute in the verify pipeline
-[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]]
 
 docker ps || true
+free -m || true
 
 # Get chef foundation version from the json file
 CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
@@ -15,6 +16,10 @@ echo "Chef Foundation Version: $CHEF_FOUNDATION_VERSION"
 OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolchain')
 export OMNIBUS_TOOLCHAIN_VERSION
 echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
+
+OMNIBUS_PLUGIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_plugin_version')
+export OMNIBUS_PLUGIN_VERSION
+echo "Omnibus Buildkite Plugin Version: $OMNIBUS_PLUGIN_VERSION"
 
 if [ $BUILDKITE_STEP_KEY == "build-windows-2019" ] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
