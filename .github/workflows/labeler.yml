@@ -1,13 +1,10 @@
 name: "Pull Request Labeler"
 on:
-  pull_request_target:
-    branches:
-      - main
-      - 'chef-*'
+  - 'pull_request_target'
 
 
 jobs:
-  labeler:
+  triage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/labeler@v4.3.0
