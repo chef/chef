@@ -1,5 +1,5 @@
 documentation:
 - any:
+  - base-branch: ['main', 'chef-.*']
   - changed-files:
     - any-glob-to-any-file: ['README.md', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md', 'lib/chef/resource/**/*']
-- base-branch: ['main', 'chef-.*']
