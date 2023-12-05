@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.99 -->
-## [v17.10.99](https://github.com/chef/chef/tree/v17.10.99) (2023-11-20)
+<!-- latest_release 17.10.100 -->
+## [v17.10.100](https://github.com/chef/chef/tree/v17.10.100) (2023-12-05)
 
 #### Merged Pull Requests
-- Temporarily remove Rocky [#14082](https://github.com/chef/chef/pull/14082) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] labeler update [#14127](https://github.com/chef/chef/pull/14127) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.95 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-17] labeler update [#14127](https://github.com/chef/chef/pull/14127) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.100 -->
 - Bump overridden Ruby version for Chef 17 to 3.0.6 [#14056](https://github.com/chef/chef/pull/14056) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.96 -->
 - Rolling back to Ruby 3.0.3 [#14057](https://github.com/chef/chef/pull/14057) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.97 -->
 - Account for multiple ansidecl.h files found [#14058](https://github.com/chef/chef/pull/14058) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.98 -->
