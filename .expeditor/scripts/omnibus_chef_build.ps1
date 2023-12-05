@@ -127,7 +127,6 @@ if ( -not $? ) { throw "omnibus build chef failed" }
 
 #confirm file is signed
 try {
-  write-output "--- signing with powershell smctl"
   $directoryPath = "C:\omnibus-ruby\pkg\"
   $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
   write-output "--- test msi path"
