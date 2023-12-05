@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.59 -->
-## [v18.3.59](https://github.com/chef/chef/tree/v18.3.59) (2023-12-04)
+<!-- latest_release 18.3.60 -->
+## [v18.3.60](https://github.com/chef/chef/tree/v18.3.60) (2023-12-05)
 
 #### Merged Pull Requests
-- updating the code sign with digicerts HSM, also put some validation i… [#14112](https://github.com/chef/chef/pull/14112) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- updating this to force install this gem from rubygems [#14125](https://github.com/chef/chef/pull/14125) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- updating this to force install this gem from rubygems [#14125](https://github.com/chef/chef/pull/14125) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.3.60 -->
 - updating the code sign with digicerts HSM, also put some validation i… [#14112](https://github.com/chef/chef/pull/14112) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.3.59 -->
 - Add resource for installing .pkg files on macOS [#13685](https://github.com/chef/chef/pull/13685) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.3.58 -->
 - bundle update --conservative inspec-core inspec-core-bin [#14086](https://github.com/chef/chef/pull/14086) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.57 -->
