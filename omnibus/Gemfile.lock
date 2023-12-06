@@ -1,28 +1,9 @@
 GIT
-  remote: https://github.com/chef/berkshelf.git
-  revision: dcdb969402137cc86be9c6cd598e536254fd650c
-  branch: jfm/chef-17-berkshelf
-  specs:
-    berkshelf (8.0.7)
-      chef (~> 17.0)
-      chef-config
-      cleanroom (~> 1.0)
-      concurrent-ruby (~> 1.0)
-      minitar (>= 0.6)
-      mixlib-archive (>= 1.1.4, < 2.0)
-      mixlib-config (>= 2.2.5)
-      mixlib-shellout (>= 2.0, < 4.0)
-      octokit (~> 4.0)
-      retryable (>= 2.0, < 4.0)
-      solve (~> 4.0)
-      thor (>= 0.20)
-
-GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: b3d89a4d490cef3015f9cda5f5e2ced439be3d30
+  revision: d357d5cf84dce2b99b28093c4a5c32f2f96b4787
   branch: main
   specs:
-    omnibus-software (23.10.300)
+    omnibus-software (23.11.307)
       omnibus (>= 9.0.0)
 
 GIT
@@ -75,7 +56,7 @@ GEM
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
     builder (3.2.4)
-    chef (17.10.0)
+    chef (17.10.95)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
