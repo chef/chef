@@ -72,9 +72,9 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  - macos_universal_package:
-      description: Builds universal macos package using arch specific packages
-      definition: .expeditor/macos_universal_package.pipeline.yml
+  # - macos_universal_package:
+  #    description: Builds universal macos package using arch specific packages
+  #    definition: .expeditor/macos_universal_package.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
