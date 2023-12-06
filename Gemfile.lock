@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 129344227d927ea67f228540654a6718265d03cd
+  revision: 71ae97744713ffd91ac8277d7a1385dabb6d570b
   branch: main
   specs:
-    chefstyle (2.2.3)
+    chefstyle (2.2.2)
       rubocop (= 1.25.1)
 
 GIT
@@ -50,7 +50,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (>= 4.23)
+      inspec-core (= 5.22.36)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -161,7 +161,6 @@ GEM
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.6.0)
       aws-eventstream (~> 1, >= 1.0.2)
-    base64 (0.2.0)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
