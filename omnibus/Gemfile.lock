@@ -56,7 +56,7 @@ GEM
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
     builder (3.2.4)
-    chef (17.10.95)
+    chef (17.10.0)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
