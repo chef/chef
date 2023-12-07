@@ -14,7 +14,7 @@ $(cat release-notes.md)
 ---
 ## Get the Build
 
-As always, you can download binaries directly from [chef.io/downloads](https://www.chef.io/downloads/tools/infra-client?v=${EXPEDITOR_VERSION}) or by using the \`mixlib-install\` command-line utility:
+As always, you can download binaries from [chef.io/downloads](https://www.chef.io/downloads/) or by using the \`mixlib-install\` command-line utility:
 
 \`\`\`
 $ mixlib-install download chef -v ${EXPEDITOR_VERSION}
