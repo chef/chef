@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.62 -->
-## [v18.3.62](https://github.com/chef/chef/tree/v18.3.62) (2023-12-07)
+<!-- latest_release 18.3.63 -->
+## [v18.3.63](https://github.com/chef/chef/tree/v18.3.63) (2023-12-08)
 
 #### Merged Pull Requests
-- Jfm/chef18 openssl 1.0.2zi [#14088](https://github.com/chef/chef/pull/14088) ([johnmccrae](https://github.com/johnmccrae))
+- Update DL link to be generic [#14132](https://github.com/chef/chef/pull/14132) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update DL link to be generic [#14132](https://github.com/chef/chef/pull/14132) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.63 -->
 - Jfm/chef18 openssl 1.0.2zi [#14088](https://github.com/chef/chef/pull/14088) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.62 -->
 - Add support for use_inline_powershell for powershell_script [#14052](https://github.com/chef/chef/pull/14052) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.3.61 -->
 - updating this to force install this gem from rubygems [#14125](https://github.com/chef/chef/pull/14125) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.3.60 -->
