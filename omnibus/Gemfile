@@ -12,7 +12,7 @@ gem "pedump"
 # by running `bundle config set --local without development && bundle install` to speed up build times.
 group :development do
   # Use Test Kitchen with Vagrant for converging the build environment
-  # gem "berkshelf", ">= 8.0"
+  gem "berkshelf", ">= 8.0"
   gem "test-kitchen", ">= 1.23"
   gem "kitchen-vagrant", ">= 1.3.1"
   gem "winrm-fs", "~> 1.0"
