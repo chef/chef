@@ -40,6 +40,7 @@ else
 end
 
 override :chef, version: "local_source"
+override :knife-windows, version: "4.0.7"
 
 dependency "chef-local-source"
 dependency "shebang-cleanup"
