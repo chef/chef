@@ -1,0 +1,18 @@
+---
+name: danger
+
+on: pull_request
+
+jobs:
+  danger:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: danger/danger-js@11.3.1
+        with:
+          args: "--verbose --text-only -f"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
