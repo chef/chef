@@ -35,7 +35,6 @@ if windows?
   #       which is only fixable if everyone in the world fixes their Makefiles
   install_dir  "#{default_root}/opscode/#{name}"
   package_name "chef-client"
-  override :knife-windows, version: "4.0.7"
 else
   install_dir "#{default_root}/#{name}"
 end
