@@ -78,7 +78,6 @@ build do
   # bundle "config set --local without #{bundle_excludes.join(" ")}", env: env
   # bundle "install", env: env
   bundle "install --without #{bundle_excludes.join(" ")}", env: env
-   
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
