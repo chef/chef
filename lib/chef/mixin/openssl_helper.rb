@@ -157,7 +157,9 @@ class Chef
         raise TypeError, "curve must be a string" unless curve.is_a?(String)
         raise ArgumentError, "Specified curve is not available on this system" unless %w{prime256v1 secp384r1 secp521r1}.include?(curve)
 
-        ::OpenSSL::PKey::EC.new(curve).generate_key
+        # https://stackoverflow.com/questions/76252414/pkeys-are-immutable-on-openssl-3-0-e0m-opensslpkeypkeyerror
+        # ::OpenSSL::PKey::EC.new(curve).generate_key
+        key = OpenSSL::PKey::EC.generate(curve)
       end
 
       # generate pem format of the public key given a private key
