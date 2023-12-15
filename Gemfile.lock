@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 71ae97744713ffd91ac8277d7a1385dabb6d570b
+  revision: 129344227d927ea67f228540654a6718265d03cd
   branch: main
   specs:
-    chefstyle (2.2.2)
+    chefstyle (2.2.3)
       rubocop (= 1.25.1)
 
 GIT
@@ -136,30 +136,30 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.5)
+    addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
-    aws-eventstream (1.2.0)
-    aws-partitions (1.809.0)
-    aws-sdk-core (3.181.0)
-      aws-eventstream (~> 1, >= 1.0.2)
+    aws-eventstream (1.3.0)
+    aws-partitions (1.867.0)
+    aws-sdk-core (3.190.0)
+      aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
-      aws-sigv4 (~> 1.5)
+      aws-sigv4 (~> 1.8)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.71.0)
-      aws-sdk-core (~> 3, >= 3.177.0)
+    aws-sdk-kms (1.74.0)
+      aws-sdk-core (~> 3, >= 3.188.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.133.0)
-      aws-sdk-core (~> 3, >= 3.181.0)
+    aws-sdk-s3 (1.141.0)
+      aws-sdk-core (~> 3, >= 3.189.0)
       aws-sdk-kms (~> 1)
-      aws-sigv4 (~> 1.6)
-    aws-sdk-secretsmanager (1.82.0)
-      aws-sdk-core (~> 3, >= 3.177.0)
+      aws-sigv4 (~> 1.8)
+    aws-sdk-secretsmanager (1.87.0)
+      aws-sdk-core (~> 3, >= 3.188.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.6.0)
+    aws-sigv4 (1.8.0)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.2.0)
     binding_of_caller (1.0.0)
@@ -190,7 +190,7 @@ GEM
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
-    debug_inspector (1.1.0)
+    debug_inspector (1.2.0)
     diff-lcs (1.5.0)
     ed25519 (1.3.0)
     erubi (1.12.0)
@@ -207,11 +207,11 @@ GEM
     ffi (1.15.5)
     ffi (1.15.5-x64-mingw32)
     ffi (1.15.5-x86-mingw32)
-    ffi-libarchive (1.1.3)
+    ffi-libarchive (1.1.13)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.4.0)
+    ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
@@ -219,7 +219,7 @@ GEM
     gyoku (1.4.0)
       builder (>= 2.1.2)
       rexml (~> 3.0)
-    hashdiff (1.0.1)
+    hashdiff (1.1.0)
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
@@ -288,7 +288,7 @@ GEM
     net-ssh (7.2.0)
     nori (2.6.0)
     parallel (1.23.0)
-    parser (3.2.2.3)
+    parser (3.2.2.4)
       ast (~> 2.4.1)
       racc
     parslet (2.0.0)
@@ -306,13 +306,13 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (5.0.4)
-    racc (1.7.1)
-    rack (2.2.7)
+    racc (1.7.3)
+    rack (2.2.8)
     rainbow (3.1.1)
-    rake (13.0.6)
+    rake (13.1.0)
     rb-readline (0.5.5)
-    regexp_parser (2.8.1)
-    rexml (3.2.5)
+    regexp_parser (2.8.3)
+    rexml (3.2.6)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -338,7 +338,7 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.29.0)
+    rubocop-ast (1.30.0)
       parser (>= 3.2.1.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
@@ -387,7 +387,7 @@ GEM
     unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    vault (0.17.0)
+    vault (0.18.2)
       aws-sigv4
     webmock (3.19.1)
       addressable (>= 2.8.0)
@@ -444,6 +444,7 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
+  ast (~> 2.4.2)
   chef!
   chef-bin!
   chef-config!
