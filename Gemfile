@@ -17,6 +17,8 @@ end
 
 gem "cheffish", "~> 17.0.0"
 
+gem "ast", "~> 2.4.2"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
