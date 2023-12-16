@@ -17,8 +17,8 @@ end
 
 gem "cheffish", "~> 17.0.0"
 
-gem "ast", "~> 2.4.2"
-gem "rubocop-ast", "~> 1.3.0"
+gem "ast", "= 2.4.2"
+gem "rubocop-ast", ">= 1.30.0"
 
 group(:omnibus_package) do
   gem "appbundler"
@@ -30,7 +30,7 @@ end
 group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
-  gem "pry", "= 0.13.0"
+  gem "pry", ">= 0.14.1"
   # byebug does not install on freebsd on ruby 3.0
   gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
   gem "pry-stack_explorer"
