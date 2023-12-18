@@ -78,7 +78,7 @@ PATH
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (~> 1.15.5)
+      ffi (~> 1.15.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -438,7 +438,6 @@ GEM
 
 PLATFORMS
   ruby
-  x64-mingw-ucrt
   x64-mingw32
   x86-mingw32
 
