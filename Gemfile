@@ -23,13 +23,11 @@ gem "rubocop-ast", ">= 1.30.0"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "= 5.22.36" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 5.22.36" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
 group(:omnibus_package, :pry) do
-  # Locked because pry-byebug is broken with 13+.
-  # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", ">= 0.14.1"
   # byebug does not install on freebsd on ruby 3.0
   gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
