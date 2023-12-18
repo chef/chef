@@ -39,6 +39,10 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
+if solaris?
+  override :bash, version: "5.1.8"
+end
+
 override :chef, version: "local_source"
 
 dependency "chef-local-source"
