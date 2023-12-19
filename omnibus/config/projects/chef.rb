@@ -40,7 +40,9 @@ else
 end
 
 if solaris?
-  override :bash, version: "5.1.8"
+  #override :bash, version: "5.1.8"
+  override :bash, version: "5.2.9"
+
 end
 
 override :chef, version: "local_source"
