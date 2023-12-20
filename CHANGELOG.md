@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.102 -->
-## [v17.10.102](https://github.com/chef/chef/tree/v17.10.102) (2023-12-18)
+<!-- latest_release 17.10.103 -->
+## [v17.10.103](https://github.com/chef/chef/tree/v17.10.103) (2023-12-20)
 
 #### Merged Pull Requests
-- Updating Inspec and its dependencies [#14147](https://github.com/chef/chef/pull/14147) ([johnmccrae](https://github.com/johnmccrae))
+- Refactoring Berkshelf [#14149](https://github.com/chef/chef/pull/14149) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.95 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Refactoring Berkshelf [#14149](https://github.com/chef/chef/pull/14149) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.103 -->
 - Updating Inspec and its dependencies [#14147](https://github.com/chef/chef/pull/14147) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.102 -->
 - [chef-17] Add Rocky back in. [#14126](https://github.com/chef/chef/pull/14126) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.101 -->
 - [chef-17] labeler update [#14127](https://github.com/chef/chef/pull/14127) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.100 -->
