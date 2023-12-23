@@ -23,8 +23,11 @@ require "fileutils" unless defined?(FileUtils)
 begin
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
   require "ffi-libarchive" unless defined?(Archive::Reader)
-rescue LoadError
+rescue LoadError => e
   STDERR.puts "ffi-libarchive could not be loaded, libarchive is probably not installed on system, archive_file will not be available"
+  STDERR.puts e.message
+  STDERR puts e.backtrace.join("\n")
+  STDERR puts e.inspect
 end
 
 class Chef

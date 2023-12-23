@@ -29,7 +29,7 @@ rescue LoadError
   end
 end
 
-describe Chef::Resource::ArchiveFile, :not_supported_on_aix do
+describe Chef::Resource::ArchiveFile, :libarchive do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
