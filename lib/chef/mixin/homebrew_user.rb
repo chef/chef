@@ -57,8 +57,6 @@ class Chef
         @homebrew_owner_username
       end
 
-      private
-
       def homebrew_bin_path(brew_bin_path = nil)
         if brew_bin_path && ::File.exist?(brew_bin_path)
           brew_bin_path
@@ -70,7 +68,9 @@ class Chef
           end.first || nil
         end
       end
-      
+
+      private
+
       def calculate_owner
         brew_path = homebrew_bin_path
         if brew_path
