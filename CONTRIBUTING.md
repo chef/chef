@@ -96,7 +96,7 @@ For more information on the change see the Chef Blog post [Introducing Developer
 The DCO requires a sign-off message in the following format appear on each commit in the pull request:
 
 ```
-Signed-off-by: Julia Child <juliachild@chef.io>
+Signed-off-by: Julia Child <julia.child@progress.com>
 ```
 
 The DCO text can either be manually added to your commit body, or you can add either **-s** or **--signoff** to your usual git commit commands. If you are using the GitHub UI to make a change you can add the sign-off message directly to the commit message when creating the pull request. If you forget to add the sign-off you can also amend a previous commit with the sign-off by running **git commit --amend -s**. If you've pushed your changes to GitHub already you'll need to force push your branch after this with **git push -f**.
