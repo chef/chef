@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.106 -->
-## [v17.10.106](https://github.com/chef/chef/tree/v17.10.106) (2023-12-29)
+<!-- latest_release 17.10.107 -->
+## [v17.10.107](https://github.com/chef/chef/tree/v17.10.107) (2024-01-03)
 
 #### Merged Pull Requests
-- [chef17] backport homebrew prs [#14153](https://github.com/chef/chef/pull/14153) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Backport PR #14150 - zypper error 104 [#14160](https://github.com/chef/chef/pull/14160) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.95 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] Backport PR #14150 - zypper error 104 [#14160](https://github.com/chef/chef/pull/14160) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.107 -->
 - [chef17] backport homebrew prs [#14153](https://github.com/chef/chef/pull/14153) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.106 -->
 - [chef-17] backport pr14011 [#14152](https://github.com/chef/chef/pull/14152) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.105 -->
 - [chef-17] backport pr14064 [#14151](https://github.com/chef/chef/pull/14151) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.104 -->
