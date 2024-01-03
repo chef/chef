@@ -292,7 +292,7 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    plist (3.7.0)
+    plist (3.7.1)
     proxifier (1.0.3)
     pry (0.14.2)
       coderay (~> 1.1)
