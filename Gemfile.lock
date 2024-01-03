@@ -283,7 +283,7 @@ GEM
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
-    net-ssh (7.1.0)
+    net-ssh (7.2.1)
     nori (2.6.0)
     parallel (1.23.0)
     parser (3.2.2.3)
