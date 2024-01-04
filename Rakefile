@@ -63,8 +63,7 @@ end
 task install: "pre_install:all"
 
 # make sure we build the correct gemspec on windows
-#gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
-gemspec = Gem.win_platform? ? "chef-universal-mingw-ucrt" : "chef"
+gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
 
 Bundler::GemHelper.install_tasks name: gemspec
 
