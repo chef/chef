@@ -20,8 +20,8 @@ class Chef
   class Provider
     class User
       class Aix < Chef::Provider::User
-        provides :user, os: "aix"
-        provides :aix_user
+        provides :user, os: "aix", target_mode: true
+        provides :aix_user, target_mode: true
 
         # The ruby-shadow gem is not supported on aix.
         def supports_ruby_shadow?
@@ -124,7 +124,7 @@ class Chef
           return unless updating_home? && new_resource.manage_home
 
           # -m option does not work on aix, so move dir.
-          if ::File.directory?(current_resource.home)
+          if ::TargetIO::File.directory?(current_resource.home)
             logger.trace("Changing users home directory from #{current_resource.home} to #{new_resource.home}")
             FileUtils.mv current_resource.home, new_resource.home
           else

@@ -25,9 +25,7 @@ class Chef
     class YumRepository < Chef::Provider
       extend Chef::Mixin::Which
 
-      provides :yum_repository do
-        which "yum"
-      end
+      provides(:yum_repository, target_mode: true) { which "yum" }
 
       def load_current_resource; end
 

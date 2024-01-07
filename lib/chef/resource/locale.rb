@@ -21,7 +21,7 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class Locale < Chef::Resource
-      provides :locale
+      provides :locale, target_mode: true
 
       description "Use the **locale** resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
       introduced "14.5"
@@ -79,7 +79,7 @@ class Chef
           lang get_system_locale_windows
         else
           begin
-            old_content = ::File.read(LOCALE_CONF)
+            old_content = ::TargetIO::File.read(LOCALE_CONF)
             locale_values = Hash[old_content.split("\n").map { |v| v.split("=") }]
             lang locale_values["LANG"]
           rescue Errno::ENOENT => e
@@ -112,11 +112,8 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion do
-              # RHEL/CentOS type platforms don't have locale-gen
-              # Windows has locale-gen as part of the install, but not in the path
-              which("locale-gen") || windows?
-            end
+            # RHEL/CentOS type platforms don't have locale-gen
+            a.assertion { which("locale-gen") }
             a.failure_message(Chef::Exceptions::ProviderNotFound, "The locale resource requires the locale-gen tool")
           end
         end
