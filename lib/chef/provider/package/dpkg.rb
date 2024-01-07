@@ -29,7 +29,7 @@ class Chef
         DPKG_INSTALLED = /^Status: install ok installed/.freeze
         DPKG_VERSION   = /^Version: (.+)$/.freeze
 
-        provides :dpkg_package
+        provides :dpkg_package, target_mode: true
 
         use_multipackage_api
         use_package_name_for_source
@@ -46,6 +46,11 @@ class Chef
             a.assertion { source_files_exist? }
             a.failure_message Chef::Exceptions::Package, "#{new_resource} source file(s) do not exist: #{missing_sources}"
             a.whyrun "Assuming they would have been previously created."
+          end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { ChefConfig::Config.target_mode? && !new_resource.response_file }
+            a.failure_message(Chef::Exceptions::Package, "dpkg package provider does not support response_file property in Target Mode.")
           end
         end
 
@@ -146,14 +151,14 @@ class Chef
         #
         # @return [Boolean] True if all sources exist
         def source_files_exist?
-          resolved_source_array.all? { |s| s && ::File.exist?(s) }
+          resolved_source_array.all? { |s| s && ::TargetIO::File.exist?(s) }
         end
 
         # Helper to return all the names of the missing sources for error messages.
         #
         # @return [Array<String>] Array of missing sources
         def missing_sources
-          resolved_source_array.select { |s| s.nil? || !::File.exist?(s) }
+          resolved_source_array.select { |s| s.nil? || !::TargetIO::File.exist?(s) }
         end
 
         def current_package_name_array

@@ -25,8 +25,8 @@ require_relative "../provider/package/freebsd/pkgng"
 class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
-      provides :freebsd_package
-      provides :package, platform: "freebsd"
+      provides :freebsd_package, target_mode: true
+      provides :package, platform: "freebsd", target_mode: true
 
       description "Use the **freebsd_package** resource to manage packages for the FreeBSD platform."
 

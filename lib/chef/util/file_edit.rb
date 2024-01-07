@@ -29,9 +29,9 @@ class Chef
       public
 
       def initialize(filepath)
-        raise ArgumentError, "File '#{filepath}' does not exist" unless File.exist?(filepath)
+        raise ArgumentError, "File '#{filepath}' does not exist" unless TargetIO::File.exist?(filepath)
 
-        @editor = Editor.new(File.open(filepath, &:readlines))
+        @editor = Editor.new(TargetIO::File.open(filepath, &:readlines))
         @original_pathname = filepath
         @file_edited = false
       end
@@ -85,8 +85,8 @@ class Chef
       def write_file
         if @changes
           backup_pathname = original_pathname + ".old"
-          FileUtils.cp(original_pathname, backup_pathname, preserve: true)
-          File.open(original_pathname, "w") do |newfile|
+          TargetIO::FileUtils.cp(original_pathname, backup_pathname, preserve: true)
+          TargetIO::File.open(original_pathname, "w") do |newfile|
             editor.lines.each do |line|
               newfile.puts(line)
             end

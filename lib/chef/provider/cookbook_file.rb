@@ -22,7 +22,7 @@ class Chef
   class Provider
     class CookbookFile < Chef::Provider::File
 
-      provides :cookbook_file
+      provides :cookbook_file, target_mode: true
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::CookbookFile::Content

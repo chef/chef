@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Ifconfig
       class Aix < Chef::Provider::Ifconfig
-        provides :ifconfig, platform: "aix"
+        provides :ifconfig, platform: "aix", target_mode: true
 
         def load_current_resource
           @current_resource = Chef::Resource::Ifconfig.new(new_resource.name)

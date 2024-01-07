@@ -26,7 +26,7 @@ class Chef
     class Git < Chef::Provider
 
       extend Forwardable
-      provides :git
+      provides :git, target_mode: true
 
       GIT_VERSION_PATTERN = Regexp.compile("git version (\\d+\\.\\d+.\\d+)")
 
@@ -58,7 +58,7 @@ class Chef
         # Parent directory of the target must exist.
         requirements.assert(:checkout, :sync) do |a|
           dirname = ::File.dirname(cwd)
-          a.assertion { ::File.directory?(dirname) }
+          a.assertion { ::TargetIO::File.directory?(dirname) }
           a.whyrun("Directory #{dirname} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
                             "Cannot clone #{new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
@@ -101,7 +101,7 @@ class Chef
       action :export do
         action_checkout
         converge_by("complete the export by removing #{cwd}.git after checkout") do
-          FileUtils.rm_rf(::File.join(cwd, ".git"))
+          TargetIO::FileUtils.rm_rf(::File.join(cwd, ".git"))
         end
       end
 
@@ -138,16 +138,16 @@ class Chef
       end
 
       def existing_git_clone?
-        ::File.exist?(::File.join(cwd, ".git"))
+        ::TargetIO::File.exist?(::File.join(cwd, ".git"))
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(cwd) || Dir.entries(cwd).sort == [".", ".."]
+        !::TargetIO::File.exist?(cwd) || TargetIO::Dir.entries(cwd).sort == [".", ".."]
       end
 
       def find_current_revision
         logger.trace("#{new_resource} finding current git revision")
-        if ::File.exist?(::File.join(cwd, ".git"))
+        if ::TargetIO::File.exist?(::File.join(cwd, ".git"))
           # 128 is returned when we're not in a git repo. this is fine
           result = git("rev-parse", "HEAD", cwd: cwd, returns: [0, 128]).stdout.strip
         end
@@ -413,9 +413,9 @@ class Chef
         require "etc" unless defined?(Etc)
         case user
         when Integer
-          Etc.getpwuid(user).dir
+          TargetIO::Etc.getpwuid(user).dir
         else
-          Etc.getpwnam(user.to_s).dir
+          TargetIO::Etc.getpwnam(user.to_s).dir
         end
       end
     end

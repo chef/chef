@@ -36,7 +36,7 @@ class Chef
 
         group_info = nil
         begin
-          group_info = Etc.getgrnam(new_resource.group_name)
+          group_info = TargetIO::Etc.getgrnam(new_resource.group_name)
         rescue ArgumentError
           @group_exists = false
           logger.trace("#{new_resource} group does not exist")
