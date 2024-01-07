@@ -24,7 +24,7 @@ class Chef
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, platform_family: %w{debian rhel fedora suse amazon} do
+        provides :service, platform_family: %w{debian rhel fedora suse amazon}, target_mode: true do
           insserv?
         end
 
@@ -38,7 +38,7 @@ class Chef
           # Look for a /etc/rc.*/SnnSERVICE link to signify that the service would be started in a runlevel
           service_name = Chef::Util::PathHelper.escape_glob_dir(current_resource.service_name)
 
-          if Dir.glob("/etc/rc*/**/S*#{service_name}").empty?
+          if TargetIO::Dir.glob("/etc/rc*/**/S*#{service_name}").empty?
             current_resource.enabled false
           else
             current_resource.enabled true

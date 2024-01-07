@@ -35,7 +35,7 @@ class Chef
     # template resource follow the same file specificity rules as the remote_file and file resources.
     class Template < Chef::Resource::File
 
-      provides :template
+      provides :template, target_mode: true
 
       include Chef::Mixin::Securable
 

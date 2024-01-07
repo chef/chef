@@ -30,8 +30,8 @@ class Chef
     class Package
       class Openbsd < Chef::Provider::Package
 
-        provides :package, os: "openbsd"
-        provides :openbsd_package
+        provides :package, os: "openbsd", target_mode: true
+        provides :openbsd_package, target_mode: true
 
         include Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage
@@ -129,6 +129,7 @@ class Chef
           end
         end
 
+        # Target Mode limitation: ENV["PKG_PATH"] cannot be evaluated, as remote commands are not run in a standard shell
         def pkg_path
           ENV["PKG_PATH"] || "http://ftp.OpenBSD.org/pub/#{node["kernel"]["name"]}/#{node["kernel"]["release"]}/packages/#{node["kernel"]["machine"]}/"
         end

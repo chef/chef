@@ -48,7 +48,7 @@ class Chef
       ```
       EXAMPLES
 
-      provides :group
+      provides :group, target_mode: true
 
       allowed_actions :create, :remove, :modify, :manage
       default_action :create

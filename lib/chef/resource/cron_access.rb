@@ -23,7 +23,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class CronAccess < Chef::Resource
-      provides :cron_access
+      provides :cron_access, target_mode: true
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 
       introduced "14.4"
