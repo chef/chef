@@ -49,7 +49,7 @@ class Chef
 
             Dir.mktmpdir("chef-systemd-unit") do |dir|
               temp = "#{dir}/#{::File.basename(@parent_resource.path)}"
-              ::FileUtils.cp(path, temp)
+              ::TargetIO::FileUtils.cp(path, temp)
               verify_command(temp, opts)
             end
           end

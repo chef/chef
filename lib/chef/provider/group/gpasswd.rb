@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Group
       class Gpasswd < Chef::Provider::Group::Groupadd
-        provides :group
+        provides :group, target_mode: true
 
         def load_current_resource
           super
@@ -31,7 +31,7 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exist?("/usr/bin/gpasswd") }
+            a.assertion { ::TargetIO::File.exist?("/usr/bin/gpasswd") }
             a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/gpasswd for #{new_resource}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end

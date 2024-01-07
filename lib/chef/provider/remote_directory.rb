@@ -32,7 +32,7 @@ class Chef
       extend Forwardable
       include Chef::Mixin::FileClass
 
-      provides :remote_directory
+      provides :remote_directory, target_mode: true
 
       def_delegators :new_resource, :purge, :path, :source, :cookbook, :cookbook_name
       def_delegators :new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
@@ -100,7 +100,7 @@ class Chef
       #
       def purge_unmanaged_files
         if purge
-          Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
+          TargetIO::Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
             next if [".", ".."].include?(Pathname.new(file).basename.to_s)
 
@@ -110,7 +110,7 @@ class Chef
             # Skip files that we've sync'd and their parent dirs
             next if managed_files.include?(file)
 
-            if ::File.directory?(file)
+            if ::TargetIO::File.directory?(file)
               if !ChefUtils.windows? && file_class.symlink?(file.dup)
                 # Unix treats dir symlinks as files
                 purge_file(file)
@@ -188,7 +188,7 @@ class Chef
       def create_cookbook_file(cookbook_file_relative_path)
         full_path = ::File.join(path, cookbook_file_relative_path)
 
-        ensure_directory_exists(::File.dirname(full_path))
+        ensure_directory_exists(::TargetIO::File.dirname(full_path))
 
         res = cookbook_file_resource(full_path, cookbook_file_relative_path)
         res.run_action(action_for_cookbook_file)
@@ -228,7 +228,7 @@ class Chef
       #
       def ensure_directory_exists(dir)
         # doing the check here and skipping the resource should be more performant
-        unless ::File.directory?(dir)
+        unless ::TargetIO::File.directory?(dir)
           res = directory_resource(dir)
           res.run_action(:create)
           new_resource.updated_by_last_action(true) if res.updated?

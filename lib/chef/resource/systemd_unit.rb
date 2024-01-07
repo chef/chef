@@ -24,7 +24,7 @@ class Chef
   class Resource
     class SystemdUnit < Chef::Resource
 
-      provides(:systemd_unit) { true }
+      provides(:systemd_unit, target_mode: true) { true }
 
       description "Use the **systemd_unit** resource to create, manage, and run [systemd units](https://www.freedesktop.org/software/systemd/man/systemd.html#Concepts)."
       introduced "12.11"

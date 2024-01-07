@@ -155,6 +155,8 @@ class Chef
           false
         end
       end
+
+true # Short-Circuit to avoid deadlocks for now (TODO)
     end
 
     private

@@ -42,7 +42,7 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:install, :upgrade, :remove, :purge) do |a|
-            a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
+            a.assertion { !new_resource.source || ::TargetIO::File.exist?(new_resource.source) }
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end
@@ -237,7 +237,7 @@ class Chef
         end
 
         def snapctl(*args)
-          shell_out!("snap", *args)
+          shell_out!("snap", *args, returns: [0, 10])
         end
 
         def get_snap_version_from_source(path)

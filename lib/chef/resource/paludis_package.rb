@@ -23,7 +23,7 @@ class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
 
-      provides :paludis_package
+      provides :paludis_package, target_mode: true
 
       description "Use the **paludis_package** resource to manage packages for the Paludis platform."
       introduced "12.1"
