@@ -29,13 +29,13 @@ class Chef
     class SystemdUnit < Chef::Provider
       include Chef::Mixin::Which
 
-      provides :systemd_unit
+      provides :systemd_unit, target_mode: true
 
       def load_current_resource
         @current_resource = Chef::Resource::SystemdUnit.new(new_resource.name)
 
         current_resource.unit_name(new_resource.unit_name)
-        current_resource.content(::File.read(unit_path)) if ::File.exist?(unit_path)
+        current_resource.content(::TargetIO::File.read(unit_path)) if ::TargetIO::File.exist?(unit_path)
         current_resource.user(new_resource.user)
         current_resource.enabled(enabled?)
         current_resource.active(active?)
@@ -86,7 +86,7 @@ class Chef
       end
 
       action :delete, description: "Delete a systemd unit file, if it exists." do
-        if ::File.exist?(unit_path)
+        if ::TargetIO::File.exist?(unit_path)
           converge_by("deleting unit: #{new_resource.unit_name}") do
             manage_unit_file(:delete)
             daemon_reload if new_resource.triggers_reload

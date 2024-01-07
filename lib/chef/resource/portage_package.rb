@@ -22,7 +22,7 @@ class Chef
   class Resource
     class PortagePackage < Chef::Resource::Package
 
-      provides :portage_package
+      provides :portage_package, target_mode: true
 
       description "Use the **portage_package** resource to manage packages for the Gentoo platform."
 

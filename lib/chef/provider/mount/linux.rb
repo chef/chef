@@ -23,7 +23,7 @@ class Chef
     class Mount
       class Linux < Chef::Provider::Mount::Mount
 
-        provides :mount, os: "linux"
+        provides :mount, os: "linux", target_mode: true
 
         # Check to see if the volume is mounted.
         # "findmnt" outputs the mount points with volume.
@@ -39,8 +39,8 @@ class Chef
 
         def mounted?
           mounted = false
-          real_mount_point = if ::File.exist? @new_resource.mount_point
-                               ::File.realpath(@new_resource.mount_point)
+          real_mount_point = if ::TargetIO::File.exist? @new_resource.mount_point
+                               ::TargetIO::File.realpath(@new_resource.mount_point)
                              else
                                @new_resource.mount_point
                              end
