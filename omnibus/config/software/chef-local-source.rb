@@ -85,8 +85,9 @@ build do
 
   gemspec_name = if windows?
                    # Chef18 is built with ruby3.1 so platform name is changed.
-                   RUBY_PLATFORM == "x64-mingw-ucrt" ? "chef-universal-mingw-ucrt.gemspec" : "chef-universal-mingw32.gemspec"
-                 else
+                   #RUBY_PLATFORM == "x64-mingw-ucrt" ? "chef-universal-mingw-ucrt.gemspec" : "chef-universal-mingw32.gemspec"
+                   "chef-universal-mingw32.gemspec"
+                  else
                    "chef.gemspec"
                  end
 
