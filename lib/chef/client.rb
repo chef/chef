@@ -330,9 +330,10 @@ class Chef
       new_date = eol_override
 
       # We make a release every year so take the version you're on + 2006 and you get
-      # the year it goes EOL
-      eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
-      cut_off_date = !!new_date ? Time.parse(new_date) : Time.new(eol_year, 5, 01)
+      # the year it goes EOL. 1/8/2024 - EOL for Chef-17 is now November 1, 2024
+      # eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
+      eol_year = "2024"
+      cut_off_date = !!new_date ? Time.parse(new_date) : Time.new(eol_year, 11, 01)
 
       return if Time.now < cut_off_date
 
