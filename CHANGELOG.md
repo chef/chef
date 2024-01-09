@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.110 -->
-## [v17.10.110](https://github.com/chef/chef/tree/v17.10.110) (2024-01-08)
+<!-- latest_release 17.10.111 -->
+## [v17.10.111](https://github.com/chef/chef/tree/v17.10.111) (2024-01-09)
 
 #### Merged Pull Requests
-- Updating chef-17 EOL to November 2024 [#14168](https://github.com/chef/chef/pull/14168) ([johnmccrae](https://github.com/johnmccrae))
+- Updating EOL Date [#14169](https://github.com/chef/chef/pull/14169) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.95 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating EOL Date [#14169](https://github.com/chef/chef/pull/14169) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.111 -->
 - Updating chef-17 EOL to November 2024 [#14168](https://github.com/chef/chef/pull/14168) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.110 -->
 - [chef-17] Updating net-ssh [#14162](https://github.com/chef/chef/pull/14162) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.109 -->
 - Updating PLIST [#14161](https://github.com/chef/chef/pull/14161) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.108 -->
