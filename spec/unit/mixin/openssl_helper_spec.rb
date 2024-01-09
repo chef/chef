@@ -92,7 +92,12 @@ describe Chef::Mixin::OpenSSLHelper do
 
     context "When the dhparam.pem file does exist, and does contain a vaild dhparam key" do
       it "returns true" do
-        @dhparam_file.puts(::OpenSSL::PKey::DH.new(256).to_pem) # this is 256 to speed up specs
+        # bumped this from 256 to 1024 because OpenSSL 3.x will enforce
+        # size
+        #      OpenSSL::PKey::PKeyError:
+        #       EVP_PKEY_paramgen: modulus too small
+        # need to double check that the mixin itself doesn't allow smaller
+        @dhparam_file.puts(::OpenSSL::PKey::DH.new(1024).to_pem)
         @dhparam_file.close
         expect(instance.dhparam_pem_valid?(@dhparam_file.path)).to be_truthy
       end
