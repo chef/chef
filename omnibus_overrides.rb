@@ -4,4 +4,4 @@
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
 #override "ruby", version: "3.0.3"
-override :ruby, version: aix? ? "3.0.3" : "3.1.2
+override :ruby, version: aix? ? "3.0.3" : "3.1.2"
