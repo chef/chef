@@ -324,7 +324,7 @@ class Chef
           acls += mode_ace(SID.Everyone, (mode & 07))
         end
 
-        acls.nil? ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
+        (acls.nil? || acls.empty?) ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
       end
 
       def target_group
