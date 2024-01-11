@@ -13,15 +13,7 @@ export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
 
 echo "--- Installing Chef Foundation"
-if [ -f /etc/system-release ] && grep -q "Amazon Linux release 2023" /etc/system-release; then
-  # Run the curl command specific to Amazon Linux 2023
-  
-  curl -fsSL https://omnitruck.staging.ps.chef.co/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
-else
-  # Run the generic curl command for other platforms
-  curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
-fi
-
+curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
 
 if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
   export SSL_CERT_FILE="/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem"
