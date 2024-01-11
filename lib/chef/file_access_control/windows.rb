@@ -324,9 +324,9 @@ class Chef
           acls += mode_ace(SID.Everyone, (mode & 07))
         end
 
-        # 'acls.nil?'' will evaluate to false when it is actually null. It is an empty array and Ruby
-        # still considers it not nil even though it's empty. Verifying it is indeed empty as well
-        # solves the dilemma. 'acls' can be [] in addition to nil
+        # 'acls.nil?' is true if uninitialized, but false if the initial empty array value.
+        # 'acls.empty?' cannot be called if acls is nil but successfully guards against using the empty array value.
+        # either case should return nil from this method.
         (acls.nil? || acls.empty?) ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
       end
 
