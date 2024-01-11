@@ -13,7 +13,17 @@ export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
 
 echo "--- Installing Chef Foundation"
-curl -fsSL https://omnitruck.staging.ps.chef.co/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+
+PLATFORM_ARCHITECTURE=$(uname -m)
+
+case "$PLATFORM_ARCHITECTURE" in
+    "amazon2023")
+        curl -fsSL https://omnitruck.staging.ps.chef.co/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+        ;;
+    *)
+        curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+        ;;
+esac
 
 if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
   export SSL_CERT_FILE="/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem"
