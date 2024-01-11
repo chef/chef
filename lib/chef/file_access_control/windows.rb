@@ -324,7 +324,9 @@ class Chef
           acls += mode_ace(SID.Everyone, (mode & 07))
         end
 
-        # acls can be [] in addition to nil
+        # 'acls.nil?'' will evaulate to false when it is actually null. It is an empty array and Ruby
+        # still considers it not nil even though it's empty. Verifying it is indeed empty as well
+        # solves the dilemma. 'acls' can be [] in addition to nil
         (acls.nil? || acls.empty?) ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
       end
 
