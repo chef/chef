@@ -136,7 +136,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.4)
+    addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
@@ -303,7 +303,7 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    public_suffix (5.0.1)
+    public_suffix (5.0.4)
     racc (1.7.1)
     rack (2.2.7)
     rainbow (3.1.1)
@@ -377,7 +377,7 @@ GEM
       tty-cursor (~> 0.7)
       tty-screen (~> 0.8)
       wisper (~> 2.0)
-    tty-screen (0.8.1)
+    tty-screen (0.8.2)
     tty-table (0.12.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
