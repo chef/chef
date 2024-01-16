@@ -4,7 +4,7 @@ GIT
   branch: jfm/chef-17-berkshelf
   specs:
     berkshelf (8.0.7)
-      chef (~> 17.0)
+      chef (>= 15.7.32)
       chef-config
       cleanroom (~> 1.0)
       concurrent-ruby (~> 1.0)
@@ -27,10 +27,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 82dae896a066542f1b66dc866186f856f37e518e
+  revision: 16e27f648f5be10b5895b46c109f194ff93c9f63
   branch: main
   specs:
-    omnibus (9.0.23)
+    omnibus (9.0.24)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
