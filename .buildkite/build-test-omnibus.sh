@@ -91,7 +91,8 @@ then
       fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      if [[ $platform == *"arm"* ]]; then
+      echo "******************DEBUGGING statement **************  PLATFORM =$platform"
+      if [[ $platform == *"aarch"* ]]; then
         echo "      image: chefes/omnibus-toolchain-${platform%????}:$OMNIBUS_TOOLCHAIN_VERSION"
       else
         echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
