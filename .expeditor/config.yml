@@ -16,10 +16,38 @@ rubygems:
   - chef-config
   - chef-bin
   - chef-utils
+  - knife
+
+# At the given time, trigger the following scheduled workloads
+# https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
+schedules:
+  - name: nightly_build_main
+    description: "Run a nightly build in the Buildkite pipeline"
+    cronline: "0 6 * * *"
 
 pipelines:
   - verify:
       public: true
+      env:
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - validate/release:
+      definition: .expeditor/verify.pipeline.yml
+      env:
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  - validate/adhoc:
+      definition: .expeditor/verify.adhoc.pipeline.yml
+      env:
+        - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - validate/adhoc-canary:
+      canary: true
+      definition: .expeditor/verify.adhoc.pipeline.yml
+      env:
+        - ADHOC: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
@@ -30,18 +58,23 @@ pipelines:
   - omnibus/release:
       env:
         - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
-        - IGNORE_CACHE: true
+        - IGNORE_CACHE: true # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
       definition: .expeditor/adhoc-canary.omnibus.yml
       env:
         - ADHOC: true
-        - IGNORE_CACHE: true
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - macos_universal_package:
+  #    description: Builds universal macos package using arch specific packages
+  #    definition: .expeditor/macos_universal_package.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -74,6 +107,7 @@ subscriptions:
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
       - trigger_pipeline:docker/build
+      - trigger_pipeline:macos_universal_package
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - bash:.expeditor/promote-docker-images.sh
@@ -109,10 +143,17 @@ subscriptions:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      - trigger_pipeline:omnibus/release:
+      # - trigger_pipeline:omnibus/release:
+      #     ignore_labels:
+      #       - "Expeditor: Skip Omnibus"
+      #       - "Expeditor: Skip All"
+      #     only_if: built_in:bump_version
+      - trigger_pipeline:validate/release:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
+          only_if: built_in:bump_version
+      - built_in:build_gem:
           only_if: built_in:bump_version
 
   # the habitat chain
@@ -122,6 +163,9 @@ subscriptions:
       - trigger_pipeline:habitat/test
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
+  - workload: ruby_gem_published:corefoundation-*
+    actions:
+      - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:mixlib-archive-*
     actions:
       - bash:.expeditor/update_dep.sh
@@ -224,7 +268,7 @@ subscriptions:
   - workload: ruby_gem_published:addressable-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:proxifier-*
+  - workload: ruby_gem_published:proxifier2-*
     actions:
       - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:syslog-logger-*
@@ -242,3 +286,20 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
+  # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
+  - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh
+  # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
+  - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh
+  - workload: ruby_gem_published:train-rest-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:train-winrm-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
+    actions:
+      - trigger_pipeline:validate/adhoc
