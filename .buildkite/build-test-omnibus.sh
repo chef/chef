@@ -91,9 +91,7 @@ then
       fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      if [[ $platform == "amazon-2023-aarch64" ]]; then
-        echo "      image: chefes/omnibus-toolchain-amazon-2023:aarch64:3.0.27"
-      elif [[ $platform == *"arm"* ]]; then
+      if [[ $platform == *"aarch64"* ]]; then
         echo "      image: chefes/omnibus-toolchain-${platform%????}:$OMNIBUS_TOOLCHAIN_VERSION"
       else
         echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
