@@ -44,6 +44,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier2", "~> 1.1"
 
+  # s.add_dependency "chef-licensing", "~> 0.4"
+
   s.bindir       = "bin"
   s.executables  = %w{ knife }
 
