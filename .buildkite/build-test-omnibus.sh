@@ -92,9 +92,9 @@ then
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       if [[ $platform == *"aarch64"* ]]; then
-        echo "      image: chefes/omnibus-toolchain-${platform%????}:$OMNIBUS_TOOLCHAIN_VERSION"
-      else
         echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
+      else
+        echo "      not found
       fi
       echo "      privileged: true"
       echo "      propagate-environment: true"
