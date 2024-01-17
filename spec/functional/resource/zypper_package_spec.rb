@@ -256,7 +256,7 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
       expect(shell_out("zypper locks | grep chef_rpm_provides").stdout.chomp).not_to match("chef_rpm_provides")
     end
   end
-  
+
   def remove_package
     pkg_to_remove = Chef::Resource::ZypperPackage.new(package_name, run_context)
     pkg_to_remove.run_action(:remove)
