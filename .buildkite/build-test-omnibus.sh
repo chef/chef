@@ -91,11 +91,14 @@ then
       fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      if [[ $platform == *"arm"* ]]; then
+      if [[ $platform == *"aarch64"* ]]; then
+        echo "      image: chefes/omnibus-toolchain-$platform:3.0.28"
+      elif [[ $platform == *"arm"* ]]; then
         echo "      image: chefes/omnibus-toolchain-${platform%????}:$OMNIBUS_TOOLCHAIN_VERSION"
       else
         echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
       fi
+
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "      environment:"
