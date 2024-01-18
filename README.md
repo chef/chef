@@ -40,6 +40,7 @@ For information on how a contribution goes from PR to released package, see [How
 
 To learn more about our monthly feature releases and yearly major releases, see [Chef Infra Release and Support Schedule](./docs/dev/policy/release_and_support_schedule.md).
 
+
 ## Getting Involved
 
 We'd love to have your help developing Chef Infra. See our [Contributing Document](./CONTRIBUTING.md) for more information on getting started.
