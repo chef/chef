@@ -98,6 +98,10 @@ class Chef
         description: "Specifies whether to trigger a daemon reload when creating or deleting a unit.",
         default: true, desired_state: false
 
+      property :start_after_enable, [TrueClass, FalseClass],
+        description: "Specifies whether to start the unit after it is enabled.",
+        default: false, desired_state: false
+
       property :verify, [TrueClass, FalseClass],
         default: true, desired_state: false,
         description: "Specifies if the unit will be verified before installation. Systemd can be overly strict when verifying units, so in certain cases it is preferable not to verify the unit."

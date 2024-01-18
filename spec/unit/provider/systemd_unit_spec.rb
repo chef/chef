@@ -531,6 +531,17 @@ describe Chef::Provider::SystemdUnit, :linux_only do
             provider.action_enable
           end
 
+          it "starts the unit after enabling it when start_after_enable" do
+            current_resource.enabled(false)
+            current_resource.start_after_enable(true)
+            %w{enable start}.each do |action|
+              expect(provider).to receive(:shell_out_compacted!)
+                .with(systemctl_path, "--system", action, unit_name)
+                .and_return(shell_out_success)
+            end
+            provider.action_enable
+          end
+
           it "does not enable the unit when it is enabled" do
             current_resource.enabled(true)
             expect(provider).not_to receive(:shell_out_compacted!)
