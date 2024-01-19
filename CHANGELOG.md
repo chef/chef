@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.2 -->
-## [v18.4.2](https://github.com/chef/chef/tree/v18.4.2) (2024-01-18)
+<!-- latest_release 18.4.3 -->
+## [v18.4.3](https://github.com/chef/chef/tree/v18.4.3) (2024-01-19)
 
 #### Merged Pull Requests
-- Bump buildkite-platform and omnibus for solaris issue [#14183](https://github.com/chef/chef/pull/14183) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `f50a2ad` to `86649fa` in /omnibus [#14189](https://github.com/chef/chef/pull/14189) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.3.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `f50a2ad` to `86649fa` in /omnibus [#14189](https://github.com/chef/chef/pull/14189) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.3 -->
 - Bump buildkite-platform and omnibus for solaris issue [#14183](https://github.com/chef/chef/pull/14183) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.2 -->
 - Correcting security issue [#14173](https://github.com/chef/chef/pull/14173) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.1 -->
 - Minor doc change to trigger a version update [#14158](https://github.com/chef/chef/pull/14158) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.0 -->
