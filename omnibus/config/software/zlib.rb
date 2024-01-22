@@ -67,7 +67,13 @@ build do
     ]
 
     make(*make_args, env: env)
-    puts "*********DEBUG FROm Omnibus-s/w : bin_path -> #{env["BINARY_PATH"]} dets_dir : {env["DESTDIR"]} ********" 
+    # Debug output
+    puts "*********DEBUG FROM Omnibus-s/w : bin_path :"
+    puts env["BINARY_PATH"]
+    puts " dest_dir : "
+    puts env["DESTDIR"]
+    puts "********"
+
     make("install", *make_args, env: env)
   else
     # We omit the omnibus path here because it breaks mac_os_x builds by picking
@@ -83,7 +89,14 @@ build do
     end
 
     configure env: env
-
+    
+    # Debug output
+    puts "*********DEBUG FROM Omnibus-s/w : bin_path :"
+    puts env["BINARY_PATH"]
+    puts " dest_dir : "
+    puts env["DESTDIR"]
+    puts "********"
+    
     make "-j #{workers}", env: env
     make "-j #{workers} install", env: env
   end
