@@ -1187,7 +1187,7 @@ class Chef
 
         connection&.connection&.transport_options&.merge! opts
       end
-      
+
       # List Train transports available (but not loaded) on system.
       #
       # Will filter out train-core, API transports, and other incompatible ones.

@@ -697,7 +697,7 @@ describe Chef::Knife::Bootstrap do
         expect { knife.validate_protocol! }.to raise_error SystemExit
       end
     end
-    
+
     context "when additional Train transports are present" do
       before do
         Gem::Specification.new do |spec|
