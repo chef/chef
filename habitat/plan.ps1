@@ -73,7 +73,6 @@ function Invoke-Prepare {
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
-        gem pristine ffi
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
     } finally {
@@ -88,7 +87,6 @@ function Invoke-Build {
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
-        gem install ffi
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
