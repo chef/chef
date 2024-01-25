@@ -33,6 +33,19 @@ If there are any new or updated resources, the docs site will need to be updated
 
 ## Release Chef Infra Client
 
+### Release Child Gems
+
+You'll wasnt to ensure that you also release the corresponding versions of these gems BEFORE you publish Chef Infra
+- chef-bin
+- chef-config
+- chef-utils
+
+You'll build them locally and push them to rubygems using:
+```
+gem build <chef-something-something.gemspec>
+gem push <chef-something-something.gem>
+```
+
 ### Promote the build
 
 Chef employees can promote a build to stable from Slack. This is done with expeditor using a chatops command in the following format:
