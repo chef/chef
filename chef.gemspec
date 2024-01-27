@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 17.0"
-  s.add_dependency "inspec-core", "~> 5.22.36"
+  s.add_dependency "inspec-core", "~> 5.22.40"
 
   s.add_dependency "ffi", "~> 1.15.5"
   s.add_dependency "ffi-yajl", ">= 2.2", "< 4.0"
@@ -54,7 +54,7 @@ Gem::Specification.new do |s|
   s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
-  s.add_dependency "proxifier", "~> 1.0"
+  s.add_dependency "proxifier2", "~> 1.1"
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
