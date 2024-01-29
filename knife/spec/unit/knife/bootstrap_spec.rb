@@ -682,7 +682,7 @@ describe Chef::Knife::Bootstrap do
 
     context "and the protocol is supported" do
 
-      Chef::Knife::Bootstrap::SUPPORTED_CONNECTION_PROTOCOLS.each do |proto|
+      %w{winrm ssh}.each do |proto|
         let(:connection_protocol) { proto }
         it "returns true for #{proto}" do
           expect(knife.validate_protocol!).to eq true
@@ -695,6 +695,45 @@ describe Chef::Knife::Bootstrap do
       it "outputs an error and exits" do
         expect(knife.ui).to receive(:error).with(/Unsupported protocol '#{connection_protocol}'/)
         expect { knife.validate_protocol! }.to raise_error SystemExit
+      end
+    end
+
+    context "when additional Train transports are present" do
+      before do
+        Gem::Specification.new do |spec|
+          spec.name = "train-rfc2549"
+          spec.version = "0.0.1"
+          spec.summary = "Train transport to use IPoAC"
+        end.activate
+
+        Gem.refresh
+      end
+
+      context "and their usage is supported" do
+        let(:connection_protocol) { "rfc2549" }
+        it "accepts the transport as protocol" do
+          # While the Gem mocking above will work in native RSpec, it will
+          # fail when executed as part of the test suite via Bundler.
+          #
+          # Reason for this is, that Bundler effectively replaces the whole
+          # gem loading architecture. Mocking the Gem inside of Bundler will
+          # have to reach deep into its internal implementation and make
+          # the test tighly-coupled and brittle.
+          #
+          # During the discussion on PR 13534, it was decided to skip the
+          # test as a result and add this explanation for future reference.
+
+          # expect(knife.validate_protocol!).to eq true
+          skip
+        end
+      end
+
+      context "and invalid proctocols are still refused" do
+        let(:connection_protocol) { "rfc6216" }
+        it "accepts the transport as protocol" do
+          expect(knife.ui).to receive(:error).with(/Unsupported protocol '#{connection_protocol}'/)
+          expect { knife.validate_protocol! }.to raise_error SystemExit
+        end
       end
     end
   end
