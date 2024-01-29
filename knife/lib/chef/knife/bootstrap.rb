@@ -32,7 +32,7 @@ class Chef
       include DataBagSecretOptions
       include LicenseAcceptance::CLIFlags::MixlibCLI
 
-      SUPPORTED_CONNECTION_PROTOCOLS ||= %w{ssh winrm}.freeze
+      TRANSPORTS_BLACKLIST ||= %w{train-core train-aws train-azure train-habitat train-rest}.freeze
       WINRM_AUTH_PROTOCOL_LIST ||= %w{plaintext kerberos ssl negotiate}.freeze
 
       # Common connectivity options
@@ -54,8 +54,7 @@ class Chef
       option :connection_protocol,
         short: "-o PROTOCOL",
         long: "--connection-protocol PROTOCOL",
-        description: "The protocol to use to connect to the target node.",
-        in: SUPPORTED_CONNECTION_PROTOCOLS
+        description: "The protocol to use to connect to the target node. Examples: ssh, winrm"
 
       option :max_wait,
         short: "-W SECONDS",
@@ -810,11 +809,11 @@ class Chef
           exit 1
         end
 
-        unless SUPPORTED_CONNECTION_PROTOCOLS.include?(connection_protocol)
+        unless supported_connection_protocols.include?(connection_protocol)
           ui.error <<~EOM
             Unsupported protocol '#{connection_protocol}'.
 
-            Supported protocols are: #{SUPPORTED_CONNECTION_PROTOCOLS.join(" ")}
+            Supported protocols are: #{supported_connection_protocols.join(" ")}
           EOM
           exit 1
         end
@@ -1187,6 +1186,24 @@ class Chef
         return unless opts.is_a?(Hash) || !opts.empty?
 
         connection&.connection&.transport_options&.merge! opts
+      end
+
+      # List Train transports available (but not loaded) on system.
+      #
+      # Will filter out train-core, API transports, and other incompatible ones.
+      #
+      # @return [Array] transport_names which can be used for command execution
+      def transports_available
+        train_gems = Gem::Specification.select { |spec| spec.name.start_with? "train-" }
+        train_gems.delete_if { |spec| TRANSPORTS_BLACKLIST.include? spec.name }
+        train_gems.map { |spec| spec.name.delete_prefix "train-" }
+      end
+
+      # Return all supported connection types, classical and Train-based
+      #
+      # @return [Array] connection types supported
+      def supported_connection_protocols
+        %w{ssh winrm} | transports_available
       end
     end
   end
