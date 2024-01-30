@@ -57,7 +57,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 60"
+  echo "  timeout_in_minutes: 120"
 
 done
 
@@ -73,7 +73,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "  env:"
   echo "  - CHEF_FOUNDATION_VERSION"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 60"
+  echo "  timeout_in_minutes: 120"
 done
 
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
