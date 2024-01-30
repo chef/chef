@@ -628,10 +628,6 @@ class Chef
         elsif merge_onto.is_a?(Array) && merge_with.is_a?(Array)
           merge_onto |= merge_with
 
-        # If merge_with is NIL, don't replace merge_onto
-        elsif merge_with == NIL
-          merge_onto
-
         # In all other cases, replace merge_onto with merge_with
         else
           if merge_with.is_a?(Hash)
@@ -659,10 +655,6 @@ class Chef
             # internal_set bypasses converting keys, does convert values and allows writing to immutable mashes
             merge_onto.internal_set(key, value)
           end
-          merge_onto
-
-        # If merge_with is NIL, don't replace merge_onto
-        elsif merge_with == NIL
           merge_onto
 
         # In all other cases, replace merge_onto with merge_with
