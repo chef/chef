@@ -227,7 +227,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-22:3.0
+        image: rubydistros/fedora-latest:3.0
         privileged: true
 
 - label: "Functional Fedora :ruby: 3.0"
