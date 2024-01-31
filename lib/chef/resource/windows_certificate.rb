@@ -209,6 +209,11 @@ class Chef
 
         def fetch_key
           require "openssl" unless defined?(OpenSSL)
+          # RC2 belongs to the legacy provider in OpenSSL >= 3.0, which is not enabled by default.
+          # openssl pkcs12 will also refuse to load this file without the -provider default -provider legacy option. REF: https://github.com/ruby/openssl/pull/635
+          OpenSSL::Provider.load("default")
+          OpenSSL::Provider.load("legacy")
+
           file_name = ::File.basename(new_resource.output_path, ::File.extname(new_resource.output_path))
           pfx_file = file_name + ".pfx"
           new_pfx_output_path = ::File.join(Chef::FileCache.create_cache_path("pfx_files"), pfx_file)
