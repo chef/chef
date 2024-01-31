@@ -9,37 +9,42 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - bundle update --conservative inspec-core inspec-core-bin [#14201](https://github.com/chef/chef/pull/14201) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
-<!-- release_rollup since=17.10.95 -->
+<!-- release_rollup since=17.10.114 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- bundle update --conservative inspec-core inspec-core-bin [#14201](https://github.com/chef/chef/pull/14201) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.119 -->
-- Try pinning to 0.10.1 if Ruby 3.0.0 specifically is in use (for Fedora rubydistro) [#14212](https://github.com/chef/chef/pull/14212) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.118 -->
-- Updating Train Support to allow for more connection types [#14208](https://github.com/chef/chef/pull/14208) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.117 -->
-- Try switching to proxifier2 [#14204](https://github.com/chef/chef/pull/14204) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.116 -->
 - Adding an adhoc build for the Chef-17 pipeline to be run every Sunday and Wednesday UTC [#13101](https://github.com/chef/chef/pull/13101) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 17.10.115 -->
-- Updating FFI-YAJL [#14176](https://github.com/chef/chef/pull/14176) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.114 -->
-- Omnibus bump of Solaris bash update [#14177](https://github.com/chef/chef/pull/14177) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.113 -->
-- Overcoming Ruby linting error [#14182](https://github.com/chef/chef/pull/14182) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.112 -->
-- Updating EOL Date [#14169](https://github.com/chef/chef/pull/14169) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.111 -->
-- Updating chef-17 EOL to November 2024 [#14168](https://github.com/chef/chef/pull/14168) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.110 -->
-- [chef-17] Updating net-ssh [#14162](https://github.com/chef/chef/pull/14162) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.109 -->
-- Updating PLIST [#14161](https://github.com/chef/chef/pull/14161) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.108 -->
-- [Chef-17] Backport PR #14150 - zypper error 104 [#14160](https://github.com/chef/chef/pull/14160) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.107 -->
-- [chef17] backport homebrew prs [#14153](https://github.com/chef/chef/pull/14153) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.106 -->
-- [chef-17] backport pr14011 [#14152](https://github.com/chef/chef/pull/14152) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.105 -->
-- [chef-17] backport pr14064 [#14151](https://github.com/chef/chef/pull/14151) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.104 -->
-- Refactoring Berkshelf [#14149](https://github.com/chef/chef/pull/14149) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.103 -->
-- Updating Inspec and its dependencies [#14147](https://github.com/chef/chef/pull/14147) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.102 -->
-- [chef-17] Add Rocky back in. [#14126](https://github.com/chef/chef/pull/14126) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.101 -->
-- [chef-17] labeler update [#14127](https://github.com/chef/chef/pull/14127) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.100 -->
-- Bump overridden Ruby version for Chef 17 to 3.0.6 [#14056](https://github.com/chef/chef/pull/14056) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.96 -->
-- Rolling back to Ruby 3.0.3 [#14057](https://github.com/chef/chef/pull/14057) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.97 -->
-- Account for multiple ansidecl.h files found [#14058](https://github.com/chef/chef/pull/14058) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.98 -->
-- Temporarily remove Rocky [#14082](https://github.com/chef/chef/pull/14082) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.99 -->
+- Try switching to proxifier2 [#14204](https://github.com/chef/chef/pull/14204) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.116 -->
+- Updating Train Support to allow for more connection types [#14208](https://github.com/chef/chef/pull/14208) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.117 -->
+- Try pinning to 0.10.1 if Ruby 3.0.0 specifically is in use (for Fedora rubydistro) [#14212](https://github.com/chef/chef/pull/14212) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.118 -->
+- bundle update --conservative inspec-core inspec-core-bin [#14201](https://github.com/chef/chef/pull/14201) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.119 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.10.114](https://github.com/chef/chef/tree/v17.10.114) (2024-01-31)
+
+#### Merged Pull Requests
+- Temporarily remove Rocky [#14082](https://github.com/chef/chef/pull/14082) ([johnmccrae](https://github.com/johnmccrae))
+- Account for multiple ansidecl.h files found [#14058](https://github.com/chef/chef/pull/14058) ([tpowell-progress](https://github.com/tpowell-progress))
+- Rolling back to Ruby 3.0.3 [#14057](https://github.com/chef/chef/pull/14057) ([johnmccrae](https://github.com/johnmccrae))
+- Bump overridden Ruby version for Chef 17 to 3.0.6 [#14056](https://github.com/chef/chef/pull/14056) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] labeler update [#14127](https://github.com/chef/chef/pull/14127) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] Add Rocky back in. [#14126](https://github.com/chef/chef/pull/14126) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Inspec and its dependencies [#14147](https://github.com/chef/chef/pull/14147) ([johnmccrae](https://github.com/johnmccrae))
+- Refactoring Berkshelf [#14149](https://github.com/chef/chef/pull/14149) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] backport pr14064 [#14151](https://github.com/chef/chef/pull/14151) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] backport pr14011 [#14152](https://github.com/chef/chef/pull/14152) ([johnmccrae](https://github.com/johnmccrae))
+- [chef17] backport homebrew prs [#14153](https://github.com/chef/chef/pull/14153) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Backport PR #14150 - zypper error 104 [#14160](https://github.com/chef/chef/pull/14160) ([johnmccrae](https://github.com/johnmccrae))
+- Updating PLIST [#14161](https://github.com/chef/chef/pull/14161) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-17] Updating net-ssh [#14162](https://github.com/chef/chef/pull/14162) ([johnmccrae](https://github.com/johnmccrae))
+- Updating chef-17 EOL to November 2024 [#14168](https://github.com/chef/chef/pull/14168) ([johnmccrae](https://github.com/johnmccrae))
+- Updating EOL Date [#14169](https://github.com/chef/chef/pull/14169) ([johnmccrae](https://github.com/johnmccrae))
+- Overcoming Ruby linting error [#14182](https://github.com/chef/chef/pull/14182) ([johnmccrae](https://github.com/johnmccrae))
+- Omnibus bump of Solaris bash update [#14177](https://github.com/chef/chef/pull/14177) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating FFI-YAJL [#14176](https://github.com/chef/chef/pull/14176) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v17.10.95](https://github.com/chef/chef/tree/v17.10.95) (2023-11-27)
 
 #### Merged Pull Requests
@@ -70,7 +75,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Adding support for Rocky Linux 8 and 9 [#14048](https://github.com/chef/chef/pull/14048) ([johnmccrae](https://github.com/johnmccrae))
 - chef17 Openssl 1.0.2zi upgrade [#14046](https://github.com/chef/chef/pull/14046) ([johnmccrae](https://github.com/johnmccrae))
 - Re-add solaris i386 because it exists in 18 [#14051](https://github.com/chef/chef/pull/14051) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v17.10.68](https://github.com/chef/chef/tree/v17.10.68) (2023-05-18)
 
