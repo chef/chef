@@ -37,7 +37,7 @@ ENV["CHEF_LICENSE"] = "accept-no-persist"
 namespace :pre_install do
   desc "Runs 'rake install' for the gems that live in subdirectories in this repo"
   task :install_gems_from_dirs do
-    %w{chef-utils chef-config}.each do |gem|
+    %w{chef-utils chef-config knife}.each do |gem|
       path = ::File.join(::File.dirname(__FILE__), gem)
       Dir.chdir(path) do
         system "rake install"
