@@ -91,11 +91,7 @@ then
       fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      if [[ $platform == *"arm"* ]]; then
-        echo "   image: chefes/omnibus-toolchain-amazon-2023-arm:$OMNIBUS_TOOLCHAIN_VERSION"
-      else
-        echo "    continue not arm"
-      fi
+      echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "      environment:"
