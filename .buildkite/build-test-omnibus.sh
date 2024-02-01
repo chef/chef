@@ -92,7 +92,7 @@ then
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       if [[ $platform == *"arm"* ]]; then
-        echo "   image: chefes/omnibus-toolchain-amazon-2023-arm:3.0.28"
+        echo "   image: chefes/omnibus-toolchain-amazon-2023-arm:$OMNIBUS_TOOLCHAIN_VERSION"
       else
         echo "    continue not arm"
       fi
