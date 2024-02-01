@@ -238,7 +238,7 @@ then
       fi      
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
+      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "  commands:"
