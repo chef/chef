@@ -44,7 +44,7 @@ class Chef
         when Array
           ImmutableArray.new(value, __root__, __node__, __precedence__)
         else
-          safe_dup(value).freeze
+          value.frozen? ? value : safe_dup(value).freeze
         end
       end
 
