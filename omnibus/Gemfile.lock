@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 16e27f648f5be10b5895b46c109f194ff93c9f63
+  revision: 5c0122b185a65af3e93856cba6c394a68343818a
   branch: main
   specs:
-    omnibus (9.0.24)
+    omnibus (9.0.25)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -246,7 +246,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.6)
+    license_scout (1.3.7)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
