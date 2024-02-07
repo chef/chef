@@ -90,7 +90,7 @@ for gem in ${external_gems[@]}; do
   echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
-  if [ $gem == "chef-zero" ] 
+  if [ $gem == "chef-zero" ]
   then
     echo "        - PEDANT_OPTS=--skip-oc_id"
     echo "        - CHEF_FS=true"
@@ -116,7 +116,7 @@ for gem in ${external_gems[@]}; do
     echo "    - bundle config set --local path 'vendor/bundle'"
   fi
   echo "    - bundle install --jobs=3 --retry=3"
-  case $gem in 
+  case $gem in
     "chef-zero")
       echo "    - bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant"
       ;;
@@ -124,7 +124,7 @@ for gem in ${external_gems[@]}; do
       echo "    - bundle exec tasks/bin/run_external_test chef/cheffish main rake spec"
       ;;
     "chefspec")
-      echo "    - bundle exec tasks/bin/run_external_test chefspec/chefspec main rake"
+      echo "    - bundle exec tasks/bin/run_external_test chef/chefspec main rake"
       ;;
     "knife-windows")
       echo "    - bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec"
