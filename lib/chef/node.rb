@@ -285,7 +285,7 @@ class Chef
     def loaded_recipe(cookbook, recipe)
       fully_qualified_recipe = "#{cookbook}::#{recipe}"
 
-      automatic_attrs[:recipes] << fully_qualified_recipe unless Array(self[:recipes]).include?(fully_qualified_recipe)
+      automatic_attrs[:recipes] << fully_qualified_recipe unless Array(automatic_attrs[:recipes]).include?(fully_qualified_recipe)
     end
 
     # Returns true if this Node expects a given role, false if not.
