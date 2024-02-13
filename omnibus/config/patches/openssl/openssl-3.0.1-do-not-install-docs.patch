@@ -1,0 +1,22 @@
+--- openssl-3.0.1/Configurations/unix-Makefile.tmpl.orig	2022-03-04 04:45:21.611028316 +0000
++++ openssl-3.0.1/Configurations/unix-Makefile.tmpl	2022-03-04 04:45:39.164848171 +0000
+@@ -546,7 +546,7 @@
+ 	@echo "Tests are not supported with your chosen Configure options"
+ 	@ : {- output_on() if !$disabled{tests}; "" -}
+
+-install: install_sw install_ssldirs install_docs {- $disabled{fips} ? "" : "install_fips" -}
++install: install_sw install_ssldirs {- $disabled{fips} ? "" : "install_fips" -}
+
+ uninstall: uninstall_docs uninstall_sw {- $disabled{fips} ? "" : "uninstall_fips" -}
+
+--- openssl-3.0.1/Configurations/windows-makefile.tmpl.orig	2022-03-04 04:46:02.850951693 +0000
++++ openssl-3.0.1/Configurations/windows-makefile.tmpl	2022-03-04 04:46:13.353494915 +0000
+@@ -453,7 +453,7 @@
+ 	@$(ECHO) "Tests are not supported with your chosen Configure options"
+ 	@{- output_on() if !$disabled{tests}; "\@rem" -}
+
+-install: install_sw install_ssldirs install_docs {- $disabled{fips} ? "" : "install_fips" -}
++install: install_sw install_ssldirs {- $disabled{fips} ? "" : "install_fips" -}
+
+ uninstall: uninstall_docs uninstall_sw {- $disabled{fips} ? "" : "uninstall_fips" -}
+ 
