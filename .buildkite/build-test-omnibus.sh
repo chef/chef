@@ -220,8 +220,6 @@ then
   for platform in ${omnibus_test_platforms[@]}; do
     if [[ $platform != *"windows"* ]]; then
       echo "- env:"
-      echo "    IGNORE_ARTIFACTORY_RUBY_PROXY: $IGNORE_ARTIFACTORY_RUBY_PROXY"
-      echo "    IGNORE_CACHE: $IGNORE_CACHE"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
       if [[ $platform == *"arm"* ]]; then
         echo "  label: \":mag::docker::muscle: ${platform%:*}\""
@@ -279,6 +277,8 @@ then
     build_key=$(echo ${platform#*:} | tr . _)
     test_key=$(echo ${platform%:*} | tr . _)
     echo "- env:"
+    echo "    IGNORE_ARTIFACTORY_RUBY_PROXY: $IGNORE_ARTIFACTORY_RUBY_PROXY"
+    echo "    IGNORE_CACHE: $IGNORE_CACHE"
     if [ $build_key == "el-7-ppc64" ] || [ $build_key == "el-7-ppc64le" ]
     then
       echo "    OMNIBUS_FIPS_MODE: true"
