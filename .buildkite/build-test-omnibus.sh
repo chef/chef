@@ -220,6 +220,8 @@ then
   for platform in ${omnibus_test_platforms[@]}; do
     if [[ $platform != *"windows"* ]]; then
       echo "- env:"
+      echo "    IGNORE_ARTIFACTORY_RUBY_PROXY: $IGNORE_ARTIFACTORY_RUBY_PROXY"
+      echo "    IGNORE_CACHE: $IGNORE_CACHE"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
       if [[ $platform == *"arm"* ]]; then
         echo "  label: \":mag::docker::muscle: ${platform%:*}\""
@@ -235,7 +237,7 @@ then
         echo "    queue: docker-linux-arm64"
       else
         echo "    queue: default-privileged"
-      fi      
+      fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
