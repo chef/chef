@@ -510,7 +510,7 @@ DEPENDENCIES
   rest-client!
   rspec
   ruby-shadow!
-  webmock
+  webmock (~> 3.19.1)
 
 BUNDLED WITH
    2.3.7
