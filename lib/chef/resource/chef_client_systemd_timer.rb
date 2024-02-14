@@ -103,6 +103,10 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }
 
+      property :service_umask, [Integer, String],
+        descritpion: "Fix umask for hardended systems that have a changed default umask. This changes the chef-client umask so any files or folders are created with new umask. Recommend setting to stand install default of 0022.",
+        introduced: "18.5"
+
       action :add, description: "Add a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         systemd_unit "#{new_resource.job_name}.service" do
           content service_content
@@ -175,6 +179,7 @@ class Chef
             "Install" => { "WantedBy" => "multi-user.target" },
           }
 
+          unit["Service"]["UMask"] = new_resource.service_umask if new_resource.service_umask
           unit["Service"]["ConditionACPower"] = "true" unless new_resource.run_on_battery
           unit["Service"]["CPUQuota"] = "#{new_resource.cpu_quota}%" if new_resource.cpu_quota
           unit["Service"]["Environment"] = new_resource.environment.collect { |k, v| "\"#{k}=#{v}\"" } unless new_resource.environment.empty?
