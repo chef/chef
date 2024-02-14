@@ -4,7 +4,7 @@ gem "knife", path: "."
 
 group(:development, :test) do
   gem "cheffish", ">= 14" # testing only , but why didn't this need to explicit in chef?
-  gem "webmock" # testing only
+  gem "webmock", "~> 3.19.1" # testing only
   gem "rake"
   gem "rspec"
   gem "chef-bin", path: "../chef-bin"
