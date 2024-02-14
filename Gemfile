@@ -52,6 +52,7 @@ group(:development, :test) do
   gem "rake"
   gem "rspec"
   gem "webmock", "~> 3.19.1"
+  gem "bigdecimal", "= 3.1.5"
   gem "fauxhai-ng" # for chef-utils gem
 end
 
