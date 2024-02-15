@@ -17,13 +17,6 @@ rubygems:
   - chef-bin
   - chef-utils
 
-# At the given time, trigger the following scheduled workloads
-# https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
-schedules:
-  - name: nightly_build_chef_16
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "0 2 * * *"
-
 pipelines:
   - verify:
       public: true
