@@ -230,6 +230,3 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
