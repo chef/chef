@@ -104,7 +104,7 @@ class Chef
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }
 
       property :service_umask, [Integer, String],
-        descritpion: "Fix umask for hardended systems that have a changed default umask. This changes the chef-client umask so any files or folders are created with new umask. Recommend setting to stand install default of 0022.",
+        description: "Fix umask for hardened systems that have a changed default umask. This changes the chef-client umask so any files or folders are created with new umask. Recommend setting to stand install default of 0022.",
         introduced: "18.5"
 
       action :add, description: "Add a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
