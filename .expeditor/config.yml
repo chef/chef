@@ -39,8 +39,8 @@ pipelines:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
         - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+        - IGNORE_CACHE: false # caching causes constant build failures
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: false # Artifactory is throwing 500's when downloading some gems.
   - validate/adhoc-canary:
       canary: true
       definition: .expeditor/verify.adhoc.pipeline.yml
