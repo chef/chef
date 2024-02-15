@@ -101,7 +101,7 @@ then
       echo "        - CHEF_FOUNDATION_VERSION"
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
-      echo "  timeout_in_minutes: 240"
+      echo "  timeout_in_minutes: 800"
     else
       echo "- label: \":hammer_and_wrench::windows: $platform\""
       echo "  retry:"
@@ -129,7 +129,7 @@ then
       echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
-      echo "  timeout_in_minutes: 240"
+      echo "  timeout_in_minutes: 800"
     fi
   done
 fi
@@ -153,7 +153,7 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  timeout_in_minutes: 240"
+    echo "  timeout_in_minutes: 800"
     echo "  agents:"
     echo "    queue: omnibus-$platform"
     if [[ $platform == mac_os_x* ]]
@@ -244,7 +244,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
       echo "    - omnibus/omnibus-test.sh"
-      echo "  timeout_in_minutes: 240"
+      echo "  timeout_in_minutes: 800"
     else
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
@@ -263,7 +263,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
       echo "    - ./omnibus/omnibus-test.ps1"
-      echo "  timeout_in_minutes: 240"
+      echo "  timeout_in_minutes: 800"
     fi
   done
 fi
@@ -290,9 +290,9 @@ then
     echo "    automatic:"
     echo "      limit: 1"
     if [[ $platform == *"aix"* ]]; then
-      echo "  timeout_in_minutes: 240"
+      echo "  timeout_in_minutes: 800"
     else
-      echo "  timeout_in_minutes: 240"
+      echo "  timeout_in_minutes: 800"
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
