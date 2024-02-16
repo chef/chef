@@ -125,7 +125,6 @@ sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
 rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
-gem uninstall --force bigdecimal
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   echo "HERE"
   sudo -E bundle install --jobs=3 --retry=3
