@@ -497,6 +497,7 @@ DEPENDENCIES
   chef-vault
   cheffish (>= 17)
   chefstyle
+  crack (< 1.0)
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
@@ -510,7 +511,7 @@ DEPENDENCIES
   rest-client!
   rspec
   ruby-shadow!
-  webmock (~> 3.19.1)
+  webmock
 
 BUNDLED WITH
    2.3.7
