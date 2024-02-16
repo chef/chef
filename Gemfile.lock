@@ -497,7 +497,7 @@ DEPENDENCIES
   chef-vault
   cheffish (>= 17)
   chefstyle
-  crack (< 1.0)
+  crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
