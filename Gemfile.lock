@@ -450,6 +450,7 @@ DEPENDENCIES
   chef-vault
   cheffish (~> 17.0.0)
   chefstyle!
+  crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
   inspec-core-bin (~> 5.22.36)

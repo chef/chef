@@ -49,6 +49,7 @@ group(:development, :test) do
   gem "rake"
   gem "rspec"
   gem "webmock"
+  gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end
 
