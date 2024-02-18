@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.119 -->
-## [v17.10.119](https://github.com/chef/chef/tree/v17.10.119) (2024-01-30)
+<!-- latest_release 17.10.120 -->
+## [v17.10.120](https://github.com/chef/chef/tree/v17.10.120) (2024-02-18)
 
 #### Merged Pull Requests
-- bundle update --conservative inspec-core inspec-core-bin [#14201](https://github.com/chef/chef/pull/14201) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix bigdecimal error with webmock / crack in macOS and AIX builds  [#14244](https://github.com/chef/chef/pull/14244) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.114 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix bigdecimal error with webmock / crack in macOS and AIX builds  [#14244](https://github.com/chef/chef/pull/14244) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.120 -->
 - Adding an adhoc build for the Chef-17 pipeline to be run every Sunday and Wednesday UTC [#13101](https://github.com/chef/chef/pull/13101) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 17.10.115 -->
 - Try switching to proxifier2 [#14204](https://github.com/chef/chef/pull/14204) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.116 -->
 - Updating Train Support to allow for more connection types [#14208](https://github.com/chef/chef/pull/14208) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.117 -->
