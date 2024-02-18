@@ -194,7 +194,7 @@ class Chef
         if %i{warn fatal}.include?(config[:duplicated_fqdns])
           fqdns = list.map { |v| v[0] }
           if fqdns.count != fqdns.uniq.count
-            duplicated_fqdns = fqdns.uniq
+            duplicated_fqdns = fqdns.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
             ui.send(config[:duplicated_fqdns],
               "SSH #{duplicated_fqdns.count > 1 ? "nodes are" : "node is"} " +
               "duplicated: #{duplicated_fqdns.join(",")}")
