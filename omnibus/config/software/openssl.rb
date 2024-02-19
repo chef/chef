@@ -49,6 +49,7 @@ else
 end
 
 version("3.0.11")  { source sha256: "b3425d3bb4a2218d0697eb41f7fc0cdede016ed19ca49d168b78e8d947887f55" }
+version("3.0.9")   { source sha256: "eb1ab04781474360f77c318ab89d8c5a03abc38e63d65a603cabbf1b00a1dc90" }
 version("3.0.5")   { source sha256: "aa7d8d9bef71ad6525c55ba11e5f4397889ce49c2c9349dcea6d3e4f0b024a7a" }
 version("3.0.4")   { source sha256: "2831843e9a668a0ab478e7020ad63d2d65e51f72977472dc73efcefbafc0c00f" }
 version("3.0.3")   { source sha256: "ee0078adcef1de5f003c62c80cc96527721609c6f3bb42b7795df31f8b558c0b" }
