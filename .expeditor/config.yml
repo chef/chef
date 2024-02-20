@@ -17,13 +17,6 @@ rubygems:
   - chef-bin
   - chef-utils
 
-# At the given time, trigger the following scheduled workloads
-# https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
-schedules:
-  - name: nightly_build_chef_16
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "0 2 * * *"
-
 pipelines:
   - verify:
       public: true
@@ -237,6 +230,3 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:chef-16:nightly_build_chef_16:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
