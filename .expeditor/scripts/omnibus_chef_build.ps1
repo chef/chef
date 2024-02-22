@@ -88,7 +88,7 @@ $env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME="buildkite"
 
 Write-Output "--- Installing Chef Foundation ${env:CHEF_FOUNDATION_VERSION}"
-. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v ${env:CHEF_FOUNDATION_VERSION}
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $env:CHEF_FOUNDATION_VERSION
 
 $env:PROJECT_NAME="chef"
 $env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
@@ -138,7 +138,7 @@ try {
 
     # Assign the full path to a variable ($fullPath) for later use
     $fullPathVariable = $fullPath
-    write-output "--- verify signed file smctl sign verify --input ${fullPathVariable}" 
+    write-output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
     smctl sign verify --input ${fullPathVariable}
   } else {
     Write-Output "No .msi files found in the directory: $directoryPath or its not signed"
