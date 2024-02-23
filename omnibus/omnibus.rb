@@ -51,3 +51,59 @@ fetcher_read_timeout 120
 
 fatal_transitive_dependency_licensing_warnings true
 fips_mode (ENV["OMNIBUS_FIPS_MODE"] || "").casecmp("true") >= 0
+
+
+#PATCH_OMNIBUS_BUILDER=false
+unless defined? PATCH_OMNIBUS_BUILDER
+  PATCH_OMNIBUS_BUILDER=true
+  class Omnibus::Builder
+    def shellout!(command_string, options = {})
+      puts "Running command: #{command_string}"
+      puts "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+      puts "Options: #{options.inspect}"
+      puts "ENV: #{ENV.inspect}"
+
+      # Make sure the PWD is set to the correct directory
+      # Also make a clone of options so that we can mangle it safely below.
+      options = { cwd: software.project_dir }.merge(options)
+
+      # Set the log level to :info so users will see build commands
+      options[:log_level] ||= :info
+
+      # Set the live stream to :debug so users will see build output
+      options[:live_stream] ||= log.live_stream(:debug)
+
+      if command_string.include?('win32/Makefile.gcc')
+        require 'fileutils'
+        debug_lines=<<~DEBUGLINES
+          echo $(info ************  PRINTING ENV VARIABLES ************ )
+          $(foreach v, $(.VARIABLES), $(info $(v) = $($(v))))
+          echo $(info ************  END OF VARS ************************)
+        DEBUGLINES
+
+        newfile=File.join(options[:cwd], "win32", "Makefile.gcc.new")
+        origfile=File.join(options[:cwd], "win32", "Makefile.gcc")
+        savefile=File.join(options[:cwd], "win32", "Makefile.gcc.save")
+
+        unless File.exist?(savefile)
+          File.open(newfile, "wt") do |of|
+            File.open(origfile, "rt") do |f|
+              f.each_line do |input_line|
+                of.puts input_line
+                if input_line =~ /^install:/
+                  debug_lines.each_line do |line|
+                    of.puts "\t#{line}"
+                  end
+                end
+              end
+            end
+          end
+          FileUtils.move(origfile, savefile)
+          FileUtils.move(newfile, origfile)
+        end
+      end
+      # Use Util's shellout
+      super(command_string, **options)
+    end
+  end
+end
