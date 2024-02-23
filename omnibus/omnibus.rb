@@ -79,6 +79,8 @@ unless defined? PATCH_OMNIBUS_BUILDER
           echo $(info ************  PRINTING ENV VARIABLES ************ )
           $(foreach v, $(.VARIABLES), $(info $(v) = $($(v))))
           echo $(info ************  END OF VARS ************************)
+          make -v
+          mount
         DEBUGLINES
 
         newfile=File.join(options[:cwd], "win32", "Makefile.gcc.new")
