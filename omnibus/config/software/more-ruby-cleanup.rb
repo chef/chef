@@ -24,8 +24,6 @@ license :project_license
 
 source path: "#{project.files_path}/#{name}"
 
-dependency "ruby"
-
 build do
   block "Removing console and setup binaries" do
     Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/bin/{console,setup}").each do |f|
