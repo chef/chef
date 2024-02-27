@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.15 -->
-## [v18.4.15](https://github.com/chef/chef/tree/v18.4.15) (2024-02-23)
+<!-- latest_release 18.4.16 -->
+## [v18.4.16](https://github.com/chef/chef/tree/v18.4.16) (2024-02-27)
 
 #### Merged Pull Requests
-- Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.16 -->
 - Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.15 -->
 - Safeguard for undefined and fix reference to CHEF_FOUNDATION_VERSION [#14252](https://github.com/chef/chef/pull/14252) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.14 -->
 - add umask to chef_client_systemd_timer [#14238](https://github.com/chef/chef/pull/14238) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.13 -->
