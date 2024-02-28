@@ -4,7 +4,6 @@ vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir_
 
 if File.exist?(vs_path)
   # this is the moral equivalent of a require_relative since bundler makes require_relative here fail hard
-  #eval(IO.read(vs_path))
   # include chef-utils/lib in the path if we're inside of chef vs. chef-utils gem
   $:.unshift(File.dirname(__FILE__) + "/chef-utils/lib")
 end
