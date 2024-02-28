@@ -1,4 +1,6 @@
 $:.unshift(File.dirname(__FILE__) + "/lib")
+p __dir__
+p File.dirname(__FILE__)
 vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", File.dirname(__FILE__))
 
 if File.exist?(vs_path)
