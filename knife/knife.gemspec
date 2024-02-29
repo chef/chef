@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-screen", "~> 0.6" # knife list
   s.add_dependency "tty-table", "~> 0.11" # knife render table output.
   s.add_dependency "pastel" # knife ui.color
-  s.add_dependency "erubis", "~> 3.0"
+  s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "chef-vault" # knife vault
   if RUBY_VERSION.match?("3.0.0")
     # Ruby 3.0.0 on Fedora specifically makes trouble
