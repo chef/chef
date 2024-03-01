@@ -70,9 +70,9 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.123)
+      chef-config (= 17.10.124)
       chef-powershell
-      chef-utils (= 17.10.123)
+      chef-utils (= 17.10.124)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
