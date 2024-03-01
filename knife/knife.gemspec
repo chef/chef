@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io" # These seem a bit out of date, and this address probably doesn't go anywhere anymore?
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">=3.0.0", "< 3.1"
+  s.required_ruby_version = ">= 3.0.0", "< 3.1"
 
   s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}", "< 18.0"
   s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}", "< 18.0"
