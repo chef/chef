@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/chef/chef"
   spec.license       = "Apache-2.0"
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.metadata = {
     "bug_tracker_uri" => "https://github.com/chef/chef/issues",

@@ -958,14 +958,7 @@ describe Chef::Resource do
       klz.provides :energy, platform: %w{autobots decepticons}
     end
 
-    it "adds mappings for all platforms", ruby: "< 2.7" do
-      expect(Chef.resource_handler_map).to receive(:set).with(
-        :tape_deck, Chef::Resource::Klz, {}
-      )
-      klz.provides :tape_deck
-    end
-
-    it "adds mappings for all platforms", ruby: ">= 2.7" do
+    it "adds mappings for all platforms", ruby: ">= 3.0" do
       expect(Chef.resource_handler_map).to receive(:set).with(
         :tape_deck, Chef::Resource::Klz
       )
