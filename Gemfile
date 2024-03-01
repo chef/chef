@@ -18,7 +18,7 @@ end
 gem "cheffish", "~> 17.0.0"
 
 gem "ast", "~> 2.4.2"
-gem "rubocop-ast", ">= 1.30.0"
+gem "rubocop-ast", ">= 1.31.0"
 
 group(:omnibus_package) do
   gem "appbundler"
