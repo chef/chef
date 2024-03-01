@@ -286,7 +286,7 @@ GEM
     net-ssh (7.2.1)
     nori (2.6.0)
     parallel (1.23.0)
-    parser (3.2.2.3)
+    parser (3.3.0.5)
       ast (~> 2.4.1)
       racc
     parslet (1.8.2)
@@ -336,8 +336,8 @@ GEM
       rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.30.0)
-      parser (>= 3.2.1.0)
+    rubocop-ast (1.31.1)
+      parser (>= 3.3.0.4)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
@@ -461,7 +461,7 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
-  rubocop-ast (>= 1.30.0)
+  rubocop-ast (>= 1.31.0)
   ruby-shadow!
   webmock
 
