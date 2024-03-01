@@ -35,7 +35,7 @@ GIT
 PATH
   remote: .
   specs:
-chef (17.10.124)
+    chef (17.10.124)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -46,7 +46,7 @@ chef (17.10.124)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (~> 1.15.5)
+      ffi (~> 1.16)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (>= 2.2, < 4.0)
       iniparse (~> 1.4)
@@ -203,7 +203,9 @@ GEM
       net-http
     fauxhai-ng (9.3.0)
       net-ssh
+    ffi (1.16.3)
     ffi (1.16.3-x64-mingw32)
+    ffi (1.16.3-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -260,7 +262,7 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-mixlib-archive (1.1.7)
+    mixlib-archive (1.1.7)
       mixlib-log
     mixlib-archive (1.1.7-universal-mingw32)
       mixlib-log
@@ -269,7 +271,7 @@ mixlib-archive (1.1.7)
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
-mixlib-shellout (3.2.7)
+    mixlib-shellout (3.2.7)
       chef-utils
     mixlib-shellout (3.2.7-universal-mingw32)
       chef-utils
