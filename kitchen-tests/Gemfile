@@ -7,6 +7,6 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "17-stable" # avoid
 gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "main"
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
-gem "kitchen-inspec"
+gem "kitchen-inspec", "~> 2.5.2"
 gem "inspec"
 gem "test-kitchen"
