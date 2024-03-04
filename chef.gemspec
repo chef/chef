@@ -64,7 +64,7 @@ Gem::Specification.new do |s|
 
   if RUBY_VERSION.match?("3.0.0")
     # Ruby 3.0.0 on Fedora specifically makes trouble
-    s.add_dependency "uri", "= 0.10.2"
+    s.add_dependency "uri", "= 0.10.1"
   end
 
   s.require_paths = %w{ lib }
