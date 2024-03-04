@@ -387,7 +387,7 @@ GEM
       tty-screen (~> 0.8)
     unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
-    uri (0.10.1)
+    uri (0.13.0)
     uuidtools (2.2.0)
     vault (0.18.2)
       aws-sigv4
