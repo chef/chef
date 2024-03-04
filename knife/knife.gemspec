@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-vault" # knife vault
   if RUBY_VERSION.match?("3.0.0")
     # Ruby 3.0.0 on Fedora specifically makes trouble
-    s.add_dependency "uri", "= 0.10.2"
+    s.add_dependency "uri", "= 0.10.1"
   end
   s.add_dependency "proxifier2", "~> 1.1"
 
