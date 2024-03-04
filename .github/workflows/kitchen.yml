@@ -48,6 +48,7 @@ jobs:
         Move-Item -Path $output.FullName -Destination $target_path -ErrorAction SilentlyContinue
 
         gem install appbundler appbundle-updater --no-doc
+        gem pristine ffi-yajl
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
@@ -73,7 +74,6 @@ jobs:
         # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
         # libyajl2 build if already present. gem install seems to build anyway.
         gem uninstall -I libyajl2
-        gem pristine ffi-yajl
 
         bundle install --jobs=3 --retry=3
         # If ($lastexitcode -ne 0) { Exit $lastexitcode }
