@@ -62,6 +62,11 @@ Gem::Specification.new do |s|
   s.bindir       = "bin"
   s.executables  = %w{ }
 
+  if RUBY_VERSION.match?("3.0.0")
+    # Ruby 3.0.0 on Fedora specifically makes trouble
+    s.add_dependency "uri", "= 0.10.1"
+  end
+
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
