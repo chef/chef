@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.125 -->
-## [v17.10.125](https://github.com/chef/chef/tree/v17.10.125) (2024-03-05)
+<!-- latest_release 17.10.126 -->
+## [v17.10.126](https://github.com/chef/chef/tree/v17.10.126) (2024-03-05)
 
 #### Merged Pull Requests
-- Forcing bundle update to get the URI gem to load properly [#14270](https://github.com/chef/chef/pull/14270) ([johnmccrae](https://github.com/johnmccrae))
+- Updating to properly load URI for Fedora [#14271](https://github.com/chef/chef/pull/14271) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.114 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating to properly load URI for Fedora [#14271](https://github.com/chef/chef/pull/14271) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.126 -->
 - Forcing bundle update to get the URI gem to load properly [#14270](https://github.com/chef/chef/pull/14270) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.125 -->
 - Removing Ruby 2.7 testing [#14260](https://github.com/chef/chef/pull/14260) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.124 -->
 - Refactoring for Rubocop [#14261](https://github.com/chef/chef/pull/14261) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.123 -->
