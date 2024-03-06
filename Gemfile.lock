@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: af5657847b332bc4f227071aba6c8a5eee8994e4
+  revision: 9bf7c7a1ed765f3b4a18c6b0a646ae9dfc269497
   branch: 17-stable
   specs:
-    ohai (17.9.5)
+    ohai (17.9.6)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
-      ffi (~> 1.9, < 1.16.0)
+      ffi
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
@@ -46,7 +46,7 @@ PATH
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (~> 1.15.5)
+      ffi (~> 1.16)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (>= 2.2, < 4.0)
       iniparse (~> 1.4)
@@ -58,7 +58,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 17.0)
+      ohai (~> 17.9)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
@@ -78,7 +78,7 @@ PATH
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (~> 1.15.5)
+      ffi (~> 1.16)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (>= 2.2, < 4.0)
       iniparse (~> 1.4)
@@ -91,7 +91,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 17.0)
+      ohai (~> 17.9)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
@@ -202,9 +202,9 @@ GEM
     faraday-net_http (3.0.2)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.15.5)
-    ffi (1.15.5-x64-mingw32)
-    ffi (1.15.5-x86-mingw32)
+    ffi (1.16.3)
+    ffi (1.16.3-x64-mingw32)
+    ffi (1.16.3-x86-mingw32)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
