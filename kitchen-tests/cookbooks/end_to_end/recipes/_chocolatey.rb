@@ -9,6 +9,7 @@ end
 
 chocolatey_package 'install non-existent package' do
   package_name 'gvim'
+  ignore_failure true
 end
 
 chocolatey_package 'install vim' do
