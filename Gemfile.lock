@@ -71,7 +71,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 17.10.126)
-      chef-powershell (~> 1.0.12)
+      chef-powershell (~> 18.1.0)
       chef-utils (= 17.10.126)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -165,7 +165,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-powershell (1.0.13)
+    chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
