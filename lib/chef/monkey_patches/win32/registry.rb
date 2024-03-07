@@ -29,7 +29,9 @@ module Win32
     # in ruby at https://bugs.ruby-lang.org/issues/11410. Rather than converting
     # the UTF-16LE originally returned by the win32 api, we encode to UTF-8
     # which will likely not result in any conversion error.
+    puts ">>> monkey patch defined"
     def export_string(str, enc = Encoding.default_internal || "utf-8")
+      puts "<<< monkey patched export_string >>>"
       str.encode(enc)
     end
 
