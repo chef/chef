@@ -1,169 +1,92 @@
 ---
 driver:
-  name: dokken
-  privileged: true
-  chef_image: chef/chef
-  chef_version: current
-
-transport:
-  name: dokken
+  name: vagrant
+  box_auto_update: true
+  box_auto_prune: true
 
 provisioner:
-  name: dokken
+  name: chef_infra
+  product_name: chef
+  product_version: latest
+  channel: current
+  retry_on_exit_code:
+    - 35 # 35 is the exit code signaling that the node is rebooting
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
-  chef_license: "accept-no-persist"
+  chef_license: accept-no-persist
   slow_resource_report: true
-  clean_dokken_sandbox: false
 
-lifecycle:
-  pre_converge:
-    - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
-    - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - centos-6
-        - centos-7
-        - oraclelinux-7
-    - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - centos-6
-        - centos-7
-        - oraclelinux-7
-    - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+# Uncomment the lifecycle block to enable appbundle-updater to update the chef-client to the latest version in this repo
+#lifecycle:
+#  pre_converge:
+#    - remote: echo "Chef container's Chef / Ohai release:"
+#    - remote: /opt/chef/bin/chef-client -v
+#    - remote: /opt/chef/bin/ohai -v
+#    - remote: echo "Installing appbundler and appbundle-updater gems:"
+#    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+#    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
+#      includes:
+#        - centos-7
+#        - oraclelinux-7
+#    - remote: echo "Updating Chef using appbundler-updater:"
+#    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+#      excludes:
+#        - centos-7
+#        - oraclelinux-7
+#    - remote: echo "Installed Chef / Ohai release:"
+#    - remote: /opt/chef/bin/chef-client -v
+#    - remote: /opt/chef/bin/ohai -v
 
 verifier:
   name: inspec
   format: progress
 
 platforms:
-- name: amazonlinux-2
-  driver:
-    image: dokken/amazonlinux-2
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-- name: debian-9
-  driver:
-    image: dokken/debian-9
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-- name: debian-10
-  driver:
-    image: dokken/debian-10
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-- name: debian-11
-  driver:
-    image: dokken/debian-11
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-- name: centos-6
-  driver:
-    image: dokken/centos-6
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
-      - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=https://mirror.rackspace.com/centos-vault/6.10/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-      - RUN yum install -y devtoolset-7.x86_64
-
-- name: centos-7
-  driver:
-    image: dokken/centos-7
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN yum -y install e2fsprogs
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN yum install -y centos-release-scl
-      - RUN yum install -y devtoolset-7
-
-- name: almalinux-8
-  driver:
-    image: dokken/almalinux-8
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-- name: oraclelinux-7
-  driver:
-    image: dokken/oraclelinux-7
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN yum -y install e2fsprogs
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
-      - RUN printf "[centos-sclo-rh]\nname=CentOS-7 - SCLo rh\nbaseurl=https://archive.kernel.org/centos-vault/7.8.2003/sclo/x86_64/rh/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-      - RUN yum install -y devtoolset-7
-
-
-- name: oraclelinux-8
-  driver:
-    image: dokken/oraclelinux-8
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN dnf -y reinstall systemd
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-- name: fedora-latest
-  driver:
-    image: dokken/fedora-latest
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-- name: ubuntu-18.04
-  driver:
-    image: dokken/ubuntu-18.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-- name: ubuntu-20.04
-  driver:
-    image: dokken/ubuntu-20.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
-
-- name: ubuntu-22.04
-  driver:
-    image: dokken/ubuntu-22.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
-
-- name: opensuse-leap-15
-  driver:
-    image: dokken/opensuse-leap-15
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
+  - name: almalinux-8
+  - name: almalinux-9
+  - name: amazonlinux-2
+  - name: amazonlinux-2023
+  - name: centos-7
+  - name: debian-12
+  - name: debian-11
+  - name: fedora-latest
+  - name: freebsd-13
+  - name: freebsd-14
+  - name: opensuse-leap-15
+  - name: oraclelinux-7
+  - name: oraclelinux-8
+  - name: oraclelinux-9
+  - name: rockylinux-8
+  - name: rockylinux-9
+  - name: ubuntu-18.04
+  - name: ubuntu-20.04
+  - name: ubuntu-22.04
+  - name: windows-10
+    driver:
+      box: stromweld/windows-10
+      customize:
+        memory: 4096
+  - name: windows-11
+    driver:
+      box: stromweld/windows-11
+      customize:
+        memory: 4096
+  - name: windows-2016
+    driver:
+      box: stromweld/windows-2016
+      customize:
+        memory: 4096
+  - name: windows-2019
+    driver:
+      box: stromweld/windows-2019
+      customize:
+        memory: 4096
+  - name: windows-2022
+    driver:
+      box: stromweld/windows-2022
+      customize:
+        memory: 4096
 
 suites:
   - name: end-to-end
