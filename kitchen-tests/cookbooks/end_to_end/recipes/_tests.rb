@@ -11,7 +11,6 @@
 
 file "/tmp/chef-test-ümlauts" do
   content "testing UTF-8 char in the filename"
-  ignore_failure true
 end
 
 # this caught a regression in 12.14.70 before it was released when i
@@ -20,7 +19,6 @@ end
 # cspell:disable-next-line
 file "/tmp/chef-test-\xFCmlaut" do
   content "testing illegal UTF-8 char in the filename"
-  ignore_failure true
 end
 
 node["network"]["interfaces"].each do |interface_data|

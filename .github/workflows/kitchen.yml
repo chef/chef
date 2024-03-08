@@ -81,11 +81,12 @@ jobs:
         # very bad hack.
 
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        gem install berkshelf --no-doc
+        gem install chef-cli --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        berks vendor cookbooks
+        chef-cli export policy_export --chef-license accept-no-persist
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        chef-client -z -o end_to_end --chef-license accept-no-persist
+        cd policy_export
+        chef-client -z --chef-license accept-no-persist
 
   macos:
     strategy:
@@ -124,21 +125,25 @@ jobs:
           sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
           sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
           sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-          sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
-          sudo /opt/chef/embedded/bin/berks vendor cookbooks
-          sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+          sudo /opt/chef/embedded/bin/gem install chef-cli --no-doc
+          sudo /opt/chef/embedded/bin/chef-cli export policy_export --chef-license accept-no-persist
+          cd policy_export
+          sudo /opt/chef/bin/chef-client -z --chef-license accept-no-persist
 
   linux:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - 'centos-6'
+          - 'amazonlinux-2023'
           - 'centos-7'
           - 'almalinux-8'
-          - 'debian-10'
+          - 'almalinux-9'
           - 'debian-11'
+          - 'debian-12'
           - 'fedora-latest'
+          - 'freebsd-13'
+          - 'freebsd-14'
           - 'opensuse-leap-15'
           - 'ubuntu-1804'
           - 'ubuntu-2004'
@@ -148,6 +153,7 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -175,6 +181,7 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
         uses: actions/checkout@v3
