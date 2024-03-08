@@ -1,0 +1,50 @@
+---
+driver:
+  name: exec
+  gui: false
+  customize:
+    memory: 4096
+
+transport:
+  name: exec
+
+lifecycle:
+  pre_converge:
+    - remote: . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+    - remote: $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+    - remote: chef-client -v
+    - remote: ohai -v
+    - remote: rake --version
+    - remote: bundle -v
+    - remote: $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
+    # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
+    # This leads to failures during testing. Moving that file to its correct position here.
+    # Another example of 'bad' that needs to be corrected
+    - remote: $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+    # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
+    # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
+    # making the leap that ansidecl.h isn't going to vary in a way that will fail subtly.
+    - remote: if ($output -is [Array]) { $output = $output[0] }
+    - remote: $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+    - remote: Move-Item -Path $output.FullName -Destination $target_path
+    # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
+    # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
+    # libyajl2 build if already present. gem install seems to build anyway.
+    - remote: gem uninstall -I libyajl2
+    - remote: gem install appbundler appbundle-updater --no-doc
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: Write-Output "Installed Chef / Ohai release:"
+    - remote: chef-client -v
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: ohai -v
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    # htmldiff and ldiff on windows cause a conflict with gems being loaded below. we remove thenm here.
+    - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
+    - remote: bundle install --jobs=3 --retry=3
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+
+platforms:
+  - name: windows-2019
+  - name: windows-2022

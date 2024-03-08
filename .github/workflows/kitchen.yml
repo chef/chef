@@ -7,148 +7,90 @@ name: kitchen
     branches:
       - main
 
+defaults:
+  run:
+    working-directory: kitchen-tests
+
 jobs:
-  windows:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-2022, windows-2019]
-        ruby: ['3.1']
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@v3
-    - name: 'Install Chef/Ohai from Omnitruck'
-      id: install_chef
-      run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        chef-client -v
-        ohai -v
-        rake --version
-        bundle -v
-    - name: 'Upgrade Chef/Ohai via Appbundler'
-      id: upgrade
-      run: |
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
-
-        # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
-        # This leads to failures during testing. Moving that file to its correct position here.
-        # Another example of 'bad' that needs to be corrected
-        $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
-
-        # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
-        # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
-        # making the leap that ansidecl.h isn't going to vary in a way that will fail
-        # subtly.
-        if ($output -is [Array]) { $output = $output[0] }
-
-        $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
-        Move-Item -Path $output.FullName -Destination $target_path
-
-        # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
-        # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
-        # libyajl2 build if already present. gem install seems to build anyway.
-        gem uninstall -I libyajl2
-
-        gem install appbundler appbundle-updater --no-doc
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        Write-Output "Installed Chef / Ohai release:"
-        chef-client -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        ohai -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    - name: 'Run end_to_end::default recipe'
-      id: run
-      run: |
-        cd kitchen-tests
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        # htmldiff and ldiff on windows cause a conflict with gems being loaded below.
-        # we remove thenm here.
-        if (Test-Path C:\opscode\chef\embedded\bin\htmldiff)
-        {
-            Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
-            Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff
-        }
-
-        bundle install --jobs=3 --retry=3
-        # If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        # The bundle install command above fails because our build on windows on ruby-3.0 is
-        # completely broken when it comes to installing native gems.  Until that is fixed we
-        # need to ignore that error code and to manually install berkshelf below.  This is a
-        # very bad hack.
-
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        gem install chef-cli --no-doc
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        chef-cli export policy_export --chef-license accept-no-persist
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        cd policy_export
-        chef-client -z --chef-license accept-no-persist
-
-  macos:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest]
-        ruby: ['3.1']
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-            clean: true
-      - name: 'Install Chef/Ohai from Omnitruck'
-        id: install_chef
-        run: |
-          brew install coreutils
-          curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
-          /opt/chef/bin/chef-client -v
-          /opt/chef/bin/ohai -v
-          /opt/chef/embedded/bin/rake --version
-      - name: 'Upgrade Chef/Ohai via Appbundler'
-        id: upgrade
-        run: |
-          OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-          sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-          sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
-          echo "Installed Chef / Ohai release:"
-          /opt/chef/bin/chef-client -v
-          /opt/chef/bin/ohai -v
-      - name: 'Run end_to_end::default recipe'
-        id: run
-        run: |
-          cd kitchen-tests
-          sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
-          sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
-          sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
-          sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-          sudo /opt/chef/embedded/bin/gem install chef-cli --no-doc
-          sudo /opt/chef/embedded/bin/chef-cli export policy_export --chef-license accept-no-persist
-          cd policy_export
-          sudo /opt/chef/bin/chef-client -z --chef-license accept-no-persist
-
-  linux:
+  win_x86_64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - 'amazonlinux-2023'
-          - 'centos-7'
-          - 'almalinux-8'
-          - 'almalinux-9'
-          - 'debian-11'
-          - 'debian-12'
-          - 'fedora-latest'
-          - 'freebsd-13'
-          - 'freebsd-14'
-          - 'opensuse-leap-15'
-          - 'ubuntu-1804'
-          - 'ubuntu-2004'
-          - 'ubuntu-2204'
-        ruby: ['3.1']
+          - windows-2019
+          - windows-2022
+    runs-on: ${{ matrix.os }}
+    env:
+      CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Chef
+      uses: actionshub/chef-install@3.0.0
+    - name: Kitchen Test
+      run: kitchen test end-to-end-${{ matrix.os }}
+
+  mac_x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - macos-13
+    runs-on: ${{ matrix.os }}
+    env:
+      CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+            clean: true
+      - name: Install Chef
+        uses: actionshub/chef-install@3.0.0
+      - name: Kitchen Test
+        run: kitchen test end-to-end-${{ matrix.os }}
+
+  mac_arm64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-14
+    runs-on: ${{ matrix.os }}
+    env:
+      CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          clean: true
+      - name: Install Chef
+        uses: actionshub/chef-install@3.0.0
+      - name: Kitchen Test
+        run: kitchen test end-to-end-${{ matrix.os }}
+
+  docr_lnx_x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - amazonlinux-2023
+          - almalinux-8
+          - almalinux-9
+          - centos-7
+          - debian-11
+          - debian-12
+          - fedora-latest
+          - opensuse-leap-15
+          - oraclelinux-8
+          - oraclelinux-9
+          # - rockylinux-8 # Need to troubleshoot issue with container startup
+          - rockylinux-9
+          - ubuntu-1804
+          - ubuntu-2004
+          - ubuntu-2204
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -156,27 +98,22 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.1"
-          bundler-cache: true
-          working-directory: kitchen-tests
-      - name: Run Test Kitchen
-        working-directory: kitchen-tests
-        run:  |
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+        uses: actions/checkout@v4
+      - name: Install Chef
+        uses: actionshub/chef-install@3.0.0
+      - name: Kitchen Test
+        run: kitchen test end-to-end-${{ matrix.os }}
+
   # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
   # if dokken container hosted on Ubuntu 22.04 or later. Lock to Ubuntu 20.04
   # for now.
-  linux-2004-host:
+  docr_ubnt-2004_x86_64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - 'amazonlinux-2'
-        ruby: ['3.1']
+          - amazonlinux-2
+          - oraclelinux-7
     runs-on: ubuntu-20.04
     env:
       FORCE_FFI_YAJL: ext
@@ -184,14 +121,51 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.1"
-          bundler-cache: true
-          working-directory: kitchen-tests
-      - name: Run Test Kitchen
-        working-directory: kitchen-tests
-        run:  |
-          bundle exec kitchen test end-to-end-${{ matrix.os }}
+        uses: actions/checkout@v4
+      - name: Install Chef
+        uses: actionshub/chef-install@3.0.0
+      - name: Kitchen Test
+        run: kitchen test end-to-end-${{ matrix.os }}
+
+  vm_lnx_x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - amazonlinux-2
+          # - amazonlinux-2023 # Bento Amazon Linux 2023 box is not available yet
+          - almalinux-8
+          - almalinux-9
+          # - centos-7 Need to troubleshoot slow and hanging behaviour on lifecycle hook run
+          - debian-11
+          - debian-12
+          - fedora-latest
+          # - freebsd-13 # Need to troubleshoot shell invalid issue
+          # - freebsd-14 # Need to troubleshoot bad bento box issue
+          - opensuse-leap-15
+          - oracle-7
+          - oracle-8
+          - oracle-9
+          - rockylinux-8
+          - rockylinux-9
+          - ubuntu-1804
+          - ubuntu-2004
+          - ubuntu-2204
+    runs-on: ubuntu-latest
+    env:
+      CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Vagrant and VirtualBox
+        run: |
+          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg --dearmor | sudo tee /usr/share/keyrings/oracle-virtualbox-2016.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+          sudo apt-get update
+          sudo apt-get install -y vagrant virtualbox
+      - name: Install Chef
+        uses: actionshub/chef-install@3.0.0
+      - name: Kitchen Test
+        run: kitchen test end-to-end-${{ matrix.os }}

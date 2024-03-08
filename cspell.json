@@ -1437,6 +1437,7 @@
     "untar",
     "untarred",
     "untracked",
+    "Untriaged",
     "Unversioned",
     "unversioned",
     "UNWRITABLE",
@@ -1599,7 +1600,8 @@
     "knife/spec/**",
     "docs_site",
     "distro/ruby_bin_folder/**/*",
-    "cspell.json"
+    "cspell.json",
+    ".mailmap"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".

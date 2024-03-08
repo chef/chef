@@ -68,7 +68,14 @@ end
 include_recipe "::_packages"
 include_recipe "::_chef_gem"
 
-include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
+include_recipe value_for_platform(
+                 opensuseleap: { "default" => "ntp" },
+                 amazon: { "2" => "ntp" },
+                 oracle: { "<= 8" => "ntp" },
+                 centos: { "<= 8" => "ntp" },
+                 rhel: { "<= 8" => "ntp" },
+                 default: "chrony"
+               )
 
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
@@ -192,16 +199,17 @@ include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 # include_recipe "::_tests" # generates UTF-8 error
 include_recipe "::_mount"
-include_recipe "::_ifconfig"
-unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
-  if ::File.exist?("/etc/systemd/system")
-    include_recipe "::_habitat_config"
-    include_recipe "::_habitat_install_no_user"
-    include_recipe "::_habitat_package"
-    include_recipe "::_habitat_service"
-    include_recipe "::_habitat_sup"
-    include_recipe "::_habitat_user_toml"
-  end
-end
+include_recipe "::_ifconfig" unless ubuntu? && node["platform_version"] >= "20.04" || suse? || amazon? && node["platform_version"] >= "2023"
+# TODO: re-enable when habitat recipes are fixed
+# unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
+#   if ::File.exist?("/etc/systemd/system")
+#     include_recipe "::_habitat_config"
+#     include_recipe "::_habitat_install_no_user"
+#     include_recipe "::_habitat_package"
+#     include_recipe "::_habitat_service"
+#     include_recipe "::_habitat_sup"
+#     include_recipe "::_habitat_user_toml"
+#   end
+# end
 
 include_recipe "::_snap" if platform?("ubuntu")

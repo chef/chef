@@ -14,29 +14,9 @@ provisioner:
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
+  deprecations_as_errors: true
   chef_license: accept-no-persist
   slow_resource_report: true
-
-# Uncomment the lifecycle block to enable appbundle-updater to update the chef-client to the latest version in this repo
-#lifecycle:
-#  pre_converge:
-#    - remote: echo "Chef container's Chef / Ohai release:"
-#    - remote: /opt/chef/bin/chef-client -v
-#    - remote: /opt/chef/bin/ohai -v
-#    - remote: echo "Installing appbundler and appbundle-updater gems:"
-#    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-#    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-#      includes:
-#        - centos-7
-#        - oraclelinux-7
-#    - remote: echo "Updating Chef using appbundler-updater:"
-#    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-#      excludes:
-#        - centos-7
-#        - oraclelinux-7
-#    - remote: echo "Installed Chef / Ohai release:"
-#    - remote: /opt/chef/bin/chef-client -v
-#    - remote: /opt/chef/bin/ohai -v
 
 verifier:
   name: inspec
@@ -46,7 +26,7 @@ platforms:
   - name: almalinux-8
   - name: almalinux-9
   - name: amazonlinux-2
-  - name: amazonlinux-2023
+  # - name: amazonlinux-2023 # Bento Amazon Linux 2023 box is not available yet
   - name: centos-7
   - name: debian-12
   - name: debian-11

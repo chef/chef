@@ -14,6 +14,7 @@ provisioner:
     diff_disabled: true
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
+  deprecations_as_errors: true
   slow_resource_report: true
   clean_dokken_sandbox: false
 
@@ -24,6 +25,9 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: sudo yum install centos-release-scl
+      includes:
+        - centos-7
     - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
         - centos-7
@@ -36,10 +40,6 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-
-verifier:
-  name: inspec
-  format: progress
 
 platforms:
 - name: amazonlinux-2
@@ -187,8 +187,3 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
       - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
-
-suites:
-  - name: end-to-end
-    run_list:
-      - recipe[end_to_end::default]
