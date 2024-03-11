@@ -108,10 +108,10 @@ chef_gem="$(dirname "$lib_dir")"
 
 # ensure that PATH doesn't get reset by sudoers
 if [[ -d /etc/sudoers.d ]]; then
-  echo "Defaults:$(id -un) !secure_path, exempt_group += $(id -gn)" | sudo tee "/etc/sudoers.d/$(id -un)-preserve_path"
+  echo "Defaults:$(id -un) !secure_path, exempt_group = $(id -gn)" | sudo tee "/etc/sudoers.d/$(id -un)-preserve_path"
   sudo chmod 440 "/etc/sudoers.d/$(id -un)-preserve_path"
 elif [[ -d /usr/local/etc/sudoers.d ]]; then
-  echo "Defaults:$(id -un) !secure_path, exempt_group += $(id -gn)" | sudo tee "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
+  echo "Defaults:$(id -un) !secure_path, exempt_group = $(id -gn)" | sudo tee "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
   sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
 fi
 
