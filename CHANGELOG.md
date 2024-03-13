@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.19 -->
-## [v18.4.19](https://github.com/chef/chef/tree/v18.4.19) (2024-03-13)
+<!-- latest_release 18.4.20 -->
+## [v18.4.20](https://github.com/chef/chef/tree/v18.4.20) (2024-03-13)
 
 #### Merged Pull Requests
-- Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair)) <!-- 18.4.20 -->
 - Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.19 -->
 - Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14264](https://github.com/chef/chef/pull/14264) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.18 -->
 - Fix requiring of chef-utils/version_string. [#14256](https://github.com/chef/chef/pull/14256) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.17 -->
