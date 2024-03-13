@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.21 -->
-## [v18.4.21](https://github.com/chef/chef/tree/v18.4.21) (2024-03-13)
+<!-- latest_release 18.4.22 -->
+## [v18.4.22](https://github.com/chef/chef/tree/v18.4.22) (2024-03-13)
 
 #### Merged Pull Requests
-- correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian))
+- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.22 -->
 - correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.21 -->
 - remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair)) <!-- 18.4.20 -->
 - Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.19 -->
