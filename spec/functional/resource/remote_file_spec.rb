@@ -245,7 +245,7 @@ describe Chef::Resource::RemoteFile do
           end
         end
 
-        context "when the the file is only accessible as a specific alternate identity" do
+        context "when the file is only accessible as a specific alternate identity" do
           let(:windows_nonadmin_user) { "chefremfile2" }
           let(:windows_nonadmin_user_password) { "j82ajfxK3;2Xe2" }
           include_context "a non-admin Windows user"
