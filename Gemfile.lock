@@ -35,12 +35,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.10.124)
+    chef (17.10.129)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.124)
-      chef-utils (= 17.10.124)
+      chef-config (= 17.10.129)
+      chef-utils (= 17.10.129)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -50,7 +50,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (>= 2.2, < 4.0)
       iniparse (~> 1.4)
-      inspec-core (~> 5.22.36)
+      inspec-core (~> 5.22.40)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -66,13 +66,13 @@ PATH
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.16)
-    chef (17.10.124-universal-mingw32)
+    chef (17.10.129-universal-mingw32)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 17.10.124)
-      chef-powershell
-      chef-utils (= 17.10.124)
+      chef-config (= 17.10.129)
+      chef-powershell (~> 18.1.0)
+      chef-utils (= 17.10.129)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -82,7 +82,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (>= 2.2, < 4.0)
       iniparse (~> 1.4)
-      inspec-core (~> 5.22.36)
+      inspec-core (~> 5.22.40)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -113,15 +113,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.10.124)
-      chef (= 17.10.124)
+    chef-bin (17.10.129)
+      chef (= 17.10.129)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.10.124)
+    chef-config (17.10.129)
       addressable
-      chef-utils (= 17.10.124)
+      chef-utils (= 17.10.129)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -130,7 +130,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.10.124)
+    chef-utils (17.10.129)
       concurrent-ruby
 
 GEM
@@ -457,7 +457,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  inspec-core-bin (~> 5.22.36)
+  inspec-core-bin (~> 5.22.40)
   ohai!
   pry (>= 0.14.1)
   pry-byebug
