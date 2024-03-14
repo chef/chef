@@ -8,33 +8,38 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.4.2 -->
+<!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.22 -->
-- correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.21 -->
-- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair)) <!-- 18.4.20 -->
-- Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.19 -->
-- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14264](https://github.com/chef/chef/pull/14264) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.18 -->
-- Fix requiring of chef-utils/version_string. [#14256](https://github.com/chef/chef/pull/14256) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.17 -->
-- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.16 -->
-- Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.15 -->
-- Safeguard for undefined and fix reference to CHEF_FOUNDATION_VERSION [#14252](https://github.com/chef/chef/pull/14252) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.14 -->
 - add umask to chef_client_systemd_timer [#14238](https://github.com/chef/chef/pull/14238) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.13 -->
-- Fix bigdecimal error with webmock / crack in macOS and AIX builds [#14243](https://github.com/chef/chef/pull/14243) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.12 -->
-- Avoid DeepMergeCache flap in Chef::Node#loaded_recipe [#14225](https://github.com/chef/chef/pull/14225) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.11 -->
-- Revert &quot;Bump unf ext back&quot; [#14231](https://github.com/chef/chef/pull/14231) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.10 -->
-- chefspec verify needs to point to chef/chefspec [#14230](https://github.com/chef/chef/pull/14230) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.9 -->
-- Chef 2041 infra client release amazon 2023/muthuja [#14228](https://github.com/chef/chef/pull/14228) ([muthuja](https://github.com/muthuja)) <!-- 18.4.8 -->
-- Bump unf ext back [#14115](https://github.com/chef/chef/pull/14115) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.7 -->
-- Bump omnibus-software from `f50a2ad` to `86649fa` in /omnibus [#14189](https://github.com/chef/chef/pull/14189) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.3 -->
-- bundle update --conservative inspec-core inspec-core-bin [#14200](https://github.com/chef/chef/pull/14200) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.4 -->
-- Unbound ffi upgrades and bundle update --conservative [#14199](https://github.com/chef/chef/pull/14199) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.5 -->
-- Removing deprecated attributes [#14186](https://github.com/chef/chef/pull/14186) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.6 -->
+- Safeguard for undefined and fix reference to CHEF_FOUNDATION_VERSION [#14252](https://github.com/chef/chef/pull/14252) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.14 -->
+- Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.15 -->
+- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.16 -->
+- Fix requiring of chef-utils/version_string. [#14256](https://github.com/chef/chef/pull/14256) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.17 -->
+- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14264](https://github.com/chef/chef/pull/14264) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.18 -->
+- Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.19 -->
+- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair)) <!-- 18.4.20 -->
+- correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.21 -->
+- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.22 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.4.12](https://github.com/chef/chef/tree/v18.4.12) (2024-03-14)
+
+#### Merged Pull Requests
+- Removing deprecated attributes [#14186](https://github.com/chef/chef/pull/14186) ([johnmccrae](https://github.com/johnmccrae))
+- Unbound ffi upgrades and bundle update --conservative [#14199](https://github.com/chef/chef/pull/14199) ([tpowell-progress](https://github.com/tpowell-progress))
+- bundle update --conservative inspec-core inspec-core-bin [#14200](https://github.com/chef/chef/pull/14200) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `f50a2ad` to `86649fa` in /omnibus [#14189](https://github.com/chef/chef/pull/14189) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump unf ext back [#14115](https://github.com/chef/chef/pull/14115) ([tpowell-progress](https://github.com/tpowell-progress))
+- Chef 2041 infra client release amazon 2023/muthuja [#14228](https://github.com/chef/chef/pull/14228) ([muthuja](https://github.com/muthuja))
+- chefspec verify needs to point to chef/chefspec [#14230](https://github.com/chef/chef/pull/14230) ([tpowell-progress](https://github.com/tpowell-progress))
+- Revert &quot;Bump unf ext back&quot; [#14231](https://github.com/chef/chef/pull/14231) ([tpowell-progress](https://github.com/tpowell-progress))
+- Avoid DeepMergeCache flap in Chef::Node#loaded_recipe [#14225](https://github.com/chef/chef/pull/14225) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Fix bigdecimal error with webmock / crack in macOS and AIX builds [#14243](https://github.com/chef/chef/pull/14243) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
 ## [v18.4.2](https://github.com/chef/chef/tree/v18.4.2) (2024-01-30)
 
 #### Merged Pull Requests
@@ -107,7 +112,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Minor doc change to trigger a version update [#14158](https://github.com/chef/chef/pull/14158) ([johnmccrae](https://github.com/johnmccrae))
 - Correcting security issue [#14173](https://github.com/chef/chef/pull/14173) ([johnmccrae](https://github.com/johnmccrae))
 - Bump buildkite-platform and omnibus for solaris issue [#14183](https://github.com/chef/chef/pull/14183) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v18.3.0](https://github.com/chef/chef/tree/v18.3.0) (2023-09-18)
 
