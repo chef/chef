@@ -101,11 +101,11 @@ From a Windows host:
   5. Contact the Build Systems team to get the password for the choco account if you don't have it already. The user is 'chef-ci'.
   6. Logon to the chocolatey and go to the account page
   7. Grab the API key from there.
-    8. Run `choco pack .\chef\chef.nuspec`
-      **Note**: If your nupkg file looks like this: `chef-client:15.1.9.nupkg` (note the colon), change the colon to a period. Choco push will fail on the colon
+  8. Run `choco pack .\chef\chef.nuspec`
+    **Note**: If your nupkg file looks like this: `chef-client:15.1.9.nupkg` (note the colon), change the colon to a period. Choco push will fail on the colon
 
-    9. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`. You might get an error using just that command. This will solve that: 
-       `choco push .\chef-client.18.4.12.nupkg --api-key '<your key goes here>' --source=https://push.chocolatey.org/`
+  9. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`. You might get an error using just that command. This will solve that: 
+      `choco push .\chef-client.18.4.12.nupkg --api-key '<your key goes here>' --source=https://push.chocolatey.org/`
 
   10. Once the nupkg file is pushed to Chocolatey, then merge your PR (e.g PR [here](https://github.com/chef/chocolatey-packages/pull/29))
 
