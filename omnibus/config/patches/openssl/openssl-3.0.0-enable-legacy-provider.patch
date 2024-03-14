@@ -1,0 +1,48 @@
+diff --git a/apps/openssl-vms.cnf b/apps/openssl-vms.cnf
+index ac858d6..d1cb967 100644
+--- a/apps/openssl-vms.cnf
++++ b/apps/openssl-vms.cnf
+@@ -56,6 +56,7 @@ providers = provider_sect
+ # List of providers to load
+ [provider_sect]
+ default = default_sect
++legacy  = legacy_sect
+ # The fips section name should match the section name inside the
+ # included fipsmodule.cnf.
+ # fips = fips_sect
+@@ -69,8 +70,10 @@ default = default_sect
+ # OpenSSL may not work correctly which could lead to significant system
+ # problems including inability to remotely access the system.
+ [default_sect]
+-# activate = 1
++activate = 1
+
++[legacy_sect]
++activate = 1
+
+ ####################################################################
+ [ ca ]
+diff --git a/apps/openssl.cnf b/apps/openssl.cnf
+index 12bc408..35a4282 100644
+--- a/apps/openssl.cnf
++++ b/apps/openssl.cnf
+@@ -56,6 +56,7 @@ providers = provider_sect
+ # List of providers to load
+ [provider_sect]
+ default = default_sect
++legacy  = legacy_sect
+ # The fips section name should match the section name inside the
+ # included fipsmodule.cnf.
+ # fips = fips_sect
+@@ -69,8 +70,10 @@ default = default_sect
+ # OpenSSL may not work correctly which could lead to significant system
+ # problems including inability to remotely access the system.
+ [default_sect]
+-# activate = 1
++activate = 1
+
++[legacy_sect]
++activate = 1
+
+ ####################################################################
+ [ ca ]

@@ -1,0 +1,19 @@
+--- apps/openssl.cnf.org	2024-02-08 14:01:32
++++ apps/openssl.cnf	2024-02-08 14:21:31
+@@ -56,6 +56,7 @@
+ # List of providers to load
+ [provider_sect]
+ default = default_sect
++legacy = legacy_sect
+ # The fips section name should match the section name inside the
+ # included fipsmodule.cnf.
+ # fips = fips_sect
+@@ -71,6 +72,8 @@
+ [default_sect]
+ # activate = 1
+ 
++[legacy_sect]
++activate = 1
+ 
+ ####################################################################
+ [ ca ]
