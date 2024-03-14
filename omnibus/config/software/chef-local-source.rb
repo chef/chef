@@ -75,8 +75,8 @@ build do
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
-  bundle "install --without #{bundle_excludes.join(" ")}", env: env
-
+  # bundle "install --without #{bundle_excludes.join(" ")}", env: env
+  bundle config set --local without 'docgen chefstyle development test'
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils

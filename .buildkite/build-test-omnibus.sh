@@ -147,7 +147,7 @@ then
     else
       echo "    OMNIBUS_FIPS_MODE: false"
     fi
-    echo "    IGNORE_CACHE: true"
+    echo "    IGNORE_CACHE: false"
     echo "  key: build-$build_key"
     echo "  label: \":hammer_and_wrench: $platform\""
     echo "  retry:"
