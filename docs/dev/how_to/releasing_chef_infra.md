@@ -2,15 +2,25 @@
 
 ## Steps to validate that we are ready to ship
 
-    1. Has the version number been bumped for releasing? This can be done by merging in a PR that has the "Expeditor: Bump Version Minor" label applied.
-    2. Are there any outstanding community PRs that should be merged? Ideally we don't make a community member wait multiple months for a code contribution to ship. Merge anything that's been reviewed.
-    3. Are new resource "introduced" fields using the correct version? From time to time, we incorrectly merge a PR that has the wrong "introduced" version in a new resource or new resource property. If we added new resources or properties, make sure these fields match the version we are about to ship.
-    4. Have any changes in Ohai been shipped to rubygems?
-         1. Keep in mind that if you are releasing a new version (chef 18 over chef 17, for example) you will need to ship updated versions of Ohai, Chef-Utils, Chef-Config and Knife to Rubygems.org BEFORE you ship Chef
-
-    5. Do we have a build in the `current` channel? If not, you might wanna fix that.
+  1. Has the version number been bumped for releasing? This can be done by merging in a PR that has the "Expeditor: Bump Version Minor" label applied.
+  2. Are there any outstanding community PRs that should be merged? Ideally we don't make a community member wait multiple months for a code contribution to ship. Merge anything that's been reviewed.
+  3. Are new resource "introduced" fields using the correct version? From time to time, we incorrectly merge a PR that has the wrong "introduced" version in a new resource or new resource property. If we added new resources or properties, make sure these fields match the version we are about to ship.
+  4. Have any changes in Ohai been shipped to rubygems?
+     
+        **NOTE:** Keep in mind that if you are releasing a new version (chef 18 over chef 17, for example) you will need to ship updated\ versions of Ohai, Chef-Utils, Chef-Config and Knife to Rubygems.org BEFORE you ship Chef
+  5. Do we have a build in the `current` channel? If not, you might wanna fix that.
 
 ## Prepare the Release
+
+### Let the Docs Team Know
+
+The docs team needs to know about our upcoming release at least 48 hours ahead of time. This ensures that when we release our docs are immediately available to users. Accommodations can be made for emergency releases. Contact the team directly in those instances. Do this for a normal release:
+
+Open 2 tickets on the [Chef-Infra board](https://chefio.atlassian.net/jira/software/c/projects/CHEF/boards/492)
+    1. Assign the first one to yourself to write documentation for your upcoming release. 
+    2. Create the second one, assign it to the `BL-DOCS team`, tag it as 'Documentation', and mark it as blocked by the first ticket you created.
+    3. Inform the docs team either via `#docs-support` in Slack or directly and let them know about the ticket.
+    4. Finish the documents following the steps below and update your tickets when you're done.
 
 ### Write the release notes
 
@@ -77,22 +87,26 @@ From a Windows host:
   1. Clone this repo locally : https://github.com/chef/chocolatey-packages
   2. There is no separate branch being maintained for each version of chef. Make your PR for `main` branch only.
   3. Getting the SHA256 checksum for windows artifact:
-      There are two ways we can do this:
-      * Since we have already promoted latest version of chef, the artifacts will be available on download site.
+      There are three ways we can do this:
+      * Easiest: https://omnitruck.chef.io/current/chef/packages?v=18.4.2 - obviously replace the version then hit that url, scroll down to windows and get the SHA.
+      * Still Easy: Since we have already promoted latest version of chef, the artifacts will be available on download site.
         Visit https://www.chef.io/downloads/tools/infra-client?os=windows, select the intended Infra Client version and grab the SHA256 checksum for `Windows 2012r2` OS. 
         In case this url changes or not accessible, use below method:
-      * Go to the buildkite release pipeline which you are promoting to stable.
-      * Go to the `windows-2012r2-x86_64` builder and download the artifact
-        (NOTE: On a mac system, if the `msi` file gets downloaded as an `exe`, do this from a windows machine, since they are different files and not the intended file for which we are creating the chocolatey package.)
-      * Run `shasum -a 256 {path_to_your_downloaded_artifact}`
-      * This will output the SHA256 checksum for the file
+      * Less Easy: Go to the buildkite release pipeline which you are promoting to stable.
+        * Go to the `windows-2012r2-x86_64` builder and download the artifact
+          (NOTE: On a mac system, if the `msi` file gets downloaded as an `exe`, do this from a windows machine, since they are different files and not the intended file for which we are creating the chocolatey package.)
+        * Run `shasum -a 256 {path_to_your_downloaded_artifact}`
+        * This will output the SHA256 checksum for the file
   4. Update the version strings and sha checksums in the chef.nuspec and chocolateyinstall.ps1 files and create the PR.
   5. Contact the Build Systems team to get the password for the choco account if you don't have it already. The user is 'chef-ci'.
   6. Logon to the chocolatey and go to the account page
   7. Grab the API key from there.
-  8. Run `choco pack .\chef\chef.nuspec`
-     1. Note: If your nupkg file looks like this: `chef-client:15.1.9.nupkg` (note the colon), change the colon to a period. Choco push will fail on the colon
-  9. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`
+    8. Run `choco pack .\chef\chef.nuspec`
+      **Note**: If your nupkg file looks like this: `chef-client:15.1.9.nupkg` (note the colon), change the colon to a period. Choco push will fail on the colon
+
+    9. Then run `choco push .\chef-client.15.1.9.nupkg --key API_KEY_HERE`. You might get an error using just that command. This will solve that: 
+       `choco push .\chef-client.18.4.12.nupkg --api-key '<your key goes here>' --source=https://push.chocolatey.org/`
+
   10. Once the nupkg file is pushed to Chocolatey, then merge your PR (e.g PR [here](https://github.com/chef/chocolatey-packages/pull/29))
 
 
