@@ -3,7 +3,6 @@
 gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"
-
 # Install gems from git repos.  This makes the assumption that there is a <gem_name>.gemspec and
 # you can simply gem build + gem install the resulting gem, so nothing fancy.  This does not use
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
