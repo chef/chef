@@ -101,7 +101,7 @@ then
       echo "        - CHEF_FOUNDATION_VERSION"
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
-      echo "  timeout_in_minutes: 60"
+      echo "  timeout_in_minutes: 800"
     else
       echo "- label: \":hammer_and_wrench::windows: $platform\""
       echo "  retry:"
@@ -129,7 +129,7 @@ then
       echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
       echo "  commands:"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
-      echo "  timeout_in_minutes: 120"
+      echo "  timeout_in_minutes: 800"
     fi
   done
 fi
@@ -153,7 +153,7 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  timeout_in_minutes: 120"
+    echo "  timeout_in_minutes: 800"
     echo "  agents:"
     echo "    queue: omnibus-$platform"
     if [[ $platform == mac_os_x* ]]
@@ -162,7 +162,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.86:"
+    echo "  - chef/omnibus#31909238e39a298077813ec6f1d76881c536f995:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
@@ -186,7 +186,7 @@ then
     echo "  agents:"
     echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.86:"
+    echo "  - chef/omnibus#31909238e39a298077813ec6f1d76881c536f995:"
     echo "      config: omnibus/omnibus.rb"
     echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
     echo "      notarize-macos-package: chef"
@@ -207,7 +207,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.86:"
+  echo "  - chef/omnibus#31909238e39a298077813ec6f1d76881c536f995:"
   echo "      create-build-record: chef"
 fi
 
@@ -244,7 +244,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
       echo "    - omnibus/omnibus-test.sh"
-      echo "  timeout_in_minutes: 60"
+      echo "  timeout_in_minutes: 800"
     else
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
@@ -263,7 +263,7 @@ then
       echo "  commands:"
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
       echo "    - ./omnibus/omnibus-test.ps1"
-      echo "  timeout_in_minutes: 120"
+      echo "  timeout_in_minutes: 800"
     fi
   done
 fi
@@ -290,9 +290,9 @@ then
     echo "    automatic:"
     echo "      limit: 1"
     if [[ $platform == *"aix"* ]]; then
-      echo "  timeout_in_minutes: 180"
+      echo "  timeout_in_minutes: 800"
     else
-      echo "  timeout_in_minutes: 90"
+      echo "  timeout_in_minutes: 800"
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
@@ -302,7 +302,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.86:"
+    echo "  - chef/omnibus#31909238e39a298077813ec6f1d76881c536f995:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -328,6 +328,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.86:"
+  echo "  - chef/omnibus#31909238e39a298077813ec6f1d76881c536f995:"
   echo "      promote: chef"
 fi
