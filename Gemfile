@@ -17,6 +17,11 @@ end
 
 gem "cheffish", "~> 17.0.0"
 
+# This is to help patch in openssl for Ruby 3.0.x, since Ruby 3.0 uses OpenSSL <3.0
+# unless you build without and reintroduce it manually.
+# Remove once we're no longer supporting Ruby 3.0.x.
+gem "openssl", "~> 3.2.0"
+
 gem "ast", "~> 2.4.2"
 gem "rubocop-ast", ">= 1.31.0"
 
