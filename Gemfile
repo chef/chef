@@ -21,6 +21,11 @@ end
 
 gem "cheffish", ">= 17"
 
+# This is to help patch in openssl for Ruby 3.0.x, since Ruby 3.0 uses OpenSSL <3.0
+# unless you build without and reintroduce it manually.
+# Remove once we're no longer supporting Ruby 3.0.x.
+gem "openssl", "~> 3.2.0"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
