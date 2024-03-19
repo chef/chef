@@ -21,6 +21,10 @@ end
 
 gem "cheffish", ">= 17"
 
+# AIX systems are still at ruby 3.0, which by default is packages with OpenSSL < 3.0.
+# We do this hack to get past build failures when packaged OpenSSL is upgraded to 3.0.x
+gem "openssl", "~> 3.0.0"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
