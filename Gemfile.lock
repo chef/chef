@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 129344227d927ea67f228540654a6718265d03cd
+  revision: c1fed9c045622992bf9e84ad3c374448b0c1134b
   branch: main
   specs:
     chefstyle (2.2.3)
@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: af5657847b332bc4f227071aba6c8a5eee8994e4
+  revision: 9bf7c7a1ed765f3b4a18c6b0a646ae9dfc269497
   branch: 17-stable
   specs:
-    ohai (17.9.5)
+    ohai (17.9.6)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
-      ffi (~> 1.9, < 1.16.0)
+      ffi
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
@@ -58,7 +58,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 17.0)
+      ohai (~> 17.9)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
@@ -91,7 +91,7 @@ PATH
       mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 17.0)
+      ohai (~> 17.9)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
@@ -387,7 +387,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.17.0)
       aws-sigv4
-    webmock (3.19.1)
+    webmock (3.23.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
