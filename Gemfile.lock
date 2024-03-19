@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 9bf7c7a1ed765f3b4a18c6b0a646ae9dfc269497
-  branch: 17-stable
+  revision: 73ebba274a88300ac2fa98831c3b483766080ade
+  branch: jfm/chef17-revert-ffi-2
   specs:
     ohai (17.9.6)
       chef-config (>= 14.12, < 18)
       chef-utils (>= 16.0, < 18)
-      ffi
+      ffi (~> 1.9, < 1.16.0)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)

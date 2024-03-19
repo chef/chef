@@ -38,6 +38,11 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 17.9.6"
   s.add_dependency "inspec-core", "~> 5.22.36"
 
+  # March 2024 - We attempted to update FFI to 1.16.3 and encountered an unexpected issue. In updating that gem
+  # we discovered it causes a conflict whereby the Windows Registry monkey-patch is ignored/overwritten by the
+  # base class. We were unable to resolve the exact cause but are noting here for anyone who wants to undertake this:
+  # Here, there be dragons!
+
   s.add_dependency "ffi", "~> 1.15.5"
   s.add_dependency "ffi-yajl", ">= 2.2", "< 4.0"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
