@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 73ebba274a88300ac2fa98831c3b483766080ade
+  revision: 13bebd9b8e8321b9f9afe231134bbc3e65f29fb9
   branch: jfm/chef17-revert-ffi-2
   specs:
     ohai (17.9.6)
