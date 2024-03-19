@@ -199,7 +199,7 @@ include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 # include_recipe "::_tests" # generates UTF-8 error
 include_recipe "::_mount"
-include_recipe "::_ifconfig" unless ubuntu? && node["platform_version"] >= "20.04" || suse? || amazon? && node["platform_version"] >= "2023"
+include_recipe "::_ifconfig"
 # TODO: re-enable when habitat recipes are fixed
 # unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
 #   if ::File.exist?("/etc/systemd/system")
