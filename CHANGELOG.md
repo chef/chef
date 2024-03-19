@@ -2,27 +2,40 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.121 -->
-## [v17.10.121](https://github.com/chef/chef/tree/v17.10.121) (2024-02-19)
+<!-- latest_release 17.10.129 -->
+## [v17.10.129](https://github.com/chef/chef/tree/v17.10.129) (2024-03-06)
 
 #### Merged Pull Requests
-- chefspec verify needs to point to chef/chefspec [#14247](https://github.com/chef/chef/pull/14247) ([tpowell-progress](https://github.com/tpowell-progress))
+- Chef-PowerShell to v18 [#14274](https://github.com/chef/chef/pull/14274) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
-<!-- release_rollup since=17.10.114 -->
+<!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- chefspec verify needs to point to chef/chefspec [#14247](https://github.com/chef/chef/pull/14247) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.121 -->
-- Fix bigdecimal error with webmock / crack in macOS and AIX builds  [#14244](https://github.com/chef/chef/pull/14244) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.120 -->
-- Adding an adhoc build for the Chef-17 pipeline to be run every Sunday and Wednesday UTC [#13101](https://github.com/chef/chef/pull/13101) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit)) <!-- 17.10.115 -->
-- Try switching to proxifier2 [#14204](https://github.com/chef/chef/pull/14204) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.116 -->
-- Updating Train Support to allow for more connection types [#14208](https://github.com/chef/chef/pull/14208) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.117 -->
-- Try pinning to 0.10.1 if Ruby 3.0.0 specifically is in use (for Fedora rubydistro) [#14212](https://github.com/chef/chef/pull/14212) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.118 -->
-- bundle update --conservative inspec-core inspec-core-bin [#14201](https://github.com/chef/chef/pull/14201) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.119 -->
+- Refactoring for Rubocop [#14261](https://github.com/chef/chef/pull/14261) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.123 -->
+- Removing Ruby 2.7 testing [#14260](https://github.com/chef/chef/pull/14260) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.124 -->
+- Forcing bundle update to get the URI gem to load properly [#14270](https://github.com/chef/chef/pull/14270) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.125 -->
+- Updating to properly load URI for Fedora [#14271](https://github.com/chef/chef/pull/14271) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.126 -->
+- Restricting kitchen-inspec to &quot;~&gt; 2.5.2&quot; [#14273](https://github.com/chef/chef/pull/14273) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.127 -->
+- Bumping inspec-core minimum version requirement [#14276](https://github.com/chef/chef/pull/14276) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.128 -->
+- Chef-PowerShell to v18 [#14274](https://github.com/chef/chef/pull/14274) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.129 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v17.10.122](https://github.com/chef/chef/tree/v17.10.122) (2024-03-11)
+
+#### Merged Pull Requests
+- bundle update --conservative inspec-core inspec-core-bin [#14201](https://github.com/chef/chef/pull/14201) ([tpowell-progress](https://github.com/tpowell-progress))
+- Try pinning to 0.10.1 if Ruby 3.0.0 specifically is in use (for Fedora rubydistro) [#14212](https://github.com/chef/chef/pull/14212) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating Train Support to allow for more connection types [#14208](https://github.com/chef/chef/pull/14208) ([johnmccrae](https://github.com/johnmccrae))
+- Try switching to proxifier2 [#14204](https://github.com/chef/chef/pull/14204) ([tpowell-progress](https://github.com/tpowell-progress))
+- Adding an adhoc build for the Chef-17 pipeline to be run every Sunday and Wednesday UTC [#13101](https://github.com/chef/chef/pull/13101) ([PrajaktaPurohit](https://github.com/PrajaktaPurohit))
+- Fix bigdecimal error with webmock / crack in macOS and AIX builds  [#14244](https://github.com/chef/chef/pull/14244) ([tpowell-progress](https://github.com/tpowell-progress))
+- chefspec verify needs to point to chef/chefspec [#14247](https://github.com/chef/chef/pull/14247) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `b3d89a4` to `40ca2a9` in /omnibus [#14250](https://github.com/chef/chef/pull/14250) ([dependabot[bot]](https://github.com/dependabot[bot]))
+<!-- latest_stable_release -->
+
 ## [v17.10.114](https://github.com/chef/chef/tree/v17.10.114) (2024-01-31)
 
 #### Merged Pull Requests
@@ -45,7 +58,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Overcoming Ruby linting error [#14182](https://github.com/chef/chef/pull/14182) ([johnmccrae](https://github.com/johnmccrae))
 - Omnibus bump of Solaris bash update [#14177](https://github.com/chef/chef/pull/14177) ([tpowell-progress](https://github.com/tpowell-progress))
 - Updating FFI-YAJL [#14176](https://github.com/chef/chef/pull/14176) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v17.10.95](https://github.com/chef/chef/tree/v17.10.95) (2023-11-27)
 

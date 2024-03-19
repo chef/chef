@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.7.0"
+  s.required_ruby_version = ">= 3.0.0"
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
@@ -61,6 +61,11 @@ Gem::Specification.new do |s|
   s.add_dependency "vault", "~> 0.16" # hashi vault official client gem
   s.bindir       = "bin"
   s.executables  = %w{ }
+
+  if RUBY_VERSION.match?("3.0.0")
+    # Ruby 3.0.0 on Fedora specifically makes trouble
+    s.add_dependency "uri", "= 0.10.1"
+  end
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} +

@@ -10,36 +10,6 @@ expeditor:
 steps:
 
 #########################################################################
-  # Tests Ruby 2.7
-#########################################################################
-
-- label: "chef-utils Unit :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd chef-utils
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-
-- label: "chef-config Unit :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd chef-config
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-
-#########################################################################
   # Tests Ruby 3.0
 #########################################################################
 
@@ -222,6 +192,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
+    - bundle update # Force the correct URI version to update the gemfile.lock
     - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:integration
   expeditor:
@@ -236,6 +207,7 @@ steps:
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
+    - bundle update # Force the correct URI version to update the gemfile.lock
     - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:functional
   expeditor:
@@ -253,6 +225,7 @@ steps:
     - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
+    - bundle update # Force the correct URI version to update the gemfile.lock
     - bundle install --jobs=3 --retry=3
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -261,7 +234,7 @@ steps:
       docker:
         image: rubydistros/fedora-latest:3.0
 
-- label: "Functional Windows :ruby: 2.7"
+- label: "Functional Windows :ruby: 3.0"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
