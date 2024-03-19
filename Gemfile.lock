@@ -285,7 +285,7 @@ GEM
       net-ssh (>= 5.0.0, < 8.0.0)
     net-ssh (7.2.1)
     nori (2.6.0)
-    openssl (3.2.0)
+    openssl (3.0.2)
     parallel (1.23.0)
     parser (3.3.0.5)
       ast (~> 2.4.1)
@@ -456,7 +456,7 @@ DEPENDENCIES
   fauxhai-ng
   inspec-core-bin (~> 5.22.40)
   ohai!
-  openssl (~> 3.2.0)
+  openssl (~> 3.0.0)
   pry (>= 0.14.1)
   pry-byebug
   pry-stack_explorer
