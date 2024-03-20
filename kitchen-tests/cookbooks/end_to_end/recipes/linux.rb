@@ -162,7 +162,7 @@ end
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
-chef_client_cron "Run chef-client as a cron job"
+chef_client_cron "Run chef-client as a cron job" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
 
 chef_client_cron "Run chef-client with base recipe" do
   minute 0
