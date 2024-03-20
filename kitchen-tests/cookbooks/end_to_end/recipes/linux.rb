@@ -75,7 +75,7 @@ include_recipe value_for_platform(
                  centos: { "<= 8" => "ntp" },
                  rhel: { "<= 8" => "ntp" },
                  default: "chrony"
-               )
+               ) unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
 
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
