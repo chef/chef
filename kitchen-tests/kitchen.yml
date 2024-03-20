@@ -26,7 +26,7 @@ platforms:
   - name: almalinux-8
   - name: almalinux-9
   - name: amazonlinux-2
-  # - name: amazonlinux-2023 # Bento Amazon Linux 2023 box is not available yet
+  - name: amazonlinux-2023
   - name: centos-7
   - name: debian-12
   - name: debian-11

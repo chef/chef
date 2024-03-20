@@ -133,7 +133,7 @@ jobs:
       matrix:
         os:
           - amazonlinux-2
-          # - amazonlinux-2023 # Bento Amazon Linux 2023 box is not available yet
+          - amazonlinux-2023
           - almalinux-8
           - almalinux-9
           # - centos-7 Need to troubleshoot slow and hanging behaviour on lifecycle hook run
