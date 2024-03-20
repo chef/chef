@@ -161,8 +161,10 @@ end
 
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
-puts "\n\nTEST1 = #{node['platform_version'].inspect}\n\n"
-chef_client_cron "Run chef-client as a cron job" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
+
+chef_client_cron "Run chef-client as a cron job" do
+  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
+end
 
 chef_client_cron "Run chef-client with base recipe" do
   minute 0
@@ -171,6 +173,7 @@ chef_client_cron "Run chef-client with base recipe" do
   log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
+  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
 end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
