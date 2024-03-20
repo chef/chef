@@ -197,7 +197,7 @@ include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sudo"
 include_recipe "::_sysctl"
 include_recipe "::_alternatives"
-include_recipe "::_cron"
+include_recipe "::_cron" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 # include_recipe "::_tests" # generates UTF-8 error
