@@ -278,9 +278,14 @@ class Chef
           events.register(Chef::ResourceReporter.new(rest_clean))
         end
 
+        puts "-------Node object before load_node in run------: #{node["chef-vault"]}"
         load_node
 
+        puts "-------Node object after load_node in run------: #{node["chef-vault"]}"
+
         build_node
+
+        puts "-------Node object after build_node in run------: #{node["chef-vault"]}"
 
         run_status.start_clock
         logger.info("Starting #{ChefUtils::Dist::Infra::PRODUCT} Run for #{node.name}")
@@ -290,8 +295,9 @@ class Chef
 
         Chef.resource_handler_map.lock!
         Chef.provider_handler_map.lock!
-
+        puts "-------Node object before setup_run_context in run------: #{node["chef-vault"]}"
         setup_run_context
+        puts "-------Node object after setup_run_context in run------: #{node["chef-vault"]}"
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
@@ -462,9 +468,12 @@ class Chef
     # @api private
     #
     def load_node
+      # require 'pry'
+      # binding.pry
       policy_builder.load_node
       run_status.node = policy_builder.node
       Chef.set_node(policy_builder.node)
+      puts "-------Node object after load_node------: #{node["chef-vault"]}"
       node
     end
 
@@ -478,8 +487,10 @@ class Chef
     # @api private
     #
     def build_node
+      puts "-------Node object before build_node in client.rb------: #{node["chef-vault"]}"
       policy_builder.build_node
       run_status.node = node
+      puts "-------Node object after build_node in client.rb------: #{node["chef-vault"]}"
       node
     end
 

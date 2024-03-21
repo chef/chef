@@ -76,6 +76,7 @@ class Chef
       def setup_run_context(specific_recipes = nil, run_context = nil)
         run_context ||= Chef::RunContext.new
         run_context.events = events
+        puts "-------Node object after build_node in run------: #{node["chef-vault"]}"
         run_context.node = node
 
         cookbook_collection =
@@ -122,6 +123,7 @@ class Chef
       # === Returns
       # node<Chef::Node>:: The modified node object. node is modified in place.
       def build_node
+
         # Allow user to override the environment of a node by specifying
         # a config parameter.
         if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
@@ -131,11 +133,12 @@ class Chef
         # consume_external_attrs may add items to the run_list. Save the
         # expanded run_list, which we will pass to the server later to
         # determine which versions of cookbooks to use.
+        puts "-------Node object before build_node in expanded_node.rb------: #{node["chef-vault"]}"
         node.reset_defaults_and_overrides
         node.consume_external_attrs(ohai_data, @json_attribs)
 
         setup_run_list_override
-
+        puts "-------Node object after build_node in expanded_node.rb------: #{node["chef-vault"]}"
         expand_run_list
 
         Chef::Log.info("Run List is [#{node.run_list}]")

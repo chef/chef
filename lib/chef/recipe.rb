@@ -65,6 +65,8 @@ class Chef
 
     # Used in DSL mixins
     def node
+      puts "-------run_context object  run_context in receipe------: #{run_context}"
+      puts "-------node object  run_context in receipe------: #{node["chef-vault"]}"
       run_context.node
     end
 
