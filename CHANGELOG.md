@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.129 -->
-## [v17.10.129](https://github.com/chef/chef/tree/v17.10.129) (2024-03-06)
+<!-- latest_release 17.10.130 -->
+## [v17.10.130](https://github.com/chef/chef/tree/v17.10.130) (2024-03-21)
 
 #### Merged Pull Requests
-- Chef-PowerShell to v18 [#14274](https://github.com/chef/chef/pull/14274) ([johnmccrae](https://github.com/johnmccrae))
+- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14269](https://github.com/chef/chef/pull/14269) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14269](https://github.com/chef/chef/pull/14269) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.130 -->
 - Refactoring for Rubocop [#14261](https://github.com/chef/chef/pull/14261) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.123 -->
 - Removing Ruby 2.7 testing [#14260](https://github.com/chef/chef/pull/14260) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.124 -->
 - Forcing bundle update to get the URI gem to load properly [#14270](https://github.com/chef/chef/pull/14270) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.125 -->
