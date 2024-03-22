@@ -255,9 +255,6 @@ class Chef
     # @see Chef::RunContext::CookbookCompiler
     #
     def load(run_list_expansion)
-      puts "-------Node object a load in run_context------"
-      puts node["chef-vault"]
-      puts "-------self object a load in run_context------"
       @cookbook_compiler = CookbookCompiler.new(self, run_list_expansion, events)
       cookbook_compiler.compile
     end

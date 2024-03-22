@@ -481,9 +481,6 @@ class Chef
       policy_builder.load_node
       run_status.node = policy_builder.node
       Chef.set_node(policy_builder.node)
-      puts "-------Node object after load_node------"
-      puts node["chef-vault"]
-      p node
       node
     end
 
@@ -497,12 +494,8 @@ class Chef
     # @api private
     #
     def build_node
-      puts "-------Node object before build_node in client.rb------"
-      puts node["chef-vault"]
       policy_builder.build_node
       run_status.node = node
-      puts "-------Node object after build_node in client.rb------"
-      puts node["chef-vault"]
       node
     end
 

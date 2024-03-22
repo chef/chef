@@ -206,8 +206,6 @@ class Chef
     # Set a default of this node, but auto-vivify any Mashes that might
     # be missing
     def default
-      # require 'pry'
-      # binding.pry
       attributes.default
     end
 
@@ -635,11 +633,7 @@ class Chef
     end
 
     def self.find_or_create(node_name)
-      puts "-------Node object before find_or_create in node.rb------"
-      puts node
       load(node_name)
-      puts "-------Node object after find_or_create in node.rb------"
-      puts node
 
     rescue Net::HTTPClientException => e
       raise unless e.response.code == "404"
@@ -657,8 +651,6 @@ class Chef
 
     # Load a node by name
     def self.load(name)
-      puts "-------Node object before self.load------"
-      puts node
       from_hash(Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("nodes/#{name}"))
     end
 

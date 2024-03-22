@@ -39,7 +39,6 @@ class Chef
       def chef_vault_item(bag, id)
         puts "inside chef-vault--------"
         puts node["chef-vault"]
-        p node
         if ::ChefVault::Item.vault?(bag, id)
           ::ChefVault::Item.load(bag, id)
         elsif node["chef-vault"]["databag_fallback"]

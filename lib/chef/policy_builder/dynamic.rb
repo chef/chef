@@ -77,8 +77,6 @@ class Chef
         implementation.finish_load_node(node)
         node
         events.node_load_success(node)
-        puts "-------Node object before load_node in dynamic.rb------"
-        puts node["chef-vault"]
       rescue Exception => e
         events.node_load_failed(node_name, e, config)
         raise

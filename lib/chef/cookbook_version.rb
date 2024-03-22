@@ -199,9 +199,6 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      puts "-------run_context load_recipe in cookbook_version------"
-      p run_context.node
-      p run_context.node["chef-vault"]
       if recipe_filenames_by_name.key?(recipe_name)
         load_ruby_recipe(recipe_name, run_context)
       elsif recipe_yml_filenames_by_name.key?(recipe_name)
