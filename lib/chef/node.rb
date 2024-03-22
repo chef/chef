@@ -634,7 +634,6 @@ class Chef
 
     def self.find_or_create(node_name)
       load(node_name)
-
     rescue Net::HTTPClientException => e
       raise unless e.response.code == "404"
 

@@ -135,6 +135,7 @@ class Chef
         node.consume_external_attrs(ohai_data, @json_attribs)
 
         setup_run_list_override
+
         expand_run_list
 
         Chef::Log.info("Run List is [#{node.run_list}]")
