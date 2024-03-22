@@ -278,14 +278,20 @@ class Chef
           events.register(Chef::ResourceReporter.new(rest_clean))
         end
 
-        puts "-------Node object before load_node in run------: #{node["chef-vault"]}"
+        puts "-------Node object before load_node in run------"
+        puts node
+        p node
         load_node
 
-        puts "-------Node object after load_node in run------: #{node["chef-vault"]}"
+        puts "-------Node object after load_node in run------"
+        puts node["chef-vault"]
+        p node
 
         build_node
 
-        puts "-------Node object after build_node in run------: #{node["chef-vault"]}"
+        puts "-------Node object after build_node in run------"
+        puts node["chef-vault"]
+        p node
 
         run_status.start_clock
         logger.info("Starting #{ChefUtils::Dist::Infra::PRODUCT} Run for #{node.name}")
@@ -295,9 +301,11 @@ class Chef
 
         Chef.resource_handler_map.lock!
         Chef.provider_handler_map.lock!
-        puts "-------Node object before setup_run_context in run------: #{node["chef-vault"]}"
+        puts "-------Node object before setup_run_context in run------"
+        puts node["chef-vault"]
         setup_run_context
-        puts "-------Node object after setup_run_context in run------: #{node["chef-vault"]}"
+        puts "-------Node object after setup_run_context in run------"
+        puts node["chef-vault"]
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
@@ -473,7 +481,9 @@ class Chef
       policy_builder.load_node
       run_status.node = policy_builder.node
       Chef.set_node(policy_builder.node)
-      puts "-------Node object after load_node------: #{node["chef-vault"]}"
+      puts "-------Node object after load_node------"
+      puts node["chef-vault"]
+      p node
       node
     end
 
@@ -487,10 +497,12 @@ class Chef
     # @api private
     #
     def build_node
-      puts "-------Node object before build_node in client.rb------: #{node["chef-vault"]}"
+      puts "-------Node object before build_node in client.rb------"
+      puts node["chef-vault"]
       policy_builder.build_node
       run_status.node = node
-      puts "-------Node object after build_node in client.rb------: #{node["chef-vault"]}"
+      puts "-------Node object after build_node in client.rb------"
+      puts node["chef-vault"]
       node
     end
 

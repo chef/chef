@@ -37,6 +37,9 @@ class Chef
       # @param [String] bag Name of the data bag to load from.
       # @param [String] id Identifier of the data bag item to load.
       def chef_vault_item(bag, id)
+        puts "inside chef-vault--------"
+        puts node["chef-vault"]
+        p node
         if ::ChefVault::Item.vault?(bag, id)
           ::ChefVault::Item.load(bag, id)
         elsif node["chef-vault"]["databag_fallback"]
