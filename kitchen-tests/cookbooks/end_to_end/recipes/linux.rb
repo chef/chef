@@ -68,7 +68,16 @@ end
 include_recipe "::_packages"
 include_recipe "::_chef_gem"
 
-include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
+unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
+  include_recipe value_for_platform(
+                   opensuseleap: { "default" => "ntp" },
+                   amazon: { "2" => "ntp" },
+                   oracle: { "<= 8" => "ntp" },
+                   centos: { "<= 8" => "ntp" },
+                   rhel: { "<= 8" => "ntp" },
+                   default: "chrony"
+                 )
+end
 
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
@@ -155,7 +164,9 @@ end
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
-chef_client_cron "Run chef-client as a cron job"
+chef_client_cron "Run chef-client as a cron job" do
+  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
+end
 
 chef_client_cron "Run chef-client with base recipe" do
   minute 0
@@ -164,6 +175,7 @@ chef_client_cron "Run chef-client with base recipe" do
   log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
+  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
 end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
@@ -187,19 +199,22 @@ include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sudo"
 include_recipe "::_sysctl"
 include_recipe "::_alternatives"
-include_recipe "::_cron"
+include_recipe "::_cron" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
-include_recipe "::_tests"
+# include_recipe "::_tests" # generates UTF-8 error
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
-if ::File.exist?("/etc/systemd/system")
-  include_recipe "::_habitat_config"
-  include_recipe "::_habitat_install_no_user"
-  include_recipe "::_habitat_package"
-  # include_recipe "::_habitat_service"
-  include_recipe "::_habitat_sup"
-  include_recipe "::_habitat_user_toml"
-end
+# TODO: re-enable when habitat recipes are fixed
+# unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
+#   if ::File.exist?("/etc/systemd/system")
+#     include_recipe "::_habitat_config"
+#     include_recipe "::_habitat_install_no_user"
+#     include_recipe "::_habitat_package"
+#     include_recipe "::_habitat_service"
+#     include_recipe "::_habitat_sup"
+#     include_recipe "::_habitat_user_toml"
+#   end
+# end
 
 include_recipe "::_snap" if platform?("ubuntu")

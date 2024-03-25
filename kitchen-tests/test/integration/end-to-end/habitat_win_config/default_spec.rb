@@ -17,11 +17,11 @@ describe json(command: splunkserviceapi) do
   its(%w{directories path}) { should eq ["C:/hab/pkgs/.../*.log"] }
 end
 
-# This test needs to be re-written to hit the supervisor API
-# describe json('C:\hab\sup\default\data\census.dat') do
-#   scpath = ['census_groups', 'splunkforwarder.default', 'service_config']
-#   # Incarnation is just the current timestamp, so we can't compare to an exact
-#   # value. Instead just make sure it looks right.
-#   its(scpath + ['incarnation']) { should be > 1_500_000_000 }
-#   its(scpath + %w(value directories path)) { should eq ['C:/hab/pkgs/.../*.log'] }
-# end
+census = "(Invoke-RestMethod http://localhost:9631/census | ConvertTo-Json"
+describe json(command: census) do
+  scpath = ["census_groups", "splunkforwarder.default", "service_config"]
+  # Incarnation is just the current timestamp, so we can't compare to an exact
+  # value. Instead just make sure it looks right.
+  its(scpath + ["incarnation"]) { should be > 1_500_000_000 }
+  its(scpath + %w{value directories path}) { should eq ["C:/hab/pkgs/.../*.log"] }
+end

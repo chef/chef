@@ -1,0 +1,32 @@
+---
+driver:
+  name: exec
+  gui: false
+  customize:
+    memory: 4096
+
+transport:
+  name: exec
+
+lifecycle:
+  pre_converge:
+    - remote: brew install coreutils
+    - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
+    - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
+    - remote: echo "Chef / Ohai release:"
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
+    - remote: echo "Installing appbundler and appbundle-updater gems:"
+    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+    - remote: echo "Installed Chef / Ohai release:"
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
+
+platforms:
+  - name: macos-latest # x86_64 MacOS 12 on 3/11/2024
+  - name: macos-14 # arm64
+  - name: macos-14-large # x86_64
+  - name: macos-13 # x86_64

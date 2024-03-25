@@ -6,14 +6,7 @@ mount "/proc" do
 end
 
 mount "/mnt" do
-  device "/tmp"
-  fstype "ext4"
-  options %w{bind rw}
-  action %i{ mount enable }
-end
-
-mount "/mnt" do
-  device "/etc"
+  device "/usr/local"
   fstype "ext4"
   options %w{bind rw}
   action %i{ mount enable }
