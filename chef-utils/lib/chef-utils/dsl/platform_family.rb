@@ -267,6 +267,11 @@ module ChefUtils
         node ? node["platform_family"] == "windows" : windows_ruby?
       end
 
+      def windows_2012_or_2012r2?(node = __getnode(true))
+        windows?(node) && (node["platform_version"].start_with?("6.2") || node["platform_version"].start_with?("6.3"))
+      end
+      
+
       # Determine if the Ruby VM is currently running on a Windows node (ChefSpec can never stub
       # this behavior, so this is useful for code which can never be parsed on a non-Windows box).
       #
