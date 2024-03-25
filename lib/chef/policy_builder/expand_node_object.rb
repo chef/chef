@@ -134,9 +134,13 @@ class Chef
         node.reset_defaults_and_overrides
         node.consume_external_attrs(ohai_data, @json_attribs)
 
+        puts "---------before databag_fallback set"
+        p node
         # Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
         set_databag_fallback
 
+        puts "---------after databag_fallback set"
+        p node
         setup_run_list_override
 
         expand_run_list
@@ -151,6 +155,8 @@ class Chef
       end
 
       def set_databag_fallback
+        puts "---------inside databag_fallback set"
+        p node
         node.default["chef-vault"]["databag_fallback"] = true
       end
 
