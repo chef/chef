@@ -39,7 +39,6 @@ class Chef
       def node=(node)
         @node = node
         node.default["audit"] = Chef::Compliance::DEFAULT_ATTRIBUTES.merge(node.default["audit"])
-        node.default["chef-vault"]["databag_fallback"]=true
       end
 
       def node_load_completed(node, _expanded_run_list, _config)
