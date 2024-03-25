@@ -194,7 +194,7 @@ class Chef
         run_context
       end
 
-      #Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
+      # Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
       def set_databag_fallback
         node.default["chef-vault"]["databag_fallback"] = true
       end
