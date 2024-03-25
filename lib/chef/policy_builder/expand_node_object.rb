@@ -122,6 +122,7 @@ class Chef
       # === Returns
       # node<Chef::Node>:: The modified node object. node is modified in place.
       def build_node
+        puts "---------inside build-node--------------"
         # Allow user to override the environment of a node by specifying
         # a config parameter.
         if Chef::Config[:environment] && !Chef::Config[:environment].chomp.empty?
@@ -147,7 +148,8 @@ class Chef
 
         Chef::Log.info("Run List is [#{node.run_list}]")
         Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(", ")}]")
-
+        puts "---------inside build-node-------"
+        p "---------inside build-node-------"
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
         events.run_list_expanded(@run_list_expansion)
 

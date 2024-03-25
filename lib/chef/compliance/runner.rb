@@ -37,11 +37,14 @@ class Chef
       end
 
       def node=(node)
+        puts "---------inside runner.rb file-----"
         @node = node
         node.default["audit"] = Chef::Compliance::DEFAULT_ATTRIBUTES.merge(node.default["audit"])
+        # node.default["chef-vault"]["databag_fallback"]=true
       end
 
       def node_load_completed(node, _expanded_run_list, _config)
+        puts "---------inside runner.rb file-----"
         self.node = node
       end
 
