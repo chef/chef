@@ -132,6 +132,14 @@ class Chef
 
         node.consume_external_attrs(ohai_data, json_attribs)
 
+        puts "---------before databag_fallback set"
+        p node
+        # Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
+        set_databag_fallback
+
+        puts "---------after databag_fallback set"
+        p node
+
         setup_run_list_override
 
         expand_run_list
@@ -142,6 +150,9 @@ class Chef
         end
         Chef::Log.info("Run List is [#{run_list}]")
         Chef::Log.info("Run List expands to [#{run_list_with_versions_for_display(run_list).join(", ")}]")
+
+        puts "---------inside build-node-------"
+        p "---------inside build-node-------"
 
         events.node_load_completed(node, run_list_with_versions_for_display(run_list), Chef::Config)
         events.run_list_expanded(run_list_expansion_ish)
@@ -155,6 +166,12 @@ class Chef
       rescue Exception => e
         events.node_load_failed(node_name, e, Chef::Config)
         raise
+      end
+
+      def set_databag_fallback
+        puts "---------inside databag_fallback set"
+        p node
+        node.default["chef-vault"]["databag_fallback"] = true
       end
 
       # Synchronizes cookbooks and initializes the run context object for the
