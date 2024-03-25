@@ -34,9 +34,9 @@ if(-not($old_version -match "3.0")){
     Remove-Item $package_destination -Force;
 }
   
-Write-Output "Register Installed Ruby Version 3.0 With Uru"
+Write-Output "Register Installed Ruby Version 3.0.3 With Uru"
 Start-Process "uru_rt.exe" -ArgumentList 'admin add C:\ruby30\bin' -Wait
-uru 30
+uru 303
 if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
 ruby -v
 if (-not $?) { throw "Can't run Ruby. Is it installed?" }
