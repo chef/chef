@@ -19,10 +19,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 40ca2a902ff20905aaa36ca35b1701fba8812160
+  revision: 8a87f3b2b842abe80bc997de9da3e43696ea5c36
   branch: main
   specs:
-    omnibus-software (24.2.311)
+    omnibus-software (24.3.314)
       omnibus (>= 9.0.0)
 
 GIT
@@ -53,14 +53,13 @@ GEM
     artifactory (3.0.17)
     awesome_print (1.9.2)
     aws-eventstream (1.3.0)
-    aws-partitions (1.894.0)
-    aws-sdk-core (3.191.2)
+    aws-partitions (1.900.0)
+    aws-sdk-core (3.191.4)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.8)
-      base64
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.77.0)
+    aws-sdk-kms (1.78.0)
       aws-sdk-core (~> 3, >= 3.191.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.116.0)
@@ -72,7 +71,6 @@ GEM
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.8.0)
       aws-eventstream (~> 1, >= 1.0.2)
-    base64 (0.2.0)
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
@@ -386,7 +384,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.3.0)
+    thor (1.3.1)
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
