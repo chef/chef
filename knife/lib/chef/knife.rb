@@ -423,7 +423,8 @@ class Chef
                                  when 2
                                    :debug
                                  when nil
-                                   Chef::Config[:log_level] || :warn
+                                   # The default log_level is auto and that is not a valid log_level.
+                                   Chef::Config[:log_level] == :auto ? :warn : Chef::Config[:log_level]
                                  else
                                    :trace
                                  end
