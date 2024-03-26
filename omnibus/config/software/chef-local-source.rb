@@ -104,6 +104,9 @@ build do
     copy "distro/templates/powershell/chef/*", "#{install_dir}/modules/chef"
   end
 
+  puts "GEM ENV"
+  puts `gem env`
+
   block do
     # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "inspec-core-bin", without: excluded_groups, env: env
