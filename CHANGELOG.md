@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.132 -->
-## [v17.10.132](https://github.com/chef/chef/tree/v17.10.132) (2024-03-25)
+<!-- latest_release 17.10.133 -->
+## [v17.10.133](https://github.com/chef/chef/tree/v17.10.133) (2024-03-26)
 
 #### Merged Pull Requests
-- remove macos10.15 support [#14292](https://github.com/chef/chef/pull/14292) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus-software from `40ca2a9` to `8a87f3b` in /omnibus [#14296](https://github.com/chef/chef/pull/14296) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `40ca2a9` to `8a87f3b` in /omnibus [#14296](https://github.com/chef/chef/pull/14296) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.133 -->
 - remove macos10.15 support [#14292](https://github.com/chef/chef/pull/14292) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.132 -->
 - Amending URU to be more version specific [#14293](https://github.com/chef/chef/pull/14293) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.131 -->
 - Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14269](https://github.com/chef/chef/pull/14269) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.130 -->
