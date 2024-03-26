@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.26 -->
-## [v18.4.26](https://github.com/chef/chef/tree/v18.4.26) (2024-03-26)
+<!-- latest_release 18.4.27 -->
+## [v18.4.27](https://github.com/chef/chef/tree/v18.4.27) (2024-03-26)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `86649fa` to `8a87f3b` in /omnibus [#14295](https://github.com/chef/chef/pull/14295) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Removing OSX 10.15 support per request from Build Services [#14291](https://github.com/chef/chef/pull/14291) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Removing OSX 10.15 support per request from Build Services [#14291](https://github.com/chef/chef/pull/14291) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.27 -->
 - Bump omnibus-software from `86649fa` to `8a87f3b` in /omnibus [#14295](https://github.com/chef/chef/pull/14295) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.26 -->
 - Cleaning up the installer [#14298](https://github.com/chef/chef/pull/14298) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.25 -->
 - fix kitchen-tests [#14280](https://github.com/chef/chef/pull/14280) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.24 -->
