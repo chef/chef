@@ -127,6 +127,7 @@ class Chef
           remote_file ::File.join(Chef::Config[:file_cache_path], "hab-install.sh") do
             source new_resource.install_url
             sensitive true
+            mode 0755
           end
 
           execute "installing with hab-install.sh" do
@@ -235,7 +236,7 @@ class Chef
         end
 
         def hab_command
-          cmd = "bash #{Chef::Config[:file_cache_path]}/hab-install.sh"
+          cmd = "#{Chef::Config[:file_cache_path]}/hab-install.sh"
           cmd << " -v #{new_resource.hab_version} " if new_resource.hab_version
           cmd << " -t x86_64-linux-kernel2" if node["kernel"]["release"].to_i < 3
           cmd
