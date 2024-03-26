@@ -80,6 +80,8 @@ build do
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
+  command "rake install:local", env: env
+
   gemspec_name = if windows?
                    # Chef18 is built with ruby3.1 so platform name is changed.
                    RUBY_PLATFORM == "x64-mingw-ucrt" ? "chef-universal-mingw-ucrt.gemspec" : "chef-universal-mingw32.gemspec"
@@ -93,18 +95,15 @@ build do
 
   # ensure we put the gems in the right place to get picked up by the publish scripts
   delete "pkg"
-  puts "********* checking permissions *************"
-  puts `ls -l /var/cache/omnibus/chef/src/chef/chef/chef*.gem`
   mkdir "pkg"
-  puts `whoami`
   copy "chef*.gem", "pkg"
+
   # Always deploy the powershell modules in the correct place.
   if windows?
     mkdir "#{install_dir}/modules/chef"
     copy "distro/templates/powershell/chef/*", "#{install_dir}/modules/chef"
   end
-  puts "GEM ENV"
-  puts `gem env`
+
   block do
     # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "inspec-core-bin", without: excluded_groups, env: env
