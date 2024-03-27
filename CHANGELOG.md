@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.133 -->
-## [v17.10.133](https://github.com/chef/chef/tree/v17.10.133) (2024-03-26)
+<!-- latest_release 17.10.134 -->
+## [v17.10.134](https://github.com/chef/chef/tree/v17.10.134) (2024-03-27)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `40ca2a9` to `8a87f3b` in /omnibus [#14296](https://github.com/chef/chef/pull/14296) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Pulling in updated Omnibus and Omnibus-Software [#14300](https://github.com/chef/chef/pull/14300) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pulling in updated Omnibus and Omnibus-Software [#14300](https://github.com/chef/chef/pull/14300) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.134 -->
 - Bump omnibus-software from `40ca2a9` to `8a87f3b` in /omnibus [#14296](https://github.com/chef/chef/pull/14296) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 17.10.133 -->
 - remove macos10.15 support [#14292](https://github.com/chef/chef/pull/14292) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.132 -->
 - Amending URU to be more version specific [#14293](https://github.com/chef/chef/pull/14293) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.131 -->
