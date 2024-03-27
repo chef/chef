@@ -133,7 +133,7 @@ class Chef
         node.consume_external_attrs(ohai_data, json_attribs)
 
         # Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
-        set_databag_fallback
+        set_databag_fallback if ChefUtils.kitchen?(node)
 
         setup_run_list_override
 
