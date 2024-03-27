@@ -159,7 +159,7 @@ class Chef
       def set_databag_fallback
         puts "---------inside databag_fallback set"
         p node
-        node.default["chef-vault"]["databag_fallback"] = true
+        # node.default["chef-vault"]["databag_fallback"] = true
       end
 
       # Expands the node's run list. Stores the run_list_expansion object for later use.
