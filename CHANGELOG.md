@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.28 -->
-## [v18.4.28](https://github.com/chef/chef/tree/v18.4.28) (2024-03-26)
+<!-- latest_release 18.4.29 -->
+## [v18.4.29](https://github.com/chef/chef/tree/v18.4.29) (2024-03-27)
 
 #### Merged Pull Requests
-- Add examples to snap_package resource. [#14299](https://github.com/chef/chef/pull/14299) ([williamtheaker](https://github.com/williamtheaker))
+- Fixed the issue with log level on the chef config [#14294](https://github.com/chef/chef/pull/14294) ([ashiqueps](https://github.com/ashiqueps))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixed the issue with log level on the chef config [#14294](https://github.com/chef/chef/pull/14294) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.4.29 -->
 - Add examples to snap_package resource. [#14299](https://github.com/chef/chef/pull/14299) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.28 -->
 - Removing OSX 10.15 support per request from Build Services [#14291](https://github.com/chef/chef/pull/14291) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.27 -->
 - Bump omnibus-software from `86649fa` to `8a87f3b` in /omnibus [#14295](https://github.com/chef/chef/pull/14295) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.26 -->
