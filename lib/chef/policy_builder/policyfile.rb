@@ -133,7 +133,7 @@ class Chef
         node.consume_external_attrs(ohai_data, json_attribs)
 
         # Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
-        set_databag_fallback if ChefUtils.kitchen?(node)
+        set_databag_fallback
 
         setup_run_list_override
 
@@ -196,7 +196,7 @@ class Chef
 
       # Preserve the fall back to loading an unencrypted data bag item if the item we're trying to load isn't actually a vault item.
       def set_databag_fallback
-        node.default["chef-vault"]["databag_fallback"] = true
+        node.default["chef-vault"]["databag_fallback"] = ChefUtils.kitchen?(node)
       end
 
       # Sets `run_list` on the node from the policy, sets `roles` and `recipes`
