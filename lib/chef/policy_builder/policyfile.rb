@@ -171,7 +171,9 @@ class Chef
       def set_databag_fallback
         puts "---------inside databag_fallback set"
         p node
-        node.default["chef-vault"]["databag_fallback"] = true
+        puts "-----kitchen_check------#{ENV.key?("TEST_KITCHEN")}"
+        puts "------kitchen-check----#{ChefUtils.kitchen?(node)}"
+        # node.default["chef-vault"]["databag_fallback"] = true
       end
 
       # Synchronizes cookbooks and initializes the run context object for the
