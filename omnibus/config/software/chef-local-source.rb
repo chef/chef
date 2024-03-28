@@ -75,8 +75,8 @@ build do
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
-  bundle "install --without #{bundle_excludes.join(" ")}", env: env
-
+  bundle "config set --local without docgen chefstyle development test", env: env
+  bundle "install --jobs=1 "
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
@@ -95,15 +95,18 @@ build do
 
   # ensure we put the gems in the right place to get picked up by the publish scripts
   delete "pkg"
+  puts "********* checking permissions *************"
+  puts `ls -l /var/cache/omnibus/chef/src/chef/chef/chef*.gem`
   mkdir "pkg"
+  puts `whoami`
   copy "chef*.gem", "pkg"
-
   # Always deploy the powershell modules in the correct place.
   if windows?
     mkdir "#{install_dir}/modules/chef"
     copy "distro/templates/powershell/chef/*", "#{install_dir}/modules/chef"
   end
-
+  puts "GEM ENV"
+  puts `gem env`
   block do
     # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "inspec-core-bin", without: excluded_groups, env: env
