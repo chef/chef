@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.136 -->
-## [v17.10.136](https://github.com/chef/chef/tree/v17.10.136) (2024-03-28)
+<!-- latest_release 17.10.137 -->
+## [v17.10.137](https://github.com/chef/chef/tree/v17.10.137) (2024-03-28)
 
 #### Merged Pull Requests
-- Updating gems [#14303](https://github.com/chef/chef/pull/14303) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Freebsd versions [#14307](https://github.com/chef/chef/pull/14307) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating Freebsd versions [#14307](https://github.com/chef/chef/pull/14307) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.137 -->
 - Updating gems [#14303](https://github.com/chef/chef/pull/14303) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.136 -->
 - Updating omnibus-software [#14304](https://github.com/chef/chef/pull/14304) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.135 -->
 - Pulling in updated Omnibus and Omnibus-Software [#14300](https://github.com/chef/chef/pull/14300) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.134 -->
