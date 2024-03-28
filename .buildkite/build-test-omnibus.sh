@@ -167,7 +167,7 @@ then
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ $build_key == "mac_os_x-10_15-x86_64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ]
     then
       echo "      remote-host: buildkite-omnibus-$platform"
     fi
@@ -296,7 +296,7 @@ then
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
-    if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
     then
       echo "    omnibus: tester"
       echo "    omnibus-toolchain: \"*\""
