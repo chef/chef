@@ -19,10 +19,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 763ae8b0f5c60b90ee0451b61d4dca2022229315
+  revision: 4ea194c46d42899f95db963f38abb9347a3d4731
   branch: main
   specs:
-    omnibus-software (24.3.314)
+    omnibus-software (24.3.315)
       omnibus (>= 9.0.0)
 
 GIT
@@ -202,6 +202,8 @@ GEM
       faraday (~> 1.0)
     ffi (1.16.3)
     ffi (1.16.3-x64-mingw-ucrt)
+    ffi (1.16.3-x64-mingw32)
+    ffi (1.16.3-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
