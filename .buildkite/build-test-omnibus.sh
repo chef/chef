@@ -174,7 +174,7 @@ then
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     if [ $build_key == "mac_os_x-11-arm64" ]
     then
-      echo "  concurrency: 1"
+      echo "  concurrency: 2"
       echo "  concurrency_group: omnibus-$build_key/build/chef"
     fi
   done
@@ -312,7 +312,7 @@ then
     fi
     if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
     then
-      echo "  concurrency: 1"
+      echo "  concurrency: 2"
       echo "  concurrency_group: omnibus-$test_key/test/chef"
     fi
     if [ $test_key == "freebsd-13-amd64" ]
