@@ -35,10 +35,10 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
-  s.add_dependency "ohai", "~> 17.0"
+  s.add_dependency "ohai", "~> 17.9"
   s.add_dependency "inspec-core", "~> 5.22.40"
 
-  s.add_dependency "ffi", "~> 1.15.5"
+  s.add_dependency "ffi", "~> 1.16"
   s.add_dependency "ffi-yajl", ">= 2.2", "< 4.0"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
