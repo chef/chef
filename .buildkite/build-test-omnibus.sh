@@ -174,7 +174,8 @@ then
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     if [ $build_key == "mac_os_x-11-arm64" ]
     then
-      echo "      remote-host: buildkite-omnibus-$platform"
+      echo "  concurrency: 2"
+      echo "  concurrency_group: omnibus-$build_key/build/chef"
     fi
   done
 
