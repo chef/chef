@@ -31,9 +31,9 @@ class Chef
 
         ```ruby
         macos_pkg 'osquery' do
-          checksum   'a01d1f7da016f1e6bed54955e97982d491b7e55311433ff0fc985269160633af'
+          checksum   '7d0f97d0d4b463fcf03abedbf58939c900f310c214fd2fa3c28b1a848dcbffd9'
           package_id 'io.osquery.agent'
-          source     'https://pkg.osquery.io/darwin/osquery-5.10.2.pkg'
+          source     'https://pkg.osquery.io/darwin/osquery-5.11.0.pkg'
           action     :install
         end
         ```
