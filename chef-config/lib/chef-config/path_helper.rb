@@ -248,7 +248,7 @@ module ChefConfig
       paths << ENV[@@per_tool_home_environment] if defined?(@@per_tool_home_environment) && @@per_tool_home_environment && ENV[@@per_tool_home_environment]
       paths << ENV["CHEF_HOME"] if ENV["CHEF_HOME"]
       if windows
-        # By default, Ruby uses the the following environment variables to determine Dir.home:
+        # By default, Ruby uses the following environment variables to determine Dir.home:
         # HOME
         # HOMEDRIVE HOMEPATH
         # USERPROFILE

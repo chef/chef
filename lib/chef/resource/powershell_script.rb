@@ -21,7 +21,7 @@ class Chef
   class Resource
     class PowershellScript < Chef::Resource::WindowsScript
 
-      set_guard_inherited_attributes(:interpreter)
+      set_guard_inherited_attributes(:interpreter, :use_inline_powershell)
 
       provides :powershell_script, os: "windows"
 
@@ -38,6 +38,10 @@ class Chef
         default: "powershell",
         equal_to: %w{powershell pwsh},
         description: "The interpreter type, `powershell` or `pwsh` (PowerShell Core)"
+
+      property :use_inline_powershell, [true, false],
+        default: false,
+        description: "Use inline powershell.dll rather than shelling out - this is faster, but could have different semantics to the traditional method.  In particular, it does not allow for streaming output, nor does it allow for passing custom parameters to the interpreter"
 
       property :convert_boolean_return, [true, false],
         default: false,

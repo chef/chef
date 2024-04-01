@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 4fef36786ead96e7f2f23e6f01f09efb71894992
+  revision: 8a87f3b2b842abe80bc997de9da3e43696ea5c36
   branch: main
   specs:
-    omnibus-software (23.10.302)
+    omnibus-software (24.3.314)
       omnibus (>= 9.0.0)
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 82dae896a066542f1b66dc866186f856f37e518e
+  revision: 5c0122b185a65af3e93856cba6c394a68343818a
   branch: main
   specs:
-    omnibus (9.0.23)
+    omnibus (9.0.25)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -29,19 +29,19 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.5)
+    addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    artifactory (3.0.15)
+    artifactory (3.0.17)
     awesome_print (1.9.2)
-    aws-eventstream (1.2.0)
-    aws-partitions (1.837.0)
-    aws-sdk-core (3.185.1)
-      aws-eventstream (~> 1, >= 1.0.2)
+    aws-eventstream (1.3.0)
+    aws-partitions (1.900.0)
+    aws-sdk-core (3.191.4)
+      aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
-      aws-sigv4 (~> 1.5)
+      aws-sigv4 (~> 1.8)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.72.0)
-      aws-sdk-core (~> 3, >= 3.184.0)
+    aws-sdk-kms (1.78.0)
+      aws-sdk-core (~> 3, >= 3.191.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
@@ -50,7 +50,7 @@ GEM
     aws-sdk-secretsmanager (1.73.0)
       aws-sdk-core (~> 3, >= 3.165.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.6.0)
+    aws-sigv4 (1.8.0)
       aws-eventstream (~> 1, >= 1.0.2)
     bcrypt_pbkdf (1.1.0)
     berkshelf (8.0.9)
@@ -66,6 +66,7 @@ GEM
       retryable (>= 2.0, < 4.0)
       solve (~> 4.0)
       thor (>= 0.20)
+    bigdecimal (3.1.6)
     builder (3.2.4)
     chef (18.1.29)
       addressable
@@ -174,7 +175,7 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     coderay (1.1.3)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.3)
     contracts (0.16.1)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
@@ -192,6 +193,7 @@ GEM
       faraday (>= 1, < 3)
     faraday-net_http (3.0.2)
     ffi (1.16.3)
+    ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -237,8 +239,8 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.6.3)
-    kitchen-vagrant (1.14.1)
+    json (2.7.1)
+    kitchen-vagrant (2.0.0)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -246,7 +248,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.6)
+    license_scout (1.3.7)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -267,7 +269,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-install (3.12.27)
+    mixlib-install (3.12.30)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -287,7 +289,7 @@ GEM
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
-    multipart-post (2.3.0)
+    multipart-post (2.4.0)
     net-ftp (0.2.0)
       net-protocol
       time
@@ -297,11 +299,12 @@ GEM
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
-    net-ssh (7.2.0)
+    net-ssh (7.2.1)
     net-ssh-gateway (2.0.0)
       net-ssh (>= 4.0.0)
     netrc (0.11.0)
-    nori (2.6.0)
+    nori (2.7.0)
+      bigdecimal
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
@@ -328,13 +331,13 @@ GEM
       multipart-post (>= 2.0.0)
       rainbow
       zhexdump (>= 0.0.2)
-    plist (3.7.0)
+    plist (3.7.1)
     proxifier2 (1.1.0)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (5.0.3)
-    rack (2.2.6.4)
+    public_suffix (5.0.4)
+    rack (2.2.8.1)
     rainbow (3.1.1)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
@@ -404,14 +407,14 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.2.2)
+    thor (1.3.1)
     time (0.2.2)
       date
     timeout (0.3.2)
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.10.8)
+    train-core (3.11.0)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -439,7 +442,7 @@ GEM
       tty-cursor (~> 0.7)
       tty-screen (~> 0.8)
       wisper (~> 2.0)
-    tty-screen (0.8.1)
+    tty-screen (0.8.2)
     tty-table (0.12.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
@@ -447,7 +450,8 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
-    unicode-display_width (2.4.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
+    unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
     vault (0.17.0)

@@ -11,7 +11,7 @@ fi
 FILTER="${OMNIBUS_FILTER:=*}"
 
 # array of all container platforms in the format test-platform:build-platform
-container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-6:centos-6" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "sles-15:sles-15" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9")
+container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-6:centos-6" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "sles-15:sles-15" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9" "amazon-2023:amazon-2023" "amazon-2023-arm:amazon-2023-arm")
 
 # add rest of windows platforms to tests, if not on chef-oss org
 if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
@@ -20,7 +20,7 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
@@ -91,11 +91,7 @@ then
       fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      if [[ $platform == *"arm"* ]]; then
-        echo "      image: chefes/omnibus-toolchain-${platform%????}:$OMNIBUS_TOOLCHAIN_VERSION"
-      else
-        echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION"
-      fi
+      echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "      environment:"
@@ -171,16 +167,16 @@ then
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ $build_key == "mac_os_x-10_15-x86_64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ]
     then
       echo "      remote-host: buildkite-omnibus-$platform"
     fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
-    if [ $build_key == "mac_os_x-11-arm64" ]
-    then
-      echo "  concurrency: 1"
-      echo "  concurrency_group: omnibus-$build_key/build/chef"
-    fi
+    # if [ $build_key == "mac_os_x-11-arm64" ]
+    # then
+    #   echo "  concurrency: 2"
+    #   echo "  concurrency_group: omnibus-$build_key/build/chef"
+    # fi
   done
 
   if  [[ " ${esoteric_build_platforms[*]} " =~ "mac_os_x" ]]
@@ -242,7 +238,7 @@ then
       fi      
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
-      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
+      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
       echo "      privileged: true"
       echo "      propagate-environment: true"
       echo "  commands:"
@@ -300,7 +296,7 @@ then
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
-    if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
     then
       echo "    omnibus: tester"
       echo "    omnibus-toolchain: \"*\""
@@ -314,11 +310,11 @@ then
     then
       echo "      remote-host: buildkite-omnibus-${platform%:*}"
     fi
-    if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
-    then
-      echo "  concurrency: 1"
-      echo "  concurrency_group: omnibus-$test_key/test/chef"
-    fi
+    # if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
+    # then
+    #   echo "  concurrency: 2"
+    #   echo "  concurrency_group: omnibus-$test_key/test/chef"
+    # fi
     if [ $test_key == "freebsd-13-amd64" ]
     then
       echo "  soft_fail: true"

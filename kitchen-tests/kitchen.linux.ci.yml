@@ -1,0 +1,80 @@
+---
+driver:
+  name: vagrant
+  box_auto_update: true
+  box_auto_prune: true
+
+provisioner:
+  name: chef_infra
+  product_name: chef
+  product_version: latest
+  channel: current
+  retry_on_exit_code:
+    - 35 # 35 is the exit code signaling that the node is rebooting
+  client_rb:
+    diff_disabled: true
+    always_dump_stacktrace: true
+  deprecations_as_errors: true
+  chef_license: accept-no-persist
+  slow_resource_report: true
+
+lifecycle:
+  pre_converge:
+    - remote: sudo apt-get update && sudo apt-get install -y curl
+      includes:
+        - ubuntu-18.04
+    - remote: sudo dnf install -y openssl cronie
+      includes:
+        - fedora-latest
+    - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
+    - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
+    - remote: echo "Chef container's Chef / Ohai release:"
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
+    - remote: echo "Installing appbundler and appbundle-updater gems:"
+    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: sudo yum install centos-release-scl
+      includes:
+        - centos-7
+    - remote: scl enable devtoolset-7 'sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
+      includes:
+        - centos-7
+        - oraclelinux-7
+    - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+      excludes:
+        - centos-7
+        - oraclelinux-7
+    - remote: echo "Installed Chef / Ohai release:"
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
+
+verifier:
+  name: inspec
+  format: progress
+
+platforms:
+  - name: almalinux-8
+  - name: almalinux-9
+  - name: amazonlinux-2
+  - name: amazonlinux-2023
+  - name: centos-7
+  - name: debian-12
+  - name: debian-11
+  - name: fedora-latest
+  - name: freebsd-13
+  - name: freebsd-14
+  - name: opensuse-leap-15
+  - name: oracle-7
+  - name: oracle-8
+  - name: oracle-9
+  - name: rockylinux-8
+  - name: rockylinux-9
+  - name: ubuntu-18.04
+  - name: ubuntu-20.04
+  - name: ubuntu-22.04
+
+suites:
+  - name: end-to-end
+    run_list:
+      - recipe[end_to_end::default]

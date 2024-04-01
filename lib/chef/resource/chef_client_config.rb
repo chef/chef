@@ -198,7 +198,8 @@ class Chef
         introduced: "17.3"
 
       property :minimal_ohai, [true, false],
-        description: "Run a minimal set of Ohai plugins providing data necessary for the execution of #{ChefUtils::Dist::Infra::PRODUCT}'s built-in resources. Setting this to true will skip many large and time consuming data sets such as `cloud` or `packages`. Setting this this to true may break cookbooks that assume all Ohai data will be present."
+        description: "Run a minimal set of Ohai plugins providing data necessary for the execution of #{ChefUtils::Dist::Infra::PRODUCT}'s built-in resources. Setting this to true will skip many large and time consuming data sets such as `cloud` or `packages`. Setting this to true may break cookbooks that assume all Ohai data will be present.",
+        default: false
 
       property :start_handlers, Array,
         description: %q(An array of hashes that contain a report handler class and the arguments to pass to that class on initialization. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),

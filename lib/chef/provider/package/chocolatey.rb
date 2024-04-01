@@ -383,10 +383,12 @@ class Chef
         #
         # @return [Hash] name-to-version mapping of installed packages
         def installed_packages
-          if new_resource.use_choco_list == false || !Chef::Config[:always_use_choco_list]
-            installed_packages_via_choco
-          else
+          # Logic here must be either use_choco_list is false _and_ always_use_choco_list is
+          # falsy, since the global overrides the local
+          if new_resource.use_choco_list == false && !Chef::Config[:always_use_choco_list]
             installed_packages_via_disk
+          else
+            installed_packages_via_choco
           end
         end
 
@@ -413,8 +415,8 @@ class Chef
             # that contains all possible package folders, and so we push our
             # guess to the front as an optimization.
             target_dirs << targets.first.downcase if targets.length == 1
-            if targets.downcase is_a?(String)
-              target_dirs << targets
+            if targets.is_a?(String)
+              target_dirs << targets.downcase
             end
             target_dirs += get_local_pkg_dirs(choco_lib_path)
             fetch_package_versions(choco_lib_path, target_dirs, targets)
@@ -465,6 +467,7 @@ class Chef
         # Fetch the local package versions from chocolatey
         def fetch_package_versions(base_dir, target_dirs, targets)
           pkg_versions = {}
+          targets = [targets] if targets.is_a?(String)
           target_dirs.each do |dir|
             pkg_versions.merge!(get_pkg_data(::File.join(base_dir, dir)))
             # return early if we found the single package version we were looking for

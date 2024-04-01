@@ -2,12 +2,12 @@ $:.unshift(File.dirname(__FILE__) + "/lib")
 vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir__)
 
 if File.exist?(vs_path)
-  # this is the moral equivalent of a require_relative since bundler makes require_relative here fail hard
-  eval(IO.read(vs_path))
-else
-  # if the path doesn't exist then we're just in the wild gem and not in the git repo
-  require "chef-utils/version_string"
+  # include chef-utils/lib in the path if we're inside of chef vs. chef-utils gem
+  # but add it to the end of the search path
+  $: << (File.dirname(__FILE__) + "/chef-utils/lib")
 end
+# if the path doesn't exist then we're just in the wild gem and not in the git repo
+require "chef-utils/version_string"
 require "chef/version"
 
 Gem::Specification.new do |s|
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 18.0"
   s.add_dependency "inspec-core", ">= 5", "< 6"
 
-  s.add_dependency "ffi", "~> 1.15.5"
+  s.add_dependency "ffi", ">= 1.15.5"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource

@@ -1,77 +1,128 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.3.58 -->
-## [v18.3.58](https://github.com/chef/chef/tree/v18.3.58) (2023-11-21)
+<!-- latest_release 18.4.32 -->
+## [v18.4.32](https://github.com/chef/chef/tree/v18.4.32) (2024-04-01)
 
 #### Merged Pull Requests
-- Add resource for installing .pkg files on macOS [#13685](https://github.com/chef/chef/pull/13685) ([williamtheaker](https://github.com/williamtheaker))
+- Added the databag_fallback attribute [#14290](https://github.com/chef/chef/pull/14290) ([nikhil2611](https://github.com/nikhil2611))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.3.0 -->
+<!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Add resource for installing .pkg files on macOS [#13685](https://github.com/chef/chef/pull/13685) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.3.58 -->
-- bundle update --conservative inspec-core inspec-core-bin [#14086](https://github.com/chef/chef/pull/14086) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.57 -->
-- Correct pr_authr [#14085](https://github.com/chef/chef/pull/14085) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.56 -->
-- Do not use untaint [#14077](https://github.com/chef/chef/pull/14077) ([chouetz](https://github.com/chouetz)) <!-- 18.3.55 -->
-- Updating for a new fips tester [#14065](https://github.com/chef/chef/pull/14065) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.54 -->
-- feat(ulimits): additional ulimit options [#13394](https://github.com/chef/chef/pull/13394) ([chrisminton](https://github.com/chrisminton)) <!-- 18.3.53 -->
-- Prevent inspec 6 from being used yet [#14076](https://github.com/chef/chef/pull/14076) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.52 -->
-- unf_ext-0.0.8.2 lock for no c++20 flag [#14071](https://github.com/chef/chef/pull/14071) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.51 -->
-- Add missing `description` to windows_service load_current_resource for idempotent check to be successful [#14064](https://github.com/chef/chef/pull/14064) ([jakauppila](https://github.com/jakauppila)) <!-- 18.3.50 -->
-- Enable state tracking on mutating Array operations [#13996](https://github.com/chef/chef/pull/13996) ([Annih](https://github.com/Annih)) <!-- 18.3.49 -->
-- Add Danger CI [#13976](https://github.com/chef/chef/pull/13976) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.48 -->
-- Optimize chocolatey when doing large numbers of operations, by batching and caching [#13972](https://github.com/chef/chef/pull/13972) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.3.47 -->
-- Adding a chocolatey installer [#14043](https://github.com/chef/chef/pull/14043) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.46 -->
-- Minor text fixes for sudo resource [#14049](https://github.com/chef/chef/pull/14049) ([IanMadd](https://github.com/IanMadd)) <!-- 18.3.45 -->
-- Add platform  sles-x86-64 [#14044](https://github.com/chef/chef/pull/14044) ([poorndm](https://github.com/poorndm)) <!-- 18.3.44 -->
-- Revert &quot;Creating a choco installer to match other resources&quot; [#14040](https://github.com/chef/chef/pull/14040) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.43 -->
-- Revert &quot;Put chefstyle gem back in chefstyle group&quot; [#14038](https://github.com/chef/chef/pull/14038) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.42 -->
-- Creating a choco installer to match other resources [#14022](https://github.com/chef/chef/pull/14022) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.41 -->
-- Rocky Pkg - signing [#13997](https://github.com/chef/chef/pull/13997) ([poorndm](https://github.com/poorndm)) <!-- 18.3.40 -->
-- Bump omnibus-software from `e3e8437` to `4fef367` in /omnibus [#14030](https://github.com/chef/chef/pull/14030) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.3.39 -->
-- Update command aliases documentation [#14024](https://github.com/chef/chef/pull/14024) ([hunter86bg](https://github.com/hunter86bg)) <!-- 18.3.38 -->
-- Put chefstyle gem back in chefstyle group [#13927](https://github.com/chef/chef/pull/13927) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.37 -->
-- Fix invalid CPUQuota value [#14011](https://github.com/chef/chef/pull/14011) ([blackknight36](https://github.com/blackknight36)) <!-- 18.3.36 -->
-- Adding rockylinux-9 [#13898](https://github.com/chef/chef/pull/13898) ([muthuja](https://github.com/muthuja)) <!-- 18.3.35 -->
-- Fix OpenSUSE tests [#14027](https://github.com/chef/chef/pull/14027) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.34 -->
-- Bump omnibus-software from `c44dea9` to `e3e8437` in /omnibus [#14013](https://github.com/chef/chef/pull/14013) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.3.33 -->
-- Update test crts for ssl_policies_spec.rb [#14025](https://github.com/chef/chef/pull/14025) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.32 -->
-- Revert &quot;Update sudoer.erb (#14015)&quot; [#14021](https://github.com/chef/chef/pull/14021) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.31 -->
-- Fix sudoer.erb [#14015](https://github.com/chef/chef/pull/14015) ([hunter86bg](https://github.com/hunter86bg)) <!-- 18.3.30 -->
-- Fix validation on locale-gen to account for the fact that Windows install does not have it on the path. [#14014](https://github.com/chef/chef/pull/14014) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.29 -->
-- Move untag to the node to match tag [#13994](https://github.com/chef/chef/pull/13994) ([aknarts](https://github.com/aknarts)) <!-- 18.3.28 -->
-- Adding self-hosted FIPS support [#14007](https://github.com/chef/chef/pull/14007) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.27 -->
-- Updated the attribute splitting logic to use field_separator [#13956](https://github.com/chef/chef/pull/13956) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.3.26 -->
-- Add documentation review changes to apt_package resource [#13991](https://github.com/chef/chef/pull/13991) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.25 -->
-- Disable SonarQube wholesale [#13985](https://github.com/chef/chef/pull/13985) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.24 -->
-- Add hook to service resource for non-enable-able services [#13959](https://github.com/chef/chef/pull/13959) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.23 -->
-- Attempt to make Gemfile.lock stable [#13978](https://github.com/chef/chef/pull/13978) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.22 -->
-- Don&#39;t try to run SonarQube on forked-based PRs [#13983](https://github.com/chef/chef/pull/13983) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.21 -->
-- Chef::CookbookSynchronizer#remove_deleted_files: Use Array instead of Set [#13941](https://github.com/chef/chef/pull/13941) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.20 -->
-- [WIP][Chef-18] Github actions tests to test Infra Client with FIPS enabled on windows [#13892](https://github.com/chef/chef/pull/13892) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.19 -->
-- Fix contribution documentation [#13963](https://github.com/chef/chef/pull/13963) ([jaymzh](https://github.com/jaymzh)) <!-- 18.3.18 -->
-- Update README.md [#13961](https://github.com/chef/chef/pull/13961) ([smcgillick](https://github.com/smcgillick)) <!-- 18.3.17 -->
-- Update gem update protocols [#13962](https://github.com/chef/chef/pull/13962) ([steph-hickman9](https://github.com/steph-hickman9)) <!-- 18.3.16 -->
-- Update slack channel name for contact to #chef-infra-dev [#13965](https://github.com/chef/chef/pull/13965) ([jstrauss](https://github.com/jstrauss)) <!-- 18.3.15 -->
-- Chef::Log.debug the puts debugs [#13970](https://github.com/chef/chef/pull/13970) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.14 -->
-- Updating test to be RFC2119 compliant [#13968](https://github.com/chef/chef/pull/13968) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.13 -->
-- Add new boolean property anchor_package_regex to resource apt_package resource [#13873](https://github.com/chef/chef/pull/13873) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.12 -->
-- FFI versions through 1.16.2 have a dlopen issue with macOS. Pinning to ~&gt; 1.15.5 for now [#13964](https://github.com/chef/chef/pull/13964) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.11 -->
-- Fix the latin-1 hex value for ü to \xFC [#13917](https://github.com/chef/chef/pull/13917) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.3.10 -->
-- chocolatey: fix regression in calling `choco --version` [#13935](https://github.com/chef/chef/pull/13935) ([stanhu](https://github.com/stanhu)) <!-- 18.3.9 -->
-- fix homebrew path when which() returns false [#13937](https://github.com/chef/chef/pull/13937) ([Stromweld](https://github.com/Stromweld)) <!-- 18.3.8 -->
-- Correct some UI text [#13921](https://github.com/chef/chef/pull/13921) ([IanMadd](https://github.com/IanMadd)) <!-- 18.3.7 -->
-- adding the built in ruby gem to build the gems and push them to artif… [#13930](https://github.com/chef/chef/pull/13930) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.3.6 -->
-- Use constant for ChefFS::PathUtils regexp_path_separator [#13933](https://github.com/chef/chef/pull/13933) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.5 -->
-- Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.3.1 -->
-- Removing redundant ruby setup from kitchen tests [#13895](https://github.com/chef/chef/pull/13895) ([neha-p6](https://github.com/neha-p6)) <!-- 18.3.2 -->
-- Correcting sensitive items being written out [#13897](https://github.com/chef/chef/pull/13897) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.3.4 -->
+- Added the databag_fallback attribute [#14290](https://github.com/chef/chef/pull/14290) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.4.32 -->
+- Sean simmons progress/chef 9252 [#14310](https://github.com/chef/chef/pull/14310) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.4.31 -->
+- [Immutablize#convert_value] reduce number of class comparisons [#14234](https://github.com/chef/chef/pull/14234) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.30 -->
+- Fixed the issue with log level on the chef config [#14294](https://github.com/chef/chef/pull/14294) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.4.29 -->
+- Add examples to snap_package resource. [#14299](https://github.com/chef/chef/pull/14299) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.28 -->
+- Removing OSX 10.15 support per request from Build Services [#14291](https://github.com/chef/chef/pull/14291) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.27 -->
+- Bump omnibus-software from `86649fa` to `8a87f3b` in /omnibus [#14295](https://github.com/chef/chef/pull/14295) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.26 -->
+- Cleaning up the installer [#14298](https://github.com/chef/chef/pull/14298) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.25 -->
+- fix kitchen-tests [#14280](https://github.com/chef/chef/pull/14280) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.24 -->
+- Updating the dev docs for releasing Chef [#14285](https://github.com/chef/chef/pull/14285) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.23 -->
+- add umask to chef_client_systemd_timer [#14238](https://github.com/chef/chef/pull/14238) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.13 -->
+- Safeguard for undefined and fix reference to CHEF_FOUNDATION_VERSION [#14252](https://github.com/chef/chef/pull/14252) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.14 -->
+- Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.15 -->
+- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.16 -->
+- Fix requiring of chef-utils/version_string. [#14256](https://github.com/chef/chef/pull/14256) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.17 -->
+- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14264](https://github.com/chef/chef/pull/14264) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.18 -->
+- Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.19 -->
+- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair)) <!-- 18.4.20 -->
+- correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.21 -->
+- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.22 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.4.12](https://github.com/chef/chef/tree/v18.4.12) (2024-03-14)
+
+#### Merged Pull Requests
+- Removing deprecated attributes [#14186](https://github.com/chef/chef/pull/14186) ([johnmccrae](https://github.com/johnmccrae))
+- Unbound ffi upgrades and bundle update --conservative [#14199](https://github.com/chef/chef/pull/14199) ([tpowell-progress](https://github.com/tpowell-progress))
+- bundle update --conservative inspec-core inspec-core-bin [#14200](https://github.com/chef/chef/pull/14200) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `f50a2ad` to `86649fa` in /omnibus [#14189](https://github.com/chef/chef/pull/14189) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump unf ext back [#14115](https://github.com/chef/chef/pull/14115) ([tpowell-progress](https://github.com/tpowell-progress))
+- Chef 2041 infra client release amazon 2023/muthuja [#14228](https://github.com/chef/chef/pull/14228) ([muthuja](https://github.com/muthuja))
+- chefspec verify needs to point to chef/chefspec [#14230](https://github.com/chef/chef/pull/14230) ([tpowell-progress](https://github.com/tpowell-progress))
+- Revert &quot;Bump unf ext back&quot; [#14231](https://github.com/chef/chef/pull/14231) ([tpowell-progress](https://github.com/tpowell-progress))
+- Avoid DeepMergeCache flap in Chef::Node#loaded_recipe [#14225](https://github.com/chef/chef/pull/14225) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Fix bigdecimal error with webmock / crack in macOS and AIX builds [#14243](https://github.com/chef/chef/pull/14243) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
+## [v18.4.2](https://github.com/chef/chef/tree/v18.4.2) (2024-01-30)
+
+#### Merged Pull Requests
+- Correcting sensitive items being written out [#13897](https://github.com/chef/chef/pull/13897) ([johnmccrae](https://github.com/johnmccrae))
+- Removing redundant ruby setup from kitchen tests [#13895](https://github.com/chef/chef/pull/13895) ([neha-p6](https://github.com/neha-p6))
+- Inspect lazy result (was #13570) [#13902](https://github.com/chef/chef/pull/13902) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Use constant for ChefFS::PathUtils regexp_path_separator [#13933](https://github.com/chef/chef/pull/13933) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- adding the built in ruby gem to build the gems and push them to artif… [#13930](https://github.com/chef/chef/pull/13930) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- Correct some UI text [#13921](https://github.com/chef/chef/pull/13921) ([IanMadd](https://github.com/IanMadd))
+- fix homebrew path when which() returns false [#13937](https://github.com/chef/chef/pull/13937) ([Stromweld](https://github.com/Stromweld))
+- chocolatey: fix regression in calling `choco --version` [#13935](https://github.com/chef/chef/pull/13935) ([stanhu](https://github.com/stanhu))
+- Fix the latin-1 hex value for ü to \xFC [#13917](https://github.com/chef/chef/pull/13917) ([tpowell-progress](https://github.com/tpowell-progress))
+- FFI versions through 1.16.2 have a dlopen issue with macOS. Pinning to ~&gt; 1.15.5 for now [#13964](https://github.com/chef/chef/pull/13964) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add new boolean property anchor_package_regex to resource apt_package resource [#13873](https://github.com/chef/chef/pull/13873) ([neha-p6](https://github.com/neha-p6))
+- Updating test to be RFC2119 compliant [#13968](https://github.com/chef/chef/pull/13968) ([johnmccrae](https://github.com/johnmccrae))
+- Chef::Log.debug the puts debugs [#13970](https://github.com/chef/chef/pull/13970) ([tpowell-progress](https://github.com/tpowell-progress))
+- Update slack channel name for contact to #chef-infra-dev [#13965](https://github.com/chef/chef/pull/13965) ([jstrauss](https://github.com/jstrauss))
+- Update gem update protocols [#13962](https://github.com/chef/chef/pull/13962) ([steph-hickman9](https://github.com/steph-hickman9))
+- Update README.md [#13961](https://github.com/chef/chef/pull/13961) ([smcgillick](https://github.com/smcgillick))
+- Fix contribution documentation [#13963](https://github.com/chef/chef/pull/13963) ([jaymzh](https://github.com/jaymzh))
+- [WIP][Chef-18] Github actions tests to test Infra Client with FIPS enabled on windows [#13892](https://github.com/chef/chef/pull/13892) ([neha-p6](https://github.com/neha-p6))
+- Chef::CookbookSynchronizer#remove_deleted_files: Use Array instead of Set [#13941](https://github.com/chef/chef/pull/13941) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Don&#39;t try to run SonarQube on forked-based PRs [#13983](https://github.com/chef/chef/pull/13983) ([jaymzh](https://github.com/jaymzh))
+- Attempt to make Gemfile.lock stable [#13978](https://github.com/chef/chef/pull/13978) ([jaymzh](https://github.com/jaymzh))
+- Add hook to service resource for non-enable-able services [#13959](https://github.com/chef/chef/pull/13959) ([jaymzh](https://github.com/jaymzh))
+- Disable SonarQube wholesale [#13985](https://github.com/chef/chef/pull/13985) ([jaymzh](https://github.com/jaymzh))
+- Add documentation review changes to apt_package resource [#13991](https://github.com/chef/chef/pull/13991) ([neha-p6](https://github.com/neha-p6))
+- Updated the attribute splitting logic to use field_separator [#13956](https://github.com/chef/chef/pull/13956) ([ashiqueps](https://github.com/ashiqueps))
+- Adding self-hosted FIPS support [#14007](https://github.com/chef/chef/pull/14007) ([johnmccrae](https://github.com/johnmccrae))
+- Move untag to the node to match tag [#13994](https://github.com/chef/chef/pull/13994) ([aknarts](https://github.com/aknarts))
+- Fix validation on locale-gen to account for the fact that Windows install does not have it on the path. [#14014](https://github.com/chef/chef/pull/14014) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix sudoer.erb [#14015](https://github.com/chef/chef/pull/14015) ([hunter86bg](https://github.com/hunter86bg))
+- Revert &quot;Update sudoer.erb (#14015)&quot; [#14021](https://github.com/chef/chef/pull/14021) ([tpowell-progress](https://github.com/tpowell-progress))
+- Update test crts for ssl_policies_spec.rb [#14025](https://github.com/chef/chef/pull/14025) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump omnibus-software from `c44dea9` to `e3e8437` in /omnibus [#14013](https://github.com/chef/chef/pull/14013) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix OpenSUSE tests [#14027](https://github.com/chef/chef/pull/14027) ([tpowell-progress](https://github.com/tpowell-progress))
+- Adding rockylinux-9 [#13898](https://github.com/chef/chef/pull/13898) ([muthuja](https://github.com/muthuja))
+- Fix invalid CPUQuota value [#14011](https://github.com/chef/chef/pull/14011) ([blackknight36](https://github.com/blackknight36))
+- Put chefstyle gem back in chefstyle group [#13927](https://github.com/chef/chef/pull/13927) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Update command aliases documentation [#14024](https://github.com/chef/chef/pull/14024) ([hunter86bg](https://github.com/hunter86bg))
+- Bump omnibus-software from `e3e8437` to `4fef367` in /omnibus [#14030](https://github.com/chef/chef/pull/14030) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Rocky Pkg - signing [#13997](https://github.com/chef/chef/pull/13997) ([poorndm](https://github.com/poorndm))
+- Creating a choco installer to match other resources [#14022](https://github.com/chef/chef/pull/14022) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Put chefstyle gem back in chefstyle group&quot; [#14038](https://github.com/chef/chef/pull/14038) ([tpowell-progress](https://github.com/tpowell-progress))
+- Revert &quot;Creating a choco installer to match other resources&quot; [#14040](https://github.com/chef/chef/pull/14040) ([johnmccrae](https://github.com/johnmccrae))
+- Add platform  sles-x86-64 [#14044](https://github.com/chef/chef/pull/14044) ([poorndm](https://github.com/poorndm))
+- Minor text fixes for sudo resource [#14049](https://github.com/chef/chef/pull/14049) ([IanMadd](https://github.com/IanMadd))
+- Adding a chocolatey installer [#14043](https://github.com/chef/chef/pull/14043) ([johnmccrae](https://github.com/johnmccrae))
+- Optimize chocolatey when doing large numbers of operations, by batching and caching [#13972](https://github.com/chef/chef/pull/13972) ([jaymzjulian](https://github.com/jaymzjulian))
+- Add Danger CI [#13976](https://github.com/chef/chef/pull/13976) ([jaymzh](https://github.com/jaymzh))
+- Enable state tracking on mutating Array operations [#13996](https://github.com/chef/chef/pull/13996) ([Annih](https://github.com/Annih))
+- Add missing `description` to windows_service load_current_resource for idempotent check to be successful [#14064](https://github.com/chef/chef/pull/14064) ([jakauppila](https://github.com/jakauppila))
+- unf_ext-0.0.8.2 lock for no c++20 flag [#14071](https://github.com/chef/chef/pull/14071) ([tpowell-progress](https://github.com/tpowell-progress))
+- Prevent inspec 6 from being used yet [#14076](https://github.com/chef/chef/pull/14076) ([tpowell-progress](https://github.com/tpowell-progress))
+- feat(ulimits): additional ulimit options [#13394](https://github.com/chef/chef/pull/13394) ([chrisminton](https://github.com/chrisminton))
+- Updating for a new fips tester [#14065](https://github.com/chef/chef/pull/14065) ([johnmccrae](https://github.com/johnmccrae))
+- Do not use untaint [#14077](https://github.com/chef/chef/pull/14077) ([chouetz](https://github.com/chouetz))
+- Correct pr_authr [#14085](https://github.com/chef/chef/pull/14085) ([tpowell-progress](https://github.com/tpowell-progress))
+- bundle update --conservative inspec-core inspec-core-bin [#14086](https://github.com/chef/chef/pull/14086) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add resource for installing .pkg files on macOS [#13685](https://github.com/chef/chef/pull/13685) ([williamtheaker](https://github.com/williamtheaker))
+- updating the code sign with digicerts HSM, also put some validation i… [#14112](https://github.com/chef/chef/pull/14112) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- updating this to force install this gem from rubygems [#14125](https://github.com/chef/chef/pull/14125) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- Add support for use_inline_powershell for powershell_script [#14052](https://github.com/chef/chef/pull/14052) ([jaymzjulian](https://github.com/jaymzjulian))
+- Jfm/chef18 openssl 1.0.2zi [#14088](https://github.com/chef/chef/pull/14088) ([johnmccrae](https://github.com/johnmccrae))
+- Update DL link to be generic [#14132](https://github.com/chef/chef/pull/14132) ([tpowell-progress](https://github.com/tpowell-progress))
+- Move danger runner to dangerjs [#14134](https://github.com/chef/chef/pull/14134) ([jaymzh](https://github.com/jaymzh))
+- Capture a &#39;104&#39; return from zypper info [#14150](https://github.com/chef/chef/pull/14150) ([tpowell-progress](https://github.com/tpowell-progress))
+- 3.1.14 chef-foundation bump for 1.0.2zi openssl [#14108](https://github.com/chef/chef/pull/14108) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating to Chef-Foundation 3.1.15 [#14157](https://github.com/chef/chef/pull/14157) ([johnmccrae](https://github.com/johnmccrae))
+- Minor doc change to trigger a version update [#14158](https://github.com/chef/chef/pull/14158) ([johnmccrae](https://github.com/johnmccrae))
+- Correcting security issue [#14173](https://github.com/chef/chef/pull/14173) ([johnmccrae](https://github.com/johnmccrae))
+- Bump buildkite-platform and omnibus for solaris issue [#14183](https://github.com/chef/chef/pull/14183) ([tpowell-progress](https://github.com/tpowell-progress))
+
 ## [v18.3.0](https://github.com/chef/chef/tree/v18.3.0) (2023-09-18)
 
 #### Merged Pull Requests
@@ -115,7 +166,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Fix  to pick pinned  version of  chef-foundation  on windows [#13842](https://github.com/chef/chef/pull/13842) ([poorndm](https://github.com/poorndm))
 - Add RockyLinux-8 [#13867](https://github.com/chef/chef/pull/13867) ([poorndm](https://github.com/poorndm))
 - Pinned chef-foundation version - 1.0.2zf  CHEF-4567 [#13890](https://github.com/chef/chef/pull/13890) ([muthuja](https://github.com/muthuja))
-<!-- latest_stable_release -->
 
 ## [v18.2.7](https://github.com/chef/chef/tree/v18.2.7) (2023-04-04)
 

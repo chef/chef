@@ -36,9 +36,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
   # installed packages (ConEmu is upgradable)
   let(:local_list_stdout) do
     <<~EOF
-      Chocolatey v0.9.9.11
-      chocolatey|0.9.9.11
-      ConEmu|15.10.25.0
+      Chocolatey v0.9.9.10
+      chocolatey|0.9.9.12
+      ConEmu|15.10.25.2
     EOF
   end
 
@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
     # Mock the local file system choco queries
     allow(provider).to receive(:get_local_pkg_dirs).and_return(%w{chocolatey ConEmu})
-    allow(provider).to receive(:fetch_package_versions_local).and_return({ "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" })
+    allow(provider).to receive(:fetch_package_versions).and_return({ "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" })
   end
 
   after(:each) do
@@ -168,6 +168,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
     it "should load and downcase names in the installed_packages hash (with disk provider)" do
       new_resource.use_choco_list(false)
+      provider.invalidate_cache
       provider.load_current_resource
       expect(provider.send(:installed_packages)).to eql(
         { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" }
@@ -176,9 +177,10 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
     it "should load and downcase names in the installed_packages hash (with choco list provider)" do
       new_resource.use_choco_list(true)
+      provider.invalidate_cache
       provider.load_current_resource
       expect(provider.send(:installed_packages)).to eql(
-        { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" }
+        { "chocolatey" => "0.9.9.12", "conemu" => "15.10.25.2" }
       )
     end
 
