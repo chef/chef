@@ -116,8 +116,6 @@ jobs:
     - name: 'Run end_to_end::default recipe'
       id: run
       run: |
-        brew install openssl@3 readline libyaml gmp
-        export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
         cd kitchen-tests
         sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
         sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
