@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ffi-libarchive.git
-  revision: db2ddc5bad9b155bb17a2fee0fcff5d4e710d308
+  revision: 2820f2efcc5ed0ba5f103ad46a2cdac757ac2cfd
   branch: tp/add-libarchive-a
   specs:
     ffi-libarchive (1.1.13)
