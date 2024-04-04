@@ -15,7 +15,11 @@ override "ncurses", version: "6.3"
 override "nokogiri", version: "1.13.1"
 override "openssl", version: "3.0.9"
 override "pkg-config-lite", version: "0.28-1"
-override "ruby", version: "3.0.3", openssl_gem: "3.0.0"
+if freebsd?
+  override "ruby", version: "3.0.3"
+else
+  override "ruby", version: "3.0.3", openssl_gem: "3.0.0"
+end
 override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
