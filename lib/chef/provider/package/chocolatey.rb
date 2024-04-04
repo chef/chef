@@ -144,7 +144,7 @@ class Chef
         def check_resource_semantics!; end
 
         def get_choco_version
-          # We need a different way to get the version than by simply calling "choco --version". 
+          # We need a different way to get the version than by simply calling "choco --version".
           # If the license file is installed (for business customers) but not the Chocolatey.Extension (cause your using the choco resource to install it)
           # then you get a license error. This method bypasses that by version from the exe directly instead of invoking it.
           # deprecated: @get_choco_version ||= powershell_exec!("#{choco_exe} --version").result
