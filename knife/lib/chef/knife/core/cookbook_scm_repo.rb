@@ -101,18 +101,18 @@ class Chef
 
       def merge_updates_from(cookbook_name, version)
         branch = "chef-vendor-#{cookbook_name}"
-          if branch_exists?(branch)
-            Dir.chdir(repo_path) do
-              if git("merge #{branch}")
-                ui.info("Cookbook #{cookbook_name} version #{version} successfully installed")
-              else
-                ui.error("You have merge conflicts - please resolve manually")
-                ui.info("Merge status (cd #{repo_path}; git status):")
-                git("status")
-                exit 3
-              end
+        if branch_exists?(branch)
+          Dir.chdir(repo_path) do
+            if git("merge #{branch}")
+              ui.info("Cookbook #{cookbook_name} version #{version} successfully installed")
+            else
+              ui.error("You have merge conflicts - please resolve manually")
+              ui.info("Merge status (cd #{repo_path}; git status):")
+              git("status")
+              exit 3
             end
           end
+        end
       end
 
       def updated?(cookbook_name)
