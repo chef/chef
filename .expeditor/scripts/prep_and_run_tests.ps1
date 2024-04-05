@@ -11,6 +11,12 @@ if ($TestType -eq 'Functional') {
     winrm quickconfig -q
 }
 
+Write-Output "--- Updating the Chocolatey version"
+$installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
+if(-not $installed_version -match ('^2')){
+    choco upgrade chocolatey
+}
+
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
