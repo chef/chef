@@ -24,6 +24,7 @@ bundle config set --local without 'omnibus_package'
 bundle install --jobs=3 --retry=3
 if (-not $?) { throw "Unable to install gem dependencies" }
 
+Write-Output "--- Verifying Choco Version"
 $installed_version = Get-ItemProperty ${env:ChocolateyInstall}/choco.exe | select-object -expandproperty versioninfo | select-object -expandproperty productversion
 if(-not $installed_version -match ('^2'))
 {
