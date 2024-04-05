@@ -76,7 +76,7 @@ build do
   bundle_excludes = excluded_groups + %w{development test}
 
   bundle "config set --local without docgen chefstyle development test", env: env
-  bundle "install --jobs=2 "
+  bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
