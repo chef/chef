@@ -16,7 +16,7 @@ override "nokogiri", version: "1.13.1"
 override "openssl", version: "3.0.9"
 override "pkg-config-lite", version: "0.28-1"
 if freebsd?
-  override "ruby", version: "3.1.2"
+  override "ruby", version: "3.1.2", openssl_gem: "3.0.0"
 else
   override "ruby", version: "3.0.3", openssl_gem: "3.0.0"
 end
