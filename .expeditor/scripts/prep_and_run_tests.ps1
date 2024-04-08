@@ -13,6 +13,7 @@ if ($TestType -eq 'Functional') {
 
 Write-Output "--- Checking the Chocolatey version"
 $installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
+Write-Output "The Installed version is : $installed_version"
 if(-not $installed_version -match ('^2')){
     Write-Ouput "--- Now Upgrading Choco"
     try {
@@ -25,9 +26,6 @@ if(-not $installed_version -match ('^2')){
     }
 
 }
-
-Write-Output "--- What version of Choco is loaded?"
-choco --version
 
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
