@@ -26,6 +26,9 @@ if(-not $installed_version -match ('^2')){
 
 }
 
+Write-Output "--- What version of Choco is loaded?"
+choco --version
+
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
