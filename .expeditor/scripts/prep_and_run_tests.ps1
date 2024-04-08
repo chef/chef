@@ -16,6 +16,7 @@ $installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | sel
 if(-not ($installed_version -match ('^2'))){
     Write-Output "--- Now Upgrading Choco"
     try {
+        choco feature enable -n=allowGlobalConfirmation
         choco upgrade chocolatey
     }
     catch {
