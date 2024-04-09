@@ -492,9 +492,11 @@ class Chef
 
         **Run a command with an external input file**:
 
+        ```ruby
         execute 'md5sum' do
           input File.read(__FILE__)
         end
+        ```
       EXAMPLES
 
       # The ResourceGuardInterpreter wraps a resource's guards in another resource.  That inner resource
