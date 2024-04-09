@@ -452,6 +452,34 @@ class Chef
         Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAssignPrimaryTokenPrivilege')
         ```
 
+        If you do have to add the user using `add_account_right` then the permissions will require logging out and
+        back in to the system. This can be accomplished via the `reboot` resource.
+
+        ```ruby
+        USER_RUNNING_CHEF = 'Administrator' # if running vagrant + kitchen-tests, this should be 'vagrant'
+
+        ruby_block 'set privileges' do
+          not_if { Chef::ReservedNames::Win32::Security.get_account_right(USER_RUNNING_CHEF).include?('SeAssignPrimaryTokenPrivilege') }
+          not_if { Chef::ReservedNames::Win32::Security.get_account_right(USER_RUNNING_CHEF).include?('SeIncreaseQuotaPrivilege') }
+
+          block do
+            # Setting privileges
+            Chef::ReservedNames::Win32::Security.add_account_right(USER_RUNNING_CHEF, 'SeAssignPrimaryTokenPrivilege')
+            Chef::ReservedNames::Win32::Security.add_account_right(USER_RUNNING_CHEF, 'SeIncreaseQuotaPrivilege')
+          end
+          notifies :reboot_now, 'reboot[now]', :immediately
+        end
+
+        # Reboot
+        reboot 'now' do
+          # https://docs.chef.io/resources/reboot/#actions
+          # action :nothing will only run if notified by another action
+          action :nothing
+          reason 'Cannot continue Chef run without a reboot.'
+          delay_mins 1
+        end
+        ```
+
         The following example shows how to run `mkdir test_dir` from a Chef Infra Client
         run as an alternate user.
 
