@@ -1,17 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.30 -->
-## [v18.4.30](https://github.com/chef/chef/tree/v18.4.30) (2024-03-28)
+<!-- latest_release 18.4.34 -->
+## [v18.4.34](https://github.com/chef/chef/tree/v18.4.34) (2024-04-09)
 
 #### Merged Pull Requests
-- [Immutablize#convert_value] reduce number of class comparisons [#14234](https://github.com/chef/chef/pull/14234) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [trivial] add missing markdown fence [#14326](https://github.com/chef/chef/pull/14326) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [trivial] add missing markdown fence [#14326](https://github.com/chef/chef/pull/14326) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.34 -->
+- Choco version check fails for Licensed Clients [#14320](https://github.com/chef/chef/pull/14320) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.33 -->
+- Added the databag_fallback attribute [#14290](https://github.com/chef/chef/pull/14290) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.4.32 -->
+- Sean simmons progress/chef 9252 [#14310](https://github.com/chef/chef/pull/14310) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.4.31 -->
 - [Immutablize#convert_value] reduce number of class comparisons [#14234](https://github.com/chef/chef/pull/14234) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.30 -->
 - Fixed the issue with log level on the chef config [#14294](https://github.com/chef/chef/pull/14294) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.4.29 -->
 - Add examples to snap_package resource. [#14299](https://github.com/chef/chef/pull/14299) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.28 -->

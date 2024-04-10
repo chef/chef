@@ -167,16 +167,16 @@ then
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ $build_key == "mac_os_x-10_15-x86_64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ]
     then
       echo "      remote-host: buildkite-omnibus-$platform"
     fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
-    if [ $build_key == "mac_os_x-11-arm64" ]
-    then
-      echo "  concurrency: 1"
-      echo "  concurrency_group: omnibus-$build_key/build/chef"
-    fi
+    # if [ $build_key == "mac_os_x-11-arm64" ]
+    # then
+    #   echo "  concurrency: 2"
+    #   echo "  concurrency_group: omnibus-$build_key/build/chef"
+    # fi
   done
 
   if  [[ " ${esoteric_build_platforms[*]} " =~ "mac_os_x" ]]
@@ -296,7 +296,7 @@ then
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
-    if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
     then
       echo "    omnibus: tester"
       echo "    omnibus-toolchain: \"*\""
@@ -310,11 +310,11 @@ then
     then
       echo "      remote-host: buildkite-omnibus-${platform%:*}"
     fi
-    if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
-    then
-      echo "  concurrency: 1"
-      echo "  concurrency_group: omnibus-$test_key/test/chef"
-    fi
+    # if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
+    # then
+    #   echo "  concurrency: 2"
+    #   echo "  concurrency_group: omnibus-$test_key/test/chef"
+    # fi
     if [ $test_key == "freebsd-13-amd64" ]
     then
       echo "  soft_fail: true"
