@@ -70,10 +70,13 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    if args
-      allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *(package_names.sort + args), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
-    else
-      allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *(package_names.sort), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+
+    package_names.each do |pkg|
+      if args
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *([pkg] + args), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+      else
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+      end
     end
   end
 
