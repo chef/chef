@@ -252,6 +252,7 @@ include_recipe "::_habitat_win_service"
 include_recipe "::_habitat_win_sup"
 include_recipe "::_habitat_win_user_toml"
 include_recipe "::_windows_printer"
+include_recipe "::_windows_service"
 include_recipe "::_windows_defender"
 
 windows_update_settings "Disable Windows Update" do
