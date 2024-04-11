@@ -27,8 +27,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Chef
       uses: actionshub/chef-install@3.0.0
-      with:
-        channel: current
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 

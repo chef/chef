@@ -8,6 +8,8 @@
 windows_service "chef-client" do
   action :create
   binary_path_name "c:/opscode/chef/bin"
+  include_recipe "::_windows_defender"
+  service_name 'chef-client'
   description "Test description #{SecureRandom::hex(16)}"
   startup_type :manual
 end
