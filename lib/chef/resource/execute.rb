@@ -442,10 +442,9 @@ class Chef
         NetworkService have this right when running as a service. This is necessary
         even if the user is an Administrator.
 
-        This right can be added and checked in a recipe using this example:
+        This right can be added and checked in a recipe using this example (will not take effect in the same Chef run):
 
         ```ruby
-        # note: this will not take place in the same connection
         windows_user_privilege 'add assign token privilege' do
           principal '<user>'
           privilege 'SeAssignPrimaryTokenPrivilege'
