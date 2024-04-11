@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.34 -->
-## [v18.4.34](https://github.com/chef/chef/tree/v18.4.34) (2024-04-09)
+<!-- latest_release 18.4.35 -->
+## [v18.4.35](https://github.com/chef/chef/tree/v18.4.35) (2024-04-11)
 
 #### Merged Pull Requests
-- [trivial] add missing markdown fence [#14326](https://github.com/chef/chef/pull/14326) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Add note about adding account rights not taking immediate effect. [#14325](https://github.com/chef/chef/pull/14325) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add note about adding account rights not taking immediate effect. [#14325](https://github.com/chef/chef/pull/14325) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.35 -->
 - [trivial] add missing markdown fence [#14326](https://github.com/chef/chef/pull/14326) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.34 -->
 - Choco version check fails for Licensed Clients [#14320](https://github.com/chef/chef/pull/14320) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.33 -->
 - Added the databag_fallback attribute [#14290](https://github.com/chef/chef/pull/14290) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.4.32 -->
