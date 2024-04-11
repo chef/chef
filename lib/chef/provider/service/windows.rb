@@ -52,7 +52,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   def load_current_resource
     @current_resource = Chef::Resource::WindowsService.new(new_resource.name)
     current_resource.service_name(new_resource.service_name)
-    logger.warn("loading current resource")
     if Win32::Service.exists?(current_resource.service_name)
       current_resource.running(current_state == RUNNING)
       logger.trace "#{new_resource} running: #{current_resource.running}"
@@ -74,7 +73,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       current_resource.run_as_user(config_info.service_start_name)    if config_info.service_start_name
       current_resource.display_name(config_info.display_name)         if config_info.display_name
       current_resource.delayed_start(current_delayed_start)           if current_delayed_start
-      logger.warn("running description")
       current_resource.description(config_info.description)           if new_resource.description
     end
 
