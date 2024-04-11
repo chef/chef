@@ -442,14 +442,14 @@ class Chef
         NetworkService have this right when running as a service. This is necessary
         even if the user is an Administrator.
 
-        This right can be added and checked in a recipe using this example:
+        This right can be added and checked in a recipe using this example (will not take effect in the same Chef run):
 
         ```ruby
-        # Add 'SeAssignPrimaryTokenPrivilege' for the user
-        Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
-
-        # Check if the user has 'SeAssignPrimaryTokenPrivilege' rights
-        Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAssignPrimaryTokenPrivilege')
+        windows_user_privilege 'add assign token privilege' do
+          principal '<user>'
+          privilege 'SeAssignPrimaryTokenPrivilege'
+          action :add
+        end
         ```
 
         The following example shows how to run `mkdir test_dir` from a Chef Infra Client
