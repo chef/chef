@@ -449,7 +449,7 @@ class Chef
           principal '<user>'
           privilege 'SeAssignPrimaryTokenPrivilege'
           action :add
-        end 
+        end
         ```
 
         The following example shows how to run `mkdir test_dir` from a Chef Infra Client
