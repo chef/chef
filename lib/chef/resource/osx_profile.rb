@@ -29,7 +29,9 @@ class Chef
       provides :osx_profile
       provides :osx_config_profile
 
-      description "Use the **osx_profile** resource to manage configuration profiles (`.mobileconfig` files) on the macOS platform. The **osx_profile** resource installs profiles by using the uuidgen library to generate a unique `ProfileUUID`, and then using the `profiles` command to install the profile on the system."
+      description "Use the **osx_profile** resource to manage configuration profiles (`.mobileconfig` files) on macOS nodes. The **osx_profile** resource generates a unique `ProfileUUID` using the uuidgen library and then uses the `profiles` command to install the profile on the system. Warning: Profile installation is not available on macOS 11.0 or later due to Apple's removal of support for CLI profile installation."
+      introduced "12.7"
+      Chef.deprecated :generic, "This resource will be removed in #{ChefUtils::Dist::Infra::PRODUCT} 19.0, as macOS 11 and later no longer support this functionality."
       introduced "12.7"
       examples <<~DOC
       **Install a profile from a cookbook file**

@@ -108,7 +108,7 @@ require_relative "resource/plist"
 require_relative "resource/portage_package"
 require_relative "resource/powershell_package_source"
 require_relative "resource/powershell_script"
-require_relative "resource/osx_profile"
+require_relative "resource/osx_profile" if macos?
 require_relative "resource/python"
 require_relative "resource/reboot"
 require_relative "resource/registry_key"
