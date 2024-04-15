@@ -251,6 +251,7 @@ include_recipe "::_habitat_win_package"
 include_recipe "::_habitat_win_service"
 include_recipe "::_habitat_win_sup"
 include_recipe "::_habitat_win_user_toml"
+include_recipe "::_windows_user_privilege"
 include_recipe "::_windows_printer"
 include_recipe "::_windows_defender"
 
