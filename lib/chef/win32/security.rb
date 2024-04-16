@@ -235,6 +235,7 @@ class Chef
 
             count.read_ulong.times do |i|
               sid = LSA_ENUMERATION_INFORMATION.new(buffer.read_pointer + i * LSA_ENUMERATION_INFORMATION.size)
+              puts ">> sid #{__FILE__} #{__LINE__} #{sid.inspect}"
               sid_name = lookup_account_sid(sid[:Sid])
               domain, name, use = sid_name
               account_name = (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
