@@ -177,13 +177,16 @@ class Chef
 
         # Getting users with its domain for comparison
         new_resource.users.each do |user|
+          puts ">> User for resource #{user}"
           user = Chef::ReservedNames::Win32::Security.lookup_account_name(user)
           users << user[1].account_name if user
         end
 
         new_resource.privilege.each do |privilege|
+          puts ">> Privilege #{privilege}"
           accounts = Chef::ReservedNames::Win32::Security.get_account_with_user_rights(privilege)
 
+          puts ">> Accounts #{accounts.inspect}"
           # comparing the existing accounts for privilege with users
           unless users == accounts
             # Removing only accounts which is not matching with users in new_resource
