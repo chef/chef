@@ -226,6 +226,7 @@ class Chef
 
         accounts = []
         with_lsa_policy(nil) do |policy_handle, sid|
+          puts ">> sid #{__FILE__} #{__LINE__} #{sid.inspect}"
           result = LsaEnumerateAccountsWithUserRight(policy_handle.read_pointer, privilege_pointer, buffer, count)
           if result == 0
             win32_error = LsaNtStatusToWinError(result)

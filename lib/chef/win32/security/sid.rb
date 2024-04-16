@@ -56,8 +56,6 @@ class Chef
         attr_reader :pointer
 
         def account
-          puts caller.inspect
-          puts ">> #{__FILE__} #{__LINE__} #{self.inspect}"
           Chef::ReservedNames::Win32::Security.lookup_account_sid(self)
         end
 
