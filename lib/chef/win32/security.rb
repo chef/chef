@@ -468,6 +468,7 @@ class Chef
         if LookupAccountSidW(system_name, sid, nil, name_size, nil, referenced_domain_name_size, nil)
           raise "Expected ERROR_INSUFFICIENT_BUFFER from LookupAccountSid, and got no error!"
         elsif FFI::LastError.error != ERROR_INSUFFICIENT_BUFFER
+          puts "Erroring on #{system_name.inspect} #{sid.inspect} #{name_size.inspect} #{referenced_domain_name_size.inspect}"
           Chef::ReservedNames::Win32::Error.raise!
         end
 
