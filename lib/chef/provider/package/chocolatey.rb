@@ -173,7 +173,7 @@ class Chef
 
         # Find the set of packages to ask the chocolatey server about
         #
-        # if walk_resource_tree is on, this finds _all_ of the packages that
+        # if walk_resource_tree is true, this finds _all_ of the packages that
         # we have referenced anywhere in our recipes - this is so we can
         # attempt to query them all in a single transaction.  However,
         # currently we don't do that - see the comment on available_packages
