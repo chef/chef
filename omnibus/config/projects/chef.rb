@@ -83,4 +83,13 @@ package :appx do
   skip_packager true
 end
 
-runtime_dependency "coreutils" if rhel?
+if rhel?
+  runtime_dependency "coreutils"
+  if platform_version.satisfies?("< 8")
+    # Don't touch older platforms
+  elsif platform_version.satisfies?("< 9")
+    runtime_dependency "libxcrypt-compat"
+  else
+    runtime_dependency "libxcrypt"
+  end
+end

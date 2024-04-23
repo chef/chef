@@ -634,6 +634,7 @@
     "LGRPID",
     "LHND",
     "libselinux",
+    "libxcrypt",
     "linuxbrew",
     "linuxmint",
     "LISTBOX",
