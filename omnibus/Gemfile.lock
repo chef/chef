@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 8a87f3b2b842abe80bc997de9da3e43696ea5c36
+  revision: 842b603cf83fb82b5c6cf69763a3ac9db9790a35
   branch: main
   specs:
-    omnibus-software (24.3.314)
+    omnibus-software (24.2.311)
       omnibus (>= 9.0.0)
 
 GIT
@@ -324,6 +324,7 @@ GEM
     parallel (1.22.1)
     parslet (1.8.2)
     pastel (0.8.0)
+    openssl (3.2.0)
       tty-color (~> 0.5)
     pedump (0.6.6)
       awesome_print
