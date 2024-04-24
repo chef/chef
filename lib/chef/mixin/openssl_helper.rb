@@ -111,7 +111,7 @@ class Chef
         raise ArgumentError, "Key length must be a power of 2 greater than or equal to 1024" unless key_length_valid?(key_length)
         raise TypeError, "Generator must be an integer" unless generator.is_a?(Integer)
 
-        ::OpenSSL::PKey::EC.generate(curve)
+        ::OpenSSL::PKey::DH.new(key_length, generator)
       end
 
       # generate an RSA private key given key length
@@ -157,7 +157,7 @@ class Chef
         raise TypeError, "curve must be a string" unless curve.is_a?(String)
         raise ArgumentError, "Specified curve is not available on this system" unless %w{prime256v1 secp384r1 secp521r1}.include?(curve)
 
-        ::OpenSSL::PKey::EC.new(curve).generate_key
+        ::OpenSSL::PKey::EC.generate(curve)
       end
 
       # generate pem format of the public key given a private key
