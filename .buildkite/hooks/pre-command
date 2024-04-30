@@ -5,7 +5,7 @@ set -eu
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
-docker ps || true
+# docker ps || true
 
 # Get chef foundation version from the json file
 CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
