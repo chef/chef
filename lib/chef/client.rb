@@ -305,8 +305,6 @@ class Chef
         # keep this inside the main loop to get exception backtraces
         end_profiling
 
-        warn_if_eol
-
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
