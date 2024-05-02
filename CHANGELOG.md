@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.37 -->
-## [v18.4.37](https://github.com/chef/chef/tree/v18.4.37) (2024-04-26)
+<!-- latest_release 18.4.38 -->
+## [v18.4.38](https://github.com/chef/chef/tree/v18.4.38) (2024-05-02)
 
 #### Merged Pull Requests
-- Chef 10065 - Support new IBM hosts [#14321](https://github.com/chef/chef/pull/14321) ([poorndm](https://github.com/poorndm))
+- Disable merging of chocolatey searches [#14327](https://github.com/chef/chef/pull/14327) ([jaymzjulian](https://github.com/jaymzjulian))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable merging of chocolatey searches [#14327](https://github.com/chef/chef/pull/14327) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.38 -->
 - Chef 10065 - Support new IBM hosts [#14321](https://github.com/chef/chef/pull/14321) ([poorndm](https://github.com/poorndm)) <!-- 18.4.37 -->
 - Revert &quot;Add missing `description` to windows_service load_current_resource for idempotent check to be successful&quot; [#14334](https://github.com/chef/chef/pull/14334) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.36 -->
 - Add note about adding account rights not taking immediate effect. [#14325](https://github.com/chef/chef/pull/14325) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.35 -->
