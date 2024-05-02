@@ -171,22 +171,34 @@ class Chef
           true
         end
 
-        # walk the collection to find peer resources to ensure that
-        # we get as much of the cache this run as possible.  Unified mode
-        # sub-resources will, of course, be incremental with this, since we can't
-        # grab them in advance, but even in that case we're still way, way
-        # more efficient with our queries...
+        # Find the set of packages to ask the chocolatey server about
+        #
+        # if walk_resource_tree is true, this finds _all_ of the packages that
+        # we have referenced anywhere in our recipes - this is so we can
+        # attempt to query them all in a single transaction.  However,
+        # currently we don't do that - see the comment on available_packages
+        # for details of the why, but the TL;DR is that the public chocolatey
+        # servers do not support `or` type queries properly.
+        #
+        # If walk_resource_tree is false, we don't do any of that - we just filter
+        # the package list based on cache data.  This is the default due to reasons
+        # explained in the comment on available_packages - the goal is to eventually
+        # turn this back on, hence the default false parameter here.
         #
         # @return [Array] List of chocolatey packages referenced in the run list
-        def collect_package_requests(ignore_list: [])
+        def collect_package_requests(ignore_list: [], walk_resource_tree: false)
           return ["*"] if new_resource.bulk_query || Chef::Config[:always_use_bulk_chocolatey_package_list]
 
-          # Get to the root of the resource collection
-          rc = run_context.parent_run_context || run_context
-          rc = rc.parent_run_context while rc.parent_run_context
+          if walk_resource_tree
+            # Get to the root of the resource collection
+            rc = run_context.parent_run_context || run_context
+            rc = rc.parent_run_context while rc.parent_run_context
 
-          package_collection = package_name_array
-          package_collection += nested_package_resources(rc.resource_collection)
+            package_collection = package_name_array
+            package_collection += nested_package_resources(rc.resource_collection)
+          else
+            package_collection = package_name_array
+          end
           # downcase the array and uniq.  sorted for easier testing...
           package_collection.uniq.sort.filter { |pkg| !ignore_list.include?(pkg) }
         end
@@ -343,22 +355,33 @@ class Chef
             @@choco_available_packages[new_resource.list_options] = {}
           end
 
-          # Attempt to get everything we need in a single query.
-          # Grab 25 packages at a time at most, to avoid hurting servers too badly
+          # This would previously grab 25 packages at a time, which previously worked - however,
+          # upstream changed and it turns out this was only working by accident - see
+          # https://github.com/chocolatey/choco/issues/2116 for this.  So the TL;DR ends up
+          # being that this can be re-enabled when the chocolatey server actually supports an
+          # or operator.  So it makes sense to leave the logic here for this split, while we
+          # work with upstream to get this to be a working feature there
           #
-          # For v1 we actually used to grab the entire list of packages, but we found
-          # that it could cause undue load on really large package lists
+          # Foot guns: there is a --id-starts-with for chocolatey, which you'd think would work,
+          # but that actually fails on public chocolatey as well, because it seems to do the filtering
+          # locally. Which means it too will omit a lot of results (this is also corroborated by
+          # the 2116 issue above).
+          #
+          # collect_package_requests, however, continues to be useful here because it filters
+          # the already cached things from the list.  However, for now it will no longer walk the
+          # resource tree until 2116 can be sorted out.  When we regain that ability, we should
+          # re-evaluate this, since it does save a LOT of API requests!
           collect_package_requests(
             ignore_list: @@choco_available_packages[new_resource.list_options].keys
-          ).each_slice(25) do |pkg_set|
+          ).each do |pkg_set|
             available_versions =
               begin
               cmd = [ query_command, "-r" ]
 
               # Chocolatey doesn't actually take a wildcard for this query, however
               # it will return all packages when using '*' as a query
-              unless pkg_set == ["*"]
-                cmd += pkg_set
+              unless pkg_set == "*"
+                cmd << pkg_set
               end
               cmd += common_options
               cmd.push( new_resource.list_options ) if new_resource.list_options
