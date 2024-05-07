@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.39 -->
-## [v18.4.39](https://github.com/chef/chef/tree/v18.4.39) (2024-05-07)
+<!-- latest_release 18.4.40 -->
+## [v18.4.40](https://github.com/chef/chef/tree/v18.4.40) (2024-05-07)
 
 #### Merged Pull Requests
-- hyperv added to virtualization helper [#14359](https://github.com/chef/chef/pull/14359) ([snohio](https://github.com/snohio))
+- Bump pedump from 0.6.6 to 0.6.9 in /omnibus [#14344](https://github.com/chef/chef/pull/14344) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump pedump from 0.6.6 to 0.6.9 in /omnibus [#14344](https://github.com/chef/chef/pull/14344) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.40 -->
 - hyperv added to virtualization helper [#14359](https://github.com/chef/chef/pull/14359) ([snohio](https://github.com/snohio)) <!-- 18.4.39 -->
 - Disable merging of chocolatey searches [#14327](https://github.com/chef/chef/pull/14327) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.38 -->
 - Chef 10065 - Support new IBM hosts [#14321](https://github.com/chef/chef/pull/14321) ([poorndm](https://github.com/poorndm)) <!-- 18.4.37 -->
