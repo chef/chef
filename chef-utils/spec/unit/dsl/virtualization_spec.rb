@@ -45,6 +45,9 @@ RSpec.describe ChefUtils::DSL::Virtualization do
     end
   end
 
+  context "on hyperv" do
+    virtualization_reports_true_for(:guest?, :virtual?, :hyperv?, node: { "virtualization" => { "system" => "hyperv", "role" => "guest" } })
+  end
   context "on kvm" do
     virtualization_reports_true_for(:guest?, :virtual?, :kvm?, node: { "virtualization" => { "system" => "kvm",  "role" => "guest" } })
     virtualization_reports_true_for(:hypervisor?, :physical?, :kvm_host?, node: { "virtualization" => { "system" => "kvm", "role" => "host" } })
