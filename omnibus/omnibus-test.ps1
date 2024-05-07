@@ -4,8 +4,8 @@ $ErrorActionPreference = "Stop"
 # install chocolatey
 function installChoco {
 
-  if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
-      Write-Output "Chocolatey is not installed, proceeding to install"
+  #if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
+  #    Write-Output "Chocolatey is not installed, proceeding to install"
           try {
               write-output "installing in 3..2..1.."
               Set-ExecutionPolicy Bypass -Scope Process -Force
@@ -16,11 +16,11 @@ function installChoco {
           catch {
                 Write-Error $_.Exception.Message
           }
-  }
+  #}
 
-  else {
-      Write-Output "Chocolatey is already installed"
-  }
+  #else {
+  #    Write-Output "Chocolatey is already installed"
+  #}
 }
 
 installChoco
