@@ -20,6 +20,7 @@ function installChoco {
 
   else {
       Write-Output "Chocolatey is already installed, upgrading"
+      choco feature enable -n=allowGlobalConfirmation
       choco upgrade chocolatey
   }
 }
