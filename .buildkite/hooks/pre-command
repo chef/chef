@@ -73,5 +73,7 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
   # Only if on RPM-based Linux distros
   if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]]; then
     export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)
+    echo "<<<<<<DEBUG RPM SIGNING KEY - pre-command-hooks for Linux based ports >>>>>>> RPM_SIGNING_KEY -> $RPM_SIGNING_KEY "
   fi
+  echo "<<<<<<DEBUG RPM SIGNING KEY - pre-command-hooks for NON-Linux based ports >>>>>>> RPM_SIGNING_KEY -> $RPM_SIGNING_KEY "
 fi

@@ -21,13 +21,14 @@ fi
 
 if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
-
+  echo "<<<<<<DEBUG RPM SIGNING KEY - omnibus_chef_build.sh  >>>>>>> RPM_SIGNING_KEY -> $RPM_SIGNING_KEY "
   echo "$RPM_SIGNING_KEY" | gpg --import
 
   cat <<-EOF > ~/.rpmmacros
     %_signature gpg
     %_gpg_name  Opscode Packages
 EOF
+echo "<<<<<< RPM-MACROS - `cat ~/.rpmmacros` "
 fi
 
 echo "--- Running bundle install for Omnibus"
