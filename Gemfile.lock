@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 129344227d927ea67f228540654a6718265d03cd
+  revision: c1fed9c045622992bf9e84ad3c374448b0c1134b
   branch: main
   specs:
     chefstyle (2.2.3)
@@ -456,7 +456,7 @@ DEPENDENCIES
   fauxhai-ng
   inspec-core-bin (~> 5.22.40)
   ohai!
-  openssl (= 3.2.0)
+  openssl (~> 3.2)
   pry (>= 0.14.1)
   pry-byebug
   pry-stack_explorer
