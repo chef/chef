@@ -14,7 +14,7 @@ else
   try {
     Write-Output "--- setting up auth for smctl"
     $SM_CLIENT_CERT_FILE_JSON = "sm-client-cert-file.json"
-    aws ssm get-parameter --name "sm-client-cert-file" --with-decryption --region "us-west-1" --query Parameter.Value --output text | Set-Content -Path $SM_CLIENT_CERT_FILE_JSON
+    aws ssm get-parameter --name "sm-client-cert-file" --with-decryption --region "us-west-2" --query Parameter.Value --output text | Set-Content -Path $SM_CLIENT_CERT_FILE_JSON
     # this just grabs the secret as its a json object, converts it, then selects the cert_content_base64, then creates the file to c:\digicert\certificate_pkcs12.p12 while decoding the base64 #
     $smClientCertJson = Get-Content $SM_CLIENT_CERT_FILE_JSON | ConvertFrom-Json | Select-Object -ExpandProperty cert_content_base64
     $decodedFilePath = "c:\digicert\certificate_pkcs12.p12"
@@ -38,9 +38,9 @@ else
 
   Write-Output "--- smtcl env settings"
   try {
-      $SM_API_KEY_VALUE = aws ssm get-parameter --name "sm-api-key" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $SM_CLIENT_CERT_PASSWORD_VALUE = aws ssm get-parameter --name "sm-client-cert-password" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $SM_HOST_VALUE = aws ssm get-parameter --name "sm-host" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+      $SM_API_KEY_VALUE = aws ssm get-parameter --name "sm-api-key" --with-decryption --region "us-west-2" --query Parameter.Value --output text
+      $SM_CLIENT_CERT_PASSWORD_VALUE = aws ssm get-parameter --name "sm-client-cert-password" --with-decryption --region "us-west-2" --query Parameter.Value --output text
+      $SM_HOST_VALUE = aws ssm get-parameter --name "sm-host" --with-decryption --region "us-west-2" --query Parameter.Value --output text
       $env:SM_API_KEY_FILE=${SM_API_KEY_VALUE}
       $env:SM_HOST=${SM_HOST_VALUE}
       $env:SM_CLIENT_CERT_FILE="c:\digicert\certificate_pkcs12.p12"
