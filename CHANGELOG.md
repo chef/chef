@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.40 -->
-## [v18.4.40](https://github.com/chef/chef/tree/v18.4.40) (2024-05-07)
+<!-- latest_release 18.4.41 -->
+## [v18.4.41](https://github.com/chef/chef/tree/v18.4.41) (2024-05-14)
 
 #### Merged Pull Requests
-- Bump pedump from 0.6.6 to 0.6.9 in /omnibus [#14344](https://github.com/chef/chef/pull/14344) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- EC and modulo length update for OpenSSL 3 compatibility [#14354](https://github.com/chef/chef/pull/14354) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- EC and modulo length update for OpenSSL 3 compatibility [#14354](https://github.com/chef/chef/pull/14354) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.41 -->
 - Bump pedump from 0.6.6 to 0.6.9 in /omnibus [#14344](https://github.com/chef/chef/pull/14344) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.40 -->
 - hyperv added to virtualization helper [#14359](https://github.com/chef/chef/pull/14359) ([snohio](https://github.com/snohio)) <!-- 18.4.39 -->
 - Disable merging of chocolatey searches [#14327](https://github.com/chef/chef/pull/14327) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.38 -->
