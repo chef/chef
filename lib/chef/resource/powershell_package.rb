@@ -44,6 +44,10 @@ class Chef
         description: "Skip validating module author.",
         default: false, introduced: "14.3", desired_state: false
 
+      property :allow_clobber,  [TrueClass, FalseClass],
+        description: "Overrides warning messages about installation conflicts about existing commands on a computer.",
+        default: false
+
     end
   end
 end
