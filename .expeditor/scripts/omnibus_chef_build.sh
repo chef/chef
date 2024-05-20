@@ -19,7 +19,8 @@ if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
   export SSL_CERT_FILE="/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem"
 fi
 
-echo "<<<<<<DEBUG - OMNIBUS_RPM_SIGNING_PASSPHRASE `ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]`"
+omni_rpm = "#{ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]"
+echo "<<<<<<DEBUG - OMNIBUS_RPM_SIGNING_PASSPHRASE $omni_rpm "
 if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
   echo "<<<<<<DEBUG RPM SIGNING KEY - omnibus_chef_build.sh  >>>>>>> RPM_SIGNING_KEY ->  "
