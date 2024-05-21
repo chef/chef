@@ -14,7 +14,7 @@ describe "chef-client fips" do
   end
 
   example "Do not error on MD5 if not fips_mode", fips_mode: false do
-    expect { OpenSSL::Digest::MD5.new("abcdefghijklmnop") }.not_to raise_error
+    expect { OpenSSL::Digest.new("MD5", "test string for digesting") }.not_to raise_error
   end
 
   # For FIPS OSes/builds of Ruby, enabling FIPS should not error
@@ -24,6 +24,6 @@ describe "chef-client fips" do
 
   example "Error on MD5 if fips_mode", fips_mode: true do
     enable_fips
-    expect { OpenSSL::Digest::MD5.new("abcdefghijklmnop") }.to raise_error(OpenSSL::Digest::DigestError)
+    expect { OpenSSL::Digest.new("MD5", "test string for digesting") }.to raise_error(OpenSSL::Digest::DigestError)
   end
 end
