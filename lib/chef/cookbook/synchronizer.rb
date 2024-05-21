@@ -280,8 +280,9 @@ class Chef
     end
 
     def ensure_cookbook_paths
+      cookbook_path = File.join(Chef::Config[:file_cache_path], "cookbooks")
       cookbooks.each do |cookbook|
-        cb_dir = File.join(Chef::Config[:file_cache_path], "cookbooks", cookbook.name)
+        cb_dir = File.join(cookbook_path, cookbook.name)
         cookbook.root_paths = Array(cb_dir)
       end
     end
