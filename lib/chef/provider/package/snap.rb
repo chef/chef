@@ -226,6 +226,8 @@ class Chef
               # Continue
             when "Abort", "Hold", "Error"
               Chef::Log.warn("<=> broken? <=>")
+              Chef::Log.warn(result["result"]["status"])
+              Chef::Log.warn(result.class)
               Chef::Log.warn(result.inspect)
               raise result
             when "Done"
