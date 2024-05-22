@@ -193,8 +193,6 @@ class Chef
                   # are done reading
                   break
                 rescue JSON::ParserError
-                  Chef::Log.warn("<=> JSON::ParserError <=>")
-                  Chef::Log.warn(body)
                   next
                 end
               end
