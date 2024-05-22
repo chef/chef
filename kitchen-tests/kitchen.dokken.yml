@@ -106,7 +106,7 @@ platforms:
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
-        - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
+        - RUN mkdir -p /etc/sysconfig/network-scripts # missing from the alma image
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
   - name: rockylinux-9
