@@ -88,7 +88,6 @@ jobs:
           - oraclelinux-9
           # - rockylinux-8 # Need to troubleshoot issue with container startup
           - rockylinux-9
-          - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
     runs-on: ubuntu-latest
@@ -112,6 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
+          - ubuntu-1804
           - amazonlinux-2
           - oraclelinux-7
     runs-on: ubuntu-20.04
@@ -148,7 +148,6 @@ jobs:
           - oracle-9
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
     runs-on: ubuntu-latest
