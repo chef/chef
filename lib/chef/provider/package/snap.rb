@@ -181,7 +181,7 @@ class Chef
               )
               result = nil
               body = ""
-              last_parser_error_length=0
+              json_error_last = false
               socket.each_char do |c|
                 body << c
                 # we know we're not done if we don't have a char that
@@ -192,15 +192,19 @@ class Chef
                   result = JSON.parse(body)
                   # if we get here, we were able to parse the json so we
                   # are done reading
+                  json_error_last = false
                   break
                 rescue JSON::ParserError
-                  last_parser_error_length=body.length
+                  json_error_last = true
                   next
                 end
               end
-              if last_parser_error_length == body.length
+              if json_error_last
                 Chef::Log.warn("<=> never successfully parsed <=>")
                 Chef::Log.warn(result.inspect)
+              else
+                Chef::Log.warn("<=> successfully parsed <=>")
+                Chef::Log.warn(result.class.to_s)
               end
               result
             end
