@@ -181,7 +181,6 @@ class Chef
               )
               result = nil
               body = ""
-              json_error_last = false
               socket.each_char do |c|
                 body << c
                 # we know we're not done if we don't have a char that
