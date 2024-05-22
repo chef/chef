@@ -194,11 +194,11 @@ class Chef
                   # are done reading
                   break
                 rescue JSON::ParserError
-                  last_parser_error_length=result.length
+                  last_parser_error_length=body.length
                   next
                 end
               end
-              if last_parser_error_length == result.length
+              if last_parser_error_length == body.length
                 Chef::Log.warn("<=> never successfully parsed <=>")
                 Chef::Log.warn(result.inspect)
               end
