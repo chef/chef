@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   if RUBY_PLATFORM =~ /aix/
     s.required_ruby_version = ">= 3.0.3"
   else
-    s.required_ruby_version = ">= 3.1.0"
+    s.required_ruby_version = ">= 3.1.4"
   end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
