@@ -196,6 +196,10 @@ class Chef
                   next
                 end
               end
+              Chef::Log.warn("<=> #{__FILE__} #{__LINE__}<=>")
+              Chef::Log.warn(body.inspect)
+              Chef::Log.warn("<=> #{__FILE__} #{__LINE__}<=>")
+              Chef::Log.warn(result.inspect)
               result
             end
           end
