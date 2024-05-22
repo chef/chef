@@ -73,7 +73,33 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
   # Only if on RPM-based Linux distros
   echo "<<<<<<DEBUG - OMNIBUS_RPM_SIGNING_PASSPHRASE #{ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]"
   if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]]; then
-    export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)
-    echo "<<<<<<DEBUG RPM SIGNING KEY - pre-command-hooks for Linux based ports >>>>>>> RPM_SIGNING_KEY  "
+    export RPM_SIGNING_KEY="-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAtDWl9Kg6fa2C98DgEw0/88+kCCP3ke6qA2GHsDI5lbktoRA3
+u3ZaVyx2TgApdzC2MTp55bJXcZywRdD4DwJlMX6RBx0X3YL6vASmvTe+880q6iOf
+d38iApRvhe6uyFUl4WbJWzqTK/AlRuSAFMVMr5GGajhY/xq6TdwPpHtQehbqrvCR
+Vj57g7G9vo7eMuJ+kZ9jNShbn/Qy7i3CrIHBcnSxtg7TvJgWu5cEs02s49a511Z0
+hjs7a75z2pkscODd+ffNvDBHQ0rPJiw3UvscpyN+/+riF2bM1QVXJwP9Bjk4aOuY
+nuo+GnSsnzd35eS/iATKLAT09gubRXpnU2pMawIDAQABAoIBAEOt5k7VI2px0L8F
+Y+Ij1sHVWLBp+Z+H97ffWBtXMYNGkZlswtGXqGQW4bN3ohsOY05nvMIEUYzsoNMH
+oTHZ33FQLF10krLxbwNP5+MmXYOoqRZYHJq/V2GKp7uwIVpBiEF33eVyQTV+MjHG
+vUePtbY2PDoGQX5FZnS5UfKfEWFYOp8hEIcXL+WJTlcEO6L+RzqN2ASecAfLB9F6
+nWPhJknE4N7jfg5Qop6b1uF3qx+b8REuhB6XWjLKx1sCtTxCtjN97jIZXr7Bs+1H
+rPFbtFdoRGbIPFVfPh/nppYjxS14//4TV//krjfF0hgfV3adsEEMMvdjXfhk5p6U
+wxigZIECgYEA2h3o05VLw1XEjeeQshw+VkpzI+oxFXfbrjnwa88EQc5MdgXvNcYs
+u9C9U6BHMP308SM/TxQBVLAPiuxAQcJHlOjt7paDjCkHCCOdzvKswTz7MCrKBfuf
+//fgw/WxdXHxlrH4O4X9X2NH8F93V97X/JbhpYp0/TPPfI7pPRqdAEECgYEA04JG
+Q+d/SgkdgDcnlQ2VNXKLVnN5HQyoQ6vyDDuadAjY+zGaFD6tqYk7bMSImtaM2kz6
+qkloYAyKeT9JjUgDoYO9UCdf5naMWTeVsk5jiWLO2dIYVGvJF/0g2KccLliwypxS
+EGXavWgjGFHABoEABYgtDhtYJFGygQy28drS4asCgYArEc7gwNFGEBCQ6NHkqbkR
+dwAHbn4kvBcv7xbvYuB3UhI9F+zlVG2O5KgN9E86eFs+pnQg3FVq8J0RFJeXpJJX
+8CrTevsc2RkfXVETBU5hlfYPy9M6nTY56CuE5mYVR9upoxjeQBYJGOSirWc2fbVu
+liiWdKGnQezNrraVr0SjQQKBgQDFfvCzeVdPP2GvllC8illX9eQLznk52dbIkabL
+K2CWlqhdLbzMyJYKJ104u+8+fbY6JQUuuqrefPdULfc1GBhj2YqNbKbMoMd+izuZ
+qj6hS4UQuXAEbDzyzGa+RpQ25pP2LK8oJqNwluumSrd+mzf08mn3sSrFhw+iFshA
+325oTwKBgEab8AdPeFUE2jDelnDhtyXvHRZX+qBqG47RF/HC1Md4JA3Yp9w814tk
+pWxl1cCCx4uSfTM/eGInIRrGWK9l3xWx9WimlRCLkHuFC7mODLRW4RWtpqIliMZA
+VW4CP8usNEkk962zR6SbPUpbXORLz9ZP2MkNpfyab9RZv6idnVAd
+-----END RSA PRIVATE KEY-----"
+    echo "<<<<<<DEBUG RPM SIGNING KEY - pre-command-hooks for Linux based ports >>>>>>> RPM_SIGNING_KEY  : $RPM_SIGNING_KEY "
   fi
 fi
