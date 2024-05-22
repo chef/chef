@@ -199,13 +199,6 @@ class Chef
                   next
                 end
               end
-              if json_error_last
-                Chef::Log.warn("<=> never successfully parsed <=>")
-                Chef::Log.warn(result.inspect)
-              else
-                Chef::Log.warn("<=> successfully parsed <=>")
-                Chef::Log.warn(result.class.to_s)
-              end
               result
             end
           end
@@ -232,6 +225,8 @@ class Chef
             when "Do", "Doing", "Undoing", "Undo"
               # Continue
             when "Abort", "Hold", "Error"
+              Chef::Log.warn("<=> broken? <=>")
+              Chef::Log.warn(result.inspect)
               raise result
             when "Done"
               waiting = false
