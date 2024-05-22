@@ -192,10 +192,8 @@ class Chef
                   result = JSON.parse(body)
                   # if we get here, we were able to parse the json so we
                   # are done reading
-                  json_error_last = false
                   break
                 rescue JSON::ParserError
-                  json_error_last = true
                   next
                 end
               end
@@ -222,21 +220,10 @@ class Chef
           while waiting
             result = get_change_id(id)
 
-            if result["result"]["summary"] == "Install \"hello\" snap"
-              Chef::Log.warn("<=> get_change_id(#{id}) <=>")
-              Chef::Log.warn(result["result"]["status"])
-              Chef::Log.warn(result.class)
-              Chef::Log.warn(result.inspect)
-            end
-
             case result["result"]["status"]
             when "Do", "Doing", "Undoing", "Undo"
               # Continue
             when "Abort", "Hold", "Error"
-              Chef::Log.warn("<=> broken? <=>")
-              Chef::Log.warn(result["result"]["status"])
-              Chef::Log.warn(result.class)
-              Chef::Log.warn(result.inspect)
               raise result
             when "Done"
               waiting = false
