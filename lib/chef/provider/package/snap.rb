@@ -221,6 +221,14 @@ class Chef
           waiting = true
           while waiting
             result = get_change_id(id)
+
+            if result["result"]["summary"] == "Install \"hello\" snap"
+              Chef::Log.warn("<=> get_change_id(#{id}) <=>")
+              Chef::Log.warn(result["result"]["status"])
+              Chef::Log.warn(result.class)
+              Chef::Log.warn(result.inspect)
+            end
+
             case result["result"]["status"]
             when "Do", "Doing", "Undoing", "Undo"
               # Continue
