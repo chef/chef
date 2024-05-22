@@ -88,7 +88,6 @@ jobs:
           - oraclelinux-9
           # - rockylinux-8 # Need to troubleshoot issue with container startup
           - rockylinux-9
-          - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
     runs-on: ubuntu-latest
