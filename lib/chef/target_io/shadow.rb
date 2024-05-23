@@ -28,15 +28,15 @@ module TargetIO
     class Passwd
       class << self
 
-        def method_missing(m, **kwargs, *args, &block)
-          Chef::Log.debug format('Shadow::Passwd::%s(%s)', m.to_s, args.join(', '))
+        def method_missing(m, *args, **kwargs, &block)
+          Chef::Log.debug format("Shadow::Passwd::%s(%s)", m.to_s, args.join(", "))
 
           if ChefConfig::Config.target_mode? && !Chef.run_context.transport_connection.os.unix?
-            raise 'Shadow support only on Unix, this is ' + Chef.run_context.transport_connection.platform.title
+            raise "Shadow support only on Unix, this is " + Chef.run_context.transport_connection.platform.title
           end
 
           backend = ChefConfig::Config.target_mode? ? TrainCompat::Shadow::Passwd : ::Shadow::Passwd
-          backend.send(m, **kwargs, *args, &block)
+          backend.send(m, *args, **kwargs, &block)
         end
       end
     end
