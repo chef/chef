@@ -7,19 +7,19 @@ module TargetIO
 
       class << self
         def getpwnam(name)
-          __getpw { |entry| entry['user'] == name }
+          __getpw { |entry| entry["user"] == name }
         end
 
         def getpwuid(uid)
-          __getpw { |entry| entry['uid'] == uid.to_i }
+          __getpw { |entry| entry["uid"] == uid.to_i }
         end
 
         def getgrnam(name)
-          __getgr { |entry| entry['name'] == name }
+          __getgr { |entry| entry["name"] == name }
         end
 
         def getgrgid(gid)
-          __getgr { |entry| entry['gid'] == gid.to_i }
+          __getgr { |entry| entry["gid"] == gid.to_i }
         end
 
         def __getpw(&block)
@@ -29,13 +29,13 @@ module TargetIO
           raise ArgumentError unless data
 
           ::Etc::Passwd.new(
-            data['user'],
-            data['password'],
-            data['uid'].to_i,
-            data['gid'].to_i,
-            data['desc'],
-            data['home'],
-            data['shell']
+            data["user"],
+            data["password"],
+            data["uid"].to_i,
+            data["gid"].to_i,
+            data["desc"],
+            data["home"],
+            data["shell"]
           )
         end
 
@@ -77,10 +77,10 @@ module TargetIO
           raise ArgumentError unless data
 
           ::Etc::Group.new(
-            data['name'],
-            data['password'],
-            data['gid'].to_i,
-            String(data['mem']).split(',')
+            data["name"],
+            data["password"],
+            data["gid"].to_i,
+            String(data["mem"]).split(",")
           )
         end
 

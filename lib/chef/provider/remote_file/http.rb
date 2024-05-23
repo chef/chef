@@ -96,7 +96,7 @@ class Chef
         end
 
         def want_progress?
-          events.formatter? && (Chef::Config[:show_download_progress] || !!new_resource.show_progress)
+          !ChefConfig::Config.target_mode? && events.formatter? && (Chef::Config[:show_download_progress] || !!new_resource.show_progress)
         end
 
         def progress_interval
