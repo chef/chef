@@ -1,15 +1,9 @@
 module TargetIO
-  # 38/50 done
   module TrainCompat
-    # 10/10 done
     class FileUtils
-      # done: cp, rm, mkdir_p, chown, remove_entry, rm_rf, mv, rm_r, chmod, touch
-      # missing: -
-      # Only Unix right now!
-      # (All commands are copied 1:1 from FileUtils source)
       class << self
         def chmod(mode, list, noop: nil, verbose: nil)
-          cmd = sprintf('chmod %s %s', __mode_to_s(mode), Array(list).join(' '))
+          cmd = sprintf("chmod %s %s", __mode_to_s(mode), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -18,7 +12,7 @@ module TargetIO
         end
 
         def chmod_R(mode, list, noop: nil, verbose: nil, force: nil)
-          cmd = sprintf('chmod -R%s %s %s', (force ? 'f' : ''), mode_to_s(mode), Array(list).join(' '))
+          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ''), mode_to_s(mode), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -27,7 +21,7 @@ module TargetIO
         end
 
         def chown(user, group, list, noop: nil, verbose: nil)
-          cmd = sprintf('chown %s %s', (group ? "#{user}:#{group}" : user || ':'), Array(list).join(' '))
+          cmd = sprintf("chown %s %s", (group ? "#{user}:#{group}" : user || ":"), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -36,7 +30,7 @@ module TargetIO
         end
 
         def chown_R(user, group, list, noop: nil, verbose: nil, force: nil)
-          cmd = sprintf('chown -R%s %s %s', (force ? 'f' : ''), (group ? "#{user}:#{group}" : user || ':'), Array(list).join(' '))
+          cmd = sprintf("chown -R%s %s %s", (force ? "f" : ""), (group ? "#{user}:#{group}" : user || ":"), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -51,7 +45,7 @@ module TargetIO
         # compare_stream
 
         def cp(src, dest, preserve: nil, noop: nil, verbose: nil)
-          cmd = "cp#{preserve ? ' -p' : ''} #{[src,dest].flatten.join ' '}"
+          cmd = "cp#{preserve ? ' -p' : ''} #{[src,dest].flatten.join(' ')}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -84,11 +78,11 @@ module TargetIO
 
         def install(src, dest, mode: nil, owner: nil, group: nil, preserve: nil, noop: nil, verbose: nil)
           cmd = "install -c"
-          cmd << ' -p' if preserve
-          cmd << ' -m ' << mode_to_s(mode) if mode
+          cmd << " -p" if preserve
+          cmd << " -m " << mode_to_s(mode) if mode
           cmd << " -o #{owner}" if owner
           cmd << " -g #{group}" if group
-          cmd << ' ' << [src, dest].flatten.join(' ')
+          cmd << " " << [src, dest].flatten.join(" ")
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -158,7 +152,7 @@ module TargetIO
 
         def rmdir(list, parents: nil, noop: nil, verbose: nil)
           return if noop
-          cmd = "rmdir #{Array(list).join ' '}"
+          cmd = "rmdir #{Array(list).join(' ')}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -167,7 +161,7 @@ module TargetIO
         end
 
         def rm(list, force: nil, noop: nil, verbose: nil)
-          cmd = "rm#{force ? ' -f' : ''} #{Array(list).join ' '}"
+          cmd = "rm#{force ? ' -f' : ''} #{Array(list).join(' ')}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -180,7 +174,7 @@ module TargetIO
         end
 
         def rm_r(list, force: nil, noop: nil, verbose: nil, secure: nil)
-          cmd = "rm -r#{force ? 'f' : ''} #{Array(list).join ' '}"
+          cmd = "rm -r#{force ? 'f' : ''} #{Array(list).join(' ')}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -196,7 +190,7 @@ module TargetIO
         alias_method :safe_unlink, :rm_rf
 
         def rmdir(list, parents: nil, noop: nil, verbose: nil)
-          cmd = "rmdir #{parents ? '-p ' : ''}#{Array(list).join ' '}"
+          cmd = "rmdir #{parents ? '-p ' : ''}#{Array(list).join(' ')}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -207,12 +201,12 @@ module TargetIO
         def touch(list, noop: nil, verbose: nil, mtime: nil, nocreate: nil)
           return if noop
 
-          __run_command "touch #{nocreate ? '-c ' : ''}#{mtime ? mtime.strftime('-t %Y%m%d%H%M.%S ') : ''}#{Array(list).join ' '}"
+          __run_command "touch #{nocreate ? '-c ' : ''}#{mtime ? mtime.strftime('-t %Y%m%d%H%M.%S ') : ''}#{Array(list).join(' ')}"
         end
 
         # uptodate?
 
-        def method_missing(m, *args, &block)
+        def method_missing(m, *_args, **_kwargs, &_block)
           raise 'Unsupported ' + self.class.to_s + ' method ' + m.to_s
         end
 
