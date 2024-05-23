@@ -35,7 +35,7 @@ module TargetIO
           cmd += <<-BASH4
             shopt -s globstar #{matchdot}
             cd #{base}
-            for f in #{pattern.join(' ')}; do
+            for f in #{pattern.join(" ")}; do
               printf '%s\n' "$f";
             done
           BASH4
