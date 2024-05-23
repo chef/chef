@@ -3,8 +3,12 @@
 module TargetIO
   module TrainCompat
     class HTTP
-      def initialize(url)
-        @url = url
+      attr_reader :last_response
+
+      def initialize(url, options = {})
+        @url = url.is_a?(URI) ? url.to_s : url
+        @options = options
+        @last_response = ""
       end
 
       # Send an HTTP HEAD request to the path
@@ -47,14 +51,36 @@ module TargetIO
         request(:DELETE, path, headers)
       end
 
+      # Used inside Chef::Provider::RemoteFile::HTTPS
+      def streaming_request(path, headers = {}, tempfile = nil)
+        content = get(path, headers)
+        @last_response = content
+
+        tempfile.write(content)
+        tempfile.close
+
+        tempfile
+      end
+
       def request(method, path, headers = {}, data = false)
         cmd = nil
+        path = path.is_a?(URI) ? path.to_s : path
+        headers.merge!(@options[:headers] || {})
+
         SUPPORTED_COMMANDS.each do |command_name|
           executable = which(command_name).chop
           next if !executable || executable.empty?
 
-          url = path.start_with?('http') ? path : File.join(@url, path)
-          cmd = self.send(command_name.to_sym, executable, method.to_s.upcase, url, headers, data)
+          # There are different ways to call (constructur, argument, combination of both)
+          full_url = if path.start_with?("http")
+                       path
+                     elsif path.empty? || @url.end_with?(path)
+                       @url
+                     else
+                       File.join(@url, path)
+                     end
+
+          cmd = self.send(command_name.to_sym, executable, method.to_s.upcase, full_url, headers, data)
           break
         end
 

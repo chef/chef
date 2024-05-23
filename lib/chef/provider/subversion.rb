@@ -134,7 +134,7 @@ class Chef
       alias :revision_slug :revision_int
 
       def find_current_revision
-        return nil unless ::TargetUI::File.exist?(::File.join(new_resource.destination, ".svn"))
+        return nil unless ::TargetIO::File.exist?(::File.join(new_resource.destination, ".svn"))
 
         command = scm(:info)
         svn_info = shell_out!(command, **run_options(cwd: cwd, returns: [0, 1])).stdout

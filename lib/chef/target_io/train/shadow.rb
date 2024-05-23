@@ -4,11 +4,10 @@ module TargetIO
       # @see https://www.rubydoc.info/gems/ruby-shadow/2.5.0
       class Passwd
         class << self
-          # Current Chef providers only call `getspent`
           def getspnam(name)
             content = ::TargetIO::File.read("/etc/shadow")
             entries = __parse_shadow(content)
-            data    = entries.detect { |entry| entry['name'] == name }
+            data    = entries.detect { |entry| entry["name"] == name }
             return ::TargetIO::Shadow::Entry.new unless data
 
             ::TargetIO::Shadow::Entry.new(
