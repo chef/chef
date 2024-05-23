@@ -14,7 +14,7 @@ override "makedepend", version: "1.0.5"
 override "ncurses", version: "6.3"
 override "nokogiri", version: "1.13.1"
 if windows?
-    override "openssl", version: "1.0.2zi"
+  override "openssl", version: "1.0.2zi"
 end
 override "openssl", version: mac_os_x? ? "1.1.1m" : "1.0.2zi"
 override "pkg-config-lite", version: "0.28-1"
