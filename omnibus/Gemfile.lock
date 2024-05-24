@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 80f5c3dc524b7a1d84733aaf89539493082c80e4
+  revision: 062f19114cc1f880a31d82ef7f301381242b70a5
   branch: jfm/chef-openssl-verify
   specs:
     omnibus-software (24.4.318)
@@ -201,9 +201,6 @@ GEM
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
     ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
-    ffi (1.16.3-x64-mingw32)
-    ffi (1.16.3-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
