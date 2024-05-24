@@ -58,6 +58,13 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
   fi
 fi
 
+# force regions on omnibus queues
+[[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]]; then
+  export AWS_REGION="us-west-2"
+else
+  export AWS_REGION="us-west-1"
+fi
+
 # Only if on chef-canary or chef org
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
 
