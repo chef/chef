@@ -68,9 +68,6 @@ fi
 
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
 
-  # export VAULT_ADDR="https://vault.ps.chef.co"
-  # export VAULT_TOKEN=$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)
-
   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
     lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
     export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
