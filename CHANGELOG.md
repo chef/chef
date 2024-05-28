@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.46 -->
-## [v18.4.46](https://github.com/chef/chef/tree/v18.4.46) (2024-05-28)
+<!-- latest_release 18.4.47 -->
+## [v18.4.47](https://github.com/chef/chef/tree/v18.4.47) (2024-05-28)
 
 #### Merged Pull Requests
-- update kitchen-tests platforms [#14395](https://github.com/chef/chef/pull/14395) ([Stromweld](https://github.com/Stromweld))
+- [CookbookManifest#files_for] Avoid unnecessary allocations [#14388](https://github.com/chef/chef/pull/14388) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [CookbookManifest#files_for] Avoid unnecessary allocations [#14388](https://github.com/chef/chef/pull/14388) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.47 -->
 - update kitchen-tests platforms [#14395](https://github.com/chef/chef/pull/14395) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.46 -->
 - [Knife#pattern_arg_from] Use start_with? [#14384](https://github.com/chef/chef/pull/14384) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.45 -->
 - Move Ubuntu 18.04 kitchen test to Virtualbox + Vagrant  [#14392](https://github.com/chef/chef/pull/14392) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.44 -->
