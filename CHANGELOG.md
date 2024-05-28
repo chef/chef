@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.44 -->
-## [v18.4.44](https://github.com/chef/chef/tree/v18.4.44) (2024-05-22)
+<!-- latest_release 18.4.45 -->
+## [v18.4.45](https://github.com/chef/chef/tree/v18.4.45) (2024-05-28)
 
 #### Merged Pull Requests
-- Move Ubuntu 18.04 kitchen test to Virtualbox + Vagrant  [#14392](https://github.com/chef/chef/pull/14392) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Knife#pattern_arg_from] Use start_with? [#14384](https://github.com/chef/chef/pull/14384) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Knife#pattern_arg_from] Use start_with? [#14384](https://github.com/chef/chef/pull/14384) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.45 -->
 - Move Ubuntu 18.04 kitchen test to Virtualbox + Vagrant  [#14392](https://github.com/chef/chef/pull/14392) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.44 -->
 - Test FIPS MD5 [#14387](https://github.com/chef/chef/pull/14387) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.43 -->
 - Remove EOL Warning [#14366](https://github.com/chef/chef/pull/14366) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.42 -->
