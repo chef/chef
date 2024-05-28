@@ -73,6 +73,7 @@ platforms:
   - name: ubuntu-18.04
   - name: ubuntu-20.04
   - name: ubuntu-22.04
+  - name: ubuntu-24.04
 
 suites:
   - name: end-to-end

@@ -35,8 +35,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
           - macos-13
+          - macos-12
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -56,7 +56,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14
+          - macos-latest
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -79,17 +79,17 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
-          - centos-7
           - debian-11
           - debian-12
           - fedora-latest
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
-          # - rockylinux-8 # Need to troubleshoot issue with container startup
+          - rockylinux-8
           - rockylinux-9
           - ubuntu-2004
           - ubuntu-2204
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -112,6 +112,7 @@ jobs:
       matrix:
         os:
           - amazonlinux-2
+          - centos-7
           - oraclelinux-7
     runs-on: ubuntu-20.04
     env:
@@ -135,7 +136,7 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
-          # - centos-7 Need to troubleshoot slow and hanging behaviour on lifecycle hook run
+          # - centos-7 # Need to troubleshoot slow and hanging behaviour on lifecycle hook run
           - debian-11
           - debian-12
           - fedora-latest
@@ -150,6 +151,7 @@ jobs:
           - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist

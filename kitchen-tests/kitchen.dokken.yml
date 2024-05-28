@@ -42,148 +42,156 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
 
 platforms:
-- name: amazonlinux-2
-  driver:
-    image: dokken/amazonlinux-2
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: amazonlinux-2
+    driver:
+      image: dokken/amazonlinux-2
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: amazonlinux-2023
-  driver:
-    image: dokken/amazonlinux-2023
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: amazonlinux-2023
+    driver:
+      image: dokken/amazonlinux-2023
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: debian-12
-  driver:
-    image: dokken/debian-12
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+  - name: debian-12
+    driver:
+      image: dokken/debian-12
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update -y
+        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
-- name: debian-11
-  driver:
-    image: dokken/debian-11
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+  - name: debian-11
+    driver:
+      image: dokken/debian-11
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update -y
+        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
-- name: centos-7
-  driver:
-    image: dokken/centos-7
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN yum -y install e2fsprogs
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN yum install -y centos-release-scl
-      - RUN yum install -y devtoolset-7
+  - name: centos-7
+    driver:
+      image: dokken/centos-7
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN yum -y install e2fsprogs
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN yum install -y centos-release-scl
+        - RUN yum install -y devtoolset-7
 
-- name: almalinux-8
-  driver:
-    image: dokken/almalinux-8
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: almalinux-8
+    driver:
+      image: dokken/almalinux-8
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: almalinux-9
-  driver:
-    image: dokken/almalinux-9
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: almalinux-9
+    driver:
+      image: dokken/almalinux-9
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: rockylinux-8
-  driver:
-    image: dokken/rockylinux-8
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: rockylinux-8
+    driver:
+      image: dokken/rockylinux-8
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN mkdir -p /etc/sysconfig/network-scripts
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: rockylinux-9
-  driver:
-    image: dokken/rockylinux-9
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: rockylinux-9
+    driver:
+      image: dokken/rockylinux-9
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN mkdir -p /etc/sysconfig/network-scripts
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: oraclelinux-7
-  driver:
-    image: dokken/oraclelinux-7
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN yum -y install e2fsprogs
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
-      - RUN printf "[centos-sclo-rh]\nname=CentOS-7 - SCLo rh\nbaseurl=https://archive.kernel.org/centos-vault/7.8.2003/sclo/x86_64/rh/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-      - RUN yum install -y devtoolset-7
+  - name: oraclelinux-7
+    driver:
+      image: dokken/oraclelinux-7
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN yum -y install e2fsprogs
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
+        - RUN printf "[centos-sclo-rh]\nname=CentOS-7 - SCLo rh\nbaseurl=https://archive.kernel.org/centos-vault/7.8.2003/sclo/x86_64/rh/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
+        - RUN yum install -y devtoolset-7
 
-- name: oraclelinux-8
-  driver:
-    image: dokken/oraclelinux-8
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN dnf -y reinstall systemd
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: oraclelinux-8
+    driver:
+      image: dokken/oraclelinux-8
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN dnf -y reinstall systemd
+        - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: oraclelinux-9
-  driver:
-    image: dokken/oraclelinux-9
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN dnf -y install e2fsprogs
-      - RUN dnf -y reinstall systemd
-      - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: oraclelinux-9
+    driver:
+      image: dokken/oraclelinux-9
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN dnf -y reinstall systemd
+        - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: fedora-latest
-  driver:
-    image: dokken/fedora-latest
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  - name: fedora-latest
+    driver:
+      image: dokken/fedora-latest
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: ubuntu-18.04
-  driver:
-    image: dokken/ubuntu-18.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+  - name: ubuntu-18.04
+    driver:
+      image: dokken/ubuntu-18.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update -y
+        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
-- name: ubuntu-20.04
-  driver:
-    image: dokken/ubuntu-20.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+  - name: ubuntu-20.04
+    driver:
+      image: dokken/ubuntu-20.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update -y
+        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
-- name: ubuntu-22.04
-  driver:
-    image: dokken/ubuntu-22.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update -y
-      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+  - name: ubuntu-22.04
+    driver:
+      image: dokken/ubuntu-22.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update -y
+        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
-- name: opensuse-leap-15
-  driver:
-    image: dokken/opensuse-leap-15
-    pid_one_command: /usr/lib/systemd/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
+  - name: ubuntu-24.04
+    driver:
+      image: dokken/ubuntu-24.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update -y
+        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+
+  - name: opensuse-leap-15
+    driver:
+      image: dokken/opensuse-leap-15
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN /usr/bin/zypper --non-interactive update
+        - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
