@@ -59,19 +59,23 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
 fi
 
 # Only if on chef-canary or chef org
+# force regions on omnibus queues
+[[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]]; then
+  export AWS_REGION="us-west-2"
+else
+  export AWS_REGION="us-west-1"
+fi
+
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
 
-  export VAULT_ADDR="https://vault.ps.chef.co"
-  export VAULT_TOKEN=$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)
-
   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
-    lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text)
+    lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
     export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
   fi
-  export ARTIFACTORY_PASSWORD=$(vault kv get -field password account/static/artifactory/buildkite)
+  export ARTIFACTORY_PASSWORD=$(aws ssm get-parameter --name "buildkite-artifactory-docker-full-access-token" --query Parameter.Value --with-decryption --output text --region ${AWS_REGION})
 
   # Only if on RPM-based Linux distros
   if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]]; then
-    export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/signing_certs)
+    export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
   fi
 fi
