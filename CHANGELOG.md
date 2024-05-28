@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.49 -->
-## [v18.4.49](https://github.com/chef/chef/tree/v18.4.49) (2024-05-28)
+<!-- latest_release 18.4.50 -->
+## [v18.4.50](https://github.com/chef/chef/tree/v18.4.50) (2024-05-28)
 
 #### Merged Pull Requests
-- [CookbookSynchronizer#ensure_cookbook_paths] Move file_cache_path method out of loop [#14391](https://github.com/chef/chef/pull/14391) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [PathHelper#join] Reduce allocations [#14385](https://github.com/chef/chef/pull/14385) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [PathHelper#join] Reduce allocations [#14385](https://github.com/chef/chef/pull/14385) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.50 -->
 - [CookbookSynchronizer#ensure_cookbook_paths] Move file_cache_path method out of loop [#14391](https://github.com/chef/chef/pull/14391) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.49 -->
 - [StateTracking] Do in-place compact [#14390](https://github.com/chef/chef/pull/14390) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.48 -->
 - [CookbookManifest#files_for] Avoid unnecessary allocations [#14388](https://github.com/chef/chef/pull/14388) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.47 -->
