@@ -218,6 +218,7 @@ class Chef
           waiting = true
           while waiting
             result = get_change_id(id)
+
             case result["result"]["status"]
             when "Do", "Doing", "Undoing", "Undo"
               # Continue

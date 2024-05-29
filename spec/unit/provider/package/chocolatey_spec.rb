@@ -36,9 +36,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
   # installed packages (ConEmu is upgradable)
   let(:local_list_stdout) do
     <<~EOF
-      Chocolatey v0.9.9.11
-      chocolatey|0.9.9.11
-      ConEmu|15.10.25.0
+      Chocolatey v0.9.9.10
+      chocolatey|0.9.9.12
+      ConEmu|15.10.25.2
     EOF
   end
 
@@ -47,9 +47,20 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(stdout: local_list_stdout)
     allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
+    allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "2.1.0"))
+    # Mock the local file system choco queries
+    allow(provider).to receive(:get_local_pkg_dirs).and_return(%w{chocolatey ConEmu})
+    allow(provider).to receive(:fetch_package_versions).and_return({ "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" })
+  end
+
+  after(:each) do
+    provider.instance_variable_set(:@get_choco_version, nil)
   end
 
   def allow_remote_list(package_names, args = nil)
+    # Ensure that when we set this, we invalidate any cache since we're changing
+    # the returned data on purpose
+    provider.invalidate_cache
     remote_list_stdout = <<~EOF
       Chocolatey v0.9.9.11
       chocolatey|0.9.9.11
@@ -59,11 +70,12 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
+
     package_names.each do |pkg|
       if args
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *([pkg] + args), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       else
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       end
     end
   end
@@ -75,6 +87,25 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
     it "should support arrays" do
       expect(provider.use_multipackage_api?).to be true
+    end
+  end
+
+  describe "choco searches change with the version" do
+    it "Choco V1 uses List" do
+      allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "1.4.0"))
+      expect(provider.query_command).to eql("list")
+    end
+
+    it "Choco V2 uses Search" do
+      allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "2.1.0"))
+      expect(provider.query_command).to eql("search")
+    end
+  end
+
+  describe "bulk_query changes the search behaviour" do
+    it "should respect bulk_query when getting working out what to search" do
+      new_resource.bulk_query(true)
+      expect(provider.collect_package_requests).to eql(["*"])
     end
   end
 
@@ -121,6 +152,13 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     end
   end
 
+  describe "the query cache should be invalidated if the config is clean" do
+    it "should return false to cache_is_valid? by default" do
+      provider.invalidate_cache
+      expect(provider.cache_is_valid?).to eql(false)
+    end
+  end
+
   describe "#load_current_resource" do
     it "should return a current_resource" do
       expect(provider.load_current_resource).to be_kind_of(Chef::Resource::ChocolateyPackage)
@@ -131,10 +169,21 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       expect(provider.current_resource.package_name).to eql(["git"])
     end
 
-    it "should load and downcase names in the installed_packages hash" do
+    it "should load and downcase names in the installed_packages hash (with disk provider)" do
+      new_resource.use_choco_list(false)
+      provider.invalidate_cache
       provider.load_current_resource
       expect(provider.send(:installed_packages)).to eql(
         { "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" }
+      )
+    end
+
+    it "should load and downcase names in the installed_packages hash (with choco list provider)" do
+      new_resource.use_choco_list(true)
+      provider.invalidate_cache
+      provider.load_current_resource
+      expect(provider.send(:installed_packages)).to eql(
+        { "chocolatey" => "0.9.9.12", "conemu" => "15.10.25.2" }
       )
     end
 
@@ -150,7 +199,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       new_resource.package_name("package-does-not-exist")
       new_resource.returns([0])
       allow(provider).to receive(:shell_out_compacted!)
-        .with(choco_exe, "list", "-r", new_resource.package_name.first, { returns: new_resource.returns, timeout: timeout })
+        .with(choco_exe, provider.query_command, "-r", new_resource.package_name.first, { returns: new_resource.returns, timeout: timeout })
         .and_raise(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
       expect { provider.send(:available_packages) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
     end
@@ -508,7 +557,7 @@ describe "behavior when Chocolatey is not installed" do
   end
 
   let(:error_regex) do
-    /Could not locate.*install.*cookbook.*PowerShell.*GetEnvironmentVariable/m
+    /Could not locate.*installer.*resource.*PowerShell.*GetEnvironmentVariable/m
   end
 
   context "#choco_exe" do

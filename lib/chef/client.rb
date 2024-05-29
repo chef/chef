@@ -305,8 +305,6 @@ class Chef
         # keep this inside the main loop to get exception backtraces
         end_profiling
 
-        warn_if_eol
-
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
@@ -334,19 +332,6 @@ class Chef
     # Private API
     # @todo make this stuff protected or private
     #
-
-    # @api private
-    def warn_if_eol
-      require_relative "version"
-
-      # We make a release every year so take the version you're on + 2006 and you get
-      # the year it goes EOL
-      eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
-
-      if Time.now > Time.new(eol_year, 5, 01)
-        logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
-      end
-    end
 
     # @api private
     def configure_formatters
@@ -663,7 +648,7 @@ class Chef
           logger.trace("New client keys created in the Certificate Store - skipping registration")
         end
         events.skipping_registration(client_name, config)
-      elsif File.exists?(config[:client_key])
+      elsif File.exist?(config[:client_key])
         events.skipping_registration(client_name, config)
         logger.trace("Client key #{config[:client_key]} is present - skipping registration")
       else
@@ -1069,7 +1054,7 @@ class Chef
     end
 
     def empty_directory?(path)
-      !File.exists?(path) || (Dir.entries(path).size <= 2)
+      !File.exist?(path) || (Dir.entries(path).size <= 2)
     end
 
     def is_last_element?(index, object)

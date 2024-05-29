@@ -27,8 +27,13 @@ class Chef
       provides :powershell_script
 
       action :run do
-        validate_script_syntax!
-        super()
+        Chef::Log.debug("using inline impl: #{new_resource.use_inline_powershell}")
+        if new_resource.use_inline_powershell
+          run_using_powershell_exec
+        else
+          validate_script_syntax!
+          super()
+        end
       end
 
       # Set InputFormat to None as PowerShell will hang if STDIN is redirected
@@ -38,6 +43,7 @@ class Chef
       def command
         # Must use -File rather than -Command to launch the script
         # file created by the base class that contains the script
+
         # code -- otherwise, powershell.exe does not propagate the
         # error status of a failed Windows process that ran at the
         # end of the script, it gets changed to '1'.
@@ -51,6 +57,69 @@ class Chef
       end
 
       protected
+
+      # Run the inline version of powershell, using powershell_exec rather than powershell_out - this should
+      # hopefully
+      def run_using_powershell_exec
+        # Because of the nature of powershell_exec, we can't easily stream data to the shell, so we just flat out
+        # disallow this combination
+        if new_resource.live_stream
+          raise "powershell_script does not support live_stream when inline powershell is enabled - please choose one or the other"
+        end
+
+        # This comes from the execute super resource - since we want to limit the scope of this to powershell,
+        # we use this here
+        if creates && sentinel_file.exist?
+          logger.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
+          return false
+        end
+
+        converge_by("execute direct powershell #{new_resource.name}") do
+          # For scoping - otherwise, we lose return_code/stdout/stderr when the timeout block is over
+          return_code = nil
+          stdout = nil
+          stderr = nil
+
+          r = powershell_exec!(powershell_wrapper_script, new_resource.interpreter.to_sym, timeout: new_resource.timeout)
+          # Split out the stdout/return code format if needed
+          return_code = r.result
+
+          # The script returns an array if there is stdout, or just a plain return value if
+          # there is not - we need to handle both of these cases for full coverage
+          if return_code.is_a?(Array)
+            # Why to_s?  Because if the only powershell output is an object,
+            # it'll be returned here
+            stdout = return_code[0].to_s
+            stderr = r.errors.join("\n")
+            return_code = return_code[-1]
+          else
+            stdout = ""
+            stderr = r.errors.join("\n")
+          end
+
+          Chef::Log.info("Powershell output: #{stdout}") unless stdout.empty?
+          Chef::Log.info("Powershell error: #{stderr}") unless stderr.empty?
+
+          # Check the return code, and validate.  This code is cribbed from execute.rb, and does exactly the same
+          # thing as it does there
+          valid_returns = new_resource.returns
+          valid_returns = [valid_returns] if valid_returns.is_a?(Integer)
+          unless valid_returns.include?(return_code)
+            # Handle sensitive results
+            if sensitive?
+              ex = ChefPowerShell::PowerShellExceptions::PowerShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")
+              # Forcibly hide the exception cause chain here so we don't log the unredacted version
+              def ex.cause
+                nil
+              end
+              raise ex
+            else
+              raise ChefPowerShell::PowerShellExceptions::PowerShellCommandFailed.new("Powershell command returned #{return_code} - output was \"#{stdout}\", error output  was \"#{stderr}\"")
+            end
+          end
+          true
+        end
+      end
 
       def interpreter_path
         # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
@@ -69,7 +138,7 @@ class Chef
       end
 
       def code
-        code = wrapper_script
+        code = powershell_wrapper_script
         logger.trace("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
         logger.trace("powershell_script provider will execute transformed code:\n\n#{code}\n")
         code
@@ -129,7 +198,11 @@ class Chef
       # last process run in the script if it is the last command
       # executed, otherwise 0 or 1 based on whether $? is set to true
       # (success, where we return 0) or false (where we return 1).
-      def wrapper_script
+      #
+      # This is the regular powershell version of the above script - the difference
+      # is that regular powershell allows for hidden visibility variables, due to the
+      # very slightly different semantics.
+      def powershell_wrapper_script
         <<~EOH
           # Chef Client wrapper for powershell_script resources
 
@@ -148,12 +221,23 @@ class Chef
           # Catch any exceptions -- without this, exceptions will result
           # In a zero return code instead of the desired non-zero code
           # that indicates a failure
+
+#{if new_resource.use_inline_powershell
+    # Inline powershell doesn't allow for private visibility variables,
+    # and uses return instead of exit
+    <<-EOI
+          trap [Exception] {write-error ($_.Exception.Message);return 1}
+          $interpolatedexitcode = $#{new_resource.convert_boolean_return}
+    EOI
+  else
+    <<-EOI
           trap [Exception] {write-error ($_.Exception.Message);exit 1}
 
           # Variable state that should not be accessible to the user code
           new-variable -name interpolatedexitcode -visibility private -value $#{new_resource.convert_boolean_return}
           new-variable -name chefscriptresult -visibility private
-
+    EOI
+  end}
           # Initialize a variable we use to capture $? inside a block
           $global:lastcmdlet = $null
 
@@ -198,7 +282,13 @@ class Chef
           # status of PowerShell.exe will be $exitstatus. If it was
           # launched with -Command, it will be 0 if $exitstatus was 0,
           # 1 (i.e. failed) otherwise.
-          exit $exitstatus
+#{if new_resource.use_inline_powershell
+    # Inline powershell needs return, not exit
+    "return $exitstatus\n"
+  else
+    "exit $exitstatus\n"
+  end
+}
         EOH
       end
 

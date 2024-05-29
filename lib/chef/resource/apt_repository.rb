@@ -99,6 +99,7 @@ class Chef
         ```
 
         **Add repository that needs custom options**:
+
         ```ruby
         apt_repository 'corretto' do
           uri          'https://apt.corretto.aws'
@@ -172,7 +173,7 @@ class Chef
         default: true, desired_state: false
 
       property :options, [String, Array],
-        description: "Additional options to set for the repository",
+        description: "Additional options to set for the repository.",
         default: [], coerce: proc { |x| Array(x) }
 
       default_action :add

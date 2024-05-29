@@ -90,7 +90,7 @@ class Chef
         if config[:filter_result]
           search_args[:filter_result] = create_result_filter(config[:filter_result])
         elsif (not ui.config[:attribute].nil?) && (not ui.config[:attribute].empty?)
-          search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute])
+          search_args[:filter_result] = create_result_filter_from_attributes(ui.config[:attribute], ui.attribute_field_separator)
         elsif config[:id_only]
           search_args[:filter_result] = create_result_filter_from_attributes([])
         end
@@ -179,10 +179,10 @@ class Chef
         final_filter
       end
 
-      def create_result_filter_from_attributes(filter_array)
+      def create_result_filter_from_attributes(filter_array, separator = ".")
         final_filter = {}
         filter_array.each do |f|
-          final_filter[f] = f.split(".")
+          final_filter[f] = f.split(separator)
         end
         # adding magic filter so we can actually pull the name as before
         final_filter["__display_name"] = [ "name" ]

@@ -47,9 +47,9 @@ describe Chef::Resource::PowershellScript do
     expect(resource.convert_boolean_return).to eq(false)
   end
 
-  it "inherits exactly the :cwd, :domain, :environment, :group, :password, :path, :user, :umask, :architecture, :elevated, :interpreter, :login properties from a parent resource class" do
+  it "inherits exactly the :cwd, :domain, :environment, :group, :password, :path, :user, :umask, :architecture, :elevated, :interpreter, :login, :use_inline_powershell properties from a parent resource class" do
     inherited_difference = Chef::Resource::PowershellScript.guard_inherited_attributes -
-      %i{cwd domain environment group password path user umask architecture elevated interpreter login}
+      %i{cwd domain environment group password path user umask architecture elevated interpreter login use_inline_powershell}
 
     expect(inherited_difference).to eq([])
   end

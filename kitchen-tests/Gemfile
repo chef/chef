@@ -4,9 +4,9 @@ gem "rake" # required to build some native extensions
 gem "chef", path: ".."
 gem "knife", path: "../knife"
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main" # avoids failures when we bump chef major
-gem "berkshelf", git: "https://github.com/chef/berkshelf.git", branch: "main"
+gem "chef-cli"
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
 gem "kitchen-inspec"
-gem "inspec"
+gem "inspec", ">= 5.0", "< 6"
 gem "test-kitchen"

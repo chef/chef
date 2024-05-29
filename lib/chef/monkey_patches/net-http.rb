@@ -23,7 +23,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           conn_port = port
         end
 
-        puts "opening connection to #{conn_addr}:#{conn_port}..."
+        Chef::Log.debug("opening connection to #{conn_addr}:#{conn_port}...")
         s = Timeout.timeout(@open_timeout, Net::OpenTimeout) {
           begin
             TCPSocket.open(conn_addr, conn_port, @local_host, @local_port)
@@ -33,7 +33,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           end
         }
         s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
-        puts "opened"
+        Chef::Log.debug("opened")
         if use_ssl?
           if proxy?
             plain_sock = BufferedIO.new(s, read_timeout: @read_timeout,
@@ -76,9 +76,13 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           # to IP address
           verify_hostname = @ssl_context.verify_hostname
 
+          # requiring 'resolv' near the top of the file causes registry.rb monkey patch to fail
+          # Windows 2012 R2 somehow fails to have Resolv defined unless we require it manually
+          require "resolv" unless defined?(Resolv)
+
           # Server Name Indication (SNI) RFC 3546/6066
           case @address
-          when Resolv::IPv4::Regex, Resolv::IPv6::Regex
+          when ::Resolv::IPv4::Regex, ::Resolv::IPv6::Regex
             # don't set SNI, as IP addresses in SNI is not valid
             # per RFC 6066, section 3.
 
@@ -88,7 +92,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
             ssl_host_address = @address
           end
 
-          puts "starting SSL for #{conn_addr}:#{conn_port}..."
+          Chef::Log.debug("starting SSL for #{conn_addr}:#{conn_port}...")
           s = OpenSSL::SSL::SSLSocket.new(s, @ssl_context)
           s.sync_close = true
           s.hostname = ssl_host_address if s.respond_to?(:hostname=) && ssl_host_address
@@ -101,7 +105,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           if (@ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE) && verify_hostname
             s.post_connection_check(@address)
           end
-          puts "SSL established, protocol: #{s.ssl_version}, cipher: #{s.cipher[0]}"
+          Chef::Log.debug("SSL established, protocol: #{s.ssl_version}, cipher: #{s.cipher[0]}")
         end
         @socket = BufferedIO.new(s, read_timeout: @read_timeout,
                                 write_timeout: @write_timeout,
@@ -111,7 +115,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
         on_connect
       rescue => exception
         if s
-          puts "Conn close because of connect error #{exception}"
+          Chef::Log.debug("Conn close because of connect error #{exception}")
           s.close
         end
         raise

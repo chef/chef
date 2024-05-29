@@ -219,14 +219,31 @@ class Chef
 
     # remove deleted files in cookbooks that are being used on the node
     def remove_deleted_files
+      cache_file_hash = {}
+      @cookbooks_by_name.each_key do |k|
+        cache_file_hash[k] = {}
+      end
+
+      # First populate files from cache
       cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_file|
         md = cache_file.match(%r{^cookbooks/([^/]+)/([^/]+)/(.*)})
         next unless md
 
-        ( cookbook_name, segment, file ) = md[1..3]
+        (cookbook_name, segment, file) = md[1..3]
         if have_cookbook?(cookbook_name)
+          cache_file_hash[cookbook_name][segment] ||= {}
+          cache_file_hash[cookbook_name][segment]["#{segment}/#{file}"] = cache_file
+        end
+      end
+      # Determine which files don't match manifest
+      @cookbooks_by_name.each_key do |cookbook_name|
+        cache_file_hash[cookbook_name].each_key do |segment|
           manifest_segment = cookbook_segment(cookbook_name, segment)
-          if manifest_segment.select { |manifest_record| manifest_record["path"] == "#{segment}/#{file}" }.empty?
+          manifest_record_paths = manifest_segment.map { |manifest_record| manifest_record["path"] }
+          to_be_removed = cache_file_hash[cookbook_name][segment].keys - manifest_record_paths
+          to_be_removed.each do |path|
+            cache_file = cache_file_hash[cookbook_name][segment][path]
+
             Chef::Log.info("Removing #{cache_file} from the cache; its is no longer in the cookbook manifest.")
             cache.delete(cache_file)
             @events.removed_cookbook_file(cache_file)
@@ -263,8 +280,9 @@ class Chef
     end
 
     def ensure_cookbook_paths
+      cookbook_path = File.join(Chef::Config[:file_cache_path], "cookbooks")
       cookbooks.each do |cookbook|
-        cb_dir = File.join(Chef::Config[:file_cache_path], "cookbooks", cookbook.name)
+        cb_dir = File.join(cookbook_path, cookbook.name)
         cookbook.root_paths = Array(cb_dir)
       end
     end

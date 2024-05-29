@@ -106,19 +106,19 @@ subscriptions:
   # the omnibus/docker/gem chain
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
-      - trigger_pipeline:docker/build
+      # - trigger_pipeline:docker/build
       - trigger_pipeline:macos_universal_package
-  - workload: artifact_published:current:chef:{{version_constraint}}
-    actions:
-      - bash:.expeditor/promote-docker-images.sh
+  # - workload: artifact_published:current:chef:{{version_constraint}}
+  #   actions:
+  #     - bash:.expeditor/promote-docker-images.sh
   - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:promote_artifactory_artifact
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
-      - bash:.expeditor/update_dockerfile.sh
-      - bash:.expeditor/promote-docker-images.sh
+      # - bash:.expeditor/update_dockerfile.sh
+      # - bash:.expeditor/promote-docker-images.sh
       - bash:.expeditor/publish-release-notes.sh
       - bash:.expeditor/announce-release.sh
       - built_in:publish_rubygems
@@ -152,6 +152,8 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
+          only_if: built_in:bump_version
+      - built_in:build_gem:
           only_if: built_in:bump_version
 
   # the habitat chain

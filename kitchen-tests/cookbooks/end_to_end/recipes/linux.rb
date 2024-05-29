@@ -68,7 +68,16 @@ end
 include_recipe "::_packages"
 include_recipe "::_chef_gem"
 
-include_recipe "ntp" unless fedora? # fedora 34+ doesn't have NTP
+unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
+  include_recipe value_for_platform(
+                   opensuseleap: { "default" => "ntp" },
+                   amazon: { "2" => "ntp" },
+                   oracle: { "<= 8" => "ntp" },
+                   centos: { "<= 8" => "ntp" },
+                   rhel: { "<= 8" => "ntp" },
+                   default: "chrony"
+                 )
+end
 
 resolver_config "/etc/resolv.conf" do
   nameservers [ "8.8.8.8", "8.8.4.4" ]
@@ -82,6 +91,12 @@ users_manage "sysadmin" do
   group_id 2300
   users users_from_databag
   action [:create]
+end
+
+# ssh_known_hosts_entry requires ssh-keyscan binary but that one
+# is not in the OpenSUSE Leap 15.5 dokken images by default
+package "ssh-tools" do
+  only_if { platform_family?("suse") }
 end
 
 ssh_known_hosts_entry "github.com"
@@ -119,16 +134,29 @@ inspec_waiver_file_entry "fake_inspec_control_002" do
 end
 
 user_ulimit "tomcat" do
+  as_soft_limit 65535
+  as_hard_limit "unlimited"
+  cpu_soft_limit 1024
+  cpu_hard_limit 8096
   filehandle_soft_limit 8192
   filehandle_hard_limit 8192
   process_soft_limit 61504
   process_hard_limit 61504
+  locks_limit 8192
+  maxlogins_soft_limit 5
+  maxlogins_hard_limit 10
   memory_limit 1024
+  msgqueue_soft_limit 2048
+  msgqueue_hard_limit 4096
   core_limit 2048
   core_soft_limit 1024
   core_hard_limit "unlimited"
   stack_soft_limit 2048
   stack_hard_limit 2048
+  sigpending_soft_limit 2048
+  sigpending_hard_limit 2048
+  rss_soft_limit
+  rss_hard_limit
   rtprio_soft_limit 60
   rtprio_hard_limit 60
 end
@@ -136,7 +164,9 @@ end
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
-chef_client_cron "Run chef-client as a cron job"
+chef_client_cron "Run chef-client as a cron job" do
+  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
+end
 
 chef_client_cron "Run chef-client with base recipe" do
   minute 0
@@ -145,6 +175,7 @@ chef_client_cron "Run chef-client with base recipe" do
   log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
+  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
 end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
@@ -168,19 +199,22 @@ include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sudo"
 include_recipe "::_sysctl"
 include_recipe "::_alternatives"
-include_recipe "::_cron"
+include_recipe "::_cron" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
-include_recipe "::_tests"
+# include_recipe "::_tests" # generates UTF-8 error
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
-if ::File.exist?("/etc/systemd/system")
-  include_recipe "::_habitat_config"
-  include_recipe "::_habitat_install_no_user"
-  include_recipe "::_habitat_package"
-  # include_recipe "::_habitat_service"
-  include_recipe "::_habitat_sup"
-  include_recipe "::_habitat_user_toml"
-end
+# TODO: re-enable when habitat recipes are fixed
+# unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
+#   if ::File.exist?("/etc/systemd/system")
+#     include_recipe "::_habitat_config"
+#     include_recipe "::_habitat_install_no_user"
+#     include_recipe "::_habitat_package"
+#     include_recipe "::_habitat_service"
+#     include_recipe "::_habitat_sup"
+#     include_recipe "::_habitat_user_toml"
+#   end
+# end
 
 include_recipe "::_snap" if platform?("ubuntu")

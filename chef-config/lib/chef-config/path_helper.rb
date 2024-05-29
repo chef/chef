@@ -59,11 +59,14 @@ module ChefConfig
       path_separator_regex = Regexp.escape(windows ? "#{File::SEPARATOR}#{BACKSLASH}" : File::SEPARATOR)
       trailing_slashes_regex = /[#{path_separator_regex}]+$/.freeze
       leading_slashes_regex = /^[#{path_separator_regex}]+/.freeze
+      separator = path_separator(windows: windows)
 
-      args.flatten.inject do |joined_path, component|
+      args.flatten!
+      args.inject do |joined_path, component|
         joined_path = joined_path.sub(trailing_slashes_regex, "")
         component = component.sub(leading_slashes_regex, "")
-        joined_path + "#{path_separator(windows: windows)}#{component}"
+        joined_path << "#{separator}#{component}"
+        joined_path
       end
     end
 
@@ -248,7 +251,7 @@ module ChefConfig
       paths << ENV[@@per_tool_home_environment] if defined?(@@per_tool_home_environment) && @@per_tool_home_environment && ENV[@@per_tool_home_environment]
       paths << ENV["CHEF_HOME"] if ENV["CHEF_HOME"]
       if windows
-        # By default, Ruby uses the the following environment variables to determine Dir.home:
+        # By default, Ruby uses the following environment variables to determine Dir.home:
         # HOME
         # HOMEDRIVE HOMEPATH
         # USERPROFILE

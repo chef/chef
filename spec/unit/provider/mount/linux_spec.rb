@@ -22,10 +22,11 @@ describe Chef::Provider::Mount::Linux do
   end
 
   before(:each) do
-    allow(::File).to receive(:exists?).with("/dev/sdz1").and_return true
-    allow(::File).to receive(:exists?).with("/tmp/foo").and_return true
-    allow(::File).to receive(:exists?).with("//192.168.11.102/Share/backup").and_return true
-    allow(::File).to receive(:exists?).with("//192.168.11.102/Share/backup folder").and_return true
+    allow(::File).to receive(:exist?).with("/etc/fstab").and_call_original
+    allow(::File).to receive(:exist?).with("/dev/sdz1").and_return true
+    allow(::File).to receive(:exist?).with("/tmp/foo").and_return true
+    allow(::File).to receive(:exist?).with("//192.168.11.102/Share/backup").and_return true
+    allow(::File).to receive(:exist?).with("//192.168.11.102/Share/backup folder").and_return true
     allow(::File).to receive(:realpath).with("/dev/sdz1").and_return "/dev/sdz1"
     allow(::File).to receive(:realpath).with("/tmp/foo").and_return "/tmp/foo"
   end

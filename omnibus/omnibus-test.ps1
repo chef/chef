@@ -19,7 +19,9 @@ function installChoco {
   }
 
   else {
-      Write-Output "Chocolatey is already installed"
+      Write-Output "Chocolatey is already installed, upgrading"
+      choco feature enable -n=allowGlobalConfirmation
+      choco upgrade chocolatey
   }
 }
 
@@ -115,6 +117,9 @@ $Env:CHEF_LICENSE = "accept-no-persist"
 # some tests need winrm configured
 winrm quickconfig -quiet
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
+
+# temp fix until we figure out whats going on in our specific environment as it pertains to unf_ext#
+gem install unf_ext -v 0.0.8.2 --source https://rubygems.org/gems/unf_ext
 
 bundle
 If ($lastexitcode -ne 0) { Throw $lastexitcode }

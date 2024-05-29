@@ -324,7 +324,10 @@ class Chef
           acls += mode_ace(SID.Everyone, (mode & 07))
         end
 
-        acls.nil? ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
+        # 'acls.nil?' is true if uninitialized, but false if the initial empty array value.
+        # 'acls.empty?' cannot be called if acls is nil but successfully guards against using the empty array value.
+        # either case should return nil from this method.
+        (acls.nil? || acls.empty?) ? nil : Chef::ReservedNames::Win32::Security::ACL.create(acls)
       end
 
       def target_group

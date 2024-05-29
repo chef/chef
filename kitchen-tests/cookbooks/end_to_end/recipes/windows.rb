@@ -71,6 +71,23 @@ powershell_script "sleep 1 second" do
   live_stream true
 end
 
+powershell_script "sleep 1 second inline" do
+  code "Start-Sleep -s 1"
+  use_inline_powershell true
+end
+
+powershell_script "ensure inline only_if guards work" do
+  code "Start-Sleep -s 1"
+  only_if "$True"
+  use_inline_powershell true
+end
+
+powershell_script "ensure inline not_if guards work" do
+  code "Start-Sleep -s 1"
+  not_if "$False"
+  use_inline_powershell true
+end
+
 powershell_script "sensitive sleep" do
   code "Start-Sleep -s 1"
   sensitive true
@@ -187,8 +204,7 @@ include_recipe "git"
 end
 
 locale "set system locale" do
-  lang "en_US.UTF-8"
-  only_if { debian? }
+  lang "en-us"
 end
 
 include_recipe "::_ohai_hint"
@@ -248,3 +264,4 @@ windows_feature_powershell "RSAT-AD-PowerShell" do
 end
 
 include_recipe "::_chef_gem"
+include_recipe "::_openssl"

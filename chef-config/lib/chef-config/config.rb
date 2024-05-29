@@ -1047,16 +1047,6 @@ module ChefConfig
     default :blocked_normal_attributes, nil
     default :blocked_override_attributes, nil
 
-    # deprecated config options that will be removed in Chef Infra Client 18
-    default :automatic_attribute_blacklist, nil
-    default :default_attribute_blacklist, nil
-    default :normal_attribute_blacklist, nil
-    default :override_attribute_blacklist, nil
-    default :automatic_attribute_whitelist, nil
-    default :default_attribute_whitelist, nil
-    default :normal_attribute_whitelist, nil
-    default :override_attribute_whitelist, nil
-
     # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
     # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network
     # round trips.

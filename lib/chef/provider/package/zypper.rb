@@ -132,6 +132,11 @@ class Chef
           end
           current_version ||= latest_version if is_installed
           current_version
+        rescue Mixlib::ShellOut::ShellCommandFailed => e
+          # zypper returns a '104' code if info is called for a non-existent package
+          return nil if e.message =~ /'104'/
+
+          raise
         end
 
         def resolve_available_version(package_name, new_version)
