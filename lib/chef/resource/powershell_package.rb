@@ -46,7 +46,7 @@ class Chef
 
       property :allow_clobber,  [TrueClass, FalseClass],
         description: "Overrides warning messages about installation conflicts about existing commands on a computer.",
-        default: false
+        default: false, introduced: "18.5"
 
     end
   end
