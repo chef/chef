@@ -132,7 +132,7 @@ class Chef
       def add_trusted_cert(cert)
         http_client.cert_store.add_cert(cert)
       rescue OpenSSL::X509::StoreError => e
-        raise e unless e.message == "cert already in hash table"
+        raise e unless e.message =~ /cert already in hash table/
       end
 
     end
