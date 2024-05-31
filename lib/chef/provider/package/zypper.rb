@@ -146,7 +146,6 @@ class Chef
             if md = line.match(/^(\S*)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(.*)$/)
               (status, name, type, version, arch, repo) = [ md[1], md[2], md[3], md[4], md[5], md[6] ]
               next if version == "Version" # header
-              next if name != package_name
 
               # sometimes even though we request a specific version in the search string above and have match exact, we wind up
               # with other versions in the output, particularly getting the installed version when downgrading.
