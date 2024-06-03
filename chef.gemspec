@@ -52,7 +52,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
   s.add_dependency "chef-zero", ">= 14.0.11"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
-  s.add_dependency "nori", "< 2.7.0"
+  s.add_dependency "nori", "<= 2.7.0"
 
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, osx_profile and plist resources
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
