@@ -49,7 +49,9 @@ class Chef
             ImmutableArray.new(value, __root__, __node__, __precedence__)
           end
         else
-          safe_dup(value).freeze
+          # We return any already frozen strings, since that's common over the course of a run.
+          # Check `frozen?` first since that's faster than a Class comparison
+          value.frozen? && String === value ? value : safe_dup(value).freeze
         end
       end
 
