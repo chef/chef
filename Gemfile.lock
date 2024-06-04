@@ -34,13 +34,6 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
-
 PATH
   remote: .
   specs:
@@ -77,7 +70,7 @@ PATH
       train-winrm (>= 0.2.5)
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
+      vault (~> 0.18)
     chef (18.4.52-x64-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
@@ -113,7 +106,7 @@ PATH
       train-winrm (>= 0.2.5)
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
+      vault (~> 0.18)
       win32-api (~> 1.10.0)
       win32-certstore (~> 0.6.15)
       win32-event (~> 0.6.1)
@@ -428,10 +421,11 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.4.2)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    vault (0.17.0)
+    vault (0.18.2)
       aws-sigv4
     webmock (3.19.1)
       addressable (>= 2.8.0)
@@ -510,7 +504,6 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
