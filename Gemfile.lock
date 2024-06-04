@@ -322,7 +322,6 @@ GEM
       net-ssh (>= 5.0.0, < 8.0.0)
     net-ssh (7.1.0)
     netrc (0.11.0)
-    nori (2.7.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
