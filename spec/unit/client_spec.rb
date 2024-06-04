@@ -308,25 +308,6 @@ describe Chef::Client do
     end
   end
 
-  describe "eol release warning" do
-    it "warns when running an EOL release" do
-      stub_const("Chef::VERSION", 15)
-      # added a call to client because Time.now gets invoked multiple times during instantiation. Don't mock Time until after client initialized
-      client
-      expect(Time).to receive(:now).and_return(Time.new(2024, 12, 1, 5))
-      allow(client).to receive(:eol_override).and_return(false)
-      expect(logger).to receive(:warn).with("This release of Chef Infra Client became end of life (EOL) on Nov 30, 2024. Please update to a supported release to receive new features, bug fixes, and security updates.")
-      client.warn_if_eol
-    end
-
-    it "does not warn when running an non-EOL release" do
-      stub_const("Chef::VERSION", 15)
-      allow(Time).to receive(:now).and_return(Time.new(2021, 4, 30))
-      expect(logger).to_not receive(:warn).with(/became end of life/)
-      client.warn_if_eol
-    end
-  end
-
   describe "authentication protocol selection" do
     context "when FIPS is disabled" do
       before do

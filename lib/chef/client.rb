@@ -292,8 +292,6 @@ class Chef
         # keep this inside the main loop to get exception backtraces
         end_profiling
 
-        warn_if_eol
-
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
@@ -321,35 +319,6 @@ class Chef
     # Private API
     # @todo make this stuff protected or private
     #
-
-    # @api private
-    def warn_if_eol
-      require_relative "version"
-
-      # New Date format is YYYY-MM-DD or false
-      new_date = eol_override
-
-      # We make a release every year so take the version you're on + 2006 and you get
-      # the year it goes EOL. 1/8/2024 - EOL for Chef-17 is now November 1, 2024
-      # eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
-      eol_year = "2024"
-      cut_off_date = !!new_date ? Time.parse(new_date) : Time.new(eol_year, 11, 30)
-
-      return if Time.now < cut_off_date
-
-      logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on #{cut_off_date.strftime("%b %d, %Y")}. Please update to a supported release to receive new features, bug fixes, and security updates.")
-    end
-
-    def eol_override
-      # If you want to override the existing EOL date, add a file in the root of Chef
-      # put a date in it in the form of YYYY-DD-MM.
-      override_file = "EOL_override"
-      if File.exist?(override_file)
-        File.read(File.expand_path(override_file)).strip
-      else
-        false
-      end
-    end
 
     # @api private
     def configure_formatters
