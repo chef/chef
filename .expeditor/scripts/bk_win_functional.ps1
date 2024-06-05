@@ -19,6 +19,12 @@ if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 Write-Output "--- configure winrm"
 winrm quickconfig -q
 
+Write-Output "--- Ensuring Chef-PowerShell is installed"
+$is_chef_powershell_installed = gem list chef-powershell
+if (-not($is_chef_powershell_installed.Contains("18"))){
+    gem install chef-powershell:18.1.0
+}
+
 Write-Output "--- bundle install"
 bundle config set --local without 'omnibus_package'
 bundle install --jobs=3 --retry=3
