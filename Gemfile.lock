@@ -44,12 +44,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.4.52)
+    chef (18.4.54)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.4.52)
-      chef-utils (= 18.4.52)
+      chef-config (= 18.4.54)
+      chef-utils (= 18.4.54)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -82,9 +82,9 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.4.52)
+      chef-config (= 18.4.54)
       chef-powershell (~> 18.1.0)
-      chef-utils (= 18.4.52)
+      chef-utils (= 18.4.54)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -128,15 +128,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.4.52)
-      chef (= 18.4.52)
+    chef-bin (18.4.54)
+      chef (= 18.4.54)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.4.52)
+    chef-config (18.4.54)
       addressable
-      chef-utils (= 18.4.52)
+      chef-utils (= 18.4.54)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -145,7 +145,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.4.52)
+    chef-utils (18.4.54)
       concurrent-ruby
 
 GEM
@@ -510,7 +510,7 @@ DEPENDENCIES
   rake
   rb-readline
   rest-client!
-   ruby-shadow!
+  ruby-shadow!
   rspec
   webmock
 
