@@ -115,6 +115,12 @@ $env:Path -split ';' | ForEach-Object { $_ }
 Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
 gem uninstall -I libyajl2
 
+Write-Output "--- Ensuring Chef-PowerShell is installed"
+$is_chef_powershell_installed = gem list chef-powershell
+if (-not($is_chef_powershell_installed.Contains("18"))){
+    gem install chef-powershell:18.1.0
+}
+
 Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"
 bundle config set --local without development
