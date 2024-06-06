@@ -29,6 +29,7 @@ require_relative "../providers"
 require_relative "../resources"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
+require_relative "../licensing_check"
 
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
@@ -228,6 +229,7 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def run_application
+    Chef::LicensingCheck.check_software_entitlement!
     parse_options
     run_chef_recipe
     Chef::Application.exit! "Exiting", 0
@@ -242,7 +244,7 @@ class Chef::Application::Apply < Chef::Application
   def run(enforce_license: false)
     reconfigure
     check_license_acceptance if enforce_license
+    Chef::LicensingCheck.fetch_and_persist
     run_application
   end
-
 end
