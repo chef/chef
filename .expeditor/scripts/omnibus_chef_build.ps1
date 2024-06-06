@@ -121,12 +121,6 @@ bundle config set --local without development
 bundle install
 if ( -not $? ) { throw "Running bundle install failed" }
 
-Write-Output "--- Ensuring Chef-PowerShell is installed"
-$is_chef_powershell_installed = gem list chef-powershell
-if (-not($is_chef_powershell_installed.Contains("18"))){
-  Invoke-WebRequest "https://rubygems.org/downloads/chef-powershell-18.1.0.gem" -UseBasicParsing -OutFile 'chef-powershell-18.1.0.gem'
-}
-
 Write-Output "--- Building Chef"
 bundle exec omnibus build chef -l internal --override append_timestamp:false
 if ( -not $? ) { throw "omnibus build chef failed" }
