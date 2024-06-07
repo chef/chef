@@ -48,11 +48,6 @@ class Chef
             a.assertion { !new_resource.source }
             a.failure_message(Chef::Exceptions::Package, "apt package provider cannot handle source property. Use dpkg provider instead")
           end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { ChefConfig::Config.target_mode? && !new_resource.response_file }
-            a.failure_message(Chef::Exceptions::Package, "apt package provider does not support response_file property in Target Mode.")
-          end
         end
 
         def package_data
