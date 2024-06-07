@@ -51,7 +51,7 @@ class Chef
       action_class do
         def subscription_attached?(subscription)
           cmd = "subscription-manager list --consumed | grep #{subscription}"
-          stdout = shell_out(cmd, env: { LANG => "en_US" })
+          stdout = shell_out(cmd, env: { LANG: "en_US" })
           !stdout.match(/Pool ID:\s+#{subscription}$/).nil?
         end
 
@@ -61,7 +61,7 @@ class Chef
           serial = nil
 
           cmd = "subscription-manager list --consumed"
-          stdout = shell_out(cmd, env: { LANG => "en_US" })
+          stdout = shell_out(cmd, env: { LANG: "en_US" })
 
           stdout.lines.each do |line|
             line.strip!
