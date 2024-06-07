@@ -1,4 +1,4 @@
-require_relative 'file'
+require_relative "file"
 
 module TargetIO
   module TrainCompat

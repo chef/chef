@@ -23,7 +23,7 @@ class Chef
   class Resource
     class Alternatives < Chef::Resource
 
-      provides(:alternatives, target_mode:true) { true }
+      provides(:alternatives, target_mode: true) { true }
 
       description "Use the **alternatives** resource to configure command alternatives in Linux using the alternatives or update-alternatives packages."
       introduced "16.0"

@@ -12,7 +12,7 @@ module TargetIO
         end
 
         def chmod_R(mode, list, noop: nil, verbose: nil, force: nil)
-          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ''), mode_to_s(mode), Array(list).join(" "))
+          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ""), mode_to_s(mode), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -45,7 +45,7 @@ module TargetIO
         # compare_stream
 
         def cp(src, dest, preserve: nil, noop: nil, verbose: nil)
-          cmd = "cp#{preserve ? ' -p' : ''} #{[src,dest].flatten.join(' ')}"
+          cmd = "cp#{preserve ? " -p" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -55,7 +55,7 @@ module TargetIO
         alias_method :copy, :cp
 
         def cp_lr(src, dest, noop: nil, verbose: nil, dereference_root: true, remove_destination: false)
-          cmd = "cp -lr#{remove_destination ? ' --remove-destination' : ''} #{[src,dest].flatten.join ' '}"
+          cmd = "cp -lr#{remove_destination ? " --remove-destination" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -64,7 +64,7 @@ module TargetIO
         end
 
         def cp_r(src, dest, preserve: nil, noop: nil, verbose: nil, dereference_root: true, remove_destination: nil)
-          cmd = "cp -r#{preserve ? 'p' : ''}#{remove_destination ? ' --remove-destination' : ''} #{[src,dest].flatten.join ' '}"
+          cmd = "cp -r#{preserve ? "p" : ""}#{remove_destination ? " --remove-destination" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -91,7 +91,7 @@ module TargetIO
         end
 
         def ln(src, dest, force: nil, noop: nil, verbose: nil)
-          cmd = "ln#{force ? ' -f' : ''} #{[src,dest].flatten.join ' '}"
+          cmd = "ln#{force ? " -f" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -101,7 +101,7 @@ module TargetIO
         alias_method :link, :ln
 
         def ln_s(src, dest, force: nil, noop: nil, verbose: nil)
-          cmd = "ln -s#{force ? 'f' : ''} #{[src,dest].flatten.join ' '}"
+          cmd = "ln -s#{force ? "f" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -115,7 +115,7 @@ module TargetIO
         end
 
         def mkdir(list, mode: nil, noop: nil, verbose: nil)
-          cmd = "mkdir #{mode ? ('-m %03o ' % mode) : ''}#{Array(list).join ' '}"
+          cmd = "mkdir #{mode ? ("-m %03o " % mode) : ""}#{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -124,7 +124,7 @@ module TargetIO
         end
 
         def mkdir_p(list, mode: nil, noop: nil, verbose: nil)
-          cmd = "mkdir -p #{mode ? ('-m %03o ' % mode) : ''}#{Array(list).join ' '}"
+          cmd = "mkdir -p #{mode ? ("-m %03o " % mode) : ""}#{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -135,7 +135,7 @@ module TargetIO
         alias_method :mkpath, :mkdir_p
 
         def mv(src, dest, force: nil, noop: nil, verbose: nil, secure: nil)
-          cmd = "mv#{force ? ' -f' : ''} #{[src,dest].flatten.join ' '}"
+          cmd = "mv#{force ? " -f" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -150,18 +150,8 @@ module TargetIO
         # remove_entry_secure
         # remove_file
 
-        def rmdir(list, parents: nil, noop: nil, verbose: nil)
-          return if noop
-          cmd = "rmdir #{Array(list).join(' ')}"
-
-          Chef::Log.debug cmd if verbose
-          return if noop
-
-          __run_command(cmd)
-        end
-
         def rm(list, force: nil, noop: nil, verbose: nil)
-          cmd = "rm#{force ? ' -f' : ''} #{Array(list).join(' ')}"
+          cmd = "rm#{force ? " -f" : ""} #{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -174,7 +164,7 @@ module TargetIO
         end
 
         def rm_r(list, force: nil, noop: nil, verbose: nil, secure: nil)
-          cmd = "rm -r#{force ? 'f' : ''} #{Array(list).join(' ')}"
+          cmd = "rm -r#{force ? "f" : ""} #{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -190,7 +180,7 @@ module TargetIO
         alias_method :safe_unlink, :rm_rf
 
         def rmdir(list, parents: nil, noop: nil, verbose: nil)
-          cmd = "rmdir #{parents ? '-p ' : ''}#{Array(list).join(' ')}"
+          cmd = "rmdir #{parents ? "-p " : ""}#{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -201,13 +191,13 @@ module TargetIO
         def touch(list, noop: nil, verbose: nil, mtime: nil, nocreate: nil)
           return if noop
 
-          __run_command "touch #{nocreate ? '-c ' : ''}#{mtime ? mtime.strftime('-t %Y%m%d%H%M.%S ') : ''}#{Array(list).join(' ')}"
+          __run_command "touch #{nocreate ? "-c " : ""}#{mtime ? mtime.strftime("-t %Y%m%d%H%M.%S ") : ""}#{Array(list).join(" ")}"
         end
 
         # uptodate?
 
         def method_missing(m, *_args, **_kwargs, &_block)
-          raise 'Unsupported ' + self.class.to_s + ' method ' + m.to_s
+          raise "Unsupported #{self.class} method #{m}"
         end
 
         private

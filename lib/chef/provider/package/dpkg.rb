@@ -47,11 +47,6 @@ class Chef
             a.failure_message Chef::Exceptions::Package, "#{new_resource} source file(s) do not exist: #{missing_sources}"
             a.whyrun "Assuming they would have been previously created."
           end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { ChefConfig::Config.target_mode? && !new_resource.response_file }
-            a.failure_message(Chef::Exceptions::Package, "dpkg package provider does not support response_file property in Target Mode.")
-          end
         end
 
         def load_current_resource
