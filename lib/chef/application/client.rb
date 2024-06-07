@@ -130,7 +130,7 @@ class Chef::Application::Client < Chef::Application::Base
     end
 
     if config[:credentials]
-      if !File.exist?(config[:credentials])
+      unless File.exist?(config[:credentials])
         Chef::Application.fatal!("credentials file #{config[:credentials]} not found")
       end
 

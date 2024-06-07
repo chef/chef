@@ -1,4 +1,4 @@
-require_relative 'file'
+require_relative "file"
 
 module TargetIO
   module TrainCompat
@@ -99,7 +99,7 @@ module TargetIO
             "name"     => x.at(0),
             "password" => x.at(1),
             "gid"      => x.at(2),
-            "mem"      => x.at(3)
+            "mem"      => x.at(3),
           }
         end
 

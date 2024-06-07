@@ -42,7 +42,7 @@ module TargetIO
               "sp_max"    => x.at(4),
               "sp_warn"   => x.at(5),
               "sp_inact"  => x.at(6),
-              "sp_expire" => x.at(7)
+              "sp_expire" => x.at(7),
             }
           end
         end

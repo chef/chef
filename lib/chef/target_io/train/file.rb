@@ -3,7 +3,7 @@ module TargetIO
     class File
       class << self
         def foreach(name)
-          raise "TargetIO does not implement block-less File.foreach yet" if !block_given?
+          raise "TargetIO does not implement block-less File.foreach yet" unless block_given?
 
           contents = readlines(name)
           contents.each { |line| yield(line) }
@@ -21,7 +21,7 @@ module TargetIO
 
           # Will just collapse relative paths inside
           pn = Pathname.new File.join(dir_string, file_name)
-          clean = pn.cleanpath
+          pn.cleanpath
         end
 
         def new(filename, mode = "r")
@@ -78,7 +78,7 @@ module TargetIO
         end
 
         def writable?(file_name)
-          cmd = format('test -w %s', file_name)
+          cmd = format("test -w %s", file_name)
           __transport_connection.run_command(cmd).exit_status == 0
         end
 
@@ -143,23 +143,23 @@ module TargetIO
 
         # passthrough or map calls to third parties
         def method_missing(m, *args, **kwargs, &block)
-          nonio    = %i[extname join dirname path split]
+          nonio    = %i{extname join dirname path split}
 
           # TODO: writable?
-          passthru = %i[basename directory? exist? exists? file? path pipe? socket? symlink?]
+          passthru = %i{basename directory? exist? exists? file? path pipe? socket? symlink?}
           redirect_train = {
             blockdev?: :block_device?,
-            chardev?: :character_device?
+            chardev?: :character_device?,
           }
           redirect_utils = {
             chown: :chown,
             chmod: :chmod,
             symlink: :ln_s,
-            delete: :rm
+            delete: :rm,
           }
-          filestat = %i[gid group mode owner selinux_label size uid]
+          filestat = %i{gid group mode owner selinux_label size uid}
 
-          if %i[stat lstat].include? m
+          if %i{stat lstat}.include? m
             Chef::Log.debug "File::#{m} passed to Train.file.stat"
 
             follow_symlink = m == :stat

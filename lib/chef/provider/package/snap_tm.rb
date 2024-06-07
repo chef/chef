@@ -33,7 +33,7 @@ class Chef
                 "install",
                 "--channel=#{new_resource.channel}",
                 new_resource.options,
-                snap
+                snap,
               ])
             end
           end
@@ -43,7 +43,7 @@ class Chef
           Array(names).each do |snap|
             snapctl([
               "remove",
-              snap
+              snap,
             ])
           end
         end
@@ -55,7 +55,7 @@ class Chef
 
         def get_latest_package_version(name, channel)
           cmd = shell_out("snap info #{name}")
-          latest = cmd.stdout.lines.detect { |l| l.start_with? "  latest/#{new_resource.channel}:"}
+          latest = cmd.stdout.lines.detect { |l| l.start_with? "  latest/#{new_resource.channel}:" }
           return unless latest
 
           latest.split.at(1)
@@ -63,12 +63,12 @@ class Chef
 
         def get_installed_package_by_name(name)
           cmd = shell_out("snap info #{name}")
-          installed = cmd.stdout.lines.detect { |l| l.start_with? "installed:"}
+          installed = cmd.stdout.lines.detect { |l| l.start_with? "installed:" }
           return {} unless installed
 
           {
             "name" => name,
-            "version" => installed.split.at(1)
+            "version" => installed.split.at(1),
           }
         end
       end
