@@ -424,7 +424,7 @@ module ChefConfig
     # In Target Mode, the node name will be used as a prefix to allow
     # parallel execution of Chef against different targets
     default(:lockfile) do
-      prefix = ''
+      prefix = ""
       prefix = "#{ChefConfig::Config.node_name}-" if ChefConfig::Config.target_mode?
 
       PathHelper.join(file_cache_path, "#{prefix}#{ChefUtils::Dist::Infra::CLIENT}-running.pid")

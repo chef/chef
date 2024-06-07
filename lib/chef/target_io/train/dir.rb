@@ -1,5 +1,5 @@
-require_relative 'file'
-require_relative 'fileutils'
+require_relative "file"
+require_relative "fileutils"
 
 module TargetIO
   module TrainCompat
