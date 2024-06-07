@@ -34,7 +34,7 @@ class Chef::Provider::Service::Gentoo < Chef::Provider::Service::Init
     @current_resource.enabled(
       TargetIO::Dir.glob("/etc/runlevels/**/#{Chef::Util::PathHelper.escape_glob_dir(@current_resource.service_name)}").any? do |file|
         @found_script = true
-        exists = :TargetIO::File.exist? file
+        exists = ::TargetIO::File.exist? file
         readable = ::TargetIO::File.readable? file
         logger.trace "#{@new_resource} exists: #{exists}, readable: #{readable}"
         exists && readable
