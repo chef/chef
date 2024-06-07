@@ -80,28 +80,28 @@ module TargetIO
                        File.join(@url, path)
                      end
 
-          cmd = self.send(command_name.to_sym, executable, method.to_s.upcase, full_url, headers, data)
+          cmd = send(command_name.to_sym, executable, method.to_s.upcase, full_url, headers, data)
           break
         end
 
-        raise "Target needs one of #{SUPPORTED_COMMANDS.join('/')} for HTTP requests to work" unless cmd
+        raise "Target needs one of #{SUPPORTED_COMMANDS.join("/")} for HTTP requests to work" unless cmd
 
         connection = Chef.run_context&.transport_connection
         connection.run_command(cmd).stdout
       end
 
-      SUPPORTED_COMMANDS = %w[curl wget]
+      SUPPORTED_COMMANDS = %w{curl wget}.freeze
 
       # Sending data is not yet supported
       def curl(cmd, method, url, headers, _data)
-        cmd += headers.map { |name, value| " --header '#{name}: #{value}'"}.join
+        cmd += headers.map { |name, value| " --header '#{name}: #{value}'" }.join
         cmd += " --request #{method} "
         cmd += url
       end
 
       # Sending data is not yet supported
       def wget(cmd, method, url, headers, _data)
-        cmd += headers.map { |name, value| " --header '#{name}: #{value}'"}.join
+        cmd += headers.map { |name, value| " --header '#{name}: #{value}'" }.join
         cmd += " --method #{method}"
         cmd += " --output-document=- "
         cmd += url

@@ -237,7 +237,7 @@ class Chef
         end
 
         def snapctl(*args)
-          shell_out!("snap", *args, returns: [0, 10])
+          shell_out!("snap", *args)
         end
 
         def get_snap_version_from_source(path)
