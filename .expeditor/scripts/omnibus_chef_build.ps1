@@ -123,15 +123,15 @@ $env:BUNDLE_DEBUG = 'true'
 
 write-output "--- what is my source for ruby gems it is set to:" 
 gem source
-
 Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"
 bundle config set --local without development
 bundle install --verbose
 if ( -not $? ) { throw "Running bundle install failed" }
 
-Write-Output "--- Building Chef"
-bundle exec omnibus build chef -l internal --override append_timestamp:false --log-level debug
+Write-Output "--- Building Chef and list local gems"
+gem query --local
+bundle exec --verbose omnibus build chef -l internal --override append_timestamp:false --log-level debug
 if ( -not $? ) { throw "omnibus build chef failed" }
 
 #confirm file is signed
