@@ -1,4 +1,4 @@
-source "https://rubygems-mirror.org"
+source "https://rubygems.org"
 
 gem "chef", path: "."
 
