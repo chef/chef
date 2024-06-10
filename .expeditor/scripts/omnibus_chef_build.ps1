@@ -115,14 +115,23 @@ $env:Path -split ';' | ForEach-Object { $_ }
 Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
 gem uninstall -I libyajl2
 
+#debug testing
+write-output "--- setting debug for bundle, rake, env"
+$env:DEBUG = 'true'
+$env:VERBOSE = 'true'
+$env:BUNDLE_DEBUG = 'true'
+
+write-output "--- what is my source for ruby gems it is set to:" 
+gem source
+
 Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"
 bundle config set --local without development
-bundle install
+bundle install --verbose
 if ( -not $? ) { throw "Running bundle install failed" }
 
 Write-Output "--- Building Chef"
-bundle exec omnibus build chef -l internal --override append_timestamp:false
+bundle exec omnibus build chef -l internal --override append_timestamp:false --verbose
 if ( -not $? ) { throw "omnibus build chef failed" }
 
 #confirm file is signed

@@ -82,7 +82,7 @@ namespace :install do
   task :local do
     chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
     Dir.chdir(chef_bin_path) do
-      system "rake install:local"
+      system "rake install:local --trace"
     end
   end
 end
