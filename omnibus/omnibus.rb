@@ -42,7 +42,7 @@ s3_bucket      "opscode-omnibus-cache"
 
 build_retries 3
 fetcher_retries 3
-fetcher_read_timeout 120
+fetcher_read_timeout 300
 
 # Load additional software
 # ------------------------------
