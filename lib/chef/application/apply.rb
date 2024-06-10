@@ -231,7 +231,7 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def run_application
-    Chef::LicensingCheck.check_software_entitlement!
+    Chef::LicensingCheck.check_software_entitlement! if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     parse_options
     run_chef_recipe
     Chef::Application.exit! "Exiting", 0
@@ -246,7 +246,7 @@ class Chef::Application::Apply < Chef::Application
   def run(enforce_license: false)
     reconfigure
     check_license_acceptance if enforce_license
-    Chef::LicensingCheck.fetch_and_persist
+    Chef::LicensingCheck.fetch_and_persist if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     run_application
   end
 end
