@@ -24,6 +24,7 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "../daemon"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
+require "chef-licensing/cli_flags/mixlib_cli"
 require "chef/monkey_patches/net-http"
 require_relative "../licensing_check"
 
@@ -46,6 +47,7 @@ class Chef::Application::Base < Chef::Application
   include Chef::Mixin::ShellOut
   include ChefConfig::Mixin::DotD
   include LicenseAcceptance::CLIFlags::MixlibCLI
+  include ChefLicensing::CLIFlags::MixlibCLI
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = [] # rubocop:disable Style/MutableConstant
