@@ -29,10 +29,12 @@ require_relative "../providers"
 require_relative "../resources"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
+require "chef-licensing/cli_flags/mixlib_cli"
 require_relative "../licensing_check"
 
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
+  include ChefLicensing::CLIFlags::MixlibCLI
 
   banner "Usage: #{ChefUtils::Dist::Apply::EXEC} [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
