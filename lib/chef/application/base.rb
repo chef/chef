@@ -347,7 +347,7 @@ class Chef::Application::Base < Chef::Application
 
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
-    Chef::LicensingCheck.check_software_entitlement!
+    Chef::LicensingCheck.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
     if Chef::Config[:version]
       puts "#{ChefUtils::Dist::Infra::PRODUCT} version: #{::Chef::VERSION}"
     end
