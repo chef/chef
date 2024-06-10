@@ -83,7 +83,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 18.4.56)
-      chef-powershell (~> 18.1.0)
+      chef-powershell (~> 18.1)
       chef-utils (= 18.4.56)
       chef-vault
       chef-zero (>= 14.0.11)
