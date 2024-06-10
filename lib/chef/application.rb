@@ -65,7 +65,7 @@ class Chef
       reconfigure
       setup_application
       check_license_acceptance if enforce_license
-      Chef::LicensingCheck.fetch_and_persist
+      Chef::LicensingCheck.fetch_and_persist if ChefUtils::Dist::Infra::EXEC == "chef"
       run_application
     end
 
