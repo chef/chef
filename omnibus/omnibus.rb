@@ -41,8 +41,8 @@ s3_secret_key  ENV["AWS_SECRET_ACCESS_KEY"]
 s3_bucket      "opscode-omnibus-cache"
 
 build_retries 3
-fetcher_retries 3
-fetcher_read_timeout 300
+fetcher_retries 6
+fetcher_read_timeout 1200
 
 # Load additional software
 # ------------------------------
