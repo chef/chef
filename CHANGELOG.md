@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.58 -->
-## [v18.4.58](https://github.com/chef/chef/tree/v18.4.58) (2024-06-11)
+<!-- latest_release 18.4.59 -->
+## [v18.4.59](https://github.com/chef/chef/tree/v18.4.59) (2024-06-11)
 
 #### Merged Pull Requests
-- Move attribute merge NIL checks into inject  [#14218](https://github.com/chef/chef/pull/14218) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Comment property of sysctl resource does not define system state [#14309](https://github.com/chef/chef/pull/14309) ([drdev](https://github.com/drdev))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Comment property of sysctl resource does not define system state [#14309](https://github.com/chef/chef/pull/14309) ([drdev](https://github.com/drdev)) <!-- 18.4.59 -->
 - Move attribute merge NIL checks into inject  [#14218](https://github.com/chef/chef/pull/14218) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.58 -->
 - [Chefignore#parse_ignore_file] Use strip! on lines [#14348](https://github.com/chef/chef/pull/14348) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.57 -->
 - Remove extra asterisk [#14429](https://github.com/chef/chef/pull/14429) ([IanMadd](https://github.com/IanMadd)) <!-- 18.4.56 -->
