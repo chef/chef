@@ -125,9 +125,13 @@ write-output "--- what is my source for ruby gems it is set to:"
 gem source
 Write-Output "--- Running bundle install for Omnibus"
 Set-Location "$($ScriptDir)/../../omnibus"
+pwd
 bundle config set --local without development
 bundle install --verbose
 if ( -not $? ) { throw "Running bundle install failed" }
+
+write-output "--- what is my source for ruby gems after bundle install ../../omnibus it is set to:" 
+gem source
 
 Write-Output "--- Building Chef and list local gems"
 gem query --local
