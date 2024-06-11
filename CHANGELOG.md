@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.142 -->
-## [v17.10.142](https://github.com/chef/chef/tree/v17.10.142) (2024-06-11)
+<!-- latest_release 17.10.143 -->
+## [v17.10.143](https://github.com/chef/chef/tree/v17.10.143) (2024-06-11)
 
 #### Merged Pull Requests
-- Updating the Vault gem [#14424](https://github.com/chef/chef/pull/14424) ([johnmccrae](https://github.com/johnmccrae))
+- backport fix for chef-client-config [#14431](https://github.com/chef/chef/pull/14431) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- backport fix for chef-client-config [#14431](https://github.com/chef/chef/pull/14431) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.143 -->
 - Updating the Vault gem [#14424](https://github.com/chef/chef/pull/14424) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.142 -->
 - Updating the FFI gem [#14430](https://github.com/chef/chef/pull/14430) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.141 -->
 - Jfm/chef17 update omnibus software2 [#14422](https://github.com/chef/chef/pull/14422) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.140 -->
