@@ -199,8 +199,9 @@ steps:
     - yum list openssl
     - echo "yum repo list:"
     - yum repolist
-    - echo "which openssl:"
-    - which openssl
+    - echo "cleaning yum:"
+    - yum cleanall
+    - yum update -y
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -225,8 +226,9 @@ steps:
     - yum list openssl
     - echo "yum repo list:"
     - yum repolist
-    - echo "which openssl:"
-    - which openssl
+    - echo "cleaning yum:"
+    - yum cleanall
+    - yum update -y
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle config set --local without omnibus_package
@@ -255,8 +257,9 @@ steps:
     - yum list openssl
     - echo "yum repo list:"
     - yum repolist
-    - echo "which openssl:"
-    - which openssl
+    - echo "cleaning yum:"
+    - yum cleanall
+    - yum update -y
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
