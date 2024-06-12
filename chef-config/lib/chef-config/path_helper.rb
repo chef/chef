@@ -200,7 +200,15 @@ module ChefConfig
     end
 
     def self.relative_path_from(from, to, windows: ChefUtils.windows?)
-      Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
+      path = Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
+      if windows
+        # ensure all forward slashes are backslashes
+        path.gsub!(File::SEPARATOR, path_separator(windows: windows))
+      else
+        # ensure all backslashes are forward slashes
+        path.gsub!(BACKSLASH, File::SEPARATOR)
+      end
+      Pathname.new(path)
     end
 
     # Set the project-specific home directory environment variable.
