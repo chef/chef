@@ -189,6 +189,7 @@ steps:
 
 - label: "Integration Fedora :ruby: 3.0"
   commands:
+    - dnf install libxcrypt-compat
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -203,6 +204,7 @@ steps:
 
 - label: "Functional Fedora :ruby: 3.0"
   commands:
+    - dnf install libxcrypt-compat
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle config set --local without omnibus_package
@@ -221,6 +223,7 @@ steps:
 
 - label: "Unit Fedora :ruby: 3.0"
   commands:
+    - dnf install libxcrypt-compat
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
