@@ -11,6 +11,8 @@ echo "bundler version:"
 bundle -v
 echo "openssl version:"
 openssl version
+echo "chef-client version:"
+chef-client -v
 
 echo "--- Preparing Container..."
 
