@@ -191,8 +191,8 @@ steps:
   commands:
     - dnf install -y libxcrypt-compat
     - dnf groupinstall -y development-tools rpm-development-tools c-development
-    - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
-   # - dnf install -y --allowerasing  https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
+    # - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
+    # - dnf install -y --allowerasing  https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     - find / -name openssl -type f
     - sudo /usr/share/bash-completion/completions/openssl version
     - /workdir/.expeditor/scripts/bk_container_prep.sh
@@ -211,7 +211,7 @@ steps:
   commands:
     - dnf install -y libxcrypt-compat
     - dnf groupinstall -y development-tools rpm-development-tools c-development
-    - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
+    # - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     - find / -name openssl -type f
     - sudo /usr/share/bash-completion/completions/openssl version
@@ -235,7 +235,7 @@ steps:
   commands:
     - dnf install -y libxcrypt-compat
     - dnf groupinstall -y development-tools rpm-development-tools c-development
-    - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
+    # - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     - find / -name openssl -type f
     - sudo /usr/share/bash-completion/completions/openssl version
