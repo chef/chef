@@ -6,8 +6,8 @@
 #
 
 macos_pkg "osquery" do
-  checksum   "1fea8ac9b603851d2e76c5fc73138a468a3075a3002c8cb1fd7fff53b889c4dd"
+  checksum   "7d0f97d0d4b463fcf03abedbf58939c900f310c214fd2fa3c28b1a848dcbffd9"
   package_id "io.osquery.agent"
-  source     "https://pkg.osquery.io/darwin/osquery-5.8.2.pkg"
+  source     "https://pkg.osquery.io/darwin/osquery-5.11.0.pkg"
   action     :install
 end
