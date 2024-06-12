@@ -168,7 +168,7 @@ then
     if [[ $platform == *"aix"* ]]
     then
       echo "      chef-foundation-version: 3.2.2"
-    elif [[ $platform == *mac*arm* ]]
+    elif [[ $platform == *"mac"* ]]
     then
       echo "      chef-foundation-version: 3.1.20"
     else
