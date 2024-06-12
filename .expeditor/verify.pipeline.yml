@@ -194,7 +194,8 @@ steps:
     # - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
     # - dnf install -y --allowerasing  https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     - find / -name openssl -type f
-    - sudo /usr/share/bash-completion/completions/openssl version
+    - cd /usr/share/bash-completion/completions/
+    - openssl version
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle config set --local without omnibus_package
     - bundle config set --local path 'vendor/bundle'
@@ -214,7 +215,8 @@ steps:
     # - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     - find / -name openssl -type f
-    - sudo /usr/share/bash-completion/completions/openssl version
+    - cd /usr/share/bash-completion/completions/
+    - openssl version
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle config set --local without omnibus_package
@@ -238,7 +240,8 @@ steps:
     # - dnf install -y https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-1.1.1q-7.fc40.x86_64.rpm
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     - find / -name openssl -type f
-    - sudo /usr/share/bash-completion/completions/openssl version
+    - cd /usr/share/bash-completion/completions/
+    - openssl version
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y libarchive-devel
     - bundle config set --local without omnibus_package
