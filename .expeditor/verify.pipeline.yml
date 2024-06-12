@@ -191,10 +191,12 @@ steps:
   commands:
     - dnf install -y libxcrypt-compat
     - dnf groupinstall -y development-tools rpm-development-tools c-development
-    - yum install openssl1.1.x86_64
+    # - yum install openssl1.1.x86_64
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl/3.2.1/2.fc40/x86_64/openssl-3.2.1-2.fc40.x86_64.rpm
     # - dnf install -y --allowerasing  https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     # - find / -name openssl -type f
+    - echo "yum repo list:"
+    - yum repolist
     - echo "which openssl:"
     - which openssl
     - /workdir/.expeditor/scripts/bk_container_prep.sh
@@ -213,10 +215,12 @@ steps:
   commands:
     - dnf install -y libxcrypt-compat
     - dnf groupinstall -y development-tools rpm-development-tools c-development
-    - yum install openssl1.1.x86_64
+    # - yum install openssl1.1.x86_64
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl/3.2.1/2.fc40/x86_64/openssl-3.2.1-2.fc40.x86_64.rpm
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     # - find / -name openssl -type f
+    - echo "yum repo list:"
+    - yum repolist
     - echo "which openssl:"
     - which openssl
     - /workdir/.expeditor/scripts/bk_container_prep.sh
@@ -239,10 +243,12 @@ steps:
   commands:
     - dnf install -y libxcrypt-compat
     - dnf groupinstall -y development-tools rpm-development-tools c-development
-    - yum install openssl1.1.x86_64
+    # - yum install openssl1.1.x86_64
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl/3.2.1/2.fc40/x86_64/openssl-3.2.1-2.fc40.x86_64.rpm
     # - dnf install -y --allowerasing https://kojipkgs.fedoraproject.org//packages/openssl1.1/1.1.1q/7.fc40/x86_64/openssl1.1-devel-1.1.1q-7.fc40.x86_64.rpm
     # - find / -name openssl -type f
+    - echo "yum repo list:"
+    - yum repolist
     - echo "which openssl:"
     - which openssl
     - /workdir/.expeditor/scripts/bk_container_prep.sh
