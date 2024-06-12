@@ -9,6 +9,8 @@ echo "ruby version:"
 ruby -v
 echo "bundler version:"
 bundle -v
+echo "openssl version:"
+openssl version
 
 echo "--- Preparing Container..."
 
