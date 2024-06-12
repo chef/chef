@@ -181,6 +181,7 @@ RSpec.configure do |config|
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
   config.filter_run_excluding broken: true
   config.filter_run_excluding not_wpar: true unless wpar?
+  config.filter_run_excluding not_supported_on_s390x: true unless s390x?
   config.filter_run_excluding not_supported_under_fips: true if fips?
   config.filter_run_excluding rhel: true unless rhel?
   config.filter_run_excluding rhel6: true unless rhel6?
