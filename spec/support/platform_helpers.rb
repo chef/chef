@@ -175,6 +175,10 @@ def wpar?
   !((ohai[:virtualization] || {})[:wpar_no].nil?)
 end
 
+def s390x?
+  RUBY_PLATFORM.include?("s390x")
+end
+
 def supports_cloexec?
   Fcntl.const_defined?(:F_SETFD) && Fcntl.const_defined?(:FD_CLOEXEC)
 end
