@@ -164,7 +164,13 @@ then
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.88:"
     echo "      build: chef"
-    echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
+    # temporary fix to make sure AIX builds
+    if [[ $platform == *"aix"* ]]
+    then
+      echo "      chef-foundation-version: 3.2.2"
+    else
+      echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
+    fi
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ $build_key == "mac_os_x-11-x86_64" ]
@@ -235,7 +241,7 @@ then
         echo "    queue: docker-linux-arm64"
       else
         echo "    queue: default-privileged"
-      fi      
+      fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
