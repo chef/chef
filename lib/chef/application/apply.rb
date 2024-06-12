@@ -97,8 +97,7 @@ class Chef::Application::Apply < Chef::Application
     description: "Show this help message.",
     on: :tail,
     boolean: true,
-    show_options: true,
-    exit: 0
+    proc: proc { print_help }
 
   option :version,
     short: "-v",
@@ -138,6 +137,44 @@ class Chef::Application::Apply < Chef::Application
     boolean: true
 
   attr_reader :json_attribs
+
+  def self.footer(text = nil)
+    @footer = text if text
+    @footer
+  end
+
+  footer(<<~FOOTER)
+     Chef Infra has three tiers of licensing:
+
+      * Free-Tier
+        Users are limited to audit maximum of 10 nodes
+        Entitled for personal or non-commercial use
+
+      * Trial
+        Entitled for unlimited number of nodes
+        Entitled for 30 days only
+        Entitled for commercial use
+
+      * Commercial
+        Entitled for purchased number of nodes
+        Entitled for period of subscription purchased
+        Entitled for commercial use
+
+      knife license add: This command helps users to generate or add an additional license (not applicable to local licensing service)
+
+      For more information please visit:
+      www.chef.io/licensing/faqs
+    FOOTER
+
+  def self.print_help
+    instance = new
+    instance.parse_options([])
+    puts instance.opt_parser
+    puts
+    puts footer
+    puts
+    exit 0
+  end
 
   def initialize
     super
