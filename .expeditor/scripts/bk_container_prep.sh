@@ -9,11 +9,6 @@ echo "ruby version:"
 ruby -v
 echo "bundler version:"
 bundle -v
-echo "openssl version:"
-export PATH=$PATH:/usr/bin
-openssl version
-echo "chef-client version:"
-chef-client -v
 
 echo "--- Preparing Container..."
 
