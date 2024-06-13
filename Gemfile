@@ -21,8 +21,6 @@ end
 
 gem "cheffish", ">= 17"
 
-gem "openssl", "~> 3.2.0"
-
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
