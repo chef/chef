@@ -323,6 +323,7 @@ GEM
     net-ssh (7.1.0)
     netrc (0.11.0)
     nori (2.6.0)
+    openssl (3.1.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
@@ -497,6 +498,7 @@ DEPENDENCIES
   chef-vault
   cheffish (>= 17)
   chefstyle
+  openssl (~> 3.1.0)
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
