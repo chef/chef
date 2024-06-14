@@ -126,6 +126,10 @@ sudo which ruby
 sudo which bundle
 sudo bundle exec which rspec
 
+ls -l `which ruby`
+ls -l `which bundle`
+ls -l `bundle exec which rspec`
+
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
