@@ -120,6 +120,9 @@ export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
 
+which ruby
+which bundle
+
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
