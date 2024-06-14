@@ -14,10 +14,6 @@ module TargetIO
     def initialize(url, http_client_opts = {})
       if ::ChefConfig::Config.target_mode?
         @http_class = TargetIO::TrainCompat::HTTP.new(url, http_client_opts)
-
-      # Preserves existing non-TM unit tests
-      elsif http_client_opts.empty?
-        @http_class = Chef::HTTP::Simple.new(url)
       else
         @http_class = Chef::HTTP::Simple.new(url, http_client_opts)
       end
