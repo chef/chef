@@ -122,6 +122,9 @@ cd "$chef_gem"
 
 which ruby
 which bundle
+sudo which ruby
+sudo which bundle
+sudo bundle exec which rspec
 
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
