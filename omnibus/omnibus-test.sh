@@ -129,6 +129,16 @@ sudo bundle exec which rspec
 ls -l `which ruby`
 ls -l `which bundle`
 ls -l `bundle exec which rspec`
+ls -l /opt/chef/embedded/bin/ruby
+
+/opt/chef/embedded/bin/ruby -e 'require "openssl"
+OpenSSL.fips_mode = 1
+puts OpenSSL::OPENSSL_LIBRARY_VERSION
+puts "SHA256"
+puts OpenSSL::Digest.new("SHA256", "test string for digesting")
+puts "MD5"
+puts OpenSSL::Digest.new("MD5", "test string for digesting")
+'
 
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
