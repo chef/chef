@@ -131,7 +131,7 @@ ls -l `which bundle`
 ls -l `bundle exec which rspec`
 ls -l /opt/chef/embedded/bin/ruby
 
-/opt/chef/embedded/bin/ruby -e 'require "openssl"
+ruby -e 'require "openssl"
 OpenSSL.fips_mode = 1
 puts OpenSSL::OPENSSL_LIBRARY_VERSION
 puts "SHA256"
@@ -147,6 +147,21 @@ end
 raise "MD5 allowed" unless exception_caught
 '
 
+bundle exec ruby -e 'require "openssl"
+OpenSSL.fips_mode = 1
+puts OpenSSL::OPENSSL_LIBRARY_VERSION
+puts "SHA256"
+puts OpenSSL::Digest.new("SHA256", "test string for digesting")
+puts "MD5"
+
+exception_caught=false
+begin
+  OpenSSL::Digest.new("MD5", "test string for digesting")
+rescue OpenSSL::Digest::DigestError
+  exception_caught=true
+end
+raise "MD5 allowed" unless exception_caught
+'
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
