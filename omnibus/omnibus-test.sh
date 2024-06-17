@@ -156,7 +156,24 @@ sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   echo "HERE"
   sudo -E bundle install --jobs=3 --retry=3
+  sudo ruby -e 'require "openssl"
+   puts "Ruby after bundle, but no bundle exec"
+   OpenSSL.fips_mode = 1
+   puts OpenSSL::OPENSSL_LIBRARY_VERSION
+   puts "SHA256"
+   puts OpenSSL::Digest.new("SHA256", "test string for digesting")
+   puts "MD5"
+
+   exception_caught=false
+   begin
+     OpenSSL::Digest.new("MD5", "test string for digesting")
+   rescue OpenSSL::Digest::DigestError
+     exception_caught=true
+   end
+   raise "MD5 allowed" unless exception_caught
+   '
   sudo bundle exec ruby -e 'require "openssl"
+   puts "Ruby after bundle, with bundle exec"
  OpenSSL.fips_mode = 1
  puts OpenSSL::OPENSSL_LIBRARY_VERSION
  puts "SHA256"
