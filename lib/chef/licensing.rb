@@ -3,7 +3,7 @@ require_relative "log"
 require_relative "licensing_config"
 
 class Chef
-  class LicensingCheck
+  class Licensing
     class << self
       def fetch_and_persist
         puts "Fetching and persisting license..."
