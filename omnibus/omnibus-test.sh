@@ -130,6 +130,8 @@ ls -l `which ruby`
 ls -l `which bundle`
 ls -l `bundle exec which rspec`
 ls -l /opt/chef/embedded/bin/ruby
+ls -l `bundle exec which ruby`
+ls -l `sudo bundle exec which ruby`
 
 ruby -e 'require "openssl"
 OpenSSL.fips_mode = 1
