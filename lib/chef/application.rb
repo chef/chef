@@ -28,7 +28,7 @@ require "tmpdir" unless defined?(Dir.mktmpdir)
 require "rbconfig" unless defined?(RbConfig)
 require_relative "application/exit_code"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
-require_relative "licensing_check"
+require_relative "licensing"
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
 end
@@ -65,7 +65,7 @@ class Chef
       reconfigure
       setup_application
       check_license_acceptance if enforce_license
-      Chef::LicensingCheck.fetch_and_persist if ChefUtils::Dist::Infra::EXEC == "chef"
+      Chef::Licensing.fetch_and_persist if ChefUtils::Dist::Infra::EXEC == "chef"
       run_application
     end
 

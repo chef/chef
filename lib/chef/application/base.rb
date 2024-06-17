@@ -26,7 +26,7 @@ require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
 require "chef-licensing/cli_flags/mixlib_cli"
 require "chef/monkey_patches/net-http"
-require_relative "../licensing_check"
+require_relative "../licensing"
 
 module Mixlib
   autoload :Archive, "mixlib/archive"
@@ -384,7 +384,7 @@ class Chef::Application::Base < Chef::Application
 
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
-    Chef::LicensingCheck.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
+    Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
     if Chef::Config[:version]
       puts "#{ChefUtils::Dist::Infra::PRODUCT} version: #{::Chef::VERSION}"
     end
