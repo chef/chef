@@ -137,7 +137,14 @@ puts OpenSSL::OPENSSL_LIBRARY_VERSION
 puts "SHA256"
 puts OpenSSL::Digest.new("SHA256", "test string for digesting")
 puts "MD5"
-puts OpenSSL::Digest.new("MD5", "test string for digesting")
+
+exception_caught=false
+begin
+  OpenSSL::Digest.new("MD5", "test string for digesting")
+rescue OpenSSL::Digest::DigestError
+  exception_caught=true
+end
+raise "MD5 allowed" unless exception_caught
 '
 
 # only add -E if not on centos 6
