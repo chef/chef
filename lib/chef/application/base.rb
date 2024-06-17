@@ -316,6 +316,22 @@ class Chef::Application::Base < Chef::Application
       end
     }
 
+  if ChefUtils::Dist::Infra::EXEC == "chef"
+    option :license_add,
+        long: "--license-add",
+        description: "Add a license key to the license pool.",
+        boolean: true,
+        proc: lambda { |v| Chef::Licensing.license_add },
+        exit: 0
+
+    option :license_list,
+        long: "--license-list",
+        description: "List all license keys in the license pool.",
+        boolean: true,
+        proc: lambda { |v| Chef::Licensing.license_list },
+        exit: 0
+  end
+
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
 

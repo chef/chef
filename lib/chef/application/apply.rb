@@ -136,6 +136,22 @@ class Chef::Application::Apply < Chef::Application
     description: "Only run the bare minimum Ohai plugins #{ChefUtils::Dist::Infra::PRODUCT} needs to function.",
     boolean: true
 
+  if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    option :license_add,
+        long: "--license-add",
+        description: "Add a license key to the license pool.",
+        boolean: true,
+        proc: lambda { |v| Chef::Licensing.license_add },
+        exit: 0
+
+    option :license_list,
+        long: "--license-list",
+        description: "List all license keys in the license pool.",
+        boolean: true,
+        proc: lambda { |v| Chef::Licensing.license_list },
+        exit: 0
+  end
+
   attr_reader :json_attribs
 
   def self.print_help

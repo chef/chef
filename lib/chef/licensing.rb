@@ -53,6 +53,23 @@ class Chef
 
         FOOTER
       end
+
+      def license_list
+        ChefLicensing.list_license_keys_info
+      rescue ChefLicensing::Error => e
+        Chef::Log.error e.message
+        Chef::Application.exit! "Usage error", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+      end
+
+      def license_add
+        ChefLicensing.add_license
+      rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyAddNotAllowed => e
+        Chef::Log.error e.message
+        Chef::Application.exit! "License key add not allowed", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+      rescue ChefLicensing::Error => e
+        Chef::Log.error e.message
+        Chef::Application.exit! "Usage error", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+      end
     end
   end
 end
