@@ -147,21 +147,7 @@ end
 raise "MD5 allowed" unless exception_caught
 '
 
-bundle exec ruby -e 'require "openssl"
-OpenSSL.fips_mode = 1
-puts OpenSSL::OPENSSL_LIBRARY_VERSION
-puts "SHA256"
-puts OpenSSL::Digest.new("SHA256", "test string for digesting")
-puts "MD5"
 
-exception_caught=false
-begin
-  OpenSSL::Digest.new("MD5", "test string for digesting")
-rescue OpenSSL::Digest::DigestError
-  exception_caught=true
-end
-raise "MD5 allowed" unless exception_caught
-'
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
@@ -169,9 +155,40 @@ rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   echo "HERE"
+ bundle exec ruby -e 'require "openssl"
+ OpenSSL.fips_mode = 1
+ puts OpenSSL::OPENSSL_LIBRARY_VERSION
+ puts "SHA256"
+ puts OpenSSL::Digest.new("SHA256", "test string for digesting")
+ puts "MD5"
+
+ exception_caught=false
+ begin
+   OpenSSL::Digest.new("MD5", "test string for digesting")
+ rescue OpenSSL::Digest::DigestError
+   exception_caught=true
+ end
+ raise "MD5 allowed" unless exception_caught
+ '
   sudo -E bundle install --jobs=3 --retry=3
   sudo -E bundle exec rspec --profile -f progress
 else
+  echo "non-E"
+  bundle exec ruby -e 'require "openssl"
+  OpenSSL.fips_mode = 1
+  puts OpenSSL::OPENSSL_LIBRARY_VERSION
+  puts "SHA256"
+  puts OpenSSL::Digest.new("SHA256", "test string for digesting")
+  puts "MD5"
+
+  exception_caught=false
+  begin
+    OpenSSL::Digest.new("MD5", "test string for digesting")
+  rescue OpenSSL::Digest::DigestError
+    exception_caught=true
+  end
+  raise "MD5 allowed" unless exception_caught
+  '
   sudo bundle install --jobs=3 --retry=3
   sudo bundle exec rspec --profile -f progress
 fi
