@@ -155,7 +155,8 @@ rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   echo "HERE"
- bundle exec ruby -e 'require "openssl"
+  sudo -E bundle install --jobs=3 --retry=3
+  sudo bundle exec ruby -e 'require "openssl"
  OpenSSL.fips_mode = 1
  puts OpenSSL::OPENSSL_LIBRARY_VERSION
  puts "SHA256"
@@ -170,11 +171,11 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
  end
  raise "MD5 allowed" unless exception_caught
  '
-  sudo -E bundle install --jobs=3 --retry=3
   sudo -E bundle exec rspec --profile -f progress
 else
   echo "non-E"
-  bundle exec ruby -e 'require "openssl"
+  sudo bundle install --jobs=3 --retry=3
+  sudo bundle exec ruby -e 'require "openssl"
   OpenSSL.fips_mode = 1
   puts OpenSSL::OPENSSL_LIBRARY_VERSION
   puts "SHA256"
@@ -189,6 +190,5 @@ else
   end
   raise "MD5 allowed" unless exception_caught
   '
-  sudo bundle install --jobs=3 --retry=3
   sudo bundle exec rspec --profile -f progress
 fi
