@@ -157,7 +157,10 @@ rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   echo "HERE"
+  sudo -E gem info openssl
   sudo -E bundle install --jobs=3 --retry=3
+  sudo -E gem info openssl
+  sudo -E bundle exec gem info openssl
   sudo ruby -e 'require "openssl"
    puts "Ruby after bundle, but no bundle exec"
    OpenSSL.fips_mode = 1
