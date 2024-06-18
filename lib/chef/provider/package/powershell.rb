@@ -127,6 +127,7 @@ class Chef
           command.push("-RequiredVersion #{version}") if version
           command.push("-Source #{new_resource.source}") if new_resource.source && cmdlet_name =~ Regexp.union(/Install-Package/, /Find-Package/)
           command.push("-SkipPublisherCheck") if new_resource.skip_publisher_check && cmdlet_name !~ /Find-Package/
+          command.push("-AllowClobber") if new_resource.allow_clobber
           if new_resource.options && cmdlet_name !~ Regexp.union(/Get-Package/, /Find-Package/)
             new_resource.options.each do |arg|
               command.push(arg) unless command.include?(arg)
