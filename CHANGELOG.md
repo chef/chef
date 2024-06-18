@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.60 -->
-## [v18.4.60](https://github.com/chef/chef/tree/v18.4.60) (2024-06-17)
+<!-- latest_release 18.4.61 -->
+## [v18.4.61](https://github.com/chef/chef/tree/v18.4.61) (2024-06-18)
 
 #### Merged Pull Requests
-- pick the latest version of license_scout which will fix infra-client … [#14446](https://github.com/chef/chef/pull/14446) ([muthuja](https://github.com/muthuja))
+- Updating Chef Foundation [#14449](https://github.com/chef/chef/pull/14449) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating Chef Foundation [#14449](https://github.com/chef/chef/pull/14449) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.61 -->
 - pick the latest version of license_scout which will fix infra-client … [#14446](https://github.com/chef/chef/pull/14446) ([muthuja](https://github.com/muthuja)) <!-- 18.4.60 -->
 - Comment property of sysctl resource does not define system state [#14309](https://github.com/chef/chef/pull/14309) ([drdev](https://github.com/drdev)) <!-- 18.4.59 -->
 - Move attribute merge NIL checks into inject  [#14218](https://github.com/chef/chef/pull/14218) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.58 -->
