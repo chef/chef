@@ -1,6 +1,15 @@
 #!/bin/bash
 set -ueo pipefail
 
+if [[ "$BUILDKITE_LABEL" =~ "el-.*-x86_64" || \
+      "$BUILDKITE_LABEL" =~ "el-.*-ppc64" || \
+      "$BUILDKITE_LABEL" =~ "el-.*aarch" || \
+      "$BUILDKITE_LABEL" =~ "ubuntu-" || \
+      "$BUILDKITE_LABEL" =~ "amazon-2023" ]]
+then
+  export OPENSSL_FIPS=1
+fi
+
 # Our tests hammer YUM pretty hard and the EL6 testers get corrupted
 # after some period of time. Rebuilding the RPM database clears
 # up the underlying corruption. We'll do this each test run just to

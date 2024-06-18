@@ -1,6 +1,15 @@
 #! /bin/bash
 set -eu -o pipefail
 
+if [[ "$BUILDKITE_LABEL" =~ "el-.*-x86_64" || \
+      "$BUILDKITE_LABEL" =~ "el-.*-ppc64" || \
+      "$BUILDKITE_LABEL" =~ "el-.*aarch" || \
+      "$BUILDKITE_LABEL" =~ "ubuntu-" || \
+      "$BUILDKITE_LABEL" =~ "amazon-2023" ]]
+then
+  export OPENSSL_FIPS=1
+fi
+
 echo "--- Installing package from BuildKite"
 
 if [[ $OSTYPE == "msys" ]]; then
