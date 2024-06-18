@@ -10,6 +10,7 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+gem "openssl", "= 3.2.0" # required for FIPS or bundler will pick up default openssl
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
