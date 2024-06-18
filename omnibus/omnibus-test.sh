@@ -129,97 +129,15 @@ export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
 
-which ruby
-which bundle
-sudo which ruby
-sudo which bundle
-sudo bundle exec which rspec
-
-ls -l `which ruby`
-ls -l `which bundle`
-ls -l `bundle exec which rspec`
-ls -l /opt/chef/embedded/bin/ruby
-ls -l `bundle exec which ruby`
-ls -l `sudo bundle exec which ruby`
-
-ruby -e 'require "openssl"
-OpenSSL.fips_mode = 1
-puts OpenSSL::OPENSSL_LIBRARY_VERSION
-puts "SHA256"
-puts OpenSSL::Digest.new("SHA256", "test string for digesting")
-puts "MD5"
-
-exception_caught=false
-begin
-  OpenSSL::Digest.new("MD5", "test string for digesting")
-rescue OpenSSL::Digest::DigestError
-  exception_caught=true
-end
-raise "MD5 allowed" unless exception_caught
-'
-
-
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
 rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
-  echo "HERE"
-  sudo -E gem info openssl
   sudo -E bundle install --jobs=3 --retry=3
-  sudo -E gem info openssl
-  sudo -E bundle exec gem info openssl
-  sudo ruby -e 'require "openssl"
-   puts "Ruby after bundle, but no bundle exec"
-   OpenSSL.fips_mode = 1
-   puts OpenSSL::OPENSSL_LIBRARY_VERSION
-   puts "SHA256"
-   puts OpenSSL::Digest.new("SHA256", "test string for digesting")
-   puts "MD5"
-
-   exception_caught=false
-   begin
-     OpenSSL::Digest.new("MD5", "test string for digesting")
-   rescue OpenSSL::Digest::DigestError
-     exception_caught=true
-   end
-   raise "MD5 allowed" unless exception_caught
-   '
-  sudo bundle exec ruby -e 'require "openssl"
-   puts "Ruby after bundle, with bundle exec"
- OpenSSL.fips_mode = 1
- puts OpenSSL::OPENSSL_LIBRARY_VERSION
- puts "SHA256"
- puts OpenSSL::Digest.new("SHA256", "test string for digesting")
- puts "MD5"
-
- exception_caught=false
- begin
-   OpenSSL::Digest.new("MD5", "test string for digesting")
- rescue OpenSSL::Digest::DigestError
-   exception_caught=true
- end
- raise "MD5 allowed" unless exception_caught
- '
   sudo -E bundle exec rspec --profile -f progress
 else
-  echo "non-E"
   sudo bundle install --jobs=3 --retry=3
-  sudo bundle exec ruby -e 'require "openssl"
-  OpenSSL.fips_mode = 1
-  puts OpenSSL::OPENSSL_LIBRARY_VERSION
-  puts "SHA256"
-  puts OpenSSL::Digest.new("SHA256", "test string for digesting")
-  puts "MD5"
-
-  exception_caught=false
-  begin
-    OpenSSL::Digest.new("MD5", "test string for digesting")
-  rescue OpenSSL::Digest::DigestError
-    exception_caught=true
-  end
-  raise "MD5 allowed" unless exception_caught
-  '
   sudo bundle exec rspec --profile -f progress
 fi
