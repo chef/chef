@@ -86,3 +86,6 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end
 end
+
+# TODO Change this after chef-licensing is released with license context changes
+gem "chef-licensing", git: "https://github.com/chef/chef-licensing", glob: "components/ruby/*.gemspec", branch: "main"
