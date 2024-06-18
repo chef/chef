@@ -163,11 +163,20 @@ class Chef
         first_filename = Dir[file_cache_dir].first # directory of the cache
         return keys unless first_filename
 
+        # TODO: The usage of Regexp.escape and the match here is likely
+        # vestigial, but since it's only getting called once per method, the
+        # effort needed to confirm that its removal won't break something else
+        # isn't worth it. A task for a brave soul ;-)
+        regexp_pattern = /^(#{Regexp.escape(first_filename) + File::Separator}).+/
+
         files = Dir[File.join(file_cache_dir, glob_pattern)]
         until files.empty?
           f = files.shift
           if File.file?(f)
-            keys << f[/^#{Regexp.escape(first_filename) + File::Separator}(.+)/, 1]
+            # We remove the cache directory from the string of each entry
+            path_to_remove ||= f[regexp_pattern, 1]
+            f.delete_prefix!(path_to_remove)
+            keys << f
           end
         end
         keys
