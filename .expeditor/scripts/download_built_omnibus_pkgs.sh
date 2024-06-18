@@ -7,6 +7,7 @@ if [[ "$BUILDKITE_LABEL" =~ "el-.*-x86_64" || \
       "$BUILDKITE_LABEL" =~ "ubuntu-" || \
       "$BUILDKITE_LABEL" =~ "amazon-2023" ]]
 then
+  echo "%% Installing with OPENSSL_FIPS=1 %%"
   export OPENSSL_FIPS=1
 fi
 
