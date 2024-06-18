@@ -226,10 +226,11 @@ end
 def fips_mode_build?
   if ENV.include?("BUILDKITE_LABEL") # try keying directly off Buildkite environments
     # regex version of chef/chef-foundation:.expeditor/release.omnibus.yml:fips-platforms
-    [/el-.*-x86_64/, /el-.*-ppc64/, /el-.*aarch/, /ubuntu-/, /windows-/, /amazon-2023/].any? do |os_arch|
+    [/el-.*-x86_64/, /el-.*-ppc64/, /el-.*aarch/, /ubuntu-/, /windows-/, /amazon-2/].any? do |os_arch|
       ENV["BUILDKITE_LABEL"].match?(os_arch)
     end
   else
+    # if you're testing your local build
     OpenSSL::OPENSSL_FIPS
   end
 end
