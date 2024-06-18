@@ -160,12 +160,14 @@ class Chef
       def find(glob_pattern)
         keys = []
         file_cache_dir = Chef::Util::PathHelper.escape_glob_dir(file_cache_path)
+        first_filename = Dir[file_cache_dir].first # directory of the cache
+        return keys unless first_filename
 
         files = Dir[File.join(file_cache_dir, glob_pattern)]
         until files.empty?
           f = files.shift
           if File.file?(f)
-            keys << f[/^#{Regexp.escape(Dir[file_cache_dir].first) + File::Separator}(.+)/, 1]
+            keys << f[/^#{Regexp.escape(first_filename) + File::Separator}(.+)/, 1]
           end
         end
         keys
