@@ -172,7 +172,6 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   sudo -E bundle exec gem info openssl
   sudo ruby -e 'require "openssl"
    puts "Ruby after bundle, but no bundle exec"
-   puts `lsof -p #{$$}`
    OpenSSL.fips_mode = 1
    puts OpenSSL::OPENSSL_LIBRARY_VERSION
    puts "SHA256"
@@ -189,7 +188,6 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
    '
   sudo bundle exec ruby -e 'require "openssl"
    puts "Ruby after bundle, with bundle exec"
-   puts `lsof -p #{$$}`
  OpenSSL.fips_mode = 1
  puts OpenSSL::OPENSSL_LIBRARY_VERSION
  puts "SHA256"
