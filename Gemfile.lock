@@ -44,12 +44,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (18.4.56)
+    chef (18.4.64)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.4.56)
-      chef-utils (= 18.4.56)
+      chef-config (= 18.4.64)
+      chef-utils (= 18.4.64)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -78,13 +78,13 @@ PATH
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-    chef (18.4.56-x64-mingw-ucrt)
+    chef (18.4.64-x64-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.4.56)
+      chef-config (= 18.4.64)
       chef-powershell (~> 18.1.0)
-      chef-utils (= 18.4.56)
+      chef-utils (= 18.4.64)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -128,15 +128,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (18.4.56)
-      chef (= 18.4.56)
+    chef-bin (18.4.64)
+      chef (= 18.4.64)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (18.4.56)
+    chef-config (18.4.64)
       addressable
-      chef-utils (= 18.4.56)
+      chef-utils (= 18.4.64)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -145,7 +145,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (18.4.56)
+    chef-utils (18.4.64)
       concurrent-ruby
 
 GEM
@@ -297,14 +297,14 @@ GEM
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.7)
+    mixlib-shellout (3.2.8)
       chef-utils
-    mixlib-shellout (3.2.7-universal-mingw32)
+    mixlib-shellout (3.2.8-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-mingw-ucrt)
+    mixlib-shellout (3.2.8-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
@@ -504,7 +504,7 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
   ohai!
-  openssl (~> 3.2.0)
+  openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
