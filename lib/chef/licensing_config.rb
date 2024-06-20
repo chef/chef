@@ -7,4 +7,5 @@ ChefLicensing.configure do |config|
   config.chef_executable_name = "chef-client"
   config.license_server_url = "https://services.chef.io/licensing"
   config.logger = Chef::Log
+  config.license_add_command = "--license-add"
 end
