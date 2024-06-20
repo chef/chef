@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+puts "<<<--- RUBY_PLATFORM --->>>"
+puts RUBY_PLATFORM
+puts "<<<--- RUBY_PLATFORM --->>>"
+
 gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"

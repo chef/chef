@@ -19,6 +19,12 @@ describe "chef-client fips" do
 
   # For FIPS OSes/builds of Ruby, enabling FIPS should not error
   example "Do not error enabling fips_mode if FIPS linked", fips_mode: true do
+    puts ">==> Check versions of things >==>"
+    puts OpenSSL::OPENSSL_LIBRARY_VERSION
+    puts RUBY_PATCHLEVEL
+    puts RUBY_VERSION
+    puts "<==< Check versions of things <==<"
+    puts OpenSSL::OPENSSL_LIBRARY_VERSION
     expect { enable_fips }.not_to raise_error
   end
 
