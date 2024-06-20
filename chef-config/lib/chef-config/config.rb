@@ -97,8 +97,11 @@ module ChefConfig
     # @return [String] the platform-specific path
     #
     def self.var_chef_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
-      PathHelper.cleanpath(path, windows: windows)
+      @var_chef_dir ||= {}
+      @var_chef_dir[windows] ||= begin
+        path = windows ? c_chef_dir : PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
+        PathHelper.cleanpath(path, windows: windows)
+      end
     end
 
     # On *nix, /var, on Windows C:\
@@ -107,8 +110,11 @@ module ChefConfig
     # @return [String] the platform-specific path
     #
     def self.var_root_dir(windows: ChefUtils.windows?)
-      path = windows ? "C:\\" : "/var"
-      PathHelper.cleanpath(path, windows: windows)
+      @var_root_dir ||= {}
+      @var_root_dir[windows] ||= begin
+        path = windows ? "C:\\" : "/var"
+        PathHelper.cleanpath(path, windows: windows)
+      end
     end
 
     # On windows, C:/chef/
