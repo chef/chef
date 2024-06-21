@@ -71,7 +71,7 @@ module TargetIO
           executable = which(command_name).chop
           next if !executable || executable.empty?
 
-          # There are different ways to call (constructur, argument, combination of both)
+          # There are different ways to call (constructor, argument, combination of both)
           full_url = if path.start_with?("http")
                        path
                      elsif path.empty? || @url.end_with?(path)
