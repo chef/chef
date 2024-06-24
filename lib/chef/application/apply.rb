@@ -31,6 +31,7 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
 require "chef-licensing/cli_flags/mixlib_cli"
 require_relative "../licensing"
+require_relative "../telemetry" unless defined?(Chef::Telemetry)
 
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
@@ -255,8 +256,11 @@ class Chef::Application::Apply < Chef::Application
 
   def run_application
     Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    ###### WIP: Implementation of telemetry invocation on chef-apply
+    Chef::Telemetry.run_starting({})
     parse_options
     run_chef_recipe
+    Chef::Telemetry.run_ending({})
     Chef::Application.exit! "Exiting", 0
   rescue SystemExit
     raise

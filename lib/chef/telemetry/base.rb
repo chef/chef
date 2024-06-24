@@ -3,6 +3,8 @@ require "chef-licensing"
 require "securerandom" unless defined?(SecureRandom)
 require "digest" unless defined?(Digest)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require_relative "../telemetry/run_context_probe" unless defined?(Chef::Telemetry::RunContextProbe)
+
 class Chef
   class Telemetry
     class Base
@@ -22,7 +24,7 @@ class Chef
         {
           version: VERSION,
           createdTimeUTC: Time.now.getutc.iso8601,
-          environment: "", #TODO
+          environment: Chef::Telemetry::RunContextProbe.guess_run_context,
           licenseIds: fetch_license_ids,
           source: "", #TODO
           type: TYPE,
