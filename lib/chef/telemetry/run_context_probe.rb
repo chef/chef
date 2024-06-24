@@ -35,9 +35,8 @@ class Chef
       end
 
       def self.chef_solo?(stack)
-        #TODO
-        stack_match(stack: stack, path: "", label: "") &&
-          stack_match(stack: stack, path: "", label: "")
+        stack_match(stack: stack, path: "application/solo", label: "run") &&
+          stack_match(stack: stack, path: "bin/chef-solo", label: "load")
       end
 
       def self.chef_zero?(stack)
