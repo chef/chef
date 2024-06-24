@@ -912,6 +912,7 @@
     "ORGNAME",
     "orgname",
     "osquery",
+    "OSTYPE",
     "OSVERSIONINFOEX",
     "otherfiles",
     "outform",
