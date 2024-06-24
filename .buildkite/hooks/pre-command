@@ -7,8 +7,14 @@ set -eu
 
 docker ps || true
 
-# Get chef foundation version from the json file
-CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
+# Get chef foundation version from the json file or static for AIX
+if [[ "$OSTYPE" == AIX* ]]; then
+  CHEF_FOUNDATION_VERSION='3.1.20'
+else
+  CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
+fi
+
+# CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
 export CHEF_FOUNDATION_VERSION
 echo "Chef Foundation Version: $CHEF_FOUNDATION_VERSION"
 
