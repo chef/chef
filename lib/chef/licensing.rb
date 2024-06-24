@@ -10,10 +10,10 @@ class Chef
         license_keys = ChefLicensing.fetch_and_persist
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
         Chef::Log.error "Infra cannot execute without valid licenses." # TODO: Replace Infra with the product name dynamically
-        Chef::Application.exit! "License not set", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "License not set", 174 # 174 is the exit code for LICENSE_NOT_SET defined in lib/chef/application/exit_code.rb
       rescue ChefLicensing::Error => e
         Chef::Log.error e.message
-        Chef::Application.exit! "Usage error", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "Usage error", 1 # Generic failure
       end
 
       def check_software_entitlement!
@@ -21,10 +21,10 @@ class Chef
         ChefLicensing.check_software_entitlement!
       rescue ChefLicensing::SoftwareNotEntitled
         Chef::Log.error "License is not entitled to use Infra."
-        Chef::Application.exit! "License not entitled", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "License not entitled", 173 # 173 is the exit code for LICENSE_NOT_ENTITLED defined in lib/chef/application/exit_code.rb
       rescue ChefLicensing::Error => e
         Chef::Log.error e.message
-        Chef::Application.exit! "Usage error", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "Usage error", 1 # Generic failure
       end
 
       def licensing_help
@@ -58,17 +58,17 @@ class Chef
         ChefLicensing.list_license_keys_info
       rescue ChefLicensing::Error => e
         Chef::Log.error e.message
-        Chef::Application.exit! "Usage error", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "Usage error", 1 # Generic failure
       end
 
       def license_add
         ChefLicensing.add_license
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyAddNotAllowed => e
         Chef::Log.error e.message
-        Chef::Application.exit! "License key add not allowed", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "License not set", 174 # 174 is the exit code for LICENSE_NOT_SET defined in lib/chef/application/exit_code.rb
       rescue ChefLicensing::Error => e
         Chef::Log.error e.message
-        Chef::Application.exit! "Usage error", 1 # TODO: Replace 1 with a constant after deciding on the exit code
+        Chef::Application.exit! "Usage error", 1 # Generic failure
       end
     end
   end
