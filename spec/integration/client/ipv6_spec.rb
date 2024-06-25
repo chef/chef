@@ -84,7 +84,7 @@ describe "chef-client" do
 
   # Some Solaris test platforms are too old for IPv6. These tests should not
   # otherwise be platform dependent, so exclude solaris
-  when_the_chef_server "is running on IPv6", :not_supported_on_solaris, :not_supported_on_gce, :not_supported_on_aix, :not_supported_on_s390x do
+  when_the_chef_server "is running on IPv6", :not_supported_on_solaris, :not_supported_on_gce, :not_supported_on_aix do
 
     when_the_repository "has a cookbook with a no-op recipe" do
       before do

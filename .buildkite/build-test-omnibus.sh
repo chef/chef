@@ -164,13 +164,7 @@ then
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.88:"
     echo "      build: chef"
-    # temporary fix to make sure AIX builds
-    if [[ $platform == *"aix"* ]]
-    then
-      echo "      chef-foundation-version: 3.1.20"
-    else
-      echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
-    fi
+    echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ $build_key == "mac_os_x-11-x86_64" ]
