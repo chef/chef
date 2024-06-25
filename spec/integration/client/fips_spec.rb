@@ -22,7 +22,7 @@ describe "chef-client fips" do
     expect { enable_fips }.not_to raise_error
   end
 
-  example "Error on MD5 if fips_mode", :fips_mode_test
+  example "Error on MD5 if fips_mode", :fips_mode_test do
     enable_fips
     expect { OpenSSL::Digest.new("MD5", "test string for digesting") }.to raise_error(OpenSSL::Digest::DigestError)
   end
