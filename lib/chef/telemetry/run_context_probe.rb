@@ -7,11 +7,16 @@ class Chef
       # Guess, using stack introspection, if we were called under
       # test-kitchen, chef-client, chef-zero, chef-apply, chef-solo or otherwise.
       ##### WIP: Implementation of run context probe class
+
+      class << self
+        attr_accessor :chef_zero
+      end
+
       def self.guess_run_context(stack = nil)
         stack ||= caller_locations
+        return "chef-zero" if chef_zero?
         return "chef-apply" if chef_apply?(stack)
         return "chef-client" if chef_client?(stack)
-        return "chef-zero" if chef_zero?(stack)
         return "chef-solo" if chef_solo?(stack)
         return "test-kitchen" if kitchen?(stack)
 
@@ -39,10 +44,8 @@ class Chef
           stack_match(stack: stack, path: "bin/chef-solo", label: "load")
       end
 
-      def self.chef_zero?(stack)
-        #TODO
-        stack_match(stack: stack, path: "", label: "") &&
-          stack_match(stack: stack, path: "", label: "")
+      def self.chef_zero?
+        chef_zero
       end
 
       def self.stack_match(stack: [], label: nil, path: nil)
