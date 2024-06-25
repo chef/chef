@@ -138,8 +138,8 @@ RSpec.configure do |config|
 
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
-  config.filter_run_excluding fips_mode: true unless fips_mode_build?
-  config.filter_run_excluding fips_mode: false # disable all fips_mode negative tests
+  config.filter_run_excluding fips_mode_test: true unless fips_mode_build?
+  config.filter_run_excluding fips_mode_negative_test: true # disable all fips_mode negative tests
   # Skip fips on windows
   # config.filter_run_excluding :fips_mode if windows?
 
