@@ -153,7 +153,7 @@ class Chef
 
         # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
         def query_command
-          return "list" if get_choco_version.match?(/^1/)
+          return "list" if Gem::Dependency.new("", "< 1.4.0").match?("", get_choco_version)
 
           "search"
         end
@@ -240,7 +240,7 @@ class Chef
           @choco_exe ||= begin
               # if this check is in #define_resource_requirements, it won't get
               # run before choco.exe gets called from #load_current_resource.
-              exe_path = ::File.join(choco_install_path, "bin", "choco.exe")
+              exe_path = ::File.join(choco_install_path, "choco.exe")
               raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG unless ::File.exist?(exe_path)
 
               exe_path

@@ -92,7 +92,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
   describe "choco searches change with the version" do
     it "Choco V1 uses List" do
-      allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "1.4.0"))
+      allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "1.3.0"))
       expect(provider.query_command).to eql("list")
     end
 
