@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.4.64 -->
-## [v18.4.64](https://github.com/chef/chef/tree/v18.4.64) (2024-06-20)
+<!-- latest_release 18.5.0 -->
+## [v18.5.0](https://github.com/chef/chef/tree/v18.5.0) (2024-06-26)
 
 #### Merged Pull Requests
-- [ChefConfig] Add memoization to var_root_dir and var_chef_dir methods [#14368](https://github.com/chef/chef/pull/14368) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Chef 18.5: OpenSSL 3 / chef-foundation split version [#14433](https://github.com/chef/chef/pull/14433) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.4.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef 18.5: OpenSSL 3 / chef-foundation split version [#14433](https://github.com/chef/chef/pull/14433) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.0 -->
 - [ChefConfig] Add memoization to var_root_dir and var_chef_dir methods [#14368](https://github.com/chef/chef/pull/14368) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.64 -->
 - [FileCache#Find] N to 1 calls for file matching [#14351](https://github.com/chef/chef/pull/14351) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.63 -->
 - Adds AllowClobber powershell_package resource [#14382](https://github.com/chef/chef/pull/14382) ([mikef-nl](https://github.com/mikef-nl)) <!-- 18.4.62 -->
