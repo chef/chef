@@ -330,7 +330,7 @@ class Chef
         def generate_snap_json(snap_names, action, channel, options, revision = nil)
           request = {
               "action" => action,
-              "snaps" => snap_names,
+              "snaps" => Array(snap_names),
           }
           if %w{install refresh switch}.include?(action) && channel
             request["channel"] = channel
@@ -346,7 +346,6 @@ class Chef
             request["ignore_validation"] = true if options.include?("ignore-validation")
           end
           request["revision"] = revision unless revision.nil?
-          Chef::Log.warn(request.to_json.to_s) # debugging
           request
         end
 
