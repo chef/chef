@@ -14,6 +14,7 @@ class Chef
 
       def self.guess_run_context(stack = nil)
         stack ||= caller_locations
+        # TO TEST - Why does normal run always calls chef zero?
         return "chef-zero" if chef_zero?
         return "chef-apply" if chef_apply?(stack)
         return "chef-client" if chef_client?(stack)
@@ -24,7 +25,7 @@ class Chef
       end
 
       def self.kitchen?(stack)
-        #TOTEST
+        # TOTEST
         stack_match(stack: stack, path: "kitchen/instance", label: "verify_action") &&
           stack_match(stack: stack, path: "kitchen/instance", label: "verify")
       end
