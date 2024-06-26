@@ -234,7 +234,7 @@ GEM
       train-core (~> 3.10)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    iostruct (0.0.5)
+    iostruct (0.1.0)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -288,7 +288,7 @@ GEM
     mixlib-versioning (1.2.12)
     molinillo (0.8.0)
     multi_json (1.15.0)
-    multipart-post (2.4.0)
+    multipart-post (2.4.1)
     net-ftp (0.2.0)
       net-protocol
       time
@@ -324,7 +324,7 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    pedump (0.6.9)
+    pedump (0.6.10)
       awesome_print
       iostruct (>= 0.0.4)
       multipart-post (>= 2.0.0)
