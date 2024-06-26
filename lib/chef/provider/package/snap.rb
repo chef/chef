@@ -346,7 +346,7 @@ class Chef
             request["ignore_validation"] = true if options.include?("ignore-validation")
           end
           request["revision"] = revision unless revision.nil?
-          Chef::Log.warn(response.to_json.to_s) # debugging
+          Chef::Log.warn(request.to_json.to_s) # debugging
           request
         end
 
