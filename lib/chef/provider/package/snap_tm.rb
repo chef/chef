@@ -29,12 +29,17 @@ class Chef
             install_snap_from_source(names, new_resource.source)
           else
             Array(names).each do |snap|
+              snap_options = nil
+              if new_resource.options
+                snap_options = new_resource.options.map { |opt| "--#{opt} " }.join
+              end
+
               snapctl([
                 "install",
                 "--channel=#{new_resource.channel}",
-                new_resource.options,
+                snap_options,
                 snap,
-              ])
+              ].compact)
             end
           end
         end
