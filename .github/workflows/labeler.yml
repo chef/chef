@@ -10,3 +10,4 @@ jobs:
       - uses: actions/labeler@v4.3.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          sync-labels: true
