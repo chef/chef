@@ -10,7 +10,7 @@ class Chef
     class Base
       VERSION = 2.0
       TYPE = "job"
-      JOB_TYPE = "Chef Infra" # Need to confirm
+      JOB_TYPE = "Infra"
 
       attr_accessor :scratch
 
@@ -26,7 +26,7 @@ class Chef
           createdTimeUTC: Time.now.getutc.iso8601,
           environment: Chef::Telemetry::RunContextProbe.guess_run_context,
           licenseIds: fetch_license_ids,
-          source: "", #TODO
+          source: "#{ChefUtils::Dist::Infra::EXEC}:#{Chef::VERSION}",
           type: TYPE,
         }
       end
@@ -36,26 +36,41 @@ class Chef
       def run_ending(opts)
         payload = create_wrapper
 
-        payload[:platform] = "" #TODO
+        payload[:platform] = "" # TODO
 
         payload[:jobs] = [{
                             type: JOB_TYPE,
                             # Target platform info
                             environment: {
-                              host: "", #TODO
-                              os: "", #TODO
-                              version: "", #TODO
-                              architecture: "", #TODO
-                              id: "", #TODO
+                              host: "", # TODO
+                              os: "", # TODO
+                              version: "", # TODO
+                              architecture: "", # TODO
+                              id: "", # TODO
                             },
                             runtime: Chef::VERSION,
-                            content: [], #TODO
-                            steps: [], #TODO
+                            content: [], # TODO
+                            steps: [], # TODO
                           }]
 
         Chef::Log.debug "Final data for telemetry upload -> #{payload}"
         # Return payload object for testing
         payload
+      end
+
+      # TBD Should we implement distrbution name based on below usage?
+      def determine_distribution_name
+        run_context = Chef::Telemetry::RunContextProbe.guess_run_context
+        case run_context
+        when "chef-zero"
+          ChefUtils::Dist::Zero::EXEC
+        when "chef-apply"
+          ChefUtils::Dist::Apply::EXEC
+        when "chef-solo"
+          ChefUtils::Dist::Solo::EXEC
+        else
+          ChefUtils::Dist::Infra::EXEC
+        end
       end
 
       # Hash text if non-nil
