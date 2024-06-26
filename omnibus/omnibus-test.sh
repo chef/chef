@@ -1,6 +1,15 @@
 #!/bin/bash
 set -ueo pipefail
 
+if [[ "${BUILDKITE_LABEL:-}" =~ "el-.*-x86_64" || \
+      "${BUILDKITE_LABEL:-}" =~ "el-.*-ppc64" || \
+      "${BUILDKITE_LABEL:-}" =~ "el-.*aarch" || \
+      "${BUILDKITE_LABEL:-}" =~ "ubuntu-" || \
+      "${BUILDKITE_LABEL:-}" =~ "amazon-2023" ]]
+then
+  export OPENSSL_FIPS=1
+fi
+
 # Our tests hammer YUM pretty hard and the EL6 testers get corrupted
 # after some period of time. Rebuilding the RPM database clears
 # up the underlying corruption. We'll do this each test run just to
@@ -126,7 +135,6 @@ sudo_path="$(command -v sudo)"
 rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
-  echo "HERE"
   sudo -E bundle install --jobs=3 --retry=3
   sudo -E bundle exec rspec --profile -f progress
 else
