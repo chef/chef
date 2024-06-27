@@ -85,7 +85,6 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
    echo "<<<<<< RPM-MACROS - `cat ~/.rpmmacros` "
   fi
 
-  fi
 
   # Only if on RPM-based Linux distros
   echo "<<<<<<DEBUG - OMNIBUS_RPM_SIGNING_PASSPHRASE #{ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]"
