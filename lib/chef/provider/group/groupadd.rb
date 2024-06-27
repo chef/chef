@@ -35,7 +35,7 @@ class Chef
           super
           required_binaries.each do |required_binary|
             requirements.assert(:all_actions) do |a|
-              a.assertion { ::File.exist?(required_binary) }
+              a.assertion { ::TargetIO::File.exist?(required_binary) }
               a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{new_resource}"
               # No whyrun alternative: this component should be available in the base install of any given system that uses it
             end

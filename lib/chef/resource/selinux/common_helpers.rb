@@ -40,7 +40,7 @@ class Chef
       def selinux_activate_required?
         return false unless platform_family?("debian")
 
-        !File.read("/etc/default/grub").match?("security=selinux")
+        !TargetIO::File.read("/etc/default/grub").match?("security=selinux")
       end
     end
   end

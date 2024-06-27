@@ -21,7 +21,7 @@ class Chef
   class Resource
     class HabitatSup < Chef::Resource
 
-      provides :habitat_sup do |_node|
+      provides(:habitat_sup, target_mode: true) do |_node|
         false
       end
 
@@ -186,10 +186,10 @@ class Chef
         habitat_install new_resource.name do
           license new_resource.license
           hab_version new_resource.sup_version if new_resource.sup_version
-          not_if { ::File.exist?("/bin/hab") }
-          not_if { ::File.exist?("/usr/bin/hab") }
-          not_if { ::File.exist?("c:/habitat/hab.exe") }
-          not_if { ::File.exist?("c:/ProgramData/Habitat/hab.exe") }
+          not_if { ::TargetIO::File.exist?("/bin/hab") }
+          not_if { ::TargetIO::File.exist?("/usr/bin/hab") }
+          not_if { ::TargetIO::File.exist?("c:/habitat/hab.exe") }
+          not_if { ::TargetIO::File.exist?("c:/ProgramData/Habitat/hab.exe") }
         end
 
         habitat_package "core/hab-sup" do
@@ -205,7 +205,7 @@ class Chef
         if windows?
           directory "C:/hab/sup/default/config" do
             recursive true
-            only_if { ::Dir.exist?("C:/hab") }
+            only_if { ::TargetIO::Dir.exist?("C:/hab") }
             only_if { use_toml_config }
             action :create
           end
@@ -235,14 +235,14 @@ class Chef
               keep_latest_packages: new_resource.keep_latest
             )
             only_if { use_toml_config }
-            only_if { ::Dir.exist?("C:/hab/sup/default/config") }
+            only_if { ::TargetIO::Dir.exist?("C:/hab/sup/default/config") }
           end
         else
           directory "/hab/sup/default/config" do
             mode "0755"
             recursive true
             only_if { use_toml_config }
-            only_if { ::Dir.exist?("/hab") }
+            only_if { ::TargetIO::Dir.exist?("/hab") }
             action :create
           end
 
@@ -271,7 +271,7 @@ class Chef
               keep_latest_packages: new_resource.keep_latest
             )
             only_if { use_toml_config }
-            only_if { ::Dir.exist?("/hab/sup/default/config") }
+            only_if { ::TargetIO::Dir.exist?("/hab/sup/default/config") }
           end
         end
       end

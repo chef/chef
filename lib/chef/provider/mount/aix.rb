@@ -21,7 +21,7 @@ class Chef
   class Provider
     class Mount
       class Aix < Chef::Provider::Mount::Mount
-        provides :mount, platform: "aix"
+        provides :mount, platform: "aix", target_mode: true
 
         # Override for aix specific handling
         def initialize(new_resource, run_context)
@@ -163,7 +163,7 @@ class Chef
             # disable, then enable.
             disable_fs
           end
-          ::File.open("/etc/filesystems", "a") do |fstab|
+          ::TargetIO::File.open("/etc/filesystems", "a") do |fstab|
             fstab.puts("\n\n#{@new_resource.mount_point}:")
             if network_device?
               device_details = device_fstab.split(":")
@@ -194,7 +194,7 @@ class Chef
           contents = []
           if @current_resource.enabled
             found_device = false
-            ::File.open("/etc/filesystems", "r").each_line do |line|
+            ::TargetIO::File.open("/etc/filesystems", "r").each_line do |line|
               case line
               when %r{^/.+:\s*$}
                 if /#{Regexp.escape(@new_resource.mount_point)}+:/.match?(line)
@@ -207,7 +207,7 @@ class Chef
                 contents << line
               end
             end
-            ::File.open("/etc/filesystems", "w") do |fstab|
+            ::TargetIO::File.open("/etc/filesystems", "w") do |fstab|
               contents.each { |line| fstab.puts line }
             end
           else

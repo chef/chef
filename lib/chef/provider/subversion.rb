@@ -27,7 +27,7 @@ class Chef
   class Provider
     class Subversion < Chef::Provider
 
-      provides :subversion
+      provides :subversion, target_mode: true
 
       SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/.freeze
 
@@ -48,7 +48,7 @@ class Chef
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
           parent_directory = ::File.dirname(new_resource.destination)
-          a.assertion { ::File.directory?(parent_directory) }
+          a.assertion { ::TargetIO::File.directory?(parent_directory) }
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
             "Cannot clone #{new_resource} to #{new_resource.destination}, the enclosing directory #{parent_directory} does not exist")
           a.whyrun("Directory #{parent_directory} does not exist, assuming it would have been created")
@@ -81,7 +81,7 @@ class Chef
 
       action :sync, description: "Update the source to the specified version, or get a new clone or checkout. This action causes a hard reset of the index and working tree, discarding any uncommitted changes." do
         assert_target_directory_valid!
-        if ::File.exist?(::File.join(new_resource.destination, ".svn"))
+        if ::TargetIO::File.exist?(::File.join(new_resource.destination, ".svn"))
           current_rev = find_current_revision
           logger.trace "#{new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
@@ -134,7 +134,7 @@ class Chef
       alias :revision_slug :revision_int
 
       def find_current_revision
-        return nil unless ::File.exist?(::File.join(new_resource.destination, ".svn"))
+        return nil unless ::TargetIO::File.exist?(::File.join(new_resource.destination, ".svn"))
 
         command = scm(:info)
         svn_info = shell_out!(command, **run_options(cwd: cwd, returns: [0, 1])).stdout
@@ -214,7 +214,7 @@ class Chef
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(new_resource.destination) || Dir.entries(new_resource.destination).sort == [".", ".."]
+        !::TargetIO::File.exist?(new_resource.destination) || TargetIO::Dir.entries(new_resource.destination).sort == [".", ".."]
       end
 
       def svn_binary
@@ -224,7 +224,7 @@ class Chef
 
       def assert_target_directory_valid!
         target_parent_directory = ::File.dirname(new_resource.destination)
-        unless ::File.directory?(target_parent_directory)
+        unless ::TargetIO::File.directory?(target_parent_directory)
           msg = "Cannot clone #{new_resource} to #{new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
           raise Chef::Exceptions::MissingParentDirectory, msg
         end
@@ -238,9 +238,9 @@ class Chef
         require "etc" unless defined?(Etc)
         case user
         when Integer
-          Etc.getpwuid(user).dir
+          TargetIO::Etc.getpwuid(user).dir
         else
-          Etc.getpwnam(user.to_s).dir
+          TargetIO::Etc.getpwnam(user.to_s).dir
         end
       end
     end
