@@ -71,19 +71,19 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
   export ARTIFACTORY_PASSWORD=$(vault kv get -field password account/static/artifactory/buildkite)
 
  #only for el-7 ppc64
-  if [[ "$BUILDKITE_LABEL" =~ el-7-ppc64 ]]; then
-    #export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/test_keys)
-    #echo "<<<<<<DEBUG RPM SIGNING KEY - CHEF - pre-command-hooks for el7-ppc64 >>>>>>> RPM_SIGNING_KEY  : $RPM_SIGNING_KEY "
-    export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
-    echo "<<<<<<DEBUG RPM SIGNING KEY - pre-command  >>>>>>> RPM_SIGNING_KEY ->  "
-   echo "$RPM_SIGNING_KEY" | gpg --import
+#   if [[ "$BUILDKITE_LABEL" =~ el-7-ppc64 ]]; then
+#     export RPM_SIGNING_KEY=$(vault kv get -field packages_at_chef_io account/static/packages/test_keys)
+#     echo "<<<<<<DEBUG RPM SIGNING KEY - CHEF - pre-command-hooks for el7-ppc64 >>>>>>> RPM_SIGNING_KEY  : $RPM_SIGNING_KEY "
+#     #export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
+#     echo "<<<<<<DEBUG RPM SIGNING KEY - pre-command  >>>>>>> RPM_SIGNING_KEY ->  "
+#    # echo "$RPM_SIGNING_KEY" | gpg --import
 
-  cat <<-EOF > ~/.rpmmacros
-    %_signature gpg
-    %_gpg_name  Opscode Packages
-EOF
-   echo "<<<<<< RPM-MACROS - `cat ~/.rpmmacros` "
-  fi
+#    #cat <<-EOF > ~/.rpmmacros
+# #     %_signature gpg
+# #     %_gpg_name  Opscode Packages
+# # EOF
+# #    echo "<<<<<< RPM-MACROS - `cat ~/.rpmmacros` "
+#   fi
 
   # Only if on RPM-based Linux distros
   echo "<<<<<<DEBUG - OMNIBUS_RPM_SIGNING_PASSPHRASE #{ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]"
