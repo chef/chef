@@ -162,7 +162,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#ecf3a030b4dcd2ab2e637d1330943d748f350c04:"
+    echo "  - chef/omnibus#fc335d6507dcf40a42b8ffc902373d5d8d656190:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
@@ -207,7 +207,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#ecf3a030b4dcd2ab2e637d1330943d748f350c04:"
+  echo "  - chef/omnibus#fc335d6507dcf40a42b8ffc902373d5d8d656190:"
   echo "      create-build-record: chef"
 fi
 
@@ -302,7 +302,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#ecf3a030b4dcd2ab2e637d1330943d748f350c04:"
+    echo "  - chef/omnibus#fc335d6507dcf40a42b8ffc902373d5d8d656190:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -328,6 +328,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#ecf3a030b4dcd2ab2e637d1330943d748f350c04:"
+  echo "  - chef/omnibus#fc335d6507dcf40a42b8ffc902373d5d8d656190:"
   echo "      promote: chef"
 fi
