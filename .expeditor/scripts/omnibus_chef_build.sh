@@ -20,7 +20,7 @@ if [[ -f "/opt/omnibus-toolchain/embedded/ssl/certs/cacert.pem" ]]; then
 fi
 
 echo "<<<<<<DEBUG - OMNIBUS_RPM_SIGNING_PASSPHRASE #{ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]"
-if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon|el-7-ppc64 ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   export OMNIBUS_RPM_SIGNING_PASSPHRASE=''
   echo "<<<<<<DEBUG RPM SIGNING KEY - omnibus_chef_build.sh  >>>>>>> RPM_SIGNING_KEY ->  $RPM_SIGNING_KEY "
   echo "$RPM_SIGNING_KEY" | gpg --import
