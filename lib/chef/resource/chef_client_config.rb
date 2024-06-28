@@ -196,7 +196,7 @@ class Chef
 
       property :policy_persist_run_list, [true, false],
         description: "Override run lists defined in a Policyfile with the `run_list` defined on the #{ChefUtils::Dist::Server::PRODUCT}.",
-        introduced: "17.3"
+        introduced: "17.3",
         default: false
 
       property :minimal_ohai, [true, false],
