@@ -12,7 +12,7 @@ class Chef
       TYPE = "job"
       JOB_TYPE = "Infra"
 
-      attr_accessor :scratch
+      attr_accessor :scratch, :ohai
 
       def fetch_license_ids
         Chef::Log.debug "Fetching license IDs for telemetry"
@@ -36,17 +36,24 @@ class Chef
       def run_ending(opts)
         payload = create_wrapper
 
-        payload[:platform] = "" # TODO
+        # To not load ohai information once loaded
+        unless ohai
+          @ohai = Ohai::System.new
+          # Load lugins to gather system data
+          @ohai.all_plugins(%w{ os hostname platform dmi kernel})
+        end
+
+        payload[:platform] = ohai[:platform]
 
         payload[:jobs] = [{
                             type: JOB_TYPE,
                             # Target platform info
                             environment: {
-                              host: "", # TODO
-                              os: "", # TODO
-                              version: "", # TODO
-                              architecture: "", # TODO
-                              id: "", # TODO
+                              host: ohai[:hostname],
+                              os: ohai[:os],
+                              version: ohai[:platform_version],
+                              architecture: ohai[:kernel][:machine],
+                              id: (ohai[:dmi][:system] && ohai[:dmi][:system][:uuid]) || "",
                             },
                             runtime: Chef::VERSION,
                             content: [], # TODO
