@@ -21,9 +21,9 @@ rubygems:
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
 schedules:
-  - name: nightly_build_main
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "0 6 * * *"
+  - name: adhoc_build_chef_18
+    description: "Run an adhoc build for chef-18, twice a week in the Buildkite pipeline"
+    cronline: "30 9 * * 1,4"
 
 pipelines:
   - verify:
@@ -300,6 +300,6 @@ subscriptions:
   - workload: ruby_gem_published:train-winrm-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
+  - workload: schedule_triggered:chef/chef:chef-18:adhoc_build_chef_18:*
     actions:
       - trigger_pipeline:validate/adhoc
