@@ -196,7 +196,8 @@ class Chef
 
       property :policy_persist_run_list, [true, false],
         description: "Override run lists defined in a Policyfile with the `run_list` defined on the #{ChefUtils::Dist::Server::PRODUCT}.",
-        introduced: "17.3"
+        introduced: "17.3",
+        default: false
 
       property :minimal_ohai, [true, false],
         description: "Run a minimal set of Ohai plugins providing data necessary for the execution of #{ChefUtils::Dist::Infra::PRODUCT}'s built-in resources. Setting this to true will skip many large and time consuming data sets such as `cloud` or `packages`. Setting this to true may break cookbooks that assume all Ohai data will be present.",
