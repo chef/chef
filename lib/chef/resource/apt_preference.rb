@@ -22,7 +22,7 @@ class Chef
   class Resource
     class AptPreference < Chef::Resource
 
-      provides(:apt_preference) { true }
+      provides(:apt_preference, target_mode: true) { true }
 
       description "Use the **apt_preference** resource to create APT [preference files](https://wiki.debian.org/AptPreferences). Preference files are used to control which package versions and sources are prioritized during installation."
       introduced "13.3"

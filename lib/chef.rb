@@ -32,3 +32,5 @@ require_relative "chef/handler"
 require_relative "chef/handler/json_file"
 require_relative "chef/event_dispatch/dsl"
 require_relative "chef/chef_class"
+
+require_relative "chef/target_io"
