@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 5c0122b185a65af3e93856cba6c394a68343818a
-  branch: main
+  revision: 6c8a8a434696af787b9b87261c9c35f041c88ff0
+  branch: poorndm/test-rpm-signing
   specs:
     omnibus (9.0.25)
       aws-sdk-s3 (~> 1.116.0)
