@@ -29,7 +29,7 @@ Starting from the main branch create a PR which:
 
 ### Prep main branch for forking
 
-- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch.
+- In .expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch.
 - In .github/dependabot.yml add an entry for your new stable branch
 
 ### Fork Chef main to a stable branch
