@@ -20,6 +20,7 @@
 <% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? -%>
 <%=prop.delete_prefix("@") %> <%= instance_variable_get(prop).inspect %>
 <% end -%>
+<%# boolean properties are neither .nil? nor respond to .empty? so they are included below %>
 minimal_ohai <%= @minimal_ohai.inspect %>
 policy_persist_run_list <%= @policy_persist_run_list.inspect %>
 <%# ohai_disabled_plugins and ohai_optional_plugins properties don't match the config value perfectly-%>
