@@ -382,7 +382,7 @@ class Chef::Application::Base < Chef::Application
       begin
         # run immediately without interval sleep, or splay
         run_chef_client(Chef::Config[:specific_recipes])
-        Chef::Telemetry.run_ending({})
+        Chef::Telemetry.run_ending({conf: Chef::Config})
       rescue SystemExit
         raise
       rescue Exception => e
