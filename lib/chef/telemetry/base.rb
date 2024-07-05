@@ -56,13 +56,29 @@ class Chef
                               id: (ohai[:dmi][:system] && ohai[:dmi][:system][:uuid]) || "",
                             },
                             runtime: Chef::VERSION,
-                            content: [], # TODO
+                            content: [], #TODO - WIP
                             steps: [], # TODO
                           }]
-
+        #load_content(payload, opts[:conf])
         Chef::Log.debug "Final data for telemetry upload -> #{payload}"
         # Return payload object for testing
         payload
+      end
+
+      def load_content(payload, conf)
+        cookbook_path = conf[:cookbook_path]
+        cl = Chef::CookbookLoader.new(cookbook_path)
+        cl.load_cookbooks
+
+        cl.metadata.each do |_, metadata|
+          payload[:jobs][0][:content] << {
+            name: obscure(metadata.name),
+            version: metadata.version,
+            sha256: "", # This key is not present in cookbook's metadata
+            maintainer: metadata.maintainer || "",
+            type: "cookbook",
+          }
+        end
       end
 
       # TBD Should we implement distrbution name based on below usage?

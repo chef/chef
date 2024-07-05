@@ -260,7 +260,7 @@ class Chef::Application::Apply < Chef::Application
     Chef::Telemetry.run_starting({})
     parse_options
     run_chef_recipe
-    Chef::Telemetry.run_ending({})
+    Chef::Telemetry.run_ending({conf: Chef::Config})
     Chef::Application.exit! "Exiting", 0
   rescue SystemExit
     raise
