@@ -1,6 +1,7 @@
 require "forwardable" unless defined?(Forwardable)
 
 require_relative "../http/simple"
+require_relative "../json_compat"
 require_relative "train/http"
 
 module TargetIO
@@ -16,6 +17,18 @@ module TargetIO
         @http_class = TargetIO::TrainCompat::HTTP.new(url, http_client_opts)
       else
         @http_class = Chef::HTTP::Simple.new(url, http_client_opts)
+      end
+    end
+
+    class SimpleJSON
+      def initialize(url, http_client_opts = {})
+        @http_class = TargetIO::HTTP.new(url, http_client_opts)
+      end
+
+      def get(path, headers = {})
+        response = @http_class.get(path, headers)
+
+        Chef::JSONCompat.from_json(response)
       end
     end
   end
