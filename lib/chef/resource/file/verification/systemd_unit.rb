@@ -47,6 +47,9 @@ class Chef
           def verify(path, opts = {})
             return true unless systemd_analyze_path
 
+            # Verification uses guards, which are not yet fully supported in TM
+            return true if Chef::Config.target_mode?
+
             Dir.mktmpdir("chef-systemd-unit") do |dir|
               temp = "#{dir}/#{::File.basename(@parent_resource.path)}"
               ::TargetIO::FileUtils.cp(path, temp)
