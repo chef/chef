@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 91a2ea16184c0bfbfaa66a48851444a3f3dac70f
+  revision: 621c9c292158789a882ebcd3ae4288d49843d15b
   branch: poorndm/test-rpm-signing
   specs:
     omnibus (9.0.25)
