@@ -22,5 +22,5 @@ group :development do
 end
 
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-  gem win32-process
+  gem "win32-process"
 end
