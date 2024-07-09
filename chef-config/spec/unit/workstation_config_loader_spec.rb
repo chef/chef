@@ -499,6 +499,26 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         end
       end
 
+      context "and uses relative paths for key files" do
+        let(:content) do
+          content = <<~EOH
+            [default]
+            client_key = "barney_rubble.pem"
+
+            [default.knife]
+            secret_file = "encrypted_data_bag_secret.pem"
+          EOH
+          content
+        end
+
+        it "applies the expected knife config" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.client_key.to_s).to eq("#{home}/.chef/barney_rubble.pem")
+          expect(ChefConfig::Config.knife[:secret_file].to_s).to eq("#{home}/.chef/encrypted_data_bag_secret.pem")
+          expect(ChefConfig::Config.profile.to_s).to eq("default")
+        end
+      end
+
       context "and has a profile containing a full key" do
         let(:content) do
           content = <<~EOH
