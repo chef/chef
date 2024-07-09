@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: af29405952a2f1177d2695c56b7acdf00b96f455
+  revision: 29bcd7c0ed2aafda5abd37559272fd7223d8fe9c
   branch: jfm/chef17-freebsd-openssl-nodevcrypto
   specs:
     omnibus-software (24.6.323)
@@ -282,11 +282,6 @@ GEM
     mixlib-shellout (3.2.7)
       chef-utils
     mixlib-shellout (3.2.7-universal-mingw32)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.7-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
