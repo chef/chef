@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gem "chef", path: "."
 
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
