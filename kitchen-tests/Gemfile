@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem "rake" # required to build some native extensions
 gem "chef", path: ".."
 gem "knife", path: "../knife"
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable" # avoids failures when we bump chef major
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main" # avoids failures when we bump chef major
 gem "chef-cli"
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
