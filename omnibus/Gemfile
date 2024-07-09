@@ -23,4 +23,5 @@ end
 
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   gem "win32-process"
+  gem 'ffi-win32-extensions', '~> 1.0', '>= 1.0.4'
 end
