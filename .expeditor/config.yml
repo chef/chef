@@ -163,3 +163,145 @@ subscriptions:
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
       - trigger_pipeline:habitat/test
+
+  # subscriptions to Ruby gem dependencies' releases, open PR for updates
+  - workload: ruby_gem_published:corefoundation-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-archive-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-authentication-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-cli-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-log-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:mixlib-shellout-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:chef-vault-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:chef-zero-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ohai-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:inspec-core-bin-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:train-core-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-process-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-service-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-taskscheduler-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-certstore-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-event-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-mutex-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-eventlog-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-api-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-yajl-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:libyajl2-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:cheffish-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:license-acceptance-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-libarchive-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:plist-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:net-ssh-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-prompt-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-screen-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-table-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:pastel-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:erubis-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:bcrypt_pbkdf-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ed25519-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:addressable-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:proxifier2-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:syslog-logger-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:uuidtools-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:iniparse-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:net-sftp-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:fauxhai-ng-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
+  - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh
+  # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
+  - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh
+  - workload: ruby_gem_published:train-rest-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:train-winrm-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: schedule_triggered:chef/chef:chef-18:adhoc_build_chef_18:*
+    actions:
+      - trigger_pipeline:validate/adhoc
