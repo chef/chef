@@ -8,67 +8,72 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.4.12 -->
+<!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
 - Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.1 -->
-- Chef 18.5: OpenSSL 3 / chef-foundation split version [#14433](https://github.com/chef/chef/pull/14433) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.0 -->
-- [ChefConfig] Add memoization to var_root_dir and var_chef_dir methods [#14368](https://github.com/chef/chef/pull/14368) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.64 -->
-- [FileCache#Find] N to 1 calls for file matching [#14351](https://github.com/chef/chef/pull/14351) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.63 -->
-- Adds AllowClobber powershell_package resource [#14382](https://github.com/chef/chef/pull/14382) ([mikef-nl](https://github.com/mikef-nl)) <!-- 18.4.62 -->
-- Updating Chef Foundation [#14449](https://github.com/chef/chef/pull/14449) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.61 -->
-- pick the latest version of license_scout which will fix infra-client … [#14446](https://github.com/chef/chef/pull/14446) ([muthuja](https://github.com/muthuja)) <!-- 18.4.60 -->
-- Comment property of sysctl resource does not define system state [#14309](https://github.com/chef/chef/pull/14309) ([drdev](https://github.com/drdev)) <!-- 18.4.59 -->
-- Move attribute merge NIL checks into inject  [#14218](https://github.com/chef/chef/pull/14218) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.58 -->
-- [Chefignore#parse_ignore_file] Use strip! on lines [#14348](https://github.com/chef/chef/pull/14348) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.57 -->
-- Remove extra asterisk [#14429](https://github.com/chef/chef/pull/14429) ([IanMadd](https://github.com/IanMadd)) <!-- 18.4.56 -->
-- conservative update of vault [#14423](https://github.com/chef/chef/pull/14423) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.55 -->
-- [CookbookVersionLoader#load_all_files] Do directory test after name check [#14349](https://github.com/chef/chef/pull/14349) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.54 -->
-- [Immutablize#convert_value] return already frozen String objects [#14226](https://github.com/chef/chef/pull/14226) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.53 -->
-- update latest license_scout version [#14413](https://github.com/chef/chef/pull/14413) ([muthuja](https://github.com/muthuja)) <!-- 18.4.52 -->
-- Revert &quot;zypper_package: Fix idempotency issue&quot; [#14408](https://github.com/chef/chef/pull/14408) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.51 -->
-- [PathHelper#join] Reduce allocations [#14385](https://github.com/chef/chef/pull/14385) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.50 -->
-- [CookbookSynchronizer#ensure_cookbook_paths] Move file_cache_path method out of loop [#14391](https://github.com/chef/chef/pull/14391) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.49 -->
-- [StateTracking] Do in-place compact [#14390](https://github.com/chef/chef/pull/14390) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.48 -->
-- [CookbookManifest#files_for] Avoid unnecessary allocations [#14388](https://github.com/chef/chef/pull/14388) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.47 -->
-- update kitchen-tests platforms [#14395](https://github.com/chef/chef/pull/14395) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.46 -->
-- [Knife#pattern_arg_from] Use start_with? [#14384](https://github.com/chef/chef/pull/14384) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.45 -->
-- Move Ubuntu 18.04 kitchen test to Virtualbox + Vagrant  [#14392](https://github.com/chef/chef/pull/14392) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.44 -->
-- Test FIPS MD5 [#14387](https://github.com/chef/chef/pull/14387) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.43 -->
-- Remove EOL Warning [#14366](https://github.com/chef/chef/pull/14366) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.42 -->
-- EC and modulo length update for OpenSSL 3 compatibility [#14354](https://github.com/chef/chef/pull/14354) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.41 -->
-- Bump pedump from 0.6.6 to 0.6.9 in /omnibus [#14344](https://github.com/chef/chef/pull/14344) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.40 -->
-- hyperv added to virtualization helper [#14359](https://github.com/chef/chef/pull/14359) ([snohio](https://github.com/snohio)) <!-- 18.4.39 -->
-- Disable merging of chocolatey searches [#14327](https://github.com/chef/chef/pull/14327) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.38 -->
-- Chef 10065 - Support new IBM hosts [#14321](https://github.com/chef/chef/pull/14321) ([poorndm](https://github.com/poorndm)) <!-- 18.4.37 -->
-- Revert &quot;Add missing `description` to windows_service load_current_resource for idempotent check to be successful&quot; [#14334](https://github.com/chef/chef/pull/14334) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.36 -->
-- Add note about adding account rights not taking immediate effect. [#14325](https://github.com/chef/chef/pull/14325) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.35 -->
-- [trivial] add missing markdown fence [#14326](https://github.com/chef/chef/pull/14326) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.34 -->
-- Choco version check fails for Licensed Clients [#14320](https://github.com/chef/chef/pull/14320) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.33 -->
-- Added the databag_fallback attribute [#14290](https://github.com/chef/chef/pull/14290) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.4.32 -->
-- Sean simmons progress/chef 9252 [#14310](https://github.com/chef/chef/pull/14310) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.4.31 -->
-- [Immutablize#convert_value] reduce number of class comparisons [#14234](https://github.com/chef/chef/pull/14234) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.4.30 -->
-- Fixed the issue with log level on the chef config [#14294](https://github.com/chef/chef/pull/14294) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.4.29 -->
-- Add examples to snap_package resource. [#14299](https://github.com/chef/chef/pull/14299) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.28 -->
-- Removing OSX 10.15 support per request from Build Services [#14291](https://github.com/chef/chef/pull/14291) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.27 -->
-- Bump omnibus-software from `86649fa` to `8a87f3b` in /omnibus [#14295](https://github.com/chef/chef/pull/14295) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.26 -->
-- Cleaning up the installer [#14298](https://github.com/chef/chef/pull/14298) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.25 -->
-- fix kitchen-tests [#14280](https://github.com/chef/chef/pull/14280) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.24 -->
-- Updating the dev docs for releasing Chef [#14285](https://github.com/chef/chef/pull/14285) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.4.23 -->
-- add umask to chef_client_systemd_timer [#14238](https://github.com/chef/chef/pull/14238) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.13 -->
-- Safeguard for undefined and fix reference to CHEF_FOUNDATION_VERSION [#14252](https://github.com/chef/chef/pull/14252) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.14 -->
-- Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.15 -->
-- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld)) <!-- 18.4.16 -->
-- Fix requiring of chef-utils/version_string. [#14256](https://github.com/chef/chef/pull/14256) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.4.17 -->
-- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14264](https://github.com/chef/chef/pull/14264) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.18 -->
-- Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.4.19 -->
-- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair)) <!-- 18.4.20 -->
-- correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 18.4.21 -->
-- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker)) <!-- 18.4.22 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.5.0](https://github.com/chef/chef/tree/v18.5.0) (2024-07-09)
+
+#### Merged Pull Requests
+- Replace Chef trademark with distro name in deprecation warnings. [#14279](https://github.com/chef/chef/pull/14279) ([williamtheaker](https://github.com/williamtheaker))
+- correct logic for `use_choco_list` in chocolatey_package provider [#14227](https://github.com/chef/chef/pull/14227) ([jaymzjulian](https://github.com/jaymzjulian))
+- remove repetitive words [#14281](https://github.com/chef/chef/pull/14281) ([carrychair](https://github.com/carrychair))
+- Bump rack from 2.2.6.4 to 2.2.8.1 in /omnibus [#14257](https://github.com/chef/chef/pull/14257) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump artifactory from 3.0.15 to 3.0.17 in /omnibus [#14264](https://github.com/chef/chef/pull/14264) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix requiring of chef-utils/version_string. [#14256](https://github.com/chef/chef/pull/14256) ([tpowell-progress](https://github.com/tpowell-progress))
+- fix bug in chef_client_config resource template for client.rb [#14255](https://github.com/chef/chef/pull/14255) ([Stromweld](https://github.com/Stromweld))
+- Bump kitchen-vagrant from 1.14.1 to 2.0.0 in /omnibus [#14242](https://github.com/chef/chef/pull/14242) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Safeguard for undefined and fix reference to CHEF_FOUNDATION_VERSION [#14252](https://github.com/chef/chef/pull/14252) ([tpowell-progress](https://github.com/tpowell-progress))
+- add umask to chef_client_systemd_timer [#14238](https://github.com/chef/chef/pull/14238) ([Stromweld](https://github.com/Stromweld))
+- Updating the dev docs for releasing Chef [#14285](https://github.com/chef/chef/pull/14285) ([johnmccrae](https://github.com/johnmccrae))
+- fix kitchen-tests [#14280](https://github.com/chef/chef/pull/14280) ([Stromweld](https://github.com/Stromweld))
+- Cleaning up the installer [#14298](https://github.com/chef/chef/pull/14298) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus-software from `86649fa` to `8a87f3b` in /omnibus [#14295](https://github.com/chef/chef/pull/14295) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Removing OSX 10.15 support per request from Build Services [#14291](https://github.com/chef/chef/pull/14291) ([johnmccrae](https://github.com/johnmccrae))
+- Add examples to snap_package resource. [#14299](https://github.com/chef/chef/pull/14299) ([williamtheaker](https://github.com/williamtheaker))
+- Fixed the issue with log level on the chef config [#14294](https://github.com/chef/chef/pull/14294) ([ashiqueps](https://github.com/ashiqueps))
+- [Immutablize#convert_value] reduce number of class comparisons [#14234](https://github.com/chef/chef/pull/14234) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Sean simmons progress/chef 9252 [#14310](https://github.com/chef/chef/pull/14310) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+- Added the databag_fallback attribute [#14290](https://github.com/chef/chef/pull/14290) ([nikhil2611](https://github.com/nikhil2611))
+- Choco version check fails for Licensed Clients [#14320](https://github.com/chef/chef/pull/14320) ([johnmccrae](https://github.com/johnmccrae))
+- [trivial] add missing markdown fence [#14326](https://github.com/chef/chef/pull/14326) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Add note about adding account rights not taking immediate effect. [#14325](https://github.com/chef/chef/pull/14325) ([tpowell-progress](https://github.com/tpowell-progress))
+- Revert &quot;Add missing `description` to windows_service load_current_resource for idempotent check to be successful&quot; [#14334](https://github.com/chef/chef/pull/14334) ([tpowell-progress](https://github.com/tpowell-progress))
+- Chef 10065 - Support new IBM hosts [#14321](https://github.com/chef/chef/pull/14321) ([poorndm](https://github.com/poorndm))
+- Disable merging of chocolatey searches [#14327](https://github.com/chef/chef/pull/14327) ([jaymzjulian](https://github.com/jaymzjulian))
+- hyperv added to virtualization helper [#14359](https://github.com/chef/chef/pull/14359) ([snohio](https://github.com/snohio))
+- Bump pedump from 0.6.6 to 0.6.9 in /omnibus [#14344](https://github.com/chef/chef/pull/14344) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- EC and modulo length update for OpenSSL 3 compatibility [#14354](https://github.com/chef/chef/pull/14354) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove EOL Warning [#14366](https://github.com/chef/chef/pull/14366) ([Stromweld](https://github.com/Stromweld))
+- Test FIPS MD5 [#14387](https://github.com/chef/chef/pull/14387) ([tpowell-progress](https://github.com/tpowell-progress))
+- Move Ubuntu 18.04 kitchen test to Virtualbox + Vagrant  [#14392](https://github.com/chef/chef/pull/14392) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Knife#pattern_arg_from] Use start_with? [#14384](https://github.com/chef/chef/pull/14384) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- update kitchen-tests platforms [#14395](https://github.com/chef/chef/pull/14395) ([Stromweld](https://github.com/Stromweld))
+- [CookbookManifest#files_for] Avoid unnecessary allocations [#14388](https://github.com/chef/chef/pull/14388) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [StateTracking] Do in-place compact [#14390](https://github.com/chef/chef/pull/14390) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [CookbookSynchronizer#ensure_cookbook_paths] Move file_cache_path method out of loop [#14391](https://github.com/chef/chef/pull/14391) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [PathHelper#join] Reduce allocations [#14385](https://github.com/chef/chef/pull/14385) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Revert &quot;zypper_package: Fix idempotency issue&quot; [#14408](https://github.com/chef/chef/pull/14408) ([johnmccrae](https://github.com/johnmccrae))
+- update latest license_scout version [#14413](https://github.com/chef/chef/pull/14413) ([muthuja](https://github.com/muthuja))
+- [Immutablize#convert_value] return already frozen String objects [#14226](https://github.com/chef/chef/pull/14226) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [CookbookVersionLoader#load_all_files] Do directory test after name check [#14349](https://github.com/chef/chef/pull/14349) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- conservative update of vault [#14423](https://github.com/chef/chef/pull/14423) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove extra asterisk [#14429](https://github.com/chef/chef/pull/14429) ([IanMadd](https://github.com/IanMadd))
+- [Chefignore#parse_ignore_file] Use strip! on lines [#14348](https://github.com/chef/chef/pull/14348) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Move attribute merge NIL checks into inject  [#14218](https://github.com/chef/chef/pull/14218) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Comment property of sysctl resource does not define system state [#14309](https://github.com/chef/chef/pull/14309) ([drdev](https://github.com/drdev))
+- pick the latest version of license_scout which will fix infra-client … [#14446](https://github.com/chef/chef/pull/14446) ([muthuja](https://github.com/muthuja))
+- Updating Chef Foundation [#14449](https://github.com/chef/chef/pull/14449) ([johnmccrae](https://github.com/johnmccrae))
+- Adds AllowClobber powershell_package resource [#14382](https://github.com/chef/chef/pull/14382) ([mikef-nl](https://github.com/mikef-nl))
+- [FileCache#Find] N to 1 calls for file matching [#14351](https://github.com/chef/chef/pull/14351) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [ChefConfig] Add memoization to var_root_dir and var_chef_dir methods [#14368](https://github.com/chef/chef/pull/14368) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Chef 18.5: OpenSSL 3 / chef-foundation split version [#14433](https://github.com/chef/chef/pull/14433) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
 ## [v18.4.12](https://github.com/chef/chef/tree/v18.4.12) (2024-03-14)
 
 #### Merged Pull Requests
@@ -82,7 +87,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Revert &quot;Bump unf ext back&quot; [#14231](https://github.com/chef/chef/pull/14231) ([tpowell-progress](https://github.com/tpowell-progress))
 - Avoid DeepMergeCache flap in Chef::Node#loaded_recipe [#14225](https://github.com/chef/chef/pull/14225) ([dafyddcrosby](https://github.com/dafyddcrosby))
 - Fix bigdecimal error with webmock / crack in macOS and AIX builds [#14243](https://github.com/chef/chef/pull/14243) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v18.4.2](https://github.com/chef/chef/tree/v18.4.2) (2024-01-30)
 
