@@ -7,7 +7,7 @@ driver:
 provisioner:
   name: chef_infra
   product_name: chef
-  product_version: latest
+  product_version: 18
   channel: current
   retry_on_exit_code:
     - 35 # 35 is the exit code signaling that the node is rebooting

@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gem "chef", path: "."
 
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
@@ -21,7 +21,7 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", ">= 17"
+gem "cheffish", ">= 18"
 
 group(:omnibus_package) do
   gem "appbundler"
