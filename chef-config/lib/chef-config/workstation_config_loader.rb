@@ -167,7 +167,11 @@ module ChefConfig
         when "client_key"
           extract_key(value, :client_key, :client_key_contents)
         when "knife"
-          Config.knife.merge!(value.transform_keys(&:to_sym))
+          value = value.transform_keys(&:to_sym)
+          if value[:secret_file]
+            value[:secret_file] = Pathname.new(value[:secret_file]).expand_path(home_chef_dir)
+          end
+          Config.knife.merge!(value)
         else
           Config[key.to_sym] = value
         end
