@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 4dfb17de64bae4df869b714f1936d5f2f375791e
+  revision: 42aee2f3965e5709292786dc94350745bcd2bf89
   branch: jfm/chef17-freebsd-openssl-nodevcrypto
   specs:
     omnibus-software (24.6.323)
