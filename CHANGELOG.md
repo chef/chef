@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.146 -->
-## [v17.10.146](https://github.com/chef/chef/tree/v17.10.146) (2024-07-10)
+<!-- latest_release 17.10.147 -->
+## [v17.10.147](https://github.com/chef/chef/tree/v17.10.147) (2024-07-10)
 
 #### Merged Pull Requests
-- Revert &quot;forcing win32-process&quot; [#14478](https://github.com/chef/chef/pull/14478) ([johnmccrae](https://github.com/johnmccrae))
+- Updating win32-process [#14479](https://github.com/chef/chef/pull/14479) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating win32-process [#14479](https://github.com/chef/chef/pull/14479) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.147 -->
 - Revert &quot;forcing win32-process&quot; [#14478](https://github.com/chef/chef/pull/14478) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.146 -->
 - forcing win32-process [#14475](https://github.com/chef/chef/pull/14475) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.145 -->
 - Backport of 14465 - client_config no method error [#14466](https://github.com/chef/chef/pull/14466) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.144 -->
