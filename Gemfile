@@ -76,8 +76,6 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # executed, just in case they have changed.
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   instance_eval do
-    gem "win32-process"
-    gem "ffi-win32-extensions", "~> 1.0", ">= 1.0.4"
     ruby_exe_dir = RbConfig::CONFIG["bindir"]
     assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
     FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
