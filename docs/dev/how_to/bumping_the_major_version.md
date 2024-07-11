@@ -68,7 +68,7 @@ Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
 Note: Make sure you're making this PR against the **new stable** branch and not **main!**
 
-## Step 4. Bump main for the new major release
+### Step 4. Bump main for the new major release
 
 Create a PR that performs the following:
 
@@ -76,7 +76,9 @@ Create a PR that performs the following:
 - Update `chef.gemspec` and `knife.gemspec` to point to the new ohai major release
 - run `rake dependencies:update`
 
-## Step 5. Update Ohai stable for the Chef stable branch
+### Step 5. Update Ohai stable for the Chef stable branch
 
 - In the ohai repo checkout the stable branch
 - Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.
+
+### Step 6. Have a github admin update the branch protections for the new release branch. 
