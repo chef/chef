@@ -205,7 +205,7 @@ class Chef
           return config[:bootstrap_version] if config[:bootstrap_version]
 
           if config[:channel] == "stable"
-            Chef::VERSION.split(".").first
+            Chef::VERSION
           else
             "latest"
           end
