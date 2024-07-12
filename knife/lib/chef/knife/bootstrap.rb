@@ -553,7 +553,7 @@ class Chef
 
       def run
         check_eula_license if ChefUtils::Dist::Org::ENFORCE_LICENSE
-        fetch_license if Chef::Utils::LicensingHandler.feature_enabled?
+        fetch_license
 
         plugin_setup!
         validate_name_args!
@@ -574,6 +574,7 @@ class Chef
         content = render_template
         bootstrap_path = upload_bootstrap(content)
         perform_bootstrap(bootstrap_path)
+        activate_license
         plugin_finalize
       ensure
         connection.del_file!(bootstrap_path) if connection && bootstrap_path
@@ -603,6 +604,14 @@ class Chef
       def perform_bootstrap(remote_bootstrap_script_path)
         ui.info("Bootstrapping #{ui.color(server_name, :bold)}")
         cmd = bootstrap_command(remote_bootstrap_script_path)
+        bootstrap_run_command(cmd)
+      end
+
+      # This method will run the license activation command on the created node which will use the same license as the
+      # chef-workstation.
+      def activate_license
+        ui.info("Activating the Progress Chef license")
+        cmd = "chef-client --version --chef-license-key #{config[:license_id]}"
         bootstrap_run_command(cmd)
       end
 

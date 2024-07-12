@@ -29,10 +29,6 @@ class Chef
 
           new(licenses_metadata.first.id, licenses_metadata.first.license_type)
         end
-
-        def feature_enabled?
-          File.exists?(File.join(Dir.home, ".chef/fbffb2ea48910514676e1b7a51c7248290ea958c"))
-        end
       end
     end
   end
