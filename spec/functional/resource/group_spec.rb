@@ -52,9 +52,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
       pp "OHAI PLatform Family"
       puts ohai[:platform_family]
-      pp "***** Where my Groups At *****"
-      groups = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
+      pp "***** Where my Groups At in 'Groups' *****"
       pp groups
+      pp "****** Where my groups at via /etc/group ******"
+      out = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
+      pp out
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
       Etc.getgrnam(group_name).mem.include?(user)
     end
