@@ -19,6 +19,7 @@
 
 require "spec_helper"
 require "chef/mixin/shell_out"
+require "pp"
 
 describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
@@ -35,6 +36,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def user_exist_in_group?(user)
     case ohai[:platform_family]
+      # pp "****** OHAI Platform Fammily ******"
+      # puts ohai[:platform_family]
     when "windows"
       user_sid = sid_string_from_user(user)
       user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
@@ -47,6 +50,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
       # Adding a 2 second delay for this platform is enough to get correct results.
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
+      pp "OHAI PLatform Family"
+      puts ohai[:platform_family]
+      pp "***** Where my Groups At *****"
+      groups = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
+      pp groups
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
       Etc.getgrnam(group_name).mem.include?(user)
     end

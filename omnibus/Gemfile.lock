@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: e65e06a05039d9fcdd4519d9518c378ff548f91c
+  revision: 6d2937635f68e40de54b2e2f6afabc0efe8a7132
   branch: jfm/chef17-freebsd-openssl-nodevcrypto
   specs:
     omnibus-software (24.6.323)
@@ -75,7 +75,7 @@ GEM
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
-    bigdecimal (3.1.7)
+    bigdecimal (3.1.8)
     builder (3.2.4)
     chef (17.10.0)
       addressable
@@ -282,6 +282,11 @@ GEM
     mixlib-shellout (3.2.7)
       chef-utils
     mixlib-shellout (3.2.7-universal-mingw32)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    mixlib-shellout (3.2.7-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
