@@ -50,13 +50,18 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
       # Adding a 2 second delay for this platform is enough to get correct results.
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
-      pp "OHAI PLatform Family"
+      puts "<== OHAI Platform Family ==>"
       puts ohai[:platform_family]
-      pp "***** Where my Groups At *****"
+      puts "***** Where my Groups At *****"
       groups = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
-      pp groups
+      puts "GROUP DESIRED: <#{group_name}>"
+      puts "GROUPS FOUND:"
+      puts groups
+      puts "GROUPS GREP?"
+      puts groups.each_line.grep(/#{group_name}/)
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
-      Etc.getgrnam(group_name).mem.include?(user)
+      puts "OK, LET'S CALL Etc.getgrnam(#{group_name}) now:"
+      Etc.getgrnam(group_name).mem.include?(user).tap { |result| puts "GOT #{result} for Etc.getgrnam(#{group_name})" }
     end
   end
 
