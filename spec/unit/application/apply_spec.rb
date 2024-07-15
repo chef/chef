@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require "spec_helper"
+require "chef-licensing"
 
 describe Chef::Application::Apply do
 
@@ -90,12 +91,21 @@ describe Chef::Application::Apply do
   describe "recipe_file_arg" do
     before do
       ARGV.clear
+
+      ChefLicensing.configure do |config|
+        config.logger = Logger.new(StringIO.new)  # suppress log output
+      end
     end
     it "should exit and log message" do
       expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
       expect { @app.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
 
+    after do
+      ChefLicensing.configure do |config|
+        config.logger = Chef::Log
+      end
+    end
   end
   describe "when the json_attribs configuration option is specified" do
     let(:json_attribs) { { "a" => "b" } }
