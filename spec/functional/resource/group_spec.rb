@@ -59,7 +59,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       out = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
       pp out
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
-      sleep 2 if freebsd? && (ohai[:platform_version] == "13")
+      sleep 2 if freebsd? # && (ohai[:platform_version] == "13")
       Etc.getgrnam(group_name).mem.include?(user)
     end
   end
