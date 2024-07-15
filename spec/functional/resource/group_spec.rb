@@ -53,11 +53,13 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       pp "OHAI PLatform Family"
       puts ohai[:platform_family]
       pp "***** Where my Groups At in 'Groups' *****"
-      pp groups
+      local_groups = Mixlib::ShellOut.new(%w{groups}).run_command.stdout
+      pp local_groups
       pp "****** Where my groups at via /etc/group ******"
       out = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
       pp out
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
+      sleep 2 if freebsd? && (ohai[:platform_version] == "13")
       Etc.getgrnam(group_name).mem.include?(user)
     end
   end
