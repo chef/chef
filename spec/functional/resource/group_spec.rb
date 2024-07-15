@@ -25,6 +25,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
+    pp "\nI am looking for this group on line 28: #{group}\n"
     case ohai[:os]
     when "linux"
       expect { Etc.getgrnam(group) }.not_to raise_error
@@ -50,16 +51,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
       # Adding a 2 second delay for this platform is enough to get correct results.
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
-      pp "OHAI PLatform Family"
-      puts ohai[:platform_family]
-      pp "***** Where my Groups At in 'Groups' *****"
-      local_groups = Mixlib::ShellOut.new(%w{groups}).run_command.stdout
-      pp local_groups
-      pp "****** Where my groups at via /etc/group ******"
-      out = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
-      pp out
+      # pp "OHAI PLatform Family"
+      # puts ohai[:platform_family]
+      # pp "***** Where my Groups At in 'Groups' *****"
+      # local_groups = Mixlib::ShellOut.new(%w{groups}).run_command.stdout
+      # pp local_groups
+      # pp "****** Where my groups at via /etc/group ******"
+      # out = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
+      # pp out
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
-      sleep 2 if freebsd? # && (ohai[:platform_version] == "13")
+      pp "\nI am looking for this group on line 64: #{group_name}\n"
       Etc.getgrnam(group_name).mem.include?(user)
     end
   end
@@ -67,6 +68,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   def group_should_not_exist(group)
     case ohai[:os]
     when "linux"
+    pp "\nI am looking for this group on line 71: #{group}\n"
       expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
