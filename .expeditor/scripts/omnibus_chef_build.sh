@@ -27,7 +27,9 @@ if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]] && [[ $BUILDKITE_OR
   cat <<-EOF > ~/.rpmmacros
     %_signature gpg
     %_gpg_name  Opscode Packages
+    %_gpg_digest_algo sha256
 EOF
+echo "<<<<<< RPM-MACROS - `cat ~/.rpmmacros` "
 fi
 
 echo "--- Running bundle install for Omnibus"
