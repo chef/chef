@@ -158,9 +158,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       temp_resource.run_action(:create)
       group_should_exist(group_name)
       included_members.each do |member|
-        pp "Line 161, does this user exist in this group. User: #{member}"
+        out = " "
+        q = PrettyPrint.new(out)
+        q.newline
+        pp "Line 164, does this user exist in this group. User: #{member}"
         PP "And my group name is: #{group_name}"
-        PP "Does Etc find the group?" Etc.getgrnam(group_name)
+        found_group = Etc.getgrnam(group_name)
+        PP "Does Etc find the group? : #{found_group}"
+        found_user = Etc.getgrnam(group_name).mem.include?(member)
+        pp "Did Etc find my user? : #{found_user}"
+        q.newline
         expect(user_exist_in_group?(member)).to eq(false)
       end
     end
