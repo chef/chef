@@ -26,6 +26,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def group_should_exist(group)
     pp "\nI am looking for this group on line 28: #{group}\n"
+    found_group = Etc.getgrnam(group_name)
+    pp "Does Etc find the group details on line 30? : #{found_group}"
     case ohai[:os]
     when "linux"
       expect { Etc.getgrnam(group) }.not_to raise_error
