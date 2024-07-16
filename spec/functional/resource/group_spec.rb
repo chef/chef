@@ -28,6 +28,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     # pp "\nI am looking for this group on line 28: #{group}\n"
     found_group = Etc.getgrnam(group)
     puts "Does Etc find the group details on line 30? : #{found_group}"
+    group_name = Etc.getgrnam(group).name
+    puts "Does Etc correctly find the group name on line 32: : #{group_name}"
     case ohai[:os]
     when "linux"
       expect { Etc.getgrnam(group) }.not_to raise_error
