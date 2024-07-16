@@ -25,7 +25,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    # pp "\nI am looking for this group on line 28: #{group}\n"
+    puts "\nI am looking for this group on line 28: #{group}\n"
+    out = Mixlib::ShellOut.new("cat /etc/group | grep ${group}").run_command.stdout
+    puts "Does the group exist via /etc/group on line 30: #{out}"
     found_group = Etc.getgrnam(group)
     puts "Does Etc find the group details on line 30? : #{found_group}"
     group_name = Etc.getgrnam(group).name
