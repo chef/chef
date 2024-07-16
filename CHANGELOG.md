@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.1 -->
-## [v18.5.1](https://github.com/chef/chef/tree/v18.5.1) (2024-07-02)
+<!-- latest_release 19.0.1 -->
+## [v19.0.1](https://github.com/chef/chef/tree/v19.0.1) (2024-07-16)
 
 #### Merged Pull Requests
-- Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae))
+- [trivial] fix typo dnf-helper.py -&gt; dnf_helper.py [#14492](https://github.com/chef/chef/pull/14492) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [trivial] fix typo dnf-helper.py -&gt; dnf_helper.py [#14492](https://github.com/chef/chef/pull/14492) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.1 -->
 - Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.1 -->
 <!-- release_rollup -->
 
