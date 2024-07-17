@@ -22,7 +22,7 @@ class Chef
   class Resource
     class Perl < Chef::Resource::Script
 
-      provides :perl
+      provides :perl, target_mode: true
 
       def initialize(name, run_context = nil)
         super

@@ -23,7 +23,7 @@ class Chef
   class Resource
     class Script < Chef::Resource::Execute
 
-      provides :script
+      provides :script, target_mode: true
 
       identity_attr :name
 
