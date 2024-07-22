@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.148 -->
-## [v17.10.148](https://github.com/chef/chef/tree/v17.10.148) (2024-07-11)
+<!-- latest_release 17.10.149 -->
+## [v17.10.149](https://github.com/chef/chef/tree/v17.10.149) (2024-07-22)
 
 #### Merged Pull Requests
-- Updating train-core [#14480](https://github.com/chef/chef/pull/14480) ([johnmccrae](https://github.com/johnmccrae))
+- Updating build targets [#14501](https://github.com/chef/chef/pull/14501) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating build targets [#14501](https://github.com/chef/chef/pull/14501) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.149 -->
 - Updating train-core [#14480](https://github.com/chef/chef/pull/14480) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.148 -->
 - Updating win32-process [#14479](https://github.com/chef/chef/pull/14479) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.147 -->
 - Revert &quot;forcing win32-process&quot; [#14478](https://github.com/chef/chef/pull/14478) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.146 -->
