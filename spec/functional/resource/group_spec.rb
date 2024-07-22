@@ -19,19 +19,11 @@
 
 require "spec_helper"
 require "chef/mixin/shell_out"
-require "pp"
 
 describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    puts "\nI am looking for this group on line 28: #{group}\n"
-    out = Mixlib::ShellOut.new("cat /etc/group | grep #{group}").run_command.stdout
-    puts "Does the group exist via /etc/group on line 30: #{out}"
-    found_group = Etc.getgrnam(group)
-    puts "Does Etc find the group details on line 30? : #{found_group}"
-    group_name = Etc.getgrnam(group).name
-    puts "Does Etc correctly find the group name on line 32: : #{group_name}"
     case ohai[:os]
     when "linux"
       expect { Etc.getgrnam(group) }.not_to raise_error
@@ -43,8 +35,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def user_exist_in_group?(user)
     case ohai[:platform_family]
-      # pp "****** OHAI Platform Fammily ******"
-      # puts ohai[:platform_family]
     when "windows"
       user_sid = sid_string_from_user(user)
       user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
@@ -54,19 +44,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       members.shift # Get rid of GroupMembership: string
       members.include?(user)
     else
-      # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
-      # Adding a 2 second delay for this platform is enough to get correct results.
-      # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
-      # pp "OHAI PLatform Family"
-      # puts ohai[:platform_family]
-      # pp "***** Where my Groups At in 'Groups' *****"
-      # local_groups = Mixlib::ShellOut.new(%w{groups}).run_command.stdout
-      # pp local_groups
-      # pp "****** Where my groups at via /etc/group ******"
-      # out = Mixlib::ShellOut.new(%w{cat /etc/group}).run_command.stdout
-      # pp out
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
-      pp "\nI am looking for this group on line 64: #{group_name}\n"
       Etc.getgrnam(group_name).mem.include?(user)
     end
   end
@@ -74,7 +52,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   def group_should_not_exist(group)
     case ohai[:os]
     when "linux"
-    pp "\nI am looking for this group on line 71: #{group}\n"
       expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
@@ -164,16 +141,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       temp_resource.run_action(:create)
       group_should_exist(group_name)
       included_members.each do |member|
-        # out = " "
-        # q = PrettyPrint.new(out)
-        # q.newline
-        # pp "Line 164, does this user exist in this group. User: #{member}"
-        # pp "And my group name is: #{group_name}"
-        # found_group = Etc.getgrnam(group_name)
-        # pp "Does Etc find the group? : #{found_group}"
-        # found_user = Etc.getgrnam(group_name).mem.include?(member)
-        # pp "Did Etc find my user? : #{found_user}"
-        # q.newline
         expect(user_exist_in_group?(member)).to eq(false)
       end
     end
@@ -341,12 +308,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   let(:number) do
     # Loop until we pick a gid that is not in use.
     loop do
-
       gid = rand(2000..9999) # avoid low group numbers
       return nil if Etc.getgrgid(gid).nil? # returns nil on windows
     rescue ArgumentError # group does not exist
       return gid
-
     end
   end
 
