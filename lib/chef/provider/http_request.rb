@@ -23,12 +23,12 @@ class Chef
   class Provider
     class HttpRequest < Chef::Provider
 
-      provides :http_request
+      provides :http_request, target_mode: true
 
       attr_writer :http
 
       def http
-        @http ||= Chef::HTTP::Simple.new(new_resource.url)
+        @http ||= TargetIO::HTTP.new(new_resource.url)
       end
 
       def load_current_resource; end
@@ -60,7 +60,6 @@ class Chef
             new_resource.headers
           )
           logger.info("#{new_resource} GET to #{new_resource.url} successful")
-          logger.trace("#{new_resource} GET request response: #{body}")
         end
       end
 

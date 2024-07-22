@@ -36,7 +36,7 @@ class Chef
 
       def convert_group_name
         if new_resource.gid.is_a?(String) && new_resource.gid.to_i == 0
-          new_resource.gid(Etc.getgrnam(new_resource.gid).gid)
+          new_resource.gid(TargetIO::Etc.getgrnam(new_resource.gid).gid)
         end
       rescue ArgumentError
         @group_name_resolved = false
@@ -47,7 +47,7 @@ class Chef
         current_resource.username(new_resource.username)
 
         begin
-          user_info = Etc.getpwnam(new_resource.username)
+          user_info = TargetIO::Etc.getpwnam(new_resource.username)
         rescue ArgumentError
           @user_exists = false
           logger.trace("#{new_resource} user does not exist")
@@ -68,10 +68,13 @@ class Chef
 
           begin
             require "shadow"
+
+            # Cannot use this library remotely
+            @shadow_lib_ok = false if ChefConfig::Config.target_mode?
           rescue LoadError
             @shadow_lib_ok = false
           else
-            @shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+            @shadow_info = TargetIO::Shadow::Passwd.getspnam(new_resource.username)
             # This conditional remains in place until we can sort out whether we need it.
             # Currently removing it causes tests to fail, but that /seems/ to be mocking/setup issues.
             # Some notes for context:

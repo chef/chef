@@ -46,7 +46,7 @@ class Chef
 
     # Modifies @current_resource, setting the current access control state.
     def set_all!
-      if ::File.exist?(new_resource.path)
+      if ::TargetIO::File.exist?(new_resource.path)
         set_owner
         set_group
         set_mode
@@ -76,7 +76,7 @@ class Chef
     end
 
     def lookup_uid
-      unless (pwent = Etc.getpwuid(stat.uid)).nil?
+      unless (pwent = TargetIO::Etc.getpwuid(stat.uid)).nil?
         pwent.name
       else
         stat.uid
@@ -103,7 +103,7 @@ class Chef
     end
 
     def lookup_gid
-      unless (pwent = Etc.getgrgid(stat.gid)).nil?
+      unless (pwent = TargetIO::Etc.getgrgid(stat.gid)).nil?
         pwent.name
       else
         stat.gid
@@ -128,10 +128,10 @@ class Chef
 
     def stat
       @stat ||= if @new_resource.instance_of?(Chef::Resource::Link)
-                  ::File.lstat(@new_resource.path)
+                  ::TargetIO::File.lstat(@new_resource.path)
                 else
-                  realpath = ::File.realpath(@new_resource.path)
-                  ::File.stat(realpath)
+                  realpath = ::TargetIO::File.realpath(@new_resource.path)
+                  ::TargetIO::File.stat(realpath)
                 end
     end
   end
