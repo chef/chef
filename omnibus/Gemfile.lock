@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 6d2937635f68e40de54b2e2f6afabc0efe8a7132
+  revision: 3e762d8bb11b7b871107ef50928aadad8a9c5f29
   branch: jfm/chef17-freebsd-openssl-nodevcrypto
   specs:
     omnibus-software (24.6.323)
@@ -482,11 +482,13 @@ PLATFORMS
 DEPENDENCIES
   artifactory
   berkshelf!
+  ffi-win32-extensions (~> 1.0, >= 1.0.4)
   kitchen-vagrant (>= 1.3.1)
   omnibus!
   omnibus-software!
   pedump
   test-kitchen (>= 1.23)
+  win32-process
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
