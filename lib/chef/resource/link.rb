@@ -46,7 +46,7 @@ class Chef
         description: "An optional property to set the target file if it differs from the resource block's name.",
         name_property: true
 
-      property :to, String,
+      property :to, [String, nil],
         description: "The actual file to which the link is to be created."
 
       property :link_type, [String, Symbol],
