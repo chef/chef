@@ -482,13 +482,11 @@ PLATFORMS
 DEPENDENCIES
   artifactory
   berkshelf!
-  ffi-win32-extensions (~> 1.0, >= 1.0.4)
   kitchen-vagrant (>= 1.3.1)
   omnibus!
   omnibus-software!
   pedump
   test-kitchen (>= 1.23)
-  win32-process
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
