@@ -221,9 +221,9 @@ class Chef
         description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
-        description: "The maximum time the task will run. This field accepts either seconds or an ISO8601 duration value.",
-        default: "PT72H",
-        default_description: "PT72H (72 hours in ISO8601 duration format)"
+        description: "The maximum time the task will run. This field accepts seconds with a max value of '259200' which is 72 hours",
+        default: 259200,
+        default_description: "72 hours in seconds"
 
       property :minutes_duration, [String, Integer],
         description: ""
@@ -269,8 +269,7 @@ class Chef
         end
 
         if execution_time_limit
-          execution_time_limit(259200) if execution_time_limit == "PT72H"
-          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
+          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless execution_time_limit.to_i <= 259200
 
           execution_time_limit(sec_to_min(execution_time_limit))
         end
