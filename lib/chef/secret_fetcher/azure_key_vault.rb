@@ -59,7 +59,7 @@ class Chef
       end
 
       def validate!
-        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :object_id, :client_id, or :mi_res_id" if [object_id, client_id, mi_res_id].count { |x| !x.nil? } > 1
+        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :config_object_id, :client_id, or :mi_res_id" if [config_object_id, client_id, mi_res_id].count { |x| !x.nil? } > 1
       end
 
       private
@@ -87,7 +87,7 @@ class Chef
         "https://vault.azure.net"
       end
 
-      def object_id
+      def config_object_id
         config[:object_id]
       end
 
@@ -104,7 +104,7 @@ class Chef
           p = {}
           p["api-version"] = api_version
           p["resource"] = resource
-          p["object_id"] = object_id if object_id
+          p["object_id"] = config_object_id if config_object_id
           p["client_id"] = client_id if client_id
           p["mi_res_id"] = mi_res_id if mi_res_id
           URI.encode_www_form(p)
