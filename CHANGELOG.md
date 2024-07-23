@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.149 -->
-## [v17.10.149](https://github.com/chef/chef/tree/v17.10.149) (2024-07-22)
+<!-- latest_release 17.10.150 -->
+## [v17.10.150](https://github.com/chef/chef/tree/v17.10.150) (2024-07-23)
 
 #### Merged Pull Requests
-- Updating build targets [#14501](https://github.com/chef/chef/pull/14501) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-17] Fix error due to method name conflict in Azure Secrets Manager [#14439](https://github.com/chef/chef/pull/14439) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-17] Fix error due to method name conflict in Azure Secrets Manager [#14439](https://github.com/chef/chef/pull/14439) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.150 -->
 - Updating build targets [#14501](https://github.com/chef/chef/pull/14501) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.149 -->
 - Updating train-core [#14480](https://github.com/chef/chef/pull/14480) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.148 -->
 - Updating win32-process [#14479](https://github.com/chef/chef/pull/14479) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.147 -->
