@@ -200,7 +200,17 @@ module ChefConfig
     end
 
     def self.relative_path_from(from, to, windows: ChefUtils.windows?)
-      Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
+      if windows
+        Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
+      else
+        # On non-Windows we can halve the number of cleanpath calls by doing a
+        # single gsub! call here
+
+        path = Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
+        # ensure all backslashes are forward slashes
+        path.gsub!(BACKSLASH, File::SEPARATOR)
+        Pathname.new(path)
+      end
     end
 
     # Set the project-specific home directory environment variable.
