@@ -59,7 +59,7 @@ class Chef
       end
 
       def validate!
-        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :config_object_id, :client_id, or :mi_res_id" if [object_id, client_id, mi_res_id].count { |x| !x.nil? } > 1
+        raise Chef::Exceptions::Secret::ConfigurationInvalid, "You may only specify one (these are mutually exclusive): :config_object_id, :client_id, or :mi_res_id" if [config_object_id, client_id, mi_res_id].count { |x| !x.nil? } > 1
       end
 
       private
