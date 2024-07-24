@@ -19,8 +19,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 51d02fed12257bd713bf013e04da0135c4d0a327
-  branch: main
+  revision: 0be463aa40548d102ed0a13dbfc8781b3986311d
+  branch: test_freebsd_chef-17_muthuja
   specs:
     omnibus-software (24.6.323)
       ffi (< 1.17.0)
