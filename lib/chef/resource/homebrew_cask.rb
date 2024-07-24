@@ -40,10 +40,6 @@ class Chef
       property :options, String,
         description: "Options to pass to the brew command during installation."
 
-      property :install_cask, [TrueClass, FalseClass],
-        description: "Automatically install the Homebrew cask tap, if necessary.",
-        default: true
-
       property :homebrew_path, String,
         description: "The path to the Homebrew binary."
 
@@ -53,13 +49,6 @@ class Chef
         default_description: "Calculated default username"\
 
       action :install, description: "Install an application that is packaged as a Homebrew cask." do
-        if new_resource.install_cask
-          homebrew_tap "homebrew/cask" do
-            homebrew_path homebrew_bin_path(new_resource.homebrew_path)
-            owner new_resource.owner
-          end
-        end
-
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
             shell_out!("#{homebrew_bin_path(new_resource.homebrew_path)} install --cask #{new_resource.cask_name} #{new_resource.options}",
@@ -71,13 +60,6 @@ class Chef
       end
 
       action :remove, description: "Remove an application that is packaged as a Homebrew cask." do
-        if new_resource.install_cask
-          homebrew_tap "homebrew/cask" do
-            homebrew_path homebrew_bin_path(new_resource.homebrew_path)
-            owner new_resource.owner
-          end
-        end
-
         if casked?
           converge_by("uninstall cask #{new_resource.cask_name}") do
             shell_out!("#{homebrew_bin_path(new_resource.homebrew_path)} uninstall --cask #{new_resource.cask_name}",
