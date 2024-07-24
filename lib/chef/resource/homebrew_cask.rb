@@ -49,13 +49,6 @@ class Chef
         default_description: "Calculated default username"\
 
       action :install, description: "Install an application that is packaged as a Homebrew cask." do
-        if new_resource.install_cask
-          homebrew_tap "homebrew/cask" do
-            homebrew_path homebrew_bin_path(new_resource.homebrew_path)
-            owner new_resource.owner
-          end
-        end
-
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
             shell_out!("#{homebrew_bin_path(new_resource.homebrew_path)} install --cask #{new_resource.cask_name} #{new_resource.options}",
