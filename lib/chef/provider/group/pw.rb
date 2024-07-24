@@ -38,11 +38,12 @@ class Chef
 
         # Create the group
         def create_group
-          command = if freebsd? # Freebsd 13.x doesn't accept running the whole script under sudo and throws an error when creating/deleting groups
-                      [ "sudo", "pw", "groupadd", set_options ]
-                    else
-                      [ "pw", "groupadd", set_options ]
-                    end
+          command = [ "pw", "groupadd", set_options ]
+          # command = if freebsd? # Freebsd 13.x doesn't accept running the whole script under sudo and throws an error when creating/deleting groups
+          #             [ "sudo", "pw", "groupadd", set_options ]
+          #           else
+          #             [ "pw", "groupadd", set_options ]
+          #           end
           unless new_resource.members.empty?
             # pw group[add|mod] -M is used to set the full membership list on a
             # new or existing group. Because pw groupadd does not support the -m
@@ -69,11 +70,12 @@ class Chef
 
         # Remove the group
         def remove_group
-          if freebsd? # Freebsd 13.x doesn't accept running the whole script under sudo and throws an error when creating/deleting groups
-            shell_out!("sudo", "pw", "groupdel", new_resource.group_name)
-          else
-            shell_out!("pw", "groupdel", new_resource.group_name)
-          end
+          shell_out!("pw", "groupdel", new_resource.group_name)
+          # if freebsd? # Freebsd 13.x doesn't accept running the whole script under sudo and throws an error when creating/deleting groups
+          #   shell_out!("sudo", "pw", "groupdel", new_resource.group_name)
+          # else
+          #   shell_out!("pw", "groupdel", new_resource.group_name)
+          # end
         end
 
         # Little bit of magic as per Adam's useradd provider to pull and assign the command line flags
