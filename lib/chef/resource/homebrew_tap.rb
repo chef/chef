@@ -76,6 +76,7 @@ class Chef
       def tapped?(name)
         base_path = ["#{::File.dirname(which("brew"))}/../homebrew", "#{::File.dirname(which("brew"))}/../Homebrew", "/opt/homebrew", "/usr/local/Homebrew", "/home/linuxbrew/.linuxbrew"].uniq.select do |x|
                       next if x == false
+
                       Dir.exist?(x)
                     end.first
         tap_dir = name.gsub("/", "/homebrew-")
