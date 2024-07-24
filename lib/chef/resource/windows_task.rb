@@ -224,7 +224,7 @@ class Chef
       property :execution_time_limit, [String, Integer],
         description: "The maximum time the task will run, in seconds. This field accepts a max value of '259200'",
         default: 259200,
-        default_description: "An amount of time, desribed in seconds, that is less than 72 hours"
+        default_description: "An amount of time, described in seconds, that is less than 72 hours"
 
       property :minutes_duration, [String, Integer],
         description: ""
