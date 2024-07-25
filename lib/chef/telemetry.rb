@@ -17,6 +17,7 @@ class Chef
     def self.determine_backend_class
       # TODO Determine check for automate or hab or other distros
       if license&.license_type&.downcase == "commercial"
+        Chef::Log.debug "Determined telemetry operation is not applicable and hence aborting it."
         return Chef::Telemetry::Null
       end
 
@@ -25,7 +26,7 @@ class Chef
     end
 
     def self.license
-      Chef::Log.debug "Fetching license context for telemetry"
+      Chef::Log.debug "Fetching license context for telemetry check"
       @license = ChefLicensing.license_context
     end
 
@@ -33,7 +34,6 @@ class Chef
     # These class methods make it convenient to call from anywhere within the Chef codebase.
     ######
     def self.run_starting(opts)
-      Chef::Log.debug "Initiating telemetry for Chef"
       instance.run_starting(opts)
     rescue StandardError => e
       Chef::Log.debug "Encountered error in Telemetry start run call -> #{e.message}"
@@ -41,7 +41,6 @@ class Chef
 
     def self.run_ending(opts)
       instance.run_ending(opts)
-      Chef::Log.debug "Finishing telemetry for Chef"
     rescue StandardError => e
       Chef::Log.debug "Encountered error in Telemetry end run call -> #{e.message}"
     end
