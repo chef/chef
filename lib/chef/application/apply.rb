@@ -153,7 +153,7 @@ class Chef::Application::Apply < Chef::Application
         exit: 0
   end
 
-  attr_reader :json_attribs
+  attr_reader :json_attribs, :run_context
 
   def self.print_help
     instance = new
@@ -203,13 +203,13 @@ class Chef::Application::Apply < Chef::Application
     @chef_client.run_ohai
     @chef_client.load_node
     @chef_client.build_node
-    run_context = if @chef_client.events.nil?
+    @run_context = if @chef_client.events.nil?
                     Chef::RunContext.new(@chef_client.node, {})
                   else
                     Chef::RunContext.new(@chef_client.node, {}, @chef_client.events)
                   end
-    recipe = Chef::Recipe.new("(#{ChefUtils::Dist::Apply::EXEC} cookbook)", "(#{ChefUtils::Dist::Apply::EXEC} recipe)", run_context)
-    [recipe, run_context]
+    recipe = Chef::Recipe.new("(#{ChefUtils::Dist::Apply::EXEC} cookbook)", "(#{ChefUtils::Dist::Apply::EXEC} recipe)", @run_context)
+    [recipe, @run_context]
   end
 
   # write recipe to temp file, so in case of error,
@@ -256,11 +256,10 @@ class Chef::Application::Apply < Chef::Application
 
   def run_application
     Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Apply::EXEC == "chef-apply"
-    ###### WIP: Implementation of telemetry invocation on chef-apply
     Chef::Telemetry.run_starting({})
     parse_options
     run_chef_recipe
-    Chef::Telemetry.run_ending({conf: Chef::Config})
+    Chef::Telemetry.run_ending({run_context: run_context})
     Chef::Application.exit! "Exiting", 0
   rescue SystemExit
     raise
