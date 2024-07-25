@@ -72,8 +72,9 @@ class Chef
               type: "cookbook",
             }
           end
-          if opts[:run_context].resource_collection&.all_resources
-            opts[:run_context].resource_collection.all_resources.each do |resource|
+          all_resources = opts[:run_context].resource_collection&.all_resources
+          if all_resources
+            all_resources.each do |resource|
               payload[:jobs][0][:steps] << {
                 name: resource.recipe_name,
                 resources: [],
