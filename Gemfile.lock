@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: d5d03240e6ee1130ef38441c1d25a7ca08df0cab
-  branch: main
+  revision: f68338da6327e75f4ff858e3070aaa5411be6c30
+  branch: 18-stable
   specs:
-    ohai (18.1.11)
+    ohai (18.2.0)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -323,7 +323,6 @@ GEM
     net-ssh (7.1.0)
     netrc (0.11.0)
     nori (2.6.0)
-    openssl (3.2.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
@@ -504,7 +503,6 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
   ohai!
-  openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
