@@ -84,7 +84,8 @@ class Chef
       end
 
       def get_choco_version
-        powershell_exec("choco --version").result
+        # powershell_exec("choco --version").result
+        Mixlib::ShellOut.new(%w{choco --version}).run_command.stdout
       end
 
       def existing_version
@@ -105,27 +106,34 @@ class Chef
 
       action :install, description: "Installs Chocolatey package manager" do
         if new_resource.download_url
-          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
+          ENV["ChocolateyDownloadUrl"] = new_resource.download_url
+          # powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
         end
 
         if new_resource.chocolatey_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{new_resource.chocolatey_version}")
+          ENV["ChocolateyVersion"] = new_resource.chocolatey_version
+          # powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{new_resource.chocolatey_version}")
         end
 
         if new_resource.use_native_unzip
-          powershell_exec("Set-Item -path env:ChocolateyUseWindowsCompression -Value true")
+          ENV["ChocolateyUseWindowsCompression"] = true
+          # powershell_exec("Set-Item -path env:ChocolateyUseWindowsCompression -Value true")
         end
 
         if new_resource.ignore_proxy
-          powershell_exec("Set-Item -path env:ChocolateyIgnoreProxy -Value true")
+          ENV["ChocolateyIgnoreProxy"] = true
+          # powershell_exec("Set-Item -path env:ChocolateyIgnoreProxy -Value true")
         end
 
         if new_resource.proxy_url
-          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{new_resource.proxy_url}")
+          ENV["ChocolateyProxyLocation"] = new_resource.proxy_url
+          # powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{new_resource.proxy_url}")
         end
 
         if new_resource.proxy_user && new_resource.proxy_password
-          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
+          ENV["ChocolateyProxyUser"] = new_resource.proxy_user
+          ENV["ChocolateyProxyPassword"] = new_resource.proxy_password
+          # powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 
         # note that Invoke-Expression is being called on the downloaded script (outer parens),
@@ -143,37 +151,47 @@ class Chef
         end
 
         if new_resource.download_url
-          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
+          ENV["ChocolateyDownloadUrl"] = new_resource.download_url
+          # powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
         end
 
         if new_resource.chocolatey_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{new_resource.chocolatey_version}")
+          ENV["ChocolateyVersion"] = new_resource.chocolatey_version
+          # powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{new_resource.chocolatey_version}")
         end
 
         if new_resource.use_native_unzip
-          powershell_exec("Set-Item -path env:ChocolateyUseWindowsCompression -Value true")
+          ENV["ChocolateyUseWindowsCompression"] = true
+          # powershell_exec("Set-Item -path env:ChocolateyUseWindowsCompression -Value true")
         end
 
         if new_resource.ignore_proxy
-          powershell_exec("Set-Item -path env:ChocolateyIgnoreProxy -Value true")
+          ENV["ChocolateyIgnoreProxy"] = true
+          # powershell_exec("Set-Item -path env:ChocolateyIgnoreProxy -Value true")
         end
 
         if new_resource.proxy_url
-          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{new_resource.proxy_url}")
+          ENV["ChocolateyProxyLocation"] = new_resource.proxy_url
+          # powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{new_resource.proxy_url}")
         end
 
         if new_resource.proxy_user && new_resource.proxy_password
-          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
+          ENV["ChocolateyProxyUser"] = new_resource.proxy_user
+          ENV["ChocolateyProxyPassword"] = new_resource.proxy_password
+          # powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 
-        if proposed_version && existing_version < proposed_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{proposed_version}")
+        if proposed_version && (existing_version < proposed_version)
+          ENV["ChocolateyVersion"] = proposed_version
+          # powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{proposed_version}")
         else
-          powershell_exec("Remove-Item -path env:ChocolateyVersion")
+          ENV["ChocolateyVersion"] = ""
+          # powershell_exec("Remove-Item -path env:ChocolateyVersion")
         end
 
         converge_by("upgrade choco version") do
-          powershell_exec("choco upgrade Chocolatey -y").result
+          Mixlib::ShellOut.new(%w{choco upgrade Chocolatey -y}).run_command.stdout
+          # powershell_exec("choco upgrade Chocolatey -y").result
         end
       end
 
