@@ -204,10 +204,10 @@ class Chef::Application::Apply < Chef::Application
     @chef_client.load_node
     @chef_client.build_node
     @run_context = if @chef_client.events.nil?
-                    Chef::RunContext.new(@chef_client.node, {})
-                  else
-                    Chef::RunContext.new(@chef_client.node, {}, @chef_client.events)
-                  end
+                     Chef::RunContext.new(@chef_client.node, {})
+                   else
+                     Chef::RunContext.new(@chef_client.node, {}, @chef_client.events)
+                   end
     recipe = Chef::Recipe.new("(#{ChefUtils::Dist::Apply::EXEC} cookbook)", "(#{ChefUtils::Dist::Apply::EXEC} recipe)", @run_context)
     [recipe, @run_context]
   end
@@ -259,7 +259,7 @@ class Chef::Application::Apply < Chef::Application
     Chef::Telemetry.run_starting({})
     parse_options
     run_chef_recipe
-    Chef::Telemetry.run_ending({run_context: run_context})
+    Chef::Telemetry.run_ending({ run_context: run_context })
     Chef::Application.exit! "Exiting", 0
   rescue SystemExit
     raise
