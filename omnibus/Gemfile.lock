@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: 5c0122b185a65af3e93856cba6c394a68343818a
+  revision: 3efa84c1a26daf55c4d477bf3653e5905ab4f737
   branch: main
   specs:
     omnibus (9.0.25)
@@ -35,8 +35,8 @@ GEM
     artifactory (3.0.17)
     awesome_print (1.9.2)
     aws-eventstream (1.3.0)
-    aws-partitions (1.953.0)
-    aws-sdk-core (3.201.1)
+    aws-partitions (1.958.0)
+    aws-sdk-core (3.201.3)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.8)
@@ -51,7 +51,7 @@ GEM
     aws-sdk-secretsmanager (1.101.0)
       aws-sdk-core (~> 3, >= 3.201.0)
       aws-sigv4 (~> 1.5)
-    aws-sigv4 (1.8.0)
+    aws-sigv4 (1.9.0)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.2.0)
     bcrypt_pbkdf (1.1.1)
@@ -236,7 +236,7 @@ GEM
       train-core (~> 3.10)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    iostruct (0.1.2)
+    iostruct (0.1.3)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -275,7 +275,8 @@ GEM
       mixlib-shellout
       mixlib-versioning
       thor
-    mixlib-log (3.0.9)
+    mixlib-log (3.1.1)
+      ffi (< 1.17.0)
     mixlib-shellout (3.2.8)
       chef-utils
     mixlib-shellout (3.2.8-universal-mingw32)
@@ -312,7 +313,7 @@ GEM
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
-    ohai (18.1.3)
+    ohai (18.1.18)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -340,7 +341,7 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (6.0.0)
+    public_suffix (6.0.1)
     rack (2.2.9)
     rainbow (3.1.1)
     rest-client (2.1.0)
@@ -361,7 +362,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retryable (3.0.5)
-    rexml (3.3.1)
+    rexml (3.3.2)
       strscan
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -420,7 +421,7 @@ GEM
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.12.5)
+    train-core (3.12.6)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -504,7 +505,7 @@ GEM
       winrm (~> 2.0)
     wisper (2.0.1)
     wmi-lite (1.0.7)
-    zhexdump (0.1.1)
+    zhexdump (0.2.0)
 
 PLATFORMS
   ruby
