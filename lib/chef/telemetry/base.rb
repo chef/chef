@@ -59,26 +59,41 @@ class Chef
                             content: [], #TODO - WIP
                             steps: [], # TODO
                           }]
-        #load_content(payload, opts[:conf])
+
+        if opts[:run_context]
+          opts[:run_context].cookbook_collection.each do |_, value|
+            metadata = value.metadata
+            payload[:jobs][0][:content] << {
+              name: obscure(metadata&.name) || "",
+              version: metadata&.version || "",
+              sha256: "",
+              maintainer: metadata&.maintainer || "",
+              type: "cookbook",
+            }
+          end
+          if opts[:run_context].resource_collection&.all_resources
+            opts[:run_context].resource_collection.all_resources.each do |resource|
+              payload[:jobs][0][:steps] << {
+                id: "",
+                name: resource.recipe_name,
+                description: "",
+                target: {},
+                resources: [],
+                features: [],
+                tags: [],
+              }
+
+              payload[:jobs][0][:steps].last[:resources] << {
+                type: "chef-resource",
+                name: resource.resource_name.to_s,
+                id: "unknown",
+              }
+            end
+          end
+        end
         Chef::Log.debug "Final data for telemetry upload -> #{payload}"
         # Return payload object for testing
         payload
-      end
-
-      def load_content(payload, conf)
-        cookbook_path = conf[:cookbook_path]
-        cl = Chef::CookbookLoader.new(cookbook_path)
-        cl.load_cookbooks
-
-        cl.metadata.each do |_, metadata|
-          payload[:jobs][0][:content] << {
-            name: obscure(metadata.name),
-            version: metadata.version,
-            sha256: "", # This key is not present in cookbook's metadata
-            maintainer: metadata.maintainer || "",
-            type: "cookbook",
-          }
-        end
       end
 
       # TBD Should we implement distrbution name based on below usage?
