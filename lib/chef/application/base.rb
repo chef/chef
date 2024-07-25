@@ -27,7 +27,6 @@ require "license_acceptance/cli_flags/mixlib_cli"
 require "chef-licensing/cli_flags/mixlib_cli"
 require "chef/monkey_patches/net-http"
 require_relative "../licensing"
-require_relative "../telemetry" unless defined?(Chef::Telemetry)
 
 module Mixlib
   autoload :Archive, "mixlib/archive"
@@ -372,8 +371,6 @@ class Chef::Application::Base < Chef::Application
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
     Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
-    ###### WIP: Implementation of telemetry invocation
-    Chef::Telemetry.run_starting({})
     if Chef::Config[:version]
       puts "#{ChefUtils::Dist::Infra::PRODUCT} version: #{::Chef::VERSION}"
     end
@@ -382,7 +379,6 @@ class Chef::Application::Base < Chef::Application
       begin
         # run immediately without interval sleep, or splay
         run_chef_client(Chef::Config[:specific_recipes])
-        Chef::Telemetry.run_ending({conf: Chef::Config})
       rescue SystemExit
         raise
       rescue Exception => e
