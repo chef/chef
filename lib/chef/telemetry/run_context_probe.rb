@@ -24,7 +24,7 @@ class Chef
       end
 
       def self.kitchen?(stack)
-        # TOTEST
+        # TO TEST
         stack_match(stack: stack, path: "kitchen/instance", label: "verify_action") &&
           stack_match(stack: stack, path: "kitchen/instance", label: "verify")
       end
