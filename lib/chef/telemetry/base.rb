@@ -20,7 +20,7 @@ class Chef
       end
 
       def create_wrapper
-        Chef::Log.debug "Initialising wrapper for telemetry"
+        Chef::Log.debug "Initializing wrapper for telemetry"
         {
           version: VERSION,
           createdTimeUTC: Time.now.getutc.iso8601,
@@ -41,7 +41,7 @@ class Chef
         # To not load ohai information once loaded
         unless ohai
           @ohai = Ohai::System.new
-          # Load lugins to gather system data
+          # Load plugins to gather system data
           @ohai.all_plugins(%w{ os hostname platform dmi kernel})
         end
 
@@ -93,7 +93,7 @@ class Chef
         payload
       end
 
-      # TBD Should we implement distrbution name based on below usage?
+      # TBD Should we implement distribution name based on below usage?
       def determine_distribution_name
         run_context = Chef::Telemetry::RunContextProbe.guess_run_context
         case run_context
