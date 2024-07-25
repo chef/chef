@@ -304,7 +304,7 @@ class Chef
         logger.info("#{ChefUtils::Dist::Infra::PRODUCT} Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         events.run_completed(node, run_status)
-        Chef::Telemetry.run_ending({run_context: run_context})
+        Chef::Telemetry.run_ending({ run_context: run_context })
 
         # keep this inside the main loop to get exception backtraces
         end_profiling
