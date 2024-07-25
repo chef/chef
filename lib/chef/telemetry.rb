@@ -3,7 +3,6 @@ require "time" unless defined?(Time.zone_offset)
 require "chef-licensing"
 require_relative "telemetry/null"
 require_relative "telemetry/http"
-# require_relative "telemetry/run_context_probe" TODO
 
 class Chef
   class Telemetry
