@@ -56,8 +56,8 @@ class Chef
                               id: (ohai[:dmi][:system] && ohai[:dmi][:system][:uuid]) || "",
                             },
                             runtime: Chef::VERSION,
-                            content: [], #TODO - WIP
-                            steps: [], # TODO
+                            content: [],
+                            steps: [],
                           }]
 
         if opts[:run_context]
@@ -66,7 +66,6 @@ class Chef
             payload[:jobs][0][:content] << {
               name: obscure(metadata&.name) || "",
               version: metadata&.version || "",
-              sha256: "",
               maintainer: metadata&.maintainer || "",
               type: "cookbook",
             }
@@ -74,19 +73,13 @@ class Chef
           if opts[:run_context].resource_collection&.all_resources
             opts[:run_context].resource_collection.all_resources.each do |resource|
               payload[:jobs][0][:steps] << {
-                id: "",
                 name: resource.recipe_name,
-                description: "",
-                target: {},
                 resources: [],
-                features: [],
-                tags: [],
               }
 
               payload[:jobs][0][:steps].last[:resources] << {
                 type: "chef-resource",
                 name: resource.resource_name.to_s,
-                id: "unknown",
               }
             end
           end
