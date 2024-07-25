@@ -31,7 +31,9 @@ class Chef
         }
       end
 
-      def run_starting(_opts = {}); end
+      def run_starting(_opts = {})
+        Chef::Log.debug "Initiating telemetry for Chef"
+      end
 
       def run_ending(opts)
         payload = create_wrapper
@@ -85,6 +87,7 @@ class Chef
           end
         end
         Chef::Log.debug "Final data for telemetry upload -> #{payload}"
+        Chef::Log.debug "Finishing telemetry for Chef"
         # Return payload object for testing
         payload
       end
