@@ -14,11 +14,10 @@ class Chef
 
       def self.guess_run_context(stack = nil)
         stack ||= caller_locations
-        # TO TEST - Why does normal run always calls chef zero?
-        return "chef-zero" if chef_zero?
         return "chef-apply" if chef_apply?(stack)
-        return "chef-client" if chef_client?(stack)
         return "chef-solo" if chef_solo?(stack)
+        return "chef-zero" if chef_zero?
+        return "chef-client" if chef_client?(stack)
         return "test-kitchen" if kitchen?(stack)
 
         "unknown"
