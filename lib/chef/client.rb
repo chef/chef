@@ -58,6 +58,7 @@ require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
 
 require_relative "compliance/runner"
+require_relative "telemetry" unless defined?(Chef::Telemetry)
 
 class Chef
   # == Chef::Client
@@ -285,6 +286,7 @@ class Chef
         run_status.start_clock
         logger.info("Starting #{ChefUtils::Dist::Infra::PRODUCT} Run for #{node.name}")
         run_started
+        Chef::Telemetry.run_starting({})
 
         do_windows_admin_check
 
@@ -302,6 +304,7 @@ class Chef
         logger.info("#{ChefUtils::Dist::Infra::PRODUCT} Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         events.run_completed(node, run_status)
+        Chef::Telemetry.run_ending({run_context: run_context})
 
         # keep this inside the main loop to get exception backtraces
         end_profiling
