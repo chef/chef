@@ -47,10 +47,11 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(stdout: local_list_stdout)
     allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
+    allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
   end
 
   after(:each) do
-    described_class.instance_variable_set(:@get_choco_version, nil)
+    provider.instance_variable_set(:@get_choco_version, nil)
   end
 
   def allow_remote_list(package_names, args = nil)
@@ -65,9 +66,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     remote_list_obj = double(stdout: remote_list_stdout)
     package_names.each do |pkg|
       if args
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, described_class.query_command, "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, *args, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       else
-        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, described_class.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
       end
     end
   end
@@ -84,12 +85,12 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
   describe "choco searches change with the version" do
     it "Choco V1 uses List" do
-      allow(described_class).to receive(:get_choco_version).and_return("1.4.0")
+      allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "1.4.0"))
       expect(provider.query_command).to eql("list")
     end
 
     it "Choco V2 uses Search" do
-      allow(described_class).to receive(:get_choco_version).and_return("2.1.0")
+      allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
       expect(provider.query_command).to eql("search")
     end
   end
@@ -166,7 +167,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       new_resource.package_name("package-does-not-exist")
       new_resource.returns([0])
       allow(provider).to receive(:shell_out_compacted!)
-        .with(choco_exe, described_class.query_command, "-r", new_resource.package_name.first, { returns: new_resource.returns, timeout: timeout })
+        .with(choco_exe, provider.query_command, "-r", new_resource.package_name.first, { returns: new_resource.returns, timeout: timeout })
         .and_raise(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
       expect { provider.send(:available_packages) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed, "Expected process to exit with [0], but received '2'")
     end

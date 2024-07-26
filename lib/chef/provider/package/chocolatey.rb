@@ -130,19 +130,15 @@ class Chef
         # install from, but like the rubygem provider's sources which are more like repos.
         def check_resource_semantics!; end
 
-        def self.get_choco_version
-          @get_choco_version ||= powershell_exec!("choco --version").result
+        def get_choco_version
+          @get_choco_version ||= powershell_exec!("#{choco_exe} --version").result
         end
 
         # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
-        def self.query_command
+        def query_command
           return "list" if get_choco_version.match?(/^1/)
 
           "search"
-        end
-
-        def query_command
-          self.class.query_command
         end
 
         private
