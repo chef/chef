@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export CHEF_LICENSE_SERVER="http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
+
 if [ -z "$1" ]
   then
     echo "No TestType supplied"
@@ -18,7 +20,7 @@ then
 fi
 
 echo "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3 
+bundle install --jobs=3 --retry=3
 
 case $TestType in
 
