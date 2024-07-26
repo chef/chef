@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-
 if [ -z "$1" ]
   then
     echo "No TestType supplied"
