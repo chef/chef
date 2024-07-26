@@ -1,0 +1,12 @@
+---
+expeditor:
+  defaults:
+    buildkite:
+      retry:
+        automatic:
+          limit: 1
+      timeout_in_minutes: 60
+
+steps:
+  - command: .buildkite/verify.pipeline.sh | buildkite-agent pipeline upload
+    label: ":pipeline: Upload"

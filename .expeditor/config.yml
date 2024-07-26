@@ -30,6 +30,17 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+  - verify/private: # temporary pipeline for testing licensing changes in PRs, remove when we figure out how to test this in the public pipeline
+      definition: .expeditor/verify_private.pipeline.yml
+      public: false
+      description: Pull Request validation tests
+      env:
+      - LANG: "C.UTF-8"
+      - SLOW: 1
+      - NO_AWS: 1
+      - MT_CPU: 5
+      - ARTIFACTORY_BASE_URL: https://artifactory-internal.ps.chef.co
+      - CHEF_LICENSE_SERVER: http://172.19.136.95:8000/
   - validate/release:
       definition: .expeditor/verify.pipeline.yml
       env:
