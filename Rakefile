@@ -33,6 +33,7 @@ end
 require "bundler/gem_helper"
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
+ENV["CHEF_LICENSE_SERVER"] = "http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 
 namespace :pre_install do
   desc "Runs 'rake install' for the gems that live in subdirectories in this repo"
