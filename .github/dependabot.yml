@@ -1,7 +1,7 @@
 version: 2
 updates:
 - package-ecosystem: bundler
-  target-branch: "main"
+  target-branch: "chef-18"
   directory: "/omnibus"
   schedule:
     interval: daily
