@@ -22,6 +22,7 @@ class Chef
     class RhsmRepo < Chef::Resource
 
       provides(:rhsm_repo, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **rhsm_repo** resource to enable or disable Red Hat Subscription Manager repositories that are made available via attached subscriptions."
       introduced "14.0"

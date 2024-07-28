@@ -24,6 +24,7 @@ class Chef
 
       provides :zypper_package, target_mode: true
       provides :package, platform_family: "suse", target_mode: true
+      target_mode support: :full
 
       description "Use the **zypper_package** resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and openSUSE platforms."
       examples <<~DOC

@@ -21,6 +21,7 @@ class Chef
   class Resource
     class HabitatService < Chef::Resource
       provides :habitat_service, target_mode: true
+      target_mode support: :full
 
       description "Use the **habitat_service** resource to manage Chef Habitat services. This requires that `core/hab-sup` be running as a service. See the `habitat_sup` resource documentation for more information. Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource."
       introduced "17.3"

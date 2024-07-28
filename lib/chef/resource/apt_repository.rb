@@ -27,6 +27,7 @@ class Chef
     class AptRepository < Chef::Resource
 
       provides(:apt_repository, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **apt_repository** resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."
       introduced "12.9"

@@ -20,6 +20,7 @@ class Chef
   class Resource
     class InspecInput < Chef::Resource
       provides :inspec_input, target_mode: true
+      target_mode support: :full
 
       description "Use the **inspec_input** resource to add an input to the Compliance Phase."
       introduced "17.5"

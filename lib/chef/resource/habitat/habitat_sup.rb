@@ -24,6 +24,7 @@ class Chef
       provides(:habitat_sup, target_mode: true) do |_node|
         false
       end
+      target_mode support: :full
 
       description "Use the **habitat_sup** resource to runs a Chef Habitat supervisor for one or more Chef Habitat services. The resource is commonly used in conjunction with `habitat_service` which will manage the services loaded and started within the supervisor."
       introduced "17.3"

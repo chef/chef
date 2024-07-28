@@ -25,6 +25,8 @@ class Chef
     class Hostname < Chef::Resource
 
       provides :hostname, target_mode: true
+      target_mode support: :full,
+        platforms: %i{aix bsd linux macos_x solaris}
 
       description "Use the **hostname** resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"

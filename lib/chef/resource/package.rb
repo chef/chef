@@ -23,6 +23,7 @@ class Chef
   class Resource
     class Package < Chef::Resource
       provides :package, target_mode: true
+      target_mode support: :full
 
       description "Use the **package** resource to manage packages. When the package is"\
                   " installed from a local file (such as with RubyGems, dpkg, or RPM"\

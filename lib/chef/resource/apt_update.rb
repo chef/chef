@@ -24,6 +24,7 @@ class Chef
     class AptUpdate < Chef::Resource
 
       provides(:apt_update, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **apt_update** resource to manage APT repository updates on Debian and Ubuntu platforms."
       introduced "12.7"

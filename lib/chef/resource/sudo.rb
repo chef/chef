@@ -26,6 +26,7 @@ class Chef
     class Sudo < Chef::Resource
 
       provides(:sudo, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **sudo** resource to add or remove individual sudo entries using sudoers.d files."\
                   " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the"\
