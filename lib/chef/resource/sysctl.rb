@@ -23,6 +23,7 @@ class Chef
 
       provides(:sysctl, target_mode: true) { true }
       provides(:sysctl_param, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **sysctl** resource to set or remove kernel parameters using the `sysctl` command line tool and configuration files in the system's `sysctl.d` directory. Configuration files managed by this resource are named `99-chef-KEYNAME.conf`."
       examples <<~DOC

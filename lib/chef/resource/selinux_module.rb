@@ -19,6 +19,7 @@ class Chef
       unified_mode true
 
       provides :selinux_module, target_mode: true
+      target_mode support: :full
 
       description "Use **selinux_module** module resource to create an SELinux policy module from a cookbook file or content provided as a string."
       introduced "18.0"

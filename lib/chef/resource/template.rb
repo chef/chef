@@ -36,6 +36,7 @@ class Chef
     class Template < Chef::Resource::File
 
       provides :template, target_mode: true
+      target_mode support: :full
 
       include Chef::Mixin::Securable
 

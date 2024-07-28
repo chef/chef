@@ -26,6 +26,7 @@ class Chef
       include Chef::Mixin::Securable
 
       provides :link, target_mode: true
+      target_mode support: :full
 
       description "Use the **link** resource to create symbolic or hard links.\n\n"\
                   "A symbolic link—sometimes referred to as a soft link—is a directory entry"\

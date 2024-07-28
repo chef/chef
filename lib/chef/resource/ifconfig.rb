@@ -24,6 +24,7 @@ class Chef
     class Ifconfig < Chef::Resource
 
       provides :ifconfig, target_mode: true
+      target_mode support: :full
 
       description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems. Note: This resource requires the ifconfig binary to be present on the system and may require additional packages to be installed first. On Ubuntu 18.04 or later you will need to install the `ifupdown` package, which disables the built in Netplan functionality. Warning: This resource will not work with Fedora release 33 or later."
       examples <<~DOC

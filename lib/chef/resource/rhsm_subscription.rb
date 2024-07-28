@@ -22,6 +22,7 @@ class Chef
     class RhsmSubscription < Chef::Resource
 
       provides(:rhsm_subscription, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **rhsm_subscription** resource to add or remove Red Hat Subscription Manager subscriptions from your host. This can be used when a host's activation_key does not attach all necessary subscriptions to your host."
       introduced "14.0"

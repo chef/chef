@@ -24,6 +24,7 @@ class Chef
     class Timezone < Chef::Resource
 
       provides :timezone, target_mode: true
+      target_mode support: :full
 
       description "Use the **timezone** resource to change the system timezone on Windows, Linux, and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values for Linux and macOS here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>. On Windows systems run `tzutil /l` for a complete list of valid timezones."
       introduced "14.6"

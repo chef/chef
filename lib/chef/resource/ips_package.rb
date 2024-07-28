@@ -25,6 +25,7 @@ class Chef
 
       provides :ips_package, target_mode: true
       provides :package, os: "solaris2", target_mode: true
+      target_mode support: :full
 
       description "Use the **ips_package** resource to manage packages (using Image Packaging System (IPS)) on the Solaris 11 platform."
 
