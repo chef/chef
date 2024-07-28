@@ -194,6 +194,7 @@ class Chef
           end
           s << " -E #{bootstrap_environment}" unless bootstrap_environment.nil?
           s << " --no-color" unless config[:color]
+          s << " --chef-license-key #{config[:license_id]}" unless config[:disable_license_activation]
           s
         end
 
@@ -204,7 +205,7 @@ class Chef
         def version_to_install
           return config[:bootstrap_version] if config[:bootstrap_version]
 
-          if config[:channel] == "stable"
+          if config[:channel] == "stable" && config[:license_type] == "commercial"
             Chef::VERSION
           else
             "latest"
