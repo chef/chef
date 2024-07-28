@@ -24,6 +24,7 @@ class Chef
     class HabitatConfig < Chef::Resource
 
       provides :habitat_config, target_mode: true
+      target_mode support: :full
 
       description "Use the **habitat_config** resource to apply a configuration to a Chef Habitat service."
       introduced "17.3"

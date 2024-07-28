@@ -30,6 +30,7 @@ class Chef
       include Chef::Mixin::Securable
 
       provides :remote_file, target_mode: true
+      target_mode support: :full
 
       description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 

@@ -23,6 +23,7 @@ class Chef
     class RpmPackage < Chef::Resource::Package
 
       provides :rpm_package, target_mode: true
+      target_mode support: :full
 
       allowed_actions :install, :upgrade, :remove
 

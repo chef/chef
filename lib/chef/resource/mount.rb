@@ -25,6 +25,8 @@ class Chef
       description "Use the **mount** resource to manage a mounted file system."
 
       provides :mount, target_mode: true
+      target_mode support: :full,
+        platforms: %i{aix bsd linux}
 
       default_action :mount
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable

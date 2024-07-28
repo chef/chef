@@ -25,6 +25,7 @@ class Chef
       use "scm"
 
       provides :subversion, target_mode: true
+      target_mode support: :full
 
       description "Use the **subversion** resource to manage source control resources that exist in a Subversion repository. Warning: The subversion resource has known bugs and may not work as expected. For more information see Chef GitHub issues, particularly [#4050](https://github.com/chef/chef/issues/4050) and [#4257](https://github.com/chef/chef/issues/4257)."
       examples <<~DOC

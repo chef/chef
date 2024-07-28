@@ -22,6 +22,7 @@ class Chef
     class OhaiHint < Chef::Resource
 
       provides(:ohai_hint, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **ohai_hint** resource to aid in configuration detection by passing hint data to Ohai."
       introduced "14.0"

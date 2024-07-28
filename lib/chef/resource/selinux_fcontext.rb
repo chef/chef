@@ -21,6 +21,7 @@ class Chef
       unified_mode true
 
       provides :selinux_fcontext, target_mode: true
+      target_mode support: :full
 
       description "Use the **selinux_fcontext** resource to set the SELinux context of files using the `semanage fcontext` command."
       introduced "18.0"

@@ -22,6 +22,7 @@ class Chef
     class SwapFile < Chef::Resource
 
       provides(:swap_file, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **swap_file** resource to create or delete swap files on Linux systems, and optionally to manage the swappiness configuration for a host."
       introduced "14.0"

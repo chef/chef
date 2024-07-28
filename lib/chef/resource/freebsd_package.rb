@@ -27,6 +27,7 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       provides :freebsd_package, target_mode: true
       provides :package, platform: "freebsd", target_mode: true
+      target_mode support: :full
 
       description "Use the **freebsd_package** resource to manage packages for the FreeBSD platform."
 

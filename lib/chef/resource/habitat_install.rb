@@ -20,6 +20,7 @@ class Chef
   class Resource
     class HabitatInstall < Chef::Resource
       provides :habitat_install, target_mode: true
+      target_mode support: :full
 
       description "Use the **habitat_install** resource to install Chef Habitat."
       introduced "17.3"

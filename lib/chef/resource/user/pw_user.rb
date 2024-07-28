@@ -24,6 +24,7 @@ class Chef
 
         provides :pw_user, target_mode: true
         provides :user, os: "freebsd", target_mode: true
+        target_mode support: :full
       end
     end
   end

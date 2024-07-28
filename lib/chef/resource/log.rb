@@ -31,6 +31,8 @@ class Chef
     class Log < Chef::Resource
 
       provides :log, target_mode: true
+      target_mode support: :full,
+        introduced: "15.1"
 
       description "Use the **log** resource to create log entries. The log resource behaves"\
                   " like any other resource: built into the resource collection during the"\

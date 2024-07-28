@@ -24,6 +24,7 @@ class Chef
     class UserUlimit < Chef::Resource
 
       provides :user_ulimit, target_mode: true
+      target_mode support: :full
 
       description "Use the **user_ulimit** resource to create individual ulimit files that are installed into the `/etc/security/limits.d/` directory."
       introduced "16.0"
