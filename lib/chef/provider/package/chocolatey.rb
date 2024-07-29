@@ -153,7 +153,7 @@ class Chef
 
         # Choco V2 uses 'Search' for remote repositories and 'List' for local packages
         def query_command
-          return "list" if get_choco_version.match?(/^1/)
+          return "list" if Gem::Dependency.new("", "< 1.4.0").match?("", get_choco_version)
 
           "search"
         end
