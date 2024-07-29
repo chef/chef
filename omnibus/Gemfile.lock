@@ -275,7 +275,8 @@ GEM
       mixlib-shellout
       mixlib-versioning
       thor
-    mixlib-log (3.0.9)
+    mixlib-log (3.1.1)
+      ffi (< 1.17.0)
     mixlib-shellout (3.2.8)
       chef-utils
     mixlib-shellout (3.2.8-universal-mingw32)

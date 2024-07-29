@@ -304,7 +304,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-log (3.0.9)
+    mixlib-log (3.1.1)
     mixlib-shellout (3.2.8)
       chef-utils
     mixlib-shellout (3.2.8-x64-mingw-ucrt)
@@ -514,7 +514,6 @@ DEPENDENCIES
   chefstyle!
   crack (< 0.4.6)
   knife!
-  logger (< 1.6.0)
   ohai!
   pry
   pry-byebug
