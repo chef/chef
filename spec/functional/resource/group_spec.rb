@@ -48,7 +48,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # Adding a 2 second delay for this platform is enough to get correct results.
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
-      Etc.getgrnam(group_name).mem.include?(user)
+      if freebsd?
+        cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
+        if cmd.include? user 
+          true 
+        else 
+          false
+        end
+      else
+        Etc.getgrnam(group_name).mem.include?(user)
+      end
     end
   end
 
