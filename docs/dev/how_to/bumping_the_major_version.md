@@ -27,18 +27,26 @@ Starting from the main branch create a PR which:
 
 ## Update chef/chef
 
-### Prep main branch for forking
+### Step 1.  Prep main branch for forking ###
+- Please note these steps must be completed in sequence.
 
-- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch.
+- [In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for main to match the new planned major version and add a constraint for the new stable version / branch.](https://expeditor.chef.io/docs/patterns/version-management/#release-branches)
 - In .github/dependabot.yml add an entry for your new stable branch
 
-### Fork Chef main to a stable branch
+### Step 2. Create the new release branch off of main.
 
 Before bumping the major version of Chef Infra we want to fork off the current main to a new stable branch, which will be used to build hotfix releases. We support the N-1 version of Chef Infra Client for a year after the release of a new major version. For example Chef Infra Client 17 was released in April 2021, at which point Chef Infra Client 16 became the N-1 release. Chef Infra Client 16 will then be maintained with critical bug and security fixes until April 2022.
 
-On your local machine fork the current main branch to a new stable branch. For example: `git checkout -b chef-17` and `git push --set-upstream origin chef-17`, which can then be pushed up to GitHub.
+After defining the release branch in your .expeditor/config.yml and merging the pull request to main, you can now create the branch in git.
 
-### Create a branch to fixup your new stable branch for release
+```
+git checkout main
+git pull
+git branch *new_release_branch_name* # e.g. chef-18
+git push origin *new_release_branch_name* # e.g. chef-18
+```
+
+### Step 3. Update your new release branch to fixup your new stable branch for release
 
 Once you've forked to a new stable branch such as `chef-17` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
 
@@ -58,9 +66,9 @@ Once you've forked to a new stable branch such as `chef-17` you'll want to creat
 
 Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
-Note: Make sure you're making this PR against the new stable branch and not main!
+Note: Make sure you're making this PR against the **new stable** branch and not **main!**
 
-## Bump main for the new major release
+### Step 4. Bump main for the new major release
 
 Create a PR that performs the following:
 
@@ -68,7 +76,9 @@ Create a PR that performs the following:
 - Update `chef.gemspec` and `knife.gemspec` to point to the new ohai major release
 - run `rake dependencies:update`
 
-## Update Ohai stable for the Chef stable branch
+### Step 5. Update Ohai stable for the Chef stable branch
 
 - In the ohai repo checkout the stable branch
 - Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.
+
+### Step 6. Have a github admin update the branch protections for the new release branch. 
