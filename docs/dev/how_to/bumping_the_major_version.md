@@ -42,8 +42,8 @@ After defining the release branch in your .expeditor/config.yml and merging the 
 ```
 git checkout main
 git pull
-git branch *new release branch name* ex: chef-18
-git push origin *new release branch name* ex: chef-18
+git branch *new_release_branch_name* # e.g. chef-18
+git push origin *new_release_branch_name* # e.g. chef-18
 ```
 
 ### Step 3. Update your new release branch to fixup your new stable branch for release
