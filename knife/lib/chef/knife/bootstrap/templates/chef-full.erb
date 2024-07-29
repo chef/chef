@@ -776,7 +776,7 @@ echo "Starting the first <%= ChefUtils::Dist::Infra::PRODUCT %> Client run..."
 <% if config[:disable_license_activation] %>
 echo "License Activation is disabled. Please activate the license manually by running the 'chef-client [COMMAND]'"
 <% else %>
-echo "Using the LicenseID: #{config[:license_id]} to activate the Client. "
+echo "Using the LicenseID: <%= config[:license_id] %> to activate the Client. "
 <% end %>
 
 echo "Client Run Command: <%= start_chef %>"
