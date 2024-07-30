@@ -49,6 +49,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
       if freebsd?
+		require "pry-byebug"
+		binding.pry
         cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
         if cmd.include? user 
           true 
@@ -136,6 +138,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   shared_examples_for "correct group management" do
     def add_members_to_group(members)
+		binding.pry
       temp_resource = group_resource.dup
       temp_resource.members(members)
       temp_resource.excluded_members([ ])
@@ -257,6 +260,8 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
         describe "when group already contains some users" do
           before(:each) do
+			require "pry-byebug"
+			binding.pry
             add_members_to_group([included_members[0], excluded_members[0]])
           end
 
