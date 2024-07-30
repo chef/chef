@@ -10,8 +10,8 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
-# required for FIPS or bundler will pick up default openssl
-gem "openssl", "= 3.2.0" unless (%x(which rbenv) && $? != 0) && Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" }
+# required for FIPS or bundler will pick up default openssl... set LOCAL_DEV env var to prevent openssl from unbundling
+gem "openssl", "= 3.2.0" unless ENV["LOCAL_DEV"].nil? && Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" }
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
