@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gem "chef", path: "."
 
+gem "logger", "< 1.6.0"
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.

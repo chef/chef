@@ -508,8 +508,8 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
+  logger (< 1.6.0)
   ohai!
-  openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
