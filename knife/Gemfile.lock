@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 7f3f45a8aeddcee34f3945da78946513982cc6c9
+  revision: a235eacc7cb8ee9dbc7fce6bbc7cb311177b8282
   branch: main
   specs:
-    ohai (18.2.0)
-      chef-config (>= 14.12, < 19)
-      chef-utils (>= 16.0, < 19)
+    ohai (19.0.0)
+      chef-config (>= 14.12, < 20)
+      chef-utils (>= 16.0, < 20)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
@@ -28,18 +28,18 @@ GIT
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (18.5.1)
-      chef (= 18.5.1)
+    chef-bin (19.0.2)
+      chef (= 19.0.2)
 
 PATH
   remote: ..
   specs:
-    chef (18.5.1)
+    chef (19.0.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.5.1)
-      chef-utils (= 18.5.1)
+      chef-config (= 19.0.2)
+      chef-utils (= 19.0.2)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -58,7 +58,7 @@ PATH
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 18.0)
+      ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
@@ -68,61 +68,15 @@ PATH
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-    chef (18.5.1-x64-mingw-ucrt)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.5.1)
-      chef-powershell (~> 18.1.0)
-      chef-utils (= 18.5.1)
-      chef-vault
-      chef-zero (>= 14.0.11)
-      corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.15.5)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (>= 5, < 6)
-      iso8601 (>= 0.12.1, < 0.14)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (>= 3.1.1, < 4.0)
-      net-ftp
-      net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 18.0)
-      plist (~> 3.2)
-      proxifier2 (~> 1.1)
-      syslog-logger (~> 1.6)
-      train-core (~> 3.10)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (~> 0.0.8.2)
-      uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.18.2)
-      win32-api (~> 1.10.0)
-      win32-certstore (~> 0.6.15)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
 
 PATH
   remote: .
   specs:
-    knife (18.5.1)
+    knife (19.0.2)
       bcrypt_pbkdf (~> 1.1)
-      chef (>= 18)
-      chef-config (>= 18)
-      chef-utils (>= 18)
+      chef (>= 19)
+      chef-config (>= 19)
+      chef-utils (>= 19)
       chef-vault
       erubis (~> 2.7)
       ffi (>= 1.15)
@@ -133,7 +87,7 @@ PATH
       mixlib-cli (>= 2.1.1, < 3.0)
       net-ssh (>= 5.1, < 8)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 18.0)
+      ohai (~> 19.0)
       pastel
       proxifier2 (~> 1.1)
       train-core (~> 3.10)
@@ -145,9 +99,9 @@ PATH
 PATH
   remote: /Users/powell/projects/chef/chef-config
   specs:
-    chef-config (18.5.1)
+    chef-config (19.0.2)
       addressable
-      chef-utils (= 18.5.1)
+      chef-utils (= 19.0.2)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -156,7 +110,7 @@ PATH
 PATH
   remote: /Users/powell/projects/chef/chef-utils
   specs:
-    chef-utils (18.5.1)
+    chef-utils (19.0.2)
       concurrent-ruby
 
 GEM
@@ -166,8 +120,8 @@ GEM
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.2)
     aws-eventstream (1.3.0)
-    aws-partitions (1.955.0)
-    aws-sdk-core (3.201.1)
+    aws-partitions (1.959.0)
+    aws-sdk-core (3.201.3)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.8)
@@ -179,10 +133,10 @@ GEM
       aws-sdk-core (~> 3, >= 3.201.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-secretsmanager (1.101.0)
+    aws-sdk-secretsmanager (1.102.0)
       aws-sdk-core (~> 3, >= 3.201.0)
       aws-sigv4 (~> 1.5)
-    aws-sigv4 (1.8.0)
+    aws-sigv4 (1.9.1)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.2.0)
     bcrypt_pbkdf (1.1.1)
@@ -192,9 +146,6 @@ GEM
       debug_inspector (>= 1.2.0)
     builder (3.3.0)
     byebug (11.1.3)
-    chef-powershell (18.1.0)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -229,10 +180,10 @@ GEM
       logger
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
-    faraday-net_http (3.1.0)
+    faraday-net_http (3.1.1)
       net-http
-    ffi (1.17.0)
-    ffi (1.17.0-x64-mingw-ucrt)
+    ffi (1.16.3)
+    ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -278,7 +229,6 @@ GEM
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.7.2)
     libyajl2 (2.1.0)
@@ -288,7 +238,7 @@ GEM
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
     little-plugger (1.1.4)
-    logger (1.5.3)
+    logger (1.6.0)
     logging (2.4.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
@@ -305,6 +255,7 @@ GEM
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.1.1)
+      ffi (< 1.17.0)
     mixlib-shellout (3.2.8)
       chef-utils
     mixlib-shellout (3.2.8-x64-mingw-ucrt)
@@ -332,7 +283,7 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     netrc (0.11.0)
-    nori (2.7.0)
+    nori (2.7.1)
       bigdecimal
     parallel (1.25.1)
     parser (3.3.4.0)
@@ -404,7 +355,6 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     strscan (3.1.0)
-    structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     thor (1.2.2)
     time (0.3.0)
@@ -457,28 +407,8 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
-    win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.16)
-      chef-powershell
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     winrm (2.3.8)
       builder (>= 2.1.2)
       erubi (~> 1.8)
