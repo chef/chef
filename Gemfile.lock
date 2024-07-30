@@ -196,9 +196,10 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (17.1.5)
+    cheffish (17.1.7)
       chef-utils (>= 17.0)
       chef-zero (>= 14.0)
+      logger (< 1.6.0)
       net-ssh
     chefstyle (2.2.2)
       rubocop (= 1.25.1)
