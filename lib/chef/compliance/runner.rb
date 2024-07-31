@@ -116,7 +116,7 @@ class Chef
 
       def report(report = nil)
         logger.info "Starting Chef Infra Compliance Phase"
-        Chef::Licensing.check_software_entitlement_compliance_phase!
+        Chef::Licensing.check_software_entitlement_compliance_phase! if ChefUtils::Dist::Inspec::EXEC == "inspec"
         report ||= generate_report
         # This is invoked at report-time instead of with the normal validations at node loaded,
         # because we want to ensure that it is visible in the output - and not lost in back-scroll.
