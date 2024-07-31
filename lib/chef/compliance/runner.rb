@@ -116,6 +116,7 @@ class Chef
 
       def report(report = nil)
         logger.info "Starting Chef Infra Compliance Phase"
+        Chef::Licensing.check_software_entitlement_compliance_phase!
         report ||= generate_report
         # This is invoked at report-time instead of with the normal validations at node loaded,
         # because we want to ensure that it is visible in the output - and not lost in back-scroll.
@@ -131,6 +132,9 @@ class Chef
           @reporters[reporter_type].send_report(report)
         end
         logger.info "Chef Infra Compliance Phase Complete"
+      rescue Chef::Licensing::EntitlementError => e
+        logger.error "Skipping Chef Infra Compliance Phase due to lack of entitlement."
+        return
       end
 
       def inputs_from_attributes
