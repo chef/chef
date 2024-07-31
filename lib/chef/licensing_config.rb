@@ -12,7 +12,7 @@ ChefLicensing.configure do |config|
   config.chef_product_name = "Infra"
   config.chef_entitlement_id = Chef::LicensingConfig::INFRA_ENTITLEMENT_ID
   config.chef_executable_name = "chef-client"
-  config.license_server_url = "https://services.chef.io/licensing"
+  config.license_server_url = "https://services.chef.io/licensing" unless config.license_server_url
   config.logger = Chef::Log
   config.license_add_command = "--license-add"
 end
