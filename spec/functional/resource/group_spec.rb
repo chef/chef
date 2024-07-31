@@ -467,7 +467,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       end
 
       it "does not raise an error on manage" do
-        allow(Etc).to receive(:getpwnam).and_return(double("User"))
+        if freebsd?
+          allow(shell_out).to receive("pw user show").and_return(double("User"))
+        else
+          allow(Etc).to receive(:getpwnam).and_return(double("User"))
+        end
         expect { group_resource.run_action(:manage) }.not_to raise_error
       end
     end
