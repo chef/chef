@@ -27,7 +27,7 @@ openssl_version_default =
 # builds for other versions in omnibus_software
 override "openssl", version: ENV.fetch("OPENSSL_OVERRIDE", openssl_version_default)
 override "pkg-config-lite", version: "0.28-1"
-override "ruby", version: "3.0.3", openssl_gem: "3.2.0"
+override "ruby", version: "3.0.3"#, openssl_gem: "3.2.0"
 override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
