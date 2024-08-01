@@ -208,6 +208,16 @@ class Chef
         logger.debug "Options are set to: #{opts}"
         runner = ::Inspec::Runner.new(opts)
 
+        # Switch from local to remote backend for Target Mode
+        if ChefConfig::Config.target_mode?
+          logger.info "Configure InSpec backend to use established connection"
+
+          connection = Chef.run_context.transport_connection
+          backend = Inspec::Backend.new(connection)
+
+          runner.set_backend(backend)
+        end
+
         if profiles.empty?
           failed_report("No #{Inspec::Dist::PRODUCT_NAME} profiles are defined.")
           return

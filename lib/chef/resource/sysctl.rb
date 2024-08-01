@@ -21,8 +21,9 @@ class Chef
   class Resource
     class Sysctl < Chef::Resource
 
-      provides(:sysctl) { true }
-      provides(:sysctl_param) { true }
+      provides(:sysctl, target_mode: true) { true }
+      provides(:sysctl_param, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **sysctl** resource to set or remove kernel parameters using the `sysctl` command line tool and configuration files in the system's `sysctl.d` directory. Configuration files managed by this resource are named `99-chef-KEYNAME.conf`."
       examples <<~DOC
@@ -152,7 +153,7 @@ class Chef
 
       action :remove, description: "Remove the kernel parameter and update the `sysctl` settings." do
         # only converge the resource if the file actually exists to delete
-        if ::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf")
+        if ::TargetIO::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf")
           converge_by "removing sysctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
             file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
               action :delete
@@ -216,9 +217,9 @@ class Chef
       # return the value. Raise in case this conf file needs to be created
       # or updated
       def get_sysctld_value(key)
-        raise unless ::File.exist?("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf")
+        raise unless ::TargetIO::File.exist?("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf")
 
-        k, v = ::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
+        k, v = ::Target_IO::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
         raise "Unknown sysctl key!" if k.nil?
         raise "Unknown sysctl value!" if v.nil?
 

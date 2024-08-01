@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-require_relative "../../http/simple"
 require_relative "../../digester"
 require_relative "../remote_file"
 require_relative "cache_control_data"
@@ -62,7 +61,7 @@ class Chef
         end
 
         def fetch
-          http = Chef::HTTP::Simple.new(uri, http_client_opts)
+          http = TargetIO::HTTP.new(uri, http_client_opts)
           orig_tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           if want_progress?
             tempfile = http.streaming_request_with_progress(uri, headers, orig_tempfile) do |size, total|
@@ -97,7 +96,7 @@ class Chef
         end
 
         def want_progress?
-          events.formatter? && (Chef::Config[:show_download_progress] || !!new_resource.show_progress)
+          !ChefConfig::Config.target_mode? && events.formatter? && (Chef::Config[:show_download_progress] || !!new_resource.show_progress)
         end
 
         def progress_interval

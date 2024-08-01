@@ -54,6 +54,8 @@ module ChefConfig
       # @since 14.4
       # @return [String]
       def credentials_file_path
+        return Chef::Config[:credentials] if defined?(Chef::Config) && Chef::Config.key?(:credentials)
+
         PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR, "credentials").freeze
       end
 

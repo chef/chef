@@ -19,7 +19,8 @@ class Chef
     class SelinuxState < Chef::Resource
       unified_mode true
 
-      provides :selinux_state
+      provides :selinux_state, target_mode: true
+      target_mode support: :full
 
       description "Use **selinux_state** resource to manages the SELinux state on the system. It does this by using the `setenforce` command and rendering the `/etc/selinux/config` file from a template."
       introduced "18.0"
