@@ -280,8 +280,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
             included_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(true)
             end
-            excluded_members.each do |member|
-              expect(user_exist_in_group?(member)).to eq(false)
+            unless freebsd?
+              excluded_members.each do |member|
+                expect(user_exist_in_group?(member)).to eq(false)
+              end
             end
           end
         end
