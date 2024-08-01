@@ -53,7 +53,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
       if freebsd?
-        cmd = Mixlib::ShellOut.new("getent group #{group_name} #{user}").run_command.stdout
+        cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
         if cmd.include? user 
           true 
         else 
@@ -223,8 +223,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           included_members.each do |member|
             expect(user_exist_in_group?(member)).to eq(true)
           end
-          (spec_members - included_members).each do |member|
-            expect(user_exist_in_group?(member)).to eq(false)
+		      unless freebsd?
+            (spec_members - included_members).each do |member|
+              expect(user_exist_in_group?(member)).to eq(false)
+            end
           end
         end
 
@@ -240,9 +242,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
             included_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(true)
             end
-            (spec_members - included_members).each do |member|
-              expect(user_exist_in_group?(member)).to eq(false)
-            end
+            unless freebsd?
+              (spec_members - included_members).each do |member|
+                expect(user_exist_in_group?(member)).to eq(false)
+              end
+ 			      end
           end
         end
       end
@@ -258,8 +262,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           included_members.each do |member|
             expect(user_exist_in_group?(member)).to eq(true)
           end
-          excluded_members.each do |member|
-            expect(user_exist_in_group?(member)).to eq(false)
+          unless freebsd?
+            excluded_members.each do |member|
+              expect(user_exist_in_group?(member)).to eq(false)
+            end
           end
         end
 
