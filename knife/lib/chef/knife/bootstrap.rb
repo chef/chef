@@ -21,8 +21,6 @@ require_relative "data_bag_secret_options"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
 require "chef/json_compat" unless defined?(Chef::JSONCompat) # can't be lazy loaded since it's used in options
-require "chef/utils/licensing_config"
-require "chef/utils/licensing_handler"
 
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"

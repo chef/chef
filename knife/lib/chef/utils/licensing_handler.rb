@@ -29,6 +29,16 @@ class Chef
 
           new(licenses_metadata.first.id, licenses_metadata.first.license_type)
         end
+
+        def check_software_entitlement!(ui)
+          ChefLicensing.check_software_entitlement!
+        rescue ChefLicensing::SoftwareNotEntitled
+          ui.error "License is not entitled to use Workstation."
+          exit 1
+        rescue ChefLicensing::Error => e
+          ui.error e.message
+          exit 1
+        end
       end
     end
   end
