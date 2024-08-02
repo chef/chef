@@ -65,8 +65,6 @@ class Chef
               Entitled for period of subscription purchased
               Entitled for commercial use
 
-            knife license add: This command helps users to generate or add an additional license (not applicable to local licensing service)
-
             For more information please visit:
             www.chef.io/licensing/faqs
 
