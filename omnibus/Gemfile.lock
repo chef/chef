@@ -361,7 +361,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retryable (3.0.5)
-    rexml (3.3.1)
+    rexml (3.3.3)
       strscan
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
