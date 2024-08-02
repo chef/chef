@@ -37,14 +37,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
   def user_exist_in_group?(user)
     case ohai[:platform]
-    when "windows"
-      user_sid = sid_string_from_user(user)
-      user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
-    when "mac_os_x"
-      membership_info = shell_out("dscl . -read /Groups/#{group_name}").stdout
-      members = membership_info.split(" ")
-      members.shift # Get rid of GroupMembership: string
-      members.include?(user)
     when "freebsd"
       cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
       if cmd.include? user
@@ -52,6 +44,14 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       else
         false
       end
+    when "mac_os_x"
+      membership_info = shell_out("dscl . -read /Groups/#{group_name}").stdout
+      members = membership_info.split(" ")
+      members.shift # Get rid of GroupMembership: string
+      members.include?(user)
+    when "windows"
+      user_sid = sid_string_from_user(user)
+      user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
     else
       # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
       # Adding a 2 second delay for this platform is enough to get correct results.
