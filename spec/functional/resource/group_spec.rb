@@ -219,7 +219,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           end
 
           (spec_members - included_members).each do |member|
-              expect(user_exist_in_group?(member)).to eq(false)
+            expect(user_exist_in_group?(member)).to eq(false)
           end
         end
 
