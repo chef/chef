@@ -54,9 +54,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
       if freebsd?
         cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
-        if cmd.include? user 
-          true 
-        else 
+        if cmd.include? user
+          true
+        else
           false
         end
       else
@@ -143,7 +143,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   shared_examples_for "correct group management" do
-    unless freebsd?
+    unless freebsd? # If you are not Freebsd, you should execute these tests
       def add_members_to_group(members)
         temp_resource = group_resource.dup
         temp_resource.members(members)
