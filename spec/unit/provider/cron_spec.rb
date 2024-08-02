@@ -769,6 +769,40 @@ describe Chef::Provider::Cron do
         end
       end
 
+      context "when integers are provided to the resource to express time values" do
+        it "should not report any difference" do
+          @new_resource.minute(1)
+          @new_resource.hour(1)
+          @new_resource.day(1)
+          @new_resource.month(1)
+          @new_resource.weekday(1)
+          allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+            # Chef Name: cronhole some stuff
+            1 1 1 1 1 /bin/true
+          CRONTAB
+
+          @provider.run_action(:create)
+          expect(@new_resource).not_to be_updated_by_last_action
+        end
+      end
+
+      context "when strings are provided to the resource to express time values" do
+        it "should not report any difference" do
+          @new_resource.minute("1")
+          @new_resource.hour("1")
+          @new_resource.day("1")
+          @new_resource.month("1")
+          @new_resource.weekday("1")
+          allow(@provider).to receive(:read_crontab).and_return(<<~CRONTAB)
+            # Chef Name: cronhole some stuff
+            1 1 1 1 1 /bin/true
+          CRONTAB
+
+          @provider.run_action(:create)
+          expect(@new_resource).not_to be_updated_by_last_action
+        end
+      end
+
       context "when environment variable is used" do
         before :each do
           @provider.cron_exists = true
