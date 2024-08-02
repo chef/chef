@@ -140,6 +140,7 @@ RSpec.configure do |config|
 
   config.filter_run_excluding fips_mode: !fips_mode_build?
 
+  config.filter_run_excluding not_supported_on_freebsd_gte_12_3: true if freebsd_gte_12_3?
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_macos: true if macos?

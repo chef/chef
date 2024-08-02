@@ -217,17 +217,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           end
         end
 
-        describe "when append is not set" do
+        describe "when append is not set", :not_supported_on_freebsd_gte_12_3 do
           it "should set the group to to contain given members" do
             group_resource.run_action(tested_action)
 
             included_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(true)
             end
-            unless freebsd?
-              (spec_members - included_members).each do |member|
+
+            (spec_members - included_members).each do |member|
                 expect(user_exist_in_group?(member)).to eq(false)
-              end
             end
           end
 
@@ -252,7 +251,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           end
         end
 
-        describe "when append is set" do
+        describe "when append is set", :not_supported_on_freebsd_gte_12_3 do
           before(:each) do
             group_resource.append(true)
           end
@@ -263,10 +262,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
             included_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(true)
             end
-            unless freebsd?
-              excluded_members.each do |member|
-                expect(user_exist_in_group?(member)).to eq(false)
-              end
+
+            excluded_members.each do |member|
+              expect(user_exist_in_group?(member)).to eq(false)
             end
           end
 
@@ -281,10 +279,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
               included_members.each do |member|
                 expect(user_exist_in_group?(member)).to eq(true)
               end
-              unless freebsd?
-                excluded_members.each do |member|
-                  expect(user_exist_in_group?(member)).to eq(false)
-                end
+
+              excluded_members.each do |member|
+                expect(user_exist_in_group?(member)).to eq(false)
               end
             end
           end
