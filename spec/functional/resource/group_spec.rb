@@ -66,15 +66,13 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def group_should_not_exist(group)
-    case ohai[:os]
-    when "linux"
-      if freebsd?
-        expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(65)
-      else
-        expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
-      end
+    case ohai[:platform]
+    when "freebsd"
+      expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(65)
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
+    else
+      expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     end
   end
 
