@@ -169,7 +169,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
 
     # dscl doesn't perform any error checking and will let you add users that don't exist.
-    describe "when no users exist", :not_supported_on_macos, :not_supported_on_freebsd_gte_12_3  do
+    describe "when no users exist", :not_supported_on_macos, :not_supported_on_freebsd_gte_12_3 do
       describe "when append is not set" do
         # excluded_members can only be used when append is set.  It is ignored otherwise.
         let(:excluded_members) { [] }
