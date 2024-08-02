@@ -24,21 +24,19 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    case ohai[:os]
-    when "linux"
-      if freebsd?
-        expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(0)
-      else
-        expect { Etc.getgrnam(group) }.not_to raise_error
-        expect(group).to eq(Etc.getgrnam(group).name)
-      end
+    case ohai[:platform]
+    when "freebsd"
+      expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(0)
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.not_to raise_error
+    else
+      expect { Etc.getgrnam(group) }.not_to raise_error
+      expect(group).to eq(Etc.getgrnam(group).name)
     end
   end
 
   def user_exist_in_group?(user)
-    case ohai[:platform_family]
+    case ohai[:platform]
     when "windows"
       user_sid = sid_string_from_user(user)
       user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
@@ -47,21 +45,19 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       members = membership_info.split(" ")
       members.shift # Get rid of GroupMembership: string
       members.include?(user)
+    when "freebsd"
+      cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
+      if cmd.include? user
+        true
+      else
+        false
+      end
     else
       # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
       # Adding a 2 second delay for this platform is enough to get correct results.
       # We hope to remove this delay after we get more permanent AIX 7.2 systems in our CI pipeline. reference: https://github.com/chef/release-engineering/issues/1617
       sleep 2 if aix? && (ohai[:platform_version] == "7.2")
-      if freebsd?
-        cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
-        if cmd.include? user
-          true
-        else
-          false
-        end
-      else
-        Etc.getgrnam(group_name).mem.include?(user)
-      end
+      Etc.getgrnam(group_name).mem.include?(user)
     end
   end
 
@@ -141,7 +137,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   shared_examples_for "correct group management" do
-    unless freebsd? # If you are not Freebsd, you should execute these tests
+    # unless freebsd? # If you are not Freebsd, you should execute these tests
       def add_members_to_group(members)
         temp_resource = group_resource.dup
         temp_resource.members(members)
@@ -285,7 +281,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           end
         end
       end
-    end
+    # end
   end
 
   shared_examples_for "an expected invalid domain error case" do
