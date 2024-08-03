@@ -127,6 +127,10 @@ def freebsd?
   RUBY_PLATFORM.include?("freebsd")
 end
 
+def freebsd_gte_12_3?
+  RUBY_PLATFORM.include?("freebsd") && !!(ohai[:platform_version].to_f >= 12.3)
+end
+
 def intel_64bit?
   !!(ohai[:kernel][:machine] == "x86_64")
 end

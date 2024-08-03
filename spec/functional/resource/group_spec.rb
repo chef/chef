@@ -24,25 +24,34 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    case ohai[:os]
-    when "linux"
-      expect { Etc.getgrnam(group) }.not_to raise_error
-      expect(group).to eq(Etc.getgrnam(group).name)
+    case ohai[:platform]
+    when "freebsd"
+      expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(0)
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.not_to raise_error
+    else
+      expect { Etc.getgrnam(group) }.not_to raise_error
+      expect(group).to eq(Etc.getgrnam(group).name)
     end
   end
 
   def user_exist_in_group?(user)
-    case ohai[:platform_family]
-    when "windows"
-      user_sid = sid_string_from_user(user)
-      user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
+    case ohai[:platform]
+    when "freebsd"
+      cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
+      if cmd.include? user
+        true
+      else
+        false
+      end
     when "mac_os_x"
       membership_info = shell_out("dscl . -read /Groups/#{group_name}").stdout
       members = membership_info.split(" ")
       members.shift # Get rid of GroupMembership: string
       members.include?(user)
+    when "windows"
+      user_sid = sid_string_from_user(user)
+      user_sid.nil? ? false : Chef::Util::Windows::NetGroup.new(group_name).local_get_members.include?(user_sid)
     else
       # TODO For some reason our temporary AIX 7.2 system does not correctly report group membership immediately after changes have been made.
       # Adding a 2 second delay for this platform is enough to get correct results.
@@ -53,11 +62,13 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def group_should_not_exist(group)
-    case ohai[:os]
-    when "linux"
-      expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
+    case ohai[:platform]
+    when "freebsd"
+      expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(65)
     when "windows"
       expect { Chef::Util::Windows::NetGroup.new(group).local_get_members }.to raise_error(ArgumentError, /The group name could not be found./)
+    else
+      expect { Etc.getgrnam(group) }.to raise_error(ArgumentError, "can't find group for #{group}")
     end
   end
 
@@ -158,7 +169,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     end
 
     # dscl doesn't perform any error checking and will let you add users that don't exist.
-    describe "when no users exist", :not_supported_on_macos do
+    describe "when no users exist", :not_supported_on_macos, :not_supported_on_freebsd_gte_12_3 do
       describe "when append is not set" do
         # excluded_members can only be used when append is set.  It is ignored otherwise.
         let(:excluded_members) { [] }
@@ -199,13 +210,14 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
         end
       end
 
-      describe "when append is not set" do
+      describe "when append is not set", :not_supported_on_freebsd_gte_12_3 do
         it "should set the group to to contain given members" do
           group_resource.run_action(tested_action)
 
           included_members.each do |member|
             expect(user_exist_in_group?(member)).to eq(true)
           end
+
           (spec_members - included_members).each do |member|
             expect(user_exist_in_group?(member)).to eq(false)
           end
@@ -223,14 +235,16 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
             included_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(true)
             end
-            (spec_members - included_members).each do |member|
-              expect(user_exist_in_group?(member)).to eq(false)
+            unless freebsd?
+              (spec_members - included_members).each do |member|
+                expect(user_exist_in_group?(member)).to eq(false)
+              end
             end
           end
         end
       end
 
-      describe "when append is set" do
+      describe "when append is set", :not_supported_on_freebsd_gte_12_3 do
         before(:each) do
           group_resource.append(true)
         end
@@ -241,6 +255,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           included_members.each do |member|
             expect(user_exist_in_group?(member)).to eq(true)
           end
+
           excluded_members.each do |member|
             expect(user_exist_in_group?(member)).to eq(false)
           end
@@ -257,6 +272,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
             included_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(true)
             end
+
             excluded_members.each do |member|
               expect(user_exist_in_group?(member)).to eq(false)
             end
@@ -336,7 +352,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     expect(group_resource.append).to eq(false)
   end
 
-  describe "group create action" do
+  describe "group create action", :not_supported_on_freebsd_gte_12_3 do
     after(:each) do
       group_resource.run_action(:remove)
       group_should_not_exist(group_name)
@@ -393,7 +409,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   describe "group remove action" do
-    describe "when there is a group" do
+    describe "when there is a group", :not_supported_on_freebsd_gte_12_3 do
       before do
         group_resource.run_action(:create)
         group_should_exist(group_name)
@@ -458,7 +474,11 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       end
 
       it "does not raise an error on manage" do
-        allow(Etc).to receive(:getpwnam).and_return(double("User"))
+        if freebsd?
+          allow(shell_out).to receive("pw user show").and_return(double("User"))
+        else
+          allow(Etc).to receive(:getpwnam).and_return(double("User"))
+        end
         expect { group_resource.run_action(:manage) }.not_to raise_error
       end
     end
