@@ -16,10 +16,10 @@
 # limitations under the License.
 
 require "spec_helper"
-require "chef/mixin/homebrew_user"
+require "chef/mixin/homebrew"
 
 class ExampleHomebrewUser
-  include Chef::Mixin::HomebrewUser
+  include Chef::Mixin::Homebrew
 end
 
 describe Chef::Mixin::HomebrewUser do
