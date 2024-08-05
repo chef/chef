@@ -22,7 +22,7 @@ class ExampleHomebrewUser
   include Chef::Mixin::Homebrew
 end
 
-describe Chef::Mixin::HomebrewUser do
+describe Chef::Mixin::Homebrew do
   let(:homebrew_user) { ExampleHomebrewUser.new }
   let(:node) { Chef::Node.new }
 

@@ -81,11 +81,13 @@ class Chef
       # @return [Boolean]
       def tapped?(name)
         brew_path = ::File.dirname(homebrew_bin_path(new_resource.homebrew_path))
-        base_path = ["#{brew_path}/../homebrew", "#{brew_path}/../Homebrew", "/opt/homebrew", "/usr/local/Homebrew", "/home/linuxbrew/.linuxbrew"].uniq.select do |x|
-          next if x.is_a?(FalseClass)
-
-          Dir.exist?(x)
-        end.first
+        base_path = [
+          "#{brew_path}/../homebrew",
+          "#{brew_path}/../Homebrew",
+          "/opt/homebrew",
+          "/usr/local/Homebrew",
+          "/home/linuxbrew/.linuxbrew"
+        ].filter_map { |x| x if Dir.exist?(x) }.first
         tap_dir = name.gsub("/", "/homebrew-")
         ::File.directory?("#{base_path}/Library/Taps/#{tap_dir}")
       end
