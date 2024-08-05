@@ -24,7 +24,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    case ohai[:platform]
+    case ohai[:os]
     when "freebsd"
       expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(0)
     when "windows"
@@ -36,7 +36,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def user_exist_in_group?(user)
-    case ohai[:platform]
+    case ohai[:platform_family]
     when "freebsd"
       cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
       if cmd.include? user
@@ -62,7 +62,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def group_should_not_exist(group)
-    case ohai[:platform]
+    case ohai[:os]
     when "freebsd"
       expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(65)
     when "windows"
