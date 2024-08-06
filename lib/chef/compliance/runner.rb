@@ -133,7 +133,7 @@ class Chef
         end
         logger.info "Chef Infra Compliance Phase Complete"
       rescue Chef::Licensing::EntitlementError => e
-        logger.error "Skipping Chef Infra Compliance Phase due to lack of entitlement."
+        logger.error "Skipping Chef Infra Compliance Phase because the license does not have the required entitlement for Chef InSpec."
         return
       end
 
