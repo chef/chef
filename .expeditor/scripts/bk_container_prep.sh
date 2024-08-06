@@ -18,6 +18,8 @@ echo "--- Preparing Container..."
 
 export FORCE_FFI_YAJL="ext"
 export CHEF_LICENSE="accept-no-persist"
+export ENV["CHEF_LICENSE_SERVER"] = "http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
+
 export BUNDLE_GEMFILE="/workdir/Gemfile"
 
 # make sure we have the network tools in place for various network specs
