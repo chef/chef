@@ -1,8 +1,8 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.1 -->
-## [v18.5.1](https://github.com/chef/chef/tree/v18.5.1) (2024-08-06)
+<!-- latest_release 18.5.2 -->
+## [v18.5.2](https://github.com/chef/chef/tree/v18.5.2) (2024-08-06)
 
 #### Merged Pull Requests
 - Jfm/chef18 ohai update [#14549](https://github.com/chef/chef/pull/14549) ([johnmccrae](https://github.com/johnmccrae))
