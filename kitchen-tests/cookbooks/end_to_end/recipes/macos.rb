@@ -96,9 +96,9 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "nethack"
+homebrew_package "awscli"
 
-homebrew_package "nethack" do
+homebrew_package "awscli" do
   action :purge
 end
 

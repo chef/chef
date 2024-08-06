@@ -102,7 +102,7 @@ describe Chef::Mixin::Homebrew do
   describe "when the homebrew user is not provided" do
 
     it "raises an error if no executable is found" do
-      expect(File).to receive(:exist?).and_return(nil).at_least(:once)
+      expect(File).to receive(:exist?).and_return(false).at_least(:once)
       expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::CannotDetermineHomebrewOwner)
     end
 
