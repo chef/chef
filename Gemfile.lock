@@ -310,6 +310,7 @@ GEM
     rainbow (3.1.1)
     rake (13.1.0)
     rb-readline (0.5.5)
+    rdoc (6.3.4.1)
     regexp_parser (2.8.1)
     rexml (3.2.5)
     rspec (3.11.0)
@@ -462,6 +463,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake
   rb-readline
+  rdoc (~> 6.3.4.1)
   rspec
   rubocop-ast (>= 1.31.0)
   ruby-shadow!
