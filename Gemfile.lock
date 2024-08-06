@@ -512,6 +512,7 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
