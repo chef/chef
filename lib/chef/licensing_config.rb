@@ -3,8 +3,8 @@ require_relative "log"
 
 class Chef
   class LicensingConfig
-    INFRA_ENTITLEMENT_ID = "a5213d76-181f-4924-adba-4b7ed2b098b5"
-    COMPLIANCE_ENTITLEMENT_ID = "3ff52c37-e41f-4f6c-ad4d-365192205968" # InSpec's entitlement ID
+    INFRA_ENTITLEMENT_ID = "a5213d76-181f-4924-adba-4b7ed2b098b5".freeze
+    COMPLIANCE_ENTITLEMENT_ID = "3ff52c37-e41f-4f6c-ad4d-365192205968".freeze # InSpec's entitlement ID
   end
 end
 
