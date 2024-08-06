@@ -601,7 +601,7 @@ fi
     echo "Extracting the download URL"
     if exists wget; then
       echo "Using wget"
-      download_url=$(wget --max-redirect=0 --server-response "$redirect_url" 2>&1 | awk '/^Location: / { print substr($0, 11) }')
+      download_url=$(wget --max-redirect=0 --server-response "$redirect_url" 2>&1 | awk '/^Location: / { print $2 }')
     elif exists curl; then
       echo "Using curl"
       download_url=$(curl -s -I -L $redirect_url | grep -i location | awk '{print $2}' | tr -d '\r')
