@@ -20,6 +20,8 @@ gem "cheffish", "~> 17.0.0"
 gem "ast", "~> 2.4.2"
 gem "rubocop-ast", ">= 1.31.0"
 
+gem "rdoc", "~> 6.3.4" # 6.3.4.1 required for CVE-2024-27281, allow patch upgrades
+
 gem "openssl", "= 3.2.0"
 
 group(:omnibus_package) do
