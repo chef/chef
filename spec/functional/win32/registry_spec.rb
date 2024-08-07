@@ -395,6 +395,9 @@ describe "Chef::Win32::Registry", :windows_only do
       expect { @registry.get_subkeys("JKLM\\Software\\Root") }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "returns the array of subkeys for a given key" do
+      ::Win32::Registry.define_method :export_string do |str, enc = (Encoding.default_internal || "utf-8")|
+        str.encode(enc)
+      end
       subkeys = @registry.get_subkeys("HKCU\\Software\\Root")
       reg_subkeys = []
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root", Win32::Registry::KEY_ALL_ACCESS) do |reg|

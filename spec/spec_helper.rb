@@ -166,6 +166,8 @@ RSpec.configure do |config|
   config.filter_run_excluding linux_only: true unless linux?
   config.filter_run_excluding aix_only: true unless aix?
   config.filter_run_excluding suse_only: true unless suse?
+  # These aren't valid on verify pipeline because the docker container brings its own OpenSSL
+  config.filter_run_excluding openssl_version_check: true if ENV["BUILDKITE_PIPELINE_SLUG"] =~ /verify/
   config.filter_run_excluding opensuse: true unless opensuse?
   config.filter_run_excluding debian_family_only: true unless debian_family?
   config.filter_run_excluding supports_cloexec: true unless supports_cloexec?
