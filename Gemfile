@@ -22,7 +22,10 @@ gem "rubocop-ast", ">= 1.31.0"
 
 gem "rdoc", "~> 6.3.4" # 6.3.4.1 required for CVE-2024-27281, allow patch upgrades
 
-gem "openssl", "= 3.2.0"
+# Verify and macOS bring their own ruby setups are inconsistent with our OpenSSL configurations
+install_if -> { RUBY_PLATFORM !~ /darwin/ && ENV["BUILDKITE_PIPELINE_SLUG"] !~ /verify/ } do
+  gem "openssl", "= 3.2.0"
+end
 
 group(:omnibus_package) do
   gem "appbundler"

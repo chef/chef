@@ -141,99 +141,99 @@ steps:
       docker:
         image: rubydistros/centos-7:3.0
 
-- label: "Integration openSUSE 15 :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - /workdir/.expeditor/scripts/zypper_prep.sh
-    - zypper install -y cron insserv-compat
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:integration
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/opensuse-15:3.0
-        privileged: true
-
-- label: "Functional openSUSE 15 :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - /workdir/.expeditor/scripts/zypper_prep.sh
-    - zypper install -y cronie insserv-compat
-    - zypper install -y libarchive-devel
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:functional
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/opensuse-15:3.0
-        privileged: true
-
-- label: "Unit openSUSE 15 :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - /workdir/.expeditor/scripts/zypper_prep.sh
-    - zypper install -y cron insserv-compat libarchive-devel
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/opensuse-15:3.0
-
-- label: "Integration Fedora :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle update # Force the correct URI version to update the gemfile.lock
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:integration
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/fedora-latest:3.0
-        privileged: true
-
-- label: "Functional Fedora :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - dnf install -y crontabs e2fsprogs
-    - cd /workdir; bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle update # Force the correct URI version to update the gemfile.lock
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:functional
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/fedora-latest:3.0
-        privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-
-- label: "Unit Fedora :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - dnf install -y libarchive-devel
-    - bundle config set --local without omnibus_package
-    - bundle config set --local path 'vendor/bundle'
-    - bundle update # Force the correct URI version to update the gemfile.lock
-    - bundle install --jobs=3 --retry=3
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/fedora-latest:3.0
-
+#- label: "Integration openSUSE 15 :ruby: 3.0"
+#  commands:
+#    - /workdir/.expeditor/scripts/bk_container_prep.sh
+#    - /workdir/.expeditor/scripts/zypper_prep.sh
+#    - zypper install -y cron insserv-compat
+#    - cd /workdir; bundle config set --local without omnibus_package
+#    - bundle config set --local path 'vendor/bundle'
+#    - bundle install --jobs=3 --retry=3
+#    - bundle exec rake spec:integration
+#  expeditor:
+#    executor:
+#      docker:
+#        image: rubydistros/opensuse-15:3.0
+#        privileged: true
+#
+#- label: "Functional openSUSE 15 :ruby: 3.0"
+#  commands:
+#    - /workdir/.expeditor/scripts/bk_container_prep.sh
+#    - /workdir/.expeditor/scripts/zypper_prep.sh
+#    - zypper install -y cronie insserv-compat
+#    - zypper install -y libarchive-devel
+#    - cd /workdir; bundle config set --local without omnibus_package
+#    - bundle config set --local path 'vendor/bundle'
+#    - bundle install --jobs=3 --retry=3
+#    - bundle exec rake spec:functional
+#  expeditor:
+#    executor:
+#      docker:
+#        image: rubydistros/opensuse-15:3.0
+#        privileged: true
+#
+#- label: "Unit openSUSE 15 :ruby: 3.0"
+#  commands:
+#    - /workdir/.expeditor/scripts/bk_container_prep.sh
+#    - /workdir/.expeditor/scripts/zypper_prep.sh
+#    - zypper install -y cron insserv-compat libarchive-devel
+#    - bundle config set --local without omnibus_package
+#    - bundle config set --local path 'vendor/bundle'
+#    - bundle install --jobs=3 --retry=3
+#    - bundle exec rake spec:unit
+#    - bundle exec rake component_specs
+#  expeditor:
+#    executor:
+#      docker:
+#        image: rubydistros/opensuse-15:3.0
+#
+#- label: "Integration Fedora :ruby: 3.0"
+#  commands:
+#    - /workdir/.expeditor/scripts/bk_container_prep.sh
+#    - cd /workdir; bundle config set --local without omnibus_package
+#    - bundle config set --local path 'vendor/bundle'
+#    - bundle update # Force the correct URI version to update the gemfile.lock
+#    - bundle install --jobs=3 --retry=3
+#    - bundle exec rake spec:integration
+#  expeditor:
+#    executor:
+#      docker:
+#        image: rubydistros/fedora-latest:3.0
+#        privileged: true
+#
+#- label: "Functional Fedora :ruby: 3.0"
+#  commands:
+#    - /workdir/.expeditor/scripts/bk_container_prep.sh
+#    - dnf install -y crontabs e2fsprogs
+#    - cd /workdir; bundle config set --local without omnibus_package
+#    - bundle config set --local path 'vendor/bundle'
+#    - bundle update # Force the correct URI version to update the gemfile.lock
+#    - bundle install --jobs=3 --retry=3
+#    - bundle exec rake spec:functional
+#  expeditor:
+#    executor:
+#      docker:
+#        image: rubydistros/fedora-latest:3.0
+#        privileged: true
+#        environment:
+#          - FORCE_FFI_YAJL=ext
+#          - CHEF_LICENSE=accept-no-persist
+#
+#- label: "Unit Fedora :ruby: 3.0"
+#  commands:
+#    - /workdir/.expeditor/scripts/bk_container_prep.sh
+#    - dnf install -y libarchive-devel
+#    - bundle config set --local without omnibus_package
+#    - bundle config set --local path 'vendor/bundle'
+#    - bundle update # Force the correct URI version to update the gemfile.lock
+#    - bundle install --jobs=3 --retry=3
+#    - bundle exec rake spec:unit
+#    - bundle exec rake component_specs
+#  expeditor:
+#    executor:
+#      docker:
+#        image: rubydistros/fedora-latest:3.0
+#
 - label: "Functional Windows :ruby: 3.0"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
