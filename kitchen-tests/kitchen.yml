@@ -84,7 +84,7 @@ platforms:
     image: dokken/centos-7
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN sudo find / -name *repo -type f
+      - RUN find / -name *repo -type f
       - RUN cd /etc/yum.repos.d
       - RUN sudo sed -ibak -e 's!#baseurl=http://mirror.centos.org/$contentdir!baseurl=http://vault.centos.org!g' CentOS-*repo   
       - RUN yum -y install e2fsprogs
@@ -95,7 +95,7 @@ platforms:
     image: dokken/centos-8
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN sudo find / -name *repo -type f
+      - RUN find / -name *repo -type f
       - RUN cd /etc/yum.repos.d
       - RUN sudo sed -ibak -e 's!#baseurl=http://mirror.centos.org/$contentdir!baseurl=http://vault.centos.org!g' CentOS-Stream-*repo
       - RUN dnf -y install e2fsprogs
