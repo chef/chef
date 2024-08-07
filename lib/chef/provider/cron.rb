@@ -88,7 +88,11 @@ class Chef
 
       def cron_different?
         CRON_ATTRIBUTES.any? do |cron_var|
-          new_resource.send(cron_var) != current_resource.send(cron_var)
+          if new_resource.send(cron_var).class == current_resource.send(cron_var).class
+            new_resource.send(cron_var) != current_resource.send(cron_var)
+          else
+            new_resource.send(cron_var).to_s != current_resource.send(cron_var).to_s
+          end
         end
       end
 
