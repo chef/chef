@@ -62,9 +62,7 @@ class Chef
           brew_bin_path
         else
           brew_path = which("brew", prepend_path: %w{/opt/homebrew/bin /usr/local/bin /home/linuxbrew/.linuxbrew/bin})
-          if brew_path
-            return brew_path
-          else
+          unless brew_path
             raise Chef::Exceptions::CannotDetermineHomebrewPath,
               'Couldn\'t find the "brew" executable anywhere on the path.'
           end
