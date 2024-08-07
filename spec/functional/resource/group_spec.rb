@@ -24,7 +24,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   include Chef::Mixin::ShellOut
 
   def group_should_exist(group)
-    case ohai[:platform]
+    case ohai[:os]
     when "freebsd"
       expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(0)
     when "windows"
@@ -36,7 +36,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def user_exist_in_group?(user)
-    case ohai[:platform]
+    case ohai[:platform_family]
     when "freebsd"
       cmd = Mixlib::ShellOut.new("getent group #{group_name}  #{user}").run_command.stdout
       if cmd.include? user
@@ -62,7 +62,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def group_should_not_exist(group)
-    case ohai[:platform]
+    case ohai[:os]
     when "freebsd"
       expect(shell_out("pw groupshow -n #{group}").exitstatus).to eq(65)
     when "windows"
@@ -352,7 +352,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     expect(group_resource.append).to eq(false)
   end
 
-  describe "group create action", :not_supported_on_freebsd_gte_12_3 do
+  describe "group create action", :not_supported_on_freebsd_gte_12_3, :not_supported_on_macos do
     after(:each) do
       group_resource.run_action(:remove)
       group_should_not_exist(group_name)
@@ -409,7 +409,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   describe "group remove action" do
-    describe "when there is a group", :not_supported_on_freebsd_gte_12_3 do
+    describe "when there is a group", :not_supported_on_freebsd_gte_12_3, :not_supported_on_macos do
       before do
         group_resource.run_action(:create)
         group_should_exist(group_name)
@@ -441,7 +441,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       end
     end
 
-    describe "when there is a group" do
+    describe "when there is a group", :not_supported_on_macos do
       it_behaves_like "correct group management"
     end
 
@@ -483,7 +483,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       end
     end
 
-    describe "when there is a group" do
+    describe "when there is a group", :not_supported_on_macos do
       it_behaves_like "correct group management"
     end
 
