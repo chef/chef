@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.156 -->
-## [v17.10.156](https://github.com/chef/chef/tree/v17.10.156) (2024-08-07)
+<!-- latest_release 17.10.157 -->
+## [v17.10.157](https://github.com/chef/chef/tree/v17.10.157) (2024-08-07)
 
 #### Merged Pull Requests
-- [Chef-17][Backport #13147] Fix false updates in cron resource when using integers [#14538](https://github.com/chef/chef/pull/14538) ([neha-p6](https://github.com/neha-p6))
+- rolling back changes to ohai platform and os detection [#14541](https://github.com/chef/chef/pull/14541) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- rolling back changes to ohai platform and os detection [#14541](https://github.com/chef/chef/pull/14541) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.157 -->
 - [Chef-17][Backport #13147] Fix false updates in cron resource when using integers [#14538](https://github.com/chef/chef/pull/14538) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.156 -->
 - [Chef-17][Backport #13327] Fix indentation of condition for disabling repos [#14536](https://github.com/chef/chef/pull/14536) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.155 -->
 - [Chef-17][Backport #13935] Fix regression in calling `choco --version` [#14523](https://github.com/chef/chef/pull/14523) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.154 -->
