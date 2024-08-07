@@ -13,6 +13,8 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 # required for FIPS or bundler will pick up default openssl
 gem "openssl", "= 3.2.0" unless Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" }
 
+gem "rdoc", "~> 6.4.1" # 6.4.1.1 required for CVE-2024-27281, allow patch upgrades
+
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
