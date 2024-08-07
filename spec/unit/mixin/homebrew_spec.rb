@@ -67,8 +67,6 @@ describe Chef::Mixin::Homebrew do
       end
 
       it "returns the owner of the brew executable when it is at a default location for x86_64 machines" do
-        false_unless_specific_value(File, :exist?, default_brew_path)
-        false_unless_specific_value(File, :executable?, default_brew_path)
         allow(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
         expect(homebrew_user.find_homebrew_uid(user)).to eq(brew_owner)
       end
@@ -102,8 +100,7 @@ describe Chef::Mixin::Homebrew do
   describe "when the homebrew user is not provided" do
 
     it "raises an error if no executable is found" do
-      expect(File).to receive(:exist?).and_return(false).at_least(:once)
-      expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::CannotDetermineHomebrewOwner)
+      expect { homebrew_user.find_homebrew_uid(user) }.to raise_error(Chef::Exceptions::CannotDetermineHomebrewPath)
     end
 
     include_examples "successfully find executable"

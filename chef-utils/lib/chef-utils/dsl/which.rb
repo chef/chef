@@ -46,11 +46,12 @@ module ChefUtils
       #   end
       #
       # @param [Array<String>] list of commands to search for
+      # @param [String,Array<String>] array of paths to look in first
       # @param [String,Array<String>] array of extra paths to search through
       # @return [String] the first match
       #
-      def which(*cmds, extra_path: nil, &block)
-        where(*cmds, extra_path: extra_path, &block).first || false
+      def which(*cmds, prepend_path: nil, extra_path: nil, &block)
+        where(*cmds, prepend_path: prepend_path, extra_path: extra_path, &block).first || false
       end
 
       # Lookup all the instances of an an executable that can be found through the systems search PATH.
@@ -73,12 +74,13 @@ module ChefUtils
       #   end
       #
       # @param [Array<String>] list of commands to search for
+      # @param [String,Array<String>] array of paths to look in first
       # @param [String,Array<String>] array of extra paths to search through
       # @return [String] the first match
       #
-      def where(*cmds, extra_path: nil, &block)
+      def where(*cmds, prepend_path: nil, extra_path: nil, &block)
         extra_path ||= __extra_path
-        paths = Array(extra_path) + __env_path.split(File::PATH_SEPARATOR)
+        paths = Array(prepend_path) + __env_path.split(File::PATH_SEPARATOR) + Array(extra_path)
         paths.uniq!
         exts = ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : []
         exts.unshift("")

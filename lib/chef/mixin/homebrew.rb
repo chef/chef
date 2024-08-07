@@ -61,8 +61,10 @@ class Chef
         if brew_bin_path && ::File.exist?(brew_bin_path)
           brew_bin_path
         else
-          brew_path = which("brew", extra_path: %w{/opt/homebrew/bin /usr/local/bin /home/linuxbrew/.linuxbrew/bin})
-          unless brew_path
+          brew_path = which("brew", prepend_path: %w{/opt/homebrew/bin /usr/local/bin /home/linuxbrew/.linuxbrew/bin})
+          if brew_path
+            return brew_path
+          else
             raise Chef::Exceptions::CannotDetermineHomebrewPath,
               'Couldn\'t find the "brew" executable anywhere on the path.'
           end
@@ -75,7 +77,7 @@ class Chef
         brew_path = homebrew_bin_path
         begin
           # By default, this follows symlinks which is what we want
-          ::File.stat(brew_path).uid
+          owner = ::File.stat(brew_path).uid
         rescue
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
             'Couldn\'t find the "brew" executable anywhere on the path.'
