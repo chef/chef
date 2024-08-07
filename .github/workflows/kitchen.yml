@@ -146,6 +146,10 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
     steps:
+      - name: Update CentOS-8 Repositories
+        if: matrix.os == 'centos-8'
+        run: |
+          sed -ibak -e 's!#baseurl=http://mirror.centos.org/$contentdir!baseurl=http://vault.centos.org!g' CentOS-Stream-*repo
       - name: Check out code
         uses: actions/checkout@main
       - name: Setup Ruby
