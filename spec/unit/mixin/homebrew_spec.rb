@@ -67,13 +67,13 @@ describe Chef::Mixin::Homebrew do
       end
 
       it "returns the owner of the brew executable when it is at a default location for x86_64 machines" do
-        allow_any_instance_of(ExampleHomebrew).to receive(:which).and_return(default_brew_path)
+        allow(homebrew_bin_path).to receive(:which).and_return(default_brew_path)
         allow(File).to receive(:stat).with(default_brew_path).and_return(stat_double)
         expect(homebrew.find_homebrew_uid(user)).to eq(brew_owner)
       end
 
       it "returns the owner of the brew executable when it is at a default location for arm machines" do
-        allow_any_instance_of(ExampleHomebrew).to receive(:which).and_return(default_brew_path_arm)
+        allow(homebrew_bin_path).to receive(:which).and_return(default_brew_path_arm)
         # false_unless_specific_value(File, :exist?, default_brew_path_arm)
         # false_unless_specific_value(File, :executable?, default_brew_path_arm)
         allow(File).to receive(:stat).with(default_brew_path_arm).and_return(stat_double)
@@ -81,7 +81,7 @@ describe Chef::Mixin::Homebrew do
       end
 
       it "returns the owner of the brew executable when it is at a default location for linux machines" do
-        allow_any_instance_of(ExampleHomebrew).to receive(:which).and_return(default_brew_path_linux)
+        allow(homebrew_bin_path).to receive(:which).and_return(default_brew_path_linux)
         # false_unless_specific_value(File, :exist?, default_brew_path_linux)
         # false_unless_specific_value(File, :executable?, default_brew_path_linux)
         allow(File).to receive(:stat).with(default_brew_path_linux).and_return(stat_double)
@@ -89,7 +89,7 @@ describe Chef::Mixin::Homebrew do
       end
 
       it "returns the owner of the brew executable when it is not at a default location" do
-        allow_any_instance_of(ExampleHomebrew).to receive(:which).and_return("/foo")
+        allow(homebrew_bin_path).to receive(:which).and_return("/foo")
         # false_unless_specific_value(File, :exist?, "/foo")
         # false_unless_specific_value(File, :executable?, "/foo")
         allow(homebrew).to receive_message_chain(:shell_out, :stdout, :strip).and_return("/foo")
