@@ -57,6 +57,9 @@ class Chef
         @homebrew_owner_username
       end
 
+      # Use homebrew_bin_path to return the path to the brew binary
+      # @param [String, Array(String)] brew_bin_path
+      # @return [String] path to the brew binary
       def homebrew_bin_path(brew_bin_path = nil)
         if brew_bin_path && ::File.exist?(brew_bin_path)
           brew_bin_path
@@ -73,18 +76,11 @@ class Chef
 
       def calculate_owner
         brew_path = homebrew_bin_path
-        begin
-          # By default, this follows symlinks which is what we want
-          owner = ::File.stat(brew_path).uid
-        rescue
-          raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-            'Couldn\'t find the "brew" executable anywhere on the path.'
-        end
-
-        Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"
-        owner
+        # By default, this follows symlinks which is what we want
+        owner_uid = ::File.stat(brew_path).uid
+        Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner_uid).name}; executing `brew` commands as them"
+        owner_uid
       end
-
     end
   end
 end
