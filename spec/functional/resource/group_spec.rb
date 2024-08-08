@@ -441,7 +441,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       end
     end
 
-    describe "when there is a group", :not_supported_on_macos do
+    describe "when there is a group", :not_supported_on_macos, :not_supported_on_aix do
       it_behaves_like "correct group management"
     end
 
@@ -483,7 +483,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       end
     end
 
-    describe "when there is a group", :not_supported_on_macos do
+    describe "when there is a group", :not_supported_on_macos, :not_supported_on_aix do
       it_behaves_like "correct group management"
     end
 
