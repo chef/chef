@@ -18,7 +18,7 @@
 #
 
 require "etc" unless defined?(Etc)
-require_relative "../../mixin/homebrew_user"
+require_relative "../../mixin/homebrew"
 
 class Chef
   class Provider
@@ -30,7 +30,7 @@ class Chef
         provides :package, os: "darwin"
         provides :homebrew_package
 
-        include Chef::Mixin::HomebrewUser
+        include Chef::Mixin::Homebrew
 
         def load_current_resource
           @current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
@@ -63,9 +63,8 @@ class Chef
         # and which packages can be upgrades. We do this by checking if brew_info has an entry
         # via the installed_version helper.
         def upgrade_package(names, versions)
-          # @todo when we no longer support Ruby 2.6 this can be simplified to be a .filter_map
-          upgrade_pkgs = names.select { |x| x if installed_version(x) }.compact
-          install_pkgs = names.select { |x| x unless installed_version(x) }.compact
+          upgrade_pkgs = names.filter_map { |x| x if installed_version(x) }
+          install_pkgs = names.filter_map { |x| x unless installed_version(x) }
 
           brew_cmd_output("upgrade", options, upgrade_pkgs) unless upgrade_pkgs.empty?
           brew_cmd_output("install", options, install_pkgs) unless install_pkgs.empty?
@@ -182,7 +181,7 @@ class Chef
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          logger.trace "Executing 'brew #{command.join(" ")}' as user '#{homebrew_user.name}'"
+          logger.trace "Executing '#{homebrew_bin_path} #{command.join(" ")}' as user '#{homebrew_user.name}'"
 
           # allow the calling method to decide if the cmd should raise or not
           # brew_info uses this when querying out available package info since a bad
@@ -191,7 +190,7 @@ class Chef
           shell_out_cmd = options[:allow_failure] ? :shell_out : :shell_out!
 
           # FIXME: this 1800 second default timeout should be deprecated
-          output = send(shell_out_cmd, "brew", *command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          output = send(shell_out_cmd, homebrew_bin_path, *command, user: homebrew_uid, login: true, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 

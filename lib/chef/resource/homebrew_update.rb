@@ -19,13 +19,13 @@
 #
 
 require_relative "../resource"
-require_relative "../mixin/homebrew_user"
+require_relative "../mixin/homebrew"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class HomebrewUpdate < Chef::Resource
-      include Chef::Mixin::HomebrewUser
+      include Chef::Mixin::Homebrew
 
       provides(:homebrew_update) { true }
 
@@ -78,9 +78,9 @@ class Chef
           end
 
           execute "brew update" do
-            command %w{brew update}
-            default_env true
+            command "#{homebrew_bin_path} update"
             user find_homebrew_uid
+            login true
             notifies :touch, "file[#{BREW_STAMP}]", :immediately
           end
         end

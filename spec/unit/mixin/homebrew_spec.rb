@@ -16,13 +16,13 @@
 # limitations under the License.
 
 require "spec_helper"
-require "chef/mixin/homebrew_user"
+require "chef/mixin/homebrew"
 
 class ExampleHomebrewUser
-  include Chef::Mixin::HomebrewUser
+  include Chef::Mixin::Homebrew
 end
 
-describe Chef::Mixin::HomebrewUser do
+describe Chef::Mixin::Homebrew do
   let(:homebrew_user) { ExampleHomebrewUser.new }
   let(:node) { Chef::Node.new }
 

@@ -78,7 +78,7 @@ module ChefUtils
       #
       def where(*cmds, extra_path: nil, &block)
         extra_path ||= __extra_path
-        paths = __env_path.split(File::PATH_SEPARATOR) + Array(extra_path)
+        paths = Array(extra_path) + __env_path.split(File::PATH_SEPARATOR)
         paths.uniq!
         exts = ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : []
         exts.unshift("")
