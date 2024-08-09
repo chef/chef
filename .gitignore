@@ -68,8 +68,6 @@ kitchen-tests/vendor
 # ignore nodes generated during local testing
 nodes/
 
-Gemfile.lock
-
 # chef-config
 chef-config/.bundle
 chef-config/Gemfile.lock
