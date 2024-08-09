@@ -352,7 +352,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
     expect(group_resource.append).to eq(false)
   end
 
-  describe "group create action", :not_supported_on_freebsd_gte_12_3, :not_supported_on_macos do
+  describe "group create action", :not_supported_on_freebsd_gte_12_3, :not_supported_on_macos, :not_supported_on_aix do
     after(:each) do
       group_resource.run_action(:remove)
       group_should_not_exist(group_name)
@@ -409,7 +409,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   describe "group remove action" do
-    describe "when there is a group", :not_supported_on_freebsd_gte_12_3, :not_supported_on_macos do
+    describe "when there is a group", :not_supported_on_freebsd_gte_12_3, :not_supported_on_macos, :not_supported_on_aix do
       before do
         group_resource.run_action(:create)
         group_should_exist(group_name)
