@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Mixin::Homebrew do
   let(:homebrew) { Class.new { include Chef::Mixin::Homebrew }.new }

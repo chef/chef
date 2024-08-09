@@ -69,6 +69,7 @@ class Chef
             raise Chef::Exceptions::CannotDetermineHomebrewPath,
               'Couldn\'t find the "brew" executable anywhere on the path.'
           end
+          brew_path
         end
       end
 
