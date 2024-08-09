@@ -49,6 +49,7 @@ kitchen-tests/Gemfile.lock
 kitchen-tests/Berksfile.lock
 kitchen-tests/Policyfile.lock.json
 kitchen-tests/.kitchen
+*/kitchen.local.yml
 
 
 # Temporary files present during spec runs
@@ -66,6 +67,8 @@ kitchen-tests/vendor
 
 # ignore nodes generated during local testing
 nodes/
+
+Gemfile.lock
 
 # chef-config
 chef-config/.bundle

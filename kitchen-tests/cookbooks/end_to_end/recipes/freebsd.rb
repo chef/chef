@@ -1,13 +1,11 @@
 #
 # Cookbook:: end_to_end
-# Recipe:: linux
+# Recipe:: freebsd
 #
 # Copyright:: Copyright (c) Chef Software Inc.
 #
 
 hostname "chef-bk-ci.chef.io"
-
-apt_update
 
 chef_sleep "2"
 
@@ -23,43 +21,7 @@ execute "sensitive sleep" do
   sensitive true
 end
 
-# This line is causing the knife action to fail on Amazon Linux 2.
-# timezone "America/Los_Angeles"
-
-include_recipe "::_yum" if platform_family?("rhel")
-
-if platform_family?("rhel", "fedora", "amazon")
-  selinux_install "selinux"
-
-  selinux_state "permissive" do
-    action :permissive
-  end
-
-  user "se_map_test"
-
-  selinux_user "se_map_test_u" do
-    level "s0"
-    range "s0"
-    roles %w{sysadm_r staff_r}
-  end
-
-  selinux_login "se_map_test" do
-    user "se_map_test_u"
-    range "s0"
-  end
-
-  selinux_login "se_map_test" do
-    action :delete
-  end
-
-  selinux_user "se_map_test_u" do
-    action :delete
-  end
-
-  user "se_map_test" do
-    action :remove
-  end
-end
+timezone "America/Los_Angeles"
 
 build_essential do
   raise_if_unsupported true
@@ -107,7 +69,6 @@ include_recipe "nscd" unless fedora? # fedora 34+ doesn't have nscd
 
 logrotate_package "logrotate"
 
-include_recipe "git"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
@@ -206,15 +167,13 @@ include_recipe "::_openssl"
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
 # TODO: re-enable when habitat recipes are fixed
-# unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
-#   if ::File.exist?("/etc/systemd/system")
-#     include_recipe "::_habitat_config"
-#     include_recipe "::_habitat_install_no_user"
-#     include_recipe "::_habitat_package"
-#     include_recipe "::_habitat_service"
-#     include_recipe "::_habitat_sup"
-#     include_recipe "::_habitat_user_toml"
-#   end
-# end
-
-include_recipe "::_snap" if platform?("ubuntu")
+unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
+  if ::File.exist?("/etc/systemd/system")
+    include_recipe "::_habitat_config"
+    include_recipe "::_habitat_install_no_user"
+    include_recipe "::_habitat_package"
+    include_recipe "::_habitat_service"
+    include_recipe "::_habitat_sup"
+    include_recipe "::_habitat_user_toml"
+  end
+end
