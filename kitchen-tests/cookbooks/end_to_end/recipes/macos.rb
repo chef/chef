@@ -96,9 +96,9 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "awscli"
+homebrew_package "cakebrew"
 
-homebrew_package "awscli" do
+homebrew_package "cakebrew" do
   action :purge
 end
 
