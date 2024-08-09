@@ -170,18 +170,7 @@ class Chef
         key_content = ::File.exist?(priv_key) ? File.read(priv_key) : priv_key
         key = ::OpenSSL::PKey::EC.new key_content, priv_key_password
 
-        # Get curve type (prime256v1...)
-        group = ::OpenSSL::PKey::EC::Group.new(key.group.curve_name)
-        # Get Generator point & public point (priv * generator)
-        generator = group.generator
-        pub_point = generator.mul(key.private_key)
-        key.public_key = pub_point
-
-        # Public Key in pem
-        public_key = ::OpenSSL::PKey::EC.new
-        public_key.group = group
-        public_key.public_key = pub_point
-        public_key.to_pem
+        key.public_to_pem
       end
 
       # generate a pem file given a cipher, key, an optional key_password

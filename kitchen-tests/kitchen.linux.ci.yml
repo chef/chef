@@ -26,24 +26,23 @@ lifecycle:
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-latest
-    - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
+    - remote: sudo pkg update && sudo pkg install -y git gcc gmake autoconf automake libtool
+      includes:
+        - freebsd-13
+        - freebsd-14
+    - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: sudo yum install centos-release-scl
-      includes:
-        - centos-7
     - remote: scl enable devtoolset-7 'sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
-        - centos-7
         - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
       excludes:
-        - centos-7
         - oraclelinux-7
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
@@ -58,7 +57,6 @@ platforms:
   - name: almalinux-9
   - name: amazonlinux-2
   - name: amazonlinux-2023
-  - name: centos-7
   - name: debian-12
   - name: debian-11
   - name: fedora-latest

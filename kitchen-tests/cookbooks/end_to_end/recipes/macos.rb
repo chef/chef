@@ -96,9 +96,9 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "nethack"
+homebrew_package "dos2unix"
 
-homebrew_package "nethack" do
+homebrew_package "dos2unix" do
   action :purge
 end
 

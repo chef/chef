@@ -5,6 +5,6 @@
 # Copyright:: Copyright (c) Chef Software Inc.
 #
 
-include_recipe "::linux" if linux?
+include_recipe "::linux" if linux? || freebsd?
 include_recipe "::macos" if macos?
 include_recipe "::windows" if windows?
