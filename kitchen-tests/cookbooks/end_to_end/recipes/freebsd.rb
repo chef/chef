@@ -124,9 +124,7 @@ end
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
-chef_client_cron "Run chef-client as a cron job" do
-  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
-end
+chef_client_cron "Run chef-client as a cron job"
 
 chef_client_cron "Run chef-client with base recipe" do
   minute 0
@@ -135,7 +133,6 @@ chef_client_cron "Run chef-client with base recipe" do
   log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
-  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
 end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
@@ -148,21 +145,11 @@ chef_client_systemd_timer "a timer that does not exist" do
   action :remove
 end
 
-locale "set system locale" do
-  lang "en_US.UTF-8"
-  only_if { debian? }
-end
-
-include_recipe "::_apt" if platform_family?("debian")
-include_recipe "::_zypper" if suse?
 include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sudo"
-include_recipe "::_sysctl"
-include_recipe "::_alternatives"
-include_recipe "::_cron" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
+include_recipe "::_cron"
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
-# include_recipe "::_tests" # generates UTF-8 error
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
 # TODO: re-enable when habitat recipes are fixed
