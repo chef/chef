@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.158 -->
-## [v17.10.158](https://github.com/chef/chef/tree/v17.10.158) (2024-08-07)
+<!-- latest_release 17.10.159 -->
+## [v17.10.159](https://github.com/chef/chef/tree/v17.10.159) (2024-08-09)
 
 #### Merged Pull Requests
-- Put an `install_if`  on openssl [#14534](https://github.com/chef/chef/pull/14534) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating group_spec to filter out AIX on some tests [#14554](https://github.com/chef/chef/pull/14554) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating group_spec to filter out AIX on some tests [#14554](https://github.com/chef/chef/pull/14554) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.159 -->
 - Put an `install_if`  on openssl [#14534](https://github.com/chef/chef/pull/14534) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.158 -->
 - rolling back changes to ohai platform and os detection [#14541](https://github.com/chef/chef/pull/14541) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.157 -->
 - [Chef-17][Backport #13147] Fix false updates in cron resource when using integers [#14538](https://github.com/chef/chef/pull/14538) ([neha-p6](https://github.com/neha-p6)) <!-- 17.10.156 -->
