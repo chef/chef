@@ -1,178 +1,524 @@
-#
-# Cookbook:: end_to_end
-# Recipe:: freebsd
-#
-# Copyright:: Copyright (c) Chef Software Inc.
-#
+GIT
+  remote: https://github.com/chef/ohai.git
+  revision: a235eacc7cb8ee9dbc7fce6bbc7cb311177b8282
+  branch: main
+  specs:
+    ohai (19.0.0)
+      chef-config (>= 14.12, < 20)
+      chef-utils (>= 16.0, < 20)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli (>= 1.7.0)
+      mixlib-config (>= 2.0, < 4.0)
+      mixlib-log (>= 2.0.1, < 4.0)
+      mixlib-shellout (~> 3.2, >= 3.2.5)
+      plist (~> 3.1)
+      train-core
+      wmi-lite (~> 1.0)
 
-hostname "chef-bk-ci.chef.io"
+GIT
+  remote: https://github.com/chef/rest-client
+  revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
+  branch: jfm/ucrt_update1
+  specs:
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw-ucrt)
+      ffi (~> 1.15)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
 
-chef_sleep "2"
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
 
-execute "sleep 1"
+PATH
+  remote: .
+  specs:
+    chef (19.0.2)
+      addressable
+      aws-sdk-s3 (~> 1.91)
+      aws-sdk-secretsmanager (~> 1.46)
+      chef-config (= 19.0.2)
+      chef-utils (= 19.0.2)
+      chef-vault
+      chef-zero (>= 14.0.11)
+      corefoundation (~> 0.3.4)
+      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      erubis (~> 2.7)
+      ffi (>= 1.15.5)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
+      ffi-yajl (~> 2.2)
+      iniparse (~> 1.4)
+      inspec-core (>= 5, < 6)
+      license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
+      mixlib-authentication (>= 2.1, < 4)
+      mixlib-cli (>= 2.1.1, < 3.0)
+      mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
+      net-ftp
+      net-sftp (>= 2.1.2, < 5.0)
+      ohai (~> 19.0)
+      plist (~> 3.2)
+      proxifier2 (~> 1.1)
+      syslog-logger (~> 1.6)
+      train-core (~> 3.10)
+      train-rest (>= 0.4.1)
+      train-winrm (>= 0.2.5)
+      unf_ext (~> 0.0.8.2)
+      uuidtools (>= 2.1.5, < 3.0)
+      vault (~> 0.18.2)
+    chef (19.0.2-x64-mingw-ucrt)
+      addressable
+      aws-sdk-s3 (~> 1.91)
+      aws-sdk-secretsmanager (~> 1.46)
+      chef-config (= 19.0.2)
+      chef-powershell (~> 18.1.0)
+      chef-utils (= 19.0.2)
+      chef-vault
+      chef-zero (>= 14.0.11)
+      corefoundation (~> 0.3.4)
+      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      erubis (~> 2.7)
+      ffi (>= 1.15.5)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
+      ffi-yajl (~> 2.2)
+      iniparse (~> 1.4)
+      inspec-core (>= 5, < 6)
+      iso8601 (>= 0.12.1, < 0.14)
+      license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
+      mixlib-authentication (>= 2.1, < 4)
+      mixlib-cli (>= 2.1.1, < 3.0)
+      mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
+      net-ftp
+      net-sftp (>= 2.1.2, < 5.0)
+      ohai (~> 19.0)
+      plist (~> 3.2)
+      proxifier2 (~> 1.1)
+      syslog-logger (~> 1.6)
+      train-core (~> 3.10)
+      train-rest (>= 0.4.1)
+      train-winrm (>= 0.2.5)
+      unf_ext (~> 0.0.8.2)
+      uuidtools (>= 2.1.5, < 3.0)
+      vault (~> 0.18.2)
+      win32-api (~> 1.10.0)
+      win32-certstore (~> 0.6.15)
+      win32-event (~> 0.6.1)
+      win32-eventlog (= 0.6.3)
+      win32-mmap (~> 0.4.1)
+      win32-mutex (~> 0.4.2)
+      win32-process (~> 0.9)
+      win32-service (>= 2.1.5, < 3.0)
+      win32-taskscheduler (~> 2.0)
+      wmi-lite (~> 1.0)
 
-execute "sleep 1 second" do
-  command "sleep 1"
-  live_stream true
-end
+PATH
+  remote: chef-bin
+  specs:
+    chef-bin (19.0.2)
+      chef (= 19.0.2)
 
-execute "sensitive sleep" do
-  command "sleep 1"
-  sensitive true
-end
+PATH
+  remote: chef-config
+  specs:
+    chef-config (19.0.2)
+      addressable
+      chef-utils (= 19.0.2)
+      fuzzyurl
+      mixlib-config (>= 2.2.12, < 4.0)
+      mixlib-shellout (>= 2.0, < 4.0)
+      tomlrb (~> 1.2)
 
-timezone "America/Los_Angeles"
+PATH
+  remote: chef-utils
+  specs:
+    chef-utils (19.0.2)
+      concurrent-ruby
 
-build_essential do
-  raise_if_unsupported true
-end
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.8.2)
+      public_suffix (>= 2.0.2, < 6.0)
+    appbundler (0.13.4)
+      mixlib-cli (>= 1.4, < 3.0)
+      mixlib-shellout (>= 2.0, < 4.0)
+    ast (2.4.2)
+    aws-eventstream (1.3.0)
+    aws-partitions (1.958.0)
+    aws-sdk-core (3.201.3)
+      aws-eventstream (~> 1, >= 1.3.0)
+      aws-partitions (~> 1, >= 1.651.0)
+      aws-sigv4 (~> 1.8)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-kms (1.88.0)
+      aws-sdk-core (~> 3, >= 3.201.0)
+      aws-sigv4 (~> 1.5)
+    aws-sdk-s3 (1.156.0)
+      aws-sdk-core (~> 3, >= 3.201.0)
+      aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.5)
+    aws-sdk-secretsmanager (1.102.0)
+      aws-sdk-core (~> 3, >= 3.201.0)
+      aws-sigv4 (~> 1.5)
+    aws-sigv4 (1.9.0)
+      aws-eventstream (~> 1, >= 1.0.2)
+    base64 (0.2.0)
+    bigdecimal (3.1.8)
+    binding_of_caller (1.0.0)
+      debug_inspector (>= 0.0.1)
+    builder (3.3.0)
+    byebug (11.1.3)
+    chef-powershell (18.1.0)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
+    chef-telemetry (1.1.1)
+      chef-config
+      concurrent-ruby (~> 1.0)
+    chef-vault (4.1.11)
+    chef-zero (15.0.11)
+      ffi-yajl (~> 2.2)
+      hashie (>= 2.0, < 5.0)
+      mixlib-log (>= 2.0, < 4.0)
+      rack (~> 2.0, >= 2.0.6)
+      uuidtools (~> 2.1)
+      webrick
+    cheffish (17.1.5)
+      chef-utils (>= 17.0)
+      chef-zero (>= 14.0)
+      net-ssh
+    chefstyle (2.2.2)
+      rubocop (= 1.25.1)
+    coderay (1.1.3)
+    concurrent-ruby (1.2.2)
+    corefoundation (0.3.13)
+      ffi (>= 1.15.0)
+    crack (0.4.5)
+      rexml
+    date (3.3.4)
+    debug_inspector (1.1.0)
+    diff-lcs (1.5.0)
+    domain_name (0.5.20190701)
+      unf (>= 0.0.5, < 1.0.0)
+    ed25519 (1.3.0)
+    erubi (1.13.0)
+    erubis (2.7.0)
+    faraday (2.7.4)
+      faraday-net_http (>= 2.0, < 3.1)
+      ruby2_keywords (>= 0.0.4)
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
+    faraday-net_http (3.0.2)
+    fauxhai-ng (9.3.0)
+      net-ssh
+    ffi (1.16.3)
+    ffi (1.16.3-x64-mingw-ucrt)
+    ffi (1.16.3-x64-mingw32)
+    ffi (1.16.3-x86-mingw32)
+    ffi-libarchive (1.1.14)
+      ffi (~> 1.0)
+    ffi-win32-extensions (1.0.4)
+      ffi
+    ffi-yajl (2.6.0)
+      libyajl2 (>= 1.2)
+    fuzzyurl (0.9.0)
+    gssapi (1.3.1)
+      ffi (>= 1.0.1)
+    gyoku (1.4.0)
+      builder (>= 2.1.2)
+      rexml (~> 3.0)
+    hashdiff (1.0.1)
+    hashie (4.1.0)
+    http-accept (1.7.0)
+    http-cookie (1.0.5)
+      domain_name (~> 0.5)
+    httpclient (2.8.3)
+    iniparse (1.5.0)
+    inspec-core (5.22.40)
+      addressable (~> 2.4)
+      chef-telemetry (~> 1.0, >= 1.0.8)
+      faraday (>= 1, < 3)
+      faraday-follow_redirects (~> 0.3)
+      hashie (>= 3.4, < 6.0)
+      license-acceptance (>= 0.2.13, < 3.0)
+      method_source (>= 0.8, < 2.0)
+      mixlib-log (~> 3.0)
+      multipart-post (~> 2.0)
+      parallel (~> 1.9)
+      parslet (>= 1.5, < 3.0)
+      pry (~> 0.13)
+      rspec (>= 3.9, <= 3.12)
+      rspec-its (~> 1.2)
+      rubyzip (>= 1.2.2, < 3.0)
+      semverse (~> 3.0)
+      sslshake (~> 1.2)
+      thor (>= 0.20, < 1.3.0)
+      tomlrb (>= 1.2, < 2.1)
+      train-core (~> 3.10)
+      tty-prompt (~> 0.17)
+      tty-table (~> 0.10)
+    inspec-core-bin (5.22.40)
+      inspec-core (= 5.22.40)
+    ipaddress (0.8.3)
+    iso8601 (0.13.0)
+    jmespath (1.6.2)
+    json (2.6.3)
+    libyajl2 (2.1.0)
+    license-acceptance (2.1.13)
+      pastel (~> 0.7)
+      tomlrb (>= 1.2, < 3.0)
+      tty-box (~> 0.6)
+      tty-prompt (~> 0.20)
+    little-plugger (1.1.4)
+    logging (2.4.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.14)
+    method_source (1.0.0)
+    mime-types (3.4.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2023.0218.1)
+    mixlib-archive (1.1.7)
+      mixlib-log
+    mixlib-archive (1.1.7-universal-mingw32)
+      mixlib-log
+    mixlib-authentication (3.0.10)
+    mixlib-cli (2.1.8)
+    mixlib-config (3.0.27)
+      tomlrb
+    mixlib-log (3.0.9)
+    mixlib-shellout (3.2.8)
+      chef-utils
+    mixlib-shellout (3.2.8-universal-mingw32)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    mixlib-shellout (3.2.8-x64-mingw-ucrt)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    multi_json (1.15.0)
+    multipart-post (2.3.0)
+    net-ftp (0.3.7)
+      net-protocol
+      time
+    net-protocol (0.2.2)
+      timeout
+    net-scp (4.0.0)
+      net-ssh (>= 2.6.5, < 8.0.0)
+    net-sftp (4.0.0)
+      net-ssh (>= 5.0.0, < 8.0.0)
+    net-ssh (7.1.0)
+    netrc (0.11.0)
+    nori (2.7.1)
+      bigdecimal
+    openssl (3.2.0)
+    parallel (1.22.1)
+    parser (3.2.2.0)
+      ast (~> 2.4.1)
+    parslet (1.8.2)
+    pastel (0.8.0)
+      tty-color (~> 0.5)
+    plist (3.7.0)
+    proxifier2 (1.1.0)
+    pry (0.13.0)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    pry-byebug (3.10.1)
+      byebug (~> 11.0)
+      pry (>= 0.13, < 0.15)
+    pry-stack_explorer (0.6.1)
+      binding_of_caller (~> 1.0)
+      pry (~> 0.13)
+    public_suffix (5.0.1)
+    rack (2.2.6.4)
+    rainbow (3.1.1)
+    rake (13.0.6)
+    rb-readline (0.5.5)
+    regexp_parser (2.7.0)
+    rexml (3.2.5)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-its (1.3.0)
+      rspec-core (>= 3.0.0)
+      rspec-expectations (>= 3.0.0)
+    rspec-mocks (3.11.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.1)
+    rubocop (1.25.1)
+      parallel (~> 1.10)
+      parser (>= 3.1.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml
+      rubocop-ast (>= 1.15.1, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.28.0)
+      parser (>= 3.2.1.0)
+    ruby-progressbar (1.13.0)
+    ruby2_keywords (0.0.5)
+    rubyntlm (0.6.5)
+      base64
+    rubyzip (2.3.2)
+    semverse (3.0.2)
+    sslshake (1.3.1)
+    strings (0.2.1)
+      strings-ansi (~> 0.2)
+      unicode-display_width (>= 1.5, < 3.0)
+      unicode_utils (~> 1.4)
+    strings-ansi (0.2.0)
+    structured_warnings (0.4.0)
+    syslog-logger (1.6.8)
+    thor (1.2.1)
+    time (0.3.0)
+      date
+    timeout (0.4.1)
+    tomlrb (1.3.0)
+    train-core (3.10.7)
+      addressable (~> 2.5)
+      ffi (!= 1.13.0)
+      json (>= 1.8, < 3.0)
+      mixlib-shellout (>= 2.0, < 4.0)
+      net-scp (>= 1.2, < 5.0)
+      net-ssh (>= 2.9, < 8.0)
+    train-rest (0.5.0)
+      aws-sigv4 (~> 1.5)
+      rest-client (~> 2.1)
+      train-core (~> 3.0)
+    train-winrm (0.2.13)
+      winrm (>= 2.3.6, < 3.0)
+      winrm-elevated (~> 1.2.2)
+      winrm-fs (~> 1.0)
+    tty-box (0.7.0)
+      pastel (~> 0.8)
+      strings (~> 0.2.0)
+      tty-cursor (~> 0.7)
+    tty-color (0.6.0)
+    tty-cursor (0.7.1)
+    tty-prompt (0.23.1)
+      pastel (~> 0.8)
+      tty-reader (~> 0.8)
+    tty-reader (0.9.0)
+      tty-cursor (~> 0.7)
+      tty-screen (~> 0.8)
+      wisper (~> 2.0)
+    tty-screen (0.8.1)
+    tty-table (0.12.0)
+      pastel (~> 0.8)
+      strings (~> 0.2.0)
+      tty-screen (~> 0.8)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.8.2)
+    unicode-display_width (2.4.2)
+    unicode_utils (1.4.0)
+    uuidtools (2.2.0)
+    vault (0.18.2)
+      aws-sigv4
+    webmock (3.19.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
+    webrick (1.8.1)
+    win32-api (1.10.1-universal-mingw32)
+    win32-certstore (0.6.15)
+      chef-powershell (>= 1.0.12)
+      ffi
+    win32-event (0.6.3)
+      win32-ipc (>= 0.6.0)
+    win32-eventlog (0.6.3)
+      ffi
+    win32-ipc (0.7.0)
+      ffi
+    win32-mmap (0.4.2)
+      ffi
+    win32-mutex (0.4.3)
+      win32-ipc (>= 0.6.0)
+    win32-process (0.10.0)
+      ffi (>= 1.0.0)
+    win32-service (2.3.2)
+      ffi
+      ffi-win32-extensions
+    win32-taskscheduler (2.0.4)
+      ffi
+      structured_warnings
+    winrm (2.3.8)
+      builder (>= 2.1.2)
+      erubi (~> 1.8)
+      gssapi (~> 1.2)
+      gyoku (~> 1.0)
+      httpclient (~> 2.2, >= 2.2.0.2)
+      logging (>= 1.6.1, < 3.0)
+      nori (~> 2.0)
+      rexml (~> 3.0)
+      rubyntlm (~> 0.6.0, >= 0.6.3)
+    winrm-elevated (1.2.3)
+      erubi (~> 1.8)
+      winrm (~> 2.0)
+      winrm-fs (~> 1.0)
+    winrm-fs (1.3.5)
+      erubi (~> 1.8)
+      logging (>= 1.6.1, < 3.0)
+      rubyzip (~> 2.0)
+      winrm (~> 2.0)
+    wisper (2.0.1)
+    wmi-lite (1.0.7)
 
-include_recipe "::_packages"
-include_recipe "::_chef_gem"
+PLATFORMS
+  arm64-darwin-21
+  ruby
+  x64-mingw-ucrt
+  x64-mingw32
+  x86-mingw32
 
-unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
-  include_recipe value_for_platform(
-                   opensuseleap: { "default" => "ntp" },
-                   amazon: { "2" => "ntp" },
-                   oracle: { "<= 8" => "ntp" },
-                   centos: { "<= 8" => "ntp" },
-                   rhel: { "<= 8" => "ntp" },
-                   default: "chrony"
-                 )
-end
+DEPENDENCIES
+  appbundler
+  chef!
+  chef-bin!
+  chef-config!
+  chef-utils!
+  chef-vault
+  cheffish (>= 17)
+  chefstyle
+  crack (< 0.4.6)
+  ed25519 (~> 1.2)
+  fauxhai-ng
+  ffi (>= 1.15.5)
+  inspec-core-bin (>= 5, < 6)
+  ohai!
+  openssl (= 3.2.0)
+  pry (= 0.13.0)
+  pry-byebug
+  pry-stack_explorer
+  rake
+  rb-readline
+  rest-client!
+  rspec
+  ruby-shadow!
+  webmock
 
-resolver_config "/etc/resolv.conf" do
-  nameservers [ "8.8.8.8", "8.8.4.4" ]
-  search [ "chef.io" ]
-  atomic_update false # otherwise EBUSY for linux docker containers
-end
-
-users_from_databag = search("users", "*:*")
-
-users_manage "sysadmin" do
-  group_id 2300
-  users users_from_databag
-  action [:create]
-end
-
-# ssh_known_hosts_entry requires ssh-keyscan binary but that one
-# is not in the OpenSUSE Leap 15.5 dokken images by default
-package "ssh-tools" do
-  only_if { platform_family?("suse") }
-end
-
-ssh_known_hosts_entry "github.com"
-
-include_recipe "openssh"
-
-include_recipe "nscd" unless fedora? # fedora 34+ doesn't have nscd
-
-logrotate_package "logrotate"
-
-# test various archive formats in the archive_file resource
-%w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
-  cookbook_file File.join(Chef::Config[:file_cache_path], archive) do
-    source archive
-  end
-
-  archive_file archive do
-    path File.join(Chef::Config[:file_cache_path], archive)
-    extract_to File.join(Chef::Config[:file_cache_path], archive.tr(".", "_"))
-  end
-end
-
-%w{001 002 003}.each do |control|
-  inspec_waiver_file_entry "fake_inspec_control_#{control}" do
-    expiration "2025-07-01"
-    justification "Waiving this control for the purposes of testing"
-    action :add
-  end
-end
-
-inspec_waiver_file_entry "fake_inspec_control_002" do
-  action :remove
-end
-
-user_ulimit "tomcat" do
-  as_soft_limit 65535
-  as_hard_limit "unlimited"
-  cpu_soft_limit 1024
-  cpu_hard_limit 8096
-  filehandle_soft_limit 8192
-  filehandle_hard_limit 8192
-  process_soft_limit 61504
-  process_hard_limit 61504
-  locks_limit 8192
-  maxlogins_soft_limit 5
-  maxlogins_hard_limit 10
-  memory_limit 1024
-  msgqueue_soft_limit 2048
-  msgqueue_hard_limit 4096
-  core_limit 2048
-  core_soft_limit 1024
-  core_hard_limit "unlimited"
-  stack_soft_limit 2048
-  stack_hard_limit 2048
-  sigpending_soft_limit 2048
-  sigpending_hard_limit 2048
-  rss_soft_limit
-  rss_hard_limit
-  rtprio_soft_limit 60
-  rtprio_hard_limit 60
-end
-
-include_recipe "::_chef_client_config"
-include_recipe "::_chef_client_trusted_certificate"
-
-chef_client_cron "Run chef-client as a cron job" do
-  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
-end
-
-chef_client_cron "Run chef-client with base recipe" do
-  minute 0
-  hour "0,12"
-  job_name "chef-client-base"
-  log_directory "/var/log/custom_chef_client_dir/"
-  log_file_name "chef-client-base.log"
-  daemon_options ["--override-runlist mycorp_base::default"]
-  not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
-end
-
-chef_client_systemd_timer "Run chef-client as a systemd timer" do
-  interval "1hr"
-  cpu_quota 50
-  only_if { systemd? }
-end
-
-chef_client_systemd_timer "a timer that does not exist" do
-  action :remove
-end
-
-locale "set system locale" do
-  lang "en_US.UTF-8"
-  only_if { debian? }
-end
-
-include_recipe "::_apt" if platform_family?("debian")
-include_recipe "::_zypper" if suse?
-include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
-include_recipe "::_sudo"
-include_recipe "::_sysctl"
-include_recipe "::_alternatives"
-include_recipe "::_cron" unless amazon? && node["platform_version"] >= "2023" # TODO: look into cron.d template file issue with resource
-include_recipe "::_ohai_hint"
-include_recipe "::_openssl"
-# include_recipe "::_tests" # generates UTF-8 error
-include_recipe "::_mount"
-include_recipe "::_ifconfig"
-# TODO: re-enable when habitat recipes are fixed
-unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
-  if ::File.exist?("/etc/systemd/system")
-    include_recipe "::_habitat_config"
-    include_recipe "::_habitat_install_no_user"
-    include_recipe "::_habitat_package"
-    include_recipe "::_habitat_service"
-    include_recipe "::_habitat_sup"
-    include_recipe "::_habitat_user_toml"
-  end
-end
+BUNDLED WITH
+   2.3.7
