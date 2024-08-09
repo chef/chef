@@ -96,9 +96,9 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "cakebrew"
+homebrew_package "dos2unix"
 
-homebrew_package "cakebrew" do
+homebrew_package "dos2unix" do
   action :purge
 end
 
