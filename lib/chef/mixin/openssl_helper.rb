@@ -178,10 +178,10 @@ class Chef
         key.public_key = pub_point
 
         # Public Key in pem
-        public_key = ::OpenSSL::PKey::EC.generate
+        public_key = ::OpenSSL::PKey::EC.new
         public_key.group = group
-        #public_key.public_key = pub_point
-        public_key.public_key.to_pem
+        public_key.public_key = pub_point
+        public_key.to_pem
       end
 
       # generate a pem file given a cipher, key, an optional key_password
