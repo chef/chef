@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.160 -->
-## [v17.10.160](https://github.com/chef/chef/tree/v17.10.160) (2024-08-10)
+<!-- latest_release 17.10.161 -->
+## [v17.10.161](https://github.com/chef/chef/tree/v17.10.161) (2024-08-10)
 
 #### Merged Pull Requests
-- Updating kitchen.yml to update Centos [#14552](https://github.com/chef/chef/pull/14552) ([johnmccrae](https://github.com/johnmccrae))
+- Removing the ntp test for Ubuntu 22.04 [#14556](https://github.com/chef/chef/pull/14556) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Removing the ntp test for Ubuntu 22.04 [#14556](https://github.com/chef/chef/pull/14556) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.161 -->
 - Updating kitchen.yml to update Centos [#14552](https://github.com/chef/chef/pull/14552) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.160 -->
 - Updating group_spec to filter out AIX on some tests [#14554](https://github.com/chef/chef/pull/14554) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.159 -->
 - Put an `install_if`  on openssl [#14534](https://github.com/chef/chef/pull/14534) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.158 -->
