@@ -92,7 +92,6 @@ include_recipe "::_sudo"
 include_recipe "::_cron"
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
-include_recipe "::_ifconfig"
 # TODO: re-enable when habitat recipes are fixed
 unless RbConfig::CONFIG["host_cpu"].eql?("aarch64") # Habitat supervisor doesn't support aarch64 yet
   if ::File.exist?("/etc/systemd/system")
