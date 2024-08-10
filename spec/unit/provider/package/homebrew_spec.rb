@@ -19,6 +19,7 @@
 require "spec_helper"
 
 describe Chef::Provider::Package::Homebrew do
+  let(:default_brew_path) { "/usr/local/bin/brew" }
   let(:node) { Chef::Node.new }
   let(:new_resource) { Chef::Resource::HomebrewPackage.new(%w{emacs vim}) }
   let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs, vim") }
@@ -297,11 +298,13 @@ describe Chef::Provider::Package::Homebrew do
 
     it "passes a single pkg to the brew command and return stdout" do
       allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "zombo"))
+      allow(provider).to receive(:homebrew_bin_path).and_return(default_brew_path)
       expect(provider.brew_cmd_output).to eql("zombo")
     end
 
     it "takes multiple arguments as an array" do
       allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "homestarrunner"))
+      allow(provider).to receive(:homebrew_bin_path).and_return(default_brew_path)
       expect(provider.brew_cmd_output("info", "opts", "bananas")).to eql("homestarrunner")
     end
 
@@ -310,6 +313,7 @@ describe Chef::Provider::Package::Homebrew do
 
       it "does not try to read homebrew_user from Package, which does not have it" do
         allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "zombo"))
+        allow(provider).to receive(:homebrew_bin_path).and_return(default_brew_path)
         expect(provider.brew_cmd_output).to eql("zombo")
       end
     end
