@@ -11,7 +11,7 @@ on:
       types: [opened, synchronize, reopened]
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: sonarqube-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

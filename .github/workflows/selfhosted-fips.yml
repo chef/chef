@@ -8,7 +8,7 @@ name: selfhosted-fips
       - main
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: selfhosted-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

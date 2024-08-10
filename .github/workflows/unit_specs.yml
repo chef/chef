@@ -8,7 +8,7 @@ name: unit_specs
       - main
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: unit-specs-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

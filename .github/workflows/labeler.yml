@@ -3,7 +3,7 @@ on:
   - 'pull_request_target'
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: labeler-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

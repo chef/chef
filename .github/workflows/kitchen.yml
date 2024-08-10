@@ -8,7 +8,7 @@ name: kitchen
       - main
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: kitchen-${{ github.ref }}
   cancel-in-progress: true
 
 defaults:

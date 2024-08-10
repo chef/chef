@@ -8,7 +8,7 @@ name: func_spec
       - main
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: func-spec-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

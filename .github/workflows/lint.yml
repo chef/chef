@@ -8,7 +8,7 @@ on:
       - main
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: lint-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

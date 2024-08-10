@@ -4,7 +4,7 @@ name: danger
 on: pull_request
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: danger-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

@@ -8,7 +8,7 @@ name: kitchen-fips
       - main
 
 concurrency:
-  group: ci-build-${{ github.ref }}
+  group: kitchen-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
