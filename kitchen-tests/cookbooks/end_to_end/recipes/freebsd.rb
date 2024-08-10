@@ -49,8 +49,6 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-logrotate_package "logrotate"
-
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
   cookbook_file File.join(Chef::Config[:file_cache_path], archive) do
@@ -87,16 +85,6 @@ chef_client_cron "Run chef-client with base recipe" do
   log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
-end
-
-chef_client_systemd_timer "Run chef-client as a systemd timer" do
-  interval "1hr"
-  cpu_quota 50
-  only_if { systemd? }
-end
-
-chef_client_systemd_timer "a timer that does not exist" do
-  action :remove
 end
 
 include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
