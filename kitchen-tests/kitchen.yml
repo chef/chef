@@ -100,7 +100,7 @@ platforms:
       - RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
       - RUN dnf upgrade -y
       - RUN dnf -y install e2fsprogs
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN sed -i -r "s/^Defaults\s+\+?requiretty/# Defaults +requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
   driver:
