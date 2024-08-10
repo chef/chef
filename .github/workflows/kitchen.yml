@@ -7,6 +7,10 @@ name: kitchen
     branches:
       - main
 
+concurrency:
+  group: ci-build-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: kitchen-tests
@@ -138,8 +142,8 @@ jobs:
           - debian-11
           - debian-12
           - fedora-latest
-          - freebsd-13 # Need to troubleshoot shell invalid issue
-          - freebsd-14 # Need to troubleshoot bad bento box issue
+          - freebsd-13
+          - freebsd-14
           - opensuse-leap-15
           - oracle-7
           - oracle-8
