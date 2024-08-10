@@ -99,8 +99,8 @@ platforms:
       # - RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
       # - RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
       # - RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
-      - RUN rpm -iv --replacepkgs https://vault.centos.org/8.5.2111/BaseOS/x86_64/os/Packages//centos-linux-release-8.5-1.2111.el8.noarch.rpm
-      - RUN yum -y install e2fsprogs
+      - RUN rpm -iv --replacepkgs https://vault.centos.org/8.5.2111/BaseOS/x86_64/os/Packages//centos-linux-release-8.5-1.2111.el8.noarch.rpm | tee /dev/tty2
+      # - RUN yum -y install e2fsprogs
       - RUN sed -i -r "s/^Defaults\s+\+?requiretty/# Defaults +requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
