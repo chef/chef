@@ -49,8 +49,6 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd"
-
 logrotate_package "logrotate"
 
 # test various archive formats in the archive_file resource
