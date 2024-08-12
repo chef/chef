@@ -170,7 +170,7 @@ class Chef
         key_content = ::File.exist?(priv_key) ? File.read(priv_key) : priv_key
         key = ::OpenSSL::PKey::EC.new key_content, priv_key_password
 
-        if ::OpenSSL::VERSION.match?(/1.0.2/)
+        if windows? || macos? || aix?
           # Get curve type (prime256v1...)
           group = ::OpenSSL::PKey::EC::Group.new(key.group.curve_name)
           # Get Generator point & public point (priv * generator)
