@@ -9,7 +9,11 @@ on:
       - 'release/**'
   pull_request:
       types: [opened, synchronize, reopened]
- 
+
+concurrency:
+  group: sonarqube-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sonarqube:
     # this fails for all users - internal and external - with:

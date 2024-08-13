@@ -7,6 +7,10 @@ name: kitchen
     branches:
       - main
 
+concurrency:
+  group: kitchen-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: kitchen-tests
@@ -112,7 +116,6 @@ jobs:
       matrix:
         os:
           - amazonlinux-2
-          - centos-7
           - oraclelinux-7
     runs-on: ubuntu-20.04
     env:
@@ -136,12 +139,11 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
-          # - centos-7 # Need to troubleshoot slow and hanging behaviour on lifecycle hook run
           - debian-11
           - debian-12
           - fedora-latest
-          # - freebsd-13 # Need to troubleshoot shell invalid issue
-          # - freebsd-14 # Need to troubleshoot bad bento box issue
+          - freebsd-13
+          - freebsd-14
           - opensuse-leap-15
           - oracle-7
           - oracle-8
