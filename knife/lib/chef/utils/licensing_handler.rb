@@ -1,9 +1,11 @@
+require_relative 'licensing_config'
+
 class Chef
   class Utils
     class LicensingHandler
 
       OMNITRUCK_URLS = {
-        "free"       => "https://opensource-acceptance.downloads.chef.co",
+        "free"       => "https://trial-acceptance.downloads.chef.co",
         "trial"      => "https://trial-acceptance.downloads.chef.co",
         "commercial" => "https://commercial-acceptance.downloads.chef.co"
       }.freeze
@@ -16,6 +18,8 @@ class Chef
       end
 
       def omnitruck_url
+        return if license_type.nil?
+
         OMNITRUCK_URLS[license_type] + "/%s"
       end
 
@@ -23,15 +27,13 @@ class Chef
         def validate!
           license_keys = ChefLicensing::LicenseKeyFetcher.fetch
 
+          return new(nil, nil) if license_keys.blank?
+
           licenses_metadata = ChefLicensing::Api::Describe.list({
             license_keys: license_keys,
           })
 
-          new(licenses_metadata.first.id, licenses_metadata.first.license_type)
-        end
-
-        def feature_enabled?
-          File.exists?(File.join(Dir.home, ".chef/fbffb2ea48910514676e1b7a51c7248290ea958c"))
+          new(licenses_metadata.last.id, licenses_metadata.last.license_type)
         end
       end
     end
