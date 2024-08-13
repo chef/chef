@@ -20,7 +20,7 @@ require_relative "../knife"
 require "mixlib/log"
 require "ohai/config"
 require "chef-licensing"
-require "chef/utils/licensing_config"
+require "chef/utils/licensing_handler"
 require "chef/knife/core/ui"
 module Net
   autoload :HTTP, "net/http"
@@ -164,43 +164,12 @@ class Chef::Application::Knife < Chef::Application
     ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
     Mixlib::Log::Formatter.show_time = false
     validate_and_parse_options
-    validate_license_and_entitlement if check_license_flag
     quiet_traps
     Chef::Knife.run(ARGV, options)
     exit 0
   end
 
   private
-
-  def check_license_flag
-    license_feature = File.join(Dir.home, ".chef/fbffb2ea48910514676e1b7a51c7248290ea958c")
-    if ARGV.length > 0 && ARGV[0] != "license"
-      File.exist?(license_feature) ? true : false
-      # puts "Please enable license to use it - knife license enable true"
-    elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "true"
-      File.open(File.join(Dir.home, ".chef/fbffb2ea48910514676e1b7a51c7248290ea958c"), "w") { |f| f.write("true") }
-      puts "Now you can use knife with the license feature"
-      exit 0
-    elsif ARGV.length > 1 && ARGV[1] == "enable" && ARGV[2] == "false"
-      File.exist?(license_feature) ? File.delete(license_feature) : (puts "Unable to disable the license feature")
-      exit 0
-    else
-      false
-    end
-  end
-
-  def validate_license_and_entitlement
-    @ui = Chef::Knife::UI.new(STDOUT, STDERR, STDIN, config)
-    ChefLicensing.check_software_entitlement!
-  rescue ChefLicensing::SoftwareNotEntitled
-    Chef::Log.error "License is not entitled to use Knife."
-    @ui.error "Software not entitled"
-    exit(1)
-  rescue ChefLicensing::Error => e
-    Chef::Log.warn "No license keys found on disk"
-    @ui.output "Please generate license first by running chef license command"
-    exit(1)
-  end
 
   def quiet_traps
     trap("TERM") do

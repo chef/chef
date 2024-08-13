@@ -553,7 +553,7 @@ class Chef
 
       def run
         check_eula_license if ChefUtils::Dist::Org::ENFORCE_LICENSE
-        fetch_license if Chef::Utils::LicensingHandler.feature_enabled?
+        fetch_license
 
         plugin_setup!
         validate_name_args!
@@ -575,6 +575,7 @@ class Chef
         bootstrap_path = upload_bootstrap(content)
         perform_bootstrap(bootstrap_path)
         plugin_finalize
+        warn_license_usage
       ensure
         connection.del_file!(bootstrap_path) if connection && bootstrap_path
       end
@@ -1197,6 +1198,21 @@ class Chef
         license = Chef::Utils::LicensingHandler.validate!
         config[:license_url] = license.omnitruck_url
         config[:license_id] = license.license_key
+        config[:license_type] = license.license_type
+      end
+
+      def warn_license_usage
+        return if config[:license_url].present?
+
+        ui.warn(<<MSG
++-------------------------------------------------------------------------------------------------------+
+Knife bootstrap now needs a license key to allow uninterrupted download of Infra Client.
+It is easy to add a license by following the command <knife license>.
+If you are a commercial customer, you may get a license from the customer portal else you can generate
+from https://www.chef.io/license-generation-free-trial
++-------------------------------------------------------------------------------------------------------+
+MSG
+        )
       end
     end
   end

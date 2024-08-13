@@ -591,16 +591,17 @@ fi
       exit 1
     fi
 
-    unicode_url=`grep -o '"url": *"[^"]*"' "$metadata_filename" | grep -o '"[^"]*"$'`
+    omnitruck_url=`grep -o '"url": *"[^"]*"' "$metadata_filename" | grep -o '"[^"]*"$'`
     sha256=`grep -o '"sha256": *"[^"]*"' "$metadata_filename" | grep -o '"[^"]*"$' | tr -d '"'`
 
     # TODO: Find a better way to eliminate the unicode characters in the download URL
-    redirect_url=$(echo "$unicode_url" | sed 's/\\u0026/\&/g'| tr -d '"')
+    redirect_url=$(echo "$omnitruck_url" | tr -d '"')
 
+    echo "Redirect URL :$redirect_url  ...................."
     echo "Extracting the download URL"
     if exists wget; then
       echo "Using wget"
-      download_url=$(wget --max-redirect=0 --server-response "$redirect_url" 2>&1 | awk '/^Location: / { print substr($0, 11) }')
+      download_url=$(wget --max-redirect=0 --server-response "$redirect_url" 2>&1 | awk '/^Location: / { print $2 }')
     elif exists curl; then
       echo "Using curl"
       download_url=$(curl -s -I -L $redirect_url | grep -i location | awk '{print $2}' | tr -d '\r')

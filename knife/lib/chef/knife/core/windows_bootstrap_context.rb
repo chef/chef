@@ -249,8 +249,11 @@ class Chef
             WScript.Echo errorBody
             Else
             WScript.Echo "An error occurred while downloading the file:"
-            WScript.Echo "Status: " & objXMLHTTP.Status
-            WScript.Echo "Status Text: " & objXMLHTTP.StatusText
+            errorBody = objXMLHTTP.ResponseText
+            WScript.Echo "Status: "
+            WScript.Echo objXMLHTTP.Status
+            WScript.Echo "Status Text: "
+            WScript.Echo errorBody
             End If
             Set objXMLHTTP = Nothing
             End If
