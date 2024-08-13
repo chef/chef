@@ -35,6 +35,8 @@ describe "Telemetry" do
     @all_resources = [new_resource_1, new_resource_2]
     ####### Resource addition to run context
     @run_context.resource_collection.all_resources.replace(@all_resources)
+    # Disable all real HTTP connections
+    WebMock.disable_net_connect!
   end
 
   let(:repo_path) { File.expand_path("../..", __dir__) }
@@ -56,20 +58,6 @@ describe "Telemetry" do
 
     stub_request(:get, "#{ChefLicensing::Config.license_server_url}/v1/client")
       .with(query: { licenseId: chef_license_key, entitlementId: ChefLicensing::Config.chef_entitlement_id })
-      .to_return(
-        body: valid_client_api_data ,
-        headers: { content_type: "application/json" }
-      )
-
-    stub_request(:get, "#{ChefLicensing::Config.license_server_url}/v1/client")
-      .with(query: { licenseId: [chef_license_key, ENV["CHEF_LICENSE_KEY"]].join(","), entitlementId: ChefLicensing::Config.chef_entitlement_id })
-      .to_return(
-        body: valid_client_api_data ,
-        headers: { content_type: "application/json" }
-      )
-
-    stub_request(:get, "#{ChefLicensing::Config.license_server_url}/v1/client")
-      .with(query: { licenseId: [ENV["CHEF_LICENSE_KEY"], chef_license_key].join(","), entitlementId: ChefLicensing::Config.chef_entitlement_id })
       .to_return(
         body: valid_client_api_data ,
         headers: { content_type: "application/json" }
