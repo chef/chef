@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.162 -->
-## [v17.10.162](https://github.com/chef/chef/tree/v17.10.162) (2024-08-12)
+<!-- latest_release 17.10.163 -->
+## [v17.10.163](https://github.com/chef/chef/tree/v17.10.163) (2024-08-14)
 
 #### Merged Pull Requests
-- Backporting openssl update [#14558](https://github.com/chef/chef/pull/14558) ([johnmccrae](https://github.com/johnmccrae))
+- Add Amazon Linux 2023 builders and testers to adhoc and release pipelines. [#14561](https://github.com/chef/chef/pull/14561) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.122 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Amazon Linux 2023 builders and testers to adhoc and release pipelines. [#14561](https://github.com/chef/chef/pull/14561) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.163 -->
 - Backporting openssl update [#14558](https://github.com/chef/chef/pull/14558) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.162 -->
 - Removing the ntp test for Ubuntu 22.04 [#14556](https://github.com/chef/chef/pull/14556) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.161 -->
 - Updating kitchen.yml to update Centos [#14552](https://github.com/chef/chef/pull/14552) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.160 -->
