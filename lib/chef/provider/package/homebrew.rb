@@ -189,11 +189,9 @@ class Chef
           # the package provider can magically handle that
           shell_out_cmd = options[:allow_failure] ? :shell_out : :shell_out!
 
-          # FIXME: this 1800 second default timeout should be deprecated
           output = send(shell_out_cmd, homebrew_bin_path, *command, user: homebrew_uid, login: true, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
-
       end
     end
   end
