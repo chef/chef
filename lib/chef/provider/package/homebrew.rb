@@ -192,7 +192,6 @@ class Chef
           output = send(shell_out_cmd, homebrew_bin_path, *command, user: homebrew_uid, login: true, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
-
       end
     end
   end
