@@ -30,11 +30,11 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-  - validate/release:
-      definition: .expeditor/verify.pipeline.yml
-      env:
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - validate/release:
+  #     definition: .expeditor/verify.pipeline.yml
+  #     env:
+  #       - IGNORE_CACHE: true # caching causes constant build failures
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - validate/adhoc:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
@@ -55,10 +55,10 @@ pipelines:
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
-  - omnibus/release:
-      env:
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - omnibus/release:
+  #     env:
+  #       - IGNORE_CACHE: true # caching causes constant build failures
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
@@ -123,7 +123,7 @@ subscriptions:
       # - bash:.expeditor/promote-docker-images.sh
       - bash:.expeditor/publish-release-notes.sh
       - bash:.expeditor/announce-release.sh
-      - built_in:publish_rubygems
+      # - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
 
