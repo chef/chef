@@ -7,6 +7,10 @@ name: func_spec
     branches:
       - main
 
+concurrency:
+  group: func-spec-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   choco:
     strategy:
@@ -29,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-11, macos-12]
+        os: [macos-12, macos-13, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}

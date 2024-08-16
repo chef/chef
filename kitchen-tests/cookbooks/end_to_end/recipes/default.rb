@@ -8,3 +8,4 @@
 include_recipe "::linux" if linux?
 include_recipe "::macos" if macos?
 include_recipe "::windows" if windows?
+include_recipe "::freebsd" if freebsd?

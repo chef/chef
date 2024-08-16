@@ -7,6 +7,10 @@ name: kitchen-fips
     branches:
       - main
 
+concurrency:
+  group: kitchen-fips-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows:
     strategy:
