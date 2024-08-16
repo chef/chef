@@ -28,7 +28,7 @@ asdf global ruby $ruby_version
 export BUNDLE_GEMFILE=$PWD/kitchen-tests/Gemfile
 export FORCE_FFI_YAJL=ext
 export CHEF_LICENSE="accept-silent"
-export ENV["CHEF_LICENSE_SERVER"] = "http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
+export CHEF_LICENSE_SERVER="http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000"
 
 
 # Update Gems
