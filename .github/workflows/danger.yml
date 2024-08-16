@@ -3,6 +3,10 @@ name: danger
 
 on: pull_request
 
+concurrency:
+  group: danger-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   danger:
     runs-on: ubuntu-latest
