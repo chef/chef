@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "chef-vault" # knife vault
 
-  s.add_development_dependency "chefstyle"
+  s.add_development_dependency "cookstyle", ">= 7.32.8"
 
   s.add_dependency "proxifier2", "~> 1.1"
 
