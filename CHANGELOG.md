@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.5 -->
-## [v19.0.5](https://github.com/chef/chef/tree/v19.0.5) (2024-08-19)
+<!-- latest_release 19.0.6 -->
+## [v19.0.6](https://github.com/chef/chef/tree/v19.0.6) (2024-08-20)
 
 #### Merged Pull Requests
-- Fix issues with multiple homebrew binaries [#14544](https://github.com/chef/chef/pull/14544) ([Stromweld](https://github.com/Stromweld))
+- Obvious fix: replace lint download action with curl [#14562](https://github.com/chef/chef/pull/14562) ([williamtheaker](https://github.com/williamtheaker))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Obvious fix: replace lint download action with curl [#14562](https://github.com/chef/chef/pull/14562) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.6 -->
 - Fix issues with multiple homebrew binaries [#14544](https://github.com/chef/chef/pull/14544) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.5 -->
 - fix pipeline tests [#14555](https://github.com/chef/chef/pull/14555) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.4 -->
 - disabling omnibus production builds [#14560](https://github.com/chef/chef/pull/14560) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 19.0.3 -->
