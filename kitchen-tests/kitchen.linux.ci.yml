@@ -56,8 +56,6 @@ platforms:
   - name: debian-12
   - name: debian-11
   - name: fedora-latest
-  - name: freebsd-13
-  - name: freebsd-14
   - name: opensuse-leap-15
   - name: oracle-7
   - name: oracle-8
