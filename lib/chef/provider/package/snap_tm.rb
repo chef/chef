@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Package
       class SnapTM < Chef::Provider::Package::Snap
-        provides :snap_package, target_mode: true
+        provides :snap_package, target_mode: true, agent_mode: false
 
         def install_package(names, versions)
           if new_resource.source
