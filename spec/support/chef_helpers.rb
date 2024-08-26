@@ -69,8 +69,8 @@ def make_canonical_temp_directory
 end
 
 # Check if a cmd exists on the PATH
-def which(cmd)
-  paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
+def which(cmd, prepend_path: nil, extra_path: nil)
+  paths = Array(prepend_path) + ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ] + Array(extra_path)
   paths.each do |path|
     filename = File.join(path, cmd)
     return filename if File.executable?(filename)

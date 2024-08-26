@@ -20,7 +20,7 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-12-amd64:freebsd-12-amd64" "freebsd-13-amd64:freebsd-12-amd64" "mac_os_x-10.15-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-12-x86_64:mac_os_x-10.15-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
@@ -162,21 +162,21 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.86:"
+    echo "  - chef/omnibus#v0.2.88:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ $build_key == "mac_os_x-10_15-x86_64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ]
     then
       echo "      remote-host: buildkite-omnibus-$platform"
     fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
-    if [ $build_key == "mac_os_x-11-arm64" ]
-    then
-      echo "  concurrency: 1"
-      echo "  concurrency_group: omnibus-$build_key/build/chef"
-    fi
+    # if [ $build_key == "mac_os_x-11-arm64" ]
+    # then
+    #   echo "  concurrency: 2"
+    #   echo "  concurrency_group: omnibus-$build_key/build/chef"
+    # fi
   done
 
   if  [[ " ${esoteric_build_platforms[*]} " =~ "mac_os_x" ]]
@@ -207,7 +207,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.86:"
+  echo "  - chef/omnibus#v0.2.88:"
   echo "      create-build-record: chef"
 fi
 
@@ -235,7 +235,7 @@ then
         echo "    queue: docker-linux-arm64"
       else
         echo "    queue: default-privileged"
-      fi      
+      fi
       echo "  plugins:"
       echo "  - docker#v3.5.0:"
       echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
@@ -296,13 +296,13 @@ then
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
-    if [ $build_key == "mac_os_x-10_15-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
+    if [ $build_key == "mac_os_x-11-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
     then
       echo "    omnibus: tester"
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.86:"
+    echo "  - chef/omnibus#v0.2.88:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -310,11 +310,11 @@ then
     then
       echo "      remote-host: buildkite-omnibus-${platform%:*}"
     fi
-    if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
-    then
-      echo "  concurrency: 1"
-      echo "  concurrency_group: omnibus-$test_key/test/chef"
-    fi
+    # if [ $test_key == "mac_os_x-11-arm64" ] || [ $test_key == "mac_os_x-12-arm64" ]
+    # then
+    #   echo "  concurrency: 2"
+    #   echo "  concurrency_group: omnibus-$test_key/test/chef"
+    # fi
     if [ $test_key == "freebsd-13-amd64" ]
     then
       echo "  soft_fail: true"
@@ -328,6 +328,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.86:"
+  echo "  - chef/omnibus#v0.2.88:"
   echo "      promote: chef"
 fi

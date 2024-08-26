@@ -47,7 +47,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     allow(provider).to receive(:choco_exe).and_return(choco_exe)
     local_list_obj = double(stdout: local_list_stdout)
     allow(provider).to receive(:shell_out_compacted!).with(choco_exe, "list", "-l", "-r", { returns: [0, 2], timeout: timeout }).and_return(local_list_obj)
-    allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
+    allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "2.1.0"))
     # Mock the local file system choco queries
     allow(provider).to receive(:get_local_pkg_dirs).and_return(%w{chocolatey ConEmu})
     allow(provider).to receive(:fetch_package_versions).and_return({ "chocolatey" => "0.9.9.11", "conemu" => "15.10.25.0" })
@@ -70,10 +70,13 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       munin-node|1.6.1.20130823
     EOF
     remote_list_obj = double(stdout: remote_list_stdout)
-    if args
-      allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *(package_names.sort + args), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
-    else
-      allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *(package_names.sort), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+
+    package_names.each do |pkg|
+      if args
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", *([pkg] + args), { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+      else
+        allow(provider).to receive(:shell_out_compacted!).with(choco_exe, provider.query_command, "-r", pkg, { returns: [0, 2], timeout: timeout }).and_return(remote_list_obj)
+      end
     end
   end
 
@@ -89,12 +92,12 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
 
   describe "choco searches change with the version" do
     it "Choco V1 uses List" do
-      allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "1.4.0"))
+      allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "1.4.0"))
       expect(provider.query_command).to eql("list")
     end
 
     it "Choco V2 uses Search" do
-      allow(provider).to receive(:powershell_exec!).with("#{choco_exe} --version").and_return(double(result: "2.1.0"))
+      allow(provider).to receive(:powershell_exec!).with("Get-ItemProperty #{choco_exe} | select-object -expandproperty versioninfo | select-object -expandproperty productversion").and_return(double(result: "2.1.0"))
       expect(provider.query_command).to eql("search")
     end
   end

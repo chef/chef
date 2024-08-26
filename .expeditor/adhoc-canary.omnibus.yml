@@ -56,8 +56,7 @@ builder-to-testers-map:
   freebsd-12-amd64:
     - freebsd-12-amd64
     - freebsd-13-amd64
-  mac_os_x-10.15-x86_64:
-    - mac_os_x-10.15-x86_64
+  mac_os_x-11-x86_64:
     - mac_os_x-11-x86_64
     - mac_os_x-12-x86_64
   mac_os_x-11-arm64:

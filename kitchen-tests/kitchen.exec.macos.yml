@@ -26,7 +26,8 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
 
 platforms:
-  - name: macos-latest # x86_64 MacOS 12 on 3/11/2024
+  - name: macos-latest # arm64
   - name: macos-14 # arm64
   - name: macos-14-large # x86_64
   - name: macos-13 # x86_64
+  - name: macos-12 # x86_64

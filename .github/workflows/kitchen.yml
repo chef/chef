@@ -7,6 +7,10 @@ name: kitchen
     branches:
       - main
 
+concurrency:
+  group: kitchen-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: kitchen-tests
@@ -35,8 +39,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
           - macos-13
+          - macos-12
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -56,7 +60,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14
+          - macos-latest
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -79,18 +83,17 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
-          - centos-7
           - debian-11
           - debian-12
           - fedora-latest
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
-          # - rockylinux-8 # Need to troubleshoot issue with container startup
+          - rockylinux-8
           - rockylinux-9
-          - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -136,12 +139,11 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
-          # - centos-7 Need to troubleshoot slow and hanging behaviour on lifecycle hook run
           - debian-11
           - debian-12
           - fedora-latest
-          # - freebsd-13 # Need to troubleshoot shell invalid issue
-          # - freebsd-14 # Need to troubleshoot bad bento box issue
+          - freebsd-13
+          - freebsd-14
           - opensuse-leap-15
           - oracle-7
           - oracle-8
@@ -151,6 +153,7 @@ jobs:
           - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist

@@ -103,6 +103,7 @@ class Chef
       property :comment, [Array, String],
         description: "Comments, placed above the resource setting in the generated file. For multi-line comments, use an array of strings, one per line.",
         default: [],
+        desired_state: false,
         introduced: "15.8"
 
       property :conf_dir, String,

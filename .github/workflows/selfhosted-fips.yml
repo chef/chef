@@ -6,6 +6,11 @@ name: selfhosted-fips
   push:
     branches:
       - main
+
+concurrency:
+  group: selfhosted-fips-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
     strategy:
