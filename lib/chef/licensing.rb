@@ -35,16 +35,14 @@ class Chef
         # set the chef_entitlement_id to the value for Compliance Phase entitlement (i.e. InSpec's entitlement ID)
         ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::COMPLIANCE_ENTITLEMENT_ID
         ChefLicensing.check_software_entitlement!
-        # reset the chef_entitlement_id to the default value
-        ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::INFRA_ENTITLEMENT_ID
       rescue ChefLicensing::SoftwareNotEntitled
-        # reset the chef_entitlement_id to the default value
-        ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::INFRA_ENTITLEMENT_ID
         raise EntitlementError, "License not entitled"
       rescue ChefLicensing::Error => e
-        # resetting of chef_entitlement_id is not needed here as the application will exit!
         Chef::Log.error e.message
         Chef::Application.exit! "Usage error", 1 # Generic failure
+      ensure
+        # reset the chef_entitlement_id to the default value of Infra
+        ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::INFRA_ENTITLEMENT_ID
       end
 
       def licensing_help
