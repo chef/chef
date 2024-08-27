@@ -16,5 +16,5 @@
 
 module ChefUtils
   CHEFUTILS_ROOT = File.expand_path("..", __dir__)
-  VERSION = "19.0.6"
+  VERSION = "19.0.7"
 end
