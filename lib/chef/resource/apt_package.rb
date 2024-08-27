@@ -24,6 +24,11 @@ class Chef
 
       provides :apt_package, target_mode: true
       provides :package, platform_family: "debian", target_mode: true
+      target_mode support: :full,
+        introduced: "15.1",
+        updated: "19.0",
+        description: "Does not support the `response_file` property in Target Mode."
+
       examples <<~DOC
       **Install a package using package manager**:
 

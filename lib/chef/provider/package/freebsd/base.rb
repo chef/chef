@@ -30,7 +30,7 @@ class Chef
 
         module PortsHelper
           def supports_ports?
-            ::File.exist?("/usr/ports/Makefile")
+            ::TargetIO::File.exist?("/usr/ports/Makefile")
           end
 
           def port_dir(port)

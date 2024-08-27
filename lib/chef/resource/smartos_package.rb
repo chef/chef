@@ -22,8 +22,9 @@ class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
 
-      provides :smartos_package
-      provides :package, platform_family: "smartos"
+      provides :smartos_package, target_mode: true
+      provides :package, platform_family: "smartos", target_mode: true
+      target_mode support: :full
 
       description "Use the **smartos_package** resource to manage packages for the SmartOS platform."
 

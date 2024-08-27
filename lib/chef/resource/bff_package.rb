@@ -23,7 +23,8 @@ class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
 
-      provides :bff_package
+      provides :bff_package, target_mode: true
+      target_mode support: :full
 
       description "Use the **bff_package** resource to manage packages for the AIX platform using the installp utility. When a package is installed from a local file, it must be added to the node using the **remote_file** or **cookbook_file** resources."
       introduced "12.0"

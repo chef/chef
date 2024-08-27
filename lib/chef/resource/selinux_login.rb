@@ -19,7 +19,8 @@ class Chef
     class SelinuxLogin < Chef::Resource
       unified_mode true
 
-      provides :selinux_login
+      provides :selinux_login, target_mode: true
+      target_mode support: :full
 
       description "Use the **selinux_login** resource to add, update, or remove SELinux user to OS login mappings."
       introduced "18.1"

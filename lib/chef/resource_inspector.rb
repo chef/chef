@@ -44,6 +44,7 @@ class Chef
     def self.extract_resource(resource, complete = false)
       data = {}
       data[:description] = resource.description
+      data[:target_mode] = resource.target_mode
       data[:default_action] = resource.default_action
       data[:actions] = {}
       resource.allowed_actions.each do |action|
@@ -63,6 +64,7 @@ class Chef
       data[:properties] = properties.each_with_object([]) do |(n, k), acc|
         opts = k.options
         acc << { name: n, description: opts[:description],
+                 target_mode: opts[:target_mode] || false,
                  introduced: opts[:introduced], is: opts[:is],
                  deprecated: opts[:deprecated] || false,
                  required: opts[:required] || false,

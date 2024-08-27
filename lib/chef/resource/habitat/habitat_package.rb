@@ -22,7 +22,9 @@ class Chef
   class Resource
     class HabitatPackage < Chef::Resource::Package
 
-      provides :habitat_package
+      provides :habitat_package, target_mode: true
+      target_mode support: :full
+
       use "habitat_shared"
       description "Use the **habitat_package** to install or remove Chef Habitat packages from Habitat Builder."
       introduced "17.3"

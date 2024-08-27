@@ -26,7 +26,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   include Chef::Mixin::Which
 
-  provides :service, os: "linux", target_mode: true do |node|
+  provides(:service, os: "linux", target_mode: true) do |node|
     systemd?
   end
 
@@ -106,7 +106,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if new_resource.user
       raise NotImplementedError, "#{new_resource} does not support the user property on a target_mode host (yet)" if Chef::Config.target_mode?
 
-      uid = Etc.getpwnam(new_resource.user).uid
+      uid = TargetIO::Etc.getpwnam(new_resource.user).uid
       options = {
         environment: {
           "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",

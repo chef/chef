@@ -20,7 +20,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class ChefSleep < Chef::Resource
-      provides :chef_sleep
+      provides :chef_sleep, target_mode: true
+      target_mode support: :full
 
       description "Use the **chef_sleep** resource to pause (sleep) for a number of seconds during a #{ChefUtils::Dist::Infra::PRODUCT} run. Only use this resource when a command or service exits successfully but is not ready for the next step in a recipe."
       introduced "15.5"

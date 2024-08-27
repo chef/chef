@@ -24,8 +24,8 @@ class Chef
     class Package
       class Paludis < Chef::Provider::Package
 
-        provides :package, platform: "exherbo"
-        provides :paludis_package
+        provides :package, platform: "exherbo", target_mode: true
+        provides :paludis_package, target_mode: true
 
         def load_current_resource
           @current_resource = Chef::Resource::Package.new(new_resource.package_name)

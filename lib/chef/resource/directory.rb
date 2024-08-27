@@ -25,7 +25,8 @@ class Chef
   class Resource
     class Directory < Chef::Resource
 
-      provides :directory
+      provides :directory, target_mode: true
+      target_mode support: :full
 
       description "Use the **directory** resource to manage a directory, which is a hierarchy"\
                   " of folders that comprises all of the information stored on a computer."\

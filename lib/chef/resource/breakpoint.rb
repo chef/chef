@@ -24,6 +24,7 @@ class Chef
     class Breakpoint < Chef::Resource
 
       provides :breakpoint, target_mode: true
+      target_mode support: :full, introduced: "15.1"
 
       description "Use the **breakpoint** resource to add breakpoints to recipes. Run the #{ChefUtils::Dist::Infra::SHELL} in #{ChefUtils::Dist::Infra::PRODUCT} mode, and then use those breakpoints to debug recipes. Breakpoints are ignored by the #{ChefUtils::Dist::Infra::CLIENT} during an actual #{ChefUtils::Dist::Infra::CLIENT} run. That said, breakpoints are typically used to debug recipes only when running them in a non-production environment, after which they are removed from those recipes before the parent cookbook is uploaded to the Chef server."
       introduced "12.0"

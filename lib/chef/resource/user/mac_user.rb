@@ -61,6 +61,7 @@ class Chef
 
         provides :mac_user
         provides :user, platform: "mac_os_x"
+        target_mode support: false
 
         introduced "15.3"
 

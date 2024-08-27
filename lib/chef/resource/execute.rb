@@ -25,6 +25,9 @@ class Chef
     class Execute < Chef::Resource
 
       provides :execute, target_mode: true
+      target_mode support: :full,
+        introduced: "15.1",
+        updated: "19.0"
 
       description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use `not_if` and `only_if` to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
 

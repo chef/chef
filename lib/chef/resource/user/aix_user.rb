@@ -22,8 +22,9 @@ class Chef
     class User
       class AixUser < Chef::Resource::User
 
-        provides :aix_user
-        provides :user, os: "aix"
+        provides :aix_user, target_mode: true
+        provides :user, os: "aix", target_mode: true
+        target_mode support: :full
       end
     end
   end
