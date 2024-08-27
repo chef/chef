@@ -44,7 +44,7 @@ class Chef
         else
           current_resource.link_type(:hard)
           if ::File.exist?(current_resource.target_file)
-            if ::File.exist?(new_resource.to) &&
+            if new_resource.to && ::File.exist?(new_resource.to) &&
                 file_class.stat(current_resource.target_file).ino ==
                     file_class.stat(new_resource.to).ino
               current_resource.to(canonicalize(new_resource.to))
@@ -69,6 +69,17 @@ class Chef
           end
           a.failure_message Chef::Exceptions::Link, "Cannot delete #{new_resource} at #{new_resource.target_file}! Not a #{new_resource.link_type} link."
           a.whyrun("Would assume the link at #{new_resource.target_file} was previously created")
+        end
+        requirements.assert(:create) do |a|
+          a.assertion do
+            if new_resource.to && new_resource.to != ""
+              true
+            else
+              false
+            end
+          end
+          a.failure_message Chef::Exceptions::Link, "Cannot create #{new_resource} without specifying 'to'."
+          a.whyrun("Would create the link at #{new_resource.target_file} to #{new_resource.to}")
         end
       end
 
