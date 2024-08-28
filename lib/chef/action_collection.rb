@@ -189,8 +189,10 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_skipped(resource, action, conditional)
-      current_record.status = :skipped
-      current_record.conditional = conditional
+      unless current_record.nil?
+        current_record.status = :skipped
+        current_record.conditional = conditional
+      end
     end
 
     # Hook called after an action modifies the system and is marked updated.
