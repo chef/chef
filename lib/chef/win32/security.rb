@@ -132,6 +132,7 @@ class Chef
 
       def self.clear_account_rights(name)
         return if get_account_right(name) == []
+
         with_lsa_policy(name) do |policy_handle, sid|
           result = LsaRemoveAccountRights(policy_handle.read_pointer, sid, true, nil, 1)
           test_and_raise_lsa_nt_status(result)
