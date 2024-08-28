@@ -128,9 +128,13 @@ class Chef
           values
           values_at
           zip
+          deep_merge
         }.freeze
         DISALLOWED_MUTATOR_METHODS = %i{
           []=
+          deep_merge!
+          extract!
+          slice!
           clear
           collect!
           compact!
