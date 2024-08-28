@@ -90,7 +90,7 @@ class Chef
         end
 
         def remove_user
-          clear_account_rights(name)
+          clear_account_rights(new_resource.username)
           @net_user.delete
         end
 
