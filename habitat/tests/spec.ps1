@@ -18,7 +18,10 @@ try {
     SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
     hab pkg binlink --force $PackageIdentifier
-    /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
+    /hab/bin/rspec -f progress --profile -- ./spec/unit
+    /hab/bin/rspec -f progress --profile -- ./spec/functional
+    /hab/bin/rspec -f progress --profile -- ./spec/integration
+    # /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
     if (-not $?) { throw "functional testing failed"}
 } finally {
     Pop-Location
