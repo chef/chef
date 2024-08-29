@@ -10,8 +10,11 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+
 # required for FIPS or bundler will pick up default openssl
-gem "openssl", "= 3.2.0" unless Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" }
+install_if -> { RUBY_PLATFORM !~ /darwin/ && ENV["BUILDKITE_PIPELINE_SLUG"] !~ /verify/ } do
+  gem "openssl", "= 3.2.0"
+end
 
 gem "rdoc", "~> 6.4.1" # 6.4.1.1 required for CVE-2024-27281, allow patch upgrades
 
