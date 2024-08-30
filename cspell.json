@@ -602,6 +602,7 @@
     "keygen",
     "keyid",
     "keyivgen",
+    "keyrings",
     "KEYNAME",
     "keyname",
     "keypair",
