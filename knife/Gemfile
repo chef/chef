@@ -18,7 +18,7 @@ group(:omnibus_package, :pry) do
 end
 
 group(:chefstyle) do
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
+  gem "cookstyle", ">= 7.32.8"
 end
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
