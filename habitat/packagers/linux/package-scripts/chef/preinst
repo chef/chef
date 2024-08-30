@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+
+PREV_INSTALLER_DIR=/opt/chef
+
+# The following will hold true when when we upgrade from 18.x to 19.x. We need to remove the
+# `/opt/chef/` directory then.
+if [ -e ${PREV_INSTALLER_DIR} ]; then
+	echo "removing ${PREV_INSTALLER_DIR}..."
+	rm -rf ${PREV_INSTALLER_DIR} || true
+	INSTALLER_DIR=${PREV_INSTALLER_DIR}
+else
+	# This will be a path from the "previous installation"
+	if [ -e /usr/share/chef/.hab_pkg_install_path ]; then
+		read HAB_INSTALL_DIR < /usr/share/chef/.hab_pkg_install_path
+		INSTALLER_DIR=${HAB_INSTALL_DIR}
+	else
+		# Just a fallback - we really don't have an old installation and yet this script is
+		# getting called(!!!). We do best to delete `/opt/chef` if it exists for whatever
+		# reasons
+		INSTALLER_DIR=/opt/chef
+	fi
+fi
+
+if [ -e $INSTALLER_DIR ]; then
+  echo "removing $INSTALLER_DIR..."
+  rm -rf $INSTALLER_DIR || true
+fi
+
+# Sometimes, on some platforms, we get an EBUSY error trying to delete this, which will cause issues
+# with the upgrades. So we move it so it won't interfere with the upgrade, then delete it, which will
+# cause the OS to free the space once it's no longer used (when the current chef run ends, or whatever
+# else is using those libs). See: https://github.com/chef/chef/pull/8046
+if [ -e $INSTALLER_DIR ]; then
+  echo "Some files failed to delete, moving them so we don't interfere with upgrades, and then removing them"
+
+  # have to do this dance of moving /opt/chef to a tmp dir since files may be in use
+  tmp_dir="/opt/.chef.$$"
+  # if we can't create the tmp_dir then fail hard to prevent any possible security hole
+  (umask 077 && mkdir $tmp_dir) || exit 1
+  # now we can clean up the tmp_dir we created safely
+  mv $INSTALLER_DIR $tmp_dir
+  # ignore errors which must be EBUSY issues, this may crate some litter, which may
+  # be unavoidable
+  rm -rf $tmp_dir || true
+fi
