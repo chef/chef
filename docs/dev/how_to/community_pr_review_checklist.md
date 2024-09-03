@@ -13,7 +13,6 @@ From there you should see a zoom link that links you to the meeting.
 - [Ohai](https://github.com/chef/ohai)
 - [Cookstyle](https://github.com/chef/cookstyle)
 - [Chef-Plans](https://github.com/chef/chef-plans)
-- [Chef-Secrets](https://github.com/chef/chef_secret)
 - [Chef-Powershell-Shim](https://github.com/chef/chef-powershell-shim)
 
 ## Projects MixLib
