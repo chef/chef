@@ -7,6 +7,8 @@ Additionally, if you wish to be apart of the meeting, please join this channel h
 From there you should see a zoom link that links you to the meeting. 
 
 # List of Projects to follow during the meeting
+
+## Products
 - [Chef](https://github.com/chef/chef)
 - [Ohai](https://github.com/chef/ohai)
 - [Cookstyle](https://github.com/chef/cookstyle)
@@ -15,6 +17,19 @@ From there you should see a zoom link that links you to the meeting.
 - [Chef-Plans](https://github.com/chef/chef-plans)
 - [Chef-Secrets](https://github.com/chef/chef_secrets)
 - [Chef-Powershell-Shim](https://github.com/chef/chef-powershell-shim)
+
+## Projects MixLib
+- [MixLib-Shellout](https://github.com/chef/mixlib-shellout)
+- [MixLib-Archive](https://github.com/chef/mixlib-archive)
+- [MixLib-Versioning](https://github.com/chef/mixlib-versioning)
+- [MixLib-Log](https://github.com/chef/mixlib-log)
+- [MixLib-Install](https://github.com/chef/mixlib-install)
+- [MixLib-Config](https://github.com/chef/mixlib-config)
+- [MixLib-Cli](https://github.com/chef/mixlib-cli)
+- [MixLib-Authentication](https://github.com/chef/mixlib-authentication)
+- [MixLib-Auth](https://github.com/chef/mixlib-auth)
+
+## Projects Win32
 - [Win32-Service](https://github.com/chef/win32-service)
 - [Win32-CertStore](https://github.com/chef/win32-certstore)
 - [Win32-ipc](https://github.com/chef/win32-ipc)
