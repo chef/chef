@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.13 -->
-## [v19.0.13](https://github.com/chef/chef/tree/v19.0.13) (2024-09-03)
+<!-- latest_release 19.0.14 -->
+## [v19.0.14](https://github.com/chef/chef/tree/v19.0.14) (2024-09-03)
 
 #### Merged Pull Requests
-- Remove Freebsd testing [#14569](https://github.com/chef/chef/pull/14569) ([Stromweld](https://github.com/Stromweld))
+- Enhance resource inspector to understand LWRP files containing multiple resources [#14546](https://github.com/chef/chef/pull/14546) ([jaymzjulian](https://github.com/jaymzjulian))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enhance resource inspector to understand LWRP files containing multiple resources [#14546](https://github.com/chef/chef/pull/14546) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 19.0.14 -->
 - Remove Freebsd testing [#14569](https://github.com/chef/chef/pull/14569) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.13 -->
 - Reducing the list of esoteric platforms [#14586](https://github.com/chef/chef/pull/14586) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.12 -->
 - Search for choco 1.4, chef-powershell bundle fix, and resolv registry patch fix [#14462](https://github.com/chef/chef/pull/14462) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.11 -->
