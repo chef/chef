@@ -11,7 +11,7 @@ fi
 FILTER="${OMNIBUS_FILTER:=*}"
 
 # array of all container platforms in the format test-platform:build-platform
-container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-6:centos-6" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "sles-15:sles-15" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9" "amazon-2023:amazon-2023" "amazon-2023-arm:amazon-2023-arm")
+container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-2004:ubuntu-2004" "ubuntu-2204:ubuntu-2204" "ubuntu-2404:ubuntu-2404" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9" "amazon-2023:amazon-2023" "amazon-2023-arm:amazon-2023-arm")
 
 # add rest of windows platforms to tests, if not on chef-oss org
 if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
@@ -19,8 +19,8 @@ then
   container_platforms=( "${container_platforms[@]}" "windows-2012:windows-2019" "windows-2012r2:windows-2019" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
 fi
 
-# array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+# array of all esoteric platforms in the format test-platform:build-platform. We reduced this list for Chef-19
+esoteric_platforms=("mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
