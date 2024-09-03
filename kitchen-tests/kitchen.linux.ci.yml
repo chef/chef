@@ -26,10 +26,6 @@ lifecycle:
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-latest
-    - remote: sudo pkg update && sudo pkg install -y git gcc gmake autoconf automake libtool
-      includes:
-        - freebsd-13
-        - freebsd-14
     - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef container's Chef / Ohai release:"
@@ -60,8 +56,6 @@ platforms:
   - name: debian-12
   - name: debian-11
   - name: fedora-latest
-  - name: freebsd-13
-  - name: freebsd-14
   - name: opensuse-leap-15
   - name: oracle-7
   - name: oracle-8
