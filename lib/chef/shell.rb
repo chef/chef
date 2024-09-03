@@ -38,6 +38,8 @@ require_relative "workstation_config_loader"
 require_relative "shell/ext"
 require_relative "json_compat"
 require_relative "util/path_helper"
+require "chef-licensing/cli_flags/mixlib_cli"
+require_relative "licensing"
 
 # = Shell
 # Shell is Chef in an IRB session. Shell can interact with a Chef server via the
@@ -62,6 +64,11 @@ module Shell
 
     parse_opts
     Chef::Config[:shell_config] = options.config
+
+    if ChefUtils::Dist::Infra::SHELL == "chef-shell"
+      Chef::Licensing.fetch_and_persist
+      Chef::Licensing.check_software_entitlement!
+    end
 
     # HACK: this duplicates the functions of IRB.start, but we have to do it
     # to get access to the main object before irb starts.
