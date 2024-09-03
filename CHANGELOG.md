@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.10 -->
-## [v18.5.10](https://github.com/chef/chef/tree/v18.5.10) (2024-09-03)
+<!-- latest_release 18.5.11 -->
+## [v18.5.11](https://github.com/chef/chef/tree/v18.5.11) (2024-09-03)
 
 #### Merged Pull Requests
-- [CHEF-18] Remove Freebsd testing [#14574](https://github.com/chef/chef/pull/14574) ([Stromweld](https://github.com/Stromweld))
+- Backport: replace lint download action with curl in .github lint [#14566](https://github.com/chef/chef/pull/14566) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport: replace lint download action with curl in .github lint [#14566](https://github.com/chef/chef/pull/14566) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.11 -->
 - [CHEF-18] Remove Freebsd testing [#14574](https://github.com/chef/chef/pull/14574) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.10 -->
 - Conditional install of openssl via install_if [#14584](https://github.com/chef/chef/pull/14584) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.9 -->
 - Clear user privileges before deleting user in Windows [#14575](https://github.com/chef/chef/pull/14575) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.8 -->
