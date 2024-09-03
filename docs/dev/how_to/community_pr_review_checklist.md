@@ -13,7 +13,6 @@ From there you should see a zoom link that links you to the meeting.
 - [Ohai](https://github.com/chef/ohai)
 - [Cookstyle](https://github.com/chef/cookstyle)
 - [Chef-Plans](https://github.com/chef/chef-plans)
-- [Chef-Secrets](https://github.com/chef/chef_secret)
 - [Chef-Powershell-Shim](https://github.com/chef/chef-powershell-shim)
 
 ## Projects MixLib
@@ -24,8 +23,6 @@ From there you should see a zoom link that links you to the meeting.
 - [MixLib-Install](https://github.com/chef/mixlib-install)
 - [MixLib-Config](https://github.com/chef/mixlib-config)
 - [MixLib-Cli](https://github.com/chef/mixlib-cli)
-- [MixLib-Authentication](https://github.com/chef/mixlib-authentication)
-- [MixLib-Auth](https://github.com/chef/mixlib-auth)
 
 ## Projects Win32
 - [Win32-Service](https://github.com/chef/win32-service)
