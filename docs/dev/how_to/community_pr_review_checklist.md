@@ -12,10 +12,8 @@ From there you should see a zoom link that links you to the meeting.
 - [Chef](https://github.com/chef/chef)
 - [Ohai](https://github.com/chef/ohai)
 - [Cookstyle](https://github.com/chef/cookstyle)
-- [Workstation](https://github.com/chef/chef-workstation)
-- [Server](https://github.com/chef/chef-workstation)
 - [Chef-Plans](https://github.com/chef/chef-plans)
-- [Chef-Secrets](https://github.com/chef/chef_secrets)
+- [Chef-Secrets](https://github.com/chef/chef_secret)
 - [Chef-Powershell-Shim](https://github.com/chef/chef-powershell-shim)
 
 ## Projects MixLib
