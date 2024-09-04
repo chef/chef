@@ -342,7 +342,6 @@ GEM
     netrc (0.11.0)
     nori (2.7.1)
       bigdecimal
-    openssl (3.2.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
