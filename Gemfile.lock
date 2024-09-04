@@ -49,6 +49,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.0.32)
+      chef-licensing (>= 0.7.5)
       chef-utils (= 19.0.32)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -83,6 +84,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.0.32)
+      chef-licensing (>= 0.7.5)
       chef-powershell (~> 18.1.0)
       chef-utils (= 19.0.32)
       chef-vault
@@ -151,6 +153,11 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (7.0.8.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
     addressable (2.8.2)
       public_suffix (>= 2.0.2, < 6.0)
     appbundler (0.13.4)
@@ -182,6 +189,13 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.3.0)
     byebug (11.1.3)
+    chef-licensing (1.0.2)
+      activesupport (~> 7.0, < 7.1)
+      chef-config (>= 15)
+      faraday (>= 1, < 3)
+      faraday-http-cache
+      tty-prompt (~> 0.23)
+      tty-spinner (~> 0.9.3)
     chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
@@ -221,6 +235,8 @@ GEM
       ruby2_keywords (>= 0.0.4)
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
+    faraday-http-cache (2.5.1)
+      faraday (>= 0.8)
     faraday-net_http (3.0.2)
     fauxhai-ng (9.3.0)
       net-ssh
@@ -246,6 +262,8 @@ GEM
     http-cookie (1.0.5)
       domain_name (~> 0.5)
     httpclient (2.8.3)
+    i18n (1.14.5)
+      concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
     inspec-core (5.22.40)
       addressable (~> 2.4)
@@ -290,6 +308,7 @@ GEM
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2023.0218.1)
+    minitest (5.25.1)
     mixlib-archive (1.1.7)
       mixlib-log
     mixlib-archive (1.1.7-universal-mingw32)
@@ -431,10 +450,14 @@ GEM
       tty-screen (~> 0.8)
       wisper (~> 2.0)
     tty-screen (0.8.1)
+    tty-spinner (0.9.3)
+      tty-cursor (~> 0.7)
     tty-table (0.12.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
