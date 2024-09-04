@@ -1,17 +1,30 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.2 -->
-## [v19.0.2](https://github.com/chef/chef/tree/v19.0.2) (2024-07-30)
+<!-- latest_release 19.0.15 -->
+## [v19.0.15](https://github.com/chef/chef/tree/v19.0.15) (2024-09-03)
 
 #### Merged Pull Requests
-- Update Ohai to 19 [#14526](https://github.com/chef/chef/pull/14526) ([neha-p6](https://github.com/neha-p6))
+- [PathHelper#cleanpath] avoid creating new strings with gsub [#14579](https://github.com/chef/chef/pull/14579) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [PathHelper#cleanpath] avoid creating new strings with gsub [#14579](https://github.com/chef/chef/pull/14579) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.15 -->
+- Enhance resource inspector to understand LWRP files containing multiple resources [#14546](https://github.com/chef/chef/pull/14546) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 19.0.14 -->
+- Remove Freebsd testing [#14569](https://github.com/chef/chef/pull/14569) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.13 -->
+- Reducing the list of esoteric platforms [#14586](https://github.com/chef/chef/pull/14586) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.12 -->
+- Search for choco 1.4, chef-powershell bundle fix, and resolv registry patch fix [#14462](https://github.com/chef/chef/pull/14462) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.11 -->
+- Use install_if for openssl gem [#14585](https://github.com/chef/chef/pull/14585) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.10 -->
+- Clear user privileges before deleting user in Windows (#14575) [#14581](https://github.com/chef/chef/pull/14581) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.9 -->
+- Strip spaces from apt_repository repo_name. [#14470](https://github.com/chef/chef/pull/14470) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.8 -->
+- Fix #6238 - handle link :delete action without `to` [#14350](https://github.com/chef/chef/pull/14350) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.7 -->
+- Obvious fix: replace lint download action with curl [#14562](https://github.com/chef/chef/pull/14562) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.6 -->
+- Fix issues with multiple homebrew binaries [#14544](https://github.com/chef/chef/pull/14544) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.5 -->
+- fix pipeline tests [#14555](https://github.com/chef/chef/pull/14555) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.4 -->
+- disabling omnibus production builds [#14560](https://github.com/chef/chef/pull/14560) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 19.0.3 -->
 - Update Ohai to 19 [#14526](https://github.com/chef/chef/pull/14526) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.2 -->
 - [trivial] fix typo dnf-helper.py -&gt; dnf_helper.py [#14492](https://github.com/chef/chef/pull/14492) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.1 -->
 - Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.1 -->

@@ -26,6 +26,11 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
     autoload :Registry, File.expand_path("../monkey_patches/win32/registry", __dir__)
   end
   require_relative "api/registry"
+
+  require "win32/resolv"
+  ::Win32::Registry.define_method :export_string do |str, enc = (Encoding.default_internal || "utf-8")|
+    str.encode(enc)
+  end
 end
 
 class Chef
@@ -190,7 +195,9 @@ class Chef
         key_exists!(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
-          reg.each_key { |current_key| subkeys << current_key }
+          reg.each_key do |current_key|
+            subkeys << current_key
+          end
         end
         subkeys
       end
