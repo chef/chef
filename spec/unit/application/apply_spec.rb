@@ -93,7 +93,7 @@ describe Chef::Application::Apply do
       ARGV.clear
 
       ChefLicensing.configure do |config|
-        config.logger = Logger.new(StringIO.new)  # suppress log output
+        config.logger = Logger.new(StringIO.new) # suppress log output
       end
     end
     it "should exit and log message" do
