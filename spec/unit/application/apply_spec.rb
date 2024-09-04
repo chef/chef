@@ -97,6 +97,11 @@ describe Chef::Application::Apply do
       end
     end
     it "should exit and log message" do
+      # The below log messages is because of the licensing check
+      allow(Chef::Log).to receive(:debug).with(/opening connection to .*/)
+      allow(Chef::Log).to receive(:debug).with(/opened/)
+      allow(Chef::Log).to receive(:debug).with(/starting SSL for .*/)
+      allow(Chef::Log).to receive(:debug).with(/SSL established, protocol:.*/)
       expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
       expect { @app.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
