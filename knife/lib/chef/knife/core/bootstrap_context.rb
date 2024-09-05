@@ -204,8 +204,14 @@ class Chef
         def version_to_install
           return config[:bootstrap_version] if config[:bootstrap_version]
 
-          if config[:channel] == "stable" && config[:license_type] == "commercial"
-            Chef::VERSION
+          if config[:license_url]
+            if config[:channel] == "stable" && config[:license_type] == "commercial"
+              Chef::VERSION.split(".").first
+            else
+              "latest"
+            end
+          elsif config[:channel] == "stable"
+            Chef::VERSION.split(".").first
           else
             "latest"
           end
