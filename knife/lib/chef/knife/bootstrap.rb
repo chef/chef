@@ -464,7 +464,7 @@ class Chef
         if connection.windows?
           "windows-chef-client-msi"
         else
-          "chef-#{config[:license_id] && config[:license_url] ? 'license' : 'full'}"
+          "chef-#{config[:license_id] && config[:license_url] ? "license" : "full"}"
         end
       end
 
@@ -1212,7 +1212,7 @@ If you are a commercial customer, you may get a license from the customer portal
 from https://www.chef.io/license-generation-free-trial
 +-------------------------------------------------------------------------------------------------------+
 MSG
-        )
+               )
       end
     end
   end
