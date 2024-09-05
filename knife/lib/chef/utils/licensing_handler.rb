@@ -5,9 +5,9 @@ class Chef
     class LicensingHandler
 
       OMNITRUCK_URLS = {
-        "free"       => "https://trial-acceptance.downloads.chef.co",
-        "trial"      => "https://trial-acceptance.downloads.chef.co",
-        "commercial" => "https://commercial-acceptance.downloads.chef.co",
+        "free"       => "https://chefdownload-trial.chef.io",
+        "trial"      => "https://chefdownload-trial.chef.io",
+        "commercial" => "https://chefdownload-commerical.chef.io",
       }.freeze
 
       attr_reader :license_key, :license_type
