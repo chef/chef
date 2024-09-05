@@ -1,4 +1,4 @@
-require_relative 'licensing_config'
+require_relative "licensing_config"
 
 class Chef
   class Utils
@@ -7,7 +7,7 @@ class Chef
       OMNITRUCK_URLS = {
         "free"       => "https://trial-acceptance.downloads.chef.co",
         "trial"      => "https://trial-acceptance.downloads.chef.co",
-        "commercial" => "https://commercial-acceptance.downloads.chef.co"
+        "commercial" => "https://commercial-acceptance.downloads.chef.co",
       }.freeze
 
       attr_reader :license_key, :license_type
