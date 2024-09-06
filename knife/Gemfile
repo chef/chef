@@ -9,6 +9,7 @@ group(:development, :test) do
   gem "rake"
   gem "rspec"
   gem "chef-bin", path: "../chef-bin"
+  gem "appbundler"
 end
 
 group(:omnibus_package, :pry) do
