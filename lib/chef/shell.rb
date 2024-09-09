@@ -330,6 +330,22 @@ module Shell
       description: "Use cached cookbooks without overwriting local differences from the server",
       boolean: false
 
+    if ChefUtils::Dist::Infra::SHELL == "chef-shell"
+      option :license_add,
+             long: "--license-add",
+             description: "Add a license key to the license pool.",
+             boolean: true,
+             proc: lambda { |v| Chef::Licensing.license_add },
+             exit: 0
+
+      option :license_list,
+             long: "--license-list",
+             description: "List all license keys in the license pool.",
+             boolean: true,
+             proc: lambda { |v| Chef::Licensing.license_list },
+             exit: 0
+    end
+
     def self.print_help
       instance = new
       instance.parse_options([])
