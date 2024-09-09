@@ -5,6 +5,7 @@ set -euo pipefail
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
+export HAB_BLDR_CHANNEL="LTS-2024"
 
 project_root="$(git rev-parse --show-toplevel)"
 pkg_ident="$1"
