@@ -352,6 +352,7 @@ module Shell
       puts instance.opt_parser
       puts
       puts footer
+      puts Chef::Licensing.licensing_help if ChefUtils::Dist::Infra::SHELL == "chef-shell"
       puts
       exit 1
     end
