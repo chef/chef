@@ -29,7 +29,8 @@ describe "Chef Versions", :executables do
 
   binaries.each do |binary|
     it "#{binary} version should be sane" do
-      expect(shell_out!("bundle exec #{binary} -v", cwd: chef_dir).stdout.chomp).to match(/.*: #{Chef::VERSION}/)
+      #expect(shell_out!("bundle exec #{binary} -v", cwd: chef_dir).stdout.chomp).to match(/.*: #{Chef::VERSION}/)
+      expect(shell_out!("#{binary} -v", cwd: chef_dir).stdout.chomp).to match(/.*: #{Chef::VERSION}/)
     end
   end
 
