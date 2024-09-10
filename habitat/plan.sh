@@ -1,4 +1,4 @@
-_chef_client_ruby="core/ruby31"
+_chef_client_ruby="core/ruby3_1"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
@@ -70,6 +70,10 @@ do_prepare() {
   export OPENSSL_INCLUDE_DIR="$(pkg_path_for openssl)/include"
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
+  export HAB_BLDR_CHANNEL="LTS-2024"
+  export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
+  export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
+  export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
 
   ( cd "$CACHE_PATH"
     bundle config --local build.nokogiri "--use-system-libraries \

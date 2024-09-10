@@ -7,6 +7,7 @@ export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
+export HAB_BLDR_CHANNEL="LTS-2024"
 
 # print error message followed by usage and exit
 error () {
