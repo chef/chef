@@ -21,18 +21,6 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":linux: Validate Linux (kernel2)"
-  commands:
-    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux-kernel2
-    - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
-    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
-    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
     - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
@@ -49,7 +37,6 @@ steps:
 - label: ":habicat: Promoting packages to the current channel."
   commands:
     - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX current x86_64-linux
-    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2 current x86_64-linux-kernel2
     - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS current x86_64-windows
   expeditor:
     executor:
