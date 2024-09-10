@@ -18,11 +18,13 @@ try {
     SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
     hab pkg binlink --force $PackageIdentifier
+
+    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
+    $env:HAB_TEST=[System.Environment]::GetEnvironmentVariable("HAB_TEST", "User")
+
     /hab/bin/rspec -f progress --profile -- ./spec/unit
     /hab/bin/rspec -f progress --profile -- ./spec/functional
     /hab/bin/rspec -f progress --profile -- ./spec/integration
-    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
-    $env:HAB_TEST=[System.Environment]::GetEnvironmentVariable("HAB_TEST", "User")
     # /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
     if (-not $?) { throw "functional testing failed"}
 } finally {
