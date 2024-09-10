@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.165 -->
-## [v17.10.165](https://github.com/chef/chef/tree/v17.10.165) (2024-08-27)
+<!-- latest_release 17.10.166 -->
+## [v17.10.166](https://github.com/chef/chef/tree/v17.10.166) (2024-09-10)
 
 #### Merged Pull Requests
-- Updating the builders and testers to remove EL-6 support [#14577](https://github.com/chef/chef/pull/14577) ([johnmccrae](https://github.com/johnmccrae))
+- CVE update [#14598](https://github.com/chef/chef/pull/14598) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.163 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CVE update [#14598](https://github.com/chef/chef/pull/14598) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.166 -->
 - Updating the builders and testers to remove EL-6 support [#14577](https://github.com/chef/chef/pull/14577) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.165 -->
 - bumping aix to openssl 3.0.9 [#14567](https://github.com/chef/chef/pull/14567) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.164 -->
 <!-- release_rollup -->
