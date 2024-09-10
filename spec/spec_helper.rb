@@ -137,6 +137,7 @@ RSpec.configure do |config|
   config.filter_run_excluding volatile_from_verify: false
 
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
+  config.filter_run_excluding skip_hab_test: true if hab_test?
 
   config.filter_run_excluding fips_mode_test: true unless fips_mode_build?
   config.filter_run_excluding fips_mode_negative_test: true # disable all fips_mode negative tests
@@ -347,7 +348,7 @@ end
 # Enough stuff needs json serialization that I'm just adding it here for equality asserts
 require "chef/json_compat"
 
-if ENV["HAB_TEST"] == "true"
+if hab_test?
   # the chef-bin executables not in the bundle if run through hab
   class Chef
     module Mixin
