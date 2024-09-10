@@ -36,7 +36,8 @@ done
 # echo "--- :mag_right: Testing ${pkg_ident} functionality"
 # hab pkg exec "${pkg_ident}" rspec --tag ~executables --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb' || error 'failures during rspec tests'
 # hab pkg exec "${pkg_ident}" bundle install --jobs=3
-hab pkg exec "${pkg_ident}" rspec --profile -f progress --profile -- ./spec/unit
-hab pkg exec "${pkg_ident}" rspec --profile -f progress --profile -- ./spec/functional
-hab pkg exec "${pkg_ident}" rspec --profile -f progress --profile -- ./spec/integration
+export HAB_TEST="true"
+hab pkg exec "${pkg_ident}" rspec --profile -f progress -- ./spec/unit
+hab pkg exec "${pkg_ident}" rspec --profile -f progress -- ./spec/functional
+hab pkg exec "${pkg_ident}" rspec --profile -f progress -- ./spec/integration
 
