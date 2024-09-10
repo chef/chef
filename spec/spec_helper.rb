@@ -348,10 +348,7 @@ end
 # Enough stuff needs json serialization that I'm just adding it here for equality asserts
 require "chef/json_compat"
 
-STDERR.puts "<<<<<<<<<<<<<<<<<<<<==hab_test debug-->>>>>>>>>>>>>>>>>>>>"
-STDERR.puts ENV.inspect
-
-if hab_test?
+if ENV["HAB_TEST"] == "true"
   # the chef-bin executables not in the bundle if run through hab
   class Chef
     module Mixin
