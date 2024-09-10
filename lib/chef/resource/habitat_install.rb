@@ -238,7 +238,6 @@ class Chef
         def hab_command
           cmd = "#{Chef::Config[:file_cache_path]}/hab-install.sh"
           cmd << " -v #{new_resource.hab_version} " if new_resource.hab_version
-          cmd << " -t x86_64-linux-kernel2" if node["kernel"]["release"].to_i < 3
           cmd
         end
       end
