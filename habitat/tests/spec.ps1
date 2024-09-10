@@ -19,6 +19,8 @@ try {
 
     hab pkg binlink --force $PackageIdentifier
 
+    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "Machine")
+    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
     $env:HAB_TEST="true"
 
     gci env:
