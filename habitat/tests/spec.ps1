@@ -17,6 +17,7 @@ try {
     $gemPath = $pkgEnv | Where-Object { $_.StartsWith("`$env:GEM_PATH=") }
     SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
+    $env:HAB_TEST="true"
     hab pkg binlink --force $PackageIdentifier
     /hab/bin/rspec -f progress --profile -- ./spec/unit
     /hab/bin/rspec -f progress --profile -- ./spec/functional
