@@ -308,7 +308,7 @@ GEM
     racc (1.7.1)
     rack (2.2.7)
     rainbow (3.1.1)
-    rake (13.1.0)
+    rake (13.2.1)
     rb-readline (0.5.5)
     rdoc (6.3.4.1)
     regexp_parser (2.8.1)
@@ -461,7 +461,7 @@ DEPENDENCIES
   pry (>= 0.14.1)
   pry-byebug
   pry-stack_explorer
-  rake
+  rake (>= 12.3.3)
   rb-readline
   rdoc (~> 6.3.4)
   rspec
@@ -470,4 +470,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.18
+   2.3.26
