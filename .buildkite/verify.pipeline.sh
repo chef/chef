@@ -3,6 +3,9 @@
 # exit immediately on failure, or if an undefined variable is used
 set -eu
 
+# Set the CHEF_LICENSE_SERVER environment variable
+export CHEF_LICENSE_SERVER="http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
+
 echo "---"
 echo "env:"
 echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
