@@ -56,7 +56,7 @@ group(:knife_windows_deps) do
 end
 
 group(:development, :test) do
-  gem "rake"
+  gem "rake", ">= 12.3.3"
   gem "rspec"
   gem "webmock"
   gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
