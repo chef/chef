@@ -7,6 +7,7 @@ export CHEF_LICENSE_SERVER="http://hosted-license-service-lb-8000-606952349.us-w
 
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
+export HAB_BLDR_CHANNEL="LTS-2024"
 
 project_root="$(git rev-parse --show-toplevel)"
 pkg_ident="$1"
