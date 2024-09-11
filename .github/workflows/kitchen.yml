@@ -26,7 +26,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
     - uses: actions/checkout@v4
@@ -45,7 +44,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
@@ -66,7 +64,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
@@ -101,7 +98,6 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
@@ -125,7 +121,6 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
@@ -160,7 +155,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
     steps:
       - uses: actions/checkout@v4
