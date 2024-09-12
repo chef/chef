@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.18 -->
-## [v19.0.18](https://github.com/chef/chef/tree/v19.0.18) (2024-09-10)
+<!-- latest_release 19.0.19 -->
+## [v19.0.19](https://github.com/chef/chef/tree/v19.0.19) (2024-09-12)
 
 #### Merged Pull Requests
-- Chef-19 update habitat [#14599](https://github.com/chef/chef/pull/14599) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-19]Bump license_scout to 1.3.11 [#14607](https://github.com/chef/chef/pull/14607) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-19]Bump license_scout to 1.3.11 [#14607](https://github.com/chef/chef/pull/14607) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.19 -->
 - Chef-19 update habitat [#14599](https://github.com/chef/chef/pull/14599) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.18 -->
 - CVE update [#14596](https://github.com/chef/chef/pull/14596) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.17 -->
 - removing kernel 2 support [#14595](https://github.com/chef/chef/pull/14595) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.16 -->
