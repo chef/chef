@@ -1,4 +1,4 @@
-_chef_client_ruby="core/ruby31/3.1.2"
+_chef_client_ruby="core/ruby31"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
