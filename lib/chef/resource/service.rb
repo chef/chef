@@ -29,6 +29,9 @@ class Chef
       extend Chef::Platform::ServiceHelpers
 
       provides :service, target_mode: true
+      target_mode support: :full,
+        introduced: "15.1",
+        updated: "19.0"
 
       description "Use the **service** resource to manage a service."
 

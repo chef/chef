@@ -23,7 +23,9 @@ class Chef
     module FileClass
 
       def file_class
-        @host_os_file ||= if ChefUtils.windows?
+        @host_os_file ||= if ChefConfig::Config.target_mode?
+                            ::TargetIO::File
+                          elsif ChefUtils.windows?
                             require_relative "../win32/file"
                             Chef::ReservedNames::Win32::File
                           else

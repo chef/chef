@@ -25,7 +25,8 @@ class Chef
   class Resource
     class Sudo < Chef::Resource
 
-      provides(:sudo) { true }
+      provides(:sudo, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **sudo** resource to add or remove individual sudo entries using sudoers.d files."\
                   " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the"\
@@ -216,11 +217,11 @@ class Chef
         target = "#{new_resource.config_prefix}/sudoers.d/"
         directory(target)
 
-        Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
+        Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::TargetIO::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
         file_path = "#{target}#{new_resource.filename}"
 
         if new_resource.template
-          logger.trace("Template property provided, all other properties ignored.")
+          Chef::Log.trace("Template property provided, all other properties ignored.")
 
           template file_path do
             source new_resource.template
@@ -279,13 +280,13 @@ class Chef
         end
 
         def visudo_present?
-          return true if ::File.exist?(new_resource.visudo_binary)
+          return true if ::TargetIO::File.exist?(new_resource.visudo_binary)
 
           Chef::Log.warn("The visudo binary cannot be found at '#{new_resource.visudo_binary}'. Skipping sudoer file validation. If visudo is on this system you can specify the path using the 'visudo_binary' property.")
         end
 
         def visudo_content(path)
-          if ::File.exist?(path)
+          if ::TargetIO::File.exist?(path)
             "cat #{new_resource.config_prefix}/sudoers | #{new_resource.visudo_binary} -cf - && #{new_resource.visudo_binary} -cf %{path}"
           else
             "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -"

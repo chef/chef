@@ -18,7 +18,8 @@ class Chef
     class SelinuxPermissive < Chef::Resource
       unified_mode true
 
-      provides :selinux_permissive
+      provides :selinux_permissive, target_mode: true
+      target_mode support: :full
 
       description "Use the **selinux_permissive** resource to allow some domains to misbehave without stopping them. This is not as good as setting specific policies, but better than disabling SELinux entirely."
       introduced "18.0"

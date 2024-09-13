@@ -12,7 +12,8 @@ class Chef
   class Resource
     class KernelModule < Chef::Resource
 
-      provides :kernel_module
+      provides :kernel_module, target_mode: true
+      target_mode support: :full
 
       description "Use the **kernel_module** resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, enable, install, and uninstall modules."
       introduced "14.3"
@@ -232,7 +233,7 @@ class Chef
         # see if the module is listed in /proc/modules or not
         # @return [Boolean]
         def module_loaded?
-          /^#{new_resource.modname}/.match?(::File.read("/proc/modules"))
+          /^#{new_resource.modname}/.match?(::TargetIO::File.read("/proc/modules"))
         end
       end
     end

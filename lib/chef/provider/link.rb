@@ -28,7 +28,7 @@ class Chef
   class Provider
     class Link < Chef::Provider
 
-      provides :link
+      provides :link, target_mode: true
 
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::FileClass
@@ -43,8 +43,8 @@ class Chef
           )
         else
           current_resource.link_type(:hard)
-          if ::File.exist?(current_resource.target_file)
-            if new_resource.to && ::File.exist?(new_resource.to) &&
+          if ::TargetIO::File.exist?(current_resource.target_file)
+            if new_resource.to && ::TargetIO::File.exist?(new_resource.to) &&
                 file_class.stat(current_resource.target_file).ino ==
                     file_class.stat(new_resource.to).ino
               current_resource.to(canonicalize(new_resource.to))
@@ -103,14 +103,14 @@ class Chef
             # However if the new symlink will point to a file and the current symlink is pointing at a
             # directory we want to throw an exception and calling ::File.unlink on the directory symlink
             # will throw the correct ones.
-            if ChefUtils.windows? && ::File.directory?(new_resource.to) &&
-                ::File.directory?(current_resource.target_file)
+            if ChefUtils.windows? && ::TargetIO::File.directory?(new_resource.to) &&
+                ::TargetIO::File.directory?(current_resource.target_file)
               converge_by("unlink existing windows symlink to dir at #{new_resource.target_file}") do
-                ::Dir.unlink(new_resource.target_file)
+                ::TargetIO::Dir.unlink(new_resource.target_file)
               end
             else
               converge_by("unlink existing symlink to file at #{new_resource.target_file}") do
-                ::File.unlink(new_resource.target_file)
+                ::TargetIO::File.unlink(new_resource.target_file)
               end
             end
           end
@@ -145,14 +145,14 @@ class Chef
 
       action :delete do
         if current_resource.to # Exists
-          if ChefUtils.windows? && ::File.directory?(current_resource.target_file)
+          if ChefUtils.windows? && ::TargetIO::File.directory?(current_resource.target_file)
             converge_by("delete link to dir at #{new_resource.target_file}") do
-              ::Dir.delete(new_resource.target_file)
+              ::TargetIO::Dir.delete(new_resource.target_file)
               logger.info("#{new_resource} deleted")
             end
           else
             converge_by("delete link to file at #{new_resource.target_file}") do
-              ::File.delete(new_resource.target_file)
+              ::TargetIO::File.delete(new_resource.target_file)
               logger.info("#{new_resource} deleted")
             end
           end

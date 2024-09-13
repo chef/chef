@@ -421,7 +421,14 @@ module ChefConfig
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { PathHelper.join(file_cache_path, "#{ChefUtils::Dist::Infra::CLIENT}-running.pid") }
+    # In Target Mode, the node name will be used as a prefix to allow
+    # parallel execution of Chef against different targets
+    default(:lockfile) do
+      prefix = ""
+      prefix = "#{ChefConfig::Config.node_name}-" if ChefConfig::Config.target_mode?
+
+      PathHelper.join(file_cache_path, "#{prefix}#{ChefUtils::Dist::Infra::CLIENT}-running.pid")
+    end
 
     ## Daemonization Settings ##
     # What user should Chef run as?

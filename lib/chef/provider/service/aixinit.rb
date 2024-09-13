@@ -57,7 +57,7 @@ class Chef
         end
 
         def enable_service
-          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
+          TargetIO::Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
             create_symlink(2, "S", @new_resource.priority)
@@ -72,7 +72,7 @@ class Chef
         end
 
         def disable_service
-          Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
+          TargetIO::Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"]).each { |f| ::File.delete(f) }
 
           if @new_resource.priority.is_a? Integer
             create_symlink(2, "K", 100 - @new_resource.priority)
@@ -86,13 +86,13 @@ class Chef
         end
 
         def create_symlink(run_level, status, priority)
-          ::File.symlink("/etc/rc.d/init.d/#{@new_resource.service_name}", "/etc/rc.d/rc#{run_level}.d/#{status}#{priority}#{@new_resource.service_name}")
+          ::TargetIO::File.symlink("/etc/rc.d/init.d/#{@new_resource.service_name}", "/etc/rc.d/rc#{run_level}.d/#{status}#{priority}#{@new_resource.service_name}")
         end
 
         def set_current_resource_attributes
           # assuming run level 2 for aix
           is_enabled = false
-          files = Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"])
+          files = TargetIO::Dir.glob(["/etc/rc.d/rc2.d/[SK][0-9][0-9]#{@new_resource.service_name}", "/etc/rc.d/rc2.d/[SK]#{@new_resource.service_name}"])
 
           priority = {}
 

@@ -22,7 +22,7 @@ require_relative "file"
 class Chef
   class Provider
     class RemoteFile < Chef::Provider::File
-      provides :remote_file
+      provides :remote_file, target_mode: true
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::RemoteFile::Content

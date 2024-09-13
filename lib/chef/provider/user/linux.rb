@@ -20,12 +20,17 @@ class Chef
   class Provider
     class User
       class Linux < Chef::Provider::User
-        provides :linux_user
-        provides :user, os: "linux"
+        provides :linux_user, target_mode: true
+        provides :user, os: "linux", target_mode: true
 
         def load_current_resource
           super
           load_shadow_options
+        end
+
+        def supports_ruby_shadow?
+          # For target mode, ruby-shadow is redirected to a file-based implementation
+          true unless ChefConfig::Config.target_mode?
         end
 
         def compare_user
