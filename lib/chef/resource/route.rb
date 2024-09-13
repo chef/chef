@@ -23,7 +23,8 @@ class Chef
   class Resource
     class Route < Chef::Resource
 
-      provides :route
+      provides :route, target_mode: true
+      target_mode support: :full
 
       default_action :add
       allowed_actions :add, :delete

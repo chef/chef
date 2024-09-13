@@ -23,7 +23,9 @@ class Chef
   class Resource
     class Script < Chef::Resource::Execute
 
-      provides :script
+      provides :script, target_mode: true
+      target_mode support: :full,
+        description: "Needs interpreter installed on target node."
 
       identity_attr :name
 

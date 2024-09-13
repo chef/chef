@@ -25,7 +25,7 @@ class Chef
       class Solaris < Chef::Provider::Service
         attr_reader :maintenance
 
-        provides :service, os: "solaris2"
+        provides :service, os: "solaris2", target_mode: true
 
         def initialize(new_resource, run_context = nil)
           super
@@ -39,7 +39,7 @@ class Chef
           @current_resource.service_name(@new_resource.service_name)
 
           [@init_command, @status_command].each do |cmd|
-            unless ::File.executable? cmd
+            unless ::TargetIO::File.executable? cmd
               raise Chef::Exceptions::Service, "#{cmd} not executable!"
             end
           end

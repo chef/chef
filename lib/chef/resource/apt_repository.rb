@@ -17,7 +17,6 @@
 #
 
 require_relative "../resource"
-require_relative "../http/simple"
 require "tmpdir" unless defined?(Dir.mktmpdir)
 module Addressable
   autoload :URI, "addressable/uri"
@@ -27,7 +26,8 @@ class Chef
   class Resource
     class AptRepository < Chef::Resource
 
-      provides(:apt_repository) { true }
+      provides(:apt_repository, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **apt_repository** resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."
       introduced "12.9"
@@ -99,7 +99,6 @@ class Chef
         ```
 
         **Add repository that needs custom options**:
-
         ```ruby
         apt_repository 'corretto' do
           uri          'https://apt.corretto.aws'
@@ -174,7 +173,7 @@ class Chef
         default: true, desired_state: false
 
       property :options, [String, Array],
-        description: "Additional options to set for the repository.",
+        description: "Additional options to set for the repository",
         default: [], coerce: proc { |x| Array(x) }
 
       default_action :add
@@ -290,8 +289,8 @@ class Chef
         def install_key_from_uri(key)
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
           cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
-          tmp_dir = Dir.mktmpdir(".gpg")
-          at_exit { FileUtils.remove_entry(tmp_dir) }
+          tmp_dir = TargetIO::Dir.mktmpdir(".gpg")
+          at_exit { TargetIO::FileUtils.remove_entry(tmp_dir) }
 
           declare_resource(key_type(key), cached_keyfile) do
             source key
@@ -361,7 +360,7 @@ class Chef
         # @return [void]
         def install_ppa_key(owner, repo)
           url = "https://launchpad.net/api/1.0/~#{owner}/+archive/#{repo}"
-          key_id = Chef::HTTP::Simple.new(url).get("signing_key_fingerprint").delete('"')
+          key_id = TargetIO::HTTP.new(url).get("signing_key_fingerprint").delete('"')
           install_key_from_keyserver(key_id, "keyserver.ubuntu.com")
         rescue Net::HTTPClientException => e
           raise "Could not access Launchpad ppa API: #{e.message}"
@@ -435,7 +434,7 @@ class Chef
         # @return [void]
         def cleanup_legacy_file!
           legacy_path = "/etc/apt/sources.list.d/#{new_resource.name}.list"
-          if new_resource.name != new_resource.repo_name && ::File.exist?(legacy_path)
+          if new_resource.name != new_resource.repo_name && ::TargetIO::File.exist?(legacy_path)
             converge_by "Cleaning up legacy #{legacy_path} repo file" do
               file legacy_path do
                 action :delete
@@ -501,7 +500,7 @@ class Chef
         return unless debian?
 
         cleanup_legacy_file!
-        if ::File.exist?("/etc/apt/sources.list.d/#{new_resource.repo_name}.list")
+        if ::TargetIO::File.exist?("/etc/apt/sources.list.d/#{new_resource.repo_name}.list")
           converge_by "Removing #{new_resource.repo_name} repository from /etc/apt/sources.list.d/" do
             apt_update new_resource.name do
               ignore_failure true

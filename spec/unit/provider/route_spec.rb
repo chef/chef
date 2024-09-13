@@ -117,7 +117,7 @@ describe Chef::Provider::Route do
       @node.automatic_attrs[:platform_family] = "rhel"
 
       route_file = StringIO.new
-      expect(File).to receive(:new).and_return(route_file)
+      expect(File).to receive(:open).and_yield(route_file)
       @resource_add = Chef::Resource::Route.new("192.168.1.0/24 via 192.168.0.1")
       @run_context.resource_collection << @resource_add
       allow(@provider).to receive(:shell_out!).and_return(true)
@@ -225,7 +225,7 @@ describe Chef::Provider::Route do
         @node.automatic_attrs[:platform_family] = platform_family
 
         route_file = StringIO.new
-        expect(File).to receive(:new).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
+        expect(File).to receive(:open).with("/etc/sysconfig/network-scripts/route-eth0", "w").and_return(route_file)
         @run_context.resource_collection << @new_resource
         @provider.generate_config
       end
@@ -234,8 +234,10 @@ describe Chef::Provider::Route do
         @node.automatic_attrs[:platform_family] = platform_family
 
         route_file = StringIO.new
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:open).and_call_original
         allow(File).to receive(:exist?).with("/etc/sysconfig/network").and_return(false)
-        expect(File).to receive(:new).with("/etc/sysconfig/network", "w").and_return(route_file)
+        expect(File).to receive(:open).with("/etc/sysconfig/network", "w").and_yield(route_file)
         @run_context.resource_collection << @default_resource
         @default_provider.generate_config
         expect(route_file.string).to match(/GATEWAY=10\.0\.0\.9/)
@@ -246,7 +248,7 @@ describe Chef::Provider::Route do
       @node.automatic_attrs[:platform_family] = "rhel"
 
       route_file = StringIO.new
-      expect(File).to receive(:new).and_return(route_file)
+      expect(File).to receive(:open).and_yield(route_file)
       @run_context.resource_collection << Chef::Resource::Route.new("192.168.1.0/24 via 192.168.0.1")
       @run_context.resource_collection << Chef::Resource::Route.new("192.168.2.0/24 via 192.168.0.1")
       @run_context.resource_collection << Chef::Resource::Route.new("192.168.3.0/24 via 192.168.0.1")
