@@ -647,6 +647,7 @@
     "LGRPID",
     "LHND",
     "libselinux",
+    "libyajl",
     "linuxbrew",
     "linuxmint",
     "LISTBOX",
