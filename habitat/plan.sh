@@ -59,7 +59,7 @@ do_setup_environment() {
   push_runtime_env GEM_PATH "${pkg_prefix}/vendor"
 
   set_runtime_env APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
-  set_runtime_env SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
+  set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
 }
@@ -96,6 +96,8 @@ do_prepare() {
 
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
+    build_line "Uninstalling Libyajl2 to prevent FFI from blowing up"
+    gem uninstall -I libyajl2
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
     build_line "Installing gems from git repos properly ..."

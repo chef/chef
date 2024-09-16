@@ -37,7 +37,7 @@ function Invoke-SetupEnvironment {
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
-    Set-RuntimeEnv -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
+    Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 }
@@ -94,6 +94,9 @@ function Invoke-Build {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
+
+        Write-BuildLine " ** Uninstalling Libyajl 2 to prevent FFI from blowing up" 
+        gem uninstall -I libyajl2
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
