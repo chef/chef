@@ -41,6 +41,8 @@ do_before() {
 }
 
 do_download() {
+  build_line "Setting up the safe directory for the build"
+  git config --global --add safe.directory /src
   build_line "Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
   # source is in this repo, so we're going to create an archive from the
   # appropriate path within the repo and place the generated tarball in the
@@ -87,9 +89,6 @@ do_prepare() {
     bundle config --local retry 5
     bundle config --local silence_root_warning 1
   )
-
-  build_line "Setting up the safe directory for the build"
-  git config --global --add safe.directory /src
 
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
