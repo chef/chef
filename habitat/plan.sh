@@ -88,6 +88,9 @@ do_prepare() {
     bundle config --local silence_root_warning 1
   )
 
+  build_line "Setting up the safe directory for the build"
+  git config --global --add safe.directory /src
+
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
