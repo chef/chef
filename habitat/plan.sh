@@ -98,8 +98,8 @@ do_prepare() {
 
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
-    build_line "Uninstalling Libyajl2 to prevent FFI from blowing up"
-    gem uninstall -I libyajl2
+    build_line "FFI needs ltmain.sh, running libtoolize to create it"
+    libtoolize
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
     build_line "Installing gems from git repos properly ..."

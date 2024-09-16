@@ -95,8 +95,8 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        Write-BuildLine " ** Uninstalling Libyajl 2 to prevent FFI from blowing up" 
-        gem uninstall -I libyajl2
+        Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
+        libtoolize
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
