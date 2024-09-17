@@ -98,11 +98,8 @@ function Invoke-Build {
         Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         libtoolize
 
-        Write-BuildLine " ** Now where the heck is my ltmain.sh file?"
-        find / -name ltmain.sh
-
-        Write-BuildLine " ** Now where the heck is my ltmain.sh file?"
-        echo $PATH
+        Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
+        PATH=$PATH:/usr/share/libtool/build-aux/
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
