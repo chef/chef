@@ -36,7 +36,7 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
-    Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
+    Set-RuntimeEnv FORCE_FFI_YAJL "ffi" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
     Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
@@ -78,7 +78,7 @@ function Invoke-Prepare {
         $env:HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL = "LTS-2024"
         $env:HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL= "LTS-2024"
 
-        gem install bundler:2.3.17
+        #gem install bundler #:2.3.17
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
@@ -100,6 +100,9 @@ function Invoke-Build {
 
         # Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         # libtoolize
+
+        Write-BuildLine " ** Echoing the MSYS2 Path"
+        echo $MSYS2_PATH_TYPE
 
         Write-BuildLine " ** Using PowerShell to find the errant files"
         gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
