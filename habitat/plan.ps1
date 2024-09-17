@@ -72,7 +72,7 @@ function Invoke-Prepare {
 @"%~dp0ruby.exe" "%~dpn0" %*
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";c:\\Program Files\\Git\\bin"
+        $env:Path += ";c:\\Program Files\\Git\\bin;$pkg_prefix\\msys64\\usr\\share\\libtool\\build-aux"
         $env:HAB_BLDR_CHANNEL = "LTS-2024"
         $env:HAB_STUDIO_SECRET_NODE_OPTIONS = "--dns-result-order=ipv4first"
         $env:HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL = "LTS-2024"
@@ -95,23 +95,23 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        Write-BuildLine " ** What is my pkg_prefix set to?"
-        Write-BuildLine $pkg_prefix
+        # Write-BuildLine " ** What is my pkg_prefix set to?"
+        # Write-BuildLine $pkg_prefix
 
         Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         libtoolize
 
-        Write-BuildLine " ** Using PowerShell to find the errant files"
-        gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
+        # Write-BuildLine " ** Using PowerShell to find the errant files"
+        # gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
         
-        # Write-BuildLine " ** Using Bash to find the errant files"
-        # find / -name ltmain.sh
+        # # Write-BuildLine " ** Using Bash to find the errant files"
+        # # find / -name ltmain.sh
 
-        Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
-        $env:PATH+=";/usr/share/libtool/build-aux/"
+        # Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
+        # $env:PATH+=";/usr/share/libtool/build-aux/"
 
-        Write-BuildLine " ** What is my Path set to?"
-        Write-BuildLine $env:Path
+        # Write-BuildLine " ** What is my Path set to?"
+        # Write-BuildLine $env:Path
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
