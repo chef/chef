@@ -106,6 +106,9 @@ function Invoke-Build {
         Write-BuildLine " ** What is my Path set to?"
         Write-BuildLine $env:Path
 
+        Write-BuildLine " ** What is my pkg_prefix set to?"
+        Write-BuildLine $pkg_prefix
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
