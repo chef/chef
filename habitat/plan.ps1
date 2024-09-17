@@ -98,8 +98,14 @@ function Invoke-Build {
         Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         libtoolize
 
+        Write-BuildLine " ** Using PowerShell to find the errant files"
+        gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
+        
+        Write-BuildLine " ** Using Bash to find the errant files"
+        find / -name ltmain.sh 2>/dev/null
+
         Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
-        $PATH+=";/usr/share/libtool/build-aux/"
+        $env:PATH+=";/usr/share/libtool/build-aux/"
 
         Write-BuildLine " ** What is my Path set to?"
         Write-BuildLine $env:Path
