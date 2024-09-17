@@ -99,7 +99,10 @@ function Invoke-Build {
         libtoolize
 
         Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
-        $PATH+=";usr/share/libtool/build-aux/"
+        $PATH+=";/usr/share/libtool/build-aux/"
+
+        Write-BuildLine " ** What is my Path set to?"
+        Write-BuildLine $env:Path
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
