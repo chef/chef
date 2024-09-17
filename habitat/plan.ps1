@@ -97,6 +97,9 @@ function Invoke-Build {
         Write-BuildLine " ** Now where the heck is my ltmain.sh file?"
         find / -name ltmain.sh
 
+        Write-BuildLine " ** Now where the heck is my ltmain.sh file?"
+        echo $PATH
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
