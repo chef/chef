@@ -102,7 +102,7 @@ function Invoke-Build {
         gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
         
         Write-BuildLine " ** Using Bash to find the errant files"
-        find / -name ltmain.sh 2>/dev/null
+        find / -name ltmain.sh
 
         Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
         $env:PATH+=";/usr/share/libtool/build-aux/"
