@@ -1,3 +1,4 @@
+$env:HAB_BLDR_CHANNEL = "LTS-2024"
 $pkg_name="chef-infra-client"
 
 $env:HAB_BLDR_CHANNEL="LTS-2024"
@@ -101,8 +102,8 @@ function Invoke-Build {
         Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         libtoolize
 
-        Write-BuildLine " ** Where is that configure.ac file again?"
-        gci -path c:\ -filter configure.ac -Recurse -ErrorAction SilentlyContinue
+        # Write-BuildLine " ** Where is that configure.ac file again?"
+        # gci -path c:\ -filter configure.ac -Recurse -ErrorAction SilentlyContinue
         # find / -name 'configure.ac'
 
         Write-BuildLine " ** Dumping MSYS environment variables"
@@ -113,9 +114,20 @@ function Invoke-Build {
 
         Write-BuildLine " ** Using PowerShell to find the errant files"
         gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
+
+        Write-BuildLine " ** What IS in that directory? "
+        gci -path $($plg_prefix + "\msys64\usr\share\libtool\build-aux")
         
         # # Write-BuildLine " ** Using Bash to find the errant files"
         # # find / -name ltmain.sh
+
+        Write-BuildLine "Setting up some things for ltmain.sh"
+        Pacman -S libtool --noconfirm
+        push-location $($pkg_prefix + "\msys64\usr\share\libtool")
+        autoreconf -fvi
+        Pop-Location
+
+        # C:\hab\studios\bk019205cedbdaaaf6718e\hab\pkgs\chef\ruby31-plus-devkit\3.1.6\20240904124118\msys64\usr\share\libtool  msys64\usr\share\libtool\build-aux
 
         # Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
         # $env:PATH+=";/usr/share/libtool/build-aux/"
