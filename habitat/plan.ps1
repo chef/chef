@@ -100,7 +100,8 @@ function Invoke-Build {
         libtoolize
 
         Write-BuildLine " ** Where is that configure.ac file again?"
-        find / -name 'configure.ac'
+        gci -path c:\ -filter configure.ac -Recurse -ErrorAction SilentlyContinue
+        # find / -name 'configure.ac'
 
         Write-BuildLine " ** Dumping MSYS environment variables"
         printenv
