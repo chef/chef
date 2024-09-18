@@ -12,6 +12,8 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
+  "core/openssl"
+  "core/libarchive"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
 )
@@ -94,11 +96,14 @@ function Invoke-Build {
         # Write-BuildLine " ** What is my pkg_prefix set to?"
         # Write-BuildLine $pkg_prefix
 
-        # Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
-        # libtoolize
+        Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
+        libtoolize
 
-        Write-BuildLine " ** Echoing the MSYS2 Path"
-        echo $MSYS2_PATH_TYPE
+        Write-BuildLine " ** Dumping MSYS environment variables"
+        printenv
+
+        # Write-BuildLine " ** Calling Automake now"
+        # automake
 
         Write-BuildLine " ** Using PowerShell to find the errant files"
         gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
