@@ -220,6 +220,7 @@ module Shell
   class Options
     include Mixlib::CLI
     include ChefConfig::Mixin::DotD
+    include ChefLicensing::CLIFlags::MixlibCLI
 
     def self.footer(text = nil)
       @footer = text if text
