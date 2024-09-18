@@ -10,6 +10,7 @@ PROGNAME=`basename $0`
 INSTALLER_DIR=${HAB_INSTALL_PATH}
 CONFIG_DIR=/etc/chef
 USAGE="usage: $0 [-v validation_key] ([-o organization] || [-u url])"
+CHEF_LEGACY_INSTALL_PATH=/opt/chef
 
 error_exit()
 {
@@ -27,6 +28,8 @@ if is_darwin; then
     mkdir -p "$PREFIX/bin"
 else
     PREFIX="/usr"
+    LEGACY_PREFIX=$CHEF_LEGACY_INSTALL_PATH/bin
+    mkdir -p $LEGACY_PREFIX
 fi
 
 validation_key=
@@ -75,6 +78,12 @@ rm -f $PREFIX/bin/chef-apply
 rm -f $PREFIX/bin/chef-shell
 rm -f $PREFIX/bin/ohai
 
+rm -f $LEGACY_PREFIX/chef-client
+rm -f $LEGACY_PREFIX/chef-solo
+rm -f $LEGACY_PREFIX/chef-apply
+rm -f $LEGACY_PREFIX/chef-shell
+rm -f $LEGACY_PREFIX/ohai
+
 ln -sf $INSTALLER_DIR/bin/chef-solo $PREFIX/bin || error_exit "Cannot link chef-solo to $PREFIX/bin"
 if [ -f "$INSTALLER_DIR/bin/chef-apply" ]; then
   ln -sf $INSTALLER_DIR/bin/chef-apply $PREFIX/bin || error_exit "Cannot link chef-apply to $PREFIX/bin"
@@ -87,6 +96,15 @@ ln -sf $INSTALLER_DIR/bin/ohai $PREFIX/bin || error_exit "Cannot link ohai to $P
 # We test for the presence of /usr/bin/chef-client to know if this script succeeds, so this
 # must appear as the last real action in the script
 ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link chef-client to $PREFIX/bin"
+
+# Some test suits and may be some other tools may expect the oath `/opt/chef/bin/` for some of
+# the binaries. Link to that as well.
+echo "Symlinjing executables to legacy prefix as well. Not made available through default \$PATH."
+ln -sf $INSTALLER_DIR/bin/chef-client $LEGACY_PREFIX/
+ln -sf $INSTALLER_DIR/bin/chef-solo $LEGACY_PREFIX/
+ln -sf $INSTALLER_DIR/bin/chef-apply $LEGACY_PREFIX/
+ln -sf $INSTALLER_DIR/bin/chef-shell $LEGACY_PREFIX/
+ln -sf $INSTALLER_DIR/bin/ohai $LEGACY_PREFIX/
 
 # make the base structure for chef to run
 # the sample client.rb is only written out of no chef config dir exists yet

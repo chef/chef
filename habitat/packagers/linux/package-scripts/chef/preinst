@@ -27,6 +27,11 @@ if [ -e $INSTALLER_DIR ]; then
   rm -rf $INSTALLER_DIR || true
 fi
 
+if [ -e $PREV_INSTALLER_DIR ]; then
+  echo "removing $PREV_INSTALLER_DIR..."
+  rm -rf $INSTALLER_DIR || true
+fi
+
 # Sometimes, on some platforms, we get an EBUSY error trying to delete this, which will cause issues
 # with the upgrades. So we move it so it won't interfere with the upgrade, then delete it, which will
 # cause the OS to free the space once it's no longer used (when the current chef run ends, or whatever
