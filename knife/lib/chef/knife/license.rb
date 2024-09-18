@@ -21,11 +21,11 @@ class Chef
   class Knife
     class License < Chef::Knife
       category "license"
-      banner <<BANNER
-knife license [--chef-license-key <LICENSE_KEY>]
-knife license list
-knife license add [--chef-license-key <LICENSE_KEY>]
-BANNER
+      banner <<~BANNER
+        knife license [--chef-license-key <LICENSE_KEY>]
+        knife license list
+        knife license add [--chef-license-key <LICENSE_KEY>]
+      BANNER
 
       deps do
         require "chef/utils/licensing_handler" unless defined?(ChefLicensing)
@@ -36,9 +36,10 @@ BANNER
         description: "Free/Trial/Commercial License key to activate the Chef product"
 
       def run
-        if ARGV[1] == "list"
+        case ARGV[1]
+        when "list"
           ChefLicensing.list_license_keys_info
-        elsif ARGV[1] == "add"
+        when "add"
           ChefLicensing.add_license
         else
           ChefLicensing.fetch_and_persist.each do |key|
