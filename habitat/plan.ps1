@@ -96,8 +96,8 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        # Write-BuildLine " ** What is my pkg_prefix set to?"
-        # Write-BuildLine $pkg_prefix
+        Write-BuildLine " ** What is my pkg_prefix set to?"
+        Write-BuildLine $pkg_prefix
 
         Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         libtoolize
@@ -116,7 +116,8 @@ function Invoke-Build {
         gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
 
         Write-BuildLine " ** What IS in that directory? "
-        gci -path $($plg_prefix + "\msys64\usr\share\libtool\build-aux")
+        $mypath = $pkg_prefix + "\msys64\usr\share\libtool\build-aux"
+        gci -path $mypath
         
         # # Write-BuildLine " ** Using Bash to find the errant files"
         # # find / -name ltmain.sh
