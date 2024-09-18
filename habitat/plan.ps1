@@ -101,6 +101,9 @@ function Invoke-Build {
         Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
         libtoolize
 
+        Write-BuildLine " ** Where is that configure.ac file again?"
+        find / -name 'configure.ac'
+
         Write-BuildLine " ** Dumping MSYS environment variables"
         printenv
 
