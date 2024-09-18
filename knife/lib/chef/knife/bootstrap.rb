@@ -1204,14 +1204,14 @@ class Chef
       def warn_license_usage
         return if config[:license_url].present?
 
-        ui.warn(<<MSG
-+-------------------------------------------------------------------------------------------------------+
-Knife bootstrap now needs a license key to allow uninterrupted download of Infra Client.
-It is easy to add a license by following the command <knife license>.
-If you are a commercial customer, you may get a license from the customer portal else you can generate
-from https://www.chef.io/license-generation-free-trial
-+-------------------------------------------------------------------------------------------------------+
-MSG
+        ui.warn(<<~MSG
+          +-------------------------------------------------------------------------------------------------------+
+          Knife bootstrap now needs a license key to allow uninterrupted download of Infra Client.
+          It is easy to add a license by following the command <knife license>.
+          If you are a commercial customer, you may get a license from the customer portal else you can generate
+          from https://www.chef.io/license-generation-free-trial
+          +-------------------------------------------------------------------------------------------------------+
+        MSG
                )
       end
     end
