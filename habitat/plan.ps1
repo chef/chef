@@ -115,6 +115,12 @@ function Invoke-Build {
         Write-BuildLine " ** Using PowerShell to find the errant files"
         gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
 
+        # $pkg_prefix = C:\hab\studios\bk0192068319dee73c3831\hab\pkgs\ci\chef-infra-client\19.0.20\20240918191304
+        #               C:\hab\studios\bk0192068319dee73c3831\hab\pkgs\chef\ruby31-plus-devkit\3.1.6\20240904124118\msys64\usr\share\libtool\build-aux
+        
+        Write-BuildLine " ** My Ruby directory is : \r" 
+        $(Get-HabPackagePath ruby31-plus-devkit)
+
         Write-BuildLine " ** What IS in that directory? "
         $mypath = $pkg_prefix + "\msys64\usr\share\libtool\build-aux"
         gci -path $mypath
