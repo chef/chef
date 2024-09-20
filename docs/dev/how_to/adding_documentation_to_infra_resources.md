@@ -1,4 +1,4 @@
-# Adding documentation to resources:
+# Adding documentation to Infra resources:
 The documentation for Infra Client resources resides at [chef-wed-docs repository](https://github.com/chef/chef-web-docs/).
 Currently in order to reflect the documentation added to Infra Client resources on the [website](https://docs.chef.io/) we need to follow some manual steps.
 
