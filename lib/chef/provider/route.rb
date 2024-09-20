@@ -25,7 +25,7 @@ class Chef
   class Provider
     class Route < Chef::Provider
 
-      provides :route
+      provides :route, target_mode: true
 
       attr_accessor :is_running
 
@@ -98,7 +98,7 @@ class Chef
         # For linux, we use /proc/net/route file to read proc table info
         return unless linux?
 
-        route_file = ::File.open("/proc/net/route", "r")
+        route_file = ::TargetIO::File.open("/proc/net/route", "r")
 
         # Read all routes
         while (line = route_file.gets)
@@ -186,24 +186,24 @@ class Chef
               network_file_name = "/etc/sysconfig/network"
               converge_by("write route default route to #{network_file_name}") do
                 logger.trace("#{new_resource} writing default route #{new_resource.gateway} to #{network_file_name}")
-                if ::File.exist?(network_file_name)
+                if ::TargetIO::File.exist?(network_file_name)
                   network_file = ::Chef::Util::FileEdit.new(network_file_name)
                   network_file.search_file_replace_line(/^GATEWAY=/, "GATEWAY=#{new_resource.gateway}")
                   network_file.insert_line_if_no_match(/^GATEWAY=/, "GATEWAY=#{new_resource.gateway}")
                   network_file.write_file
                 else
-                  network_file = ::File.new(network_file_name, "w")
-                  network_file.puts("GATEWAY=#{new_resource.gateway}")
-                  network_file.close
+                  ::TargetIO::File.open(network_file_name, "w") do |network_file|
+                    network_file.puts("GATEWAY=#{new_resource.gateway}")
+                  end
                 end
               end
             else
               network_file_name = "/etc/sysconfig/network-scripts/route-#{k}"
               converge_by("write route route.#{k}\n#{conf[k]} to #{network_file_name}") do
-                network_file = ::File.new(network_file_name, "w")
-                network_file.puts(conf[k])
+                ::TargetIO::File.open(network_file_name, "w") do |network_file|
+                  network_file.puts(conf[k])
+                end
                 logger.trace("#{new_resource} writing route.#{k}\n#{conf[k]}")
-                network_file.close
               end
             end
           end

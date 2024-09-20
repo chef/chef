@@ -26,7 +26,7 @@ class Chef
 
         attr_accessor :init_command
 
-        provides :service, os: "!windows"
+        provides :service, os: "!windows", target_mode: true
 
         def self.supports?(resource, action)
           service_script_exist?(:initd, resource.service_name)
@@ -42,7 +42,7 @@ class Chef
           shared_resource_requirements
           requirements.assert(:start, :stop, :restart, :reload) do |a|
             a.assertion do
-              custom_command_for_action?(action) || ::File.exist?(default_init_command)
+              custom_command_for_action?(action) || ::TargetIO::File.exist?(default_init_command)
             end
             a.failure_message(Chef::Exceptions::Service, "#{default_init_command} does not exist!")
             a.whyrun("Init script '#{default_init_command}' doesn't exist, assuming a prior action would have created it.") do

@@ -92,6 +92,7 @@ describe Chef::Resource::RhsmSubscription do
     before do
       allow(Mixlib::ShellOut).to receive(:new).and_return(cmd)
       allow(cmd).to receive(:run_command)
+      allow(cmd).to receive(:live_stream).and_return(output)
       allow(cmd).to receive(:stdout).and_return(output)
     end
 
@@ -127,6 +128,7 @@ describe Chef::Resource::RhsmSubscription do
     it "parses the output correctly" do
       allow(Mixlib::ShellOut).to receive(:new).and_return(cmd)
       allow(cmd).to receive(:run_command)
+      allow(cmd).to receive(:live_stream).and_return(output)
       allow(cmd).to receive(:stdout).and_return(output)
 
       expect(provider.serials_by_pool["pool1"]).to eq("serial1")

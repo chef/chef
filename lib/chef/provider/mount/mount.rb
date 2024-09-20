@@ -42,9 +42,9 @@ class Chef
 
         def mountable?
           # only check for existence of non-remote devices
-          if device_should_exist? && !::File.exist?(device_real)
+          if device_should_exist? && !::TargetIO::File.exist?(device_real)
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif @new_resource.mount_point != "none" && !::File.exist?(@new_resource.mount_point)
+          elsif @new_resource.mount_point != "none" && !::TargetIO::File.exist?(@new_resource.mount_point)
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
 
@@ -54,11 +54,11 @@ class Chef
         def enabled?
           # Check to see if there is a entry in /etc/fstab. Last entry for a volume wins.
           enabled = false
-          unless ::File.exist?("/etc/fstab")
+          unless ::TargetIO::File.exist?("/etc/fstab")
             logger.debug "/etc/fstab not found, treating mount as not-enabled"
             return
           end
-          ::File.foreach("/etc/fstab") do |line|
+          ::TargetIO::File.foreach("/etc/fstab") do |line|
             case line
             when /^[#\s]/
               next
@@ -81,8 +81,8 @@ class Chef
           # "mount" outputs the mount points as real paths. Convert
           # the mount_point of the resource to a real path in case it
           # contains symlinks in its parents dirs.
-          real_mount_point = if ::File.exist? @new_resource.mount_point
-                               ::File.realpath(@new_resource.mount_point)
+          real_mount_point = if ::TargetIO::File.exist? @new_resource.mount_point
+                               ::TargetIO::File.realpath(@new_resource.mount_point)
                              else
                                @new_resource.mount_point
                              end
@@ -168,7 +168,7 @@ class Chef
             # and order will remain the same.
             edit_fstab
           else
-            ::File.open("/etc/fstab", "a") do |fstab|
+            ::TargetIO::File.open("/etc/fstab", "a") do |fstab|
               fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
               logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
             end
@@ -229,12 +229,12 @@ class Chef
           if network_device?
             # ignore trailing slash
             Regexp.escape(device_real) + "/?"
-          elsif ::File.symlink?(device_real)
+          elsif ::TargetIO::File.symlink?(device_real)
             # This regular expression tries to match device_real. If that does not match it will try to match the target of device_real.
             # So given a symlink like this:
             # /dev/mapper/vgroot-tmp.vol -> /dev/dm-9
             # First it will try to match "/dev/mapper/vgroot-tmp.vol". If there is no match it will try matching for "/dev/dm-9".
-            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::File.readlink(device_real), ::File.dirname(device_real)))})"
+            "(?:#{Regexp.escape(device_real)}|#{Regexp.escape(::File.expand_path(::TargetIO::File.readlink(device_real), ::File.dirname(device_real)))})"
           else
             Regexp.escape(device_real)
           end
@@ -261,7 +261,7 @@ class Chef
             contents = []
 
             found = false
-            ::File.readlines("/etc/fstab").reverse_each do |line|
+            ::TargetIO::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
                 found = true
                 if remove
@@ -276,7 +276,7 @@ class Chef
               end
             end
 
-            ::File.open("/etc/fstab", "w") do |fstab|
+            ::TargetIO::File.open("/etc/fstab", "w") do |fstab|
               contents.reverse_each { |line| fstab.puts line }
             end
           else

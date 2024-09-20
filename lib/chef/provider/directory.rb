@@ -27,12 +27,12 @@ class Chef
   class Provider
     class Directory < Chef::Provider::File
 
-      provides :directory
+      provides :directory, target_mode: true
 
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(new_resource.name)
         current_resource.path(new_resource.path)
-        if ::File.exist?(current_resource.path) && @action != :create_if_missing
+        if ::TargetIO::File.exist?(current_resource.path) && @action != :create_if_missing
           load_resource_attributes_from_file(current_resource)
         end
         current_resource
@@ -50,15 +50,15 @@ class Chef
             if new_resource.recursive
               does_parent_exist = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
-                if ::File.exist?(base_dir)
-                  ::File.directory?(base_dir)
+                if ::TargetIO::File.exist?(base_dir)
+                  ::TargetIO::File.directory?(base_dir)
                 else
                   does_parent_exist.call(base_dir)
                 end
               end
               does_parent_exist.call(new_resource.path)
             else
-              ::File.directory?(parent_directory)
+              ::TargetIO::File.directory?(parent_directory)
             end
           end
           a.failure_message(Chef::Exceptions::EnclosingDirectoryDoesNotExist, "Parent directory #{parent_directory} does not exist, cannot create #{new_resource.path}")
@@ -73,7 +73,7 @@ class Chef
               # make sure we have write permissions to that directory
               is_parent_writable = lambda do |base_dir|
                 base_dir = ::File.dirname(base_dir)
-                if ::File.exist?(base_dir)
+                if ::TargetIO::File.exist?(base_dir)
                   if Chef::FileAccessControl.writable?(base_dir)
                     true
                   elsif Chef::Util::PathHelper.is_sip_path?(base_dir, node)
@@ -89,7 +89,7 @@ class Chef
             else
               # in why run mode & parent directory does not exist no permissions check is required
               # If not in why run, permissions must be valid and we rely on prior assertion that dir exists
-              if !whyrun_mode? || ::File.exist?(parent_directory)
+              if !whyrun_mode? || ::TargetIO::File.exist?(parent_directory)
                 if Chef::FileAccessControl.writable?(parent_directory)
                   true
                 elsif Chef::Util::PathHelper.is_sip_path?(parent_directory, node)
@@ -108,8 +108,8 @@ class Chef
 
         requirements.assert(:delete) do |a|
           a.assertion do
-            if ::File.exist?(new_resource.path)
-              ::File.directory?(new_resource.path) && Chef::FileAccessControl.writable?(new_resource.path)
+            if ::TargetIO::File.exist?(new_resource.path)
+              ::TargetIO::File.directory?(new_resource.path) && Chef::FileAccessControl.writable?(new_resource.path)
             else
               true
             end
@@ -122,12 +122,12 @@ class Chef
       end
 
       action :create, description: "Create a directory. If a directory already exists (but does not match), update that directory to match." do
-        unless ::File.exist?(new_resource.path)
+        unless ::TargetIO::File.exist?(new_resource.path)
           converge_by("create new directory #{new_resource.path}") do
             if new_resource.recursive == true
-              ::FileUtils.mkdir_p(new_resource.path)
+              ::TargetIO::FileUtils.mkdir_p(new_resource.path)
             else
-              ::Dir.mkdir(new_resource.path)
+              ::TargetIO::Dir.mkdir(new_resource.path)
             end
             logger.info("#{new_resource} created directory #{new_resource.path}")
           end
@@ -138,15 +138,15 @@ class Chef
       end
 
       action :delete, description: "Delete a directory." do
-        if ::File.exist?(new_resource.path)
+        if ::TargetIO::File.exist?(new_resource.path)
           converge_by("delete existing directory #{new_resource.path}") do
             if new_resource.recursive == true
               # we don't use rm_rf here because it masks all errors, including
               # IO errors or permission errors that would prevent the deletion
-              FileUtils.rm_r(new_resource.path)
+              ::TargetIO::FileUtils.rm_r(new_resource.path)
               logger.info("#{new_resource} deleted #{new_resource.path} recursively")
             else
-              ::Dir.delete(new_resource.path)
+              ::TargetIO::Dir.delete(new_resource.path)
               logger.info("#{new_resource} deleted #{new_resource.path}")
             end
           end

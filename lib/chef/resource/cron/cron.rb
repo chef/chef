@@ -28,7 +28,8 @@ class Chef
 
       use "cron_shared"
 
-      provides :cron
+      provides :cron, target_mode: true
+      target_mode support: :full
 
       description "Use the **cron** resource to manage cron entries for time-based job scheduling. Properties for a schedule will default to * if not provided. The cron resource requires access to a crontab program, typically cron. Warning: The cron resource should only be used to modify an entry in a crontab file. The `cron_d` resource directly manages `cron.d` files. This resource ships in #{ChefUtils::Dist::Infra::PRODUCT} 14.4 or later and can also be found in the [cron](https://github.com/chef-cookbooks/cron) cookbook) for previous #{ChefUtils::Dist::Infra::PRODUCT} releases."
 
