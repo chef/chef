@@ -27,6 +27,7 @@ pkg_deps=(
   core/libffi
   core/coreutils
   core/libarchive
+  core/openssl
 )
 pkg_svc_user=root
 
@@ -49,6 +50,9 @@ do_download() {
   ( cd "${SRC_PATH}" || exit_with "unable to enter hab-src directory" 1
     git archive --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   )
+
+  build_line " ** Setting the safe directory for /src"
+  git config --global --add safe.directory /src
 }
 
 do_verify() {
@@ -63,6 +67,9 @@ do_setup_environment() {
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
+
+  build_line " ** What is my pkg_prefix?"
+  echo $pkg_prefix
 }
 
 do_prepare() {
