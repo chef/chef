@@ -6,6 +6,8 @@
 # - if you think you are a bash wizard, you probably do not understand
 #   this programming language.  do not touch.
 # - if you are under 40, get peer review from your elders.
+# Set umask to 022 to allow non-root users to create files with appropriate permissions
+umask 022
 
 # This whole file exists because on some versions of RPM, during upgrades, the postrm script
 # runs AFTER the installation of the upgraded RPM. Oops. See https://github.com/chef/chef/pull/7964
