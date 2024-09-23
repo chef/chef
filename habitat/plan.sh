@@ -35,10 +35,11 @@ pkg_version() {
   # build_line " ** Where is the version file? - asking from the pkg_version method"
   #_chef_path="$(pkg_path_for chef-infra-client)"
   # sleep 5h
-  # cat "${SRC_PATH}/VERSION"
+  cat "/src/VERSION"
   # cat "/src/VERSION"
-  value=`cat /src/VERSION`
-  echo "$value"
+  #value=$HAB_CACHE_SRC_PATH/VERSION
+  # value=`cat /src/VERSION`
+  #echo "$value"
 }
 
 do_before() {
@@ -53,8 +54,9 @@ do_download() {
   # source is in this repo, so we're going to create an archive from the
   # appropriate path within the repo and place the generated tarball in the
   # location expected by do_unpack
-  ( cd "${SRC_PATH}" || exit_with "unable to enter hab-src directory" 1
-    git archive --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
+  git config --global --add safe.directory /src
+  ( cd /src || exit_with "unable to enter hab-src directory" 1
+    git archive --prefix="${pkg_name}-${pkg_version}/" --output="/src/${pkg_filename}" HEAD
   )
 }
 
@@ -75,15 +77,15 @@ do_setup_environment() {
   #echo $pkg_prefix
 
   #build_line " ** Where the hell is git?"
-  _git_path="$(pkg_path_for core/git)/bin/git"
+  # _git_path="$(pkg_path_for core/git)/bin/git"
   #echo $_git_path
-  export _git_path
+  # export _git_path
 
 #   build_line " ** AND where is the version File?"
 #  find $pkg_prefix -name "VERSION"
 
-  build_line " ** Setting the /src directory to safe"
-  $_git_path config --global --add safe.directory /src
+  # build_line " ** Setting the /src directory to safe"
+  # $_git_path config --global --add safe.directory /src
 }
 
 do_prepare() {
@@ -121,6 +123,8 @@ do_prepare() {
 
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
+    build_line " ** The Cache Path is:"
+	echo $CACHE_PATH
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
     build_line "Installing gems from git repos properly ..."
