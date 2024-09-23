@@ -32,7 +32,13 @@ pkg_deps=(
 pkg_svc_user=root
 
 pkg_version() {
-  cat "${SRC_PATH}/VERSION"
+  # build_line " ** Where is the version file? - asking from the pkg_version method"
+  #_chef_path="$(pkg_path_for chef-infra-client)"
+  # sleep 5h
+  # cat "${SRC_PATH}/VERSION"
+  # cat "/src/VERSION"
+  value=`cat /src/VERSION`
+  echo "$value"
 }
 
 do_before() {
@@ -50,9 +56,6 @@ do_download() {
   ( cd "${SRC_PATH}" || exit_with "unable to enter hab-src directory" 1
     git archive --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   )
-
-  build_line " ** Setting the safe directory for /src"
-  git config --global --add safe.directory /src
 }
 
 do_verify() {
@@ -68,8 +71,19 @@ do_setup_environment() {
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
 
-  build_line " ** What is my pkg_prefix?"
-  echo $pkg_prefix
+  #build_line " ** What is my pkg_prefix?"
+  #echo $pkg_prefix
+
+  #build_line " ** Where the hell is git?"
+  _git_path="$(pkg_path_for core/git)/bin/git"
+  #echo $_git_path
+  export _git_path
+
+#   build_line " ** AND where is the version File?"
+#  find $pkg_prefix -name "VERSION"
+
+  build_line " ** Setting the /src directory to safe"
+  $_git_path config --global --add safe.directory /src
 }
 
 do_prepare() {
@@ -82,6 +96,9 @@ do_prepare() {
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
   export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
+
+  build_line " ** Securing the /src directory"
+  git config --global --add safe.directory /src
 
   ( cd "$CACHE_PATH"
     bundle config --local build.nokogiri "--use-system-libraries \
