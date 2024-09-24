@@ -33,7 +33,7 @@ class Chef
       **Tap a repository**:
 
       ```ruby
-      homebrew_tap 'petere/postgresql'
+      homebrew_tap 'apple/homebrew-apple'
       ```
       DOC
 
@@ -85,7 +85,7 @@ class Chef
       end
 
       action_class do
-        # Is the passed tap already tapped
+        # Check if the passed tap is already tapped
         #
         # @return [Boolean]
         def tapped?(name)
