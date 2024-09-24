@@ -56,7 +56,7 @@ do_download() {
   # location expected by do_unpack
   git config --global --add safe.directory /src
   ( cd /src || exit_with "unable to enter hab-src directory" 1
-    git archive --prefix="${pkg_name}-${pkg_version}/" --output="/src/${pkg_filename}" HEAD
+    git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   )
 }
 
