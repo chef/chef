@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.15 -->
-## [v18.5.15](https://github.com/chef/chef/tree/v18.5.15) (2024-09-23)
+<!-- latest_release 18.5.16 -->
+## [v18.5.16](https://github.com/chef/chef/tree/v18.5.16) (2024-09-24)
 
 #### Merged Pull Requests
-- This change is only to test out whether expeditor bumps versions on merge [#14609](https://github.com/chef/chef/pull/14609) ([neha-p6](https://github.com/neha-p6))
+- [Chef-18] Fix issue in automated expeditor version bump not bumping the versions in Gemfile.lock [#14610](https://github.com/chef/chef/pull/14610) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-18] Fix issue in automated expeditor version bump not bumping the versions in Gemfile.lock [#14610](https://github.com/chef/chef/pull/14610) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.16 -->
 - This change is only to test out whether expeditor bumps versions on merge [#14609](https://github.com/chef/chef/pull/14609) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.15 -->
 - [Chef-18]Bump license_scout to fix build failures [#14606](https://github.com/chef/chef/pull/14606) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.14 -->
 - Updating rake to overcome a CVE [#14604](https://github.com/chef/chef/pull/14604) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.13 -->
