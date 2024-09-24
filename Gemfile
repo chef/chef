@@ -90,3 +90,6 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end
 end
+
+# verify if license scout is able to find the license file in the root directory of the ruby project
+gem "chef-licensing", git: 'https://github.com/chef/chef-licensing.git', branch: 'ss/place-license-in-root-dir-of-ruby-project', glob: 'components/ruby/*.gemspec'
