@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.16 -->
-## [v18.5.16](https://github.com/chef/chef/tree/v18.5.16) (2024-09-24)
+<!-- latest_release 18.5.17 -->
+## [v18.5.17](https://github.com/chef/chef/tree/v18.5.17) (2024-09-24)
 
 #### Merged Pull Requests
-- [Chef-18] Fix issue in automated expeditor version bump not bumping the versions in Gemfile.lock [#14610](https://github.com/chef/chef/pull/14610) ([neha-p6](https://github.com/neha-p6))
+- [chef18] Enhance resource inspector to understand LWRP files containing multiple resources [#14592](https://github.com/chef/chef/pull/14592) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef18] Enhance resource inspector to understand LWRP files containing multiple resources [#14592](https://github.com/chef/chef/pull/14592) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.5.17 -->
 - [Chef-18] Fix issue in automated expeditor version bump not bumping the versions in Gemfile.lock [#14610](https://github.com/chef/chef/pull/14610) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.16 -->
 - This change is only to test out whether expeditor bumps versions on merge [#14609](https://github.com/chef/chef/pull/14609) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.15 -->
 - [Chef-18]Bump license_scout to fix build failures [#14606](https://github.com/chef/chef/pull/14606) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.14 -->
