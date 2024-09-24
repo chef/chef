@@ -28,6 +28,14 @@ class Chef
 
       description "Use the **homebrew_tap** resource to add additional formula repositories to the Homebrew package manager."
       introduced "14.0"
+  
+      examples <<~DOC
+      **Tap a repository**:
+
+      ```ruby
+      homebrew_tap 'petere/postgresql'
+      ```
+      DOC
 
       include Chef::Mixin::Homebrew
 
