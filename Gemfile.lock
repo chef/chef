@@ -1,4 +1,18 @@
 GIT
+  remote: https://github.com/chef/chef-licensing.git
+  revision: 39a0bca7bc3446a57c83eba0838a05c235c85fd5
+  branch: ss/place-license-in-root-dir-of-ruby-project
+  glob: components/ruby/*.gemspec
+  specs:
+    chef-licensing (1.0.3)
+      activesupport (~> 7.0, < 7.1)
+      chef-config (>= 15)
+      faraday (>= 1, < 3)
+      faraday-http-cache
+      tty-prompt (~> 0.23)
+      tty-spinner (~> 0.9.3)
+
+GIT
   remote: https://github.com/chef/ohai.git
   revision: a235eacc7cb8ee9dbc7fce6bbc7cb311177b8282
   branch: main
@@ -49,7 +63,6 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.0.21)
-      chef-licensing (>= 0.7.5)
       chef-utils (= 19.0.21)
       chef-vault
       chef-zero (>= 14.0.11)
@@ -84,7 +97,6 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.0.21)
-      chef-licensing (>= 0.7.5)
       chef-powershell (~> 18.1.0)
       chef-utils (= 19.0.21)
       chef-vault
@@ -189,13 +201,6 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.3.0)
     byebug (11.1.3)
-    chef-licensing (1.0.2)
-      activesupport (~> 7.0, < 7.1)
-      chef-config (>= 15)
-      faraday (>= 1, < 3)
-      faraday-http-cache
-      tty-prompt (~> 0.23)
-      tty-spinner (~> 0.9.3)
     chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
@@ -241,9 +246,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
-    ffi (1.16.3-x64-mingw32)
-    ffi (1.16.3-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -262,7 +264,7 @@ GEM
     http-cookie (1.0.5)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (1.14.5)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
     inspec-core (5.22.40)
@@ -522,6 +524,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-licensing!
   chef-utils!
   chef-vault
   cheffish (>= 17)
