@@ -1,4 +1,4 @@
 {
-    "chef_foundation": "3.2.8",
+    "chef_foundation": "3.2.10",
     "omnibus_toolchain": "3.0.28"
 }
