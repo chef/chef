@@ -59,6 +59,24 @@ namespace :pre_install do
   task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
 end
 
+desc "Builds and Copies powershell_exec related binaries from the latest built Habitat Packages"
+task :update_chef_powershell_dlls do
+  raise "This task must be run on Windows since we are installing a Windows targeted package!" unless Gem.win_platform?
+
+  require "mkmf"
+  raise "Unable to locate Habitat cli. Please install Habitat cli before invoking this task!" unless find_executable "hab"
+
+  sh("hab pkg build Habitat")
+
+  sh("hab pkg install chef/chef-powershell-shim")
+
+  x64 = `hab pkg path chef/chef-powershell-shim`.chomp.tr("\\", "/")
+
+  FileUtils.rm_rf(Dir["bin/ruby_bin_folder/AMD64/*"])
+  puts "Copying #{x64}/bin/* to chef-powershell/bin/ruby_bin_folder/AMD64"
+  FileUtils.cp_r(Dir["#{x64}/bin/*"], "chef-powershell/bin/ruby_bin_folder/AMD64")
+end
+
 # hack in all the preinstall tasks to occur before the traditional install task
 task install: "pre_install:all"
 # make sure we build the correct gemspec on windows
