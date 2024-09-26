@@ -32,6 +32,7 @@ pkg_deps=(
 pkg_svc_user=root
 
 pkg_version() {
+  cat "${SRC_PATH}/VERSION"
   # build_line " ** Where is the version file? - asking from the pkg_version method"
   #_chef_path="$(pkg_path_for chef-infra-client)"
   # sleep 5h
@@ -48,12 +49,12 @@ do_before() {
   # We must wait until we update the pkg_version to use the pkg_version
   pkg_filename="${pkg_name}-${pkg_version}.tar.gz"
 }
-
 do_download() {
   build_line "Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
   # source is in this repo, so we're going to create an archive from the
   # appropriate path within the repo and place the generated tarball in the
   # location expected by do_unpack
+
   git config --global --add safe.directory /src
   ( cd /src || exit_with "unable to enter hab-src directory" 1
     git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
@@ -64,11 +65,11 @@ do_verify() {
   build_line "Skipping checksum verification on the archive we just created."
   return 0
 }
-
 do_setup_environment() {
   push_runtime_env GEM_PATH "${pkg_prefix}/vendor"
 
   set_runtime_env APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
+  set_runtime_env SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
@@ -114,7 +115,6 @@ do_prepare() {
     bundle config --local retry 5
     bundle config --local silence_root_warning 1
   )
-
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
@@ -133,7 +133,6 @@ do_build() {
     bundle exec rake install:local
   )
 }
-
 do_install() {
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
@@ -146,10 +145,8 @@ do_install() {
     done
   )
 }
-
 do_after() {
   build_line "Trimming the fat ..."
-
   # We don't need the cache of downloaded .gem files ...
   rm -r "$pkg_prefix/vendor/cache"
   # ... or bundler's cache of git-ref'd gems
@@ -161,14 +158,12 @@ do_after() {
   find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
       | while read spec_dir; do rm -r "$spec_dir"; done
 }
-
 do_end() {
   if [ "$(readlink /usr/bin/env)" = "$(pkg_interpreter_for core/coreutils bin/env)" ]; then
     build_line "Removing the symlink we created for '/usr/bin/env'"
     rm /usr/bin/env
   fi
 }
-
 do_strip() {
   return 0
 }
