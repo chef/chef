@@ -20,7 +20,6 @@ require "run_list" unless defined?(Chef::RunList)
 require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 require "pathname" unless defined?(Pathname)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
-require "mixlib/install"
 
 class Chef
   class Knife
