@@ -171,13 +171,20 @@ do_download() {
 <% if @config[:bootstrap_install_command] %>
   <%= @config[:bootstrap_install_command] %>
 <% else %>
-  install_sh="<%= @config[:bootstrap_url] ? @config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
+  <% if @config[:bootstrap_url] %>
+  install_sh="<%= @config[:bootstrap_url] %>"
+  <% elsif license_available? %>
+  install_sh="<%= config[:license_url] %>"
+  <% else %>
+  install_sh="https://omnitruck.chef.io/chef/install.sh"
+  <% end %>
+
   if test -f /usr/bin/<%= ChefUtils::Dist::Infra::CLIENT %>; then
     echo "-----> Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected"
   else
     echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
     do_download ${install_sh} $tmp_dir/install.sh
-    sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
+    bash $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
   fi
 <% end %>
 
