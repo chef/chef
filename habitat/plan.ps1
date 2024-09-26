@@ -1,26 +1,26 @@
 $env:HAB_BLDR_CHANNEL = "LTS-2024"
-$pkg_name="chef-infra-client"
+$pkg_name = "chef-infra-client"
 
-$env:HAB_BLDR_CHANNEL="LTS-2024"
-$pkg_origin="chef"
-$pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
-$pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
-$pkg_maintainer="The Chef Maintainers <maintainers@chef.io>"
-$pkg_upstream_url="https://github.com/chef/chef"
-$pkg_license=@("Apache-2.0")
-$pkg_filename="${pkg_name}-${pkg_version}.zip"
-$pkg_bin_dirs=@(
+$env:HAB_BLDR_CHANNEL = "LTS-2024"
+$pkg_origin = "chef"
+$pkg_version = (Get-Content $PLAN_CONTEXT/../VERSION)
+$pkg_description = "Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
+$pkg_maintainer = "The Chef Maintainers <maintainers@chef.io>"
+$pkg_upstream_url = "https://github.com/chef/chef"
+$pkg_license = @("Apache-2.0")
+$pkg_filename = "${pkg_name}-${pkg_version}.zip"
+$pkg_bin_dirs = @(
     "bin"
     "vendor/bin"
 )
-$pkg_deps=@(
-  "core/cacerts"
-  "core/openssl"
-  "core/libarchive"
-  "chef/ruby31-plus-devkit"
-  "chef/chef-powershell-shim"
+$pkg_deps = @(
+    "core/cacerts"
+    "core/openssl"
+    "core/libarchive"
+    "chef/ruby31-plus-devkit"
+    "chef/chef-powershell-shim"
 )
-$pkg_build_deps=@( "core/git")
+$pkg_build_deps = @( "core/git")
 
 function Invoke-Begin {
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
@@ -28,7 +28,8 @@ function Invoke-Begin {
         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
         Write-Warning ":habicat: I'm being built with $hab_version. I need at least Hab 0.85.0, because I use the -IsPath option for setting/pushing paths in SetupEnvironment."
         throw "unable to build: required minimum version of Habitat not installed"
-    } else {
+    }
+    else {
         Write-BuildLine ":habicat: I think I have the version I need to build."
     }
 }
@@ -52,7 +53,8 @@ function Invoke-Download() {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         if (-not $?) { throw "unable to create archive of source" }
-    } finally {
+    }
+    finally {
         Pop-Location
     }
 }
@@ -85,7 +87,8 @@ function Invoke-Prepare {
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
-    } finally {
+    }
+    finally {
         Pop-Location
     }
 }
@@ -123,16 +126,16 @@ function Invoke-Build {
 
         Write-BuildLine " ** What IS in that directory? "
         $mypath = $pkg_prefix + "\msys64\usr\share\libtool\build-aux"
-        gci -path $mypath
+        gci -path $mypath -Recurse -ErrorAction SilentlyContinue
         
         # # Write-BuildLine " ** Using Bash to find the errant files"
         # # find / -name ltmain.sh
 
         Write-BuildLine "Setting up some things for ltmain.sh"
         Pacman -S libtool --noconfirm
-        push-location $($pkg_prefix + "\msys64\usr\share\libtool")
+        # push-location $($pkg_prefix + "\msys64\usr\share\libtool")
         autoreconf -fvi
-        Pop-Location
+        # Pop-Location
 
         # C:\hab\studios\bk019205cedbdaaaf6718e\hab\pkgs\chef\ruby31-plus-devkit\3.1.6\20240904124118\msys64\usr\share\libtool  msys64\usr\share\libtool\build-aux
 
@@ -146,13 +149,13 @@ function Invoke-Build {
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
-        foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
+        foreach ($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
                 # The rest client doesn't have an 'Install' task so it bombs out when we call Rake Install for it
                 # Happily, its Rakefile ultimately calls 'gem build' to build itself with. We're doing that here.
-                if ($git_gem -match "rest-client"){
+                if ($git_gem -match "rest-client") {
                     $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
@@ -162,7 +165,8 @@ function Invoke-Build {
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
                 if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
-            } finally {
+            }
+            finally {
                 Pop-Location
             }
         }
@@ -175,7 +179,8 @@ function Invoke-Build {
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
 
-    } finally {
+    }
+    finally {
         Pop-Location
     }
 }
@@ -183,15 +188,16 @@ function Invoke-Build {
 function Invoke-Install {
     try {
         Push-Location $pkg_prefix
-        $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
+        $env:BUNDLE_GEMFILE = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
 
-        foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
+        foreach ($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
-            if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
+            if (-not $?) { throw "Failed to create appbundled binstubs for $gem" }
         }
         Remove-StudioPathFrom -File $pkg_prefix/vendor/gems/chef-$pkg_version*/Gemfile
-    } finally {
+    }
+    finally {
         Pop-Location
     }
 }
@@ -209,18 +215,18 @@ function Invoke-After {
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
     Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
-        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
-        | Remove-Item -Recurse -Force
+    | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
+    | Remove-Item -Recurse -Force
     # Remove the byproducts of compiling gems with extensions
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
-        | Remove-Item -Force
+    | Remove-Item -Force
 }
 
 function Remove-StudioPathFrom {
     Param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [String]
         $File
     )
-    (Get-Content $File) -replace ($env:FS_ROOT -replace "\\","/"),"" | Set-Content $File
+    (Get-Content $File) -replace ($env:FS_ROOT -replace "\\", "/"), "" | Set-Content $File
 }
