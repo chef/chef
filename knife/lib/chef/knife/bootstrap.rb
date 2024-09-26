@@ -464,7 +464,7 @@ class Chef
         if connection.windows?
           "windows-chef-client-msi"
         else
-          "chef-#{config[:license_id] && config[:license_url] ? "license" : "full"}"
+          "chef-full"
         end
       end
 
@@ -1196,13 +1196,13 @@ class Chef
       # Fetch the workstation license stored in the system
       def fetch_license
         license = Chef::Utils::LicensingHandler.validate!
-        config[:license_url] = license.omnitruck_url
+        config[:license_url] = license.install_sh_url
         config[:license_id] = license.license_key
         config[:license_type] = license.license_type
       end
 
       def warn_license_usage
-        return if config[:license_url].present?
+        return if config[:license_type].present?
 
         ui.warn(<<~MSG
           +-------------------------------------------------------------------------------------------------------+

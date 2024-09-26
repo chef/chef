@@ -230,13 +230,8 @@ class Chef
           end
         end
 
-        def macos_dir
-          Mixlib::Install::Dist::MACOS_VOLUME
-        end
-
-        def download_url
-          format(config[:license_url], config[:channel]) +
-            "/$project/metadata?v=$version&p=$platform&pv=$platform_version&m=$machine&license_id=#{config[:license_id]}"
+        def license_available?
+          config[:license_id] && config[:license_type]
         end
 
         private
