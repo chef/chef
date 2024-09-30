@@ -16,6 +16,12 @@ pkg_build_deps=(
   core/git
   core/which
 )
+
+pkg_bin_dirs=(bin)
+pkg_include_dirs=(include)
+pkg_lib_dirs=(lib64)
+pkg_pconfig_dirs=(lib64/pkgconfig)
+
 pkg_deps=(
   core/glibc
   $_chef_client_ruby
@@ -34,7 +40,6 @@ pkg_svc_user=root
 pkg_gcc_path="not set"
 
 pkg_version() {
-  # cat "/src/VERSION"
   cat "${SRC_PATH}/VERSION"
 }
 
@@ -54,22 +59,11 @@ do_download() {
   ( cd /src || exit_with "unable to enter hab-src directory" 1
     git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   )
-
-  build_line " ** What is my SRC_PATH set to? : "
-  echo $SRC_PATH
-
-  build_line " ** In the Download Section - Can we see GCC from here? : "
-  echo "$(gcc --version)"
-
 }
 
 do_verify() {
   build_line "Skipping checksum verification on the archive we just created."
   return 0
-
-  build_line " ** In the Verify Section - Can we see GCC from here? : "
-  echo "$(gcc --version)"
-
 }
 
 do_setup_environment() {
@@ -79,13 +73,11 @@ do_setup_environment() {
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
-  set_runtime_env OPENSSL_LIB_DIR "$(pkg_path_for openssl)"
 }
 
 do_prepare() {
   export GEM_HOME="${pkg_prefix}/vendor"
   export OPENSSL_DIR="$(pkg_path_for openssl)"
-  export OPENSSL_LIB_DIR="$(pkg_path_for openssl)"
   export OPENSSL_INCLUDE_DIR="$(pkg_path_for openssl)/include"
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
@@ -93,9 +85,6 @@ do_prepare() {
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
   export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
-
-  build_line " ** What are my env variables set to while running Hab? :"
-  printenv
 
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
@@ -118,18 +107,11 @@ do_prepare() {
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
   fi
 
-  build_line " ** In the Prepare Section - Can we see GCC from here? : "
-  echo "$(gcc --version)"
-
   build_line " ** Say, which gcc is that anyway?"
   echo "$(which gcc)"
   local_gcc_path=$(which gcc)
   pkg_gcc_path="$(dirname "$local_gcc_path")"
   echo "${pkg_gcc_path}"
-
-  build_line " ** Where is my openssl ?"
-  openssl_path="$(pkg_path_for openssl)"
-  echo "${openssl_path}"
 }
 
 do_build() {
@@ -148,10 +130,9 @@ do_install() {
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
-    export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
-      appbundler $CACHE_PATH $pkg_prefix/bin $gem
+      "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
   )
 }
