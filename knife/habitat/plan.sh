@@ -76,7 +76,7 @@ do_install() {
 # Wrap the Knife binary to ensure paths are set correctly for execution
 wrap_knife_bin() {
 
-  build_line " coreruby path $(pkg_path_for core/ruby31)/bin:$PATH"
+  build_line "core ruby path $(pkg_path_for core/ruby31)/bin:$PATH"
   local bin="$pkg_prefix/bin/$pkg_name"
   local real_bin="$GEM_HOME/gems/knife-${pkg_version}/bin/knife"
   build_line "Adding wrapper $bin to $real_bin"
