@@ -169,6 +169,7 @@ jobs:
           sudo apt-cache search vagrant
           sudo apt-get remove --purge qemu-kvm libvirt-bin
           sudo apt-get install -y vagrant virtualbox-7.0
+          sudo ps -aux
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
