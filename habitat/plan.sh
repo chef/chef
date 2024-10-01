@@ -37,7 +37,6 @@ pkg_deps=(
   core/libarchive
 )
 pkg_svc_user=root
-pkg_gcc_path="not set"
 
 pkg_version() {
   cat "${SRC_PATH}/VERSION"
@@ -106,12 +105,6 @@ do_prepare() {
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
   fi
-
-  build_line " ** Say, which gcc is that anyway?"
-  echo "$(which gcc)"
-  local_gcc_path=$(which gcc)
-  pkg_gcc_path="$(dirname "$local_gcc_path")"
-  echo "${pkg_gcc_path}"
 }
 
 do_build() {
