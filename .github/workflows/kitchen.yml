@@ -165,7 +165,7 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-#         # sudo apt-get remove --purge qemu-kvm libvirt-bin
+          # sudo apt-get remove --purge qemu-kvm libvirt-bin
           sudo apt-get install -y vagrant virtualbox-7.0
           sudo vagrant --version
           sudo VBoxManage --version
