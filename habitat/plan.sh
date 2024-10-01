@@ -84,7 +84,6 @@ do_prepare() {
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
   export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
-
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 
@@ -112,6 +111,9 @@ do_build() {
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
     build_line "Installing gems from git repos properly ..."
+  # build_line " ** have my ENV variables changed somewhere yet?"
+  # printenv
+
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
@@ -119,8 +121,18 @@ do_build() {
 }
 
 do_install() {
+	build_line " ** Recap - the Pkg Prefix :"
+	echo $pkg_prefix
+
+	appbundler_path="${pkg_prefix}/vendor/bin/"
+	build_line " ** My AppBunndler path is : "
+	echo $appbundler_path
+
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+
+	build_line " ** What is my gemfile path, please: "
+ 	build_line "${CACHE_PATH}/Gemfile"
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
     for gem in chef-bin chef inspec-core-bin ohai; do
