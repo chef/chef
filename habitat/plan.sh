@@ -1,3 +1,5 @@
+export HAB_BLDR_CHANNEL="LTS-2024"
+SRC_PATH="$(dirname "$PLAN_CONTEXT")"
 _chef_client_ruby="core/ruby3_1"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
@@ -12,7 +14,14 @@ pkg_build_deps=(
   core/make
   core/gcc
   core/git
+  core/which
 )
+
+pkg_bin_dirs=(bin)
+pkg_include_dirs=(include)
+pkg_lib_dirs=(lib64)
+pkg_pconfig_dirs=(lib64/pkgconfig)
+
 pkg_deps=(
   core/glibc
   $_chef_client_ruby
@@ -45,8 +54,9 @@ do_download() {
   # source is in this repo, so we're going to create an archive from the
   # appropriate path within the repo and place the generated tarball in the
   # location expected by do_unpack
-  ( cd "${SRC_PATH}" || exit_with "unable to enter hab-src directory" 1
-    git archive --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
+  git config --global --add safe.directory /src
+  ( cd /src || exit_with "unable to enter hab-src directory" 1
+    git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   )
 }
 
@@ -59,14 +69,14 @@ do_setup_environment() {
   push_runtime_env GEM_PATH "${pkg_prefix}/vendor"
 
   set_runtime_env APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
-  set_runtime_env SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
+  set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
 }
 
 do_prepare() {
   export GEM_HOME="${pkg_prefix}/vendor"
-  export OPENSSL_LIB_DIR="$(pkg_path_for openssl)/lib"
+  export OPENSSL_DIR="$(pkg_path_for openssl)"
   export OPENSSL_INCLUDE_DIR="$(pkg_path_for openssl)/include"
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
@@ -74,6 +84,9 @@ do_prepare() {
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
   export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
+
+  build_line " ** Securing the /src directory"
+  git config --global --add safe.directory /src
 
   ( cd "$CACHE_PATH"
     bundle config --local build.nokogiri "--use-system-libraries \
@@ -87,7 +100,7 @@ do_prepare() {
     bundle config --local retry 5
     bundle config --local silence_root_warning 1
   )
-
+ 
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
@@ -110,10 +123,9 @@ do_install() {
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
-    export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
-      appbundler $CACHE_PATH $pkg_prefix/bin $gem
+      "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
   )
 }
