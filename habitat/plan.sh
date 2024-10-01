@@ -84,7 +84,6 @@ do_prepare() {
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
   export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
-
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 
@@ -112,6 +111,7 @@ do_build() {
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
     build_line "Installing gems from git repos properly ..."
+
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
@@ -121,6 +121,7 @@ do_build() {
 do_install() {
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
     for gem in chef-bin chef inspec-core-bin ohai; do
