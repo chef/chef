@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.19 -->
-## [v18.5.19](https://github.com/chef/chef/tree/v18.5.19) (2024-10-01)
+<!-- latest_release 18.5.20 -->
+## [v18.5.20](https://github.com/chef/chef/tree/v18.5.20) (2024-10-01)
 
 #### Merged Pull Requests
-- [Chef-18] Bump ohai to 18.2.4 [#14619](https://github.com/chef/chef/pull/14619) ([neha-p6](https://github.com/neha-p6))
+- [chef-18] backport fix vm tests [#14629](https://github.com/chef/chef/pull/14629) ([Stromweld](https://github.com/Stromweld))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] backport fix vm tests [#14629](https://github.com/chef/chef/pull/14629) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.20 -->
 - [Chef-18] Bump ohai to 18.2.4 [#14619](https://github.com/chef/chef/pull/14619) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.19 -->
 - [Chef-18] Fix Chef versions in lock files manually as the script was not working before [#14616](https://github.com/chef/chef/pull/14616) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.18 -->
 - [chef18] Enhance resource inspector to understand LWRP files containing multiple resources [#14592](https://github.com/chef/chef/pull/14592) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.5.17 -->
