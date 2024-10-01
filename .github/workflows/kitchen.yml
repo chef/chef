@@ -160,7 +160,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Vagrant and VirtualBox
         run: |
-          sudo ls -alh /dev/
+          sudo virsh -c qemu:///system list
           wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
           wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg --dearmor | sudo tee /usr/share/keyrings/oracle-virtualbox-2016.gpg
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
@@ -168,6 +168,8 @@ jobs:
           sudo apt-get update
           sudo apt-cache search virtualbox
           sudo apt-cache search vagrant
+          sudo apt-get remove --purge qemu-kvm libvirt-bin
+          sudo virsh -c qemu:///system list
           sudo apt-get install -y vagrant virtualbox-7.0
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
