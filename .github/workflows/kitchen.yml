@@ -174,4 +174,4 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: VAGRANT_LOG=debug; kitchen test end-to-end-${{ matrix.os }}
+        run: export LOGNAME=$USER; export VAGRANT_LOG=debug; kitchen test end-to-end-${{ matrix.os }}
