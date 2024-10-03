@@ -93,9 +93,8 @@ describe Chef::Decorator do
 
     impersonates_a(Hash)
 
-    it "formats it correctly through ffi-yajl and not the JSON gem" do
-      # this relies on a quirk of pretty formatting whitespace between yajl and ruby's JSON
-      expect(FFI_Yajl::Encoder.encode(decorator, pretty: true)).to eql("{\n\n}\n")
+    it "pretty formats with a newline between open and close" do
+      expect(Chef::JSONCompat.to_json(decorator, pretty: true)).to eql("{\n}")
     end
   end
 

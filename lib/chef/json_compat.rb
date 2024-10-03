@@ -17,7 +17,6 @@
 
 # Wrapper class for interacting with JSON.
 
-autoload :FFI_Yajl, "ffi_yajl"
 require_relative "exceptions"
 # We're requiring this to prevent breaking consumers using Hash.to_json
 require "json" unless defined?(JSON)
@@ -28,8 +27,10 @@ class Chef
     class << self
 
       def parse(source, opts = {})
-        FFI_Yajl::Parser.parse(source, opts)
-      rescue FFI_Yajl::ParseError => e
+        return if source.nil? || source.empty?
+        opts[:max_nesting] ||= 252
+        JSON.parse(source, opts)
+      rescue JSON::ParserError => e
         raise Chef::Exceptions::JSON::ParseError, e.message
       end
 
@@ -47,9 +48,18 @@ class Chef
       end
 
       def to_json(obj, opts = nil)
-        FFI_Yajl::Encoder.encode(obj, opts)
-      rescue FFI_Yajl::EncodeError => e
+        opts&.[](:pretty) ? JSON.pretty_generate(obj, opts) : obj.to_json(opts)
+      rescue JSON::NestingError, TypeError => e
         raise Chef::Exceptions::JSON::EncodeError, e.message
+      rescue JSON::GeneratorError => e
+        raise unless opts[:validate_utf8] == false
+
+        recurse_proc = Proc.new do |result, &proc|
+          next result unless result.is_a? String
+
+          result.encode!("UTF-8", undef: :replace, invalid: :replace, replace: "?")
+        end
+        JSON.recurse_proc(obj, &recurse_proc)
       end
 
       def to_json_pretty(obj, opts = nil)

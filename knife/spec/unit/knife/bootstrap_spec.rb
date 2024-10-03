@@ -328,16 +328,16 @@ describe Chef::Knife::Bootstrap do
       it "should have foo => {bar => baz} in the first_boot from cli" do
         knife.parse_options(["-j", '{"foo":{"bar":"baz"}}'])
         knife.merge_configs
-        expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
-        actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+        expected_hash = JSON.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+        actual_hash = JSON.parse(knife.render_template)
         expect(actual_hash).to eq(expected_hash)
       end
 
       it "should have foo => {bar => baz} in the first_boot from file" do
         knife.parse_options(["--json-attribute-file", jsonfile.path])
         knife.merge_configs
-        expected_hash = FFI_Yajl::Parser.new.parse('{"foo":{"bar":"baz"},"run_list":[]}')
-        actual_hash = FFI_Yajl::Parser.new.parse(knife.render_template)
+        expected_hash = JSON.parse('{"foo":{"bar":"baz"},"run_list":[]}')
+        actual_hash = JSON.parse(knife.render_template)
         expect(actual_hash).to eq(expected_hash)
         jsonfile.close
       end
