@@ -167,7 +167,7 @@ class Chef
               add_version(hash, parameters["version"]) unless parameters["version"].nil?
             end
 
-            FFI_Yajl::Encoder.encode(hash)
+            JSON.generate(hash)
           end
 
           def parse_response(output)

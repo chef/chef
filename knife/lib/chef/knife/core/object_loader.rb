@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-autoload :FFI_Yajl, "ffi_yajl"
 require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 require "chef/data_bag_item" unless defined?(Chef::DataBagItem)
 
@@ -87,7 +86,7 @@ class Chef
         def object_from_file(filename)
           case filename
           when /\.(js|json)$/
-            r = FFI_Yajl::Parser.parse(IO.read(filename))
+            r = JSON.parse(IO.read(filename))
 
             # Chef::DataBagItem doesn't work well with the json_create method
             if @klass == Chef::DataBagItem

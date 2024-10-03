@@ -248,7 +248,7 @@ class Chef
               hash[param_name] = param_value unless param_value.nil?
             end
 
-            FFI_Yajl::Encoder.encode(hash)
+            Chef::JSONCompat.to_json(hash)
           end
 
           def parse_response(output)

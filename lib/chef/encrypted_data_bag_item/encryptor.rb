@@ -19,7 +19,6 @@
 autoload :Base64, "base64"
 require "digest/sha2" unless defined?(Digest::SHA2)
 autoload :OpenSSL, "openssl"
-autoload :FFI_Yajl, "ffi_yajl"
 require_relative "../encrypted_data_bag_item"
 require_relative "unsupported_encrypted_data_bag_item_format"
 require_relative "encryption_failure"
@@ -123,7 +122,7 @@ class Chef::EncryptedDataBagItem
       # Strings) that do not produce valid JSON when serialized without the
       # wrapper.
       def serialized_data
-        FFI_Yajl::Encoder.encode(json_wrapper: plaintext_data)
+        Chef::JSONCompat.to_json(json_wrapper: plaintext_data)
       end
 
       def self.encryptor_keys

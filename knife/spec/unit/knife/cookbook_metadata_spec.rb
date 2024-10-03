@@ -54,7 +54,7 @@ describe Chef::Knife::CookbookMetadata do
     name = kwargs[:name]
     Dir.mkdir("#{cookbook_dir}/#{name}")
     File.open("#{cookbook_dir}/#{name}/metadata.json", "w+") do |f|
-      f.write(FFI_Yajl::Encoder.encode(kwargs))
+      f.write(JSON.generate(kwargs))
     end
   end
 
@@ -124,7 +124,7 @@ describe Chef::Knife::CookbookMetadata do
       expect(knife).to receive(:generate_metadata_from_file).with("foobar", "#{cookbook_dir}/foobar/metadata.rb").and_call_original
       knife.run
       expect(File.exist?("#{cookbook_dir}/foobar/metadata.json")).to be true
-      json = FFI_Yajl::Parser.parse(IO.read("#{cookbook_dir}/foobar/metadata.json"))
+      json = JSON.parse(IO.read("#{cookbook_dir}/foobar/metadata.json"))
       expect(json["name"]).to eql("foobar")
       expect(json["version"]).to eql("1.0.0")
     end
