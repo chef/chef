@@ -116,7 +116,7 @@ module ChefConfig
         train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
         logger.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
-        unless credentials.slice(:user, :train_user).values.include? 'root'
+        unless credentials.slice(:user, :train_user).values.include? "root"
           logger.warn("Target Mode requires the root user for full functionality. Other users might result in failures")
         end
 
