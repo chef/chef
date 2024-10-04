@@ -1,8 +1,7 @@
 ---
 driver:
-  name: vagrant
-  box_auto_update: true
-  box_auto_prune: true
+  name: dokken
+  privileged: true
 
 provisioner:
   name: chef_infra

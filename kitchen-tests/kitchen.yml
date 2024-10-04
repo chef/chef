@@ -1,73 +1,79 @@
+# ---
+# driver:
+#   name: dokken
+#   privileged: true
+
+# transport:
+#   name: dokken
+#   username: root
+#   password: root
+
+# provisioner:
+#   name: chef_infra
+#   product_name: chef
+#   product_version: latest
+#   channel: current
+#   retry_on_exit_code:
+#     - 35 # 35 is the exit code signaling that the node is rebooting
+#   client_rb:
+#     diff_disabled: true
+#     always_dump_stacktrace: true
+#   deprecations_as_errors: true
+#   chef_license: accept-no-persist
+#   slow_resource_report: true
+
+# verifier:
+#   name: inspec
+#   format: progress
+
+# platforms:
+#   - name: almalinux-8
+#   - name: almalinux-9
+#   - name: amazonlinux-2
+#   - name: amazonlinux-2023
+#   - name: centos-7
+#   - name: debian-12
+#   - name: debian-11
+#   - name: fedora-latest
+#   - name: opensuse-leap-15
+#   - name: oraclelinux-7
+#   - name: oraclelinux-8
+#   - name: oraclelinux-9
+#   - name: rockylinux-8
+#   - name: rockylinux-9
+#   - name: ubuntu-18.04
+#   - name: ubuntu-20.04
+#   - name: ubuntu-22.04
+#   - name: ubuntu-24.04
+
 ---
 driver:
-  name: vagrant
-  box_auto_update: true
-  box_auto_prune: true
+  name: dokken
+  privileged: true
+
+transport:
+  name: dokken
+  username: root
+  password: root
 
 provisioner:
-  name: chef_infra
+  name: dokken
+  chef_license: accept
   product_name: chef
-  product_version: latest
-  channel: current
-  retry_on_exit_code:
-    - 35 # 35 is the exit code signaling that the node is rebooting
-  client_rb:
-    diff_disabled: true
-    always_dump_stacktrace: true
-  deprecations_as_errors: true
-  chef_license: accept-no-persist
-  slow_resource_report: true
+  product_version: 18.5.1
 
 verifier:
   name: inspec
-  format: progress
 
 platforms:
-  - name: almalinux-8
-  - name: almalinux-9
-  - name: amazonlinux-2
-  - name: amazonlinux-2023
-  - name: centos-7
-  - name: debian-12
-  - name: debian-11
-  - name: fedora-latest
-  - name: opensuse-leap-15
-  - name: oraclelinux-7
-  - name: oraclelinux-8
-  - name: oraclelinux-9
-  - name: rockylinux-8
-  - name: rockylinux-9
-  - name: ubuntu-18.04
-  - name: ubuntu-20.04
-  - name: ubuntu-22.04
-  - name: ubuntu-24.04
-  - name: windows-10
+  - name: ubuntu
     driver:
-      box: stromweld/windows-10
-      customize:
-        memory: 4096
-  - name: windows-11
-    driver:
-      box: stromweld/windows-11
-      customize:
-        memory: 4096
-  - name: windows-2016
-    driver:
-      box: stromweld/windows-2016
-      customize:
-        memory: 4096
-  - name: windows-2019
-    driver:
-      box: stromweld/windows-2019
-      customize:
-        memory: 4096
-  - name: windows-2022
-    driver:
-      box: stromweld/windows-2022
-      customize:
-        memory: 4096
+      image: ubuntu:20.04
+  # - name: macos
+  #   driver:
+  #     image: macos:10.15
 
 suites:
-  - name: end-to-end
+  - name: default
     run_list:
       - recipe[end_to_end::default]
