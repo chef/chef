@@ -48,9 +48,10 @@ class Chef
         # Determine if it started with a slash
         absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{REGEXP_PATH_SEPARATOR}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
-        parts = parts.map { |part| part.gsub(/^#{REGEXP_PATH_SEPARATOR}+|#{REGEXP_PATH_SEPARATOR}+$/, "") }
+        parts = parts.map { |part| part.gsub(/^#{REGEXP_PATH_SEPARATOR}+|#{REGEXP_PATH_SEPARATOR}+$/, "".freeze) }
         # Don't join empty bits
-        result = parts.select { |part| part != "" }.join("/")
+        parts.reject! { |part| part == "".freeze }
+        result = parts.join("/".freeze)
         # Put the / back on
         absolute ? "/#{result}" : result
       end
