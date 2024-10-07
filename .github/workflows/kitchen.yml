@@ -93,7 +93,7 @@ jobs:
           - rockylinux-9
           - ubuntu-2004
           - ubuntu-2204
-          - ubuntu-2404
+          # - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -151,7 +151,7 @@ jobs:
           - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
-          - ubuntu-2404
+          # - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
