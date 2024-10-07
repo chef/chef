@@ -26,6 +26,11 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
     autoload :Registry, File.expand_path("../monkey_patches/win32/registry", __dir__)
   end
   require_relative "api/registry"
+
+  require "win32/resolv"
+  ::Win32::Registry.define_method :export_string do |str, enc = (Encoding.default_internal || "utf-8")|
+     str.encode(enc)
+  end
 end
 
 class Chef
