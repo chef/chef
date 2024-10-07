@@ -274,3 +274,7 @@ def pwsh_installed?
 rescue
   false
 end
+
+def hab_test?
+  ENV["HAB_TEST"] == "true"
+end
