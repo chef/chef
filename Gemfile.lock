@@ -479,7 +479,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.6)
+    winrm (2.3.9)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)
