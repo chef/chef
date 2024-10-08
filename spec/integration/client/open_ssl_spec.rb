@@ -3,7 +3,7 @@ require "spec_helper"
 describe "openssl checks" do
   let(:openssl_version_default) do
     if windows?
-      "1.0.2zi"
+      "3.0.9"
     elsif macos?
       "1.1.1m"
     else
