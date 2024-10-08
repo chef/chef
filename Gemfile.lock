@@ -1,23 +1,4 @@
 GIT
-  remote: https://github.com/chef/ohai.git
-  revision: 38116d10155ca120e611422d07339bcc213156e1
-  branch: main
-  specs:
-    ohai (19.0.3)
-      chef-config (>= 14.12, < 20)
-      chef-utils (>= 16.0, < 20)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli (>= 1.7.0)
-      mixlib-config (>= 2.0, < 4.0)
-      mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (~> 3.2, >= 3.2.5)
-      plist (~> 3.1)
-      train-core
-      wmi-lite (~> 1.0)
-
-GIT
   remote: https://github.com/chef/rest-client
   revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
   branch: jfm/ucrt_update1
@@ -326,6 +307,19 @@ GEM
     netrc (0.11.0)
     nori (2.7.1)
       bigdecimal
+    ohai (19.0.3)
+      chef-config (>= 14.12, < 20)
+      chef-utils (>= 16.0, < 20)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli (>= 1.7.0)
+      mixlib-config (>= 2.0, < 4.0)
+      mixlib-log (>= 2.0.1, < 4.0)
+      mixlib-shellout (~> 3.2, >= 3.2.5)
+      plist (~> 3.1)
+      train-core
+      wmi-lite (~> 1.0)
     openssl (3.2.0)
     parallel (1.22.1)
     parser (3.2.2.0)
@@ -508,7 +502,7 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
-  ohai!
+  ohai (>= 19.0.3)
   openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
