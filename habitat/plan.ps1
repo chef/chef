@@ -33,7 +33,7 @@ function Invoke-SetupEnvironment {
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
-    Set-RuntimeEnv -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
+    Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 }
@@ -61,6 +61,14 @@ function Invoke-Prepare {
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
     try {
+        Write-Buildline " ** Installing gems that otherwise error out during install. "
+        gem install ohai
+
+        # install chef-powershell here - C:\hab\studios\localrepo--chef2\hab\pkgs\core\chef-infra-client\18.5.17\20240925230057\vendor
+        Write-Buildline " ** Installing Powershell "
+        gem install chef-powershell --install-dir "$pkg_prefix/vendor" # chef-powershell C:\hab\studios\localrepo--chef2\hab\pkgs\core\chef-infra-client\18.5.17\20240925230057\vendor
+        Write-Buildline " ** My new gem home is : $env:GEM_HOME"
+        Write-Buildline " ** My new location is $("${HAB_CACHE_SRC_PATH}/${pkg_dirname}")"
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
         Write-BuildLine " ** Where the hell is 'Gem'?"
         $gem_file = @"
@@ -69,11 +77,10 @@ function Invoke-Prepare {
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";c:\\Program Files\\Git\\bin"
-        gem install bundler:2.3.17
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
-        bundle config --local retry 5
+        bundle config --local retry 1
         bundle config --local silence_root_warning 1
     } finally {
         Pop-Location
@@ -86,8 +93,14 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
+        Write-BuildLine " ** Uninstalling Libyajl 2 to prevent FFI from blowing up" 
+        gem uninstall -I libyajl2
+
+        Write-BuildLine " ** I am installing from this directory :"
+        $(Get-Location).Path
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
-        bundle install --jobs=3 --retry=3
+        bundle install --jobs=3 --retry=3 
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
@@ -117,7 +130,7 @@ function Invoke-Build {
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
             bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+        } while ((-not $?) -and ($install_attempt -lt 2))
 
     } finally {
         Pop-Location
