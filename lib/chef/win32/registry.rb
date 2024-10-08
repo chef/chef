@@ -29,7 +29,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
 
   require "win32/resolv"
   ::Win32::Registry.define_method :export_string do |str, enc = (Encoding.default_internal || "utf-8")|
-     str.encode(enc)
+    str.encode(enc)
   end
 end
 
