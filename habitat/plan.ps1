@@ -94,54 +94,14 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        Write-BuildLine " ** What is my pkg_prefix set to?"
-        Write-BuildLine $pkg_prefix
+        Write-BuildLine " ** Setting Bundler Plafrom to x64-mingw-ucrt"
+        bundle config specific_platform x64-mingw-ucrt
 
-        Write-BuildLine " ** FFI needs ltmain.sh, running libtoolize to create it"
-        libtoolize
-
-        # Write-BuildLine " ** Where is that configure.ac file again?"
-        # gci -path c:\ -filter configure.ac -Recurse -ErrorAction SilentlyContinue
-        # find / -name 'configure.ac'
-
-        Write-BuildLine " ** Dumping MSYS environment variables"
-        printenv
-
-        # Write-BuildLine " ** Calling Automake now"
-        # automake
-
-        Write-BuildLine " ** Using PowerShell to find the errant files"
-        gci -path c:\ -filter ltmain.sh -Recurse -ErrorAction SilentlyContinue
-
-        # $pkg_prefix = C:\hab\studios\bk0192068319dee73c3831\hab\pkgs\ci\chef-infra-client\19.0.20\20240918191304
-        #               C:\hab\studios\bk0192068319dee73c3831\hab\pkgs\chef\ruby31-plus-devkit\3.1.6\20240904124118\msys64\usr\share\libtool\build-aux
-        
-        Write-BuildLine " ** My Ruby directory is : \r" 
-        $(Get-HabPackagePath ruby31-plus-devkit)
-
-        Write-BuildLine " ** What IS in that directory? "
-        $mypath = $pkg_prefix + "\msys64\usr\share\libtool\build-aux"
-        gci -path $mypath
-        
-        # # Write-BuildLine " ** Using Bash to find the errant files"
-        # # find / -name ltmain.sh
-
-        Write-BuildLine "Setting up some things for ltmain.sh"
-        Pacman -S libtool --noconfirm
-        push-location $($pkg_prefix + "\msys64\usr\share\libtool")
-        autoreconf -fvi
-        Pop-Location
-
-        # C:\hab\studios\bk019205cedbdaaaf6718e\hab\pkgs\chef\ruby31-plus-devkit\3.1.6\20240904124118\msys64\usr\share\libtool  msys64\usr\share\libtool\build-aux
-
-        # Write-BuildLine " ** Updating Path to ensure LTMAIN.SH gets found"
-        # $env:PATH+=";/usr/share/libtool/build-aux/"
-
-        # Write-BuildLine " ** What is my Path set to?"
-        # Write-BuildLine $env:Path
+        Write-BuildLine " ** Installing FFI with a mingw platform"
+        gem install ffi --platform=x64-mingw-ucrt
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
-        bundle install --jobs=3 --retry=3
+        bundle install --jobs=3 --retry=3 --prefer-local
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
