@@ -94,7 +94,7 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        Write-BuildLine " ** Setting Bundler Plafrom to x64-mingw-ucrt"
+        Write-BuildLine " ** Setting Bundler Platform to x64-mingw-ucrt"
         bundle config specific_platform x64-mingw-ucrt
 
         Write-BuildLine " ** Installing FFI with a mingw platform"
