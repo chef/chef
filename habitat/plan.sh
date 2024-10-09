@@ -98,10 +98,12 @@ do_prepare() {
 
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
-    build_line "FFI needs ltmain.sh, running libtoolize to create it"
-    libtoolize
+    build_line "Setting the bundle config for the specific_platform"
+    bundle config specific_platform true
+    build_line "pre-installing ffi"
+    gem install ffi
     build_line "Installing gem dependencies ..."
-    bundle install --jobs=3 --retry=3
+    bundle install --jobs=3 --retry=3 --prefer-local
     build_line "Installing gems from git repos properly ..."
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
