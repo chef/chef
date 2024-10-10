@@ -38,6 +38,8 @@ class Chef
         # 42 was used by audit mode and should not be reused
         CONFIG_FAILURE: 43,
         CLIENT_UPGRADED: 213,
+        LICENSE_NOT_ENTITLED: 173,
+        LICENSE_NOT_SET: 174,
       }.freeze
 
       DEPRECATED_RFC_062_EXIT_CODES = {
