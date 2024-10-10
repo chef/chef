@@ -124,6 +124,11 @@ class Chef
 
         private
 
+        # @return [String] package name with or without anchors attached to it.
+        def resolve_package(pkg)
+          new_resource.anchor_package_regex ? "^#{pkg}$" : pkg
+        end
+
         # @return [String] version of apt-get which is installed
         def apt_version
           @apt_version ||= shell_out("apt-get --version").stdout.match(/^apt (\S+)/)[1]
