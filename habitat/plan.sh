@@ -50,12 +50,13 @@ do_before() {
 }
 
 do_download() {
+  build_line "Setting up the safe directory for the build"
+  git config --global --add safe.directory /src
   build_line "Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
   # source is in this repo, so we're going to create an archive from the
   # appropriate path within the repo and place the generated tarball in the
   # location expected by do_unpack
-  git config --global --add safe.directory /src
-  ( cd /src || exit_with "unable to enter hab-src directory" 1
+  ( cd "${SRC_PATH}" || exit_with "unable to enter hab-src directory" 1
     git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   )
 }
