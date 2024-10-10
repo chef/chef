@@ -34,5 +34,8 @@ for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'chef-solo'; do
   hab pkg exec "${pkg_ident}" "${executable}" -- --version || error "${executable} failed to execute properly"
 done
 
+# For some reason, libarchive is not available to the Ruby runtime. Setting LD_LIBRARY_PATH allows the tests to pass.
+export LD_LIBRARY_PATH="$(hab pkg path core/libarchive)/lib"
+
 echo "--- :mag_right: Testing ${pkg_ident} functionality"
 hab pkg exec "${pkg_ident}" rspec --tag ~executables --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb' || error 'failures during rspec tests'
