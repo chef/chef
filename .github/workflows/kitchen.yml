@@ -93,7 +93,7 @@ jobs:
           - rockylinux-9
           - ubuntu-2004
           - ubuntu-2204
-          - ubuntu-2404
+          # - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -151,7 +151,7 @@ jobs:
           - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
-          - ubuntu-2404
+          # - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
@@ -165,8 +165,10 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox
+          sudo apt-get install -y vagrant virtualbox-7.0
+          sudo vagrant --version
+          sudo VBoxManage --version
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}

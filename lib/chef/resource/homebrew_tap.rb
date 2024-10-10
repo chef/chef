@@ -29,6 +29,14 @@ class Chef
       description "Use the **homebrew_tap** resource to add additional formula repositories to the Homebrew package manager."
       introduced "14.0"
 
+      examples <<~DOC
+      **Tap a repository**:
+
+      ```ruby
+      homebrew_tap 'apple/homebrew-apple'
+      ```
+      DOC
+
       include Chef::Mixin::Homebrew
 
       property :tap_name, String,
@@ -77,7 +85,7 @@ class Chef
       end
 
       action_class do
-        # Is the passed tap already tapped
+        # Check if the passed tap is already tapped
         #
         # @return [Boolean]
         def tapped?(name)

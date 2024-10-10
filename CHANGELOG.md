@@ -1,17 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.20 -->
-## [v19.0.20](https://github.com/chef/chef/tree/v19.0.20) (2024-09-13)
+<!-- latest_release 19.0.30 -->
+## [v19.0.30](https://github.com/chef/chef/tree/v19.0.30) (2024-10-09)
 
 #### Merged Pull Requests
-- Generic Target Mode [#14397](https://github.com/chef/chef/pull/14397) ([thheinen](https://github.com/thheinen))
+- Revert &quot;Updating Ohai&quot; [#14647](https://github.com/chef/chef/pull/14647) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert &quot;Updating Ohai&quot; [#14647](https://github.com/chef/chef/pull/14647) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.30 -->
+- Set channel for habitat plan script in verify pipeline to LTS-2024 for windows platforms [#14646](https://github.com/chef/chef/pull/14646) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.29 -->
+- Updating Ohai [#14645](https://github.com/chef/chef/pull/14645) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.28 -->
+- Update builders to temporarily remove ubuntu24 [#14642](https://github.com/chef/chef/pull/14642) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.27 -->
+- Fixing missing rspec in hab plan testing [#14630](https://github.com/chef/chef/pull/14630) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.26 -->
+- fix VM linux tests [#14626](https://github.com/chef/chef/pull/14626) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.25 -->
+- updating Linux, part 1 [#14613](https://github.com/chef/chef/pull/14613) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.24 -->
+- Bump ohai to 19.0.3 [#14624](https://github.com/chef/chef/pull/14624) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.23 -->
+- Add example to homebrew_tap resource. [#14615](https://github.com/chef/chef/pull/14615) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.22 -->
+- [Chef-19] Fix knife/Gemfile.lock to pull correct chef 19 version instead of 18 [#14611](https://github.com/chef/chef/pull/14611) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.21 -->
 - Generic Target Mode [#14397](https://github.com/chef/chef/pull/14397) ([thheinen](https://github.com/thheinen)) <!-- 19.0.20 -->
 - [Chef-19]Bump license_scout to 1.3.11 [#14607](https://github.com/chef/chef/pull/14607) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.19 -->
 - Chef-19 update habitat [#14599](https://github.com/chef/chef/pull/14599) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.18 -->

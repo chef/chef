@@ -8,6 +8,7 @@ param(
 )
 
 $env:HAB_ORIGIN = 'ci'
+$env:HAB_BLDR_CHANNEL = "LTS-2024"
 $Plan = 'chef-infra-client'
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
