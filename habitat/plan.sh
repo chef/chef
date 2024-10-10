@@ -109,12 +109,8 @@ do_prepare() {
 
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
-    # build_line "Setting the bundle config for the specific_platform"
-    # bundle config specific_platform true
-    # build_line "pre-installing ffi"
-    # gem install ffi
     build_line "Installing gem dependencies ..."
-    bundle install --jobs=3 --retry=3 # --prefer-local
+    bundle install --jobs=3 --retry=3
     build_line "Installing gems from git repos properly ..."
 
     ruby ./post-bundle-install.rb
