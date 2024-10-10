@@ -77,7 +77,7 @@ function Invoke-Prepare {
         $env:HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL = "LTS-2024"
         $env:HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL= "LTS-2024"
 
-        #gem install bundler #:2.3.17
+        # gem install bundler:2.3.7
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
@@ -94,14 +94,14 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        Write-BuildLine " ** Setting Bundler Platform to x64-mingw-ucrt"
-        bundle config specific_platform x64-mingw-ucrt
+        # Write-BuildLine " ** Setting Bundler Platform to x64-mingw-ucrt"
+        # bundle config specific_platform x64-mingw-ucrt
 
-        Write-BuildLine " ** Installing FFI with a mingw platform"
-        gem install ffi --platform=x64-mingw-ucrt
+        # Write-BuildLine " ** Installing FFI with a mingw platform"
+        # gem install ffi --platform=x64-mingw-ucrt
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
-        bundle install --jobs=3 --retry=3 --prefer-local
+        bundle install --jobs=3 --retry=3 # --prefer-local
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
