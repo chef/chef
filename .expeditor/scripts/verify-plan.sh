@@ -18,6 +18,10 @@ error () {
   exit 1
 }
 
+echo "--- :habicat: Patching /etc/nsswitch.conf to ensure 'files' is listed first and that we remove myhostname"
+sed -i 's/hosts:      files dns myhostname/hosts:      files dns/g' /etc/nsswitch.conf
+sed -i 's/networks:   files dns/networks:   files/g' /etc/nsswitch.conf
+
 echo "--- :8ball: :linux: Verifying $PLAN"
 project_root="$(git rev-parse --show-toplevel)"
 
