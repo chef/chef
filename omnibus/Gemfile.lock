@@ -4,7 +4,6 @@ GIT
   branch: main
   specs:
     omnibus-software (24.6.323)
-      ffi (< 1.17.0)
       omnibus (>= 9.0.0)
 
 GIT
