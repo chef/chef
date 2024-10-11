@@ -72,10 +72,6 @@ function Invoke-Prepare {
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";c:\\Program Files\\Git\\bin;"
-        $env:HAB_BLDR_CHANNEL = "LTS-2024"
-        $env:HAB_STUDIO_SECRET_NODE_OPTIONS = "--dns-result-order=ipv4first"
-        $env:HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL = "LTS-2024"
-        $env:HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL= "LTS-2024"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
