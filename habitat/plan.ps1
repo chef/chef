@@ -1,3 +1,4 @@
+$env:HAB_BLDR_CHANNEL = "LTS-2024"
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
@@ -12,6 +13,8 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
+  "core/openssl"
+  "core/libarchive"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
 )
@@ -32,8 +35,8 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
-    Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
-    Set-RuntimeEnv -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
+    Set-RuntimeEnv FORCE_FFI_YAJL "ext" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
+    Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 }
@@ -68,13 +71,8 @@ function Invoke-Prepare {
 @"%~dp0ruby.exe" "%~dpn0" %*
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";c:\\Program Files\\Git\\bin"
-        $env:HAB_BLDR_CHANNEL = "LTS-2024"
-        $env:HAB_STUDIO_SECRET_NODE_OPTIONS = "--dns-result-order=ipv4first"
-        $env:HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL = "LTS-2024"
-        $env:HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL= "LTS-2024"
+        $env:Path += ";c:\\Program Files\\Git\\bin;"
 
-        gem install bundler:2.3.17
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
