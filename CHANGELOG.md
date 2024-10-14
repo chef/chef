@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.31 -->
-## [v19.0.31](https://github.com/chef/chef/tree/v19.0.31) (2024-10-11)
+<!-- latest_release 19.0.32 -->
+## [v19.0.32](https://github.com/chef/chef/tree/v19.0.32) (2024-10-14)
 
 #### Merged Pull Requests
-- Updating the plan files [#14608](https://github.com/chef/chef/pull/14608) ([johnmccrae](https://github.com/johnmccrae))
+- port rdoc vulnerability update from chef 18 [#14648](https://github.com/chef/chef/pull/14648) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- port rdoc vulnerability update from chef 18 [#14648](https://github.com/chef/chef/pull/14648) ([rishichawda](https://github.com/rishichawda)) <!-- 19.0.32 -->
 - Updating the plan files [#14608](https://github.com/chef/chef/pull/14608) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.31 -->
 - Revert &quot;Updating Ohai&quot; [#14647](https://github.com/chef/chef/pull/14647) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.30 -->
 - Set channel for habitat plan script in verify pipeline to LTS-2024 for windows platforms [#14646](https://github.com/chef/chef/pull/14646) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.29 -->
