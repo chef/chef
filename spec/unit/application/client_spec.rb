@@ -390,6 +390,30 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
       let(:daemonize) { wait_secs }
 
       before do
+        # Disable all real HTTP connections
+        WebMock.disable_net_connect!
+        repo_path = File.expand_path("../../..", __dir__)
+        mock_path = File.join(repo_path, "spec", "data")
+        valid_client_api_data = File.read("#{mock_path}/valid_client_api_data.json")
+        chef_license_key = "free-42727540-ddc8-4d4b-0000-80662e03cd73-0000"
+        chef_license_server_url = ChefLicensing::Config.license_server_url.chomp("/")
+        stub_request(:get, "#{chef_license_server_url}/v1/listLicenses")
+          .to_return(
+            body: {
+              "data": [chef_license_key],
+              "message": "",
+              "status_code": 200,
+            }.to_json,
+            headers: { content_type: "application/json" }
+          )
+
+        stub_request(:get, "#{chef_license_server_url}/v1/client")
+          .with(query: { licenseId: chef_license_key, entitlementId: ChefLicensing::Config.chef_entitlement_id })
+          .to_return(
+            body: valid_client_api_data ,
+            headers: { content_type: "application/json" }
+          )
+        ChefLicensing::Context.license = ChefLicensing.client(license_keys: [chef_license_key])
         allow(@app).to receive(:interval_sleep).with(wait_secs).and_return true
         allow(@app).to receive(:interval_sleep).with(0).and_call_original
         allow(@app).to receive(:time_to_sleep).and_return(1)
