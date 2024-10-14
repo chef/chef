@@ -21,6 +21,8 @@ require "chef-licensing"
 describe Chef::Application::Apply do
 
   before(:each) do
+    # Disable all real HTTP connections
+    WebMock.disable_net_connect!
     repo_path = File.expand_path("../../..", __dir__)
     mock_path = File.join(repo_path, "spec", "data")
     valid_client_api_data = File.read("#{mock_path}/valid_client_api_data.json")
