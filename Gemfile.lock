@@ -1,22 +1,4 @@
 GIT
-  remote: https://github.com/chef/mixlib-shellout
-  revision: 3d9ff1063e9e77a3f46604f26d57b300fd9cd63b
-  branch: main
-  specs:
-    mixlib-shellout (3.3.3)
-      chef-utils
-    mixlib-shellout (3.3.3-universal-mingw32)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
-    mixlib-shellout (3.3.3-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
-
-GIT
   remote: https://github.com/chef/ohai.git
   revision: 38116d10155ca120e611422d07339bcc213156e1
   branch: main
@@ -83,6 +65,7 @@ PATH
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
       ohai (~> 19.0)
@@ -118,6 +101,7 @@ PATH
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
       ohai (~> 19.0)
@@ -315,6 +299,18 @@ GEM
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
+    mixlib-shellout (3.3.3)
+      chef-utils
+    mixlib-shellout (3.3.3-universal-mingw32)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    mixlib-shellout (3.3.3-x64-mingw-ucrt)
+      chef-utils
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.3.0)
     net-ftp (0.3.7)
@@ -512,7 +508,6 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
-  mixlib-shellout!
   ohai!
   openssl (= 3.2.0)
   pry (= 0.13.0)
