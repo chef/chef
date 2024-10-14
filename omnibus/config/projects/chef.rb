@@ -74,7 +74,7 @@ package :msi do
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
   signing_identity ENV.fetch("OMNIBUS_SIGNING_IDENTITY", "7D16AE73AB249D473362E9332D029089DBBB89B2"), machine_store: false, keypair_alias: "key_875762014"
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-x64-mingw-ucrt/ext/win32-eventlog/chef-log.dll")),
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-([0-9]*|[0-9].*)-(x64|universal)-mingw-ucrt/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 
