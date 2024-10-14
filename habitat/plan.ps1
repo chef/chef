@@ -100,7 +100,7 @@ function Invoke-Build {
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
-        bundle install --jobs=3 --retry=3 --prefer-local
+        bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
