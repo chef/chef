@@ -10,6 +10,10 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+
+# Use mixlib-shellout from git repo until we fix gem promote issue
+gem "mixlib-shellout", git: "https://github.com/chef/mixlib-shellout", branch: "main"
+
 # required for FIPS or bundler will pick up default openssl
 install_if -> { RUBY_PLATFORM !~ /darwin/ } do
   gem "openssl", "= 3.2.0"
