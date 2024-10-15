@@ -398,7 +398,7 @@ GEM
     rubyzip (2.3.2)
     semverse (3.0.2)
     sslshake (1.3.1)
-    stringio (3.1.1)
+    #stringio (3.1.1)
     strings (0.2.1)
       strings-ansi (~> 0.2)
       unicode-display_width (>= 1.5, < 3.0)
@@ -529,7 +529,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake (>= 12.3.3)
   rb-readline
-  rdoc (~> 6.4.1)
+  #rdoc (~> 6.4.1)
   rest-client!
   rspec
   ruby-shadow!
