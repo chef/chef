@@ -35,7 +35,7 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
-    Set-RuntimeEnv FORCE_FFI_YAJL "ffi" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
+    # Set-RuntimeEnv FORCE_FFI_YAJL "ffi" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
     Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
@@ -92,11 +92,6 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        Write-BuildLine " ** Setting Bundler Platform to x64-mingw-ucrt"
-        bundle config specific_platform x64-mingw-ucrt
-
-        Write-BuildLine " ** Installing FFI with a mingw platform"
-        gem install ffi --platform=x64-mingw-ucrt
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
