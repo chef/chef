@@ -529,7 +529,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake (>= 12.3.3)
   rb-readline
-  #rdoc (~> 6.4.1)
+  rdoc (= 6.4.1)
   rest-client!
   rspec
   ruby-shadow!
