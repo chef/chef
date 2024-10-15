@@ -39,6 +39,8 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
+
+    Set-RuntimeEnv -f -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin;$env:RUBY_DLL_PATH"
 }
 
 function Invoke-Download() {
