@@ -13,7 +13,8 @@ describe Chef::Provider::Mount::Linux do
     new_resource.device "/dev/sdz1"
     new_resource.device_type :device
     new_resource.fstype "ext3"
-    new_resource.supports remount: false
+    new_resource.supports remount: true
+    new_resource.options %w{nodev nosuid}
     new_resource
   end
 
@@ -32,6 +33,11 @@ describe Chef::Provider::Mount::Linux do
   end
 
   context "to see if the volume is mounted" do
+    it "should set mounted true if the mount point is found in the mounts list" do
+      allow(provider).to receive(:shell_out!).with("findmnt --kernel #{new_resource.device}| tail -1 | awk '{print$4}'").and_return(double(stdout: "nodev nosuid"))
+      provider.load_current_resource
+      expect(provider.current_resource.remount).to be_truthy
+    end
 
     it "should set mounted true if the mount point is found in the mounts list" do
       allow(provider).to receive(:shell_out!).with("losetup --list").and_return(double(stdout: "/tmp/foo"))

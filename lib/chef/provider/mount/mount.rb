@@ -255,6 +255,11 @@ class Chef
             @current_resource.pass == @new_resource.pass
         end
 
+        # should actually check if the filesystem is mounted and new resource have any difference (not just return current_resource) and return true/false
+        def remount_require?
+          raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #remount_require?"
+        end
+
         # It will update or delete the entry from fstab.
         def edit_fstab(remove: false)
           if @current_resource.enabled
