@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-
 if [ -z "$1" ]
   then
     echo "No TestType supplied"
@@ -19,7 +18,7 @@ then
 fi
 
 echo "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3
+bundle install --jobs=3 --retry=3 
 
 case $TestType in
 
