@@ -18,7 +18,17 @@ try {
     SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
     hab pkg binlink --force $PackageIdentifier
-    /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
+
+    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "Machine")
+    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
+    $env:HAB_TEST="true"
+
+    gci env:
+
+    hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/unit
+    hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/functional
+    hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/integration
+    # /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
     if (-not $?) { throw "functional testing failed"}
 } finally {
     Pop-Location
