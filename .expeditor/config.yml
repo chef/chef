@@ -116,7 +116,7 @@ subscriptions:
   - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:promote_artifactory_artifact
-  - workload: artifact_published:stable:chef:{{version_constraint}}
+  - workload: artifact_published:unstable:habitat:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       # - bash:.expeditor/update_dockerfile.sh
