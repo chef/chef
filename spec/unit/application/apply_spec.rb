@@ -16,8 +16,41 @@
 # limitations under the License.
 
 require "spec_helper"
+require "chef-licensing"
 
 describe Chef::Application::Apply do
+
+  before(:each) do
+    # Disable all real HTTP connections
+    WebMock.disable_net_connect!
+    repo_path = File.expand_path("../../..", __dir__)
+    mock_path = File.join(repo_path, "spec", "data")
+    valid_client_api_data = File.read("#{mock_path}/valid_client_api_data.json")
+    # TODO Not a good approach - but required since software entitlement call picks key from env, arg or file
+    ENV["CHEF_LICENSE_KEY"] = "free-42727540-ddc8-4d4b-0000-80662e03cd73-0000"
+    chef_license_server_url = ChefLicensing::Config.license_server_url.chomp("/")
+    stub_request(:get, "#{chef_license_server_url}/v1/listLicenses")
+      .to_return(
+        body: {
+          "data": [ENV["CHEF_LICENSE_KEY"]],
+          "message": "",
+          "status_code": 200,
+        }.to_json,
+        headers: { content_type: "application/json" }
+      )
+
+    stub_request(:get, "#{chef_license_server_url}/v1/client")
+      .with(query: { licenseId: ENV["CHEF_LICENSE_KEY"], entitlementId: ChefLicensing::Config.chef_entitlement_id })
+      .to_return(
+        body: valid_client_api_data ,
+        headers: { content_type: "application/json" }
+      )
+    ChefLicensing::Context.license = ChefLicensing.client(license_keys: [ENV["CHEF_LICENSE_KEY"]])
+  end
+
+  after do
+    ENV.delete("CHEF_LICENSE_KEY")
+  end
 
   before do
     @app = Chef::Application::Apply.new
@@ -90,12 +123,26 @@ describe Chef::Application::Apply do
   describe "recipe_file_arg" do
     before do
       ARGV.clear
+
+      ChefLicensing.configure do |config|
+        config.logger = Logger.new(StringIO.new) # suppress log output
+      end
     end
     it "should exit and log message" do
+      # The below log messages is because of the licensing check
+      allow(Chef::Log).to receive(:debug).with(/opening connection to .*/)
+      allow(Chef::Log).to receive(:debug).with(/opened/)
+      allow(Chef::Log).to receive(:debug).with(/starting SSL for .*/)
+      allow(Chef::Log).to receive(:debug).with(/SSL established, protocol:.*/)
       expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
       expect { @app.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
 
+    after do
+      ChefLicensing.configure do |config|
+        config.logger = Chef::Log
+      end
+    end
   end
   describe "when the json_attribs configuration option is specified" do
     let(:json_attribs) { { "a" => "b" } }

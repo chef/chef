@@ -1,0 +1,57 @@
+{
+    "data":{
+      "cache": {
+        "lastModified": "2023-01-16T12:05:40Z",
+        "evaluatedOn": "2023-01-16T12:07:20.114370692Z",
+        "expires": "2023-01-17T12:07:20.114370783Z",
+        "cacheControl": "private,max-age:42460"
+      },
+      "client": {
+        "license": "Free",
+        "status": "Active",
+        "changesTo": "Grace",
+        "changesOn": "2024-11-01",
+        "changesIn": "2 days",
+        "usage": "Active",
+        "used": 2,
+        "limit": 2,
+        "measure": 2
+      },
+      "assets": [
+        {
+          "id": "assetguid1",
+          "name": "Test Asset 1"
+        },
+        {
+          "id": "assetguid2",
+          "name": "Test Asset 2"
+        }
+      ],
+      "features": [
+        {
+          "id": "featureguid1",
+          "name": "Test Feature 1"
+        },
+        {
+          "id": "featureguid2",
+          "name": "Test Feature 2"
+        }
+      ],
+      "entitlement": {
+        "id": "3ff52c37-e41f-4f6c-ad4d-365192205968",
+        "name": "Infra",
+        "start": "2022-11-01",
+        "end": "2024-11-01",
+        "licenses": 2,
+        "limits": [
+          {
+            "measure": "nodes",
+            "amount": 2
+          }
+        ],
+        "entitled": false
+      }
+    },
+    "message": "",
+    "status_code": 200
+  }
