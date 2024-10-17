@@ -57,12 +57,12 @@ builder-to-testers-map:
   freebsd-12-amd64:
     - freebsd-12-amd64
     - freebsd-13-amd64
-  mac_os_x-11-x86_64:
-    - mac_os_x-11-x86_64
-    - mac_os_x-12-x86_64
-  mac_os_x-11-arm64:
-    - mac_os_x-11-arm64
-    - mac_os_x-12-arm64
+  # mac_os_x-11-x86_64:         Temporarily removed due to build failures
+  #   - mac_os_x-11-x86_64
+  #   - mac_os_x-12-x86_64
+  # mac_os_x-11-arm64:
+  #   - mac_os_x-11-arm64
+  #   - mac_os_x-12-arm64
   rocky-8-x86_64:
     - rocky-8-x86_64
   rocky-9-x86_64:

@@ -56,11 +56,13 @@ builder-to-testers-map:
   freebsd-12-amd64:
     - freebsd-12-amd64
     - freebsd-13-amd64
-  mac_os_x-11-x86_64:
-    - mac_os_x-11-x86_64
-    - mac_os_x-12-x86_64
-  mac_os_x-11-arm64:
-    - mac_os_x-11-arm64
+
+  # mac_os_x-11-x86_64:
+  #   - mac_os_x-11-x86_64  Temporary disabled due to chef-19.0.0 release
+  #   - mac_os_x-12-x86_64
+  # mac_os_x-11-arm64:
+  #   - mac_os_x-11-arm64
+
   #   - mac_os_x-12-arm64     canary org doesn't yet have a macos 12 arm64 omnibus worker
   rocky-8-x86_64:
     - rocky-8-x86_64
