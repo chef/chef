@@ -5,7 +5,6 @@ set -euo pipefail
 export HAB_ORIGIN='ci'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
-
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
 export HAB_BLDR_CHANNEL="LTS-2024"

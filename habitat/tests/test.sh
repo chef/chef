@@ -3,7 +3,6 @@
 set -euo pipefail
 
 export CHEF_LICENSE="accept-no-persist"
-
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
 export HAB_BLDR_CHANNEL="LTS-2024"
