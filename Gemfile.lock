@@ -34,13 +34,6 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
-
 PATH
   remote: .
   specs:
@@ -326,7 +319,6 @@ GEM
     netrc (0.11.0)
     nori (2.7.1)
       bigdecimal
-    openssl (3.2.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
@@ -379,6 +371,7 @@ GEM
     rubocop-ast (1.28.0)
       parser (>= 3.2.1.0)
     ruby-progressbar (1.13.0)
+    ruby-shadow (2.5.1)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.5)
       base64
@@ -509,7 +502,6 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
   ohai!
-  openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -517,7 +509,7 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow!
+  ruby-shadow
   webmock
 
 BUNDLED WITH
