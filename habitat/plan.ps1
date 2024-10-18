@@ -58,6 +58,7 @@ function Invoke-Download() {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         write-output "--- did this pass just throw a weird exit code?"
+        gci ${HAB_CACHE_SRC_PATH}
         if (-not $?) { throw "unable to create archive of source" }
     } finally {
         Pop-Location
