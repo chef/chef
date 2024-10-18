@@ -46,4 +46,8 @@ echo "--- :mag_right: Testing ${pkg_ident} functionality"
 # rspec is not on the path by default. We had to find it above. Now we insert it into the path.
 rspec_path=$(dirname ${results[1]})
 export PATH="${rspec_path}":$PATH
-hab pkg exec "${pkg_ident}" rspec --tag ~executables --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb' || error 'failures during rspec tests'
+export HAB_TEST="true"
+hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
+hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional
+hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/integration
+

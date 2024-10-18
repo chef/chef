@@ -1,5 +1,7 @@
 $env:HAB_BLDR_CHANNEL = "LTS-2024"
 $pkg_name="chef-infra-client"
+
+$env:HAB_BLDR_CHANNEL="LTS-2024"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."

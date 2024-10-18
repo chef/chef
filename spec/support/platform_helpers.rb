@@ -228,6 +228,8 @@ def aes_256_gcm?
 end
 
 def fips_mode_build?
+  return false if ENV.fetch("BUILDKITE_PIPELINE_SLUG", "") =~ /verify$/
+
   if ENV.include?("BUILDKITE_LABEL") # try keying directly off Buildkite environments
     # regex version of chef/chef-foundation:.expeditor/release.omnibus.yml:fips-platforms
     [/el-.*-x86_64/, /el-.*-ppc64/, /el-.*aarch/, /ubuntu-/, /windows-/, /amazon-2/].any? do |os_arch|
@@ -273,4 +275,11 @@ def pwsh_installed?
   result.stderr.empty?
 rescue
   false
+end
+
+def hab_test?
+  STDERR.puts "<<<<<<<<<<<<<<<<<<<<==hab_test? called-->>>>>>>>>>>>>>>>>>>>"
+  return @hab_test unless @hab_test.nil?
+  STDERR.puts ENV.inspect
+  @hab_test=ENV["HAB_TEST"] =~ /true/i
 end
