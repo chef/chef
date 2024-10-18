@@ -71,6 +71,7 @@ function Invoke-Verify() {
 }
 
 function Invoke-Prepare {
+    write-output " ** Invoke Prepare"
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
     try {
