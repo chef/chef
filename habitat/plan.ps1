@@ -81,16 +81,16 @@ function Invoke-Download() {
         }
 
         
-        try {
-            $resolvedPath = Resolve-Path "$PLAN_CONTEXT/../"
-            if (-not $resolvedPath) { throw "Failed to resolve path: $PLAN_CONTEXT/../" }
+        # try {
+        #     $resolvedPath = Resolve-Path "$PLAN_CONTEXT/../"
+        #     if (-not $resolvedPath) { throw "Failed to resolve path: $PLAN_CONTEXT/../" }
             
-            Push-Location $resolvedPath.Path
-        }
-        catch {
-            Log-Error "Failed to push location or resolve path: $PLAN_CONTEXT/../"
-            throw $_
-        }
+        #     Push-Location $resolvedPath.Path
+        # }
+        # catch {
+        #     Log-Error "Failed to push location or resolve path: $PLAN_CONTEXT/../"
+        #     throw $_
+        # }
 
         
         try {
