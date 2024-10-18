@@ -384,6 +384,7 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
     context "when the daemonize option is an integer" do
       include_context "with signal handlers"
       include_context "with interval_sleep"
+      include_context "license server stubs"
 
       let(:wait_secs) { 1 }
       let(:daemonize) { wait_secs }
@@ -506,7 +507,7 @@ end
 
 describe Chef::Application::Client, "run_application", :unix_only do
   include_context "with signal handlers"
-
+  include_context "license server stubs"
   before(:each) do
     @pipe = IO.pipe
     @client = Chef::Client.new

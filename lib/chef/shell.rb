@@ -38,6 +38,8 @@ require_relative "workstation_config_loader"
 require_relative "shell/ext"
 require_relative "json_compat"
 require_relative "util/path_helper"
+require "chef-licensing/cli_flags/mixlib_cli"
+require_relative "licensing"
 
 # = Shell
 # Shell is Chef in an IRB session. Shell can interact with a Chef server via the
@@ -62,6 +64,11 @@ module Shell
 
     parse_opts
     Chef::Config[:shell_config] = options.config
+
+    if ChefUtils::Dist::Infra::SHELL == "chef-shell"
+      Chef::Licensing.fetch_and_persist
+      Chef::Licensing.check_software_entitlement!
+    end
 
     # HACK: this duplicates the functions of IRB.start, but we have to do it
     # to get access to the main object before irb starts.
@@ -213,6 +220,7 @@ module Shell
   class Options
     include Mixlib::CLI
     include ChefConfig::Mixin::DotD
+    include ChefLicensing::CLIFlags::MixlibCLI
 
     def self.footer(text = nil)
       @footer = text if text
@@ -323,12 +331,29 @@ module Shell
       description: "Use cached cookbooks without overwriting local differences from the server",
       boolean: false
 
+    if ChefUtils::Dist::Infra::SHELL == "chef-shell"
+      option :license_add,
+             long: "--license-add",
+             description: "Add a license key to the license pool.",
+             boolean: true,
+             proc: lambda { |v| Chef::Licensing.license_add },
+             exit: 0
+
+      option :license_list,
+             long: "--license-list",
+             description: "List all license keys in the license pool.",
+             boolean: true,
+             proc: lambda { |v| Chef::Licensing.license_list },
+             exit: 0
+    end
+
     def self.print_help
       instance = new
       instance.parse_options([])
       puts instance.opt_parser
       puts
       puts footer
+      puts Chef::Licensing.licensing_help if ChefUtils::Dist::Infra::SHELL == "chef-shell"
       puts
       exit 1
     end
