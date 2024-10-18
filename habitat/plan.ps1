@@ -44,11 +44,12 @@ function Invoke-SetupEnvironment {
 }
 
 function Invoke-Download() {
-    Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
+    Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
     try {
+        write-output "test before failure"
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         if (-not $?) { throw "unable to create archive of source" }
