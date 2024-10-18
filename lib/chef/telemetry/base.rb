@@ -51,7 +51,7 @@ class Chef
                             type: JOB_TYPE,
                             # Target platform info
                             environment: {
-                              host: ohai[:hostname],
+                              host: obscure(ohai[:hostname]),
                               os: ohai[:os],
                               version: ohai[:platform_version],
                               architecture: ohai[:kernel][:machine],
