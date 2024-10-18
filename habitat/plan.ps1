@@ -54,10 +54,7 @@ function Invoke-Download() {
     # location expected by do_unpack
     try {
         write-output "--- echo plan context test before failure"
-        pwd
-        echo $PLAN_CONTEXT
-        echo ${PLAN_CONTEXT}
-        Push-Location (Resolve-Path "${PLAN_CONTEXT}/../").Path
+        Push-Location C:\src\
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         if (-not $?) { throw "unable to create archive of source" }
     } finally {
