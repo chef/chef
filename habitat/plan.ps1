@@ -48,6 +48,7 @@ function Invoke-Download() {
     write-output "--- echo plan context test before failure"
     echo $PLAN_CONTEXT
     echo ${PLAN_CONTEXT}
+    (Resolve-Path "${PLAN_CONTEXT}/../").Path
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
