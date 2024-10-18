@@ -422,7 +422,7 @@ class Chef
                      "[" + options_list.join(" ") + "]"
                    end
           info = [ optstr, uri.normalize.to_s, distribution, components ].compact.join(" ")
-          repo =  "deb      #{info}\n"
+          repo =  "deb #{info}\n"
           repo << "deb-src  #{info}\n" if add_src
           repo
         end
