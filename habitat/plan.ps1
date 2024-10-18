@@ -81,26 +81,26 @@ function Invoke-Download() {
         }
 
         
-        # try {
-        #     $resolvedPath = Resolve-Path "$PLAN_CONTEXT/../"
-        #     if (-not $resolvedPath) { throw "Failed to resolve path: $PLAN_CONTEXT/../" }
-            
-        #     Push-Location $resolvedPath.Path
-        # }
-        # catch {
-        #     Log-Error "Failed to push location or resolve path: $PLAN_CONTEXT/../"
-        #     throw $_
-        # }
-
-        
         try {
-            git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\\${pkg_filename}" HEAD
-            if (-not $?) { throw "Unable to create archive of source." }
+            $resolvedPath = Resolve-Path "$PLAN_CONTEXT/../"
+            if (-not $resolvedPath) { throw "Failed to resolve path: $PLAN_CONTEXT/../" }
+            
+            Push-Location $resolvedPath.Path
         }
         catch {
-            Log-Error "Failed during git archive command."
+            Log-Error "Failed to push location or resolve path: $PLAN_CONTEXT/../"
             throw $_
         }
+
+        
+        # try {
+        #     git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\\${pkg_filename}" HEAD
+        #     if (-not $?) { throw "Unable to create archive of source." }
+        # }
+        # catch {
+        #     Log-Error "Failed during git archive command."
+        #     throw $_
+        # }
     }
     finally {
         # Ensure we always pop the location, even on error
