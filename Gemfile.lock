@@ -83,7 +83,6 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.0.31)
       chef-licensing (>= 0.7.5)
       chef-config (= 19.0.33)
       chef-licensing (>= 0.7.5)
