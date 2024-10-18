@@ -53,7 +53,11 @@ function Invoke-Download() {
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
     try {
+        Write-BuildLine " ** vars here work? ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
         write-output "--- echo plan context test before failure"
+        pwd
+        echo $PLAN_CONTEXT
+        echo ${PLAN_CONTEXT}
         Push-Location C:\src\
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         if (-not $?) { throw "unable to create archive of source" }
