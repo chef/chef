@@ -52,64 +52,15 @@ function Invoke-Download() {
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
-    # Function to log errors
-    function Log-Error {
-        param (
-            [string]$message
-        )
-        Write-Error "ERROR: $message"
-    }
-
-    
     try {
-        
-        try {
-            Write-BuildLine " ** vars here work? ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
-        }
-        catch {
-            Log-Error "Failed to write build line with variables."
-            throw $_  
-        }
-
-        
-        try {
-            write-output "--- echo plan context test before failure"
-        }
-        catch {
-            Log-Error "Failed during echo output test."
-            throw $_
-        }
-
-        
-        try {
-            $resolvedPath = Resolve-Path "$PLAN_CONTEXT/../"
-            if (-not $resolvedPath) { throw "Failed to resolve path: $PLAN_CONTEXT/../" }
-            
-            Push-Location $resolvedPath.Path
-        }
-        catch {
-            Log-Error "Failed to push location or resolve path: $PLAN_CONTEXT/../"
-            throw $_
-        }
-
-        
-        # try {
-        #     git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\\${pkg_filename}" HEAD
-        #     if (-not $?) { throw "Unable to create archive of source." }
-        # }
-        # catch {
-        #     Log-Error "Failed during git archive command."
-        #     throw $_
-        # }
-    }
-    finally {
-        # Ensure we always pop the location, even on error
-        try {
-            Pop-Location
-        }
-        catch {
-            Log-Error "Failed to pop the location back to the original context."
-        }
+        Write-BuildLine " ** vars here work? ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+        write-output "--- echo plan context test before failure"
+        Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
+        write-output "--- did this pass just throw a weird exit code?"
+        if (-not $?) { throw "unable to create archive of source" }
+    } finally {
+        Pop-Location
     }
 }
 
