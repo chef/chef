@@ -390,40 +390,9 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
       let(:daemonize) { wait_secs }
 
       before do
-        # Disable all real HTTP connections
-        WebMock.disable_net_connect!
-        repo_path = File.expand_path("../../..", __dir__)
-        mock_path = File.join(repo_path, "spec", "data")
-        valid_client_api_data = File.read("#{mock_path}/valid_client_api_data.json")
-        # TODO Not a good approach - but required since software entitlement call picks key from env, arg or file
-        allow(ChefLicensing::Config).to receive(:license_server_url).and_return("http://www.samplelicenseserver.com")
-
-        ENV["CHEF_LICENSE_KEY"] = "free-42727540-ddc8-4d4b-0000-80662e03cd73-0000"
-        chef_license_server_url = ChefLicensing::Config.license_server_url.chomp("/")
-        stub_request(:get, "#{chef_license_server_url}/v1/listLicenses")
-          .to_return(
-            body: {
-              "data": [ENV["CHEF_LICENSE_KEY"]],
-              "message": "",
-              "status_code": 200,
-            }.to_json,
-            headers: { content_type: "application/json" }
-          )
-
-        stub_request(:get, "#{chef_license_server_url}/v1/client")
-          .with(query: { licenseId: ENV["CHEF_LICENSE_KEY"], entitlementId: ChefLicensing::Config.chef_entitlement_id })
-          .to_return(
-            body: valid_client_api_data ,
-            headers: { content_type: "application/json" }
-          )
-        ChefLicensing::Context.license = ChefLicensing.client(license_keys: [ENV["CHEF_LICENSE_KEY"]])
         allow(@app).to receive(:interval_sleep).with(wait_secs).and_return true
         allow(@app).to receive(:interval_sleep).with(0).and_call_original
         allow(@app).to receive(:time_to_sleep).and_return(1)
-      end
-
-      after do
-        ENV.delete("CHEF_LICENSE_KEY")
       end
 
       it "sleeps for the amount of time passed" do
@@ -548,39 +517,6 @@ describe Chef::Application::Client, "run_application", :unix_only do
       sleep 1
       @pipe[1].puts "finished"
     end
-
-    # Disable all real HTTP connections
-    WebMock.disable_net_connect!
-    repo_path = File.expand_path("../../..", __dir__)
-    mock_path = File.join(repo_path, "spec", "data")
-    valid_client_api_data = File.read("#{mock_path}/valid_client_api_data.json")
-    # TODO Not a good approach - but required since software entitlement call picks key from env, arg or file
-    ENV["CHEF_LICENSE_KEY"] = "free-42727540-ddc8-4d4b-0000-80662e03cd73-0000"
-
-    allow(ChefLicensing::Config).to receive(:license_server_url).and_return("http://www.samplelicenseserver.com")
-
-    chef_license_server_url = ChefLicensing::Config.license_server_url.chomp("/")
-    stub_request(:get, "#{chef_license_server_url}/v1/listLicenses")
-      .to_return(
-        body: {
-          "data": [ENV["CHEF_LICENSE_KEY"]],
-          "message": "",
-          "status_code": 200,
-        }.to_json,
-        headers: { content_type: "application/json" }
-      )
-
-    stub_request(:get, "#{chef_license_server_url}/v1/client")
-      .with(query: { licenseId: ENV["CHEF_LICENSE_KEY"], entitlementId: ChefLicensing::Config.chef_entitlement_id })
-      .to_return(
-        body: valid_client_api_data ,
-        headers: { content_type: "application/json" }
-      )
-    ChefLicensing::Context.license = ChefLicensing.client(license_keys: [ENV["CHEF_LICENSE_KEY"]])
-  end
-
-  after do
-    ENV.delete("CHEF_LICENSE_KEY")
   end
 
   context "when sent SIGTERM", :volatile_on_solaris do
