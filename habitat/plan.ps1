@@ -32,6 +32,7 @@ function Invoke-Begin {
 }
 
 function Invoke-SetupEnvironment {
+    write-output "--- invoke setupenvironment"
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
@@ -45,18 +46,17 @@ function Invoke-SetupEnvironment {
 
 function Invoke-Download() {
     Write-BuildLine "--- ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
-    echo $PLAN_CONTEXT
-    echo ${PLAN_CONTEXT}
-    (Resolve-Path "${PLAN_CONTEXT}/../").Path
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
     try {
+        (Resolve-Path "$PLAN_CONTEXT/../").Path
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         write-output "--- did this pass just throw a weird exit code? also get child item on path" && gci ${HAB_CACHE_SRC_PATH}
         if (-not $?) { throw "unable to create archive of source" }
     } finally {
+        write-output "--- pop-location"
         Pop-Location
     }
 }
