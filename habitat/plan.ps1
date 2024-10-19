@@ -44,8 +44,7 @@ function Invoke-SetupEnvironment {
 }
 
 function Invoke-Download() {
-    Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
-    write-output "--- echo plan context test before failure"
+    Write-BuildLine "--- ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
     echo $PLAN_CONTEXT
     echo ${PLAN_CONTEXT}
     (Resolve-Path "${PLAN_CONTEXT}/../").Path
@@ -53,12 +52,9 @@ function Invoke-Download() {
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
     try {
-        Write-BuildLine " ** vars here work? ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
-        write-output "--- echo plan context test before failure"
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
-        write-output "--- did this pass just throw a weird exit code?"
-        gci ${HAB_CACHE_SRC_PATH}
+        write-output "--- did this pass just throw a weird exit code? also get child item on path" && gci ${HAB_CACHE_SRC_PATH}
         if (-not $?) { throw "unable to create archive of source" }
     } finally {
         Pop-Location
@@ -99,6 +95,7 @@ function Invoke-Prepare {
 
 function Invoke-Build {
     try {
+        write-output "--- invoke-build"
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
@@ -144,6 +141,7 @@ function Invoke-Build {
 }
 
 function Invoke-Install {
+    write-output "--- invoke-install"
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
@@ -160,6 +158,7 @@ function Invoke-Install {
 }
 
 function Invoke-After {
+    write-output "--- invoke after"
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
