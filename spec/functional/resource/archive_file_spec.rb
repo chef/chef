@@ -20,7 +20,7 @@ require "tmpdir"
 
 # AIX is broken, see https://github.com/chef/omnibus-software/issues/1566
 # Windows tests are disbled since we'd need libarchive on windows testers in buildkite for PRs
-describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_windows do
+describe Chef::Resource::ArchiveFile, :libarchive, :not_supported_on_windows do
   include RecipeDSLHelper
 
   let(:tmp_path) { Dir.mktmpdir }
