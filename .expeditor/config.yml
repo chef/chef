@@ -53,7 +53,7 @@ pipelines:
       trigger: default
   - habitat/build:
       env:
-        - HABITAT_BUILDKITE_PLUGIN_VERSION: 7cce8ad2c06f3edc195d2c9c3b733d10fa0220fa
+        - EXPEDITOR_BUILDKITE_HABITAT_PLUGIN_GITREF: 7cce8ad2c06f3edc195d2c9c3b733d10fa0220fa
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default

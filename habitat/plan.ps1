@@ -64,6 +64,7 @@ function Invoke-Download() {
 function Invoke-Verify() {
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
     return 0
+    Write-BuildLine " ** OutInvokeVerify"
 }
 
 function Invoke-Prepare {
