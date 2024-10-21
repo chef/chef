@@ -228,6 +228,8 @@ def aes_256_gcm?
 end
 
 def fips_mode_build?
+  return false if ENV.fetch("BUILDKITE_PIPELINE_SLUG", "") =~ /verify$/
+
   if ENV.include?("BUILDKITE_LABEL") # try keying directly off Buildkite environments
     # regex version of chef/chef-foundation:.expeditor/release.omnibus.yml:fips-platforms
     [/el-.*-x86_64/, /el-.*-ppc64/, /el-.*aarch/, /ubuntu-/, /windows-/, /amazon-2/].any? do |os_arch|

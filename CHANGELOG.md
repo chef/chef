@@ -1,17 +1,37 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.6 -->
-## [v19.0.6](https://github.com/chef/chef/tree/v19.0.6) (2024-08-20)
+<!-- latest_release 19.0.26 -->
+## [v19.0.26](https://github.com/chef/chef/tree/v19.0.26) (2024-10-01)
 
 #### Merged Pull Requests
-- Obvious fix: replace lint download action with curl [#14562](https://github.com/chef/chef/pull/14562) ([williamtheaker](https://github.com/williamtheaker))
+- Fixing missing rspec in hab plan testing [#14630](https://github.com/chef/chef/pull/14630) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixing missing rspec in hab plan testing [#14630](https://github.com/chef/chef/pull/14630) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.26 -->
+- fix VM linux tests [#14626](https://github.com/chef/chef/pull/14626) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.25 -->
+- updating Linux, part 1 [#14613](https://github.com/chef/chef/pull/14613) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.24 -->
+- Bump ohai to 19.0.3 [#14624](https://github.com/chef/chef/pull/14624) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.23 -->
+- Add example to homebrew_tap resource. [#14615](https://github.com/chef/chef/pull/14615) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.22 -->
+- [Chef-19] Fix knife/Gemfile.lock to pull correct chef 19 version instead of 18 [#14611](https://github.com/chef/chef/pull/14611) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.21 -->
+- Generic Target Mode [#14397](https://github.com/chef/chef/pull/14397) ([thheinen](https://github.com/thheinen)) <!-- 19.0.20 -->
+- [Chef-19]Bump license_scout to 1.3.11 [#14607](https://github.com/chef/chef/pull/14607) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.19 -->
+- Chef-19 update habitat [#14599](https://github.com/chef/chef/pull/14599) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.18 -->
+- CVE update [#14596](https://github.com/chef/chef/pull/14596) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.17 -->
+- removing kernel 2 support [#14595](https://github.com/chef/chef/pull/14595) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.16 -->
+- [PathHelper#cleanpath] avoid creating new strings with gsub [#14579](https://github.com/chef/chef/pull/14579) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.15 -->
+- Enhance resource inspector to understand LWRP files containing multiple resources [#14546](https://github.com/chef/chef/pull/14546) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 19.0.14 -->
+- Remove Freebsd testing [#14569](https://github.com/chef/chef/pull/14569) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.13 -->
+- Reducing the list of esoteric platforms [#14586](https://github.com/chef/chef/pull/14586) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.12 -->
+- Search for choco 1.4, chef-powershell bundle fix, and resolv registry patch fix [#14462](https://github.com/chef/chef/pull/14462) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.11 -->
+- Use install_if for openssl gem [#14585](https://github.com/chef/chef/pull/14585) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.10 -->
+- Clear user privileges before deleting user in Windows (#14575) [#14581](https://github.com/chef/chef/pull/14581) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.9 -->
+- Strip spaces from apt_repository repo_name. [#14470](https://github.com/chef/chef/pull/14470) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.8 -->
+- Fix #6238 - handle link :delete action without `to` [#14350](https://github.com/chef/chef/pull/14350) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.7 -->
 - Obvious fix: replace lint download action with curl [#14562](https://github.com/chef/chef/pull/14562) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.6 -->
 - Fix issues with multiple homebrew binaries [#14544](https://github.com/chef/chef/pull/14544) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.5 -->
 - fix pipeline tests [#14555](https://github.com/chef/chef/pull/14555) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.4 -->

@@ -21,12 +21,12 @@ class Chef
     class Group
       class Groupmod < Chef::Provider::Group
 
-        provides :group, os: "netbsd"
+        provides :group, os: "netbsd", target_mode: true
 
         def load_current_resource
           super
           %w{group user}.each do |binary|
-            raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{new_resource}" unless ::File.exist?("/usr/sbin/#{binary}")
+            raise Chef::Exceptions::Group, "Could not find binary /usr/sbin/#{binary} for #{new_resource}" unless ::TargetIO::File.exist?("/usr/sbin/#{binary}")
           end
         end
 

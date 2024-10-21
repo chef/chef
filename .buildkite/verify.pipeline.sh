@@ -9,7 +9,7 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "steps:"
 echo ""
 
-test_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "ubuntu-1604" "sles-15")
+test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
 
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
@@ -139,7 +139,7 @@ for gem in ${external_gems[@]}; do
   esac
 done
 
-habitat_plans=("linux" "linux-kernel2" "windows")
+habitat_plans=("linux" "windows")
 
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""

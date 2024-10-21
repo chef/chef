@@ -230,7 +230,7 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     it "gets a key" do
       simples = double("HTTP")
       allow(simples).to receive(:get).and_return("\"#{key}\"")
-      expect(Chef::HTTP::Simple).to receive(:new).with(url).and_return(simples)
+      expect(Chef::HTTP::Simple).to receive(:new).with(url, {}).and_return(simples)
       expect(provider).to receive(:install_key_from_keyserver).with(key, "keyserver.ubuntu.com")
       provider.install_ppa_key("chef", "main")
     end

@@ -26,7 +26,7 @@ class Chef
 
         attr_reader :enabled_state_found
 
-        provides :service, os: %w{freebsd netbsd}
+        provides :service, os: %w{freebsd netbsd}, target_mode: true
 
         include Chef::Mixin::ShellOut
 
@@ -34,9 +34,9 @@ class Chef
           super
           @enabled_state_found = false
           @init_command = nil
-          if ::File.exist?("/etc/rc.d/#{new_resource.service_name}")
+          if ::TargetIO::File.exist?("/etc/rc.d/#{new_resource.service_name}")
             @init_command = "/etc/rc.d/#{new_resource.service_name}"
-          elsif ::File.exist?("/usr/local/etc/rc.d/#{new_resource.service_name}")
+          elsif ::TargetIO::File.exist?("/usr/local/etc/rc.d/#{new_resource.service_name}")
             @init_command = "/usr/local/etc/rc.d/#{new_resource.service_name}"
           end
         end
@@ -118,11 +118,11 @@ class Chef
         private
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", "r", &:readlines)
+          ::TargetIO::File.open("/etc/rc.conf", "r", &:readlines)
         end
 
         def write_rc_conf(lines)
-          ::File.open("/etc/rc.conf", "w") do |file|
+          ::TargetIO::File.open("/etc/rc.conf", "w") do |file|
             lines.each { |line| file.puts(line) }
           end
         end
@@ -131,7 +131,7 @@ class Chef
         def service_enable_variable_name
           @service_enable_variable_name ||=
             if init_command
-              ::File.open(init_command) do |rcscript|
+              ::TargetIO::File.open(init_command) do |rcscript|
                 rcscript.each_line do |line|
                   if line =~ /^name="?(\w+)"?/
                     return $1 + "_enable"
@@ -150,7 +150,7 @@ class Chef
 
         def determine_enabled_status!
           var_name = service_enable_variable_name
-          if ::File.exist?("/etc/rc.conf") && var_name
+          if ::TargetIO::File.exist?("/etc/rc.conf") && var_name
             read_rc_conf.each do |line|
               case line
               when /^#{Regexp.escape(var_name)}="(\w+)"/

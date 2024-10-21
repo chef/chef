@@ -24,7 +24,7 @@ class Chef
     class Service
       class Openbsd < Chef::Provider::Service::Init
 
-        provides :service, os: "openbsd"
+        provides :service, os: "openbsd", target_mode: true
 
         attr_reader :init_command, :rc_conf, :rc_conf_local, :enabled_state_found
 
@@ -33,9 +33,9 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-          @rc_conf = ::File.read(RC_CONF_PATH) rescue ""
-          @rc_conf_local = ::File.read(RC_CONF_LOCAL_PATH) rescue ""
-          @init_command = ::File.exist?(rcd_script_path) ? rcd_script_path : nil
+          @rc_conf = ::TargetIO::File.read(RC_CONF_PATH) rescue ""
+          @rc_conf_local = ::TargetIO::File.read(RC_CONF_LOCAL_PATH) rescue ""
+          @init_command = ::TargetIO::File.exist?(rcd_script_path) ? rcd_script_path : nil
           new_resource.status_command("#{default_init_command} check")
         end
 
@@ -129,8 +129,8 @@ class Chef
         end
 
         def update_rcl(value)
-          FileUtils.touch RC_CONF_LOCAL_PATH unless ::File.exist? RC_CONF_LOCAL_PATH
-          ::File.write(RC_CONF_LOCAL_PATH, value)
+          TargetIO::FileUtils.touch RC_CONF_LOCAL_PATH unless ::TargetIO::File.exist? RC_CONF_LOCAL_PATH
+          ::TargetIO::File.write(RC_CONF_LOCAL_PATH, value)
           @rc_conf_local = value
         end
 
@@ -139,7 +139,7 @@ class Chef
           @bsevn ||= begin
             result = nil
             if rcd_script_found?
-              ::File.open(init_command) do |rcscript|
+              ::TargetIO::File.open(init_command) do |rcscript|
                 if m = rcscript.read.match(/^# \$OpenBSD: (\w+)[(.rc),]?/)
                   result = m[1] + "_flags"
                 end

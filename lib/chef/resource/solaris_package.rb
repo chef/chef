@@ -23,7 +23,8 @@ class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
 
-      provides :solaris_package
+      provides :solaris_package, target_mode: true
+      target_mode support: :full
 
       description "Use the **solaris_package** resource to manage packages on the Solaris platform."
 

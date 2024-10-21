@@ -124,11 +124,6 @@ class Chef
 
         private
 
-        # @return [String] package name with or without anchors attached to it.
-        def resolve_package(pkg)
-          new_resource.anchor_package_regex ? "^#{pkg}$" : pkg
-        end
-
         # @return [String] version of apt-get which is installed
         def apt_version
           @apt_version ||= shell_out("apt-get --version").stdout.match(/^apt (\S+)/)[1]
@@ -179,12 +174,10 @@ class Chef
         end
 
         def resolve_package_versions(pkg)
-          # apt-cache considers package names as regex by default. The anchor_package_regex flag will decide whether to match name exact string or not
-          pkg_name = resolve_package(pkg)
           current_version = nil
           candidate_version = nil
           all_versions = []
-          run_noninteractive("apt-cache", default_release_options, "policy", pkg_name).stdout.each_line do |line|
+          run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
               current_version = ( $1 != "(none)" ) ? $1 : nil
@@ -223,9 +216,7 @@ class Chef
         end
 
         def resolve_virtual_package_name(pkg)
-          # apt-cache considers package names as regex by default. The anchor_package_regex flag will decide whether to match name exact string or not
-          pkg_name = resolve_package(pkg)
-          showpkg = run_noninteractive("apt-cache", "showpkg", pkg_name).stdout
+          showpkg = run_noninteractive("apt-cache", "showpkg", pkg).stdout
           partitions = showpkg.rpartition(/Reverse Provides: ?#{$/}/)
           return nil if partitions[0] == "" && partitions[1] == "" # not found in output
 

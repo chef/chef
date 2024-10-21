@@ -19,7 +19,8 @@ class Chef
     class SelinuxUser < Chef::Resource
       unified_mode true
 
-      provides :selinux_user
+      provides :selinux_user, target_mode: true
+      target_mode support: :full
 
       description "Use the **selinux_user** resource to add, update, or remove SELinux users."
       introduced "18.1"

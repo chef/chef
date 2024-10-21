@@ -22,7 +22,8 @@ class Chef
   class Resource
     class Ksh < Chef::Resource::Script
 
-      provides :ksh
+      provides :ksh, target_mode: true
+      target_mode support: :full
 
       description "Use the **ksh** resource to execute scripts using the Korn shell (ksh)"\
                   " interpreter. This resource may also use any of the actions and properties"\

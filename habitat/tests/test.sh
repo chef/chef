@@ -5,6 +5,7 @@ set -euo pipefail
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
+export HAB_BLDR_CHANNEL="LTS-2024"
 
 project_root="$(git rev-parse --show-toplevel)"
 pkg_ident="$1"
@@ -33,9 +34,14 @@ for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'chef-solo'; do
   hab pkg exec "${pkg_ident}" "${executable}" -- --version || error "${executable} failed to execute properly"
 done
 
-# echo "--- :mag_right: Testing ${pkg_ident} functionality"
-# hab pkg exec "${pkg_ident}" rspec --tag ~executables --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb' || error 'failures during rspec tests'
-# hab pkg exec "${pkg_ident}" bundle install --jobs=3
+echo "--- :construction: Gotta find RSPEC so testing doesn't immediately fail"
+results=(`find /hab/pkgs -name "rspec" -type f`)
+echo "${results[1]}"
+
+echo "--- :mag_right: Testing ${pkg_ident} functionality"
+# rspec is not on the path by default. We had to find it above. Now we insert it into the path.
+rspec_path=$(dirname ${results[1]})
+export PATH="${rspec_path}":$PATH
 export HAB_TEST="true"
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional

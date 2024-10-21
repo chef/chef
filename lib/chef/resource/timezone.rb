@@ -23,7 +23,8 @@ class Chef
   class Resource
     class Timezone < Chef::Resource
 
-      provides :timezone
+      provides :timezone, target_mode: true
+      target_mode support: :full
 
       description "Use the **timezone** resource to change the system timezone on Windows, Linux, and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values for Linux and macOS here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>. On Windows systems run `tzutil /l` for a complete list of valid timezones."
       introduced "14.6"
@@ -96,10 +97,10 @@ class Chef
       # @since 16.5
       # @return [String] timezone id
       def current_rhel_tz
-        return nil unless ::File.exist?("/etc/sysconfig/clock")
+        return nil unless ::TargetIO::File.exist?("/etc/sysconfig/clock")
 
         # https://rubular.com/r/aoj01L3bKBM7wh
-        /ZONE="(.*)"/.match(::File.read("/etc/sysconfig/clock"))[1]
+        /ZONE="(.*)"/.match(::TargetIO::File.read("/etc/sysconfig/clock"))[1]
       end
 
       load_current_value do
@@ -155,13 +156,13 @@ class Chef
                 execute "tzdata-update" do
                   command "/usr/sbin/tzdata-update"
                   action :nothing
-                  only_if { ::File.executable?("/usr/sbin/tzdata-update") }
+                  only_if { ::TargetIO::File.executable?("/usr/sbin/tzdata-update") }
                   subscribes :run, "file[/etc/sysconfig/clock]", :immediately
                 end
 
                 link "/etc/localtime" do
                   to "/usr/share/zoneinfo/#{new_resource.timezone}"
-                  not_if { ::File.executable?("/usr/sbin/tzdata-update") }
+                  not_if { ::TargetIO::File.executable?("/usr/sbin/tzdata-update") }
                 end
               when "mac_os_x"
                 shell_out!(["sudo", "systemsetup", "-settimezone", new_resource.timezone])

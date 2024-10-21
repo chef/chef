@@ -37,7 +37,7 @@ class Chef
           provides :json
 
           def verify(path, opts = {})
-            Chef::JSONCompat.parse(IO.read(path))
+            Chef::JSONCompat.parse(TargetIO::IO.read(path))
             true
           rescue Chef::Exceptions::JSON::ParseError => e
             Chef::Log.error("Json syntax verify failed with : #{e.message}")
