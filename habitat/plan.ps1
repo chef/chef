@@ -68,10 +68,14 @@ function Invoke-Verify() {
 
 
 function Invoke-Clean () {
-    Write-BuildLine " ** this step is breaking in the code, trying to skip it to see if we cant get past the specific error"
+    Write-BuildLine " ** testing on skipping invoke-clean"
     return 0
 }
 
+function Invoke-Unpack () {
+    Write-BuildLine " -- Testing to skip invoke-unpack Expand-Archive -Path "$HAB_CACHE_SRC_PATH/$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH/$pkg_dirname""
+    return 0 
+}
 
 function Invoke-Prepare {
     write-output " ** Invoke Prepare"
