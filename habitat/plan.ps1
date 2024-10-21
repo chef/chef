@@ -45,7 +45,7 @@ function Invoke-SetupEnvironment {
 }
 
 function Invoke-Download() {
-    Write-BuildLine "--- ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+    Write-BuildLine "--- ** Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
@@ -62,19 +62,24 @@ function Invoke-Download() {
 }
 
 function Invoke-Verify() {
-    Write-BuildLine " ** Skipping checksum verification on the archive we just created."
+    Write-BuildLine " ** Invoke-Verify Skipping checksum verification on the archive we just created."
     return 0
 }
 
 
 function Invoke-Clean () {
-    Write-BuildLine " ** testing on skipping invoke-clean"
-    return 0
+    Write-BuildLine " ** Invoke-Clean - testing"
+    $src = "$HAB_CACHE_SRC_PATH\$pkg_dirname"
+    if (Test-Path "$src") {
+        Remove-Item "$src" -Recurse -Force
+    }
 }
 
 function Invoke-Unpack () {
     Write-BuildLine " -- Testing to skip invoke-unpack Expand-Archive -Path "$HAB_CACHE_SRC_PATH/$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH/$pkg_dirname""
-    return 0 
+    if($null -ne $pkg_filename) {
+        Expand-Archive -Path "$HAB_CACHE_SRC_PATH/$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH/$pkg_dirname"
+    }
 }
 
 function Invoke-Prepare {
