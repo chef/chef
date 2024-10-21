@@ -1,6 +1,7 @@
 require_relative "base"
 require_relative "../config"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require_relative "../context"
 
 class Chef
   module Formatters
@@ -46,6 +47,7 @@ class Chef
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
         puts_line "Infra Phase starting"
         puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
+        puts_line "Running under: #{Context.test_kitchen_context? ? "Test-Kitchen" : "Chef Infra"}"
       end
 
       def total_resources

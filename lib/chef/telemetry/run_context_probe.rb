@@ -1,3 +1,5 @@
+require_relative "../context"
+
 class Chef
   class Telemetry
     # Guesses the run context of Chef - how were we invoked?
@@ -24,9 +26,7 @@ class Chef
       end
 
       def self.kitchen?(stack)
-        # TO TEST
-        stack_match(stack: stack, path: "kitchen/instance", label: "verify_action") &&
-          stack_match(stack: stack, path: "kitchen/instance", label: "verify")
+        Context.test_kitchen_context?
       end
 
       def self.chef_apply?(stack)
