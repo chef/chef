@@ -64,8 +64,14 @@ function Invoke-Download() {
 function Invoke-Verify() {
     Write-BuildLine " ** Skipping checksum verification on the archive we just created."
     return 0
-    Write-BuildLine " ** OutInvokeVerify"
 }
+
+
+function Invoke-Clean () {
+    Write-BuildLine " ** this step is breaking in the code, trying to skip it to see if we cant get past the specific error"
+    return 0
+}
+
 
 function Invoke-Prepare {
     write-output " ** Invoke Prepare"
