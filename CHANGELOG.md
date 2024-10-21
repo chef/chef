@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.33 -->
-## [v19.0.33](https://github.com/chef/chef/tree/v19.0.33) (2024-10-16)
+<!-- latest_release 19.0.34 -->
+## [v19.0.34](https://github.com/chef/chef/tree/v19.0.34) (2024-10-18)
 
 #### Merged Pull Requests
-- Fix windows plan [#14655](https://github.com/chef/chef/pull/14655) ([sajjaphani](https://github.com/sajjaphani))
+- Temporarily removing MacOS [#14660](https://github.com/chef/chef/pull/14660) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Temporarily removing MacOS [#14660](https://github.com/chef/chef/pull/14660) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.34 -->
 - Fix windows plan [#14655](https://github.com/chef/chef/pull/14655) ([sajjaphani](https://github.com/sajjaphani)) <!-- 19.0.33 -->
 - port rdoc vulnerability update from chef 18 [#14648](https://github.com/chef/chef/pull/14648) ([rishichawda](https://github.com/rishichawda)) <!-- 19.0.32 -->
 - Updating the plan files [#14608](https://github.com/chef/chef/pull/14608) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.31 -->
