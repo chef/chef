@@ -6,6 +6,7 @@ $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
 $pkg_maintainer="The Chef Maintainers <maintainers@chef.io>"
 $pkg_upstream_url="https://github.com/chef/chef"
+$env:OPENSSL_FIPS = "1"
 $pkg_license=@("Apache-2.0")
 $pkg_filename="${pkg_name}-${pkg_version}.zip"
 $pkg_bin_dirs=@(
