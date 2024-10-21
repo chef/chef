@@ -20,7 +20,7 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform. We reduced this list for Chef-19
-esoteric_platforms=("mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64")
+# esoteric_platforms=("mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
@@ -42,29 +42,29 @@ then
 fi
 
 ## add esoteric platforms in chef/chef-canary
-if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
-then
-  esoteric_build_platforms=()
-  esoteric_test_platforms=()
+# if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
+# then
+#   esoteric_build_platforms=()
+#   esoteric_test_platforms=()
 
-  # build build array and test array based on filter
-  for platform in ${esoteric_platforms[@]}; do
-    case ${platform%:*} in
-        $FILTER)
-            esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
-            esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
-            ;;
-    esac
-  done
+#   # build build array and test array based on filter
+#   for platform in ${esoteric_platforms[@]}; do
+#     case ${platform%:*} in
+#         $FILTER)
+#             esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
+#             esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
+#             ;;
+#     esac
+#   done
 
-  # remove duplicates from build array
-  # using shell parameter expansion this checks to make sure the esoteric_build_platforms array isn't empty if OMNIBUS_FILTER is only container platforms
-  # prevents esoteric_build_platforms unbound variable error
-  if [[ ! -z "${esoteric_build_platforms:-}" ]]
-  then
-    esoteric_build_platforms=($(printf "%s\n" "${esoteric_build_platforms[@]}" | sort -u | tr '\n' ' '))
-  fi
-fi
+#   # remove duplicates from build array
+#   # using shell parameter expansion this checks to make sure the esoteric_build_platforms array isn't empty if OMNIBUS_FILTER is only container platforms
+#   # prevents esoteric_build_platforms unbound variable error
+#   if [[ ! -z "${esoteric_build_platforms:-}" ]]
+#   then
+#     esoteric_build_platforms=($(printf "%s\n" "${esoteric_build_platforms[@]}" | sort -u | tr '\n' ' '))
+#   fi
+# fi
 
 # using shell parameter expansion this checks to make sure the omnibus_build_platforms array isn't empty if OMNIBUS_FILTER is only esoteric platforms
 # prevents omnibus_build_platforms unbound variable error
