@@ -51,7 +51,9 @@ pipelines:
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
-  - habitat/build
+  - habitat/build:
+      env:
+        - HABITAT_BUILDKITE_PLUGIN_VERSION: 7cce8ad2c06f3edc195d2c9c3b733d10fa0220fa
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
