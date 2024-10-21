@@ -20,7 +20,7 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform. We reduced this list for Chef-19
-# esoteric_platforms=("mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64")
+esoteric_platforms=("mac_os_x-11-x86_64:mac_os_x-11-x86_64" "mac_os_x-12-x86_64:mac_os_x-11-x86_64" "mac_os_x-11-arm64:mac_os_x-11-arm64" "mac_os_x-12-arm64:mac_os_x-11-arm64")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
