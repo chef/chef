@@ -21,10 +21,11 @@ class Chef
 
       def create_wrapper
         Chef::Log.debug "Initializing wrapper for telemetry"
+        run_context = Chef::Telemetry::RunContextProbe.guess_run_context
         {
           version: VERSION,
           createdTimeUTC: Time.now.getutc.iso8601,
-          environment: Chef::Telemetry::RunContextProbe.guess_run_context,
+          environment: Chef::Config.target_mode? ? "#{run_context}:target-mode" : run_context,
           licenseIds: fetch_license_ids,
           source: "#{ChefUtils::Dist::Infra::EXEC}:#{Chef::VERSION}",
           type: TYPE,
