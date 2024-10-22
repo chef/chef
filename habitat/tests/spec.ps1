@@ -19,17 +19,18 @@ try {
 
     hab pkg binlink --force $PackageIdentifier
 
-    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "Machine")
-    [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
+    # [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "Machine")
+    # [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
     $env:HAB_TEST="true"
 
-    gci env:
-
     hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/unit
+    if (-not $?) { throw "Unit tests failed"}
+
     hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/functional
+    if (-not $?) { throw "Functional tests failed"}
+
     hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/integration
-    # /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
-    if (-not $?) { throw "functional testing failed"}
+    if (-not $?) { throw "Integration tests failed"}
 } finally {
     Pop-Location
 }
