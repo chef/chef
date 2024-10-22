@@ -21,6 +21,7 @@ $pkg_deps=@(
 $pkg_build_deps=@( "core/git")
 
 function Invoke-Begin {
+    write-output "*** Start Invoke-Begin Function"
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]"0.85.0" ) {
         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
@@ -32,6 +33,7 @@ function Invoke-Begin {
 }
 
 function Invoke-SetupEnvironment {
+    write-output "*** Start Invoke-SetupEnvironment Function"
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
@@ -44,25 +46,70 @@ function Invoke-SetupEnvironment {
 }
 
 function Invoke-Download() {
-    Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
-    # source is in this repo, so we're going to create an archive from the
-    # appropriate path within the repo and place the generated tarball in the
-    # location expected by do_unpack
+    Write-BuildLine "*** Start Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+    
     try {
-        Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
-        if (-not $?) { throw "unable to create archive of source" }
+        # what is my actual path here before push-location
+        Write-Output "Invoke-Download Function: Original path: $(Get-Location)"
+
+        # just doing a test example here, should show my resolved-path, for those not sure what the resolved path does
+        $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../").Path
+        Write-Output "Invoke-Download Function: Resolved target path: $resolvedPath"
+
+        # Push-Location to move into the new directory and stack the current directory, neat way to use cd
+        Push-Location $resolvedPath
+        Write-Output "Path after Push-Location: $(Get-Location) "
+        
+        # Generate the archive using git, fixing perms as well
+        write-output "*** Invoke-Download Function: fixing permissions on docker container git config --global --add safe.directory C:/src"
+        git config --global --add safe.directory C:/src
+        Write-Output "*** Invoke-Download Function: Creating archive at ${HAB_CACHE_SRC_PATH}\${pkg_filename}... "
+        git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\${pkg_filename}" HEAD
+        
+        # Check if the file exists and has a valid size (non-zero), or fail the build
+        $archiveFile = Get-Item "${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+        if (-not $archiveFile) { 
+            throw "Invoke-Download Function: Archive file not created. "
+        } elseif ($archiveFile.Length -eq 0) {
+            throw "Invoke-Download Function: Archive file is 0 bytes. Archive creation failed. "
+        }
+
+        Write-Output "*** Invoke-Download Function: Archive created successfully: $($archiveFile.FullName) with size $($archiveFile.Length) bytes"
+        
+    } catch {
+        # Capture any errors from git archive or other commands
+        Write-Output "Invoke-Download Function: Error occurred: $_ "
+        throw $_
     } finally {
+        # Always return to the original path
+        Write-Output "Invoke-Download Function: Path before Pop-Location: $(Get-Location) "
         Pop-Location
+        Write-Output "Invoke-Download Function: Restored path after Pop-Location: $(Get-Location) "
     }
 }
 
 function Invoke-Verify() {
-    Write-BuildLine " ** Skipping checksum verification on the archive we just created."
+    Write-BuildLine " ** Invoke-Verify Skipping checksum verification on the archive we just created"
     return 0
 }
 
+function Invoke-Clean () {
+    Write-BuildLine " **  Start Invoke-Clean Function"
+    $src = "$HAB_CACHE_SRC_PATH\$pkg_dirname"
+    if (Test-Path "$src") {
+        Remove-Item "$src" -Recurse -Force
+    }
+}
+
+function Invoke-Unpack () {
+    Write-BuildLine "*** Start Invoke-Unpack Function"
+    if($null -ne $pkg_filename) {
+        Expand-Archive -Path "$HAB_CACHE_SRC_PATH\$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH\$pkg_dirname"
+    }
+}
+
 function Invoke-Prepare {
+    write-output " ** Start Invoke-Prepare Function"
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
     try {
@@ -90,6 +137,7 @@ function Invoke-Prepare {
 
 function Invoke-Build {
     try {
+        write-output "*** invoke-build"
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
@@ -135,6 +183,7 @@ function Invoke-Build {
 }
 
 function Invoke-Install {
+    write-output "*** invoke-install"
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
@@ -151,6 +200,7 @@ function Invoke-Install {
 }
 
 function Invoke-After {
+    write-output "*** invoke after"
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
