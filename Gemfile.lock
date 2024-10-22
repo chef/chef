@@ -341,7 +341,7 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    psych (5.1.2)
+    psych (5.1.1.1)
       stringio
     public_suffix (5.0.1)
     rack (2.2.6.4)
@@ -444,7 +444,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
-    win32-api (1.10.1-universal-mingw32)
+    win32-api (1.10.1)
     win32-certstore (0.6.16)
       chef-powershell
       ffi
@@ -513,6 +513,7 @@ DEPENDENCIES
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
+  psych (< 5.1.2)
   rake (>= 12.3.3)
   rb-readline
   rdoc (~> 6.4.1)
