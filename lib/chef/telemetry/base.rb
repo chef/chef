@@ -12,7 +12,7 @@ class Chef
       TYPE = "job"
       JOB_TYPE = "Infra"
 
-      attr_accessor :scratch, :ohai
+      attr_accessor :ohai
 
       def fetch_license_ids
         Chef::Log.debug "Fetching license IDs for telemetry"
@@ -72,17 +72,28 @@ class Chef
             }
           end
           all_resources = opts[:run_context].resource_collection&.all_resources
+          seen_resources = {} # A hash to keep track of resource types that have been added
           if all_resources
             all_resources.each do |resource|
-              payload[:jobs][0][:steps] << {
-                name: resource.recipe_name,
-                resources: [],
-              }
-
-              payload[:jobs][0][:steps].last[:resources] << {
-                type: "chef-resource",
-                name: resource.resource_name.to_s,
-              }
+              resource_type = resource.is_a?(Chef::Resource) ? resource.resource_name.to_s : "HWLR"
+              # If the resource type has not been seen, add it with an initial count
+              unless seen_resources[resource_type]
+                step_name = resource.is_a?(Chef::Resource) ? "Chef Resources" : "Custom Resources"
+                # Append the step for this resource type
+                payload[:jobs][0][:steps] << {
+                  name: step_name,
+                  resources: []
+                }
+                # Append the resource type to the last added step with an initial count of 0
+                payload[:jobs][0][:steps].last[:resources] << {
+                  type: resource_type,
+                  count: 0 # Initial count
+                }
+                # Mark this resource type as seen, and store reference to its count hash
+                seen_resources[resource_type] = payload[:jobs][0][:steps].last[:resources].last
+              end
+              # Increment the resource count for each occurrence
+              seen_resources[resource_type][:count] += 1
             end
           end
         end
