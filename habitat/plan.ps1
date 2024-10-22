@@ -114,7 +114,7 @@ function Invoke-Prepare {
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-        Write-BuildLine " ** Where the hell is 'Gem'?"
+        Write-BuildLine " ** Where is my gem at?"
         $gem_file = @"
 @ECHO OFF
 @"%~dp0ruby.exe" "%~dpn0" %*
