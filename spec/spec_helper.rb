@@ -354,11 +354,11 @@ if hab_test?
     module Mixin
       module ShellOut
         def self.included(other_module)
-          [%i[shell_out! shell_out_compacted!], %i[shell_out shell_out_compacted]].each do |shell_out, shell_out_compacted|
+          [%i{shell_out! shell_out_compacted!}, %i{shell_out shell_out_compacted}].each do |shell_out, shell_out_compacted|
             other_module.define_method shell_out do |*args, **options|
               options = options.dup
               options = __maybe_add_timeout(self, options)
-              args=args.dup.map { |str| str.gsub(/^bundle exec /, '') }
+              args = args.dup.map { |str| str.gsub(/^bundle exec /, "") }
               if options.empty?
                 send(shell_out_compacted, *__clean_array(*args))
               else
