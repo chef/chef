@@ -68,7 +68,6 @@ class Chef
             payload[:jobs][0][:content] << {
               name: obscure(metadata&.name) || "",
               version: metadata&.version || "",
-              maintainer: metadata&.maintainer || "",
               type: "cookbook",
             }
           end
