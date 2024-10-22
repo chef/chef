@@ -47,22 +47,45 @@ function Invoke-SetupEnvironment {
 
 function Invoke-Download() {
     Write-BuildLine "--- ** Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename} in plan.ps1"
-    # source is in this repo, so we're going to create an archive from the
-    # appropriate path within the repo and place the generated tarball in the
-    # location expected by do_unpack
+    
     try {
-        (Resolve-Path "$PLAN_CONTEXT/../").Path
-        Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
-        write-output "--- what is ${HAB_CACHE_SRC_PATH}\${pkg_filename} in plan.ps1"
-        # this seems to create a file that has 0 kbs, is it working right?
-        git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\${pkg_filename} HEAD
-        write-output "--- did this pass just throw a weird exit code? also get child item on path" && gci ${HAB_CACHE_SRC_PATH}
-        if (-not $?) { throw "unable to create archive of source" }
+        # what is my actual path here before push-location
+        Write-Output "Original path: $(Get-Location) in plan.ps1"
+
+        # just doing a test example here, should show my resolved-path
+        $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../").Path
+        Write-Output "Resolved target path: $resolvedPath in plan.ps1"
+
+        # Push-Location to move into the new directory and stack the current directory
+        Push-Location $resolvedPath
+        Write-Output "Path after Push-Location: $(Get-Location) in plan.ps1"
+        
+        # Generate the archive using git
+        Write-Output "--- Creating archive at ${HAB_CACHE_SRC_PATH}\${pkg_filename}... in plan.ps1"
+        git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\${pkg_filename}" HEAD
+        
+        # Check if the file exists and has a valid size (non-zero)
+        $archiveFile = Get-Item "${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+        if (-not $archiveFile) { 
+            throw "Archive file not created. in plan.ps1"
+        } elseif ($archiveFile.Length -eq 0) {
+            throw "Archive file is 0 bytes. Archive creation failed. in plan.ps1"
+        }
+
+        Write-Output "--- Archive created successfully: $($archiveFile.FullName) with size $($archiveFile.Length) bytes in plan.ps1"
+        
+    } catch {
+        # Capture any errors from git archive or other commands
+        Write-Output "Error occurred: $_ in plan.ps1"
+        throw $_
     } finally {
-        write-output "--- pop-location"
+        # Always return to the original path
+        Write-Output "Path before Pop-Location: $(Get-Location) in plan.ps1"
         Pop-Location
+        Write-Output "Restored path after Pop-Location: $(Get-Location) in plan.ps1"
     }
 }
+
 
 function Invoke-Verify() {
     Write-BuildLine " ** Invoke-Verify Skipping checksum verification on the archive we just created plan.ps1"
