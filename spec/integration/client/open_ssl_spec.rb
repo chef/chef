@@ -1,10 +1,8 @@
 require "spec_helper"
 
-describe "openssl checks", skip_hab_test: true do
+describe "openssl checks" do
   let(:openssl_version_default) do
-    if windows?
-      "1.0.2zi"
-    elsif macos?
+    if macos?
       "1.1.1m"
     else
       "3.0.9"
