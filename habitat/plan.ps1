@@ -79,9 +79,9 @@ function Invoke-Clean () {
 }
 
 function Invoke-Unpack () {
-    Write-BuildLine " -- Testing to skip invoke-unpack Expand-Archive -Path "$HAB_CACHE_SRC_PATH/$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH/$pkg_dirname""
+    Write-BuildLine " -- Testing to skip invoke-unpack Expand-Archive -Path ${HAB_CACHE_SRC_PATH}\${pkg_filename} -DestinationPath ${HAB_CACHE_SRC_PATH}\${pkg_dirname} in file plan.ps1"
     if($null -ne $pkg_filename) {
-        Expand-Archive -Path "$HAB_CACHE_SRC_PATH/$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH/$pkg_dirname"
+        Expand-Archive -Path "$HAB_CACHE_SRC_PATH\$pkg_filename" -DestinationPath "$HAB_CACHE_SRC_PATH\$pkg_dirname"
     }
 }
 
