@@ -61,6 +61,8 @@ function Invoke-Download() {
         Write-Output "Path after Push-Location: $(Get-Location) in plan.ps1"
         
         # Generate the archive using git
+        write-output "--- we had some errors with permissions git config --global --add safe.directory C:/src"
+        git config --global --add safe.directory C:/src
         Write-Output "--- Creating archive at ${HAB_CACHE_SRC_PATH}\${pkg_filename}... in plan.ps1"
         git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\${pkg_filename}" HEAD
         
