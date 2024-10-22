@@ -12,6 +12,8 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
+  "core/openssl"
+  "core/libarchive"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
 )
@@ -32,10 +34,12 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
-    Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
-    Set-RuntimeEnv -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
+    # Set-RuntimeEnv FORCE_FFI_YAJL "ffi" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
+    Set-RuntimeEnv -f -IsPath SSL_CERT_FILE "$(Get-HabPackagePath cacerts)/ssl/cert.pem"
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
+
+    Set-RuntimeEnv -f -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin;$env:RUBY_DLL_PATH"
 }
 
 function Invoke-Download() {
@@ -68,16 +72,22 @@ function Invoke-Prepare {
 @"%~dp0ruby.exe" "%~dpn0" %*
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";c:\\Program Files\\Git\\bin"
-        gem install bundler:2.3.17
+        $env:Path += ";c:\\Program Files\\Git\\bin;"
+
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
+        $openssl_dir = "$(Get-HabPackagePath core/openssl)"
+        Write-BuildLine "OpenSSL Dir $openssl_dir"
+        bundle config build.openssl --with-openssl-dir=$openssl_dir
     } finally {
         Pop-Location
     }
+
+    # Enable long file name support because we have some deep paths in the gem cache that die screaming without it.
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -Force
 }
 
 function Invoke-Build {
@@ -86,6 +96,8 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
+        $openssl_dir = "$(Get-HabPackagePath core/openssl)"
+        gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
@@ -158,6 +170,9 @@ function Invoke-After {
     # Remove the byproducts of compiling gems with extensions
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
+
+    # Disable long file name support
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
 }
 
 function Remove-StudioPathFrom {
