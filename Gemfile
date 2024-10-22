@@ -17,7 +17,7 @@ install_if -> { RUBY_PLATFORM !~ /darwin/ } do
 end
 
 gem "rdoc", "~> 6.4.1" # 6.4.1.1 required for CVE-2024-27281, allow patch upgrades
-gem "psych", "< 5.1.2"
+
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
