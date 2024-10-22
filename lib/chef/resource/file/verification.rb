@@ -116,6 +116,9 @@ class Chef
             raise ArgumentError, "The %{file} expansion for verify commands has been removed. Please use %{path} instead."
           end
 
+          # Verification uses guards, which are not yet fully supported in TM
+          return true if Chef::Config.target_mode?
+
           command = @command % { path: path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
           ret = interpreter.evaluate
