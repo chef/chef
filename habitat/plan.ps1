@@ -53,6 +53,7 @@ function Invoke-Download() {
     try {
         (Resolve-Path "$PLAN_CONTEXT/../").Path
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        write-output "--- what is ${HAB_CACHE_SRC_PATH}\\${pkg_filename} in plan.ps1"
         # this seems to create a file that has 0 kbs, is it working right?
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         write-output "--- did this pass just throw a weird exit code? also get child item on path" && gci ${HAB_CACHE_SRC_PATH}
