@@ -21,6 +21,7 @@ $pkg_deps=@(
 $pkg_build_deps=@( "core/git")
 
 function Invoke-Begin {
+    write-output "--- Invoke Begin Debug plan.ps1 in chef repo"
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]"0.85.0" ) {
         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
@@ -32,7 +33,7 @@ function Invoke-Begin {
 }
 
 function Invoke-SetupEnvironment {
-    write-output "--- invoke setupenvironment"
+    write-output "--- invoke setupenvironment plan.ps1 in chef repo"
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
@@ -45,13 +46,14 @@ function Invoke-SetupEnvironment {
 }
 
 function Invoke-Download() {
-    Write-BuildLine "--- ** Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+    Write-BuildLine "--- ** Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename} in plan.ps1"
     # source is in this repo, so we're going to create an archive from the
     # appropriate path within the repo and place the generated tarball in the
     # location expected by do_unpack
     try {
         (Resolve-Path "$PLAN_CONTEXT/../").Path
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
+        # this seems to create a file that has 0 kbs, is it working right?
         git archive --format=zip --output=${HAB_CACHE_SRC_PATH}\\${pkg_filename} HEAD
         write-output "--- did this pass just throw a weird exit code? also get child item on path" && gci ${HAB_CACHE_SRC_PATH}
         if (-not $?) { throw "unable to create archive of source" }
@@ -62,14 +64,15 @@ function Invoke-Download() {
 }
 
 function Invoke-Verify() {
-    Write-BuildLine " ** Invoke-Verify Skipping checksum verification on the archive we just created."
+    Write-BuildLine " ** Invoke-Verify Skipping checksum verification on the archive we just created plan.ps1"
     return 0
 }
 
 
 function Invoke-Clean () {
-    Write-BuildLine " ** Invoke-Clean - testing"
+    Write-BuildLine " ** Invoke-Clean - testing plan.ps1"
     $src = "$HAB_CACHE_SRC_PATH\$pkg_dirname"
+    write-output "what is my path here? ${src} plan.ps1"
     if (Test-Path "$src") {
         Remove-Item "$src" -Recurse -Force
     }
