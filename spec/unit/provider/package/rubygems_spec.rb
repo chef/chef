@@ -155,7 +155,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "latest_specs.4.8.gz")))
     end
 
-    it "finds a matching gem candidate version on rubygems 2.0.0+" do
+    it "finds a matching gem candidate version on rubygems 2.0.0+", skip_hab_test: true do
       stub_request(:get, "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
