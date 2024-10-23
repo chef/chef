@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.37 -->
-## [v19.0.37](https://github.com/chef/chef/tree/v19.0.37) (2024-10-23)
+<!-- latest_release 19.0.38 -->
+## [v19.0.38](https://github.com/chef/chef/tree/v19.0.38) (2024-10-23)
 
 #### Merged Pull Requests
-- Bump rexml from 3.3.1 to 3.3.6 in /omnibus [#14644](https://github.com/chef/chef/pull/14644) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump webrick from 1.8.1 to 1.8.2 in /omnibus [#14651](https://github.com/chef/chef/pull/14651) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump webrick from 1.8.1 to 1.8.2 in /omnibus [#14651](https://github.com/chef/chef/pull/14651) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.0.38 -->
 - Bump rexml from 3.3.1 to 3.3.6 in /omnibus [#14644](https://github.com/chef/chef/pull/14644) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.0.37 -->
 - Resource fixes for Target Mode [#14640](https://github.com/chef/chef/pull/14640) ([thheinen](https://github.com/thheinen)) <!-- 19.0.36 -->
 - Testing for what broke adhoc [#14662](https://github.com/chef/chef/pull/14662) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.35 -->
