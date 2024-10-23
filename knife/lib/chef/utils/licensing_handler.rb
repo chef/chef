@@ -1,11 +1,12 @@
+require_relative "licensing_config"
+
 class Chef
   class Utils
     class LicensingHandler
-
       OMNITRUCK_URLS = {
-        "free"       => "https://opensource-acceptance.downloads.chef.co",
-        "trial"      => "https://trial-acceptance.downloads.chef.co",
-        "commercial" => "https://commercial-acceptance.downloads.chef.co"
+        "free"       => "https://chefdownload-trial.chef.io",
+        "trial"      => "https://chefdownload-trial.chef.io",
+        "commercial" => "https://chefdownload-commerical.chef.io",
       }.freeze
 
       attr_reader :license_key, :license_type
@@ -16,18 +17,26 @@ class Chef
       end
 
       def omnitruck_url
-        OMNITRUCK_URLS[license_type] + "/%s"
+        url = OMNITRUCK_URLS[license_type]
+
+        "#{url}/%s#{license_key ? "?license_id=#{license_key}" : ""}"
+      end
+
+      def install_sh_url
+        format(omnitruck_url, "install.sh")
       end
 
       class << self
         def validate!
-          license_keys = ChefLicensing::LicenseKeyFetcher.fetch
+          license_keys = ChefLicensing.license_keys
+
+          return new(nil, nil) if license_keys.blank?
 
           licenses_metadata = ChefLicensing::Api::Describe.list({
             license_keys: license_keys,
           })
 
-          new(licenses_metadata.first.id, licenses_metadata.first.license_type)
+          new(licenses_metadata.last.id, licenses_metadata.last.license_type)
         end
 
         def check_software_entitlement!(ui)

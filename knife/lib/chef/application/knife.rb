@@ -19,7 +19,7 @@ require "chef/application"
 require_relative "../knife"
 require "mixlib/log"
 require "ohai/config"
-require "chef/utils/licensing_config"
+require "chef/utils/licensing_handler"
 require "chef/knife/core/ui"
 module Net
   autoload :HTTP, "net/http"
