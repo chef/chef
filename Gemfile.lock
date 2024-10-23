@@ -341,7 +341,6 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
-    #psych (5.1.1.1)
       stringio
     public_suffix (5.0.1)
     rack (2.2.6.4)
@@ -349,7 +348,6 @@ GEM
     rake (13.2.1)
     rb-readline (0.5.5)
     rdoc (6.4.1.1)
-      #psych (>= 4.0.0)
     regexp_parser (2.7.0)
     rexml (3.2.5)
     rspec (3.11.0)
