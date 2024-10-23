@@ -349,7 +349,7 @@ GEM
     rake (13.2.1)
     rb-readline (0.5.5)
     rdoc (6.4.1.1)
-      psych (>= 4.0.0)
+      #psych (>= 4.0.0)
     regexp_parser (2.7.0)
     rexml (3.2.5)
     rspec (3.11.0)
