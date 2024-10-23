@@ -22,8 +22,9 @@ class Chef
     class User
       class PwUser < Chef::Resource::User
 
-        provides :pw_user
-        provides :user, os: "freebsd"
+        provides :pw_user, target_mode: true
+        provides :user, os: "freebsd", target_mode: true
+        target_mode support: :full
       end
     end
   end

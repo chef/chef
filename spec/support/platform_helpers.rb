@@ -67,10 +67,10 @@ end
 
 def win32_os_version
   @win32_os_version ||= begin
-    wmi = WmiLite::Wmi.new
-    host = wmi.first_of("Win32_OperatingSystem")
-    host["version"]
-  end
+                          wmi = WmiLite::Wmi.new
+                          host = wmi.first_of("Win32_OperatingSystem")
+                          host["version"]
+                        end
 end
 
 def windows_powershell_dsc?
@@ -80,7 +80,7 @@ def windows_powershell_dsc?
   begin
     wmi = WmiLite::Wmi.new("root/microsoft/windows/desiredstateconfiguration")
     lcm = wmi.query("SELECT * FROM meta_class WHERE __this ISA 'MSFT_DSCLocalConfigurationManager'")
-    supports_dsc = !! lcm
+    supports_dsc = !!lcm
   rescue WmiLite::WmiException
   end
   supports_dsc
@@ -95,7 +95,7 @@ end
 
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?
-  windows? && ( ENV["PROCESSOR_ARCHITECTURE"] == "AMD64" || ENV["PROCESSOR_ARCHITEW6432"] == "AMD64" )
+  windows? && (ENV["PROCESSOR_ARCHITECTURE"] == "AMD64" || ENV["PROCESSOR_ARCHITEW6432"] == "AMD64")
 end
 
 # detects if the hardware is 32-bit
@@ -175,6 +175,10 @@ def wpar?
   !((ohai[:virtualization] || {})[:wpar_no].nil?)
 end
 
+def s390x?
+  RUBY_PLATFORM.include?("s390x")
+end
+
 def supports_cloexec?
   Fcntl.const_defined?(:F_SETFD) && Fcntl.const_defined?(:FD_CLOEXEC)
 end
@@ -224,7 +228,15 @@ def aes_256_gcm?
 end
 
 def fips_mode_build?
-  OpenSSL::OPENSSL_FIPS
+  if ENV.include?("BUILDKITE_LABEL") # try keying directly off Buildkite environments
+    # regex version of chef/chef-foundation:.expeditor/release.omnibus.yml:fips-platforms
+    [/el-.*-x86_64/, /el-.*-ppc64/, /el-.*aarch/, /ubuntu-/, /windows-/, /amazon-2/].any? do |os_arch|
+      ENV["BUILDKITE_LABEL"].match?(os_arch)
+    end
+  else
+    # if you're testing your local build
+    OpenSSL::OPENSSL_FIPS
+  end
 end
 
 def fips?
@@ -233,6 +245,7 @@ end
 
 class HttpHelper
   extend Ohai::Mixin::HttpHelper
+
   def self.logger
     Chef::Log
   end

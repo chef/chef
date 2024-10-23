@@ -152,11 +152,12 @@ module ChefConfig
       path = Pathname.new(path).cleanpath.to_s
       if windows
         # ensure all forward slashes are backslashes
-        path.gsub(File::SEPARATOR, path_separator(windows: windows))
+        path.gsub!(File::SEPARATOR, path_separator(windows: windows))
       else
         # ensure all backslashes are forward slashes
-        path.gsub(BACKSLASH, File::SEPARATOR)
+        path.gsub!(BACKSLASH, File::SEPARATOR)
       end
+      path
     end
 
     # This is not just escaping for something like use in Regexps, or in globs.  For the former

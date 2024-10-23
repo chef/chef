@@ -58,7 +58,7 @@ smksp_cert_sync.exe
 ####################################################################
 
   try {
-    $thumbprint = "769E6AF679126F184850AAC7C5C823A80DB3ADAA"
+    $thumbprint = "7D16AE73AB249D473362E9332D029089DBBB89B2"
 
     # Get the certificate from the Current User's Personal store by thumbprint, this case its ContainerAdministrator
     $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }

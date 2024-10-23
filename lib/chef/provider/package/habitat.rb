@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../package"
@@ -27,7 +26,7 @@ class Chef
       class Habitat < Chef::Provider::Package
         use_multipackage_api
         use "../../resource/habitat/habitat_shared"
-        provides :habitat_package
+        provides :habitat_package, target_mode: true
 
         def load_current_resource
           @current_resource = Chef::Resource::HabitatPackage.new(new_resource.name)
@@ -40,6 +39,9 @@ class Chef
         end
 
         def install_package(names, versions)
+          # License acceptance needed outside of local Chef Client
+          shell_out!("hab license accept") if Chef::Config.target_mode?
+
           names.zip(versions).map do |n, v|
             opts = ["pkg", "install", "--channel", new_resource.channel, "--url", new_resource.bldr_url]
             opts += ["--auth", new_resource.auth_token] if new_resource.auth_token
@@ -83,8 +85,6 @@ class Chef
         def platform_target
           if windows?
             "target=x86_64-windows"
-          elsif node["kernel"]["release"].to_i < 3
-            "target=x86_64-linux-kernel2"
           else
             ""
           end
@@ -120,7 +120,7 @@ class Chef
 
         def http
           # FIXME: use SimpleJSON when the depot mime-type is fixed
-          @http ||= Chef::HTTP::Simple.new(new_resource.bldr_url.to_s)
+          @http ||= TargetIO::HTTP.new(new_resource.bldr_url.to_s)
         end
 
         def candidate_versions

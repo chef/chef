@@ -138,7 +138,8 @@ RSpec.configure do |config|
 
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
-  config.filter_run_excluding fips_mode: !fips_mode_build?
+  config.filter_run_excluding fips_mode_test: true unless fips_mode_build?
+  config.filter_run_excluding fips_mode_negative_test: true # disable all fips_mode negative tests
   # Skip fips on windows
   # config.filter_run_excluding :fips_mode if windows?
 
@@ -180,6 +181,7 @@ RSpec.configure do |config|
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
   config.filter_run_excluding broken: true
   config.filter_run_excluding not_wpar: true unless wpar?
+  config.filter_run_excluding not_supported_on_s390x: true unless s390x?
   config.filter_run_excluding not_supported_under_fips: true if fips?
   config.filter_run_excluding rhel: true unless rhel?
   config.filter_run_excluding rhel6: true unless rhel6?

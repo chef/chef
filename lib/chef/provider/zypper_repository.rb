@@ -25,7 +25,7 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Provider
     class ZypperRepository < Chef::Provider
-      provides :zypper_repository, platform_family: "suse"
+      provides :zypper_repository, platform_family: "suse", target_mode: true
 
       def load_current_resource; end
 

@@ -19,7 +19,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatInstall < Chef::Resource
-      provides :habitat_install
+      provides :habitat_install, target_mode: true
+      target_mode support: :full
 
       description "Use the **habitat_install** resource to install Chef Habitat."
       introduced "17.3"
@@ -70,7 +71,7 @@ class Chef
         description: "Specify the version of `Habitat` you would like to install."
 
       action :install, description: "Installs Habitat. Does nothing if the `hab` binary is found in the default location for the system (`/bin/hab` on Linux, `/usr/local/bin/hab` on macOS, `C:/habitat/hab.exe` on Windows)" do
-        if ::File.exist?(hab_path)
+        if ::TargetIO::File.exist?(hab_path)
           cmd = shell_out!([hab_path, "--version"].flatten.compact.join(" "))
           version = %r{hab (\d*\.\d*\.\d[^\/]*)}.match(cmd.stdout)[1]
           return if version == new_resource.hab_version
@@ -94,7 +95,7 @@ class Chef
             path habfile
             destination "#{Chef::Config[:file_cache_path]}/habitat"
             action :extract
-            not_if { ::Dir.exist?("c:\\habitat") }
+            not_if { ::TargetIO::Dir.exist?("c:\\habitat") }
           end
 
           directory "c:\\habitat" do
@@ -238,7 +239,6 @@ class Chef
         def hab_command
           cmd = "#{Chef::Config[:file_cache_path]}/hab-install.sh"
           cmd << " -v #{new_resource.hab_version} " if new_resource.hab_version
-          cmd << " -t x86_64-linux-kernel2" if node["kernel"]["release"].to_i < 3
           cmd
         end
       end

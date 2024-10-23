@@ -25,6 +25,7 @@ class Chef
 
       provides :yum_package
       provides :package, platform_family: "fedora_derived"
+      target_mode support: :full
 
       description "Use the **yum_package** resource to install, upgrade, and remove packages with Yum for the Red Hat and CentOS platforms. The yum_package resource is able to resolve `provides` data for packages much like Yum can do when it is run from the command line. This allows a variety of options for installing packages, like minimum versions, virtual provides, and library names. Note: Support for using file names to install packages (as in `yum_package '/bin/sh'`) is not available because the volume of data required to parse for this is excessive."
       examples <<~DOC
@@ -109,7 +110,7 @@ class Chef
         ```
       DOC
 
-      allowed_actions :install, :upgrade, :remove, :purge, :lock, :unlock
+      allowed_actions :install, :upgrade, :remove, :purge, :lock, :unlock, :flush_cache
 
       # XXX: the coercions here are due to the provider promiscuously updating the properties on the
       # new_resource which causes immutable modification exceptions when passed an immutable node array.

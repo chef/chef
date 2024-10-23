@@ -50,7 +50,10 @@ class Chef
         ignore_globs = []
         if @ignore_file && readable_file_or_symlink?(@ignore_file)
           File.foreach(@ignore_file) do |line|
-            ignore_globs << line.strip unless COMMENTS_AND_WHITESPACE.match?(line)
+            unless COMMENTS_AND_WHITESPACE.match?(line)
+              line.strip!
+              ignore_globs << line
+            end
           end
         else
           Chef::Log.debug("No chefignore file found. No files will be ignored!")

@@ -21,7 +21,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class Locale < Chef::Resource
-      provides :locale
+      provides :locale, target_mode: true
+      target_mode support: :full
 
       description "Use the **locale** resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
       introduced "14.5"
@@ -79,7 +80,7 @@ class Chef
           lang get_system_locale_windows
         else
           begin
-            old_content = ::File.read(LOCALE_CONF)
+            old_content = ::TargetIO::File.read(LOCALE_CONF)
             locale_values = Hash[old_content.split("\n").map { |v| v.split("=") }]
             lang locale_values["LANG"]
           rescue Errno::ENOENT => e

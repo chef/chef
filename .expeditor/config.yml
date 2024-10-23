@@ -30,11 +30,11 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-  - validate/release:
-      definition: .expeditor/verify.pipeline.yml
-      env:
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - validate/release:
+  #     definition: .expeditor/verify.pipeline.yml
+  #     env:
+  #       - IGNORE_CACHE: true # caching causes constant build failures
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - validate/adhoc:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
@@ -55,10 +55,10 @@ pipelines:
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
-  - omnibus/release:
-      env:
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  # - omnibus/release:
+  #     env:
+  #       - IGNORE_CACHE: true # caching causes constant build failures
+  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
@@ -93,11 +93,13 @@ github:
 # for building.
 release_branches:
   - main:
+      version_constraint: 19*
+  - chef-18:
       version_constraint: 18*
   - chef-17:
       version_constraint: 17*
-  - chef-16:
-      version_constraint: 16*
+  # - chef-16:
+  #     version_constraint: 16*
 
 changelog:
   rollup_header: Changes not yet released to stable

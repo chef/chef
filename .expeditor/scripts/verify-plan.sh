@@ -7,6 +7,7 @@ export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
+export HAB_BLDR_CHANNEL="LTS-2024"
 
 # print error message followed by usage and exit
 error () {
@@ -16,6 +17,10 @@ error () {
 
   exit 1
 }
+
+echo "--- :habicat: Patching /etc/nsswitch.conf to ensure 'files' is listed first and that we remove myhostname"
+sed -i 's/hosts:      files dns myhostname/hosts:      files dns/g' /etc/nsswitch.conf
+sed -i 's/networks:   files dns/networks:   files/g' /etc/nsswitch.conf
 
 echo "--- :8ball: :linux: Verifying $PLAN"
 project_root="$(git rev-parse --show-toplevel)"

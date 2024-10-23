@@ -23,7 +23,8 @@ class Chef
   class Resource
     class Alternatives < Chef::Resource
 
-      provides(:alternatives) { true }
+      provides(:alternatives, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **alternatives** resource to configure command alternatives in Linux using the alternatives or update-alternatives packages."
       introduced "16.0"
@@ -113,7 +114,7 @@ class Chef
 
         requirements.assert(:install, :set, :remove) do |a|
           a.assertion do
-            ::File.exist?(new_resource.path)
+            ::TargetIO::File.exist?(new_resource.path)
           end
 
           a.whyrun("Assuming file #{new_resource.path} already exists or was created already")

@@ -17,6 +17,7 @@
 #
 
 require_relative "chef-utils/dsl/architecture"
+require_relative "chef-utils/dsl/backend"
 require_relative "chef-utils/dsl/cloud"
 require_relative "chef-utils/dsl/introspection"
 require_relative "chef-utils/dsl/os"

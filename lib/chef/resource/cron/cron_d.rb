@@ -26,7 +26,8 @@ class Chef
 
       use "cron_shared"
 
-      provides :cron_d
+      provides :cron_d, target_mode: true
+      target_mode support: :full
 
       introduced "14.4"
       description "Use the **cron_d** resource to manage cron job files in the `/etc/cron.d` directory. Warning: #{ChefUtils::Dist::Infra::PRODUCT} also ships with the **cron** resource for managing the monolithic `/etc/crontab` file on platforms that lack cron.d support. See the [cron resource](/resources/cron/) for information on using that resource."

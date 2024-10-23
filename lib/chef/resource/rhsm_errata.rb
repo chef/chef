@@ -20,7 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmErrata < Chef::Resource
-      provides(:rhsm_errata) { true }
+      provides(:rhsm_errata, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **rhsm_errata** resource to install packages associated with a given Red Hat Subscription Manager Errata ID. This is helpful if packages to mitigate a single vulnerability must be installed on your hosts."
       introduced "14.0"

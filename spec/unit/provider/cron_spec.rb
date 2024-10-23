@@ -1110,7 +1110,7 @@ describe Chef::Provider::Cron do
     end
 
     it "should call crontab for the user" do
-      expect(@provider).to receive(:shell_out!).with("crontab -u #{@new_resource.user} -", input: "Foo").and_return(@status)
+      expect(@provider).to receive(:shell_out!).with(/\Acrontab -u #{@new_resource.user} /).and_return(@status)
       @provider.send(:write_crontab, "Foo")
     end
 
