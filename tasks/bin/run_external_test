@@ -25,6 +25,9 @@ env = {
   "CHEF_LICENSE" => "accept-no-persist",
 }
 
+# Knife-windows requires the chef-licensing gem to execute the tests.
+env["GEMFILE_MOD"] += "; gem 'chef-licensing'" if github_repo == "chef/knife-windows"
+
 Dir.mktmpdir("chef-external-test") do |dir|
   git_url = "https://github.com/#{github_repo}"
   Dir.rmdir dir

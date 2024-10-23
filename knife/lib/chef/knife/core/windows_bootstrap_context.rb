@@ -172,11 +172,16 @@ class Chef
           c_opscode_dir = ChefConfig::PathHelper.cleanpath(ChefConfig::Config.c_opscode_dir, windows: true)
           client_rb = clean_etc_chef_file("client.rb")
           first_boot = clean_etc_chef_file("first-boot.json")
+          license_argument = if config[:disable_license_activation]
+                               ""
+                             else
+                               " --chef-license-key #{config[:license_id]}"
+                             end
 
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
 
           start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
-          start_chef << "#{ChefUtils::Dist::Infra::CLIENT} -c #{client_rb} -j #{first_boot}#{bootstrap_environment_option}\n"
+          start_chef << "#{ChefUtils::Dist::Infra::CLIENT} -c #{client_rb} -j #{first_boot}#{bootstrap_environment_option} #{license_argument}\n"
         end
 
         def win_wget
@@ -242,6 +247,18 @@ class Chef
             objADOStream.SaveToFile path
             objADOStream.Close
             Set objADOStream = Nothing
+            ElseIf objXMLHTTP.Status = 400 Then
+            errorBody = objXMLHTTP.ResponseText
+            WScript.Echo "Error: 400 BadRequest"
+            WScript.Echo "Error Body:"
+            WScript.Echo errorBody
+            Else
+            WScript.Echo "An error occurred while downloading the file:"
+            errorBody = objXMLHTTP.ResponseText
+            WScript.Echo "Status: "
+            WScript.Echo objXMLHTTP.Status
+            WScript.Echo "Status Text: "
+            WScript.Echo errorBody
             End If
             Set objXMLHTTP = Nothing
             End If
@@ -266,7 +283,28 @@ class Chef
               $WebClient.Proxy = $WebProxy
             }
 
-            $webClient.DownloadFile($remoteUrl, $localPath);
+            try {
+              $webClient.DownloadFile($remoteUrl, $localPath);
+
+              Write-Host "Download complete. The file has been saved to $localPath."
+            } catch [System.Net.WebException] {
+              $response = $_.Exception.Response
+
+              if ($response.StatusCode -eq [System.Net.HttpStatusCode]::BadRequest) {
+                $streamReader = New-Object System.IO.StreamReader($response.GetResponseStream())
+                $errorBody = $streamReader.ReadToEnd()
+                $streamReader.Dispose()
+
+                Write-Host "Error: 400 BadRequest"
+                Write-Host "Error Body:"
+                Write-Host $errorBody
+              }
+              else {
+                Write-Host "An error occurred while downloading the file:"
+                Write-Host $_.Exception.Message
+              }
+              Exit 1
+            }
           WGET_PS
 
           escape_and_echo(win_wget_ps)
@@ -297,11 +335,16 @@ class Chef
         # Build a URL that will redirect to the correct Chef Infra msi download.
         def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)
           if config[:msi_url].nil? || config[:msi_url].empty?
-            url = "https://omnitruck.chef.io/chef/download?p=windows"
+            url = if config[:license_url]
+                    format(config[:license_url], config[:channel]) + "/chef/download?p=windows"
+                  else
+                    "https://omnitruck.chef.io/chef/download?p=windows"
+                  end
             url += "&pv=#{machine_os}" unless machine_os.nil?
             url += "&m=#{machine_arch}" unless machine_arch.nil?
             url += "&DownloadContext=#{download_context}" unless download_context.nil?
-            url += "&channel=#{config[:channel]}"
+            url += "&channel=#{config[:channel]}" if config[:license_url].blank?
+            url += "&license_id=#{config[:license_id]}" unless config[:license_id].blank?
             url += "&v=#{version_to_install}"
           else
             config[:msi_url]
