@@ -10,8 +10,9 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "ffi", ">= 1.15.5"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+
 # required for FIPS or bundler will pick up default openssl
-install_if -> { RUBY_PLATFORM !~ /darwin/ } do
+install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" } } do
   gem "openssl", "= 3.2.0"
 end
 
@@ -40,14 +41,17 @@ group(:omnibus_package, :pry) do
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "= 0.13.0"
   # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
+  install_if -> { !RUBY_PLATFORM.match?(/freebsd/i) } do
+    gem "pry-byebug"
+  end
   gem "pry-stack_explorer"
 end
 
 # Everything except AIX and Windows
 group(:ruby_shadow) do
-  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby unless RUBY_PLATFORM == "x64-mingw-ucrt"
+  install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
+    gem "ruby-shadow", platforms: :ruby
+  end
 end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes

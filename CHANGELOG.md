@@ -1,17 +1,23 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.34 -->
-## [v19.0.34](https://github.com/chef/chef/tree/v19.0.34) (2024-10-18)
+<!-- latest_release 19.0.40 -->
+## [v19.0.40](https://github.com/chef/chef/tree/v19.0.40) (2024-10-24)
 
 #### Merged Pull Requests
-- Temporarily removing MacOS [#14660](https://github.com/chef/chef/pull/14660) ([johnmccrae](https://github.com/johnmccrae))
+- Add ActiveSupport-like methods to Immutablize Mixins for Array and Hash [#14667](https://github.com/chef/chef/pull/14667) ([ahasunos](https://github.com/ahasunos))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add ActiveSupport-like methods to Immutablize Mixins for Array and Hash [#14667](https://github.com/chef/chef/pull/14667) ([ahasunos](https://github.com/ahasunos)) <!-- 19.0.40 -->
+- Habitat test expansion [#14573](https://github.com/chef/chef/pull/14573) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.39 -->
+- Bump webrick from 1.8.1 to 1.8.2 in /omnibus [#14651](https://github.com/chef/chef/pull/14651) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.0.38 -->
+- Bump rexml from 3.3.1 to 3.3.6 in /omnibus [#14644](https://github.com/chef/chef/pull/14644) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.0.37 -->
+- Resource fixes for Target Mode [#14640](https://github.com/chef/chef/pull/14640) ([thheinen](https://github.com/thheinen)) <!-- 19.0.36 -->
+- Testing for what broke adhoc [#14662](https://github.com/chef/chef/pull/14662) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.35 -->
 - Temporarily removing MacOS [#14660](https://github.com/chef/chef/pull/14660) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.34 -->
 - Fix windows plan [#14655](https://github.com/chef/chef/pull/14655) ([sajjaphani](https://github.com/sajjaphani)) <!-- 19.0.33 -->
 - port rdoc vulnerability update from chef 18 [#14648](https://github.com/chef/chef/pull/14648) ([rishichawda](https://github.com/rishichawda)) <!-- 19.0.32 -->
