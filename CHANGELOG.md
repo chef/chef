@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.39 -->
-## [v19.0.39](https://github.com/chef/chef/tree/v19.0.39) (2024-10-23)
+<!-- latest_release 19.0.40 -->
+## [v19.0.40](https://github.com/chef/chef/tree/v19.0.40) (2024-10-24)
 
 #### Merged Pull Requests
-- Habitat test expansion [#14573](https://github.com/chef/chef/pull/14573) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add ActiveSupport-like methods to Immutablize Mixins for Array and Hash [#14667](https://github.com/chef/chef/pull/14667) ([ahasunos](https://github.com/ahasunos))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add ActiveSupport-like methods to Immutablize Mixins for Array and Hash [#14667](https://github.com/chef/chef/pull/14667) ([ahasunos](https://github.com/ahasunos)) <!-- 19.0.40 -->
 - Habitat test expansion [#14573](https://github.com/chef/chef/pull/14573) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.39 -->
 - Bump webrick from 1.8.1 to 1.8.2 in /omnibus [#14651](https://github.com/chef/chef/pull/14651) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.0.38 -->
 - Bump rexml from 3.3.1 to 3.3.6 in /omnibus [#14644](https://github.com/chef/chef/pull/14644) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.0.37 -->
