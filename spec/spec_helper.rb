@@ -240,6 +240,7 @@ RSpec.configure do |config|
 
     Chef.reset!
 
+    allow(TTY::Spinner).to receive(:new).and_return(double("TTY::Spinner").as_null_object)
     # Hack warning:
     #
     # Something across gem_installer_spec and mixlib_cli specs are polluting gem state so that the 'unmockening' test in rubygems_spec fails.
