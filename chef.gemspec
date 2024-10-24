@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.10", "< 3.12.5"
+  s.add_dependency "train-core", "~> 3.10", "<= 3.12.7"
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 18.0"
   s.add_dependency "inspec-core", ">= 5", "< 6"
 
-  s.add_dependency "ffi", ">= 1.15.5"
+  s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
