@@ -134,25 +134,6 @@ class Chef
           presence
           present?
           to_yaml
-          compact_blank
-          to_xml
-          to_sentence
-          to_fs
-          to_default_s
-          to_formatted_s
-          pick
-          index_by
-          in_order_of
-          many?
-          sole
-          exclude?
-          excluding
-          minimum
-          maximum
-          pluck
-          including
-          without
-          index_with
           |
         }.freeze
         # A list of methods that mutate Array. Each of these is overridden to
@@ -193,8 +174,6 @@ class Chef
           sort_by!
           uniq!
           unshift
-          compact_blank!
-          extract_options!
         }.freeze
 
         # Redefine all of the methods that mutate a Hash to raise an error when called.

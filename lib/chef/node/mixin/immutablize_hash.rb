@@ -129,31 +129,7 @@ class Chef
           values_at
           zip
           deep_merge
-          symbolize_keys
-          stringify_keys
-          compact_blank
-          deep_symbolize_keys
-          extractable_options?
-          assert_valid_keys
-          to_options
-          to_options!
-          deep_transform_keys
-          deep_stringify_keys
-          pick
-          index_by
-          in_order_of
-          many?
-          sole
-          exclude?
-          excluding
-          minimum
-          maximum
-          pluck
-          including
-          without
-          index_with
         }.freeze
-
         DISALLOWED_MUTATOR_METHODS = %i{
           []=
           deep_merge!
@@ -184,12 +160,6 @@ class Chef
           update
           write!
           write
-          stringify_keys!
-          compact_blank!
-          symbolize_keys!
-          deep_transform_keys!
-          deep_symbolize_keys!
-          deep_stringify_keys!
         }.freeze
 
         # Redefine all of the methods that mutate a Hash to raise an error when called.
