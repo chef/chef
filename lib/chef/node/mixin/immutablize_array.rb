@@ -130,10 +130,6 @@ class Chef
           uniq
           values_at
           zip
-          blank?
-          presence
-          present?
-          to_yaml
           |
         }.freeze
         # A list of methods that mutate Array. Each of these is overridden to
