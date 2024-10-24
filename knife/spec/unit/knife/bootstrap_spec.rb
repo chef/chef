@@ -50,7 +50,7 @@ describe Chef::Knife::Bootstrap do
     k
   end
 
-  context "#check_license" do
+  context "#check_eula_license" do
     let(:acceptor) { instance_double(LicenseAcceptance::Acceptor) }
 
     before do
@@ -60,7 +60,7 @@ describe Chef::Knife::Bootstrap do
     describe "when a license is not required" do
       it "does not set the chef_license" do
         expect(acceptor).to receive(:license_required?).and_return(false)
-        knife.check_license
+        knife.check_eula_license
         expect(Chef::Config[:chef_license]).to eq(nil)
       end
     end
@@ -71,7 +71,7 @@ describe Chef::Knife::Bootstrap do
         expect(acceptor).to receive(:id_from_mixlib).and_return("id")
         expect(acceptor).to receive(:check_and_persist)
         expect(acceptor).to receive(:acceptance_value).and_return("accept-no-persist")
-        knife.check_license
+        knife.check_eula_license
         expect(Chef::Config[:chef_license]).to eq("accept-no-persist")
       end
     end
@@ -347,7 +347,7 @@ describe Chef::Knife::Bootstrap do
         knife.parse_options(["--json-attribute-file", jsonfile.path])
         knife.merge_configs
         allow(knife).to receive(:validate_name_args!)
-        expect(knife).to receive(:check_license)
+        expect(knife).to receive(:check_eula_license)
 
         expect { knife.run }.to raise_error(Chef::Exceptions::BootstrapCommandInputError)
         jsonfile.close
@@ -1686,7 +1686,7 @@ describe Chef::Knife::Bootstrap do
   end
   describe "#run" do
     it "performs the steps we expect to run a bootstrap" do
-      expect(knife).to receive(:check_license)
+      expect(knife).to receive(:check_eula_license)
       expect(knife).to receive(:validate_name_args!).ordered
       expect(knife).to receive(:validate_protocol!).ordered
       expect(knife).to receive(:validate_first_boot_attributes!).ordered
@@ -1956,7 +1956,7 @@ describe Chef::Knife::Bootstrap do
 
   it "verifies that a server to bootstrap was given as a command line arg" do
     knife.name_args = nil
-    expect(knife).to receive(:check_license)
+    expect(knife).to receive(:check_eula_license)
     expect { knife.run }.to raise_error(SystemExit)
     expect(stderr.string).to match(/ERROR:.+FQDN or ip/)
   end
