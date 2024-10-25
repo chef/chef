@@ -78,9 +78,6 @@ PATH
       aws-sdk-secretsmanager (~> 1.46)
       chef-licensing (>= 0.7.5)
       chef-config (= 19.0.42)
-      chef-licensing (>= 0.7.5)
-      chef-config (= 19.0.42)
-      chef-licensing (>= 0.7.5)
       chef-powershell (~> 18.1.0)
       chef-utils (= 19.0.42)
       chef-vault
