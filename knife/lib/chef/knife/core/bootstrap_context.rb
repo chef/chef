@@ -203,7 +203,13 @@ class Chef
         def version_to_install
           return config[:bootstrap_version] if config[:bootstrap_version]
 
-          if config[:channel] == "stable"
+          if config[:license_url]
+            if config[:channel] == "stable" && config[:license_type] == "commercial"
+              Chef::VERSION.split(".").first
+            else
+              "latest"
+            end
+          elsif config[:channel] == "stable"
             Chef::VERSION.split(".").first
           else
             "latest"
@@ -221,6 +227,10 @@ class Chef
             attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
             attributes.merge!(tags: config[:tags]) if config[:tags] && !config[:tags].empty?
           end
+        end
+
+        def license_available?
+          config[:license_id] && config[:license_type]
         end
 
         private

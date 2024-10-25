@@ -171,7 +171,14 @@ do_download() {
 <% if @config[:bootstrap_install_command] %>
   <%= @config[:bootstrap_install_command] %>
 <% else %>
-  install_sh="<%= @config[:bootstrap_url] ? @config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
+  <% if @config[:bootstrap_url] %>
+  install_sh="<%= @config[:bootstrap_url] %>"
+  <% elsif license_available? %>
+  install_sh="<%= config[:license_url] %>"
+  <% else %>
+  install_sh="https://omnitruck.chef.io/chef/install.sh"
+  <% end %>
+
   if test -f /usr/bin/<%= ChefUtils::Dist::Infra::CLIENT %>; then
     echo "-----> Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected"
   else
