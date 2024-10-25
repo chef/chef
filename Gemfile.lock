@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: d5d03240e6ee1130ef38441c1d25a7ca08df0cab
-  branch: main
+  revision: d5060f57f7e9f974fca55e0d74c9c62d5b36a622
+  branch: 18-stable
   specs:
-    ohai (18.1.11)
+    ohai (18.2.4)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
       ffi (~> 1.9)
@@ -72,7 +72,7 @@ PATH
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.7)
+      train-core (~> 3.10, = 3.12.7)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
       unf_ext (~> 0.0.8.2)
@@ -108,7 +108,7 @@ PATH
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.7)
+      train-core (~> 3.10, = 3.12.7)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.5)
       unf_ext (~> 0.0.8.2)
