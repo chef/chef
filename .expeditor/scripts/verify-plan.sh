@@ -5,6 +5,7 @@ set -euo pipefail
 export HAB_ORIGIN='ci'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
+export CHEF_LICENSE_SERVER="http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
 export HAB_BLDR_CHANNEL="LTS-2024"
