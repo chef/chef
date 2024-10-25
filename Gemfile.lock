@@ -37,13 +37,13 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.0.40)
+    chef (19.0.42)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.0.40)
+      chef-config (= 19.0.42)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.0.40)
+      chef-utils (= 19.0.42)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -72,15 +72,14 @@ PATH
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-    chef (19.0.40-universal-mingw-ucrt)
+    chef (19.0.42-universal-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-licensing (>= 0.7.5)
-      chef-config (= 19.0.40)
-      chef-licensing (>= 0.7.5)
+      chef-config (= 19.0.42)
       chef-powershell (~> 18.1.0)
-      chef-utils (= 19.0.40)
+      chef-utils (= 19.0.42)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -124,15 +123,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.0.40)
-      chef (= 19.0.40)
+    chef-bin (19.0.42)
+      chef (= 19.0.42)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.0.40)
+    chef-config (19.0.42)
       addressable
-      chef-utils (= 19.0.40)
+      chef-utils (= 19.0.42)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -141,7 +140,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.0.40)
+    chef-utils (19.0.42)
       concurrent-ruby
 
 GEM
@@ -339,6 +338,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.1)
       bigdecimal
+    openssl (3.2.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
@@ -531,6 +531,7 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
   ohai!
+  openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
