@@ -319,6 +319,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.1)
       bigdecimal
+    openssl (3.2.0)
     parallel (1.22.1)
     parser (3.2.2.0)
       ast (~> 2.4.1)
@@ -441,7 +442,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
-    win32-api (1.10.1-universal-mingw32)
+    win32-api (1.10.1)
     win32-certstore (0.6.16)
       chef-powershell
       ffi
@@ -507,6 +508,7 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (>= 5, < 6)
   ohai!
+  openssl (= 3.2.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
