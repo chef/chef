@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.41 -->
-## [v19.0.41](https://github.com/chef/chef/tree/v19.0.41) (2024-10-25)
+<!-- latest_release 19.0.42 -->
+## [v19.0.42](https://github.com/chef/chef/tree/v19.0.42) (2024-10-25)
 
 #### Merged Pull Requests
-- Commit the Gemfile.lock from fixed Gemfile [#14673](https://github.com/chef/chef/pull/14673) ([tpowell-progress](https://github.com/tpowell-progress))
+- [backport] Updating the regex glob [#14674](https://github.com/chef/chef/pull/14674) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [backport] Updating the regex glob [#14674](https://github.com/chef/chef/pull/14674) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.42 -->
 - Commit the Gemfile.lock from fixed Gemfile [#14673](https://github.com/chef/chef/pull/14673) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.41 -->
 - Add ActiveSupport-like methods to Immutablize Mixins for Array and Hash [#14667](https://github.com/chef/chef/pull/14667) ([ahasunos](https://github.com/ahasunos)) <!-- 19.0.40 -->
 - Habitat test expansion [#14573](https://github.com/chef/chef/pull/14573) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.39 -->
