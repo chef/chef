@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "train-core", "~> 3.10" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
+  s.add_dependency "train-core", "~> 3.10", "<= 3.12.7" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
