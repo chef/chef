@@ -97,11 +97,11 @@ describe "Telemetry" do
 
       expect(j[:steps].class).to eq(Array)
       j[:steps].each do |s|
-        expect(s[:name]).to match(/Test Recipe/)
+        expect(s[:name]).to match(/Chef Resources/)
         expect(s[:resources].class).to eq(Array)
         s[:resources].each do |r|
-          expect(r[:type]).to eq("chef-resource")
-          expect(r[:name]).to eq("file")
+          expect(r[:type]).to eq("file")
+          expect(r[:count]).to eq(2)
         end
       end
     end
