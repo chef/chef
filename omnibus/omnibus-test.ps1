@@ -61,8 +61,10 @@ Remove-Item Env:RUBY_VERSION -ErrorAction SilentlyContinue
 Remove-Item Env:BUNDLER_VERSION -ErrorAction SilentlyContinue
 
 Write-Host "--- Setting CHEF_LICENSE_SERVER environment variable"
-# Read the CHEF_LICENSE_SERVER value from chef_license_server_url.txt
-$CHEF_LICENSE_SERVER = Get-Content -Path "$PSScriptRoot/chef_license_server_url.txt"
+# Define the path to the license server URL file relative to $PSScriptRoot
+$LicenseServerFile = Join-Path -Path $PSScriptRoot -ChildPath "../.expeditor/scripts/chef_license_server_url.txt"
+# Read the CHEF_LICENSE_SERVER value from the file
+$CHEF_LICENSE_SERVER = Get-Content -Path $LicenseServerFile
 # Set the environment variable
 $env:CHEF_LICENSE_SERVER = $CHEF_LICENSE_SERVER
 # Output the CHEF_LICENSE_SERVER environment variable
