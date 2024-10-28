@@ -66,6 +66,8 @@ Gem::Specification.new do |s|
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", "~> 0.18.2" # hashi vault official client gem
+  s.add_dependency "chef-licensing", ">= 0.7.5"
+
   s.bindir       = "bin"
   s.executables  = %w{ }
 

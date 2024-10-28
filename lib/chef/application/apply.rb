@@ -29,9 +29,12 @@ require_relative "../providers"
 require_relative "../resources"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
+require "chef-licensing/cli_flags/mixlib_cli"
+require_relative "../licensing"
 
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
+  include ChefLicensing::CLIFlags::MixlibCLI
 
   banner "Usage: #{ChefUtils::Dist::Apply::EXEC} [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
@@ -94,8 +97,7 @@ class Chef::Application::Apply < Chef::Application
     description: "Show this help message.",
     on: :tail,
     boolean: true,
-    show_options: true,
-    exit: 0
+    proc: proc { print_help }
 
   option :version,
     short: "-v",
@@ -134,7 +136,31 @@ class Chef::Application::Apply < Chef::Application
     description: "Only run the bare minimum Ohai plugins #{ChefUtils::Dist::Infra::PRODUCT} needs to function.",
     boolean: true
 
+  if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    option :license_add,
+        long: "--license-add",
+        description: "Add a license key to the license pool.",
+        boolean: true,
+        proc: lambda { |v| Chef::Licensing.license_add },
+        exit: 0
+
+    option :license_list,
+        long: "--license-list",
+        description: "List all license keys in the license pool.",
+        boolean: true,
+        proc: lambda { |v| Chef::Licensing.license_list },
+        exit: 0
+  end
+
   attr_reader :json_attribs
+
+  def self.print_help
+    instance = new
+    instance.parse_options([])
+    puts instance.opt_parser
+    puts Chef::Licensing.licensing_help if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    exit 0
+  end
 
   def initialize
     super
@@ -228,6 +254,7 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def run_application
+    Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     parse_options
     run_chef_recipe
     Chef::Application.exit! "Exiting", 0
@@ -242,7 +269,7 @@ class Chef::Application::Apply < Chef::Application
   def run(enforce_license: false)
     reconfigure
     check_license_acceptance if enforce_license
+    Chef::Licensing.fetch_and_persist if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     run_application
   end
-
 end
