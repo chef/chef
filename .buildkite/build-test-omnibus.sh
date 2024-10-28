@@ -26,14 +26,14 @@ omnibus_build_platforms=()
 omnibus_test_platforms=()
 
 # build build array and test array based on filter
-# for platform in ${container_platforms[@]}; do
-#     case ${platform%:*} in
-#         $FILTER)
-#             omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
-#             omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
-#             ;;
-#     esac
-# done
+for platform in ${container_platforms[@]}; do
+    case ${platform%:*} in
+        $FILTER)
+            omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
+            omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
+            ;;
+    esac
+done
 
 # remove duplicates from build array
 if [[ ! -z "${omnibus_build_platforms:-}" ]]
