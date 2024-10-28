@@ -47,12 +47,12 @@ class Chef
         end
 
         payload[:platform] = ohai[:platform]
-
+        hostname = Chef::Config.target_mode? ? Chef::Config.target_mode.host : ohai[:hostname]
         payload[:jobs] = [{
                             type: JOB_TYPE,
                             # Target platform info
                             environment: {
-                              host: Chef::Config.target_mode? ? Chef::Config.target_mode.host : obscure(ohai[:hostname]),
+                              host: obscure(hostname),
                               os: ohai[:os],
                               version: ohai[:platform_version],
                               architecture: ohai[:kernel][:machine],
