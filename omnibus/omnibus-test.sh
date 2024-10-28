@@ -10,6 +10,11 @@ then
   export OPENSSL_FIPS=1
 fi
 
+# Get the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Use SCRIPT_DIR to refer to files relative to the script’s location
+export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
+
 # Our tests hammer YUM pretty hard and the EL6 testers get corrupted
 # after some period of time. Rebuilding the RPM database clears
 # up the underlying corruption. We'll do this each test run just to

@@ -60,6 +60,14 @@ Remove-Item Env:RUBY_ROOT -ErrorAction SilentlyContinue
 Remove-Item Env:RUBY_VERSION -ErrorAction SilentlyContinue
 Remove-Item Env:BUNDLER_VERSION -ErrorAction SilentlyContinue
 
+Write-Host "--- Setting CHEF_LICENSE_SERVER environment variable"
+# Read the CHEF_LICENSE_SERVER value from chef_license_server_url.txt
+$CHEF_LICENSE_SERVER = Get-Content -Path "$PSScriptRoot/chef_license_server_url.txt"
+# Set the environment variable
+$env:CHEF_LICENSE_SERVER = $CHEF_LICENSE_SERVER
+# Output the CHEF_LICENSE_SERVER environment variable
+Write-Host "--- CHEF_LICENSE_SERVER URL: $env:CHEF_LICENSE_SERVER"
+
 ForEach ($b in
   "chef-client",
   "chef-solo",
