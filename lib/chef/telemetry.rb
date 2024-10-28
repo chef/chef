@@ -17,7 +17,7 @@ class Chef
       # Don't perform telemetry action for other Chef distros
       # Don't perform telemetry action if license is a commercial license
       if license&.license_type&.downcase == "commercial" ||
-        ChefUtils::Dist::Infra::EXEC != "chef"
+          ChefUtils::Dist::Infra::EXEC != "chef"
 
         Chef::Log.debug "Determined telemetry operation is not applicable and hence aborting it."
         return Chef::Telemetry::Null

@@ -83,12 +83,12 @@ class Chef
                 # Append the step for this resource type
                 payload[:jobs][0][:steps] << {
                   name: step_name,
-                  resources: []
+                  resources: [],
                 }
                 # Append the resource type to the last added step with an initial count of 0
                 payload[:jobs][0][:steps].last[:resources] << {
                   type: resource_type,
-                  count: 0 # Initial count
+                  count: 0, # Initial count
                 }
                 # Mark this resource type as seen, and store reference to its count hash
                 seen_resources[resource_type] = payload[:jobs][0][:steps].last[:resources].last
@@ -105,8 +105,8 @@ class Chef
       end
 
       def resource_is_a_chef_resource?(resource)
-        resource_action_classname = resource.class.action_class.to_s
-        resource_action_classname.include?("Chef::Resource") && !resource_action_classname.include?("Custom")
+        resource_action_class_name = resource.class.action_class.to_s
+        resource_action_class_name.include?("Chef::Resource") && !resource_action_class_name.include?("Custom")
       end
 
       # TBD Should we implement distribution name based on below usage?
