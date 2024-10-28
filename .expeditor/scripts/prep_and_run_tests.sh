@@ -17,8 +17,12 @@ then
     mkdir spec/data/nodes && touch spec/data/nodes/test.rb && touch spec/data/nodes/default.rb && touch spec/data/nodes/test.example.com.rb
 fi
 
+if [ "$TestType" == "Integration" ] || [ "$TestType" == "Functional" ]; then
+    export CHEF_LICENSE_SERVER=$(cat ./chef_license_server_url.txt)
+fi
+
 echo "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3 
+bundle install --jobs=3 --retry=3
 
 case $TestType in
 
