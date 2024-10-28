@@ -76,10 +76,10 @@ class Chef
           seen_resources = {} # A hash to keep track of resource types that have been added
           if all_resources
             all_resources.each do |resource|
-              resource_type = resource.is_a?(Chef::Resource) ? resource.resource_name.to_s : "HWLR"
+              resource_type = resource_is_a_chef_resource?(resource) ? resource.resource_name.to_s : "HWLR"
               # If the resource type has not been seen, add it with an initial count
               unless seen_resources[resource_type]
-                step_name = resource.is_a?(Chef::Resource) ? "Chef Resources" : "Custom Resources"
+                step_name = resource_is_a_chef_resource?(resource) ? "Chef Resources" : "Custom Resources"
                 # Append the step for this resource type
                 payload[:jobs][0][:steps] << {
                   name: step_name,
@@ -102,6 +102,11 @@ class Chef
         Chef::Log.debug "Finishing telemetry for Chef"
         # Return payload object for testing
         payload
+      end
+
+      def resource_is_a_chef_resource?(resource)
+        resource_action_classname = resource.class.action_class.to_s
+        resource_action_classname.include?("Chef::Resource") && !resource_action_classname.include?("Custom")
       end
 
       # TBD Should we implement distribution name based on below usage?
