@@ -39,12 +39,9 @@ class Chef
       def run_ending(opts)
         payload = create_wrapper
 
-        # To not load ohai information once loaded
-        unless ohai
-          @ohai = Ohai::System.new
-          # Load plugins to gather system data
-          @ohai.all_plugins(%w{ os hostname platform dmi kernel})
-        end
+        @ohai = Ohai::System.new
+        # Load plugins to gather system data
+        @ohai.all_plugins(%w{ os hostname platform dmi kernel})
 
         payload[:platform] = ohai[:platform]
         hostname = Chef::Config.target_mode? ? Chef::Config.target_mode.host : ohai[:hostname]
