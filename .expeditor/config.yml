@@ -9,6 +9,10 @@ product_key:
 slack:
   notify_channel: chef-infra-notify
 
+# The common environment variable to be used across multiple pipelines
+env: &chef_license_env
+  CHEF_LICENSE_SERVER: "http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
+
 # Which Ruby Gems, built when the Omnibus package is built, to publish to rubygems.org
 # This publish is triggered by the `built_in:publish_rubygems` artifact_action.
 rubygems:
@@ -30,6 +34,7 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+        <<: *chef_license_env # Local Chef License Server
   # - validate/release:
   #     definition: .expeditor/verify.pipeline.yml
   #     env:
@@ -41,6 +46,7 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+        <<: *chef_license_env # Local Chef License Server
   - validate/adhoc-canary:
       canary: true
       definition: .expeditor/verify.adhoc.pipeline.yml
@@ -48,6 +54,7 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
+        <<: *chef_license_env # Local Chef License Server
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
@@ -65,6 +72,7 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+        <<: *chef_license_env # Local Chef License Server
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
@@ -72,6 +80,7 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+        <<: *chef_license_env # Local Chef License Server
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
