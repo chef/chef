@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.25 -->
-## [v18.5.25](https://github.com/chef/chef/tree/v18.5.25) (2024-10-25)
+<!-- latest_release 18.5.26 -->
+## [v18.5.26](https://github.com/chef/chef/tree/v18.5.26) (2024-10-29)
 
 #### Merged Pull Requests
-- Chef 2618 knife bootstrap changes to chef 18 [#14669](https://github.com/chef/chef/pull/14669) ([ashiqueps](https://github.com/ashiqueps))
+- Fix for mac 11 arm64 and windows platforms for chef-18 adhoc build [#14680](https://github.com/chef/chef/pull/14680) ([muthuja](https://github.com/muthuja))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix for mac 11 arm64 and windows platforms for chef-18 adhoc build [#14680](https://github.com/chef/chef/pull/14680) ([muthuja](https://github.com/muthuja)) <!-- 18.5.26 -->
 - Chef 2618 knife bootstrap changes to chef 18 [#14669](https://github.com/chef/chef/pull/14669) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.5.25 -->
 - Bump train-core to 3.12.7 in omnibus [#14670](https://github.com/chef/chef/pull/14670) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.24 -->
 - [Chef-18]Update all the dependencies as inspec-core update is getting blocked due to multiple gem dependencies [#14622](https://github.com/chef/chef/pull/14622) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.23 -->
