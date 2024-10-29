@@ -213,8 +213,7 @@ class Chef
 
         def subject
           if new_resource.common_name.nil? && new_resource.subject_alt_name.empty?
-            Chef::Log.fatal("Neither common_name nor subject_alt_name specified, one is required.")
-            raise "Neither common_name nor subject_alt_name specified, one is required."
+            Chef.deprecated(:common_name_and_subject_alt_name_empty, "According to RFC5280 subsection 4.1.2.6, certificates must have one of a common_name or a subject_alt_name entry. Neither common_name nor subject_alt_name specified, one is required.")
           end
 
           OpenSSL::X509::Name.new.tap do |csr_subject|
