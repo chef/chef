@@ -28,7 +28,10 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Updating the plan files [#14608](https://github.com/chef/chef/pull/14608) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.31 -->
 - Revert &quot;Updating Ohai&quot; [#14647](https://github.com/chef/chef/pull/14647) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.30 -->
 - Set channel for habitat plan script in verify pipeline to LTS-2024 for windows platforms [#14646](https://github.com/chef/chef/pull/14646) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.29 -->
+- Updating Ohai [#14645](https://github.com/chef/chef/pull/14645) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.28 -->
 - Update builders to temporarily remove ubuntu24 [#14642](https://github.com/chef/chef/pull/14642) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.27 -->
+- Fixing missing rspec in hab plan testing [#14630](https://github.com/chef/chef/pull/14630) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.26 -->
+- fix VM linux tests [#14626](https://github.com/chef/chef/pull/14626) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.25 -->
 - updating Linux, part 1 [#14613](https://github.com/chef/chef/pull/14613) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.24 -->
 - Bump ohai to 19.0.3 [#14624](https://github.com/chef/chef/pull/14624) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.23 -->
 - Add example to homebrew_tap resource. [#14615](https://github.com/chef/chef/pull/14615) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.0.22 -->

@@ -9,9 +9,6 @@ product_key:
 slack:
   notify_channel: chef-infra-notify
 
-# The anchor for common CHEF_LICENSE_SEVER environment variable to be used across multiple pipelines
-local_license_server: &local_license_server_anchor "http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
-
 # Which Ruby Gems, built when the Omnibus package is built, to publish to rubygems.org
 # This publish is triggered by the `built_in:publish_rubygems` artifact_action.
 rubygems:
@@ -33,7 +30,6 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
   # - validate/release:
   #     definition: .expeditor/verify.pipeline.yml
   #     env:
@@ -45,7 +41,6 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
   - validate/adhoc-canary:
       canary: true
       definition: .expeditor/verify.adhoc.pipeline.yml
@@ -53,18 +48,13 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
-  - habitat/build:
-      env:
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
+  - habitat/build
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
-      env:
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
   # - omnibus/release:
   #     env:
   #       - IGNORE_CACHE: true # caching causes constant build failures
@@ -75,7 +65,6 @@ pipelines:
         - ADHOC: true
         - IGNORE_CACHE: true # caching causes constant build failures
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
   # the adhoc-canary pipeline is used to test new omnibus workers
   - omnibus/adhoc-canary:
       canary: true
@@ -83,7 +72,6 @@ pipelines:
       env:
         - ADHOC: true
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-        - CHEF_LICENSE_SERVER: *local_license_server_anchor # Reference to local license server anchor defined above
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
