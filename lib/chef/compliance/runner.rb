@@ -1,4 +1,7 @@
 autoload :Inspec, "inspec"
+
+# Temporarily adding an explicit `require "inspec"`
+# as `autoload :Inspec, "inspec"` wasn't working with a local or Git path reference.
 require "inspec"
 
 require_relative "default_attributes"

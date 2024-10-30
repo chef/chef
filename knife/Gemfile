@@ -21,6 +21,9 @@ group(:chefstyle) do
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
 end
 
+# Temporarily adding `inspec-core` to the Gemfile as `autoload :Inspec, "inspec"` wasn't working with a local or Git path reference.
+gem "inspec-core", git: "https://github.com/inspec/inspec.git", tag: "v6.8.4"
+
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 gem "chef", path: ".."
 gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist?(File.expand_path("../chef-utils", __dir__))
