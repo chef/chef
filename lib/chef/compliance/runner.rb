@@ -1,4 +1,5 @@
 autoload :Inspec, "inspec"
+require "inspec"
 
 require_relative "default_attributes"
 
