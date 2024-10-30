@@ -1,5 +1,35 @@
 GIT
-  remote: git@github.com:inspec/inspec.git
+  remote: https://github.com/chef/ohai.git
+  revision: fb50e0151df1e9caf80a8ef1979901b8214139dc
+  branch: main
+  specs:
+    ohai (19.0.5)
+      chef-config (>= 14.12, < 20)
+      chef-utils (>= 16.0, < 20)
+      ffi (~> 1.9)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli (>= 1.7.0)
+      mixlib-config (>= 2.0, < 4.0)
+      mixlib-log (>= 2.0.1, < 4.0)
+      mixlib-shellout (~> 3.2, >= 3.2.5)
+      plist (~> 3.1)
+      train-core
+      wmi-lite (~> 1.0)
+
+GIT
+  remote: https://github.com/chef/rest-client
+  revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
+  branch: jfm/ucrt_update1
+  specs:
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+
+GIT
+  remote: https://github.com/inspec/inspec.git
   revision: 7868bfe2673924981cfc11fcbebb3b1cb5a01cb0
   tag: v6.8.4
   specs:
@@ -30,43 +60,13 @@ GIT
       tty-table (~> 0.10)
 
 GIT
-  remote: git@github.com:inspec/inspec.git
+  remote: https://github.com/inspec/inspec.git
   revision: 7868bfe2673924981cfc11fcbebb3b1cb5a01cb0
   tag: v6.8.4
   glob: inspec-bin/*.gemspec
   specs:
     inspec-core-bin (6.8.4)
       inspec-core (= 6.8.4)
-
-GIT
-  remote: https://github.com/chef/ohai.git
-  revision: fb50e0151df1e9caf80a8ef1979901b8214139dc
-  branch: main
-  specs:
-    ohai (19.0.5)
-      chef-config (>= 14.12, < 20)
-      chef-utils (>= 16.0, < 20)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli (>= 1.7.0)
-      mixlib-config (>= 2.0, < 4.0)
-      mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (~> 3.2, >= 3.2.5)
-      plist (~> 3.1)
-      train-core
-      wmi-lite (~> 1.0)
-
-GIT
-  remote: https://github.com/chef/rest-client
-  revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
-  branch: jfm/ucrt_update1
-  specs:
-    rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
 
 PATH
   remote: .
