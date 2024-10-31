@@ -98,8 +98,8 @@ release_branches:
       version_constraint: 18*
   - chef-17:
       version_constraint: 17*
-  - chef-16:
-      version_constraint: 16*
+  # - chef-16:
+  #     version_constraint: 16*
 
 changelog:
   rollup_header: Changes not yet released to stable
