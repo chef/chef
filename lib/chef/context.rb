@@ -1,3 +1,4 @@
+# freeze_string_literal: true
 #
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -17,18 +18,21 @@
 class Chef
   class Context
     class << self
-      COMMON_KEY = "2f3b66cbbafa2d326b2856bccc4c8ebe".freeze
-      TMP_FILE_PATH = "/tmp/c769508738d671db424b7442".freeze
+      COMMON_KEY = "2f3b66cbbafa2d326b2856bccc4c8ebe"
+      FILE_NAME = "c769508738d671db424b7442"
 
       def test_kitchen_context?
         return @context if defined?(@context)
 
         @context = false
-        if File.exist?(TMP_FILE_PATH)
+        file_path = (ChefUtils.windows? ? Dir.tmpdir : "/tmp") + "/kitchen/#{FILE_NAME}"
+        if File.exist?(file_path)
           file_content = {}
-          File.foreach(TMP_FILE_PATH) do |line|
-            key, value = line.strip.split(':')
-            file_content[key] = value
+          File.open(file_path, "r:bom|utf-16le:utf-8") do |file|
+            file.each_line do |line|
+              key, value = line.strip.split(':')
+              file_content[key] = value
+            end
           end
 
           received_nonce = file_content['nonce']
