@@ -30,8 +30,6 @@ provisioner:
   chef_license: accept-no-persist
 
 platforms:
-  - name: centos-6
-    run_list: yum-epel::default
   - name: centos-7
     run_list: yum-epel::default
   - name: debian-9
@@ -39,6 +37,10 @@ platforms:
   - name: freebsd-11
     run_list: freebsd::portsnap
   - name: ubuntu-18.04
+    run_list: apt::default
+  - name: ubuntu-22.04
+    run_list: apt::default
+  - name: ubuntu-24.04
     run_list: apt::default
 
   # macOS
@@ -53,61 +55,34 @@ platforms:
       - ['../../omnibus', '/Users/vagrant/omnibus']
       - ['../../omnibus-software', '/Users/vagrant/omnibus-software']
 
-  <% %w(
-    10
-    2012r2
-  ).each do |win_version| %>
-  # Windows 64-bit
-  - name: windows-<%= win_version %>
+  # Windows
+  - name: windows-10
     driver:
-      box: tas50/windows-<%= win_version %> # private
-      synced_folders:
-      # We have to mount this repos enclosing folder as the Omnibus build
-      # gets cranky if the mounted Chef source folder is a symlink. This
-      # mounts at `C:\vagrant\code` and the Chef source folder is available
-      # at `C:\vagrant\code\chef`
-      - ['../..', '/vagrant/code']
-      communicator: winrm
-    provisioner:
-      attributes:
-        omnibus:
-          build_user:          vagrant
-          build_user_group:    Administrators
-          build_user_password: vagrant
-      chef_omnibus_root: /opscode/angrychef
-    transport:
-      name: winrm
-      elevated: true
-
-  # Windows 32-bit
-  # By adding an `i386` to the name the Omnibus cookbook's `load-omnibus-toolchain.bat`
-  # will load the 32-bit version of the MinGW toolchain.
-  - name: windows-<%= win_version %>-i386
+      box: stromweld/windows-10
+      customize:
+        memory: 4096
+  - name: windows-11
     driver:
-      box: tas50/windows-<%= win_version %> # private
-      synced_folders:
-      - ['../..', '/vagrant/code']
-      communicator: winrm
-    provisioner:
-      attributes:
-        omnibus:
-          build_user:          vagrant
-          build_user_group:    Administrators
-          build_user_password: vagrant
-      chef_omnibus_root: /opscode/angrychef
-    transport:
-      name: winrm
-      elevated: true
-  <% end %>
+      box: stromweld/windows-11
+      customize:
+        memory: 4096
+  - name: windows-2016
+    driver:
+      box: stromweld/windows-2016
+      customize:
+        memory: 4096
+  - name: windows-2019
+    driver:
+      box: stromweld/windows-2019
+      customize:
+        memory: 4096
+  - name: windows-2022
+    driver:
+      box: stromweld/windows-2022
+      customize:
+        memory: 4096
 
 suites:
-  # - name: angrychef
-  #   attributes:
-  #     omnibus:
-  #       <<: *attribute_defaults
-  #       install_dir: /opt/angrychef
-  #   run_list:
-  #     - omnibus::default
   - name: chef
     attributes:
       omnibus:

@@ -98,8 +98,6 @@ release_branches:
       version_constraint: 18*
   - chef-17:
       version_constraint: 17*
-  - chef-16:
-      version_constraint: 16*
 
 changelog:
   rollup_header: Changes not yet released to stable
@@ -145,11 +143,6 @@ subscriptions:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      # - trigger_pipeline:omnibus/release:
-      #     ignore_labels:
-      #       - "Expeditor: Skip Omnibus"
-      #       - "Expeditor: Skip All"
-      #     only_if: built_in:bump_version
       - trigger_pipeline:validate/release:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
