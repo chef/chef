@@ -18,8 +18,8 @@
 class Chef
   class Context
     class << self
-      COMMON_KEY = "2f3b66cbbafa2d326b2856bccc4c8ebe"
-      FILE_NAME = "c769508738d671db424b7442"
+      COMMON_KEY = "2f3b66cbbafa2d326b2856bccc4c8ebe".freeze
+      FILE_NAME = "c769508738d671db424b7442".freeze
 
       def test_kitchen_context?
         return @context if defined?(@context)
@@ -30,19 +30,19 @@ class Chef
           file_content = {}
           File.open(file_path, "r:bom|utf-16le:utf-8") do |file|
             file.each_line do |line|
-              key, value = line.strip.split(':')
+              key, value = line.strip.split(":")
               file_content[key] = value
             end
           end
 
-          received_nonce = file_content['nonce']
-          received_timestamp = file_content['timestamp']
-          received_signature = file_content['signature']
+          received_nonce = file_content["nonce"]
+          received_timestamp = file_content["timestamp"]
+          received_signature = file_content["signature"]
 
           current_time = Time.now.utc.to_i
           if (current_time - received_timestamp.to_i).abs < 30
             message = "#{received_nonce}:#{received_timestamp}"
-            expected_signature = OpenSSL::HMAC.hexdigest('SHA256', COMMON_KEY, message)
+            expected_signature = OpenSSL::HMAC.hexdigest("SHA256", COMMON_KEY, message)
             if expected_signature == received_signature
               @context = true
             end
