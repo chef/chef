@@ -73,24 +73,25 @@ class Chef
           seen_resources = {} # A hash to keep track of resource types that have been added
           if all_resources
             all_resources.each do |resource|
+              # Determine if the resource is a Chef resource or a custom one
               resource_type = resource_is_a_chef_resource?(resource) ? resource.resource_name.to_s : "HWLR"
-              # If the resource type has not been seen, add it with an initial count
+
+              # If the resource type hasn't been tracked yet, initialize it within payload
               unless seen_resources[resource_type]
                 step_name = resource_is_a_chef_resource?(resource) ? "Chef Resources" : "Custom Resources"
-                # Append the step for this resource type
-                payload[:jobs][0][:steps] << {
-                  name: step_name,
-                  resources: [],
-                }
-                # Append the resource type to the last added step with an initial count of 0
-                payload[:jobs][0][:steps].last[:resources] << {
-                  type: resource_type,
-                  count: 0, # Initial count
-                }
-                # Mark this resource type as seen, and store reference to its count hash
-                seen_resources[resource_type] = payload[:jobs][0][:steps].last[:resources].last
+
+                # Add a step for Chef or Custom resources if it doesn’t already exist
+                step = payload[:jobs][0][:steps].find { |s| s[:name] == step_name }
+                step ||= { name: step_name, resources: [] }
+                payload[:jobs][0][:steps] << step unless payload[:jobs][0][:steps].include?(step)
+
+                # Append a new resource type within this step and initialize the count
+                step[:resources] << { type: resource_type, count: 0 }
+                # Reference this resource type for further count accumulation
+                seen_resources[resource_type] = step[:resources].last
               end
-              # Increment the resource count for each occurrence
+
+              # Increment the count for each occurrence of this resource type
               seen_resources[resource_type][:count] += 1
             end
           end
