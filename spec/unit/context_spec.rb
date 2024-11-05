@@ -20,16 +20,31 @@ require "chef/context"
 require "openssl"
 
 describe Chef::Context do
+  describe "when executed normally" do
+    before(:each) do
+      described_class.send(:reset_context)
+    end
+
+    it "#test_kitchen_context? should return false" do
+      expect(described_class.test_kitchen_context?).to be_falsey
+    end
+
+    it "#context_secret should be empty" do
+      expect(described_class.send(:context_secret)).to eq("")
+    end
+  end
+
   context "when executed from test kitchen" do
-    let (:context_key) { "key-123" }
+    let(:context_key) { "key-123" }
 
     before(:each) do
+      described_class.send(:reset_context)
       allow(ENV).to receive(:fetch).with("TEST_KITCHEN_CONTEXT", "").and_return(context_key)
 
       # Mock the signed file content
       nonce = Base64.encode64(SecureRandom.random_bytes(16)).strip
       timestamp = Time.now.utc.to_i
-      signature = OpenSSL::HMAC.hexdigest('SHA256', context_key, "#{nonce}:#{timestamp}")
+      signature = OpenSSL::HMAC.hexdigest("SHA256", context_key, "#{nonce}:#{timestamp}")
 
       file_data = "nonce:#{nonce}\ntimestamp:#{timestamp}\nsignature:#{signature}"
       allow(File).to receive(:exist?).with(described_class.send(:signed_file_path)).and_return(true)
