@@ -26,14 +26,16 @@ class Chef
         return @context if context_secret.nil? || context_secret.empty?
 
         if File.exist?(signed_file_path)
+          # Read the nonce, timestamp and signature from the file
           received_nonce, received_timestamp, received_signature = read_file_content
           current_time = Time.now.utc.to_i
+          # Check if the nonce is within 30 seconds of the current time
           if (current_time - received_timestamp.to_i).abs < 30
             if expected_signature(received_nonce, received_timestamp) == received_signature
               @context = true
             end
-
           end
+          # Delete the file after reading the content
           File.delete(signed_file_path)
         end
 
