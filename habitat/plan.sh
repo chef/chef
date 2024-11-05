@@ -136,6 +136,8 @@ do_after() {
   build_line "Trimming the fat, and exporting ..."
 
   hab pkg export tar chef/chef-infra-client
+  # Upload the tar file as an artifact
+  buildkite-agent artifact upload "/hab/cache/artifacts/*.tar"
 
   # We don't need the cache of downloaded .gem files ...
   rm -r "$pkg_prefix/vendor/cache"
