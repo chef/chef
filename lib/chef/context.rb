@@ -20,7 +20,7 @@ class Chef
   class Context
     class << self
       def test_kitchen_context?
-        return @context if defined?(@context)
+        return @context unless @context.nil?
 
         @context = false
         return @context if context_secret.nil? || context_secret.empty?
@@ -75,6 +75,10 @@ class Chef
       def expected_signature(nonce, timestamp)
         message = "#{nonce}:#{timestamp}"
         OpenSSL::HMAC.hexdigest("SHA256", context_secret, message)
+      end
+
+      def reset_context
+        @context = nil
       end
     end
   end
