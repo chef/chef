@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.44 -->
-## [v19.0.44](https://github.com/chef/chef/tree/v19.0.44) (2024-10-28)
+<!-- latest_release 19.0.45 -->
+## [v19.0.45](https://github.com/chef/chef/tree/v19.0.45) (2024-11-05)
 
 #### Merged Pull Requests
-- CHEF-11803: Integrate `chef-licensing` library with Infra [#14467](https://github.com/chef/chef/pull/14467) ([ahasunos](https://github.com/ahasunos))
+- Bump multiple dependencies to bump inspec-core to 6 [#14658](https://github.com/chef/chef/pull/14658) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump multiple dependencies to bump inspec-core to 6 [#14658](https://github.com/chef/chef/pull/14658) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.45 -->
 - CHEF-11803: Integrate `chef-licensing` library with Infra [#14467](https://github.com/chef/chef/pull/14467) ([ahasunos](https://github.com/ahasunos)) <!-- 19.0.44 -->
 - Temporarily removing windows from AdHoc [#14676](https://github.com/chef/chef/pull/14676) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.43 -->
 - [backport] Updating the regex glob [#14674](https://github.com/chef/chef/pull/14674) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.42 -->
