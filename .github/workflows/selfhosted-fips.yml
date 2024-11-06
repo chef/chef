@@ -5,7 +5,7 @@ name: selfhosted-fips
   pull_request:
   push:
     branches:
-      - main
+      - chef-18
 
 concurrency:
   group: selfhosted-fips-${{ github.ref }}
