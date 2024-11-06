@@ -31,14 +31,3 @@ steps:
           privileged: true
           environment:
             - BUILD_PKG_TARGET=x86_64-linux
-
-  # - label: "[:windows: build hab-pkg-export-tar]"
-  #   command:
-  #     - powershell .expeditor/scripts/release_habitat/build_component.ps1 pkg-export-tar
-  #   expeditor:
-  #     executor:
-  #       docker:
-  #         host_os: windows
-  #         environment:
-  #           - BUILD_PKG_TARGET=x86_64-windows
-  #           - BUILDKITE_AGENT_ACCESS_TOKEN
