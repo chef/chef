@@ -1,8 +1,8 @@
 # Requiring inspec instead of lazy loading temporarily to get past License validation failures in Inspec 6.
 # When compliance phase of Infra Client is run, the lazy loading ends up calling production environment values for few variables(such as Licensing server URL)
 # which are set as default in Inspec, instead of the test values passed in pipelines
-# 
-#autoload :Inspec, "inspec"
+#
+# autoload :Inspec, "inspec"
 require "inspec"
 
 require_relative "default_attributes"

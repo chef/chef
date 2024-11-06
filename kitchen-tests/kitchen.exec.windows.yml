@@ -10,8 +10,6 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: $env:CHEF_LICENSE_KEY = 'free-d35b4c03-7621-4b16-a756-14b462b2b396-1558'
-    - remote: $env:CHEF_LICENSE_SERVER = 'https://licensing-acceptance.chef.co/License'
     - remote: . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
     - remote: $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
     - remote: chef-client -v
