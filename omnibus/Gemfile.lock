@@ -460,7 +460,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.18.2)
       aws-sigv4
-    webrick (1.8.1)
+    webrick (1.8.2)
     win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.16)
       chef-powershell
