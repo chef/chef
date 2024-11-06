@@ -8,6 +8,7 @@ puts "fixing bundle installed gems in #{gem_home}"
 # you can simply gem build + gem install the resulting gem, so nothing fancy.  This does not use
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
 #
+system("gem pristine psych -v '5.1.2'")
 Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
