@@ -32,7 +32,7 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 6.0" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 6.8" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
