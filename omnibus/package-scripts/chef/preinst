@@ -10,6 +10,9 @@
 # This whole file exists because on some versions of RPM, during upgrades, the postrm script
 # runs AFTER the installation of the upgraded RPM. Oops. See https://github.com/chef/chef/pull/7964
 
+# Set umask to 022 to allow non-root users to create files with appropriate permissions on a hardened system
+umask 022
+
 INSTALLER_DIR=/opt/chef
 
 if [ -e $INSTALLER_DIR ]; then
@@ -27,7 +30,7 @@ if [ -e $INSTALLER_DIR ]; then
   # have to do this dance of moving /opt/chef to a tmp dir since files may be in use
   tmp_dir="/opt/.chef.$$"
   # if we can't create the tmp_dir then fail hard to prevent any possible security hole
-  (umask 022 && mkdir $tmp_dir) || exit 1
+  (umask 077 && mkdir $tmp_dir) || exit 1
   # now we can clean up the tmp_dir we created safely
   mv $INSTALLER_DIR $tmp_dir
   # ignore errors which must be EBUSY issues, this may crate some litter, which may
