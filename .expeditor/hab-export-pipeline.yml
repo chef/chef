@@ -14,13 +14,14 @@ expeditor:
         PIPELINE_HAB_BLDR_URL: "https://bldr.habitat.sh"
         # Necessary to prevent old studios from poisoning builds after core plans refreshes
         HAB_STUDIO_SECRET_HAB_PREFER_LOCAL_CHEF_DEPS: "true"
-        HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: "stable"
+        HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: "unstable"
 
 steps:
 
   - label: "[:linux: build hab-pkg-export-tar and upload to :amazon-s3:]"
     command:
       - echo "--- testing hab export tar chef/chef-infra-client"
+      - export HAB_BLDR_CHANNEL="unstable"
       - hab pkg export tar chef/chef-infra-client
       - mkdir -p upload && find . -name "chef-chef-infra-client-*.tar.gz" | grep -E 'chef-chef-infra-client-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.tar\.gz' | xargs -I {} cp {} upload/
       - cd upload/ && buildkite-agent artifact upload "*.tar.gz" && aws s3 sync . s3://unstable-habitat-tarball/ --exclude "*" --include "*.tar.gz" --region us-west-2 --profile chef-cd
