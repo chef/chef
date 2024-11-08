@@ -474,7 +474,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webrick (1.8.1)
+    webrick (1.8.2)
     win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.16)
       chef-powershell
