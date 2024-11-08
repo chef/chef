@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.47 -->
-## [v19.0.47](https://github.com/chef/chef/tree/v19.0.47) (2024-11-07)
+<!-- latest_release 19.0.48 -->
+## [v19.0.48](https://github.com/chef/chef/tree/v19.0.48) (2024-11-08)
 
 #### Merged Pull Requests
-- Bump inspec-core and inspec-core-bin to 6.8.11 [#14687](https://github.com/chef/chef/pull/14687) ([neha-p6](https://github.com/neha-p6))
+- updating webrick to overcome a CVE [#14698](https://github.com/chef/chef/pull/14698) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- updating webrick to overcome a CVE [#14698](https://github.com/chef/chef/pull/14698) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.48 -->
 - Bump inspec-core and inspec-core-bin to 6.8.11 [#14687](https://github.com/chef/chef/pull/14687) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.47 -->
 - Added docs for GHA workflows for new release branches [#14689](https://github.com/chef/chef/pull/14689) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.46 -->
 - Bump multiple dependencies to bump inspec-core to 6 [#14658](https://github.com/chef/chef/pull/14658) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.45 -->
