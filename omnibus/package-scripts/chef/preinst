@@ -10,6 +10,9 @@
 # This whole file exists because on some versions of RPM, during upgrades, the postrm script
 # runs AFTER the installation of the upgraded RPM. Oops. See https://github.com/chef/chef/pull/7964
 
+# Set umask to 022 to allow non-root users to create files with appropriate permissions on a hardened system
+umask 022
+
 INSTALLER_DIR=/opt/chef
 
 if [ -e $INSTALLER_DIR ]; then
