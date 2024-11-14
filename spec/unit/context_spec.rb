@@ -30,34 +30,29 @@ describe Chef::Context do
     end
 
     it "#context_secret should be empty" do
-      expect(described_class.send(:context_secret)).to eq("")
+      expect(described_class.send(:fetch_env_value)).to be_falsey
     end
   end
 
   context "when executed from test kitchen" do
-    let(:context_key) { "key-123" }
-
     before(:each) do
       described_class.send(:reset_context)
-      allow(ENV).to receive(:fetch).with("TEST_KITCHEN_CONTEXT", "").and_return(context_key)
-
-      # Mock the signed file content
-      nonce = Base64.encode64(SecureRandom.random_bytes(16)).strip
-      timestamp = Time.now.utc.to_i
-      signature = OpenSSL::HMAC.hexdigest("SHA256", context_key, "#{nonce}:#{timestamp}")
-
-      file_data = "nonce:#{nonce}\ntimestamp:#{timestamp}\nsignature:#{signature}"
-      allow(File).to receive(:exist?).with(described_class.send(:signed_file_path)).and_return(true)
-      allow(File).to receive(:open).with(described_class.send(:signed_file_path), "r:bom|utf-16le:utf-8").and_yield(StringIO.new(file_data))
-      allow(File).to receive(:delete).with(described_class.send(:signed_file_path)).and_return(true)
+      allow(ENV).to receive(:fetch).with("IS_KITCHEN", false).and_return("true")
     end
 
     it "#context_secret should return the context key" do
-      expect(described_class.send(:context_secret)).to eq(context_key)
+      expect(described_class.send(:fetch_env_value)).to eq("true")
     end
 
     it "#test_kitchen_context? should return true" do
       expect(described_class.test_kitchen_context?).to eq(true)
+    end
+  end
+
+  context "when switching to workstation entitlement" do
+    it "should set the entitlement ID to the workstation ID" do
+      described_class.switch_to_workstation_entitlement
+      expect(ChefLicensing::Config.chef_entitlement_id).to eq(Chef::LicensingConfig::WORKSTATION_ENTITLEMENT_ID)
     end
   end
 end

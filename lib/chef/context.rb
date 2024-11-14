@@ -19,46 +19,19 @@ require_relative "licensing_config"
 
 class Chef
   class Context
+    KITCHEN_CONTEXT_ENV_NAME = "IS_KITCHEN".freeze
+
     class << self
-      # The test kitchen will generate a nonce and sign it with a secret key.
-      # All these details are written to a file in the temp directory with the same name as the secret key.
-      # The file looks like:
-      # nonce:<nonce>
-      # timestamp:<timestamp>
-      # signature:<signature>
-      #
-      # The nonce is valid for 60 seconds from the time it was generated.
-      # The secret key will be passed to chef-infra client through env variable.
-      #
-      # This method reads the file and verifies the nonce, timestamp and signature.
-      # If the received timestamp is within 60 seconds of the current time and the signature is valid
-      # this confirms that the execution is initiated from the test-kitchen.
+      # When chef-test-kitchen-enterprise invokes the chef-client during the converge phase,
+      # it sets the env variable IS_KITCHEN to true. This method checks the existance of the env variable
+      # and returns if the chef-client is running in the test-kitchen context.
       def test_kitchen_context?
-        return @context unless @context.nil?
-
-        @context = false
-        return @context if context_secret.nil? || context_secret.empty?
-
-        if File.exist?(signed_file_path)
-          # Read the nonce, timestamp and signature from the file
-          received_nonce, received_timestamp, received_signature = read_file_content
-          current_time = Time.now.utc.to_i
-          # Check if the nonce is within 60 seconds of the current time
-          if (current_time - received_timestamp.to_i).abs < 60
-            if expected_signature(received_nonce, received_timestamp) == received_signature
-              @context = true
-            end
-          end
-          # Delete the file after reading the content
-          File.delete(signed_file_path)
-        end
-
-        @context
+        @context ||= (fetch_env_value == "true")
       end
 
       # This method will switch the license entitlement to Chef Workstation entitlement.
       def switch_to_workstation_entitlement
-        puts "Running under Test-Kitchen: Switching License to Chef Workstation entitlement"
+        puts "Running under Test-Kitchen: Switching License to Chef Workstation entitlement!"
         ChefLicensing.configure do |config|
           # Reset entitlement ID to the ID of Chef Workstation
           config.chef_entitlement_id = Chef::LicensingConfig::WORKSTATION_ENTITLEMENT_ID
@@ -67,33 +40,9 @@ class Chef
 
       private
 
-      # The secret key is passed as an environment variable to the chef-infra client.
-      def context_secret
-        ENV.fetch("TEST_KITCHEN_CONTEXT", "")
-      end
-
-      # The file contains the nonce, timestamp and signature which are written by the test-kitchen.
-      def signed_file_path
-        "#{Dir.tmpdir}/kitchen/#{context_secret}"
-      end
-
-      # Reads the file and return the nonce, timestamp and signature
-      def read_file_content
-        file_content = {}
-        File.open(signed_file_path, "r:bom|utf-16le:utf-8") do |file|
-          file.each_line do |line|
-            key, value = line.strip.split(":")
-            file_content[key] = value
-          end
-        end
-
-        [file_content["nonce"], file_content["timestamp"], file_content["signature"]]
-      end
-
-      # Generate the signature using the nonce and timestamp and the received secret key
-      def expected_signature(nonce, timestamp)
-        message = "#{nonce}:#{timestamp}"
-        OpenSSL::HMAC.hexdigest("SHA256", context_secret, message)
+      # Get the value of the ENV variable
+      def fetch_env_value
+        ENV.fetch(KITCHEN_CONTEXT_ENV_NAME, false)
       end
 
       def reset_context
