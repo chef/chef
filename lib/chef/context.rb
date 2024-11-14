@@ -23,7 +23,7 @@ class Chef
 
     class << self
       # When chef-test-kitchen-enterprise invokes the chef-client during the converge phase,
-      # it sets the env variable IS_KITCHEN to true. This method checks the existance of the env variable
+      # it sets the env variable IS_KITCHEN to true. This method checks the existence of the ENV variable
       # and returns if the chef-client is running in the test-kitchen context.
       def test_kitchen_context?
         @context ||= (fetch_env_value == "true")
