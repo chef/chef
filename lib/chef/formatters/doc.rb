@@ -1,7 +1,6 @@
 require_relative "base"
 require_relative "../config"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
-require_relative "../context"
 
 class Chef
   module Formatters
