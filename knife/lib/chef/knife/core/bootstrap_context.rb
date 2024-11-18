@@ -201,7 +201,11 @@ class Chef
         #
         # @return [String] download version string
         def version_to_install
+
+          puts "version_to_installversion_to_installversion_to_installversion_to_install============___ #{config[:bootstrap_version]}"
           return config[:bootstrap_version] if config[:bootstrap_version]
+
+          puts "vllversion_to_install============___ #{config[:bootstrap_version]}"
 
           if config[:license_url]
             if config[:channel] == "stable" && config[:license_type] == "commercial"

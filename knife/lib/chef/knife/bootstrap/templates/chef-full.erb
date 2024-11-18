@@ -122,8 +122,36 @@ do_python() {
   return 0
 }
 
+do_extract() {
+  echo "++++++++----DOEXTACR"
+  local tar_file="$1"            # Path to the .tar.gz file
+  local target_dir="$2"          # Directory to extract to
+  local prefix="$3"   # New folder name for the extracted contents
+
+  # Create the target directory if it doesn't exist
+  mkdir -p "$target_dir"
+
+  # Extract the tar.gz file in the target directory
+  tar -xzf "$tar_file" -C "$target_dir"
+
+  # Find the newly extracted folder and rename it based on prefix
+  for dir in "$target_dir"/hab-1.6.826-*; do
+  if [ -d "$dir" ]; then
+  mv "$dir" "$target_dir/$prefix"
+  echo "Extracted and renamed to '$prefix' in '$target_dir'"
+  echo "$target_dir/$prefix"  # Return the path of the extracted location
+  return
+  fi
+  done
+
+  echo "No folder found to rename."
+  return 1
+}
+
+
 # do_download URL FILENAME
 do_download() {
+  echo "do_download...."
   PATH=/opt/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sfw/bin:/sbin:/bin:/usr/sbin:/usr/bin
   export PATH
 
@@ -162,6 +190,23 @@ do_download() {
   return 16
 }
 
+
+# Function to move extracted folder to /usr/local/bin
+do_move() {
+  local source_path="$1"
+  local target_path="$2"
+
+  echo "Moving $source_path to $target_path"
+  mv "$source_path" "$target_path"
+  if [ $? -ne 0 ]; then
+  echo "Move operation failed."
+  return 1
+  fi
+  echo "Move operation successful."
+  return 0
+}
+
+
 <%# Run any custom commands before installing chef-client -%>
 <%# Ex. wait for cloud-init to complete -%>
 <% if @config[:bootstrap_preinstall_command] %>
@@ -172,19 +217,43 @@ do_download() {
   <%= @config[:bootstrap_install_command] %>
 <% else %>
   <% if @config[:bootstrap_url] %>
+  echo "VERSION TO INSTALL bootstrap_url <%= config[:bootstrap_url] %>"
   install_sh="<%= @config[:bootstrap_url] %>"
   <% elsif license_available? %>
+  echo "VERSION TO license_available <%= config[:license_url] %>"
+
   install_sh="<%= config[:license_url] %>"
   <% else %>
   install_sh="https://omnitruck.chef.io/chef/install.sh"
   <% end %>
-
+  echo "VERSION TO INSTALL <%= version_to_install %>"
+  echo "VERSION TO @config <%= @config %>"
+  echo "VERSION TO @config $tmp_dir <%= $tmp_dir %>"
   if test -f /usr/bin/<%= ChefUtils::Dist::Infra::CLIENT %>; then
     echo "-----> Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected"
   else
     echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
-    do_download ${install_sh} $tmp_dir/install.sh
-    sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
+
+  do_download "https://trial-acceptance.downloads.chef.co/stable/habitat/download?m=x86_64&p=linux&v=latest&license_id=free-048f4f0e-721f-446b-886d-727bbc832729-7747" /home/ubuntu/abc.tar.gz
+
+  # Call do_extract and capture the output
+  hab_path=$(do_extract /home/ubuntu/abc.tar.gz /home/ubuntu/example hab)
+
+  # Check if do_extract ran successfully
+  if [ $? -eq 0 ]; then
+  echo "do_extract was successful. Extracted path: $hab_path"
+  else
+  echo "do_extract failed."
+  exit 1  # Optionally exit the script if the extraction fails
+  fi
+
+  do_move "/home/ubuntu/example/hab/hab" "/usr/local/bin"
+  if [ $? -ne 0 ]; then
+  echo "Exiting due to move operation failure."
+  exit 1
+  fi
+
+  sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
   fi
 <% end %>
 
