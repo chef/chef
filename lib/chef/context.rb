@@ -42,7 +42,7 @@ class Chef
 
       # Get the value of the ENV variable
       def fetch_env_value
-        ENV.fetch(KITCHEN_CONTEXT_ENV_NAME, false)
+        ENV.fetch(KITCHEN_CONTEXT_ENV_NAME, "")
       end
 
       def reset_context

@@ -23,24 +23,25 @@ describe Chef::Context do
   describe "when executed normally" do
     before(:each) do
       described_class.send(:reset_context)
+      allow(ENV).to receive(:fetch).with("IS_KITCHEN", "").and_return("")
     end
 
     it "#test_kitchen_context? should return false" do
       expect(described_class.test_kitchen_context?).to be_falsey
     end
 
-    it "#context_secret should be empty" do
-      expect(described_class.send(:fetch_env_value)).to be_falsey
+    it "#fetch_env_value should be empty" do
+      expect(described_class.send(:fetch_env_value)).to eq("")
     end
   end
 
   context "when executed from test kitchen" do
     before(:each) do
       described_class.send(:reset_context)
-      allow(ENV).to receive(:fetch).with("IS_KITCHEN", false).and_return("true")
+      allow(ENV).to receive(:fetch).with("IS_KITCHEN", "").and_return("true")
     end
 
-    it "#context_secret should return the context key" do
+    it "#fetch_env_value should return true" do
       expect(described_class.send(:fetch_env_value)).to eq("true")
     end
 
