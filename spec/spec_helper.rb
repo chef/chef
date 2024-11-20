@@ -179,6 +179,7 @@ RSpec.configure do |config|
   config.filter_run_excluding requires_unprivileged_user: true if root?
   config.filter_run_excluding openssl_gte_101: true unless openssl_gte_101?
   config.filter_run_excluding openssl_lt_101: true unless openssl_lt_101?
+  config.filter_run_excluding openssl_version_check: true unless ENV.fetch("BUILDKITE_PIPELINE_SLUG", "").match?("adhoc")
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
   config.filter_run_excluding broken: true
   config.filter_run_excluding not_wpar: true unless wpar?
