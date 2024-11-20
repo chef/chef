@@ -278,9 +278,7 @@ rescue
 end
 
 def hab_test?
-  STDERR.puts "<<<<<<<<<<<<<<<<<<<<==hab_test? called-->>>>>>>>>>>>>>>>>>>>"
   return @hab_test unless @hab_test.nil?
 
-  STDERR.puts ENV.inspect
   @hab_test = ENV["HAB_TEST"] =~ /true/i ? true : false
 end

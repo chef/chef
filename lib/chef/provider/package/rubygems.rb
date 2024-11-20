@@ -136,6 +136,10 @@ class Chef
             if defined?(Gem::Format) && Gem::Package.respond_to?(:open)
               Gem::Format.from_file_by_path(file).spec
             else
+              # Gem::Package is getting defined as an empty class as of bundler 2.5.23
+              # and therefore won't autoload
+              # ["bundler-2.5.23/lib/bundler/rubygems_ext.rb", 457]
+              require 'rubygems/package' if Gem::Package.method(:new).source_location.nil?
               Gem::Package.new(file).spec
             end
           end
@@ -422,7 +426,7 @@ class Chef
 
         def is_omnibus?
           if %r{/(#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}|#{ChefUtils::Dist::Infra::SHORT}|#{ChefUtils::Dist::Workstation::DIR_SUFFIX})/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
-            logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
+              logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
           elsif RbConfig::CONFIG["bindir"].sub(/^\w:/, "") == "/#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}/#{ChefUtils::Dist::Infra::SHORT}/embedded/bin"
