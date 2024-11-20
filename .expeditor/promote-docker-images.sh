@@ -18,12 +18,12 @@ function create_and_push_manifest() {
   manifest_tag="$1"
 
   echo "--- Creating manifest for ${manifest_tag}"
-  docker manifest create "chef/chef:${manifest_tag}" \
-    --amend "chef/chef:${version}-arm64" \
-    --amend "chef/chef:${version}-amd64"
+  docker manifest create "chef/chef-hab:${manifest_tag}" \
+    --amend "chef/chef-hab:${version}-arm64" \
+    --amend "chef/chef-hab:${version}-amd64"
 
   echo "--- Pushing manifest for ${manifest_tag}"
-  docker manifest push "chef/chef:${manifest_tag}"
+  docker manifest push "chef/chef-hab:${manifest_tag}"
 }
 
 # split the version components into integer variables

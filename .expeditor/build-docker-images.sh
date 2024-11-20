@@ -14,13 +14,13 @@ fi
 channel="${EXPEDITOR_CHANNEL:-unstable}"
 version="${EXPEDITOR_VERSION:?You must manually set the EXPEDITOR_VERSION environment variable to an existing semantic version.}"
 
-echo "--- Building chef/chef:${version} docker image for ${arch}"
+echo "--- Building chef/chef-hab:${version} docker image for ${arch}"
 docker build \
   --build-arg "CHANNEL=${channel}" \
   --build-arg "VERSION=${version}" \
   --build-arg "ARCH=${dockerfile_arch}" \
   --build-arg "PKG_VERSION=${dockerfile_pkg_version}" \
-  -t "chef/chef:${version}-${arch}" .
+  -t "chef/chef-hab:${version}-${arch}" .
 
-echo "--- Pushing chef/chef:${version} docker image for ${arch} to dockerhub"
-docker push "chef/chef:${version}-${arch}"
+echo "--- Pushing chef/chef-hab:${version} docker image for ${arch} to dockerhub"
+docker push "chef/chef-hab:${version}-${arch}"
