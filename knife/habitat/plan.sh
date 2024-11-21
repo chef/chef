@@ -1,7 +1,6 @@
 # Package metadata
 pkg_name=knife
 pkg_origin=core
-pkg_version="18.5.11"
 pkg_description="knife is a command-line tool that provides an interface between a local chef-repo and the Chef Infra Server."
 pkg_upstream_url=https://www.chef.io/
 pkg_maintainer="The Habitat Maintainers <humans@habitat.sh>"
@@ -20,6 +19,14 @@ pkg_build_deps=(
   core/gcc
   core/make
 )
+
+pkg_version() {
+  cat "../../VERSION"
+}
+
+do_before() {
+  update_pkg_version
+}
 
 # Directories that contain executable binaries
 pkg_bin_dirs=(bin)
