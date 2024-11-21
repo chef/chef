@@ -110,14 +110,15 @@ subscriptions:
   # the omnibus/docker/gem chain
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
-      - trigger_pipeline:docker/build
+      # - trigger_pipeline:docker/build
       - trigger_pipeline:macos_universal_package
-  - workload: artifact_published:current:chef:{{version_constraint}}
-    actions:
-      - bash:.expeditor/promote-docker-images.sh
+  # - workload: artifact_published:current:chef:{{version_constraint}}
+  #   actions:
+  #     - bash:.expeditor/promote-docker-images.sh
   - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:promote_artifactory_artifact
+      - bash:.expeditor/promote-docker-images.sh
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
@@ -165,6 +166,7 @@ subscriptions:
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
       - trigger_pipeline:habitat/test
+      - trigger_pipeline:docker/build
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
