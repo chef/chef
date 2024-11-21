@@ -126,9 +126,11 @@ class Chef
 
         # ToDo: Would prefer to use net/http over socket
         def call_snap_api(method, uri, post_data = nil?)
+          # https://api.snapcraft.io/docs/info.html
           request = "#{method} #{uri} HTTP/1.0\r\n" +
             "Accept: application/json\r\n" +
-            "Content-Type: application/json\r\n"
+            "Content-Type: application/json\r\n" +
+            "Snap-Device-Series: 16\r\n"
           if method == "POST"
             pdata = post_data.to_json.to_s
             request.concat("Content-Length: #{pdata.bytesize}\r\n\r\n#{pdata}")
