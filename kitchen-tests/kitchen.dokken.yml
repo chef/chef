@@ -155,6 +155,7 @@ platforms:
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN dnf -y install python3-libdnf python3-dnf
 
   - name: ubuntu-18.04
     driver:
