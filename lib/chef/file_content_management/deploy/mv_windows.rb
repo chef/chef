@@ -90,7 +90,7 @@ class Chef
           #
           # Then apply the cached acls to the new dst file
           #
-
+          binding.pry
           dst_so = Security::SecurableObject.new(dst)
           dst_so.group = dst_sd.group
           dst_so.owner = dst_sd.owner
