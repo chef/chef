@@ -136,6 +136,10 @@ class Chef
             if defined?(Gem::Format) && Gem::Package.respond_to?(:open)
               Gem::Format.from_file_by_path(file).spec
             else
+              # Gem::Package is getting defined as an empty class as of bundler 2.5.23
+              # and therefore won't autoload
+              # ["bundler-2.5.23/lib/bundler/rubygems_ext.rb", 457]
+              require "rubygems/package" if Gem::Package.method(:new).source_location.nil?
               Gem::Package.new(file).spec
             end
           end
