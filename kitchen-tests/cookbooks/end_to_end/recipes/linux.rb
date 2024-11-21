@@ -217,4 +217,4 @@ include_recipe "::_ifconfig"
 #   end
 # end
 
-include_recipe "::_snap" if platform?("ubuntu")
+include_recipe "::_snap" if platform?("ubuntu") && !File.exist?('/.dockerenv')
