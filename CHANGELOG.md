@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.30 -->
-## [v18.5.30](https://github.com/chef/chef/tree/v18.5.30) (2024-11-12)
+<!-- latest_release 18.5.31 -->
+## [v18.5.31](https://github.com/chef/chef/tree/v18.5.31) (2024-11-21)
 
 #### Merged Pull Requests
-- [Chef-18] Set default mask to allow infra client to run uninterrupted on hardened systems [#14699](https://github.com/chef/chef/pull/14699) ([neha-p6](https://github.com/neha-p6))
+- Replace do-not-disturb with an actively maintained cask (#14711) [#14716](https://github.com/chef/chef/pull/14716) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace do-not-disturb with an actively maintained cask (#14711) [#14716](https://github.com/chef/chef/pull/14716) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.31 -->
 - [Chef-18] Set default mask to allow infra client to run uninterrupted on hardened systems [#14699](https://github.com/chef/chef/pull/14699) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.30 -->
 - Updating Webrick to overcome a CVE [#14695](https://github.com/chef/chef/pull/14695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.29 -->
 - update workflows to run on chef-18 branch [#14686](https://github.com/chef/chef/pull/14686) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.28 -->
