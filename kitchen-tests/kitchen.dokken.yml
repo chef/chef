@@ -172,6 +172,8 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+        - RUN snap set system proxy.http=""
+        - RUN snap set system proxy.https=""
 
   - name: ubuntu-22.04
     driver:
