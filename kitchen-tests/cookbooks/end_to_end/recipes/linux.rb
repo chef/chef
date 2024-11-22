@@ -217,4 +217,8 @@ include_recipe "::_ifconfig"
 #   end
 # end
 
-include_recipe "::_snap" if platform?("ubuntu") && !File.exist?("/.dockerenv")
+# Snap doesn't work on docker (you can make it do so with some work, see:
+#   https://ograblog.wordpress.com/2017/06/02/dock-a-snap/)
+# But testing on just the VMs is sufficient, so we exclude docker from
+# running this recipe
+include_recipe "::_snap" if platform?("ubuntu") && !docker?
