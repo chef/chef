@@ -23,7 +23,7 @@ lifecycle:
     - remote: sudo apt-get update && sudo apt-get install -y curl
       includes:
         - ubuntu-18.04
-    - remote: sudo systemd start snapd
+    - remote: sudo snap set system proxy.http=""; sudo snap set system proxy.https=""
       includes:
         - ubuntu-20.04
     - remote: sudo dnf install -y openssl cronie
