@@ -18,7 +18,7 @@
 
 # Metadata
 Name: chef
-Version: %{VERSION}
+Version: %{VERSION}~%{RELEASE}
 Release: 1%{?dist}
 Summary:  The full stack of chef
 AutoReqProv: no
@@ -26,7 +26,7 @@ BuildRoot: %buildroot
 Prefix: /
 Group: default
 License: Chef EULA
-Vendor: Omnibus <omnibus@getchef.com>
+Vendor: Progress Software Inc.
 URL: https://www.chef.io
 Packager: Chef Software, Inc. <maintainers@chef.io>
 %description
@@ -45,13 +45,7 @@ The full stack of chef
 # noop
 
 %pre
-#!/bin/sh
-#
-# Perform necessary inspec setup steps
-# before package is installed.
-#
-
-echo "You're about to install Chef Infra Client!"
+# noop
 
 %post
 #!/bin/sh
@@ -64,21 +58,25 @@ echo "You're about to install Chef Infra Client!"
 #
 # Install Chef Infra Client
 #
+INSTALLER_DIR="/hab/chef/%{VERSION}/%{RELEASE}"
 
-# Create wrapper binaries into /hab/chef directory
-mkdir -p /hab/chef/bin
+# extract the components into /hab (will expand into hab/pkg).
+pushd /hab
+tar --strip-components=1 -xf /hab/chef-chef-infra-client-%{VERSION}-%{RELEASE}.tar.gz
+popd
 
+# Create wrapper binaries
+mkdir -p $INSTALLER_DIR/bin
 binaries=("chef-apply" "chef-client" "chef-resource-inspector" "chef-service-manager" "chef-shell" "chef-solo" "chef-windows-service" "inspec" "ohai")
 for binary in "${binaries[@]}"; do
-  cat << EOF > /hab/chef/bin/$binary
+  cat << EOF > $INSTALLER_DIR/bin/$binary
 #!/bin/sh
-hab pkg exec chef/chef-infra-client $binary -- "\$@"
+/hab/bin/hab pkg exec chef/chef-infra-client/%{VERSION}/%{RELEASE} $binary -- "\$@"
 EOF
-  chmod +x /hab/chef/bin/$binary
+  chmod +x $INSTALLER_DIR/bin/$binary
 done
 
 PROGNAME=`basename $0`
-INSTALLER_DIR=/hab/chef
 CONFIG_DIR=/etc/chef
 USAGE="usage: $0 [-v validation_key] ([-o organization] || [-u url])"
 
@@ -194,6 +192,8 @@ exit 0
 #   this programming language.  do not touch.
 # - if you are under 40, get peer review from your elders.
 
+INSTALLER_DIR="/hab/chef/%{VERSION}/%{RELEASE}"
+
 is_darwin() {
   uname -a | grep "^Darwin" 2>&1 >/dev/null
 }
@@ -230,10 +230,22 @@ elif [ "x$1" = "x0" ]; then
   cleanup_symlinks
 fi
 
-# Clean the /hab/chef directory created with wrappers
-rm -rf /hab/chef || true
+rm -rf $INSTALLER_DIR || true
+
+
+# Even though it's safe and cleaner, we can't do it this way.
+# The /hab/accepted-licenses directory will be gone and hab will fail because there's no accepted license.
+# Even if we put this in `%preun`, we'll see the same thing if no chef command was ever run and so the hab
+# license was never accepted.
+# /hab/bin/hab pkg uninstall chef/chef-infra-client/%{VERSION}/%{RELEASE} || true
+
+# Instead we'll do what we safely can directly:
+rm -rf /hab/pkgs/chef/chef-infra-client/%{VERSION}/%{RELEASE} || true
 
 # Remove /hab if it is empty after this RPM is uninstalled
+# TODO - this directory will never be empty, because there are other components (inlcuding /hab/bin/hab itself)
+#        included in the tarball that we can't safely erase . This means we'll /always/ leave something behind
+#        in /hab, unless we verify that no other non-infra components are installed and remove everything.
 if [ -d /hab ] && [ -z "$(ls -A /hab)" ]; then
   rmdir /hab
 fi

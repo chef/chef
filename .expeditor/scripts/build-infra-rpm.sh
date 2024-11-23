@@ -21,6 +21,7 @@ TEMP_DIR=$(mktemp -d)
 export HAB_LICENSE="accept-no-persist"
 sudo -E hab pkg export tar chef/chef-infra-client/$VERSION/$RELEASE
 
+
 # Copy build source files to the BUILD directory or untar the tarball
 TARBALL="chef-chef-infra-client-$VERSION-$RELEASE.tar.gz"
 
@@ -30,22 +31,23 @@ if [ ! -f "$TARBALL" ]; then
   exit 1
 fi
 
+
 # Create the directory structure
 BASE_DIR=$TEMP_DIR/rpmbuild
 mkdir -p "$BASE_DIR"/{BUILD,RPMS/x86_64,SOURCES,SPECS,SRPMS}
 
 echo "RPM build directory structure created under $BASE_DIR"
 
-echo "Untarring $TARBALL into $BASE_DIR/BUILD"
-tar -xzf "$TARBALL" -C "$BASE_DIR/BUILD"
+mkdir "$BASE_DIR/BUILD/hab"
+mv $TARBALL "$BASE_DIR/BUILD/hab/"
 
 .expeditor/scripts/hab-contents.sh "$BASE_DIR/BUILD/hab"
 
 # Concatenate spec and contents into a single spec file
 cat .expeditor/scripts/infra-hab.spec hab-contents.txt > "$BASE_DIR/SPECS/chef.spec"
 
-# Replace the VERSION placeholder with the combined $VERSION and $RELEASE
-sed -i "s/%{VERSION}/$VERSION~$RELEASE/" "$BASE_DIR/SPECS/chef.spec"
+# Replace all VERSION and RELEASE placeholders.
+sed -i "s/%{VERSION}/$VERSION/ ; s/%{RELEASE}/$RELEASE/" "$BASE_DIR/SPECS/chef.spec"
 
 # Run the rpmbuild command
 rpmbuild -bb --target $arch --buildroot "$BASE_DIR/BUILD" --define "_topdir $BASE_DIR" "$BASE_DIR/SPECS/chef.spec"
@@ -63,5 +65,4 @@ else
   echo "RPM creation failed or the RPM is not located in the expected directory."
 fi
 
-# Delete the temporary directory after build
 rm -rf "$TEMP_DIR"
