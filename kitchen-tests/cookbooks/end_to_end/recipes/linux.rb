@@ -221,4 +221,4 @@ include_recipe "::_ifconfig"
  #   https://ograblog.wordpress.com/2017/06/02/dock-a-snap/)
  # But testing on just the VMs is sufficient, so we exclude docker from
  # running this recipe
- include_recipe "::_snap" if platform?("ubuntu") && !docker?
+ include_recipe "::_snap" if platform?("ubuntu") #&& !docker?
