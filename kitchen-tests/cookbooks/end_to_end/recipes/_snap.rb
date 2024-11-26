@@ -6,7 +6,7 @@ service "snapd" do
   action :start
 end
 
-execute "sleep 5"
+execute "sleep 10"
 
 snap_package "hello" do
   action :install
