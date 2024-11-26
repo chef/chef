@@ -43,9 +43,10 @@ class Chef
           raise "get_filename: Cannot determine segment/filename for incoming filename #{filename}"
         end
 
-        raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest.files_for(segment)
+        files_for_segment = @manifest.files_for(segment)
+        raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless files_for_segment
 
-        found_manifest_record = @manifest.files_for(segment).find { |manifest_record| manifest_record[:path] == filename }
+        found_manifest_record = files_for_segment.find { |manifest_record| manifest_record[:path] == filename }
         raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
 
         cache_filename = File.join("cookbooks", @cookbook_name, found_manifest_record["path"])
