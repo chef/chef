@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.5.34 -->
-## [v18.5.34](https://github.com/chef/chef/tree/v18.5.34) (2024-11-26)
+<!-- latest_release 18.5.35 -->
+## [v18.5.35](https://github.com/chef/chef/tree/v18.5.35) (2024-11-27)
 
 #### Merged Pull Requests
-- Given snapd a bit more time to boot? (#14726) [#14727](https://github.com/chef/chef/pull/14727) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef18][RemoteFileVendor#get_filename] only do one files_for [#14730](https://github.com/chef/chef/pull/14730) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef18][RemoteFileVendor#get_filename] only do one files_for [#14730](https://github.com/chef/chef/pull/14730) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.5.35 -->
 - Given snapd a bit more time to boot? (#14726) [#14727](https://github.com/chef/chef/pull/14727) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.34 -->
 - Fix fedora-latest tests: install dnf (#14710) [#14715](https://github.com/chef/chef/pull/14715) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.33 -->
 - Backport gem package fix to chef-18 [#14714](https://github.com/chef/chef/pull/14714) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.32 -->
