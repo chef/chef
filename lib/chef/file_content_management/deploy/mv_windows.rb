@@ -53,9 +53,12 @@ class Chef
           #
 
           dst_so = Security::SecurableObject.new(dst)
+
+          puts "dst_so #{dst_so.inspect}"
           begin
             # get the sd with the SACL
             dst_sd = dst_so.security_descriptor(true)
+            puts "dst_sd #{dst_sd.inspect}"
           rescue Chef::Exceptions::Win32APIError
             # Catch and raise if the user is not elevated enough.
             # At this point we can't configure the file as expected so
@@ -64,7 +67,12 @@ class Chef
           end
 
           dacl_present = dst_sd.dacl_present?
+          puts "dacl_present #{dacl_present.inspect}"
+
           if dacl_present
+            puts "dst_sd.dacl #{dst_sd.dacl.inspect}"
+            puts "dst_sd.dacl.map(&:to_s) #{dst_sd.dacl.map(&:to_s).inspect}"
+            puts "dst_sd.dacl.select { |ace| !ace.inherited? } #{dst_sd.dacl.select { |ace| !ace.inherited? }.inspect}"
             if dst_sd.dacl.nil?
               apply_dacl = nil
             else
@@ -73,10 +81,13 @@ class Chef
           end
 
           sacl_present = dst_sd.sacl_present?
+          puts "sacl_present #{sacl_present.inspect}"
           if sacl_present
             if dst_sd.sacl.nil?
               apply_sacl = nil
             else
+              puts "dst_sd.sacl.map(&:to_s) #{dst_sd.sacl.map(&:to_s).inspect}"
+              puts "dst_sd.sacl.select { |ace| !ace.inherited? } #{dst_sd.sacl.select { |ace| !ace.inherited? }.inspect}"
               apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
             end
           end
