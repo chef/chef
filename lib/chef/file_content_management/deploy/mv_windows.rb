@@ -26,6 +26,8 @@ if ChefUtils.windows?
   require_relative "../../win32/security"
 end
 
+require "pry"
+
 class Chef
   class FileContentManagement
     class Deploy
@@ -73,12 +75,16 @@ class Chef
           # end
 
           dacl_present = dst_sd.dacl_present?
+          binding.pry
           if dacl_present
-            if dst_sd.dacl.nil?
-              apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
-            else
-              apply_dacl = nil
-            end
+            apply_dacl = nil
+          else
+            apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
+            # if dst_sd.dacl.nil?
+            #   apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
+            # else
+            #   apply_dacl = nil
+            # end
           end
 
           sacl_present = dst_sd.sacl_present?

@@ -20,6 +20,8 @@
 require_relative "../win32/security"
 require_relative "../win32/file"
 
+require "pry"
+
 class Chef
   class FileAccessControl
     module Windows
@@ -244,7 +246,7 @@ class Chef
       def calculate_flags(rights)
         # Handle inheritance flags
         flags = 0
-
+        binding.pry
         #
         # Configure child inheritance only if the resource is some
         # type of a directory.

@@ -20,6 +20,8 @@
 
 require "etc"
 
+require "pry"
+
 shared_context "setup correct permissions" do
   if windows?
     include_context "use Windows permissions"
@@ -554,6 +556,7 @@ shared_examples_for "a securable resource without existing target" do
       end
 
       it "respects mode in string form as an octal number" do
+        binding.pry
         # on windows, mode cannot modify owner and/or group permissions
         # unless the owner and/or group as appropriate is specified
         resource.mode "400"
