@@ -75,8 +75,9 @@ class Chef
             if dst_sd.dacl.nil?
               apply_dacl = nil
             else
-              puts "dst_sd.dacl.map(&:to_s) #{dst_sd.dacl.map(&:to_s).inspect}"
+              puts "dst_sd.dacl.map(&:inspect) #{dst_sd.dacl.map(&:inspect).inspect}"
               puts "dst_sd.dacl.select { |ace| !ace.inherited? } #{dst_sd.dacl.select { |ace| !ace.inherited? }.inspect}"
+              puts "dst_sd.dacl.map { |ace| !ace.inherited? } #{dst_sd.dacl.map { |ace| !ace.inherited? }.inspect}"
               apply_dacl = ACL.create(dst_sd.dacl.select { |ace| !ace.inherited? })
             end
           end
@@ -88,8 +89,9 @@ class Chef
             if dst_sd.sacl.nil?
               apply_sacl = nil
             else
-              puts "dst_sd.sacl.map(&:to_s) #{dst_sd.sacl.map(&:to_s).inspect}"
+              puts "dst_sd.sacl.map(&:inspect) #{dst_sd.sacl.map(&:inspect).inspect}"
               puts "dst_sd.sacl.select { |ace| !ace.inherited? } #{dst_sd.sacl.select { |ace| !ace.inherited? }.inspect}"
+              puts "dst_sd.sacl.map { |ace| !ace.inherited? } #{dst_sd.sacl.map { |ace| !ace.inherited? }.inspect}"
               apply_sacl = ACL.create(dst_sd.sacl.select { |ace| !ace.inherited? })
             end
           end
