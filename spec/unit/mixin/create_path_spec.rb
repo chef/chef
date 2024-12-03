@@ -65,7 +65,6 @@ describe Chef::Mixin::CreatePath do
       path = "C:/foo/bar/baz"
       allow(File).to receive(:expand_path).with(path).and_return(path)
 
-      expect(File).to receive(:directory?).with("C:").and_return(true)
       expect(File).to receive(:directory?).with("C:/foo").and_return(true)
       ["C:/foo/bar", "C:/foo/bar/baz"].each do |d|
         expect(File).to receive(:directory?).with(d).and_return(false)
@@ -75,8 +74,6 @@ describe Chef::Mixin::CreatePath do
       expect(test.create_path(path)).to eql(path)
     end
     it "doesn't call create_dir if path already exists" do
-      expect(File).to receive(:directory?).with("/foo").and_return(true)
-      expect(File).to receive(:directory?).with("/foo/bar").and_return(true)
       expect(File).to receive(:directory?).with("/foo/bar/baz").and_return(true)
       expect(test).to_not receive(:create_dir)
 
@@ -87,11 +84,7 @@ describe Chef::Mixin::CreatePath do
       allow(ChefUtils).to receive(:windows?) { true }
       path = "C:/foo/bar/baz"
       allow(File).to receive(:expand_path).with(path).and_return(path)
-
-      expect(File).to receive(:directory?).with("C:").and_return(true)
-      ["C:/foo", "C:/foo/bar", "C:/foo/bar/baz"].each do |d|
-        expect(File).to receive(:directory?).with(d).and_return(true)
-      end
+      expect(File).to receive(:directory?).with(path).and_return(true)
       expect(test).to_not receive(:create_dir)
 
       expect(test.create_path(path)).to eql(path)

@@ -42,9 +42,20 @@ class Chef
           end
         end
 
-        file_path.each_index do |i|
-          create_path = File.join(file_path[0, i + 1])
-          create_dir(create_path) unless File.directory?(create_path)
+        # Walk through the path in reverse, to reduce directory? calls
+        base_dir_index = file_path.length
+        while base_dir_index > 0
+          create_path = File.join(file_path[0, base_dir_index])
+
+          break if File.directory?(create_path)
+
+          base_dir_index -= 1
+        end
+
+        while base_dir_index < file_path.length
+          create_path = File.join(file_path[0, base_dir_index + 1])
+          create_dir(create_path)
+          base_dir_index += 1
         end
 
         File.expand_path(File.join(file_path))
