@@ -102,7 +102,7 @@ homebrew_package "dos2unix" do
   action :purge
 end
 
-homebrew_cask "do-not-disturb"
+homebrew_cask "1password"
 
 include_recipe "::_dmg_package"
 include_recipe "::_macos_userdefaults"

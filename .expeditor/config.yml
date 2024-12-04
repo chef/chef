@@ -55,6 +55,8 @@ pipelines:
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
+  - hab-export:
+      definition: .expeditor/hab-export-pipeline.yml
   # - omnibus/release:
   #     env:
   #       - IGNORE_CACHE: true # caching causes constant build failures
