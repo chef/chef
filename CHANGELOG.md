@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.0 -->
-## [v18.6.0](https://github.com/chef/chef/tree/v18.6.0) (2024-12-04)
+<!-- latest_release 18.6.1 -->
+## [v18.6.1](https://github.com/chef/chef/tree/v18.6.1) (2024-12-04)
 
 #### Merged Pull Requests
-- Updating Windows file resource tests [#14746](https://github.com/chef/chef/pull/14746) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.1 -->
 - Updating Windows file resource tests [#14746](https://github.com/chef/chef/pull/14746) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.0 -->
 - [Chef-18 Backport] Reenable _tests to trigger GA (#14731) [#14732](https://github.com/chef/chef/pull/14732) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.37 -->
 - Bump .buildkite-platform.json for 3.2.12 chef-foundation [#14722](https://github.com/chef/chef/pull/14722) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.36 -->
