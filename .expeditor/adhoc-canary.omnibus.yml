@@ -8,8 +8,6 @@ fips-platforms:
   - el-*-ppc64*
   - ubuntu-*-x86_64
   - windows-*
-skip-artifactory-platforms:
-  - freebsd-13-amd64
 windows-64-msystem: UCRT64
 builder-to-testers-map:
   aix-7.1-powerpc:
@@ -53,8 +51,7 @@ builder-to-testers-map:
     - el-9-aarch64
   el-9-x86_64:
     - el-9-x86_64
-  freebsd-12-amd64:
-    - freebsd-12-amd64
+  freebsd-13-amd64:
     - freebsd-13-amd64
   mac_os_x-11-x86_64:
     - mac_os_x-11-x86_64
