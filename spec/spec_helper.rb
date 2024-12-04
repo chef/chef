@@ -145,6 +145,7 @@ RSpec.configure do |config|
 
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
+  config.filter_run_excluding not_supported_on_windows_11: true if windows_11?
   config.filter_run_excluding not_supported_on_macos: true if macos?
   config.filter_run_excluding macos_only: true unless macos?
   config.filter_run_excluding not_macos_gte_11: true if macos_gte_11?
