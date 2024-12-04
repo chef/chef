@@ -142,6 +142,8 @@ jobs:
           - debian-11
           - debian-12
           - fedora-latest
+          - freebsd-13
+          - freebsd-14
           - opensuse-leap-15
           - oracle-7
           - oracle-8
