@@ -201,7 +201,7 @@ then
   fi
 fi
 
-if [[ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]]
+if [[ $BUILDKITE_PIPELINE_SLUG == "chef-chef-chef-18-validate-release" ]]
 then
   echo "- wait: ~"
   echo "- key: create-build-record"
@@ -322,7 +322,7 @@ then
   done
 fi
 
-if [[ $BUILDKITE_PIPELINE_SLUG == "chef-chef-main-validate-release" ]]
+if [[ $BUILDKITE_PIPELINE_SLUG == "chef-chef-chef-18-validate-release" ]]
 then
   echo "- wait: ~"
   echo "- key: promote"
