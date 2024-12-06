@@ -44,6 +44,8 @@ require_relative "mixin/provides"
 require_relative "dsl/universal"
 require_relative "constants"
 
+require "pry"
+
 class Chef
   class Resource
 

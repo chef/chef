@@ -35,6 +35,8 @@ require_relative "../util/selinux"
 require_relative "../file_content_management/deploy"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
 
+require "pry"
+
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
 #  - do_create_file shall always create the file first and obey umask when perms are not specified
@@ -140,6 +142,7 @@ class Chef
       end
 
       action :create do
+        binding.pry
         do_generate_content
         do_validate_content
         do_unlink
@@ -367,6 +370,7 @@ class Chef
       def do_create_file
         if needs_creating?
           converge_by("create new file #{new_resource.path}") do
+            binding.pry
             deployment_strategy.create(new_resource.path)
             logger.info("#{new_resource} created file #{new_resource.path}")
           end
@@ -443,6 +447,7 @@ class Chef
       def do_acl_changes
         if access_controls.requires_changes?
           converge_by(access_controls.describe_changes) do
+            binding.pry
             access_controls.set_all
           end
         end

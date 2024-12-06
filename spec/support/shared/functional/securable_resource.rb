@@ -19,6 +19,7 @@
 #
 
 require "etc"
+require "pry"
 
 shared_context "setup correct permissions" do
   if windows?
@@ -642,8 +643,22 @@ shared_examples_for "a securable resource without existing target" do
       # non-inherited ACLs. Filter them out here.
       parent_inherited_acls = parent_acls.dacl.collect(&:inherited?)
 
+      # trace = TracePoint.new(:line) do |tp|
+      #   case tp.path
+      #   when /^</
+      #     puts tp.path
+      #   when /^\(eval\)$/
+      #     puts tp.path
+      #   else
+      #     puts "+ #{File.open(tp.path) { |f| f.each_line.to_a[tp.lineno-1] }}"
+      #   end
+      # end
+      
+      # trace.enable
+      binding.pry
       resource.run_action(:create)
-
+      # trace.disable
+      # line_handler.disable
       # Similarly filter out the non-inherited ACLs
       resource_inherited_acls = descriptor.dacl.collect(&:inherited?)
 

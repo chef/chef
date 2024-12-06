@@ -24,6 +24,9 @@ require_relative "unicode"
 require_relative "security/token"
 require_relative "../mixin/wide_string"
 
+require "pry"
+require "delegate"
+
 class Chef
   module ReservedNames::Win32
     class Security
@@ -586,7 +589,15 @@ class Chef
         end
       end
 
+      class IntegerProxy < DelegateClass(Integer)
+        def |(other)
+          print "#{self.to_s(2)} | #{other.to_s(2)} =>"
+          IntegerProxy.new(super).tap { |new_value| puts new_value.to_s(2) }
+        end
+      end
+
       def self.set_named_security_info(path, type, args)
+        binding.pry
         owner = args[:owner]
         group = args[:group]
         dacl = args[:dacl]
@@ -597,13 +608,21 @@ class Chef
         sacl = sacl.pointer if sacl && sacl.respond_to?(:pointer)
 
         # Determine the security_information flags
-        security_information = 0
+        security_information = IntegerProxy.new(0)
+        # security_information << class
+        #   def |(value)
+        #     puts self.to_s(2)
+        #     super
+        #   end
+        # end
         security_information |= OWNER_SECURITY_INFORMATION if args.key?(:owner)
         security_information |= GROUP_SECURITY_INFORMATION if args.key?(:group)
         security_information |= DACL_SECURITY_INFORMATION if args.key?(:dacl)
+        puts security_information.to_s(2)
         security_information |= SACL_SECURITY_INFORMATION if args.key?(:sacl)
         if args.key?(:dacl_inherits)
           security_information |= (args[:dacl_inherits] ? UNPROTECTED_DACL_SECURITY_INFORMATION : PROTECTED_DACL_SECURITY_INFORMATION)
+          puts security_information.to_s(2)
         end
         if args.key?(:sacl_inherits)
           security_information |= (args[:sacl_inherits] ? UNPROTECTED_SACL_SECURITY_INFORMATION : PROTECTED_SACL_SECURITY_INFORMATION)
