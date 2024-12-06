@@ -34,13 +34,6 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
-GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
-
 PATH
   remote: .
   specs:
@@ -445,7 +438,6 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.8.2)
-    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (0.13.1)
@@ -532,7 +524,6 @@ DEPENDENCIES
   rdoc (~> 6.4.1)
   rest-client!
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
