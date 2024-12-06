@@ -29,6 +29,7 @@ builder-to-testers-map:
     - debian-11-aarch64
   el-7-aarch64:
     - el-7-aarch64
+    - amazon-2-aarch64
   el-7-ppc64:
     - el-7-ppc64
   el-7-ppc64le:
