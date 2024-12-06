@@ -44,6 +44,7 @@ require_relative "mixin/provides"
 require_relative "dsl/universal"
 require_relative "constants"
 
+require "pry"
 class Chef
   class Resource
 
@@ -598,6 +599,8 @@ class Chef
         return if should_skip?(action)
 
         with_umask do
+          binding.eval("self", __FILE__, __LINE__).send("provider_for_#{action}").run_action
+          binding.pry
           provider_for_action(action).run_action
         end
       rescue StandardError => e
