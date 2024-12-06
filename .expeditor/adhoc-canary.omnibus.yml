@@ -21,6 +21,8 @@ builder-to-testers-map:
     - amazon-2023-aarch64
   amazon-2023-x86_64:
     - amazon-2023-x86_64  
+  amazon-2-arm:
+    - amazon-2-arm
   debian-9-x86_64:
     - debian-9-x86_64
     - debian-10-x86_64
