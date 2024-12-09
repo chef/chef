@@ -1,8 +1,8 @@
 registry_key 'HKEY_LOCAL_MACHINE\System\RegTest' do
   values [{
     name: 'test',
-    type: :dword,
-    data: '1',
+    type: :string,
+    data: SecureRandom.base64(1024)
     }]
   action :create
   recursive true
