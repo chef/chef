@@ -361,8 +361,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retryable (3.0.5)
-    rexml (3.3.6)
-      strscan
+    rexml (3.3.9)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
       rspec-expectations (~> 3.11.0)
@@ -396,7 +395,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    strscan (3.1.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     test-kitchen (3.6.0)
