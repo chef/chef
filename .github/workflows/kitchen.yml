@@ -59,7 +59,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest # currently macos-14
+          - macos-14 # currently macos-latest
           - macos-15
     runs-on: ${{ matrix.os }}
     env:

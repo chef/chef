@@ -26,7 +26,7 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
 
 platforms:
-  - name: macos-15
+  - name: macos-15 # arm64
   - name: macos-14 # arm64
   - name: macos-14-large # x86_64
   - name: macos-13 # x86_64
