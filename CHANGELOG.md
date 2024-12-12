@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.1 -->
-## [v18.6.1](https://github.com/chef/chef/tree/v18.6.1) (2024-12-04)
+<!-- latest_release 18.6.2 -->
+## [v18.6.2](https://github.com/chef/chef/tree/v18.6.2) (2024-12-12)
 
 #### Merged Pull Requests
-- Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae))
+- Empty commit to bump the version [#14756](https://github.com/chef/chef/pull/14756) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Empty commit to bump the version [#14756](https://github.com/chef/chef/pull/14756) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.6.2 -->
 - Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.1 -->
 - Updating Windows file resource tests [#14746](https://github.com/chef/chef/pull/14746) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.0 -->
 - [Chef-18 Backport] Reenable _tests to trigger GA (#14731) [#14732](https://github.com/chef/chef/pull/14732) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.37 -->
