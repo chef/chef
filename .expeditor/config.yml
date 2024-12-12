@@ -16,7 +16,6 @@ rubygems:
   - chef-config
   - chef-bin
   - chef-utils
-  - knife
 
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
@@ -147,8 +146,6 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
-          only_if: built_in:bump_version
-      - built_in:build_gem:
           only_if: built_in:bump_version
 
   # the habitat chain
