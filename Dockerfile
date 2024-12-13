@@ -18,7 +18,7 @@ FROM busybox
 LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 
 ARG CHANNEL=stable
-ARG VERSION=18.3.0
+ARG VERSION=18.6.2
 ARG ARCH=x86_64
 ARG PKG_VERSION=9
 

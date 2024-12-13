@@ -1,60 +1,58 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.2 -->
-## [v18.6.2](https://github.com/chef/chef/tree/v18.6.2) (2024-12-12)
-
-#### Merged Pull Requests
-- Empty commit to bump the version [#14756](https://github.com/chef/chef/pull/14756) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.5.0 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Empty commit to bump the version [#14756](https://github.com/chef/chef/pull/14756) ([sean-simmons-progress](https://github.com/sean-simmons-progress)) <!-- 18.6.2 -->
-- Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.1 -->
-- Updating Windows file resource tests [#14746](https://github.com/chef/chef/pull/14746) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.0 -->
-- [Chef-18 Backport] Reenable _tests to trigger GA (#14731) [#14732](https://github.com/chef/chef/pull/14732) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.37 -->
-- Bump .buildkite-platform.json for 3.2.12 chef-foundation [#14722](https://github.com/chef/chef/pull/14722) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.36 -->
-- [Chef18][RemoteFileVendor#get_filename] only do one files_for [#14730](https://github.com/chef/chef/pull/14730) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.5.35 -->
-- Given snapd a bit more time to boot? (#14726) [#14727](https://github.com/chef/chef/pull/14727) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.34 -->
-- Fix fedora-latest tests: install dnf (#14710) [#14715](https://github.com/chef/chef/pull/14715) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.33 -->
-- Backport gem package fix to chef-18 [#14714](https://github.com/chef/chef/pull/14714) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.32 -->
-- Replace do-not-disturb with an actively maintained cask (#14711) [#14716](https://github.com/chef/chef/pull/14716) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.31 -->
-- [Chef-18] Set default mask to allow infra client to run uninterrupted on hardened systems [#14699](https://github.com/chef/chef/pull/14699) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.30 -->
-- Updating Webrick to overcome a CVE [#14695](https://github.com/chef/chef/pull/14695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.29 -->
-- update workflows to run on chef-18 branch [#14686](https://github.com/chef/chef/pull/14686) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.28 -->
-- Updating builders and testers [#14683](https://github.com/chef/chef/pull/14683) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.27 -->
-- Fix for mac 11 arm64 and windows platforms for chef-18 adhoc build [#14680](https://github.com/chef/chef/pull/14680) ([muthuja](https://github.com/muthuja)) <!-- 18.5.26 -->
-- Chef 2618 knife bootstrap changes to chef 18 [#14669](https://github.com/chef/chef/pull/14669) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.5.25 -->
-- Bump train-core to 3.12.7 in omnibus [#14670](https://github.com/chef/chef/pull/14670) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.24 -->
-- [Chef-18]Update all the dependencies as inspec-core update is getting blocked due to multiple gem dependencies [#14622](https://github.com/chef/chef/pull/14622) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.23 -->
-- Backporting Hab Plan [#14665](https://github.com/chef/chef/pull/14665) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.22 -->
-- Choco deprecation, windows chef-powershell, and Ruby 3.1.6 chef-foundation  [#14627](https://github.com/chef/chef/pull/14627) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.21 -->
-- [chef-18] backport fix vm tests [#14629](https://github.com/chef/chef/pull/14629) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.20 -->
-- [Chef-18] Bump ohai to 18.2.4 [#14619](https://github.com/chef/chef/pull/14619) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.19 -->
-- [Chef-18] Fix Chef versions in lock files manually as the script was not working before [#14616](https://github.com/chef/chef/pull/14616) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.18 -->
-- [chef18] Enhance resource inspector to understand LWRP files containing multiple resources [#14592](https://github.com/chef/chef/pull/14592) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.5.17 -->
-- [Chef-18] Fix issue in automated expeditor version bump not bumping the versions in Gemfile.lock [#14610](https://github.com/chef/chef/pull/14610) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.16 -->
-- This change is only to test out whether expeditor bumps versions on merge [#14609](https://github.com/chef/chef/pull/14609) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.15 -->
-- [Chef-18]Bump license_scout to fix build failures [#14606](https://github.com/chef/chef/pull/14606) ([neha-p6](https://github.com/neha-p6)) <!-- 18.5.14 -->
-- Updating rake to overcome a CVE [#14604](https://github.com/chef/chef/pull/14604) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.13 -->
-- update the latest digi cert for windows platforms [#14600](https://github.com/chef/chef/pull/14600) ([muthuja](https://github.com/muthuja)) <!-- 18.5.12 -->
-- Backport: replace lint download action with curl in .github lint [#14566](https://github.com/chef/chef/pull/14566) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.11 -->
-- [CHEF-18] Remove Freebsd testing [#14574](https://github.com/chef/chef/pull/14574) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.10 -->
-- Conditional install of openssl via install_if [#14584](https://github.com/chef/chef/pull/14584) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.9 -->
-- Clear user privileges before deleting user in Windows [#14575](https://github.com/chef/chef/pull/14575) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.5.8 -->
-- [CHEF-18] fix docker builds [#14564](https://github.com/chef/chef/pull/14564) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.7 -->
-- modify .rpmmacros to sign the rpms with SHA256 [#14571](https://github.com/chef/chef/pull/14571) ([poorndm](https://github.com/poorndm)) <!-- 18.5.6 -->
-- [Backport chef-18] Fix issues with multiple homebrew binaries [#14545](https://github.com/chef/chef/pull/14545) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.5 -->
-- [backport chef-18] fix pipeline tests [#14557](https://github.com/chef/chef/pull/14557) ([Stromweld](https://github.com/Stromweld)) <!-- 18.5.4 -->
-- Updating the rdoc version for Chef-18 [#14550](https://github.com/chef/chef/pull/14550) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.3 -->
-- Jfm/chef18 ohai update [#14549](https://github.com/chef/chef/pull/14549) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.1 -->
-- Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.5.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.6.2](https://github.com/chef/chef/tree/v18.6.2) (2024-12-13)
+
+#### Merged Pull Requests
+- Updating the client_config_resource [#14465](https://github.com/chef/chef/pull/14465) ([johnmccrae](https://github.com/johnmccrae))
+- Jfm/chef18 ohai update [#14549](https://github.com/chef/chef/pull/14549) ([johnmccrae](https://github.com/johnmccrae))
+- Updating the rdoc version for Chef-18 [#14550](https://github.com/chef/chef/pull/14550) ([johnmccrae](https://github.com/johnmccrae))
+- [backport chef-18] fix pipeline tests [#14557](https://github.com/chef/chef/pull/14557) ([Stromweld](https://github.com/Stromweld))
+- [Backport chef-18] Fix issues with multiple homebrew binaries [#14545](https://github.com/chef/chef/pull/14545) ([Stromweld](https://github.com/Stromweld))
+- modify .rpmmacros to sign the rpms with SHA256 [#14571](https://github.com/chef/chef/pull/14571) ([poorndm](https://github.com/poorndm))
+- [CHEF-18] fix docker builds [#14564](https://github.com/chef/chef/pull/14564) ([Stromweld](https://github.com/Stromweld))
+- Clear user privileges before deleting user in Windows [#14575](https://github.com/chef/chef/pull/14575) ([tpowell-progress](https://github.com/tpowell-progress))
+- Conditional install of openssl via install_if [#14584](https://github.com/chef/chef/pull/14584) ([tpowell-progress](https://github.com/tpowell-progress))
+- [CHEF-18] Remove Freebsd testing [#14574](https://github.com/chef/chef/pull/14574) ([Stromweld](https://github.com/Stromweld))
+- Backport: replace lint download action with curl in .github lint [#14566](https://github.com/chef/chef/pull/14566) ([tpowell-progress](https://github.com/tpowell-progress))
+- update the latest digi cert for windows platforms [#14600](https://github.com/chef/chef/pull/14600) ([muthuja](https://github.com/muthuja))
+- Updating rake to overcome a CVE [#14604](https://github.com/chef/chef/pull/14604) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18]Bump license_scout to fix build failures [#14606](https://github.com/chef/chef/pull/14606) ([neha-p6](https://github.com/neha-p6))
+- This change is only to test out whether expeditor bumps versions on merge [#14609](https://github.com/chef/chef/pull/14609) ([neha-p6](https://github.com/neha-p6))
+- [Chef-18] Fix issue in automated expeditor version bump not bumping the versions in Gemfile.lock [#14610](https://github.com/chef/chef/pull/14610) ([neha-p6](https://github.com/neha-p6))
+- [chef18] Enhance resource inspector to understand LWRP files containing multiple resources [#14592](https://github.com/chef/chef/pull/14592) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Chef-18] Fix Chef versions in lock files manually as the script was not working before [#14616](https://github.com/chef/chef/pull/14616) ([neha-p6](https://github.com/neha-p6))
+- [Chef-18] Bump ohai to 18.2.4 [#14619](https://github.com/chef/chef/pull/14619) ([neha-p6](https://github.com/neha-p6))
+- [chef-18] backport fix vm tests [#14629](https://github.com/chef/chef/pull/14629) ([Stromweld](https://github.com/Stromweld))
+- Choco deprecation, windows chef-powershell, and Ruby 3.1.6 chef-foundation  [#14627](https://github.com/chef/chef/pull/14627) ([tpowell-progress](https://github.com/tpowell-progress))
+- Backporting Hab Plan [#14665](https://github.com/chef/chef/pull/14665) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18]Update all the dependencies as inspec-core update is getting blocked due to multiple gem dependencies [#14622](https://github.com/chef/chef/pull/14622) ([neha-p6](https://github.com/neha-p6))
+- Bump train-core to 3.12.7 in omnibus [#14670](https://github.com/chef/chef/pull/14670) ([neha-p6](https://github.com/neha-p6))
+- Chef 2618 knife bootstrap changes to chef 18 [#14669](https://github.com/chef/chef/pull/14669) ([ashiqueps](https://github.com/ashiqueps))
+- Fix for mac 11 arm64 and windows platforms for chef-18 adhoc build [#14680](https://github.com/chef/chef/pull/14680) ([muthuja](https://github.com/muthuja))
+- Updating builders and testers [#14683](https://github.com/chef/chef/pull/14683) ([johnmccrae](https://github.com/johnmccrae))
+- update workflows to run on chef-18 branch [#14686](https://github.com/chef/chef/pull/14686) ([Stromweld](https://github.com/Stromweld))
+- Updating Webrick to overcome a CVE [#14695](https://github.com/chef/chef/pull/14695) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18] Set default mask to allow infra client to run uninterrupted on hardened systems [#14699](https://github.com/chef/chef/pull/14699) ([neha-p6](https://github.com/neha-p6))
+- Replace do-not-disturb with an actively maintained cask (#14711) [#14716](https://github.com/chef/chef/pull/14716) ([tpowell-progress](https://github.com/tpowell-progress))
+- Backport gem package fix to chef-18 [#14714](https://github.com/chef/chef/pull/14714) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix fedora-latest tests: install dnf (#14710) [#14715](https://github.com/chef/chef/pull/14715) ([tpowell-progress](https://github.com/tpowell-progress))
+- Given snapd a bit more time to boot? (#14726) [#14727](https://github.com/chef/chef/pull/14727) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef18][RemoteFileVendor#get_filename] only do one files_for [#14730](https://github.com/chef/chef/pull/14730) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Bump .buildkite-platform.json for 3.2.12 chef-foundation [#14722](https://github.com/chef/chef/pull/14722) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef-18 Backport] Reenable _tests to trigger GA (#14731) [#14732](https://github.com/chef/chef/pull/14732) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating Windows file resource tests [#14746](https://github.com/chef/chef/pull/14746) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae))
+- Empty commit to bump the version [#14756](https://github.com/chef/chef/pull/14756) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
+<!-- latest_stable_release -->
+
 ## [v18.5.0](https://github.com/chef/chef/tree/v18.5.0) (2024-07-09)
 
 #### Merged Pull Requests
@@ -111,7 +109,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - [FileCache#Find] N to 1 calls for file matching [#14351](https://github.com/chef/chef/pull/14351) ([dafyddcrosby](https://github.com/dafyddcrosby))
 - [ChefConfig] Add memoization to var_root_dir and var_chef_dir methods [#14368](https://github.com/chef/chef/pull/14368) ([dafyddcrosby](https://github.com/dafyddcrosby))
 - Chef 18.5: OpenSSL 3 / chef-foundation split version [#14433](https://github.com/chef/chef/pull/14433) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v18.4.12](https://github.com/chef/chef/tree/v18.4.12) (2024-03-14)
 
