@@ -90,7 +90,6 @@ then
         echo "    queue: default-privileged"
       fi
       echo "  plugins:"
-      echo "  - chef/habitat#94bcec5cec5f8557a271aa255391b82ecade8d0e"
       echo "  - docker#v3.5.0:"
       echo "      image: chefes/omnibus-toolchain-$platform:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
       echo "      privileged: true"
@@ -132,6 +131,8 @@ then
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
       echo "  timeout_in_minutes: 120"
     fi
+      echo "  plugins:"
+      echo "  - chef/habitat#94bcec5cec5f8557a271aa255391b82ecade8d0e"
   done
 fi
 
