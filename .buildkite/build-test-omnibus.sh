@@ -132,7 +132,7 @@ then
       echo "  timeout_in_minutes: 120"
     fi
       echo "  plugins:"
-      echo "  - chef/habitat#94bcec5cec5f8557a271aa255391b82ecade8d0e"
+      echo "  - chef/habitat#2a479e94e3dec3d2def59f6a7d831d9ab9ee336a"
   done
 fi
 
