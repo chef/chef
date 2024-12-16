@@ -40,7 +40,6 @@ jobs:
       matrix:
         os:
           - macos-13
-          - macos-12
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -60,7 +59,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
+          - macos-14 # currently macos-latest
+          - macos-15
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
