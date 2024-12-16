@@ -203,7 +203,7 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (17.1.7)
+    cheffish (17.1.8)
       chef-utils (>= 17.0)
       chef-zero (>= 14.0)
       logger (< 1.6.0)
