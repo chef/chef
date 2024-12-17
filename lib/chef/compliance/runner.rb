@@ -133,8 +133,13 @@ class Chef
         end
 
         requested_reporters.each do |reporter_type|
-          logger.info "Reporting to #{reporter_type}"
-          @reporters[reporter_type].send_report(report)
+          if node["audit"]["quiet"]
+            logger.info "Quiet mode enabled, skipping #{reporter_type} reporter"
+          else
+            logger.info "Reporting to #{reporter_type}"
+            @reporters[reporter_type].send_report(report)
+            logger.info "Finished reporting to #{reporter_type}"
+          end
         end
         logger.info "Chef Infra Compliance Phase Complete"
       rescue Chef::Licensing::EntitlementError => e
