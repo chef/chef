@@ -131,6 +131,8 @@ then
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
       echo "  timeout_in_minutes: 120"
     fi
+      echo "  plugins:"
+      echo "  - chef/habitat#2a479e94e3dec3d2def59f6a7d831d9ab9ee336a"
   done
 fi
 
