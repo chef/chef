@@ -105,7 +105,7 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Install libxcrypt
-        run: sudo apt-get update && sudo apt-get install -y libxcrypt
+        run: sudo cp ./usr/lib/x86_64-linux-gnu/libcrypt.so.1 ./usr/lib/x86_64-linux-gnu/libcrypt.so.2
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
