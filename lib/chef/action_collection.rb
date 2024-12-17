@@ -189,6 +189,8 @@ class Chef
     # (see EventDispatch::Base#)
     #
     def resource_skipped(resource, action, conditional)
+      return if current_record.nil?
+
       current_record.status = :skipped
       current_record.conditional = conditional
     end
