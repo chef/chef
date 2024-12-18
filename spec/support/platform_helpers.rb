@@ -65,6 +65,12 @@ def windows_gte_10?
   Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(win32_os_version))
 end
 
+def windows_11?
+  return false unless windows?
+
+  Gem::Requirement.new(">= 10.0.22621").satisfied_by?(Gem::Version.new(win32_os_version))
+end
+
 def win32_os_version
   @win32_os_version ||= begin
                           wmi = WmiLite::Wmi.new
