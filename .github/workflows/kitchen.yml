@@ -94,7 +94,7 @@ jobs:
           - ubuntu-2004
           - ubuntu-2204
           # - ubuntu-2404
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2204 # due to libcrypt.so.2 missing issue
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
