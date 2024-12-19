@@ -4,10 +4,10 @@ set -eux -o pipefail
 arch=$1
 
 if [[ $arch == "arm64" ]]; then
-  dockerfile_pkg_version="9"
+  dockerfile_pkg_version="8"
   dockerfile_arch="aarch64"
 else
-  dockerfile_pkg_version="9"
+  dockerfile_pkg_version="8"
   dockerfile_arch="x86_64"
 fi
 
