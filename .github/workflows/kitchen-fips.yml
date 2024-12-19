@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2019]
-        ruby: ['3.4']
+        ruby: ['3.3']
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
