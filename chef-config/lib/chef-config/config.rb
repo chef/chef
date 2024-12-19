@@ -136,7 +136,7 @@ module ChefConfig
     #
     def self.c_opscode_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      PathHelper.join(drive, ChefUtils::Dist::Org::LEGACY_CONF_DIR, ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
+      PathHelper.join(drive, ChefUtils::Dist::Infra::DIR_PREFIX, ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
     end
 
     # the drive where Chef is installed on a windows host. This is determined

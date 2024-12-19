@@ -62,6 +62,9 @@ module ChefUtils
       # "chef" => /etc/cinc, /var/cinc, C:\\cinc
       DIR_SUFFIX = "chef"
 
+      # Parent directory that DIR_SUFFIX lives under, omnibus build /opt/chef, hab pkg build /hab/chef
+      DIR_PREFIX = 'hab'
+
       # The client's gem
       GEM = "chef"
 
