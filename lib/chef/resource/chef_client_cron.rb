@@ -126,7 +126,7 @@ class Chef
         description: "Append to the log file instead of overwriting the log file on each run."
 
       property :chef_binary_path, String,
-        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}",
+        default: "/#{ChefUtils::Dist::Infra::DIR_PREFIX}/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}",
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary."
 
       property :daemon_options, Array,
