@@ -370,11 +370,7 @@ class Chef::Application::Base < Chef::Application
 
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
-    if ENV["TEST_KITCHEN"]
-      puts "Temporarily bypassing licensing check in Kitchen"
-    else
-      Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
-    end
+    Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
     if Chef::Config[:version]
       puts "#{ChefUtils::Dist::Infra::PRODUCT} version: #{::Chef::VERSION}"
     end
