@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [windows-2019, windows-2022]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['3.1']
+        ruby: ['3.4']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -33,9 +33,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-12, macos-13, macos-latest]
+        os: [macos-13, macos-14, macos-15]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['3.1']
+        ruby: ['3.4']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
