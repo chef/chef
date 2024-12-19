@@ -189,7 +189,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     it "returns the expected string" do
       expect(bootstrap_context.start_chef).to eq(
         <<~EOH
-          SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin;%PATH%"
+          SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\hab\\chef\\bin;C:\\hab\\chef\\embedded\\bin;%PATH%"
           chef-client -c C:\\chef\\client.rb -j C:\\chef\\first-boot.json
         EOH
       )

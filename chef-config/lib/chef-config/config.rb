@@ -134,7 +134,7 @@ module ChefConfig
     #
     # @return [String] the platform-specific path
     #
-    def self.c_opscode_dir(windows: ChefUtils.windows?)
+    def self.bin_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
       PathHelper.join(drive, ChefUtils::Dist::Infra::DIR_PREFIX, ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
     end

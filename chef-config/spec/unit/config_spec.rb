@@ -840,15 +840,15 @@ RSpec.describe ChefConfig::Config do
 
         if is_windows
           describe "finding the windows embedded dir" do
-            let(:default_config_location) { "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+            let(:default_config_location) { "c:/hab/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
             let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
             let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
 
-            let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
+            let(:default_ca_file) { "c:/hab/chef/embedded/ssl/certs/cacert.pem" }
 
             it "finds the embedded dir in the default location" do
               allow(ChefConfig::Config).to receive(:_this_file).and_return(default_config_location)
-              expect(ChefConfig::Config.embedded_dir).to eq("c:/opscode/chef/embedded")
+              expect(ChefConfig::Config.embedded_dir).to eq("c:/hab/chef/embedded")
             end
 
             it "finds the embedded dir in a custom install location" do
