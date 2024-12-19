@@ -3,6 +3,9 @@ set -eux -o pipefail
 
 arch=$1
 
+# dockerfile_pkg_version is the enterprise linux version of packages to install
+# for maximum compatibility with various OSs' use the lowest version still supported to get the minimal gcc version available
+# using latest el version may have pkg versions higher than what is available in older OS versions
 if [[ $arch == "arm64" ]]; then
   dockerfile_pkg_version="8"
   dockerfile_arch="aarch64"
