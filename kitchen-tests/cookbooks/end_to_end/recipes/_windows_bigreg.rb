@@ -5,6 +5,8 @@
       type: :string,
       data: "NaN"*1400
     }]
+    action :create
+    recursive true
   end
 end
 
