@@ -271,6 +271,12 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     end
 
     it "prepares the reporting data for action :create" do
+      presource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
+      presource.key(reg_child + "\\Ood")
+      presource.values([{ name: "TheBefore", type: :string, data: "predata" }])
+      presource.recursive(true)
+      presource.run_action(:create)
+
       @new_resource.key(reg_child + "\\Ood")
       @new_resource.values([{ name: "ReportingVal1", type: :string, data: "report1" }, { name: "ReportingVal2", type: :string, data: "report2" }])
       @new_resource.recursive(true)
