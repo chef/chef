@@ -129,6 +129,7 @@ class Chef
             archive.each_entry do |e|
               FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
             end
+            archive.close
           end
         end
       end
@@ -176,6 +177,7 @@ class Chef
               modified = true
             end
           end
+          archive.close
           modified
         end
 
