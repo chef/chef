@@ -16,6 +16,7 @@ provisioner:
     always_dump_stacktrace: true
   deprecations_as_errors: true
   chef_license: accept-no-persist
+  chef_license_key: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
   slow_resource_report: true
 
 verifier:

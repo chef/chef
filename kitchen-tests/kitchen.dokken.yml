@@ -14,6 +14,7 @@ provisioner:
     diff_disabled: true
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
+  chef_license_key: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
   deprecations_as_errors: true
   slow_resource_report: true
   clean_dokken_sandbox: false
@@ -25,18 +26,8 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: sudo yum install centos-release-scl
-      includes:
-        - centos-7
-    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - centos-7
-        - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - centos-7
-        - oraclelinux-7
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
