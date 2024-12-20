@@ -10,6 +10,7 @@ transport:
 
 lifecycle:
   pre_converge:
+    - remote: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
     - remote: brew install coreutils
     - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"

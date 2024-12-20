@@ -30,13 +30,8 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
     - uses: actions/checkout@v4
-    - name: Install chef-test-kitchen-enterprise
-      run: |
-        curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-        sudo hab license accept
-        sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
-        sudo hab --version
-        sudo kitchen --version
+    - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
+      uses: actionshub/chef-install@3.0.0
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -56,13 +51,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-      - name: Install chef-test-kitchen-enterprise
-        run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
-          sudo hab --version
-          sudo kitchen --version
+      - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
+        uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -83,13 +73,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-      - name: Install chef-test-kitchen-enterprise
-        run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
-          sudo hab --version
-          sudo kitchen --version
+      - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
+        uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
