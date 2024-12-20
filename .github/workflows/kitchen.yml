@@ -168,12 +168,7 @@ jobs:
           sudo apt-get install -y vagrant virtualbox-7.0
           sudo vagrant --version
           sudo VBoxManage --version
-      - name: Install chef-test-kitchen-enterprise
-        run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
-          sudo hab --version
-          sudo kitchen --version
+      - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
+        uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
         run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}

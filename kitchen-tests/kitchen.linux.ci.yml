@@ -20,6 +20,7 @@ provisioner:
 
 lifecycle:
   pre_converge:
+    - remote: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
     - remote: sudo apt-get update && sudo apt-get install -y curl
       includes:
         - ubuntu-18.04
@@ -33,13 +34,8 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: scl enable devtoolset-7 'sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - oraclelinux-7
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
@@ -51,13 +47,11 @@ verifier:
 platforms:
   - name: almalinux-8
   - name: almalinux-9
-  - name: amazonlinux-2
   - name: amazonlinux-2023
   - name: debian-12
   - name: debian-11
   - name: fedora-latest
   - name: opensuse-leap-15
-  - name: oracle-7
   - name: oracle-8
   - name: oracle-9
   - name: rockylinux-8

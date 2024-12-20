@@ -42,13 +42,6 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
 
 platforms:
-  - name: amazonlinux-2
-    driver:
-      image: dokken/amazonlinux-2
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
   - name: amazonlinux-2023
     driver:
       image: dokken/amazonlinux-2023
@@ -71,16 +64,6 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-  - name: centos-7
-    driver:
-      image: dokken/centos-7
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN yum -y install e2fsprogs
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN yum install -y centos-release-scl
-        - RUN yum install -y devtoolset-7
 
   - name: almalinux-8
     driver:
@@ -117,17 +100,6 @@ platforms:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir -p /etc/sysconfig/network-scripts
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-  - name: oraclelinux-7
-    driver:
-      image: dokken/oraclelinux-7
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN yum -y install e2fsprogs
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
-        - RUN printf "[centos-sclo-rh]\nname=CentOS-7 - SCLo rh\nbaseurl=https://archive.kernel.org/centos-vault/7.8.2003/sclo/x86_64/rh/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-        - RUN yum install -y devtoolset-7
 
   - name: oraclelinux-8
     driver:

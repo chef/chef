@@ -25,14 +25,11 @@ verifier:
 platforms:
   - name: almalinux-8
   - name: almalinux-9
-  - name: amazonlinux-2
   - name: amazonlinux-2023
-  - name: centos-7
   - name: debian-12
   - name: debian-11
   - name: fedora-latest
   - name: opensuse-leap-15
-  - name: oraclelinux-7
   - name: oraclelinux-8
   - name: oraclelinux-9
   - name: rockylinux-8
@@ -41,11 +38,6 @@ platforms:
   - name: ubuntu-20.04
   - name: ubuntu-22.04
   - name: ubuntu-24.04
-  - name: windows-10
-    driver:
-      box: stromweld/windows-10
-      customize:
-        memory: 4096
   - name: windows-11
     driver:
       box: stromweld/windows-11
