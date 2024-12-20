@@ -10,7 +10,6 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: $env:CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
     - remote: . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
     - remote: $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
     - remote: chef-client -v
@@ -45,6 +44,7 @@ lifecycle:
     - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
     - remote: bundle install --jobs=3 --retry=3
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: chef-client --chef-license-key=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
 
 platforms:
   - name: windows-2019

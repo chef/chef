@@ -10,7 +10,6 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
     - remote: brew install coreutils
     - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
@@ -22,6 +21,7 @@ lifecycle:
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+    - remote: chef-client --chef-license-key=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v

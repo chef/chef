@@ -114,7 +114,7 @@ jobs:
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835 && kitchen test end-to-end-${{ matrix.os }}
 
   vm_lnx_x86_64:
     strategy:
