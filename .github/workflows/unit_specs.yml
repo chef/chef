@@ -20,7 +20,7 @@ jobs:
         clean: true
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.3"
+        ruby-version: "3.1.4"
         bundler-cache: false
     - run: bundle update --bundler
     - run: bundle install
