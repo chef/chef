@@ -1,5 +1,5 @@
 1000.times do |i|
-  registry_key "HKEY_LOCAL_MACHINE\\SOFTWARE\\Notepad\\Pad{i}" do
+  registry_key "HKEY_LOCAL_MACHINE\\SOFTWARE\\Notepad\\Pad#{i}" do
     values [{
       name: "AThing",
       type: :string,
