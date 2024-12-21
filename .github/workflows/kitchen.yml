@@ -156,4 +156,4 @@ jobs:
       - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
+        run: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835 && export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
