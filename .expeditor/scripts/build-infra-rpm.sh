@@ -33,7 +33,8 @@ fi
 
 CHEF_INFRA_TAR="$CHEF_INFRA_HAB_TAR"
 CHEF_MIGRATE_TAR="$CHEF_INFRA_MIGRATE_TAR"
-SPEC_FILE="chef-infra-client.spec"
+SPEC_NAME="chef-infra-client.spec"
+SPEC_FILE=".expeditor/scripts/$SPEC_NAME"
 
 CHEF_INFRA_TAR_NAME=$(basename "$CHEF_INFRA_TAR")
 CHEF_MIGRATE_TAR_NAME=$(basename "$CHEF_MIGRATE_TAR")
@@ -54,12 +55,12 @@ cp "$CHEF_MIGRATE_TAR" "$RPMBUILD_ROOT/SOURCES/"
 cp "$SPEC_FILE" "$RPMBUILD_ROOT/SPECS/"
 
 # Replace the VERSION and file name place holders
-sed -i "s/%{VERSION}/$VERSION/" "$RPMBUILD_ROOT/SPECS/$SPEC_FILE"
-sed -i "s/%{CHEF_INFRA_TAR}/$CHEF_INFRA_TAR_NAME/" "$RPMBUILD_ROOT/SPECS/$SPEC_FILE"
-sed -i "s/%{CHEF_MIGRATE_TAR}/$CHEF_MIGRATE_TAR_NAME/" "$RPMBUILD_ROOT/SPECS/$SPEC_FILE"
+sed -i "s/%{VERSION}/$VERSION/" "$RPMBUILD_ROOT/SPECS/$SPEC_NAME"
+sed -i "s/%{CHEF_INFRA_TAR}/$CHEF_INFRA_TAR_NAME/" "$RPMBUILD_ROOT/SPECS/$SPEC_NAME"
+sed -i "s/%{CHEF_MIGRATE_TAR}/$CHEF_MIGRATE_TAR_NAME/" "$RPMBUILD_ROOT/SPECS/$SPEC_NAME"
 
 # Run the rpmbuild command
-rpmbuild -bb --target $arch --buildroot "$RPMBUILD_ROOT/BUILD" --define "_topdir $RPMBUILD_ROOT" "$RPMBUILD_ROOT/SPECS/$SPEC_FILE"
+rpmbuild -bb --target $arch --buildroot "$RPMBUILD_ROOT/BUILD" --define "_topdir $RPMBUILD_ROOT" "$RPMBUILD_ROOT/SPECS/$SPEC_NAME"
 
 # RPM_PATH=$(find "$RPMBUILD_ROOT/RPMS/$arch" -type f -name "chef-infra-client-${version}~${release}-*.${arch}.rpm" | head -n 1)
 find "$RPMBUILD_ROOT/RPMS/$arch" -type f
