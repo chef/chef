@@ -52,7 +52,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   def load_current_resource
     @current_resource = Chef::Resource::WindowsService.new(new_resource.name)
     current_resource.service_name(new_resource.service_name)
-
     if Win32::Service.exists?(current_resource.service_name)
       current_resource.running(current_state == RUNNING)
       logger.trace "#{new_resource} running: #{current_resource.running}"
