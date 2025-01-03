@@ -30,7 +30,11 @@ class Chef
 
       class << self
         def validate!
-          license_keys = ChefLicensing::LicenseKeyFetcher.fetch
+          begin
+            license_keys = ChefLicensing::LicenseKeyFetcher.fetch
+          rescue
+            return new(nil, nil)
+          end
 
           return new(nil, nil) if license_keys.blank?
 
