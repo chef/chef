@@ -69,7 +69,6 @@ prepare_package() {
     echo "Package structure prepared successfully."
 }
 
-
 prepare_control_file() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/control"
 Package: $DEB_PKG_NAME
@@ -88,6 +87,14 @@ prepare_preinstall_script() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/preinst"
 #!/bin/bash
 
+FRESH_INSTALL_FLAG_FILE="/tmp/chef_fresh_install"
+
+if [ -d "/opt/chef" ]; then
+    rm -f "\$FRESH_INSTALL_FLAG_FILE"
+else
+    echo "fresh_install" > "\$FRESH_INSTALL_FLAG_FILE"
+fi
+
 if [[ "\$1" == "--help" ]]; then
     echo -e "\nChef Infra Client Installation Help"
     echo "Usage: sudo LICENSE_KEY=\"<license-key>\" dpkg -i <deb-file>"
@@ -98,11 +105,16 @@ if [[ "\$1" == "--help" ]]; then
     exit 0
 fi
 
-if [ -z "\$LICENSE_KEY" ]; then
-    echo -e "\nError: LICENSE_KEY environment variable is required."
-    echo "Usage: sudo LICENSE_KEY=\"<license-key>\" dpkg -i <deb-file>"
-    exit 1
+if [ -z "\${LICENSE_KEY:-}" ]; then
+    LICENSE_KEY=$(env | grep -m 1 '^LICENSE_KEY=' | cut -d '=' -f 2 | xargs)
+    
+    if [ -z "\$LICENSE_KEY" ]; then
+        echo -e "\nError: LICENSE_KEY environment variable is required."
+        echo "Usage: sudo LICENSE_KEY=\"<license-key>\" dpkg -i <deb-file>"
+        exit 1
+    fi
 fi
+
 EOL
     chmod +x "$PACKAGE_DIR/DEBIAN/preinst" || { echo "Error: Failed to make preinst script executable"; exit 1; }
     echo "Pre-install script prepared successfully."
@@ -115,18 +127,30 @@ prepare_postinstall_script() {
 #!/bin/bash
 CHEF_BIN_DIR="/opt/chef/bin"
 CHEF_BUNDLE_DIR="/opt/chef/bundle"
-LICENSE_SERVER="https://services.chef.io"
+FRESH_INSTALL_FLAG_FILE="/tmp/chef_fresh_install"
 
-if [ -z "\$LICENSE_KEY" ]; then
-    if [ "\$DPKG_MAINTSCRIPT_NAME" == "postinst" ]; then
-        echo "Skipping post-install script during cleanup: LICENSE_KEY is not set."
-    fi
-    exit 0
+FRESH_INSTALL_FLAG=""
+LICENSE_SERVER=\${CHEF_INFRA_LICENSE_SERVER:-}
+LICENSE_KEY=\${CHEF_INFRA_LICENSE_KEY:-}
+
+if [ -f "\$FRESH_INSTALL_FLAG_FILE" ]; then
+    FRESH_INSTALL_FLAG="--fresh_install"
+    echo "Postinstall: Detected fresh installation."
+    rm -f "\$FRESH_INSTALL_FLAG_FILE"
+else
+    echo "Postinstall: Detected upgrade installation."
 fi
 
-if [ -f \$CHEF_BIN_DIR/chef-migrate ]; then
+if [ -f "\$CHEF_BIN_DIR/chef-migrate" ]; then
     echo "Running post-install tasks..."
-    \$CHEF_BIN_DIR/chef-migrate apply airgap --fresh_install \$CHEF_BUNDLE_DIR/chef-infra-client.tar.gz --license.server \$LICENSE_SERVER --license.key "\$LICENSE_KEY" || { echo "Error: Post-installation failed."; exit 1; }
+    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/chef-infra-client.tar.gz"
+
+    if [ -n "\$LICENSE_KEY" ] && [ -n "\$LICENSE_SERVER" ]; then
+        MIGRATE_CMD="\$MIGRATE_CMD --license.key \$LICENSE_KEY --license.server \$LICENSE_SERVER"
+    fi
+
+    echo "Executing: \$MIGRATE_CMD"
+    eval \$MIGRATE_CMD || { echo "Error: Post-installation failed."; exit 1; }
 else
     echo "Error: chef-migrate tool not found in \$CHEF_BIN_DIR"
     exit 1
