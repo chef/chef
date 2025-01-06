@@ -3,21 +3,21 @@
 set -euo pipefail
 
 validate_env_vars() {
-    if [ -z "${CHEF_INFRA_MIGRATE_TAR_DEB:-}" ] || [ -z "${CHEF_INFRA_HAB_TAR_DEB:-}" ]; then
-        echo "Environment variables CHEF_INFRA_MIGRATE_TAR_DEB and CHEF_INFRA_HAB_TAR_DEB must be set to the URLs of the respective tarball files."
+    if [ -z "${CHEF_INFRA_MIGRATE_TAR:-}" ] || [ -z "${CHEF_INFRA_HAB_TAR:-}" ]; then
+        echo "Environment variables CHEF_INFRA_MIGRATE_TAR and CHEF_INFRA_HAB_TAR must be set to the URLs of the respective tarball files."
         echo "Usage: Set the following environment variables before running the script:"
-        echo "  export CHEF_INFRA_MIGRATE_TAR_DEB=<url_to_chef-migrate-tarball>"
-        echo "  export CHEF_INFRA_HAB_TAR_DEB=<url_to_chef-infra-client-tarball>"
+        echo "  export CHEF_INFRA_MIGRATE_TAR=<url_to_chef-migrate-tarball>"
+        echo "  export CHEF_INFRA_HAB_TAR=<url_to_chef-infra-client-tarball>"
         echo "Example:"
-        echo   export CHEF_INFRA_MIGRATE_TAR_DEB=\"https://example.com/migration-tools_Linux_x86_64.tar.gz\"
-        echo   export CHEF_INFRA_HAB_TAR_DEB=\"https://example.com/chef-chef-infra-client-19.0.54-20241121145703.tar.gz\"
+        echo   export CHEF_INFRA_MIGRATE_TAR=\"https://example.com/migration-tools_Linux_x86_64.tar.gz\"
+        echo   export CHEF_INFRA_HAB_TAR=\"https://example.com/chef-chef-infra-client-19.0.54-20241121145703.tar.gz\"
         exit 1
     fi
     echo "Environment variables validated successfully."
 }
 
 initialize_vars() {
-    TAR_NAME=$(basename "$CHEF_INFRA_HAB_TAR_DEB")
+    TAR_NAME=$(basename "$CHEF_INFRA_HAB_TAR")
     TAR_NAME_NO_QUERY=$(echo "$TAR_NAME" | cut -d '?' -f 1)
     VERSION=$(echo "$TAR_NAME" | cut -d '-' -f 5 )
     TIMESTAMP=$(echo "$TAR_NAME" | cut -d '-' -f 6 | cut -d '.' -f 1)
@@ -43,10 +43,10 @@ create_temp_dir() {
 
 download_files() {
     echo "Downloading migration tool..."
-    curl -L -o "$TEMP_DIR/migration-tools.tar.gz" "$CHEF_INFRA_MIGRATE_TAR_DEB" || { echo "Error: Failed to download migration tool from $CHEF_INFRA_MIGRATE_TAR_DEB"; exit 1; }
+    curl -L -o "$TEMP_DIR/migration-tools.tar.gz" "$CHEF_INFRA_MIGRATE_TAR" || { echo "Error: Failed to download migration tool from $CHEF_INFRA_MIGRATE_TAR"; exit 1; }
 
     echo "Downloading Chef Infra tarball..."
-    curl -L -o "$TEMP_DIR/chef-infra-client.tar.gz" "$CHEF_INFRA_HAB_TAR_DEB" || { echo "Error: Failed to download Chef Infra tarball from $CHEF_INFRA_HAB_TAR_DEB"; exit 1; }
+    curl -L -o "$TEMP_DIR/chef-infra-client.tar.gz" "$CHEF_INFRA_HAB_TAR" || { echo "Error: Failed to download Chef Infra tarball from $CHEF_INFRA_HAB_TAR"; exit 1; }
 
     echo "Files downloaded successfully."
 }
