@@ -20,12 +20,12 @@ Name:           chef-infra-client
 Version:        %{VERSION}
 Release:        1%{?dist}
 Summary:        The full stack of Chef Infra Client
-AutoReqProv: 	  no
+AutoReqProv: 	no
 BuildRoot: 	    %buildroot
-Prefix: 	      /
-Group: 		      default
+Prefix: 	    /
+Group: 		    default
 License:        Chef EULA
-URL: 		        https://www.chef.io
+URL: 		    https://www.chef.io
 Packager: 	    Chef Software, Inc. <maintainers@chef.io>
 Source0:        %{CHEF_INFRA_TAR}
 Source1:        %{CHEF_MIGRATE_TAR}
@@ -59,9 +59,27 @@ cp %{SOURCE0} %{buildroot}/opt/chef/bundle/
 
 %post
 
+# Determine if --fresh_install needs to be passed based on the existence of the /opt/chef directory
+MIGRATE_CMD="/opt/chef/bin/chef-migrate apply airgap"
+if [ ! -d /opt/chef ]; then
+    MIGRATE_CMD="$MIGRATE_CMD --fresh_install"
+fi
+
+# Check for CHEF_INFRA_LICENSE_KEY and CHEF_INFRA_LICENSE_SERVER environment variables
+if [ -n "$CHEF_INFRA_LICENSE_KEY" ]; then
+    MIGRATE_CMD="$MIGRATE_CMD --license.key $CHEF_INFRA_LICENSE_KEY"
+fi
+
+if [ -n "$CHEF_INFRA_LICENSE_SERVER" ]; then
+    MIGRATE_CMD="$MIGRATE_CMD --license.server $CHEF_INFRA_LICENSE_SERVER"
+fi
+
+# Add the tarball path
+MIGRATE_CMD="$MIGRATE_CMD /opt/chef/bundle/%{CHEF_INFRA_TAR}"
+
 # Invoke the chef-migrate tool using the tarball as input
 if [ -f /opt/chef//bin/chef-migrate ]; then
-    /opt/chef/bin/chef-migrate apply airgap --fresh_install /opt/chef/bundle/%{CHEF_INFRA_TAR}
+    eval $MIGRATE_CMD
 else
     echo "Error: chef-migrate tool not found in /opt/chef/bin"
     exit 1
