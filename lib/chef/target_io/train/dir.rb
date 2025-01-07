@@ -54,13 +54,12 @@ module TargetIO
 
         # Borrowed and adapted from Ruby's Dir::tmpdir and Dir::mktmpdir
         def mktmpdir(prefix_suffix = nil, *rest, **options)
-
           prefix, suffix = ::File.basename(prefix_suffix || "d")
           random = (::Random.urandom(4).unpack1("L") % 36**6).to_s(36)
 
           tmpdir = ::Dir.tmpdir
           t = Time.now.strftime("%Y%m%d%s")
-          path = "#{prefix}#{t}-#{$$}-#{random}" "#{suffix || ''}"
+          path = "#{prefix}#{t}-#{$$}-#{random}" "#{suffix || ""}"
           path = ::File.join(tmpdir, path)
 
           ::TargetIO::FileUtils.mkdir(path)
