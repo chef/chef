@@ -78,7 +78,7 @@ fi
 MIGRATE_CMD="$MIGRATE_CMD /opt/chef/bundle/%{CHEF_INFRA_TAR}"
 
 # Invoke the chef-migrate tool using the tarball as input
-if [ -f /opt/chef//bin/chef-migrate ]; then
+if [ -f /opt/chef/bin/chef-migrate ]; then
     eval $MIGRATE_CMD
 else
     echo "Error: chef-migrate tool not found in /opt/chef/bin"
