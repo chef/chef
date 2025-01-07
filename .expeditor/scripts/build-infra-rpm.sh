@@ -2,37 +2,55 @@
 
 set -euo pipefail
 
-# Check if required environment variables pointing to tarball paths are set
-if [ -z "$CHEF_INFRA_MIGRATE_TAR" ] || [ -z "$CHEF_INFRA_HAB_TAR" ]; then
-  echo "Environment variables CHEF_INFRA_MIGRATE_TAR and CHEF_INFRA_HAB_TAR must be set to the paths of the respective tarball files."
-  echo "Usage: Set the following environment variables before running the script:"
-  echo "  export CHEF_INFRA_MIGRATE_TAR=<path_to_chef-migrate-tarball>"
-  echo "  export CHEF_INFRA_HAB_TAR=<path_to_chef-infra-client-tarball>"
-  echo "Example:"
-  echo "  export CHEF_INFRA_MIGRATE_TAR=/path/to/migration-tools_Linux_x86_64.tar.gz"
-  echo "  export CHEF_INFRA_HAB_TAR=/path/to/chef-chef-infra-client-19.0.54-20241121145703.tar.gz"
-  exit 1
-fi
-
-# Ensure the provided files exist
-if [ ! -f "$CHEF_INFRA_MIGRATE_TAR" ]; then
-  echo "Error: The file specified in CHEF_INFRA_MIGRATE_TAR does not exist: $CHEF_INFRA_MIGRATE_TAR"
-  exit 1
-fi
-
-if [ ! -f "$CHEF_INFRA_HAB_TAR" ]; then
-  echo "Error: The file specified in CHEF_INFRA_HAB_TAR does not exist: $CHEF_INFRA_HAB_TAR"
-  exit 1
-fi
-
 arch=$(uname -m)
 if [ "$arch" != "x86_64" ]; then
   echo "Architecture '$arch' is not supported. Only x86_64 is supported."
   exit 1
 fi
 
-CHEF_INFRA_TAR="$CHEF_INFRA_HAB_TAR"
-CHEF_MIGRATE_TAR="$CHEF_INFRA_MIGRATE_TAR"
+TEMP_DIR=$(mktemp -d)
+TARS_DIR="$TEMP_DIR/tars"
+mkdir -p "$TARS_DIR"
+trap 'rm -rf "$TEMP_DIR"' EXIT
+
+# Check if required environment variables pointing to tarball URLs are set
+if [ -z "$CHEF_INFRA_MIGRATE_TAR" ] || [ -z "$CHEF_INFRA_HAB_TAR" ]; then
+  echo "Environment variables CHEF_INFRA_MIGRATE_TAR and CHEF_INFRA_HAB_TAR must be set to the URLs of the respective tarball files."
+  echo "Usage: Set the following environment variables before running the script:"
+  echo "  export CHEF_INFRA_MIGRATE_TAR=<url_to_chef-migrate-tarball>"
+  echo "  export CHEF_INFRA_HAB_TAR=<url_to_chef-infra-client-tarball>"
+  echo "Example:"
+  echo "  export CHEF_INFRA_MIGRATE_TAR=https://example.com/migration-tools_Linux_x86_64.tar.gz"
+  echo "  export CHEF_INFRA_HAB_TAR=https://example.com/chef-chef-infra-client-19.0.54.tar.gz"
+  exit 1
+fi
+
+# Function to download a file
+download_file() {
+  local url="$1"
+  local output_path="$2"
+
+  echo "Downloading $url to $output_path..."
+  if ! curl -fsSL "$url" -o "$output_path"; then
+    echo "Error: Failed to download $url"
+    exit 1
+  fi
+}
+
+migrate_filename=$(basename "${CHEF_INFRA_MIGRATE_TAR%%\?*}")
+hab_filename=$(basename "${CHEF_INFRA_HAB_TAR%%\?*}")
+
+download_file "$CHEF_INFRA_MIGRATE_TAR" "$TARS_DIR/$migrate_filename"
+download_file "$CHEF_INFRA_HAB_TAR" "$TARS_DIR/$hab_filename"
+
+# Set final paths to the downloaded files
+CHEF_MIGRATE_TAR="$TARS_DIR/$migrate_filename"
+CHEF_INFRA_TAR="$TARS_DIR/$hab_filename"
+
+echo "Tarballs downloaded and variables set:"
+echo "  CHEF_INFRA_TAR=$CHEF_INFRA_TAR"
+echo "  CHEF_MIGRATE_TAR=$CHEF_MIGRATE_TAR"
+
 SPEC_NAME="chef-infra-client.spec"
 SPEC_FILE=".expeditor/scripts/$SPEC_NAME"
 
@@ -40,9 +58,6 @@ CHEF_INFRA_TAR_NAME=$(basename "$CHEF_INFRA_TAR")
 CHEF_MIGRATE_TAR_NAME=$(basename "$CHEF_MIGRATE_TAR")
 VERSION=$(echo "$CHEF_INFRA_TAR_NAME" | grep -oP '(?<=chef-chef-infra-client-)[0-9]+\.[0-9]+\.[0-9]+')
 #VERSION=$(echo "$CHEF_INFRA_TAR_NAME" | grep -oP '(?<=chef-chef-infra-client-)[0-9]+\.[0-9]+\.[0-9]+-[0-9]+')
-
-# Define the base directory for the RPM build environment
-TEMP_DIR=$(mktemp -d)
 
 # Create the directory structure
 RPMBUILD_ROOT=$TEMP_DIR/rpmbuild
@@ -74,6 +89,3 @@ if [ -f "$RPM_PATH" ]; then
 else
   echo "RPM creation failed or the RPM is not located in the expected directory."
 fi
-
-# Delete the temporary directory after build
-rm -rf "$TEMP_DIR"
