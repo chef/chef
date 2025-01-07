@@ -120,27 +120,17 @@ class Chef
           user.public_key File.read(File.expand_path(config[:user_key]))
         end
 
-        if @name_args.size > 1
-          user_hash = {
-            username: user.username,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            display_name: "#{user.first_name} #{user.last_name}",
-            email: user.email,
-            password: password,
-            create_key: user.create_key,
-          }
-        else
-          user_hash = {
-            username: user.username,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            display_name: user.display_name,
-            email: user.email,
-            password: password,
-            create_key: user.create_key,
-          }
-        end
+        user_hash = {
+          username: user.username,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          display_name: @name_args.size > 1 ? "#{user.first_name} #{user.last_name}" : user.display_name,
+          email: user.email,
+          password: password,
+        }
+
+        user_hash[:create_key] = user.create_key if user.create_key
+        user_hash[:public_key] = user.public_key if user.public_key
 
         # Check the file before creating the user so the api is more transactional.
         if config[:file]
