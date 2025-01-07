@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.62 -->
-## [v19.0.62](https://github.com/chef/chef/tree/v19.0.62) (2025-01-07)
+<!-- latest_release 19.0.63 -->
+## [v19.0.63](https://github.com/chef/chef/tree/v19.0.63) (2025-01-07)
 
 #### Merged Pull Requests
-- Bump foundation to 3.2.12 [#14781](https://github.com/chef/chef/pull/14781) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix `knife user create` with provided `--user-key` [#14682](https://github.com/chef/chef/pull/14682) ([drewhammond](https://github.com/drewhammond))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix `knife user create` with provided `--user-key` [#14682](https://github.com/chef/chef/pull/14682) ([drewhammond](https://github.com/drewhammond)) <!-- 19.0.63 -->
 - Bump foundation to 3.2.12 [#14781](https://github.com/chef/chef/pull/14781) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.62 -->
 - Bump cheffish to 17.1.8 [#14758](https://github.com/chef/chef/pull/14758) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.61 -->
 - Remove macos-12 from GA kitchen-tests [#14755](https://github.com/chef/chef/pull/14755) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.60 -->
