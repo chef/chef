@@ -39,7 +39,7 @@ class Chef
                            []
                          end
 
-          return new(nil, nil) if license_keys.nil? || license_keys.empty?
+          return new(nil, nil) if license_keys&.empty?
 
           licenses_metadata = ChefLicensing::Api::Describe.list({
             license_keys: license_keys,
