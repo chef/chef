@@ -22,7 +22,6 @@ jobs:
       with:
         ruby-version: "3.1.4"
         bundler-cache: false
-    - run: bundle update --bundler
     - run: bundle install
     - run: bundle exec rake spec:unit
     - run: bundle exec rake component_specs
