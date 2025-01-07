@@ -19,8 +19,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
-  branch: jfm/ucrt_update1
+  revision: af7ec0797972bc142279871c7637895f94cdd256
+  branch: tp/jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
