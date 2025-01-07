@@ -61,7 +61,7 @@ cp %{SOURCE0} %{buildroot}/opt/chef/bundle/
 
 # Determine if --fresh_install needs to be passed based on the existence of the /opt/chef directory
 MIGRATE_CMD="/opt/chef/bin/chef-migrate apply airgap"
-if [ ! -d /opt/chef ]; then
+if [ ! -f /opt/chef/bin/chef-client ]; then
     MIGRATE_CMD="$MIGRATE_CMD --fresh_install"
 fi
 
