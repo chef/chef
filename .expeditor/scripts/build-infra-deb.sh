@@ -46,7 +46,7 @@ download_files() {
     curl -L -o "$TEMP_DIR/migration-tools.tar.gz" "$CHEF_INFRA_MIGRATE_TAR" || { echo "Error: Failed to download migration tool from $CHEF_INFRA_MIGRATE_TAR"; exit 1; }
 
     echo "Downloading Chef Infra tarball..."
-    curl -L -o "$TEMP_DIR/chef-infra-client.tar.gz" "$CHEF_INFRA_HAB_TAR" || { echo "Error: Failed to download Chef Infra tarball from $CHEF_INFRA_HAB_TAR"; exit 1; }
+    curl -L -o "$TEMP_DIR/$TAR_NAME_NO_QUERY" "$CHEF_INFRA_HAB_TAR" || { echo "Error: Failed to download Chef Infra tarball from $CHEF_INFRA_HAB_TAR"; exit 1; }
 
     echo "Files downloaded successfully."
 }
@@ -61,7 +61,7 @@ prepare_package() {
     tar -xf "$TEMP_DIR/migration-tools.tar.gz" -C "$PACKAGE_DIR$CHEF_BIN_DIR/" || { echo "Error: Failed to unpack migration tool"; exit 1; }
 
     echo "Copying Chef Infra tarball..."
-    cp "$TEMP_DIR/chef-infra-client.tar.gz" "$PACKAGE_DIR$CHEF_BUNDLE_DIR/" || { echo "Error: Failed to copy Chef Infra tarball"; exit 1; }
+    cp "$TEMP_DIR/$TAR_NAME_NO_QUERY" "$PACKAGE_DIR$CHEF_BUNDLE_DIR/" || { echo "Error: Failed to copy Chef Infra tarball"; exit 1; }
 
     prepare_control_file
     prepare_preinstall_script
@@ -120,8 +120,6 @@ EOL
     echo "Pre-install script prepared successfully."
 }
 
-
-
 prepare_postinstall_script() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/postinst"
 #!/bin/bash
@@ -143,10 +141,14 @@ fi
 
 if [ -f "\$CHEF_BIN_DIR/chef-migrate" ]; then
     echo "Running post-install tasks..."
-    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/chef-infra-client.tar.gz"
+    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/$TAR_NAME_NO_QUERY"
 
-    if [ -n "\$LICENSE_KEY" ] && [ -n "\$LICENSE_SERVER" ]; then
-        MIGRATE_CMD="\$MIGRATE_CMD --license.key \$LICENSE_KEY --license.server \$LICENSE_SERVER"
+    if [ -n "\$LICENSE_KEY" ]; then
+        MIGRATE_CMD="\$MIGRATE_CMD --license.key \$LICENSE_KEY"
+    fi
+
+    if [ -n "\$LICENSE_SERVER" ]; then
+        MIGRATE_CMD="\$MIGRATE_CMD --license.server \$LICENSE_SERVER"
     fi
 
     echo "Executing: \$MIGRATE_CMD"
@@ -159,7 +161,6 @@ EOL
     chmod +x "$PACKAGE_DIR/DEBIAN/postinst" || { echo "Error: Failed to make postinst script executable"; exit 1; }
     echo "Post-install script prepared successfully."
 }
-
 
 build_package() {
     dpkg-deb --build "$PACKAGE_DIR" "$DEB_NAME" || { echo "Error: Failed to build .deb package"; exit 1; }
