@@ -23,7 +23,7 @@ class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
 
-      provides :yum_package
+      provides :yum_package, target_mode: true
       provides :package, platform_family: "fedora_derived"
       target_mode support: :full
 
