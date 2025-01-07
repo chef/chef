@@ -87,14 +87,6 @@ prepare_preinstall_script() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/preinst"
 #!/bin/bash
 
-FRESH_INSTALL_FLAG_FILE="/tmp/chef_fresh_install"
-
-if [ -d "/opt/chef" ]; then
-    rm -f "\$FRESH_INSTALL_FLAG_FILE"
-else
-    echo "fresh_install" > "\$FRESH_INSTALL_FLAG_FILE"
-fi
-
 if [[ "\$1" == "--help" ]]; then
     echo -e "\nChef Infra Client Installation Help"
     echo "Usage: sudo LICENSE_KEY=\"<license-key>\" dpkg -i <deb-file>"
@@ -125,16 +117,14 @@ prepare_postinstall_script() {
 #!/bin/bash
 CHEF_BIN_DIR="/opt/chef/bin"
 CHEF_BUNDLE_DIR="/opt/chef/bundle"
-FRESH_INSTALL_FLAG_FILE="/tmp/chef_fresh_install"
 
 FRESH_INSTALL_FLAG=""
 LICENSE_SERVER=\${CHEF_INFRA_LICENSE_SERVER:-}
 LICENSE_KEY=\${CHEF_INFRA_LICENSE_KEY:-}
 
-if [ -f "\$FRESH_INSTALL_FLAG_FILE" ]; then
+if [ ! -f "\$CHEF_BIN_DIR/chef-client" ]; then
     FRESH_INSTALL_FLAG="--fresh_install"
     echo "Postinstall: Detected fresh installation."
-    rm -f "\$FRESH_INSTALL_FLAG_FILE"
 else
     echo "Postinstall: Detected upgrade installation."
 fi
@@ -153,6 +143,8 @@ if [ -f "\$CHEF_BIN_DIR/chef-migrate" ]; then
 
     echo "Executing: \$MIGRATE_CMD"
     eval \$MIGRATE_CMD || { echo "Error: Post-installation failed."; exit 1; }
+
+    cp /hab/chef/bin/* \$CHEF_BIN_DIR || { echo "Error: Failed to copy binaries to \$CHEF_BIN_DIR"; exit 1; }
 else
     echo "Error: chef-migrate tool not found in \$CHEF_BIN_DIR"
     exit 1
