@@ -13,6 +13,9 @@ TARS_DIR="$TEMP_DIR/tars"
 mkdir -p "$TARS_DIR"
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
+CHEF_INFRA_MIGRATE_TAR="${CHEF_INFRA_MIGRATE_TAR:-}"
+CHEF_INFRA_HAB_TAR="${CHEF_INFRA_HAB_TAR:-}"
+
 # Check if required environment variables pointing to tarball URLs are set
 if [ -z "$CHEF_INFRA_MIGRATE_TAR" ] || [ -z "$CHEF_INFRA_HAB_TAR" ]; then
   echo "Environment variables CHEF_INFRA_MIGRATE_TAR and CHEF_INFRA_HAB_TAR must be set to the URLs of the respective tarball files."
@@ -86,6 +89,9 @@ if [ -f "$RPM_PATH" ]; then
   echo "RPM created successfully: $RPM_PATH"
   cp "$RPM_PATH" .  # Copy the RPM to the current directory
   echo "RPM copied to current directory."
+  echo "--- Uploading build RPM artifact: $(basename "$RPM_PATH")"
+  buildkite-agent artifact upload "$(basename "$RPM_PATH")"
 else
   echo "RPM creation failed or the RPM is not located in the expected directory."
+  exit 1
 fi
