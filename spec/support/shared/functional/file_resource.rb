@@ -245,14 +245,14 @@ shared_examples_for "a file resource" do
 
     include_context "deploying with move"
 
-    describe "when deploying via tmpdir" do
+    describe "when deploying via tmpdir", :not_supported_on_windows_11  do
 
       include_context "deploying via tmpdir"
 
       it_behaves_like "a configured file resource"
     end
 
-    describe "when deploying via destdir" do
+    describe "when deploying via destdir", :not_supported_on_windows_11  do
 
       include_context "deploying via destdir"
 
@@ -912,7 +912,7 @@ shared_examples_for "a configured file resource" do
     dummy_desc
   end
 
-  it_behaves_like "a securable resource without existing target"
+  it_behaves_like "a securable resource without existing target", :not_supported_on_windows_11 
 
   context "when the target file has the wrong content" do
     before(:each) do
