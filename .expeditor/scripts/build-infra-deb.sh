@@ -157,12 +157,15 @@ EOL
 build_package() {
     dpkg-deb --build "$PACKAGE_DIR" "$DEB_NAME" || { echo "Error: Failed to build .deb package"; exit 1; }
 
-    if [ ! -f "$DEB_NAME" ]; then
-        echo "Error: Package creation failed. $DEB_NAME not found."
-        exit 1
-    fi
-
     echo "Package built successfully: $DEB_NAME."
+
+    # upload_artifact       #Uncomment when upload is fixed
+}
+
+upload_artifact() {
+    echo "Uploading build DEB artifact: $DEB_NAME"
+    buildkite-agent artifact upload "$DEB_NAME" || { echo "Error: Failed to upload artifact."; exit 1; }
+    echo "Artifact uploaded successfully."
 }
 
 cleanup() {
