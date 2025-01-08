@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.4 -->
-## [v18.6.4](https://github.com/chef/chef/tree/v18.6.4) (2025-01-07)
+<!-- latest_release 18.6.5 -->
+## [v18.6.5](https://github.com/chef/chef/tree/v18.6.5) (2025-01-08)
 
 #### Merged Pull Requests
-- update glob string for chef-log.dll [#14672](https://github.com/chef/chef/pull/14672) ([rishichawda](https://github.com/rishichawda))
+- [Chef-18] Shorten the rspec test data file names which end throwing file not found error on windows upon gem installation [#14780](https://github.com/chef/chef/pull/14780) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-18] Shorten the rspec test data file names which end throwing file not found error on windows upon gem installation [#14780](https://github.com/chef/chef/pull/14780) ([neha-p6](https://github.com/neha-p6)) <!-- 18.6.5 -->
 - update glob string for chef-log.dll [#14672](https://github.com/chef/chef/pull/14672) ([rishichawda](https://github.com/rishichawda)) <!-- 18.6.4 -->
 - Backport the bundle update removal on GA unit spec [#14783](https://github.com/chef/chef/pull/14783) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.3 -->
 <!-- release_rollup -->
