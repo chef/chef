@@ -164,7 +164,7 @@ then
       echo "The hostname is: $(hostname)"
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.89:"
+    echo "  - chef/omnibus#219a8de469ec4b8d5b31c15e5067d1fd70f14040:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
@@ -209,7 +209,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.89:"
+  echo "  - chef/omnibus#219a8de469ec4b8d5b31c15e5067d1fd70f14040:"
   echo "      create-build-record: chef"
 fi
 
@@ -304,7 +304,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.89:"
+    echo "  - chef/omnibus#v219a8de469ec4b8d5b31c15e5067d1fd70f14040:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -330,6 +330,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.89:"
+  echo "  - chef/omnibus#219a8de469ec4b8d5b31c15e5067d1fd70f14040:"
   echo "      promote: chef"
 fi
