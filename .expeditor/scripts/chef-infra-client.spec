@@ -11,8 +11,6 @@
 # Use SHA256 checksums for all files
 %define _binary_filedigest_algorithm 8
 
-%define _binary_payload w1.xzdio
-
 # Disable creation of build-id links
 %define _build_id_links none
 
@@ -84,6 +82,3 @@ else
     echo "Error: chef-migrate tool not found in /opt/chef/bin"
     exit 1
 fi
-
-%changelog
-# Nothing yet!
