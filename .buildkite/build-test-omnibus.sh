@@ -160,8 +160,6 @@ then
     then
       echo "    omnibus: builder"
       echo "    omnibus-toolchain: \"*\""
-      echo "IP ADDRESS  is: $(ifconfig)"
-      echo "The hostname is: $(hostname)"
     fi
     echo "  plugins:"
     echo "  - chef/omnibus#219a8de469ec4b8d5b31c15e5067d1fd70f14040:"
