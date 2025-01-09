@@ -107,29 +107,6 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
-  # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
-  # if dokken container hosted on Ubuntu 22.04 or later. Lock to Ubuntu 20.04
-  # for now.
-  docr_ubnt-2004_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - amazonlinux-2
-          - oraclelinux-7
-    runs-on: ubuntu-20.04
-    env:
-      FORCE_FFI_YAJL: ext
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
-      - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
-
   vm_lnx_x86_64:
     strategy:
       fail-fast: false
