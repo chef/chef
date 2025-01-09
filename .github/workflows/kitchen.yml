@@ -112,6 +112,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
+          - amazonlinux-2
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
@@ -119,10 +120,12 @@ jobs:
           - debian-12
           - fedora-latest
           - opensuse-leap-15
+          - oracle-7
           - oracle-8
           - oracle-9
           - rockylinux-8
           - rockylinux-9
+          - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
           # - ubuntu-2404
