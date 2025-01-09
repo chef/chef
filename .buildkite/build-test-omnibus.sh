@@ -160,13 +160,13 @@ then
     then
       echo "    omnibus: builder"
       echo "    omnibus-toolchain: \"*\""
+      echo "IP ADDRESS  is: $(ipconfig getifaddr en0)"
+      echo "The hostname is: $(hostname)"
     fi
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.89:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
-    echo "IP ADDRESS  is: $(ipconfig getifaddr en0)"
-    echo "The hostname is: $(hostname)"
     echo ""
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
