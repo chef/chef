@@ -160,7 +160,7 @@ then
     then
       echo "    omnibus: builder"
       echo "    omnibus-toolchain: \"*\""
-      echo "IP ADDRESS  is: $(ifconfig en0)"
+      echo "IP ADDRESS  is: $(ifconfig)"
       echo "The hostname is: $(hostname)"
     fi
     echo "  plugins:"
