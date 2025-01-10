@@ -70,7 +70,7 @@ platforms:
       pid_one_command: /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+        - RUN /usr/bin/apt-get install build-essentials ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
   - name: centos-7
     driver:
