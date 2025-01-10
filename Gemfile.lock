@@ -280,7 +280,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.7.2)
+    json (2.7.1)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -305,14 +305,14 @@ GEM
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.8)
+    mixlib-shellout (3.3.4)
       chef-utils
-    mixlib-shellout (3.2.8-universal-mingw32)
+    mixlib-shellout (3.3.4-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.2.8-x64-mingw-ucrt)
+    mixlib-shellout (3.3.4-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
