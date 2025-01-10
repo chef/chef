@@ -125,11 +125,11 @@ class Chef
 
         if new_resource.owner || new_resource.group
           converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            archive = Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components)
-            archive.each_entry do |e|
-              FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+            Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components) do |archive|
+              archive.each_entry do |e|
+                FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+              end
             end
-            archive.close
           end
         end
       end
@@ -165,19 +165,19 @@ class Chef
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
           modified = false
-          archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
-          Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
-          archive.each_entry do |e|
-            pathname = ::File.expand_path(e.pathname, dest)
-            if ::File.exist?(pathname)
-              Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
-              modified = true unless ::File.mtime(pathname) == e.mtime
-            else
-              Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
-              modified = true
+          Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+            Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
+            archive.each_entry do |e|
+              pathname = ::File.expand_path(e.pathname, dest)
+              if ::File.exist?(pathname)
+                Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
+                modified = true unless ::File.mtime(pathname) == e.mtime
+              else
+                Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
+                modified = true
+              end
             end
           end
-          archive.close
           modified
         end
 
@@ -193,12 +193,11 @@ class Chef
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
             Dir.chdir(dest) do
-              archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
-
-              archive.each_entry do |e|
-                archive.extract(e, flags.to_i)
+              Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+                archive.each_entry do |e|
+                  archive.extract(e, flags.to_i)
+                end
               end
-              archive.close
             end
           end
         end
