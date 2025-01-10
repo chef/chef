@@ -162,7 +162,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#9f84bf07c546574e7c83af4919d4266196095ff1:"
+    echo "  - chef/omnibus#v0.2.89:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
@@ -184,11 +184,11 @@ then
     echo "- key: notarize-macos"
     echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
     echo "  agents:"
-    echo "    queue: omnibus-mac_os_x-12-x86_64"
+    [[ $platform == *"arm"* ]] && echo "    queue: omnibus-mac_os_x-12-arm64" || echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.86:"
     echo "      config: omnibus/omnibus.rb"
-    echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
+    [[ $platform == *"arm"* ]] && echo "      remote-host: buildkite-omnibus-mac_os_x-12-arm64" || echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
     echo "      notarize-macos-package: chef"
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     echo "  depends_on:"
@@ -207,7 +207,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#9f84bf07c546574e7c83af4919d4266196095ff1:"
+  echo "  - chef/omnibus#v0.2.89:"
   echo "      create-build-record: chef"
 fi
 
@@ -302,7 +302,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#9f84bf07c546574e7c83af4919d4266196095ff1:"
+    echo "  - chef/omnibus#v0.2.89:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -328,6 +328,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#9f84bf07c546574e7c83af4919d4266196095ff1:"
+  echo "  - chef/omnibus#v0.2.89:"
   echo "      promote: chef"
 fi
