@@ -43,6 +43,8 @@ class Chef
         ```
       DOC
 
+      extend Chef::ResourceHelpers::PathHelpers
+
       property :user, String,
         description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
         default: "root"
@@ -81,7 +83,7 @@ class Chef
 
       property :chef_binary_path, String,
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
-        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
+        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path }
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
