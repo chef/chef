@@ -2,14 +2,31 @@ require "chef-licensing"
 require_relative "log"
 require_relative "licensing_config"
 
+# To use platform helpers
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+
 class Chef
   class Licensing
     class << self
       def fetch_and_persist
+        Chef::Log.info "Fetching and persisting license..."
+        # This is temporary arrangement to continue end-to-end recipe testing.
+        # Windows, Mac, Linux VMs on vagrant will be tested using legacy test-kitchen
+        # whereas linux docker containers will be tested using test-kitchen-enterprise (habitat)
+        # Reason: test-kitchen-enterprise RC1 currently supports only kitchen-dokken driver and is available only on Linux x86_64
+        # Rest of platforms in pipeline will use legacy test-kitchen.
+        # So for now we skip license validation on Mac, Windows, Linux distributions which run using test kitchen.
         if ENV["TEST_KITCHEN"]
-          puts "Temporarily bypassing licensing check in Kitchen"
+          if ChefUtils.windows? || ChefUtils.macos?
+            Chef::Log.info "****Skipping license validation..."
+          else # assume everything else is linux (??)
+            if ChefUtils.docker? # this means we are using test-kitchen-enterprise hence license should be validated
+              license_keys = ChefLicensing.fetch_and_persist
+            else # linux systems on vagrant
+              Chef::Log.info "*****Skipping license validation..."
+            end
+          end
         else
-          Chef::Log.info "Fetching and persisting license..."
           license_keys = ChefLicensing.fetch_and_persist
         end
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
