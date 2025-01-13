@@ -16,23 +16,24 @@ defaults:
     working-directory: kitchen-tests
 
 jobs:
-  win_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - windows-2019
-          - windows-2022
-    runs-on: ${{ matrix.os }}
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install Chef
-      uses: actionshub/chef-install@3.0.0
-    - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+  # First getting linux docker containers up
+  # win_x86_64:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os:
+  #         - windows-2019
+  #         - windows-2022
+  #   runs-on: ${{ matrix.os }}
+  #   env:
+  #     CHEF_LICENSE: accept-no-persist
+  #     KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Install Chef
+  #     uses: actionshub/chef-install@3.0.0
+  #   - name: Kitchen Test
+  #     run: kitchen test end-to-end-${{ matrix.os }}
 
   # Habitat does not support Mac yet.
   # mac_x86_64:
