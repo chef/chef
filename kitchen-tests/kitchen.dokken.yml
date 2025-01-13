@@ -20,11 +20,11 @@ provisioner:
 
 lifecycle:
   pre_converge:
-    - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
-    
     # appbundle-updater changes will happen once it is hab compatible
+    
+    # - remote: echo "Chef container's Chef / Ohai release:"
+    # - remote: /opt/chef/bin/chef-client -v
+    # - remote: /opt/chef/bin/ohai -v
     # - remote: echo "Installing appbundler and appbundle-updater gems:"
     # - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     # - remote: sudo yum install centos-release-scl
