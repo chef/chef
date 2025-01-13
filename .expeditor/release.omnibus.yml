@@ -23,7 +23,7 @@ builder-to-testers-map:
   amazon-2023-aarch64:
     - amazon-2023-aarch64
   amazon-2023-x86_64:
-    - amazon-2023-x86_64    
+    - amazon-2023-x86_64
   debian-9-x86_64:
     - debian-9-x86_64
     - debian-10-x86_64
@@ -66,7 +66,7 @@ builder-to-testers-map:
   rocky-8-x86_64:
     - rocky-8-x86_64
   rocky-9-x86_64:
-    - rocky-9-x86_64  
+    - rocky-9-x86_64
   sles-12-s390x:
     - sles-12-s390x
     - sles-15-s390x
@@ -89,8 +89,6 @@ builder-to-testers-map:
     - ubuntu-20.04-x86_64
     - ubuntu-22.04-x86_64
   windows-10-x86_64:
-    - windows-2012-x86_64
-    - windows-2012r2-x86_64
     - windows-2016-x86_64
     - windows-2019-x86_64
     - windows-2022-x86_64
