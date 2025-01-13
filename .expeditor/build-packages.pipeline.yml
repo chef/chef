@@ -1,0 +1,26 @@
+expeditor:
+  accounts:
+    - aws/chef-cd
+
+steps:
+  - label: ":linux: Build RPM package"
+    commands:
+      - pkg_identifier=$(sed 's/\//-/g' <<< $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX).tar.gz
+      - export CHEF_INFRA_MIGRATE_TAR=s3://<chef-migrate-tarball-url>
+      - export CHEF_INFRA_HAB_TAR=s3://<chef-hab-tarball-bucket>/$pkg_identifier
+      - sh ./expeditor/scripts/build-infra-rpm.sh
+    expeditor:
+      executor:
+        linux:
+          privileged: true
+
+  - label: ":linux: Build Debian package"
+    commands:
+      - pkg_identifier=$(sed 's/\//-/g' <<< $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX).tar.gz
+      - export CHEF_INFRA_MIGRATE_TAR=s3://<chef-migrate-tarball-url>
+      - export CHEF_INFRA_HAB_TAR=s3://<chef-hab-tarball-bucket>/$pkg_identifier
+      - sh ./expeditor/scripts/build-infra-deb.sh
+    expeditor:
+      executor:
+        linux:
+          privileged: true
