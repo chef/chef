@@ -57,6 +57,8 @@ pipelines:
       trigger: default
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
+  - build-packages:
+      definition: .expeditor/build-packages.pipeline.yml
   # - omnibus/release:
   #     env:
   #       - IGNORE_CACHE: true # caching causes constant build failures
