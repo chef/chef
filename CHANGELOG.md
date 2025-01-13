@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.67 -->
-## [v19.0.67](https://github.com/chef/chef/tree/v19.0.67) (2025-01-10)
+<!-- latest_release 19.0.68 -->
+## [v19.0.68](https://github.com/chef/chef/tree/v19.0.68) (2025-01-13)
 
 #### Merged Pull Requests
-- Shorten the rspec test data file names which might end up throwing file not found error on windows upon gem installation [#14788](https://github.com/chef/chef/pull/14788) ([neha-p6](https://github.com/neha-p6))
+- Remove 2012 testers from bk adhoc [#14789](https://github.com/chef/chef/pull/14789) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove 2012 testers from bk adhoc [#14789](https://github.com/chef/chef/pull/14789) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.68 -->
 - Shorten the rspec test data file names which might end up throwing file not found error on windows upon gem installation [#14788](https://github.com/chef/chef/pull/14788) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.67 -->
 - remove eol&#39;d platforms from testing [#14790](https://github.com/chef/chef/pull/14790) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.66 -->
 - [Backport] - Updating Windows 11 testing [#14787](https://github.com/chef/chef/pull/14787) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.65 -->
