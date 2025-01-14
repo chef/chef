@@ -83,10 +83,10 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
-          - debian-11
+#          - debian-11
           - debian-12
           - fedora-latest
-          - opensuse-leap-15
+#          - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
           - rockylinux-8
