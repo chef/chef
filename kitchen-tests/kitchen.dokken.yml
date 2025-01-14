@@ -27,6 +27,7 @@ lifecycle:
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
+        - opensuse-leap-15
         - debian-11
     - remote: sudo yum install centos-release-scl
       includes:
