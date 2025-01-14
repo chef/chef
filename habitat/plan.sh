@@ -1,6 +1,6 @@
 export HAB_BLDR_CHANNEL="LTS-2024"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
-_chef_client_ruby="core/ruby3_1/3.1.6/20241017135756"
+_chef_client_ruby="core/ruby3_1"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
@@ -11,8 +11,8 @@ pkg_bin_dirs=(
   vendor/bin
 )
 pkg_build_deps=(
-  core/make/4.4.1/20241017114721
-  core/gcc/12.2.0/20241017105633
+  core/make
+  core/gcc
   core/git
   core/which
 )
@@ -23,18 +23,18 @@ pkg_lib_dirs=(lib64)
 pkg_pconfig_dirs=(lib64/pkgconfig)
 
 pkg_deps=(
-  core/glibc/2.36/20241017094131
+  core/glibc
   $_chef_client_ruby
-  core/libxml2/2.11.5/20241017131712
-  core/libxslt/1.1.34/20241017140159
-  core/libiconv/1.17/20241018004256
-  core/xz/5.2.6/20241017112102
-  core/zlib/1.3.1/20241017112207
-  core/openssl/3.0.9/20241017121505
-  core/cacerts/2023.12.12/20241017111624
-  core/libffi/3.4.4/20241017125515
-  core/coreutils/9.4/20241017111752
-  core/libarchive/3.7.4/20241017132032
+  core/libxml2
+  core/libxslt
+  core/libiconv
+  core/xz
+  core/zlib
+  core/openssl
+  core/cacerts
+  core/libffi
+  core/coreutils
+  core/libarchive
 )
 pkg_svc_user=root
 
