@@ -16,7 +16,7 @@ container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "rhel-9:rhe
 # add rest of windows platforms to tests, if not on chef-oss org
 if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
 then
-  container_platforms=( "${container_platforms[@]}" "windows-2012:windows-2019" "windows-2012r2:windows-2019" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
+  container_platforms=( "${container_platforms[@]}" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform. We reduced this list for Chef-19

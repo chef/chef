@@ -40,7 +40,6 @@ jobs:
       matrix:
         os:
           - macos-13
-          - macos-12
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -60,7 +59,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
+          - macos-14 # currently macos-latest
+          - macos-15
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -95,29 +95,6 @@ jobs:
           - ubuntu-2204
           # - ubuntu-2404
     runs-on: ubuntu-latest
-    env:
-      FORCE_FFI_YAJL: ext
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
-      - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
-
-  # Amazon Linux 2 has an issue with systemctl (throws a timedatectl error)
-  # if dokken container hosted on Ubuntu 22.04 or later. Lock to Ubuntu 20.04
-  # for now.
-  docr_ubnt-2004_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - amazonlinux-2
-          - oraclelinux-7
-    runs-on: ubuntu-20.04
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
