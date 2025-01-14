@@ -23,10 +23,6 @@ lifecycle:
     - remote: sudo apt-get update && sudo apt-get install -y curl
       includes:
         - ubuntu-18.04
-    - remote: sudo ln -s /usr/bin/install /bin/install
-      includes:
-        - debian-11
-        - opensuse-leap-15
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-latest
