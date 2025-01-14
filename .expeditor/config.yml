@@ -2,8 +2,9 @@
 ---
 
 # The name of the product keys for this product (from mixlib-install)
-product_key:
-  - chef
+# setting this value also tells expeditor its an omnibus build.
+# product_key:
+#   - chef
 
 # Slack channel in Chef Software slack to send notifications about build failures, etc
 slack:
