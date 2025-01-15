@@ -162,14 +162,15 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.89:"
+    echo "  - chef/omnibus#71c3ceaee9a7ded4ea50186242848b1c11cbb158:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ $build_key == "mac_os_x-12-x86_64" ]
-    then
-      echo "      remote-host: buildkite-omnibus-$platform"
+    if [ "$build_key" == "mac_os_x-12-x86_64" ]; then
+    echo "      remote-host: buildkite-omnibus-$platform"
+    elif [ "$build_key" == "mac_os_x-12-arm64" ]; then
+    echo "      remote-host: buildkite-omnibus-$platform"  
     fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     # if [ $build_key == "mac_os_x-11-arm64" ]
@@ -207,7 +208,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.89:"
+  echo "  - chef/omnibus#71c3ceaee9a7ded4ea50186242848b1c11cbb158:"
   echo "      create-build-record: chef"
 fi
 
@@ -302,7 +303,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.89:"
+    echo "  - chef/omnibus#71c3ceaee9a7ded4ea50186242848b1c11cbb158:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -328,6 +329,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.89:"
+  echo "  - chef/omnibus#71c3ceaee9a7ded4ea50186242848b1c11cbb158:"
   echo "      promote: chef"
 fi
