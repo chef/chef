@@ -91,6 +91,7 @@ class Chef
           # the path are picked up by ohai.
           ohai.all_plugins new_resource.plugin
           node.automatic_attrs.merge! ohai.data
+          node.fix_automatic_attributes
           logger.info("#{new_resource} reloaded")
         end
       end
