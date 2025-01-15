@@ -52,6 +52,26 @@ module TargetIO
           ::TargetIO::FileUtils.chmod(dir_name, mode) if mode
         end
 
+        # Borrowed and adapted from Ruby's Dir::tmpdir and Dir::mktmpdir
+        def mktmpdir(prefix_suffix = nil, *rest, **options)
+          prefix, suffix = ::File.basename(prefix_suffix || "d")
+          random = (::Random.urandom(4).unpack1("L") % 36**6).to_s(36)
+
+          tmpdir = ::Dir.tmpdir
+          t = Time.now.strftime("%Y%m%d%s")
+          path = "#{prefix}#{t}-#{$$}-#{random}" "#{suffix || ""}"
+          path = ::File.join(tmpdir, path)
+
+          ::TargetIO::FileUtils.mkdir(path)
+          ::TargetIO::FileUtils.chmod(0700, path)
+
+          at_exit do
+            ::TargetIO::FileUtils.rm_rf(path)
+          end
+
+          path
+        end
+
         def unlink(dir_name)
           ::TargetIO::FileUtils.rmdir(dir_name)
         end
