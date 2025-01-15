@@ -26,7 +26,7 @@ hab origin key generate "$HAB_ORIGIN"
 echo "--- :construction: Building $PLAN (solely for verification testing)"
 (
   cd "$project_root" || error 'cannot change directory to project root'
-  DO_CHECK=true hab pkg build . || error 'unable to build'
+  DO_CHECK=true hab pkg build . --refresh-channel stable || error 'unable to build'
 )
 
 source "${project_root}/results/last_build.env" || error 'unable to determine details about this build'
