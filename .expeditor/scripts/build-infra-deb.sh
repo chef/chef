@@ -20,18 +20,18 @@ initialize_vars() {
     TAR_NAME=$(basename "$CHEF_INFRA_HAB_TAR")
     TAR_NAME_NO_QUERY=$(echo "$TAR_NAME" | cut -d '?' -f 1)
     VERSION=$(echo "$TAR_NAME" | cut -d '-' -f 5 )
-    TIMESTAMP=$(echo "$TAR_NAME" | cut -d '-' -f 6 | cut -d '.' -f 1)
-    DEB_NAME=$(echo "$TAR_NAME_NO_QUERY" | awk -F'.tar.gz' '{print $1}').deb
+    RELEASE="1"
+    ARCH=$(dpkg --print-architecture)
+    DEB_NAME="chef-infra-client-${VERSION}-${RELEASE}_${ARCH}.deb"
 
-    if [[ -z "$VERSION" || -z "$TIMESTAMP" ]]; then
-        echo "Error: Failed to extract version or timestamp from tarball name: $TAR_NAME"
+    if [[ -z "$VERSION" ]]; then
+        echo "Error: Failed to extract version from tarball name: $TAR_NAME"
         exit 1
     fi
-    TEMP_DIR="$HOME/temp_chef_chef_infra_client_${VERSION}_${TIMESTAMP}"
+    TEMP_DIR="$HOME/temp_chef-infra-client_${VERSION}-${RELEASE}_${ARCH}"
     CHEF_BIN_DIR="/hab/migration/bin"
     CHEF_BUNDLE_DIR="/hab/migration/bundle"
     DEB_PKG_NAME=chef
-    ARCH=$(dpkg --print-architecture)
 
     echo "Variables initialized successfully."
 }
@@ -52,7 +52,7 @@ download_files() {
 }
 
 prepare_package() {
-    PACKAGE_DIR="$TEMP_DIR/infra-client_package"
+    PACKAGE_DIR="$TEMP_DIR/infra-client-package"
     mkdir -p "$PACKAGE_DIR/DEBIAN" || { echo "Error: Failed to create DEBIAN directory"; exit 1; }
     mkdir -p "$PACKAGE_DIR$CHEF_BIN_DIR" || { echo "Error: Failed to create Chef bin directory"; exit 1; }
     mkdir -p "$PACKAGE_DIR$CHEF_BUNDLE_DIR" || { echo "Error: Failed to create Chef bundle directory"; exit 1; }
