@@ -1212,7 +1212,7 @@ class Chef
           Here's what you need to know:
             * Adding a License: Use the < knife license > command to easily add a license key.
             * For Commercial Customers: Obtain your license key from the customer portal.
-            * For Free/Trial Users: Non-commercial users can generate a license key from Chef's license generation page.
+            * For Free/Trial Users: Non-commercial users can generate a license key from https://www.chef.io/license-generation-free-trial
 
           No action is require at this time, but please prepare for this change.
         +---------------------------------------------------------------------------------------------------------------------+
