@@ -1205,12 +1205,17 @@ class Chef
         return if config[:license_type].present?
 
         ui.warn(<<~MSG
-          +-------------------------------------------------------------------------------------------------------+
-          Knife bootstrap now needs a license key to allow uninterrupted download of Infra Client.
-          It is easy to add a license by following the command <knife license>.
-          If you are a commercial customer, you may get a license from the customer portal else you can generate
-          from https://www.chef.io/license-generation-free-trial
-          +-------------------------------------------------------------------------------------------------------+
+
+        +---------------------------------------------------------------------------------------------------------------------+
+          To ensure uninterrupted downloads of Infra Client, Knife Bootstrap will soon require a license key.
+
+          Here's what you need to know:
+            * Adding a License: Use the < knife license > command to easily add a license key.
+            * For Commercial Customers: Obtain your license key from the customer portal.
+            * For Free/Trial Users: Non-commercial users can generate a license key from https://www.chef.io/license-generation-free-trial
+
+          No action is require at this time, but please prepare for this change.
+        +---------------------------------------------------------------------------------------------------------------------+
         MSG
                )
       end
