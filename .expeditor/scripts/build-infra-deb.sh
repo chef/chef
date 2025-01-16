@@ -119,6 +119,9 @@ CHEF_BIN_DIR="/opt/chef/bin"
 CHEF_BUNDLE_DIR="/opt/chef/bundle"
 
 FRESH_INSTALL_FLAG=""
+LICENSE_KEY_FLAG=""
+LICENSE_SERVER_FLAG=""
+
 LICENSE_SERVER=\${CHEF_INFRA_LICENSE_SERVER:-}
 LICENSE_KEY=\${CHEF_INFRA_LICENSE_KEY:-}
 
@@ -131,15 +134,16 @@ fi
 
 if [ -f "\$CHEF_BIN_DIR/chef-migrate" ]; then
     echo "Running post-install tasks..."
-    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/$TAR_NAME_NO_QUERY"
 
-    if [ -n "\$LICENSE_KEY" ]; then
-        MIGRATE_CMD="\$MIGRATE_CMD --license.key \$LICENSE_KEY"
+     if [ -n "\$LICENSE_KEY" ]; then
+        LICENSE_KEY_FLAG="--license.key \$LICENSE_KEY"
     fi
 
     if [ -n "\$LICENSE_SERVER" ]; then
-        MIGRATE_CMD="\$MIGRATE_CMD --license.server \$LICENSE_SERVER"
+        LICENSE_SERVER_FLAG="--license.server \$LICENSE_SERVER"
     fi
+
+    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/$TAR_NAME_NO_QUERY \$LICENSE_KEY_FLAG \$LICENSE_SERVER_FLAG"
 
     echo "Executing: \$MIGRATE_CMD"
     eval \$MIGRATE_CMD || { echo "Error: Post-installation failed."; exit 1; }
@@ -165,7 +169,7 @@ cleanup() {
     echo "Temporary directory cleaned up."
 }
 
-trap cleanup EXIT
+# trap cleanup EXIT
 
 validate_env_vars
 initialize_vars
