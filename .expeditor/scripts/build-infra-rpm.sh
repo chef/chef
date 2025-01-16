@@ -89,8 +89,6 @@ if [ -f "$RPM_PATH" ]; then
   echo "RPM created successfully: $RPM_PATH"
   cp "$RPM_PATH" .  # Copy the RPM to the current directory
   echo "RPM copied to current directory."
-  echo "--- Uploading build RPM artifact: $(basename "$RPM_PATH")"
-  buildkite-agent artifact upload "$(basename "$RPM_PATH")"
 else
   echo "RPM creation failed or the RPM is not located in the expected directory."
   exit 1
