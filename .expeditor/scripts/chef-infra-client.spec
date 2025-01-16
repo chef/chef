@@ -17,7 +17,7 @@
 Name:           chef-infra-client
 Version:        %{VERSION}
 Release:        1%{?dist}
-Summary:        Chef Infra Client is an agent that runs locally on each node managed by the Chef Infra Server.
+Summary:        Chef infra client is an agent for configuration management
 AutoReqProv: 	no
 BuildRoot: 	    %buildroot
 Prefix: 	    /
@@ -30,7 +30,7 @@ Source0:        %{CHEF_INFRA_TAR}
 Source1:        %{CHEF_MIGRATE_TAR}
 
 %description
-Chef Infra Client is an agent that runs locally on each node managed by the Chef Infra Server.
+Chef infra client is an agent for configuration management
 
 %prep
 # noop
