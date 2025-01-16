@@ -76,8 +76,12 @@ Version: $VERSION
 Architecture: $ARCH
 Maintainer: The Chef Maintainers <maintainers@chef.io>
 Description: Chef Infra Client
- Chef Infra Client is an agent that runs locally on each node managed by the Chef Infra Server.
+ Chef Infra Client is an agent for configuration management.
 Conflicts: chef-workstation
+URL: 		    https://www.chef.io
+Packager: 	    Chef Software, Inc. <maintainers@chef.io>
+Group: 		    default
+License:        Chef EULA
 
 EOL
     if [ $? -ne 0 ]; then
