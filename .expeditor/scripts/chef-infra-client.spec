@@ -23,6 +23,7 @@ BuildRoot: 	    %buildroot
 Prefix: 	    /
 Group: 		    default
 License:        Chef EULA
+Conflicts:      chef-workstation
 URL: 		    https://www.chef.io
 Packager: 	    Chef Software, Inc. <maintainers@chef.io>
 Source0:        %{CHEF_INFRA_TAR}
