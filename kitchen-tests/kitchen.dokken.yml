@@ -25,6 +25,11 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    # back compat for pre-unified-/usr distros, do not add new OSes
+    - remote: sudo ln -s /usr/bin/install /bin/install
+      includes:
+        - opensuse-leap-15
+        - debian-11
     - remote: sudo yum install centos-release-scl
       includes:
         - centos-7
