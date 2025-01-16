@@ -40,27 +40,26 @@ The full stack of Chef Infra Client
 
 %install
 # Create the installation directory for the migration tools
-#mkdir -p %{buildroot}/opt/chef
-mkdir -p %{buildroot}/opt/chef/{bin,bundle}
+mkdir -p %{buildroot}/hab/migration/{bin,bundle}
 
-# Untar the migration tools into /opt/chef/bin
-tar -xf %{SOURCE1} -C %{buildroot}/opt/chef/bin
+# Untar the migration tools into /hab/migration/bin
+tar -xf %{SOURCE1} -C %{buildroot}/hab/migration/bin
 
-# Copy the chef infra tarball into /opt/chef/bundle
-cp %{SOURCE0} %{buildroot}/opt/chef/bundle/
+# Copy the chef infra tarball into /hab/migration/bundle
+cp %{SOURCE0} %{buildroot}/hab/migration/bundle/
 
 %files
-/opt/chef
-/opt/chef/bin
-/opt/chef/bin/*
-/opt/chef/bundle
-/opt/chef/bundle/*
+/hab/migration
+/hab/migration/bin
+/hab/migration/bin/*
+/hab/migration/bundle
+/hab/migration/bundle/*
 
 %post
 
 # Determine if --fresh_install needs to be passed based on the existence of the /opt/chef directory
-MIGRATE_CMD="/opt/chef/bin/chef-migrate apply airgap"
-if [ ! -f /opt/chef/bin/chef-client ]; then
+MIGRATE_CMD="/hab/migration/bin/chef-migrate apply airgap"
+if [ ! -d /opt/chef/ ]; then
     MIGRATE_CMD="$MIGRATE_CMD --fresh_install"
 fi
 
@@ -74,12 +73,12 @@ if [ -n "$CHEF_INFRA_LICENSE_SERVER" ]; then
 fi
 
 # Add the tarball path
-MIGRATE_CMD="$MIGRATE_CMD /opt/chef/bundle/%{CHEF_INFRA_TAR}"
+MIGRATE_CMD="$MIGRATE_CMD /hab/migration/bundle/%{CHEF_INFRA_TAR}"
 
 # Invoke the chef-migrate tool using the tarball as input
-if [ -f /opt/chef/bin/chef-migrate ]; then
+if [ -f /hab/migration/bin/chef-migrate ]; then
     eval $MIGRATE_CMD
 else
-    echo "Error: chef-migrate tool not found in /opt/chef/bin"
+    echo "Error: chef-migrate tool not found in /hab/migration/bin"
     exit 1
 fi
