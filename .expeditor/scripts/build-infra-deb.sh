@@ -28,8 +28,8 @@ initialize_vars() {
         exit 1
     fi
     TEMP_DIR="$HOME/temp_chef_chef_infra_client_${VERSION}_${TIMESTAMP}"
-    CHEF_BIN_DIR="/opt/chef/bin"
-    CHEF_BUNDLE_DIR="/opt/chef/bundle"
+    CHEF_BIN_DIR="/hab/migration/bin"
+    CHEF_BUNDLE_DIR="/hab/migration/bundle"
     DEB_PKG_NAME=chef
     ARCH=$(dpkg --print-architecture)
 
@@ -118,8 +118,8 @@ EOL
 prepare_postinstall_script() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/postinst"
 #!/bin/bash
-CHEF_BIN_DIR="/opt/chef/bin"
-CHEF_BUNDLE_DIR="/opt/chef/bundle"
+CHEF_BIN_DIR="/hab/migration/bin"
+CHEF_BUNDLE_DIR="/hab/migration/bundle"
 
 FRESH_INSTALL_FLAG=""
 LICENSE_KEY_FLAG=""
@@ -128,7 +128,7 @@ LICENSE_SERVER_FLAG=""
 LICENSE_SERVER=\${CHEF_INFRA_LICENSE_SERVER:-}
 LICENSE_KEY=\${CHEF_INFRA_LICENSE_KEY:-}
 
-if [ ! -f "\$CHEF_BIN_DIR/chef-client" ]; then
+if [ ! -f "/opt/chef/bin/chef-client" ]; then
     FRESH_INSTALL_FLAG="--fresh_install"
     echo "Postinstall: Detected fresh installation."
 else
@@ -172,7 +172,7 @@ cleanup() {
     echo "Temporary directory cleaned up."
 }
 
-# trap cleanup EXIT
+trap cleanup EXIT
 
 validate_env_vars
 initialize_vars
