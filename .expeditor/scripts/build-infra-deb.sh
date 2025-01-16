@@ -76,6 +76,9 @@ Version: $VERSION
 Architecture: $ARCH
 Maintainer: The Chef Maintainers <maintainers@chef.io>
 Description: Chef Infra Client
+ Chef Infra Client is an agent that runs locally on each node managed by the Chef Infra Server.
+Conflicts: chef-workstation
+
 EOL
     if [ $? -ne 0 ]; then
         echo "Error: Failed to create control file"; exit 1
