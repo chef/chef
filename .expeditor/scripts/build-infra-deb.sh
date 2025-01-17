@@ -94,14 +94,14 @@ prepare_preinstall_script() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/preinst"
 #!/bin/bash
 
-if [[ "\$1" == "--help" ]]; then
-    echo -e "\nChef Infra Client Installation Help"
-    echo "Usage: sudo LICENSE_KEY=\"<license-key>\" dpkg -i <deb-file>"
-    echo "Example:"
-    echo "  sudo LICENSE_KEY=\"your-license-key\" dpkg -i chef-chef-infra-client-<version>-<timestamp>.deb"
-    echo "Environment Variables:"
-    echo "  LICENSE_KEY: The license key required for the Chef Infra Client installation."
-    exit 0
+BACKUP_DIR="/opt/chef_backup"
+echo "LICENSE_KEY=\$LICENSE_KEY" > /tmp/chef_env
+echo "LICENSE_SERVER=\$LICENSE_SERVER" >> /tmp/chef_env
+chmod 600 /tmp/chef_env
+
+if [ -d "/opt/chef/" ]; then
+    echo "Detected existing installation."
+    sudo mv "/opt/chef/" "\$BACKUP_DIR"
 fi
 
 if [ -z "\${LICENSE_KEY:-}" ]; then
@@ -122,9 +122,10 @@ EOL
 prepare_postinstall_script() {
     cat <<EOL > "$PACKAGE_DIR/DEBIAN/postinst"
 #!/bin/bash
+
 CHEF_BIN_DIR="/hab/migration/bin"
 CHEF_BUNDLE_DIR="/hab/migration/bundle"
-
+BACKUP_DIR="/opt/chef_backup"
 FRESH_INSTALL_FLAG=""
 LICENSE_KEY_FLAG=""
 LICENSE_SERVER_FLAG=""
@@ -132,7 +133,16 @@ LICENSE_SERVER_FLAG=""
 LICENSE_SERVER=\${CHEF_INFRA_LICENSE_SERVER:-}
 LICENSE_KEY=\${CHEF_INFRA_LICENSE_KEY:-}
 
-if [ ! -f "/opt/chef/bin/chef-client" ]; then
+if [ -f /tmp/chef_env ]; then
+    source /tmp/chef_env
+    rm -f /tmp/chef_env
+fi
+
+if [ -d "\$BACKUP_DIR" ]; then
+    mv "\$BACKUP_DIR" "/opt/chef/"
+fi
+
+if [ ! -d "/opt/chef/" ]; then
     FRESH_INSTALL_FLAG="--fresh_install"
     echo "Postinstall: Detected fresh installation."
 else
