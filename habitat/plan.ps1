@@ -1,4 +1,4 @@
-$env:HAB_BLDR_CHANNEL = "stable"
+$env:HAB_BLDR_CHANNEL = "LTS-2024"
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)

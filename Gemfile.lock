@@ -229,6 +229,9 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.0)
+    ffi (1.17.0-x64-mingw-ucrt)
+    ffi (1.17.0-x64-mingw32)
+    ffi (1.17.0-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -442,7 +445,6 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.8.2)
-    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (0.13.1)
@@ -529,7 +531,6 @@ DEPENDENCIES
   rdoc (~> 6.4.1)
   rest-client!
   rspec
-  ruby-shadow!
   webmock
 
 BUNDLED WITH
