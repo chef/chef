@@ -445,7 +445,6 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.8.2)
-    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (0.13.1)
@@ -520,7 +519,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
+  ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (>= 5, < 6)
   ohai!
   openssl (= 3.2.0)
