@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: d5060f57f7e9f974fca55e0d74c9c62d5b36a622
+  revision: 58ee0df16894c3eace7c35ff1642390d2e487383
   branch: 18-stable
   specs:
-    ohai (18.2.4)
+    ohai (18.2.5)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
-      ffi (~> 1.9)
+      ffi (~> 1.9, <= 1.17.0)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
@@ -520,7 +520,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
+  ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (>= 5, < 6)
   ohai!
   openssl (= 3.2.0)
