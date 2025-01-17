@@ -43,13 +43,13 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 18.0"
   s.add_dependency "inspec-core", ">= 5", "< 6"
 
-  s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
+  s.add_dependency "ffi", ">= 1.15.5", "<= 1.17.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
   s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
-  s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
+  s.add_dependency "ffi-libarchive", "~> 1.1", ">= 1.1.3" # archive_file resource
   s.add_dependency "chef-zero", ">= 14.0.11"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
 
