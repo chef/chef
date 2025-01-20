@@ -31,7 +31,7 @@ initialize_vars() {
     TEMP_DIR="$HOME/temp_chef-infra-client_${VERSION}-${RELEASE}_${ARCH}"
     CHEF_BIN_DIR="/hab/migration/bin"
     CHEF_BUNDLE_DIR="/hab/migration/bundle"
-    DEB_PKG_NAME=chef
+    DEB_PKG_NAME=chef-infra-client
 
     echo "Variables initialized successfully."
 }
@@ -99,11 +99,6 @@ echo "LICENSE_KEY=\$LICENSE_KEY" > /tmp/chef_env
 echo "LICENSE_SERVER=\$LICENSE_SERVER" >> /tmp/chef_env
 chmod 600 /tmp/chef_env
 
-if [ -d "/opt/chef/" ]; then
-    echo "Detected existing installation."
-    sudo mv "/opt/chef/" "\$BACKUP_DIR"
-fi
-
 if [ -z "\${LICENSE_KEY:-}" ]; then
     LICENSE_KEY=$(env | grep -m 1 '^LICENSE_KEY=' | cut -d '=' -f 2 | xargs)
     
@@ -136,10 +131,6 @@ LICENSE_KEY=\${CHEF_INFRA_LICENSE_KEY:-}
 if [ -f /tmp/chef_env ]; then
     source /tmp/chef_env
     rm -f /tmp/chef_env
-fi
-
-if [ -d "\$BACKUP_DIR" ]; then
-    mv "\$BACKUP_DIR" "/opt/chef/"
 fi
 
 if [ ! -d "/opt/chef/" ]; then
