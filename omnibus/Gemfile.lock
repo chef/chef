@@ -198,6 +198,7 @@ GEM
     ffi (1.17.0.x64-mingw-ucrt)
     ffi (1.17.0-x64-mingw32)
     ffi (1.17.0-x86-mingw32)
+    ffi (1.17.0-arm64-darwin)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
