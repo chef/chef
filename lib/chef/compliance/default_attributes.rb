@@ -39,7 +39,7 @@ class Chef
       "insecure" => nil,
 
       # Controls verbosity of Chef InSpec runner. See less output when true.
-      "quiet" => true,
+      "quiet" => false,
 
       # Chef Inspec Compliance profiles to be used for scan of node.
       # See Compliance Phase documentation for further details:
