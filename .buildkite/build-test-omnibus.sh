@@ -168,9 +168,9 @@ then
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ "$build_key" == "mac_os_x-12-x86_64" ]; then
-        echo "      remote-host: buildkite-omnibus-$platform"
+        echo " remote-host: buildkite-omnibus-$platform"
     elif [ "$build_key" == "mac_os_x-12-arm64" ]; then
-           echo "      remote-host: buildkite-omnibus-$platform"
+          echo " remote-host: buildkite-omnibus-$platform"
     fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     # if [ $build_key == "mac_os_x-11-arm64" ]
