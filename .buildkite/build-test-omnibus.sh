@@ -187,7 +187,7 @@ then
     [[ $platform == *"arm"* ]] && echo " queue: omnibus-mac_os_x-12-arm64" || echo " queue: omnibus-mac_os_x-12-x86_64"
     echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.86:"
+    echo "  - chef/omnibus#v0.2.89:"
     echo "      config: omnibus/omnibus.rb"
     [[ $platform == *"arm"* ]] && echo " remote-host: buildkite-omnibus-mac_os_x-12-arm64" || echo " remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
     echo "      notarize-macos-package: chef"
