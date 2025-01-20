@@ -184,6 +184,7 @@ then
   then
     echo "- key: notarize-macos"
     echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
+    echo "  agents:"
     [[ $platform == *"arm"* ]] && echo " queue: omnibus-mac_os_x-12-arm64" || echo " queue: omnibus-mac_os_x-12-x86_64"
     echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
