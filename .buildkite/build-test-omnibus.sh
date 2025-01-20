@@ -186,7 +186,6 @@ then
     echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
     echo "  agents:"
     [[ $platform == *"arm"* ]] && echo " queue: omnibus-mac_os_x-12-arm64" || echo " queue: omnibus-mac_os_x-12-x86_64"
-    echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.89:"
     echo "      config: omnibus/omnibus.rb"
