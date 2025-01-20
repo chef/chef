@@ -167,9 +167,10 @@ then
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ $build_key == "mac_os_x-11-x86_64" ]
-    then
-      echo "      remote-host: buildkite-omnibus-$platform"
+    if [ "$build_key" == "mac_os_x-12-x86_64" ]; then
+        echo "      remote-host: buildkite-omnibus-$platform"
+    elif [ "$build_key" == "mac_os_x-12-arm64" ]; then
+           echo "      remote-host: buildkite-omnibus-$platform"
     fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     # if [ $build_key == "mac_os_x-11-arm64" ]
@@ -183,12 +184,12 @@ then
   then
     echo "- key: notarize-macos"
     echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
-    echo "  agents:"
+    [[ $platform == *"arm"* ]] && echo " queue: omnibus-mac_os_x-12-arm64" || echo " queue: omnibus-mac_os_x-12-x86_64"
     echo "    queue: omnibus-mac_os_x-12-x86_64"
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.86:"
     echo "      config: omnibus/omnibus.rb"
-    echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
+    [[ $platform == *"arm"* ]] && echo " remote-host: buildkite-omnibus-mac_os_x-12-arm64" || echo " remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
     echo "      notarize-macos-package: chef"
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     echo "  depends_on:"
@@ -296,7 +297,7 @@ then
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
-    if [ $build_key == "mac_os_x-11-x86_64" ] || [ $build_key == "mac_os_x-11-arm64" ]
+    if [ $build_key == "mac_os_x-12-x86_64" ] || [ $build_key == "mac_os_x-12-arm64" ]
     then
       echo "    omnibus: tester"
       echo "    omnibus-toolchain: \"*\""
