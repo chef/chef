@@ -3,7 +3,7 @@
 # source /etc/os-release
 # echo $PRETTY_NAME
 
-# Install Chef Foundation - why? we should not be using this on Chef-19
+# Install Chef - We need the tools that come with Chef. 
 echo "--- Installing Chef"
 curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "stable" -P "chef" -v 18
 export PATH="/opt/chef/bin:${PATH}"
