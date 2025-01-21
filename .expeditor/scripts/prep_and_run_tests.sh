@@ -9,10 +9,7 @@ fi
 
 TestType=$1
 
-# we load chef-foundation here to get some of the basic tools we need for testing and installing gems with
-# curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
-
-gem install bundler --no-document -v 2.3.7
+curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "stable" -P "chef" -v 18
 
 export PATH="/opt/chef/bin:${PATH}"
 
