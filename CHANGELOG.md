@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.72 -->
-## [v19.0.72](https://github.com/chef/chef/tree/v19.0.72) (2025-01-21)
+<!-- latest_release 19.0.73 -->
+## [v19.0.73](https://github.com/chef/chef/tree/v19.0.73) (2025-01-21)
 
 #### Merged Pull Requests
-- Fix for error when &#39;chef-vault&#39; attr undefined [#14811](https://github.com/chef/chef/pull/14811) ([freakinhippie](https://github.com/freakinhippie))
+- Fixes for yum packages and various other failing resources [#14786](https://github.com/chef/chef/pull/14786) ([thheinen](https://github.com/thheinen))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixes for yum packages and various other failing resources [#14786](https://github.com/chef/chef/pull/14786) ([thheinen](https://github.com/thheinen)) <!-- 19.0.73 -->
 - Fix for error when &#39;chef-vault&#39; attr undefined [#14811](https://github.com/chef/chef/pull/14811) ([freakinhippie](https://github.com/freakinhippie)) <!-- 19.0.72 -->
 - Removing Chef-Foundation from the builds [#14815](https://github.com/chef/chef/pull/14815) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.71 -->
 - try symlink for install [#14799](https://github.com/chef/chef/pull/14799) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.70 -->
