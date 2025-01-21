@@ -9,7 +9,8 @@ fi
 
 TestType=$1
 
-# curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+# we load chef-foundation here to get some of the basic tools we need for testing and installing gems with
+curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
 export PATH="/opt/chef/bin:${PATH}"
 
 if [ "$TestType" == "Unit" ]
