@@ -30,6 +30,8 @@ class Chef
           parse_yaml(filename)
         when ".json"
           parse_json(filename)
+        else
+          raise "Expected TOML, JSON, or YAML when parsing #{filename}"
         end
       end
 
