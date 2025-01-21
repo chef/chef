@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.70 -->
-## [v19.0.70](https://github.com/chef/chef/tree/v19.0.70) (2025-01-14)
+<!-- latest_release 19.0.71 -->
+## [v19.0.71](https://github.com/chef/chef/tree/v19.0.71) (2025-01-21)
 
 #### Merged Pull Requests
-- try symlink for install [#14799](https://github.com/chef/chef/pull/14799) ([tpowell-progress](https://github.com/tpowell-progress))
+- Removing Chef-Foundation from the builds [#14815](https://github.com/chef/chef/pull/14815) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Removing Chef-Foundation from the builds [#14815](https://github.com/chef/chef/pull/14815) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.71 -->
 - try symlink for install [#14799](https://github.com/chef/chef/pull/14799) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.70 -->
 - Updating the plan file [#14797](https://github.com/chef/chef/pull/14797) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.69 -->
 - Remove 2012 testers from bk adhoc [#14789](https://github.com/chef/chef/pull/14789) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.68 -->
