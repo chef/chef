@@ -319,14 +319,14 @@ GEM
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.3.4)
+    mixlib-shellout (3.3.6)
       chef-utils
-    mixlib-shellout (3.3.4-universal-mingw32)
+    mixlib-shellout (3.3.6-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.3.4-x64-mingw-ucrt)
+    mixlib-shellout (3.3.6-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
