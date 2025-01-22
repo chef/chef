@@ -25,13 +25,14 @@ rbenv global ${RUBY_VERSION}
 gem install bundler -v 2.3.7
 echo "Bundle should be installed here: $(which bundle)"
 echo "Gem environment is: $(gem env)"
+export PATH="/root/.rbenv/shims:$PATH"
 
 
 echo "--- Container Config..."
 echo "ruby version:"
 ruby -v
 echo "bundler version:"
-/root/.rbenv/shims/bundle -v
+bundle -v
 
 echo "--- Preparing Container..."
 
