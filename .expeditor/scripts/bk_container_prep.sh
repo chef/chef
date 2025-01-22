@@ -22,7 +22,7 @@ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 . ~/.bashrc
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
-gem install bundler -v ${BUNDLER_VERSION}
+gem install bundler -v 2.3.7
 
 
 echo "--- Container Config..."
