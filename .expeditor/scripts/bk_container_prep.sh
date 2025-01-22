@@ -10,7 +10,9 @@
 
 # Install Ruby to get the bundler gem.
 echo "--- Ruby Config..."
-echo "Proposed Ruby Version is ${RUBY_VERSION}"
+RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
+export RUBY_VERSION
+echo "Proposed Ruby Version is: $RUBY_VERSION"
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
 gem install bundler -v ${BUNDLER_VERSION}

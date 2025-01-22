@@ -18,7 +18,7 @@ echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
 RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
 export RUBY_VERSION
-echo "Ruby Version: $RUBY_VERSION"
+echo "Proposed Ruby Version: $RUBY_VERSION"
 
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
