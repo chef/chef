@@ -3,10 +3,15 @@
 # source /etc/os-release
 # echo $PRETTY_NAME
 
-# Install Chef Foundation
-echo "--- Installing Chef Foundation"
-curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
-export PATH="/opt/chef/bin:${PATH}"
+# # Install Chef Foundation
+# echo "--- Installing Chef Foundation"
+# curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+# export PATH="/opt/chef/bin:${PATH}"
+
+# Install Ruby to get the bundler gem.
+rbenv install ${RUBY_VERSION}
+rbenv global ${RUBY_VERSION}
+gem install bundler -v ${BUNDLER_VERSION}
 
 echo "--- Container Config..."
 echo "ruby version:"
