@@ -38,7 +38,7 @@ class Chef
       # Allow for connections to HTTPS endpoints using self-signed ssl certificates.
       "insecure" => nil,
 
-      # Controls verbosity of Chef InSpec runner. See less output when true.
+      # When set to true, it will suppress CLI output for compliance phase.
       "quiet" => false,
 
       # Chef Inspec Compliance profiles to be used for scan of node.
