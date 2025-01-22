@@ -9,9 +9,12 @@
 # export PATH="/opt/chef/bin:${PATH}"
 
 # Install Ruby to get the bundler gem.
+echo "--- Ruby Config..."
+echo "Proposed Ruby Version is ${RUBY_VERSION}"
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
 gem install bundler -v ${BUNDLER_VERSION}
+
 
 echo "--- Container Config..."
 echo "ruby version:"
