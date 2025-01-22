@@ -26,6 +26,7 @@ gem install bundler -v 2.3.7
 echo "Bundle should be installed here: $(which bundle)"
 echo "Gem environment is: $(gem env)"
 export PATH="/root/.rbenv/shims:$PATH"
+echo "Which bundle was that again? $(bundle -v)"
 
 
 echo "--- Container Config..."
