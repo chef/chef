@@ -31,7 +31,7 @@ echo "--- Container Config..."
 echo "ruby version:"
 ruby -v
 echo "bundler version:"
-bundle -v
+/root/.rbenv/shims/bundle -v
 
 echo "--- Preparing Container..."
 
