@@ -10,7 +10,7 @@
 
 # Install Ruby to get the bundler gem.
 echo "--- Ruby Config..."
-echo "I am running the following shell: $(echo $0)"
+echo "I am running the following shell: $(echo $SHELL)"
 sudo apt-get install jq -y
 RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
 export RUBY_VERSION
