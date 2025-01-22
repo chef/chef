@@ -58,7 +58,7 @@ class Chef
       end
 
       action :remount do
-        if current_resource.mounted
+        if current_resource.mounted && remount_require?
           if new_resource.supports[:remount]
             converge_by("remount #{current_resource.device}") do
               remount_fs
@@ -116,6 +116,11 @@ class Chef
       # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
+      end
+
+      # should actually check if the filesystem is mounted and new resource have any difference (not just return current_resource) and return true/false
+      def remount_require?
+        raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #remount_require?"
       end
 
       # It's entirely plausible that a site might prefer UUIDs or labels, so
