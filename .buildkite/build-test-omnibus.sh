@@ -164,6 +164,7 @@ then
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.89:"
     echo "      build: chef"
+    echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ $build_key == "mac_os_x-11-x86_64" ]

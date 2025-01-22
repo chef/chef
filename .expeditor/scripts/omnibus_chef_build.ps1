@@ -87,6 +87,9 @@ $env:ARTIFACTORY_BASE_PATH="com/getchef"
 $env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME="buildkite"
 
+Write-Output "--- Installing Chef Foundation ${env:CHEF_FOUNDATION_VERSION}"
+. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $env:CHEF_FOUNDATION_VERSION
+
 $env:PROJECT_NAME="chef"
 $env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
 $env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
