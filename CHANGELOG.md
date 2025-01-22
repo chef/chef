@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.75 -->
-## [v19.0.75](https://github.com/chef/chef/tree/v19.0.75) (2025-01-22)
+<!-- latest_release 19.0.76 -->
+## [v19.0.76](https://github.com/chef/chef/tree/v19.0.76) (2025-01-22)
 
 #### Merged Pull Requests
-- Added deb installer for chef infra-client [#14775](https://github.com/chef/chef/pull/14775) ([sougata-progress](https://github.com/sougata-progress))
+- Prepare hab based chef-infra-client rpm [#14772](https://github.com/chef/chef/pull/14772) ([sajjaphani](https://github.com/sajjaphani))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Prepare hab based chef-infra-client rpm [#14772](https://github.com/chef/chef/pull/14772) ([sajjaphani](https://github.com/sajjaphani)) <!-- 19.0.76 -->
 - Added deb installer for chef infra-client [#14775](https://github.com/chef/chef/pull/14775) ([sougata-progress](https://github.com/sougata-progress)) <!-- 19.0.75 -->
 - Bump mixlib-shellout to 3.3.6 to pull in Target mode fixes [#14807](https://github.com/chef/chef/pull/14807) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.74 -->
 - Fixes for yum packages and various other failing resources [#14786](https://github.com/chef/chef/pull/14786) ([thheinen](https://github.com/thheinen)) <!-- 19.0.73 -->
