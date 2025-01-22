@@ -23,6 +23,8 @@ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
 gem install bundler -v 2.3.7
+echo "Bundle should be installed here: $(which bundle)"
+echo "Gem environment is: $(gem env)"
 
 
 echo "--- Container Config..."
