@@ -43,6 +43,7 @@ class Chef
         current_resource.static(static?)
         current_resource.indirect(indirect?)
         current_resource.triggers_reload(new_resource.triggers_reload)
+        current_resource.start_after_enable(new_resource.start_after_enable)
 
         current_resource
       end
@@ -118,6 +119,10 @@ class Chef
           converge_by("enabling unit: #{new_resource.unit_name}") do
             systemctl_execute!(:enable, new_resource.unit_name)
             logger.info("#{new_resource} enabled")
+            if new_resource.start_after_enable
+              systemctl_execute!(:start, new_resource.unit_name)
+              logger.info("#{new_resource} started (after enable)")
+            end
           end
         end
       end
