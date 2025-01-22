@@ -106,13 +106,13 @@ for gem in ${external_gems[@]}; do
   echo "    - .expeditor/scripts/bk_container_prep.sh"
   if [ $gem == "berkshelf" ]
   then
-    echo "    - export PATH=\"/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}\""
+    echo "    - export PATH=\"/root/.rbenv/shims:/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}\""
     echo "    - apt-get update -y"
     # cspell:disable-next-line
     echo "    - apt-get install -y graphviz"
     echo "    - bundle config set --local without omnibus_package"
   else
-    echo "    - export PATH=\"/opt/chef/bin:${PATH}\""
+    echo "    - export PATH=\"/root/.rbenv/shims:/opt/chef/bin:${PATH}\""
     echo "    - bundle config set --local without omnibus_package"
     echo "    - bundle config set --local path 'vendor/bundle'"
   fi
