@@ -7,6 +7,8 @@ then
   find /etc/zypp/repos.d -name "SMT-*" -execdir rm -f -- '{}' \;
   zypper addrepo --check --priority 50 --refresh --name "Chefzypper-repo" "https://mirror.fcix.net/opensuse/distribution/leap/15.3/repo/oss/" "chefzypper"
   zypper --gpg-auto-import-keys ref
+  zypper refresh
+  zypper in -t patch SUSE-SLE-Module-Basesystem-15-SPx-202x-2224=1
 else
   echo "--- :hammer_and_wrench: Not Running on openSUSE 15, nothing to do"
 fi
