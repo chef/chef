@@ -3,10 +3,26 @@
 # source /etc/os-release
 # echo $PRETTY_NAME
 
-# Install Chef Foundation
-echo "--- Installing Chef Foundation"
-curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
-export PATH="/opt/chef/bin:${PATH}"
+# # Install Chef Foundation
+# echo "--- Installing Chef Foundation"
+# curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+# export PATH="/opt/chef/bin:${PATH}"
+
+# Install Ruby to get the bundler gem.
+echo "--- Ruby Config..."
+sudo apt-get install jq -y
+RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
+export RUBY_VERSION
+sudo apt install git curl libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev -y
+curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+. ~/.bashrc
+rbenv install ${RUBY_VERSION}
+rbenv global ${RUBY_VERSION}
+gem install bundler -v $(cat .buildkite-platform.json | jq -r '.bundler_version')
+export PATH="/root/.rbenv/shims:$PATH"
+
 
 echo "--- Container Config..."
 echo "ruby version:"
