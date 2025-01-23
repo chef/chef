@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.78 -->
-## [v19.0.78](https://github.com/chef/chef/tree/v19.0.78) (2025-01-22)
+<!-- latest_release 19.0.79 -->
+## [v19.0.79](https://github.com/chef/chef/tree/v19.0.79) (2025-01-23)
 
 #### Merged Pull Requests
-- fix compliance phase reporting when quiet mode is set to true [#14779](https://github.com/chef/chef/pull/14779) ([rishichawda](https://github.com/rishichawda))
+- Updating chef to remove foundation during builds [#14818](https://github.com/chef/chef/pull/14818) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating chef to remove foundation during builds [#14818](https://github.com/chef/chef/pull/14818) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.79 -->
 - fix compliance phase reporting when quiet mode is set to true [#14779](https://github.com/chef/chef/pull/14779) ([rishichawda](https://github.com/rishichawda)) <!-- 19.0.78 -->
 - Revert &quot;Removing Chef-Foundation from the builds&quot; [#14816](https://github.com/chef/chef/pull/14816) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.77 -->
 - Prepare hab based chef-infra-client rpm [#14772](https://github.com/chef/chef/pull/14772) ([sajjaphani](https://github.com/sajjaphani)) <!-- 19.0.76 -->
