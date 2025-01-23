@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.7 -->
-## [v18.6.7](https://github.com/chef/chef/tree/v18.6.7) (2025-01-16)
+<!-- latest_release 18.6.8 -->
+## [v18.6.8](https://github.com/chef/chef/tree/v18.6.8) (2025-01-23)
 
 #### Merged Pull Requests
-- try symlink for install (#14799) [#14802](https://github.com/chef/chef/pull/14802) ([tpowell-progress](https://github.com/tpowell-progress))
+- Limit ffi to 1.17.0 max via Ohai bump. [#14809](https://github.com/chef/chef/pull/14809) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Limit ffi to 1.17.0 max via Ohai bump. [#14809](https://github.com/chef/chef/pull/14809) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.8 -->
 - try symlink for install (#14799) [#14802](https://github.com/chef/chef/pull/14802) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.7 -->
 - [Backport] remove EOL&#39;d OS docker tests [#14791](https://github.com/chef/chef/pull/14791) ([Stromweld](https://github.com/Stromweld)) <!-- 18.6.6 -->
 - [Chef-18] Shorten the rspec test data file names which end throwing file not found error on windows upon gem installation [#14780](https://github.com/chef/chef/pull/14780) ([neha-p6](https://github.com/neha-p6)) <!-- 18.6.5 -->
