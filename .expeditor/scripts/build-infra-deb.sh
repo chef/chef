@@ -18,7 +18,6 @@ validate_env_vars() {
 
 initialize_vars() {
     TAR_NAME=$(basename "$CHEF_INFRA_HAB_TAR")
-    TAR_NAME_NO_QUERY=$(echo "$TAR_NAME" | cut -d '?' -f 1)
     VERSION=$(echo "$TAR_NAME" | cut -d '-' -f 5 )
     RELEASE="1"
     ARCH=$(dpkg --print-architecture)
@@ -43,10 +42,10 @@ create_temp_dir() {
 
 download_files() {
     echo "Downloading migration tool..."
-    curl -L -o "$TEMP_DIR/migration-tools.tar.gz" "$CHEF_INFRA_MIGRATE_TAR" || { echo "Error: Failed to download migration tool from $CHEF_INFRA_MIGRATE_TAR"; exit 1; }
+    aws s3 cp "$CHEF_INFRA_MIGRATE_TAR" "$TEMP_DIR/migration-tools.tar.gz" || { echo "Error: Failed to download migration tool from $CHEF_INFRA_MIGRATE_TAR"; exit 1; }
 
     echo "Downloading Chef Infra tarball..."
-    curl -L -o "$TEMP_DIR/$TAR_NAME_NO_QUERY" "$CHEF_INFRA_HAB_TAR" || { echo "Error: Failed to download Chef Infra tarball from $CHEF_INFRA_HAB_TAR"; exit 1; }
+    aws s3 cp "$CHEF_INFRA_HAB_TAR" "$TEMP_DIR/$TAR_NAME" || { echo "Error: Failed to download Chef Infra tarball from $CHEF_INFRA_HAB_TAR"; exit 1; }
 
     echo "Files downloaded successfully."
 }
@@ -61,7 +60,7 @@ prepare_package() {
     tar -xf "$TEMP_DIR/migration-tools.tar.gz" -C "$PACKAGE_DIR$CHEF_BIN_DIR/" || { echo "Error: Failed to unpack migration tool"; exit 1; }
 
     echo "Copying Chef Infra tarball..."
-    cp "$TEMP_DIR/$TAR_NAME_NO_QUERY" "$PACKAGE_DIR$CHEF_BUNDLE_DIR/" || { echo "Error: Failed to copy Chef Infra tarball"; exit 1; }
+    cp "$TEMP_DIR/$TAR_NAME" "$PACKAGE_DIR$CHEF_BUNDLE_DIR/" || { echo "Error: Failed to copy Chef Infra tarball"; exit 1; }
 
     prepare_control_file
     prepare_preinstall_script
@@ -151,7 +150,7 @@ if [ -f "\$CHEF_BIN_DIR/chef-migrate" ]; then
         LICENSE_SERVER_FLAG="--license.server \$LICENSE_SERVER"
     fi
 
-    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/$TAR_NAME_NO_QUERY \$LICENSE_KEY_FLAG \$LICENSE_SERVER_FLAG"
+    MIGRATE_CMD="\$CHEF_BIN_DIR/chef-migrate apply airgap \$FRESH_INSTALL_FLAG \$CHEF_BUNDLE_DIR/$TAR_NAME \$LICENSE_KEY_FLAG \$LICENSE_SERVER_FLAG"
 
     echo "Executing: \$MIGRATE_CMD"
     eval \$MIGRATE_CMD || { echo "Error: Post-installation failed."; exit 1; }
@@ -170,6 +169,7 @@ build_package() {
     dpkg-deb --build "$PACKAGE_DIR" "$DEB_NAME" || { echo "Error: Failed to build .deb package"; exit 1; }
 
     echo "Package built successfully: $DEB_NAME."
+    echo "$DEB_NAME" > "DEB_PKG_NAME"
 }
 
 cleanup() {
