@@ -8,7 +8,7 @@ group(:development, :test) do
   gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
   gem "rake", ">= 12.3.3"
   gem "rspec"
-  gem "chef-bin", "~> 18.6" #path: "../chef-bin"
+  gem "chef-bin", "~> 18.6" # path: "../chef-bin"
 end
 
 group(:omnibus_package, :pry) do
