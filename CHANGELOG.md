@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.11 -->
-## [v18.6.11](https://github.com/chef/chef/tree/v18.6.11) (2025-01-24)
+<!-- latest_release 18.6.12 -->
+## [v18.6.12](https://github.com/chef/chef/tree/v18.6.12) (2025-01-27)
 
 #### Merged Pull Requests
-- [backport] quiet mode fix for compliance phase [#14817](https://github.com/chef/chef/pull/14817) ([rishichawda](https://github.com/rishichawda))
+- Updating rexml to get past a cve [#14823](https://github.com/chef/chef/pull/14823) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating rexml to get past a cve [#14823](https://github.com/chef/chef/pull/14823) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.12 -->
 - [backport] quiet mode fix for compliance phase [#14817](https://github.com/chef/chef/pull/14817) ([rishichawda](https://github.com/rishichawda)) <!-- 18.6.11 -->
 - [CHEF-18381] Fixed the issues with knife bootstrap failing on the airgapped envs [#14777](https://github.com/chef/chef/pull/14777) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.10 -->
 - Updated the license warning message [#14795](https://github.com/chef/chef/pull/14795) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.9 -->
