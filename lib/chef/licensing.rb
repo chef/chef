@@ -2,6 +2,9 @@ require "chef-licensing"
 require_relative "log"
 require_relative "licensing_config"
 
+# To use platform helpers
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+
 class Chef
   class Licensing
     class << self
@@ -10,7 +13,7 @@ class Chef
         # test-kitchen-enterprise RC1 currently supports only docker driver and is available only on Linux x86_64
         # Rest of platforms in pipeline will use legacy test-kitchen. Hence license validation for then needs to be skipped.
         if ENV["TEST_KITCHEN"]
-          if linux? && docker?
+          if ChefUtils.linux? && ChefUtils.docker?
             license_keys = ChefLicensing.fetch_and_persist
           else
             Chef::Log.info "Skipping license validation..."
