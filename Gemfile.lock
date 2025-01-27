@@ -364,7 +364,7 @@ GEM
     rdoc (6.4.1.1)
       psych (>= 4.0.0)
     regexp_parser (2.9.2)
-    rexml (3.3.8)
+    rexml (3.4.0)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
