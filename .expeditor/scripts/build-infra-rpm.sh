@@ -34,7 +34,7 @@ download_file() {
   local output_path="$2"
 
   echo "Downloading $url to $output_path..."
-  if ! curl -fsSL "$url" -o "$output_path"; then
+  if ! aws s3 cp "$url" "$output_path"; then
     echo "Error: Failed to download $url"
     exit 1
   fi
@@ -89,6 +89,7 @@ if [ -f "$RPM_PATH" ]; then
   echo "RPM created successfully: $RPM_PATH"
   cp "$RPM_PATH" .  # Copy the RPM to the current directory
   echo "RPM copied to current directory."
+  echo `basename $RPM_PATH` > RPM_PKG_NAME
 else
   echo "RPM creation failed or the RPM is not located in the expected directory."
   exit 1
