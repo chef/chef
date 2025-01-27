@@ -7,6 +7,17 @@ class Chef
     class << self
       def fetch_and_persist
         Chef::Log.info "Fetching and persisting license..."
+        # test-kitchen-enterprise RC1 currently supports only docker driver and is available only on Linux x86_64
+        # Rest of platforms in pipeline will use legacy test-kitchen. Hence license validation for then needs to be skipped.
+        if ENV["TEST_KITCHEN"]
+          if linux? && docker?
+            license_keys = ChefLicensing.fetch_and_persist
+          else
+            Chef::Log.info "Skipping license validation..."
+          end
+        else
+          license_keys = ChefLicensing.fetch_and_persist
+        end
         license_keys = ChefLicensing.fetch_and_persist
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
         Chef::Log.error "Chef Infra cannot execute without valid licenses." # TODO: Replace Infra with the product name dynamically
