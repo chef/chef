@@ -18,7 +18,8 @@ defaults:
 jobs:
   # Test-kitchen-enterprise currently supports only linux platforms, 
   # Hence we are testing on Windows using test-kitchen
-  win_x86_64(test-kitchen legacy):
+  win_x86_64:
+    name: win_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -37,7 +38,8 @@ jobs:
       run: kitchen test end-to-end-${{ matrix.os }}
 
   # Habitat does not support Mac yet. Hence we're testing on Mac systems using test-kitchen
-  mac_x86_64(test-kitchen legacy):
+  mac_x86_64:
+    name: mac_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -57,7 +59,8 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
-  mac_arm64(test-kitchen legacy):
+  mac_arm64:
+    name: mac_arm64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +82,8 @@ jobs:
         run: kitchen test end-to-end-${{ matrix.os }}
 
   # This block does end-to-end recipe using test-kitchen-enterprise using Habitat package of chef19
-  docr_lnx_x86_64(test-kitchen-enterprise):
+  docr_lnx_x86_64:
+    name: docr_lnx_x86_64(test-kitchen-enterprise)
     strategy:
       fail-fast: false
       matrix:
@@ -118,7 +122,8 @@ jobs:
 
   # chef-test-kitchen-enterprise RC1 currently supports only kitchen-dokken driver hence in this block we 
   # will continue testing with test-kitchen
-  vm_lnx_x86_64(test-kitchen legacy):
+  vm_lnx_x86_64:
+    name: vm_lnx_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
