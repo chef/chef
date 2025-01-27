@@ -27,8 +27,9 @@ sed -i -r "s/(^\s+chef-bin\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile
 sed -i -r "s/(^\s+chef-config\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
 sed -i -r "s/(^\s+chef-utils\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
 
-#Update the version in knife/Gemfile.lock
-sed -i -r "s/(^\s+chef\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" knife/Gemfile.lock
+# Update the version in knife/Gemfile.lock
+# Commenting this for releasing knife separately
+# sed -i -r "s/(^\s+chef\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" knife/Gemfile.lock
 
 # Once Expeditor finishes executing this script, it will commit the changes and push
 # the commit as a new tag corresponding to the value in the VERSION file.
