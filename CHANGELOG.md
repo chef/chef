@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.81 -->
-## [v19.0.81](https://github.com/chef/chef/tree/v19.0.81) (2025-01-28)
+<!-- latest_release 19.0.82 -->
+## [v19.0.82](https://github.com/chef/chef/tree/v19.0.82) (2025-01-28)
 
 #### Merged Pull Requests
-- Release file handles after extraction [#14770](https://github.com/chef/chef/pull/14770) ([nielsbuus](https://github.com/nielsbuus))
+- ohai resource: ensure fix_automatic_attributes is called [#14761](https://github.com/chef/chef/pull/14761) ([mattp-](https://github.com/mattp-))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- ohai resource: ensure fix_automatic_attributes is called [#14761](https://github.com/chef/chef/pull/14761) ([mattp-](https://github.com/mattp-)) <!-- 19.0.82 -->
 - Release file handles after extraction [#14770](https://github.com/chef/chef/pull/14770) ([nielsbuus](https://github.com/nielsbuus)) <!-- 19.0.81 -->
 - Revert addition of native installers to main project [#14825](https://github.com/chef/chef/pull/14825) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.80 -->
 - Updating chef to remove foundation during builds [#14818](https://github.com/chef/chef/pull/14818) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.79 -->
