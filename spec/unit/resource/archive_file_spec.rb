@@ -95,7 +95,7 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       allow(File).to receive(:exist?).with(path).and_return(true)
       allow(File).to receive(:exist?).with(destination).and_return(true)
 
-      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 0).and_return(archive_reader)
+      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 0).and_yield(archive_reader)
       allow(archive_reader).to receive(:each_entry)
         .and_yield(archive_entry_1)
         .and_yield(archive_entry_2)
@@ -106,7 +106,7 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       allow(archive_reader).to receive(:extract).with(archive_entry_3, any_args)
       allow(archive_reader).to receive(:extract).with(archive_entry_4, any_args)
 
-      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 1).and_return(archive_reader_with_strip_components_1)
+      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 1).and_yield(archive_reader_with_strip_components_1)
       allow(archive_reader_with_strip_components_1).to receive(:each_entry)
         .and_yield(archive_entry_2_s1)
         .and_yield(archive_entry_3_s1)
@@ -115,7 +115,7 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       allow(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_3_s1, any_args)
       allow(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_4_s1, any_args)
 
-      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 2).and_return(archive_reader_with_strip_components_2)
+      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 2).and_yield(archive_reader_with_strip_components_2)
       allow(archive_reader_with_strip_components_2).to receive(:each_entry)
         .and_yield(archive_entry_4_s2)
       allow(archive_reader_with_strip_components_2).to receive(:extract).with(archive_entry_4_s2, any_args)
