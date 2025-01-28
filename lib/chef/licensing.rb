@@ -14,7 +14,7 @@ class Chef
         # Rest of platforms in pipeline will use legacy test-kitchen. 
         # Hence license validation for using test kitchen on Mac, windows, linux distributions using vagrant need to be skipped.
         if ENV["TEST_KITCHEN"]
-          if ChefUtils.windows? || ChefUtils.macos?
+          if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
             Chef::Log.info "Skipping license validation..."
           else # assume everything else is linux (??)
             if ChefUtils.docker? # this means we are using test-kitchen-enterprise hence license should be validated
