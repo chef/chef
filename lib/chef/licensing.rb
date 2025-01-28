@@ -2,16 +2,31 @@ require "chef-licensing"
 require_relative "log"
 require_relative "licensing_config"
 
+# To use platform helpers
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+
 class Chef
   class Licensing
     class << self
       def fetch_and_persist
+        Chef::Log.info "Fetching and persisting license..."
+        # test-kitchen-enterprise RC1 currently supports only docker driver and is available only on Linux x86_64
+        # Rest of platforms in pipeline will use legacy test-kitchen. 
+        # Hence license validation for using test kitchen on Mac, windows, linux distributions using vagrant need to be skipped.
         if ENV["TEST_KITCHEN"]
-          puts "Temporarily bypassing licensing check in Kitchen"
+          if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+            Chef::Log.info "Skipping license validation..."
+          else # assume everything else is linux (??)
+            if ChefUtils.docker? # this means we are using test-kitchen-enterprise hence license should be validated
+              license_keys = ChefLicensing.fetch_and_persist
+            else
+              Chef::Log.info "Skipping license validation..."
+            end
+          end
         else
-          Chef::Log.info "Fetching and persisting license..."
           license_keys = ChefLicensing.fetch_and_persist
         end
+        license_keys = ChefLicensing.fetch_and_persist
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
         Chef::Log.error "Chef Infra cannot execute without valid licenses." # TODO: Replace Infra with the product name dynamically
         Chef::Application.exit! "License not set", 174 # 174 is the exit code for LICENSE_NOT_SET defined in lib/chef/application/exit_code.rb
