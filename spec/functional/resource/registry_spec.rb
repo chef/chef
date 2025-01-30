@@ -278,7 +278,8 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       presource.run_action(:create)
 
       @new_resource.key(reg_child + "\\Ood")
-      @new_resource.values([{ name: "ReportingVal1", type: :string, data: "report1" }, { name: "ReportingVal2", type: :string, data: "report2" }])
+      key_values = [{ name: "ReportingVal1", type: :dword, data: rand(0..10000)}]
+      @new_resource.values(key_values)
       @new_resource.recursive(true)
       @new_resource.run_action(:create)
       @report = @resource_reporter.prepare_run_data
@@ -287,8 +288,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       expect(@report["resources"][0]["type"]).to eq("registry_key")
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_child + "\\Ood")
-      expect(@report["resources"][0]["after"][:values]).to eq([{ name: "ReportingVal1", type: :string, data: "report1" },
-                                                           { name: "ReportingVal2", type: :string, data: "report2" }])
+      expect(@report["resources"][0]["after"][:values]).to eq(key_values)
       expect(@report["resources"][0]["before"][:values]).to eq([])
       expect(@report["resources"][0]["result"]).to eq("create")
       expect(@report["status"]).to eq("success")
