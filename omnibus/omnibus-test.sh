@@ -87,7 +87,8 @@ hab pkg install chef/inspec/7.0.30/20250130053644
 echo " --- Let's Move Inspec to the embedded bin dir ---"
 echo " This is my inspec source path: $(pkg_path_for chef/inspec)/bin/inspec"
 echo " This is my embedded bin target dir: $EMBEDDED_BIN_DIR/inspec"
-cp "$(pkg_path_for chef/inspec)/bin/inspec" $EMBEDDED_BIN_DIR/inspec
+hab pkg list --all
+cp "$(pkg_path_for inspec)/bin/inspec" $EMBEDDED_BIN_DIR/inspec
 
 echo " --- Where in the world is Inspec? ---"
 find / -name inspec -type f
