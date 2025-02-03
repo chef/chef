@@ -82,7 +82,7 @@ export HAB_BLDR_CHANNEL="LTS-2024-current"
 export HAB_REFRESH_CHANNEL="LTS-2024-current"
 export HAB_LICENSE="accept-no-persist"
 curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash
-hab pkg install chef/inspec
+hab pkg install chef/inspec/7.0.30/20250130053644
 
 echo " --- Where in the world is Inspec? ---"
 find / -name inspec -type f
