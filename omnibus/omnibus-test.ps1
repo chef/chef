@@ -32,7 +32,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
   $TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
   [System.Net.ServicePointManager]::SecurityProtocol = $TLS12Protocol
 }
-Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/PowerShell-7.3.0-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
+Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.5.0/PowerShell-7.5.0-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
 Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
 $env:path += ";C:\Program Files\PowerShell\7"
 
@@ -119,10 +119,11 @@ Set-Location -Path $chefdir
 Get-Location
 
 # ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
-$Env:FORCE_FFI_YAJL = "ext"
+$env:FORCE_FFI_YAJL = "ext"
 
 # accept license
-$Env:CHEF_LICENSE = "accept-no-persist"
+$env:CHEF_LICENSE = "accept-no-persist"
+$env:HAB_LICENSE = "accept-no-persist"
 
 # some tests need winrm configured
 winrm quickconfig -quiet
@@ -130,6 +131,7 @@ If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # temp fix until we figure out whats going on in our specific environment as it pertains to unf_ext#
 gem install unf_ext -v 0.0.8.2 --source https://rubygems.org/gems/unf_ext
+gem install webmock # required for some tests. It gets filtered out during setup.
 
 bundle
 If ($lastexitcode -ne 0) { Throw $lastexitcode }

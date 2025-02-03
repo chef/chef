@@ -80,6 +80,7 @@ fi
 echo " --- Let's install Inspec ---"
 export HAB_BLDR_CHANNEL="LTS-2024"
 export HAB_REFRESH_CHANNEL="LTS-2024"
+export HAB_LICENSE="accept-no-persist"
 curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash
 hab pkg install chef/inspec
 
