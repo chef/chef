@@ -77,6 +77,11 @@ if [[ ! -L $USR_BIN_DIR/ohai ]] || [[ $(ls -l $USR_BIN_DIR/ohai | awk '{print$NF
   exit 1
 fi
 
+echo " --- Let's install Inspec ---"
+export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_REFRESH_CHANNEL="LTS-2024"
+hab pkg install chef/inspec
+
 echo " --- Where in the world is Inspec? ---"
 find / -name inspec -type f
 
