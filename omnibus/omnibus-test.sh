@@ -77,6 +77,9 @@ if [[ ! -L $USR_BIN_DIR/ohai ]] || [[ $(ls -l $USR_BIN_DIR/ohai | awk '{print$NF
   exit 1
 fi
 
+echo " --- Where in the world is Inspec? ---"
+find / -name inspec -type f
+
 if [[ ! -x $EMBEDDED_BIN_DIR/inspec ]]; then
   echo "$EMBEDDED_BIN_DIR/inspec does not exist!"
   exit 1
