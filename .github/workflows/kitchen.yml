@@ -27,7 +27,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_KEY: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
     - uses: actions/checkout@v4
@@ -79,7 +78,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_KEY: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
@@ -119,7 +117,6 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_KEY: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
@@ -128,8 +125,8 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
           sudo hab license accept
-          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
+          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo kitchen --version
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
@@ -157,7 +154,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
-      CHEF_LICENSE_KEY: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
     steps:
       - uses: actions/checkout@v4
