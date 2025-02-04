@@ -36,6 +36,7 @@ jobs:
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
         hab license accept
         hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+        $env:Path = $env:Path + ';C:\hab\bin'
         hab --version
         kitchen --version
       shell: pwsh
@@ -175,5 +176,6 @@ jobs:
           sudo hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-vagrant
           sudo hab --version
           sudo kitchen --version
+          sudo which kitchen
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: sudo kitchen test end-to-end-${{ matrix.os }}
