@@ -16,7 +16,7 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (>= 17.1.5)
-  chefstyle
+  cookstyle (>= 7.32.8)
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
