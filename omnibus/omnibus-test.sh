@@ -92,6 +92,11 @@ echo " Is hab actually installed?"
 export MYHAB=$(which hab)
 which hab
 "$MYHAB" pkg list --origin chef
+
+echo " Is Inspec even installed correctly?"
+export MYINSPEC=$(which inspec)
+which inspec
+"$MYINSPEC" --version
 cp "$(pkg_path_for inspec)/bin/inspec" $EMBEDDED_BIN_DIR/inspec
 
 echo " --- Where in the world is Inspec? ---"
