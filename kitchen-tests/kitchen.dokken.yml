@@ -2,7 +2,7 @@
 driver:
   name: dokken
   privileged: true
-  chef_image: chef/chef-hab
+#   chef_image: chef/chef-hab
   chef_version: unstable
 
 transport:
