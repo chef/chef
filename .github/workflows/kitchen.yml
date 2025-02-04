@@ -16,7 +16,10 @@ defaults:
     working-directory: kitchen-tests
 
 jobs:
+  # Test-kitchen-enterprise currently supports only linux platforms, 
+  # Hence we are testing on Windows using test-kitchen
   win_x86_64:
+    name: win_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -26,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
+      KITCHEN_LOCAL_YAML: kitchen-legacy.exec.windows.yml
     steps:
     - uses: actions/checkout@v4
     - name: Install Chef
@@ -34,7 +37,9 @@ jobs:
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
+  # Habitat does not support Mac yet. Hence we're testing on Mac systems using test-kitchen
   mac_x86_64:
+    name: mac_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +48,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      KITCHEN_LOCAL_YAML: kitchen-legacy.exec.macos.yml
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -55,6 +60,7 @@ jobs:
         run: kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
+    name: mac_arm64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -64,7 +70,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      KITCHEN_LOCAL_YAML: kitchen-legacy.exec.macos.yml
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -75,7 +81,9 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
+  # This block does end-to-end recipe using test-kitchen-enterprise using Habitat package of chef19
   docr_lnx_x86_64:
+    name: docr_lnx_x86_64(test-kitchen-enterprise)
     strategy:
       fail-fast: false
       matrix:
@@ -102,12 +110,20 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo kitchen --version
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
+  # chef-test-kitchen-enterprise RC1 currently supports only kitchen-dokken driver hence in this block we 
+  # will continue testing with test-kitchen
   vm_lnx_x86_64:
+    name: vm_lnx_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -132,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
+      KITCHEN_LOCAL_YAML: kitchen-legacy.linux.ci.yml
     steps:
       - uses: actions/checkout@v4
       - name: Install Vagrant and VirtualBox
