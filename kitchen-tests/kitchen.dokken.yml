@@ -2,8 +2,8 @@
 driver:
   name: dokken
   privileged: true
-  chef_image: chef/chef
-  chef_version: "18.3.0" # TODO: Change back to "current" after 18.6.2 container is fixed
+  chef_image: chef/chef-hab
+  chef_version: unstable
 
 transport:
   name: dokken

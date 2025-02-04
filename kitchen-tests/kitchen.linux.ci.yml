@@ -8,7 +8,7 @@ provisioner:
   name: chef_infra
   product_name: chef
   product_version: latest
-  channel: current
+  channel: unstable
   retry_on_exit_code:
     - 35 # 35 is the exit code signaling that the node is rebooting
   client_rb:
