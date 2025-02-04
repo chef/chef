@@ -93,10 +93,10 @@ export MYHAB=$(which hab)
 which hab
 "$MYHAB" pkg list --origin chef
 
-echo " Is Inspec even installed correctly?"
-export MYINSPEC=$(which inspec)
-which inspec
-"$MYINSPEC" --version
+# echo " Is Inspec even installed correctly?"
+# export MYINSPEC=$(which inspec)
+# which inspec
+# "$MYINSPEC" --version
 
 echo " What if we search for Inspec?"
 find / -name inspec -type f
