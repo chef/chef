@@ -92,6 +92,13 @@ def query(command):
     q = subj.get_best_query(sack, with_provides=True)
 
     if command['action'] == "whatinstalled":
+        # When attempting to figure out what is installed, we should ignore any
+        # excludes that are configured, otherwise the "best" query for a given
+        # subject may refer to a package that is installed that provides that
+        # subject, but we really want to know if a package by that name exists
+        # in any available repository
+        q = subj.get_best_query(sack, with_provides=True, query=sack.query(flags=hawkey.IGNORE_EXCLUDES))
+
         q = q.installed()
 
     if command['action'] == "whatavailable":
