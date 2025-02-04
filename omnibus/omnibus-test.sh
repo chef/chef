@@ -85,24 +85,17 @@ curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/in
 hab pkg install chef/inspec/7.0.30/20250130053644
 
 echo " --- Let's Move Inspec to the embedded bin dir ---"
-echo " This is my inspec source path: $(pkg_path_for chef/inspec)/bin/inspec"
-echo " This is my embedded bin target dir: $EMBEDDED_BIN_DIR/inspec"
 
 echo " Is hab actually installed?"
 export MYHAB=$(which hab)
 which hab
 "$MYHAB" pkg list --origin chef
 
-# echo " Is Inspec even installed correctly?"
-# export MYINSPEC=$(which inspec)
-# which inspec
-# "$MYINSPEC" --version
-
 echo " What if we search for Inspec?"
-find / -name inspec -type f
+inspec="$(find / -name inspec -type f | head -n 1)"
 
 echo " copying the binary to the embedded bin dir"
-cp "$(pkg_path_for inspec)/bin/inspec" $EMBEDDED_BIN_DIR/inspec
+cp "${inspec}" $EMBEDDED_BIN_DIR/inspec
 
 echo " --- Where in the world is Inspec? ---"
 find / -name inspec -type f
