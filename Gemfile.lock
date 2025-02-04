@@ -37,13 +37,13 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.0.61)
+    chef (19.0.85)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.0.61)
+      chef-config (= 19.0.85)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.0.61)
+      chef-utils (= 19.0.85)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -72,14 +72,14 @@ PATH
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-    chef (19.0.61-universal-mingw-ucrt)
+    chef (19.0.85-universal-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.0.61)
+      chef-config (= 19.0.85)
       chef-licensing (>= 0.7.5)
       chef-powershell (~> 18.1.0)
-      chef-utils (= 19.0.61)
+      chef-utils (= 19.0.85)
       chef-vault
       chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
@@ -123,15 +123,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.0.61)
-      chef (= 19.0.61)
+    chef-bin (19.0.85)
+      chef (= 19.0.85)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.0.61)
+    chef-config (19.0.85)
       addressable
-      chef-utils (= 19.0.61)
+      chef-utils (= 19.0.85)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -140,7 +140,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.0.61)
+    chef-utils (19.0.85)
       concurrent-ruby
 
 GEM
@@ -319,14 +319,14 @@ GEM
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.3.4)
+    mixlib-shellout (3.3.6)
       chef-utils
-    mixlib-shellout (3.3.4-universal-mingw32)
+    mixlib-shellout (3.3.6-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.3.4-x64-mingw-ucrt)
+    mixlib-shellout (3.3.6-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)

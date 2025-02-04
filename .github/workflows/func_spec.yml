@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, windows-2022]
+        os: [windows-2019, windows-2022, windows-2025]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}

@@ -1,17 +1,41 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.61 -->
-## [v19.0.61](https://github.com/chef/chef/tree/v19.0.61) (2024-12-17)
+<!-- latest_release 19.0.85 -->
+## [v19.0.85](https://github.com/chef/chef/tree/v19.0.85) (2025-02-04)
 
 #### Merged Pull Requests
-- Bump cheffish to 17.1.8 [#14758](https://github.com/chef/chef/pull/14758) ([neha-p6](https://github.com/neha-p6))
+- [Metadata#recipes_from_cookbook_version] Use end_with? [#14830](https://github.com/chef/chef/pull/14830) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Metadata#recipes_from_cookbook_version] Use end_with? [#14830](https://github.com/chef/chef/pull/14830) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.85 -->
+- dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14821](https://github.com/chef/chef/pull/14821) ([vmagro](https://github.com/vmagro)) <!-- 19.0.84 -->
+- [RemoteFileVendor#get_filename] Do O(1) search for filename [#14829](https://github.com/chef/chef/pull/14829) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.83 -->
+- ohai resource: ensure fix_automatic_attributes is called [#14761](https://github.com/chef/chef/pull/14761) ([mattp-](https://github.com/mattp-)) <!-- 19.0.82 -->
+- Release file handles after extraction [#14770](https://github.com/chef/chef/pull/14770) ([nielsbuus](https://github.com/nielsbuus)) <!-- 19.0.81 -->
+- Revert addition of native installers to main project [#14825](https://github.com/chef/chef/pull/14825) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.80 -->
+- Updating chef to remove foundation during builds [#14818](https://github.com/chef/chef/pull/14818) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.79 -->
+- fix compliance phase reporting when quiet mode is set to true [#14779](https://github.com/chef/chef/pull/14779) ([rishichawda](https://github.com/rishichawda)) <!-- 19.0.78 -->
+- Revert &quot;Removing Chef-Foundation from the builds&quot; [#14816](https://github.com/chef/chef/pull/14816) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.77 -->
+- Prepare hab based chef-infra-client rpm [#14772](https://github.com/chef/chef/pull/14772) ([sajjaphani](https://github.com/sajjaphani)) <!-- 19.0.76 -->
+- Added deb installer for chef infra-client [#14775](https://github.com/chef/chef/pull/14775) ([sougata-progress](https://github.com/sougata-progress)) <!-- 19.0.75 -->
+- Bump mixlib-shellout to 3.3.6 to pull in Target mode fixes [#14807](https://github.com/chef/chef/pull/14807) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.74 -->
+- Fixes for yum packages and various other failing resources [#14786](https://github.com/chef/chef/pull/14786) ([thheinen](https://github.com/thheinen)) <!-- 19.0.73 -->
+- Fix for error when &#39;chef-vault&#39; attr undefined [#14811](https://github.com/chef/chef/pull/14811) ([freakinhippie](https://github.com/freakinhippie)) <!-- 19.0.72 -->
+- Removing Chef-Foundation from the builds [#14815](https://github.com/chef/chef/pull/14815) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.71 -->
+- try symlink for install [#14799](https://github.com/chef/chef/pull/14799) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.70 -->
+- Updating the plan file [#14797](https://github.com/chef/chef/pull/14797) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.69 -->
+- Remove 2012 testers from bk adhoc [#14789](https://github.com/chef/chef/pull/14789) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.68 -->
+- Shorten the rspec test data file names which might end up throwing file not found error on windows upon gem installation [#14788](https://github.com/chef/chef/pull/14788) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.67 -->
+- remove eol&#39;d platforms from testing [#14790](https://github.com/chef/chef/pull/14790) ([Stromweld](https://github.com/Stromweld)) <!-- 19.0.66 -->
+- [Backport] - Updating Windows 11 testing [#14787](https://github.com/chef/chef/pull/14787) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.0.65 -->
+- Update macos GA func_spec to use 13, 14, 15 and latest [#14784](https://github.com/chef/chef/pull/14784) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.64 -->
+- Fix `knife user create` with provided `--user-key` [#14682](https://github.com/chef/chef/pull/14682) ([drewhammond](https://github.com/drewhammond)) <!-- 19.0.63 -->
+- Bump foundation to 3.2.12 [#14781](https://github.com/chef/chef/pull/14781) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.62 -->
 - Bump cheffish to 17.1.8 [#14758](https://github.com/chef/chef/pull/14758) ([neha-p6](https://github.com/neha-p6)) <!-- 19.0.61 -->
 - Remove macos-12 from GA kitchen-tests [#14755](https://github.com/chef/chef/pull/14755) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.60 -->
 - [RemoteFileVendor#get_filename] only do one files_for [#14705](https://github.com/chef/chef/pull/14705) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.59 -->

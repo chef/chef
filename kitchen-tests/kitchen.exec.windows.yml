@@ -44,8 +44,8 @@ lifecycle:
     - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
     - remote: bundle install --jobs=3 --retry=3
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    - remote: chef-client --chef-license-key=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
 
 platforms:
   - name: windows-2019
   - name: windows-2022
+  - name: windows-2025

@@ -23,6 +23,7 @@ jobs:
         os:
           - windows-2019
           - windows-2022
+          - windows-2025
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
@@ -30,8 +31,13 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
     - uses: actions/checkout@v4
-    - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
-      uses: actionshub/chef-install@3.0.0
+    - name: Install chef-test-kitchen-enterprise
+      run: |
+        curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+        sudo hab license accept
+        sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+        sudo hab --version
+        sudo kitchen --version
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -51,8 +57,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-      - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo hab --version
+          sudo kitchen --version
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -73,8 +84,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-      - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo hab --version
+          sudo kitchen --version
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -114,7 +130,7 @@ jobs:
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
-        run: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835 && kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen test end-to-end-${{ matrix.os }}
 
   vm_lnx_x86_64:
     strategy:
@@ -150,10 +166,16 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox-7.0
+          sudo apt-get install -y vagrant virtualbox-7.1
           sudo vagrant --version
           sudo VBoxManage --version
-      - name: Install Chef # TODO: switch to chef-test-kitchen-enterprise when it supports vagrant driver
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-vagrant
+          sudo hab --version
+          sudo kitchen --version
       - name: Kitchen Test
-        run: export CHEF_LICENSE_KEY=free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835 && export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
+        run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}

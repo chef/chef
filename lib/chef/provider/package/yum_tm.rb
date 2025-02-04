@@ -24,6 +24,14 @@ class Chef
         provides :package, platform_family: "fedora_derived", target_mode: true, agent_mode: false
         provides :yum_package, target_mode: true, agent_mode: false
 
+        def load_current_resource
+          @current_resource = Chef::Resource::YumPackage.new(new_resource.name)
+          current_resource.package_name(new_resource.package_name)
+          current_resource.version(get_current_versions)
+
+          current_resource
+        end
+
         def install_package(names, versions)
           if new_resource.source
             yum(options, "-y", "install", new_resource.source)
@@ -42,6 +50,17 @@ class Chef
           package_name_array.each.map do |pkg, i|
             cmd = shell_out("rpm -q --queryformat='%{VERSION}' #{pkg}")
             cmd.exitstatus == 1 ? nil : cmd.stdout
+          end
+        end
+
+        def candidate_version
+          @candidate_version ||= get_candidate_versions
+        end
+
+        def get_candidate_versions
+          package_name_array.map do |package_name|
+            stdout = package_query_raw(package_name)
+            stdout.match(/^Version +: (.+)$/)[1]
           end
         end
 
@@ -77,21 +96,27 @@ class Chef
           else
             logger.info("Retrieving package information from repository server (please wait)...")
 
-            cmdline = "yum info #{provides}"
-            cmdline += "-#{version} " unless version.nil?
-            cmdline += " --forcearch=#{arch} " unless arch.nil?
+            stdout = package_query_raw(provides, arch, version, options)
 
-            cmd = shell_out(cmdline)
-            if cmd.exitstatus != 0
-              raise Chef::Exceptions::Package, "#{new_resource.package_name} caused a repository error: #{cmd.stderr}"
-            else
-              Chef::Provider::Package::Yum::Version.new(
-                provides,
-                cmd.stdout.match(/^Version +: (.+)$/)[1],
-                cmd.stdout.match(/^Architecture +: (.+)$/)[1]
-              )
-            end
+            Chef::Provider::Package::Yum::Version.new(
+              provides,
+              stdout.match(/^Version +: (.+)$/)[1],
+              stdout.match(/^Architecture +: (.+)$/)[1]
+            )
           end
+        end
+
+        def package_query_raw(provides, arch: nil, version: nil, options: {})
+          cmdline = "yum info #{provides}"
+          cmdline += "-#{version} " unless version.nil?
+          cmdline += " --forcearch=#{arch} " unless arch.nil?
+
+          cmd = shell_out(cmdline)
+          if cmd.exitstatus != 0
+            raise Chef::Exceptions::Package, "#{new_resource.package_name} caused a repository error: #{cmd.stderr}"
+          end
+
+          cmd.stdout
         end
 
         def yum_binary
