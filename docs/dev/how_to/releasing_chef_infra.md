@@ -116,6 +116,16 @@ Note: You may need to be added as a maintainer on [Chocolatey.org](https://choco
 Please make sure cookstyle is working properly & auto correcting detected offenses for any of the cookbooks you are trying to test against the newer version of Chef Infra Client
 Reference doc - https://github.com/chef/cookstyle#usage
 
+### Bumping Chef version inside Knife
+
+Knife is released as a separate gem, but currently resides under the same GitHub repository.
+Whenever we release a new Infra Client version, bump the version in knife's Gemfile.lock.
+
+Create and merge a PR after running the following commands:
+
+- `cd knife`
+- `bundle update chef --conservative`
+
 ### Relax
 
 You're done. You have a month to relax.
