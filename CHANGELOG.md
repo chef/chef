@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.13 -->
-## [v18.6.13](https://github.com/chef/chef/tree/v18.6.13) (2025-01-27)
+<!-- latest_release 18.6.14 -->
+## [v18.6.14](https://github.com/chef/chef/tree/v18.6.14) (2025-02-05)
 
 #### Merged Pull Requests
-- Changes required for the knife standalone release [#14820](https://github.com/chef/chef/pull/14820) ([ashiqueps](https://github.com/ashiqueps))
+- Housekeeping changes for Knife [#14831](https://github.com/chef/chef/pull/14831) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Housekeeping changes for Knife [#14831](https://github.com/chef/chef/pull/14831) ([neha-p6](https://github.com/neha-p6)) <!-- 18.6.14 -->
 - Changes required for the knife standalone release [#14820](https://github.com/chef/chef/pull/14820) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.13 -->
 - Updating rexml to get past a cve [#14823](https://github.com/chef/chef/pull/14823) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.12 -->
 - [backport] quiet mode fix for compliance phase [#14817](https://github.com/chef/chef/pull/14817) ([rishichawda](https://github.com/rishichawda)) <!-- 18.6.11 -->
