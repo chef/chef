@@ -77,6 +77,21 @@ if [[ ! -L $USR_BIN_DIR/ohai ]] || [[ $(ls -l $USR_BIN_DIR/ohai | awk '{print$NF
   exit 1
 fi
 
+echo " --- Let's install Inspec ---"
+export HAB_BLDR_CHANNEL="LTS-2024-current"
+export HAB_REFRESH_CHANNEL="LTS-2024-current"
+export HAB_LICENSE="accept-no-persist"
+curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash
+hab pkg install chef/inspec/7.0.30/20250130053644
+
+echo " --- Let's Move Inspec to the embedded bin dir ---"
+
+echo " What if we search for Inspec?"
+inspec="$(find / -name inspec -type f | head -n 1)"
+
+echo " copying the binary to the embedded bin dir"
+cp "${inspec}" $EMBEDDED_BIN_DIR/inspec
+
 if [[ ! -x $EMBEDDED_BIN_DIR/inspec ]]; then
   echo "$EMBEDDED_BIN_DIR/inspec does not exist!"
   exit 1

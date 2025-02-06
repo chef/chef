@@ -4,10 +4,13 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+gem "inspec", git: "https://github.com/inspec/inspec.git", branch: "inspec-7"
+gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
+
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "ffi", ">= 1.15.5"
+gem "ffi", ">= 1.15.5", "<= 1.17.0"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
@@ -18,6 +21,9 @@ end
 
 # since we are using ruby 3.1.x, rdoc needs to be on 6.4.1.1 so we use this
 gem "rdoc", "~> 6.4.1"
+
+# Moving webmock here - the testers keep filtering this out and tests are failing
+gem "webmock"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
@@ -32,7 +38,7 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 6.8" # need to provide the binaries for inspec
+  # gem "inspec-core-bin", "~> 6.8" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
@@ -62,7 +68,7 @@ end
 group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
-  gem "webmock"
+  # gem "webmock"
   gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end
