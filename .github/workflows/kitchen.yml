@@ -65,13 +65,8 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          df -h
-          which hab
-          whereis hab
-          ls -alh /usr/local/bin/hab
-          ls -alh /usr/local
           # hab license 'accept-no-persist'
-          sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo HAB_LICENSE='accept-no-persist' /usr/local/bin/hab pkg install --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
