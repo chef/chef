@@ -29,13 +29,13 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept-no-persist
-      PATH: $env:PATH;C:\hab\bin
     steps:
     - uses: actions/checkout@v4
     - name: Install chef-test-kitchen-enterprise
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+        hab --license 'accept-no-persist'
         hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
         hab --version
         kitchen --version
@@ -55,7 +55,6 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       CHEF_LICENSE_KEY: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-      HAB_LICENSE: accept-no-persist
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -64,6 +63,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          hab --license 'accept-no-persist'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
@@ -81,7 +81,6 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-      HAB_LICENSE: accept-no-persist
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -90,6 +89,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          hab --license 'accept-no-persist'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
@@ -120,13 +120,13 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-      HAB_LICENSE: accept-no-persist
     steps:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          hab --license 'accept-no-persist'
           sudo hab --version
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo kitchen --version
@@ -157,7 +157,6 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
-      HAB_LICENSE: accept-no-persist
     steps:
       - uses: actions/checkout@v4
       - name: Install Vagrant and VirtualBox
@@ -173,6 +172,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          hab --license 'accept-no-persist'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-vagrant
           sudo hab --version
