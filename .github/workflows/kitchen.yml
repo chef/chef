@@ -68,7 +68,8 @@ jobs:
           df -h
           which hab
           whereis hab
-          ls -alh /hab
+          ls -alh /usr/local/bin/hab
+          ls -alh /usr/local
           # hab license 'accept-no-persist'
           sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version

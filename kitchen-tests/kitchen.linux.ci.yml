@@ -25,6 +25,7 @@ lifecycle:
       includes:
         - fedora-latest
     - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: hab license accept-no-persist
     - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-clientchef-client -v
