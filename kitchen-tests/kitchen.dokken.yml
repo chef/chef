@@ -20,24 +20,22 @@ provisioner:
 
 lifecycle:
   pre_converge:
-    - remote: |
-      echo "Chef container's Chef / Ohai release:"
-      /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
-      /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
-      echo "Installing appbundler and appbundle-updater gems:"
-      /hab/bin/hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
+    - remote: echo "Chef container's Chef / Ohai release:"
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
+    - remote: echo "Installing appbundler and appbundle-updater gems:"
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
       # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
         - opensuse-leap-15
         - debian-11
-    - remote: |
-      echo "Updating Chef using appbundler-updater:"
-      /hab/bin/hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      /hab/bin/hab pkg exec chef/chef-infra-client chef-client --chef-license accept
-      echo "Installed Chef / Ohai release:"
-      /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
-      /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
+    - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client --chef-license accept
+    - remote: echo "Installed Chef / Ohai release:"
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
 
 platforms:
   - name: amazonlinux-2023

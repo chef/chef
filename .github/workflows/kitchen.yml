@@ -35,6 +35,7 @@ jobs:
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+        $env:PATH = 'C:\hab\bin;' + $env:PATH
         hab license 'accept-no-persist'
         hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
         hab --version
@@ -64,6 +65,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          df -h
           # hab license 'accept-no-persist'
           sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
@@ -173,7 +175,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          hab license 'accept-no-persist'
+          # hab license 'accept-no-persist'
           sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-vagrant
           sudo hab --version
