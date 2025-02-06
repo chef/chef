@@ -64,7 +64,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          export HAB_LICENSE='accept-no-persist'
+          export HAB_LICENSE='accept'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
@@ -76,7 +76,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14 # currently macos-latest
+          - macos-14
           - macos-15
     runs-on: ${{ matrix.os }}
     env:
@@ -90,7 +90,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          export HAB_LICENSE='accept-no-persist'
+          export HAB_LICENSE='accept'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
