@@ -12,7 +12,7 @@ lifecycle:
   pre_converge:
     - remote: brew install coreutils
     - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c unstable
-    - remote: export PATH="/hab/chef/bin:/opt/chef/embedded/bin:$PATH"
+    - remote: export PATH="/hab/bin:$PATH"
     - remote: echo "Chef / Ohai release:"
     - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
     - remote: /hab/bin/hab pkg exec chef/chef-infra-client ohai -v

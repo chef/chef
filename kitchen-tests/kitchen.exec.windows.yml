@@ -10,10 +10,13 @@ transport:
 
 lifecycle:
   pre_converge:
+    - remote: Set-ExecutionPolicy Bypass -Scope Process -Force
     - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     - remote: $env:HAB_LICENSE = 'accept-no-persist'
-    - remote: $env:PATH = "C:\hab\bin;" + $env:PATH
     - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
+    - remote: $env:Path = $env:Path + ';C:\hab\bin'
+    - remote: hab --version
+    - remote: chef-client --version
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
     - remote: hab pkg exec chef/chef-infra-client rake --version
