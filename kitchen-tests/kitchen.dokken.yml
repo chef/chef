@@ -21,7 +21,10 @@ provisioner:
 lifecycle:
   pre_converge:
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: ls -alh /opt/chef
+    - remote: ls -alh /hab
+    - remote: ls -alh /hab/bin
+    # - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
     - remote: /hab/bin/hab license accept
     - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
     - remote: /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
