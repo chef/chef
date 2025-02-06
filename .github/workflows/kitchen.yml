@@ -36,7 +36,7 @@ jobs:
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
         $env:PATH = 'C:\hab\bin;' + $env:PATH
-        hab license 'accept-no-persist'
+        hab license accept
         hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
         hab --version
         kitchen --version
@@ -133,7 +133,7 @@ jobs:
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
-        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
+        run: sudo HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
 
   vm_lnx_x86_64:
     strategy:
@@ -181,4 +181,4 @@ jobs:
           sudo kitchen --version
           sudo which kitchen
       - name: Kitchen Test
-        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
+        run: sudo HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
