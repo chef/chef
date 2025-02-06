@@ -66,12 +66,15 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
           df -h
+          which hab
+          whereis hab
+          ls -alh /hab
           # hab license 'accept-no-persist'
           sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
@@ -97,7 +100,7 @@ jobs:
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -134,7 +137,7 @@ jobs:
           sudo hab --version
           sudo kitchen --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
 
   vm_lnx_x86_64:
     strategy:
@@ -182,4 +185,4 @@ jobs:
           sudo kitchen --version
           sudo which kitchen
       - name: Kitchen Test
-        run: sudo kitchen test end-to-end-${{ matrix.os }}
+        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}

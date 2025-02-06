@@ -10,10 +10,11 @@ transport:
 
 lifecycle:
   pre_converge:
+    - remote: Import-Module Microsoft.PowerShell.Security
     - remote: Set-ExecutionPolicy Bypass -Scope Process -Force
     - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     - remote: $env:HAB_LICENSE = 'accept-no-persist'
-    - remote: $env:Path = $env:Path + ';C:\hab\bin'
+    - remote: $env:Path = 'C:\hab\bin;' + $env:Path
     - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
     - remote: hab --version
     - remote: chef-client --version
