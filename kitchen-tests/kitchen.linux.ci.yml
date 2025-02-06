@@ -21,25 +21,22 @@ provisioner:
 
 lifecycle:
   pre_converge:
-    - remote: sudo apt-get update && sudo apt-get install -y curl
-      includes:
-        - ubuntu-18.04
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-latest
-    - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
-    - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
+    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    - remote: hab pkg exec chef/chef-infra-clientchef-client -v
+    - remote: hab pkg exec chef/chef-infra-clientohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: sudo hab pkg exec chef/chef-infra-clientgem install appbundler appbundle-updater --no-doc
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-    - remote: /opt/chef/bin/chef-client --chef-license accept
+    - remote: sudo hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: hab pkg exec chef/chef-infra-client chef-client --chef-license accept
     - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: hab pkg exec chef/chef-infra-client ohai -v
 
 verifier:
   name: inspec

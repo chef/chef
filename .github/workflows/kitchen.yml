@@ -34,14 +34,16 @@ jobs:
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-        hab license accept
+        $env:HAB_LICENSE = 'accept-no-persist'
         hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
         $env:Path = $env:Path + ';C:\hab\bin'
         hab --version
         kitchen --version
       shell: pwsh
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: |
+        $env:Path = $env:Path + ';C:\hab\bin'
+        kitchen test end-to-end-${{ matrix.os }}
 
   mac_x86_64:
     strategy:
@@ -62,7 +64,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
+          sudo export HAB_LICENSE='accept-no-persist'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
@@ -88,7 +90,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
+          sudo export HAB_LICENSE='accept-no-persist'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab --version
           sudo kitchen --version
@@ -125,7 +127,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
+          sudo export HAB_LICENSE='accept-no-persist'
           sudo hab --version
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo kitchen --version
@@ -171,7 +173,7 @@ jobs:
       - name: Install chef-test-kitchen-enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
+          sudo export HAB_LICENSE='accept-no-persist'
           sudo hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           sudo hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-vagrant
           sudo hab --version
