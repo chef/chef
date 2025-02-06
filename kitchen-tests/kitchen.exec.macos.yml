@@ -10,22 +10,22 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: |
-      brew install coreutils
-      curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c unstable
-      export PATH="/hab/bin:$PATH"
-      echo "Chef / Ohai release:"
-      /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
-      /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
-      echo "Installing appbundler and appbundle-updater gems:"
-      sudo /hab/bin/hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
-      echo "Updating Chef using appbundler-updater:"
-      sudo /hab/bin/hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
-      /hab/bin/hab pkg exec chef/chef-infra-client chef-client --chef-license accept
-      echo "Installed Chef / Ohai release:"
-      /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
-      /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
+    - remote: brew install coreutils
+    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c unstable
+    - remote: export PATH="/hab/bin:$PATH"
+    - remote: echo "Chef / Ohai release:"
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
+    - remote: echo "Installing appbundler and appbundle-updater gems:"
+    - remote: sudo /hab/bin/hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
+    - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: sudo /hab/bin/hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    # - remote: sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client --chef-license accept
+    - remote: echo "Installed Chef / Ohai release:"
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: /hab/bin/hab pkg exec chef/chef-infra-client ohai -v
 
 platforms:
   - name: macos-15 # arm64

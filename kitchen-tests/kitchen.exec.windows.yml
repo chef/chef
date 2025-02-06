@@ -10,47 +10,45 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: |
-      Import-Module Microsoft.PowerShell.Security
-      Set-ExecutionPolicy Bypass -Scope Process -Force
-      iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-      $env:HAB_LICENSE = 'accept-no-persist'
-      $env:Path = $env:Path + ';C:\hab\bin'
-      hab pkg install --binlink --force chef/chef-infra-client --channel unstable
-      hab --version
-      chef-client --version
-      hab pkg exec chef/chef-infra-client chef-client -v
-      hab pkg exec chef/chef-infra-client ohai -v
-      hab pkg exec chef/chef-infra-client rake --version
-      hab pkg exec chef/chef-infra-client bundle -v
-      $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
-      # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
-      # This leads to failures during testing. Moving that file to its correct position here.
-      # Another example of 'bad' that needs to be corrected
-      $output = gci -path C:\hab\ -file ansidecl.h -Recurse
-      # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
-      # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
-      # making the leap that ansidecl.h isn't going to vary in a way that will fail subtly.
-      if ($output -is [Array]) { $output = $output[0] }
-      $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
-      Move-Item -Path $output.FullName -Destination $target_path
-      # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
-      # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
-      # libyajl2 build if already present. gem install seems to build anyway.
-      hab pkg exec chef/chef-infra-client gem uninstall -I libyajl2
-      hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
-      If ($lastexitcode -ne 0) { Exit $lastexitcode }
-      hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      If ($lastexitcode -ne 0) { Exit $lastexitcode }
-      Write-Output "Installed Chef / Ohai release:"
-      hab pkg exec chef/chef-infra-client chef-client -v
-      If ($lastexitcode -ne 0) { Exit $lastexitcode }
-      hab pkg exec chef/chef-infra-client ohai -v
-      If ($lastexitcode -ne 0) { Exit $lastexitcode }
-      # htmldiff and ldiff on windows cause a conflict with gems being loaded below. we remove thenm here.
-      # - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
-      hab pkg exec chef/chef-infra-client bundle install --jobs=3 --retry=3
-      If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: Set-ExecutionPolicy Bypass -Scope Process -Force
+    - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+    - remote: $env:HAB_LICENSE = 'accept-no-persist'
+    - remote: $env:Path = $env:Path + ';C:\hab\bin'
+    - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
+    - remote: hab --version
+    - remote: chef-client --version
+    - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: hab pkg exec chef/chef-infra-client ohai -v
+    - remote: hab pkg exec chef/chef-infra-client rake --version
+    - remote: hab pkg exec chef/chef-infra-client bundle -v
+    - remote: $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
+    # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
+    # This leads to failures during testing. Moving that file to its correct position here.
+    # Another example of 'bad' that needs to be corrected
+    - remote: $output = gci -path C:\hab\ -file ansidecl.h -Recurse
+    # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
+    # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
+    # making the leap that ansidecl.h isn't going to vary in a way that will fail subtly.
+    - remote: if ($output -is [Array]) { $output = $output[0] }
+    - remote: $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+    - remote: Move-Item -Path $output.FullName -Destination $target_path
+    # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
+    # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
+    # libyajl2 build if already present. gem install seems to build anyway.
+    - remote: hab pkg exec chef/chef-infra-client gem uninstall -I libyajl2
+    - remote: hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: Write-Output "Installed Chef / Ohai release:"
+    - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: hab pkg exec chef/chef-infra-client ohai -v
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    # htmldiff and ldiff on windows cause a conflict with gems being loaded below. we remove thenm here.
+    # - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
+    - remote: hab pkg exec chef/chef-infra-client bundle install --jobs=3 --retry=3
+    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
 platforms:
   - name: windows-2019

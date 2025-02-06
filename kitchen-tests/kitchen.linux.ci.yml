@@ -24,20 +24,19 @@ lifecycle:
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-latest
-    - remote: |
-      curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-      hab pkg install --binlink --force chef/chef-infra-client --channel unstable
-      echo "Chef container's Chef / Ohai release:"
-      hab pkg exec chef/chef-infra-clientchef-client -v
-      hab pkg exec chef/chef-infra-clientohai -v
-      echo "Installing appbundler and appbundle-updater gems:"
-      sudo hab pkg exec chef/chef-infra-clientgem install appbundler appbundle-updater --no-doc
-      echo "Updating Chef using appbundler-updater:"
-      sudo hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      hab pkg exec chef/chef-infra-client chef-client --chef-license accept
-      echo "Installed Chef / Ohai release:"
-      hab pkg exec chef/chef-infra-client chef-client -v
-      hab pkg exec chef/chef-infra-client ohai -v
+    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
+    - remote: echo "Chef container's Chef / Ohai release:"
+    - remote: hab pkg exec chef/chef-infra-clientchef-client -v
+    - remote: hab pkg exec chef/chef-infra-clientohai -v
+    - remote: echo "Installing appbundler and appbundle-updater gems:"
+    - remote: sudo hab pkg exec chef/chef-infra-clientgem install appbundler appbundle-updater --no-doc
+    - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: sudo hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: hab pkg exec chef/chef-infra-client chef-client --chef-license accept
+    - remote: echo "Installed Chef / Ohai release:"
+    - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: hab pkg exec chef/chef-infra-client ohai -v
 
 verifier:
   name: inspec
