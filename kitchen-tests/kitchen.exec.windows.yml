@@ -11,8 +11,9 @@ transport:
 lifecycle:
   pre_converge:
     - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+    - remote: ls c:\hab
     - remote: ls c:\hab\bin\
-    - remote: 'Get-Childitem –Path C:\ -Include hab.bat -File -Recurse -ErrorAction SilentlyContinue'
+    # - remote: 'Get-Childitem –Path C:\ -Include hab.bat -File -Recurse -ErrorAction SilentlyContinue'
     - remote: c:\hab\bin\hab license accept
     - remote: c:\hab\bin\hab pkg install --binlink --force chef/chef-infra-client --channel unstable
     - remote: c:\hab\bin\hab --version
