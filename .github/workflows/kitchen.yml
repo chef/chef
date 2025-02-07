@@ -42,7 +42,9 @@ jobs:
         kitchen --version
       shell: pwsh
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: |
+        $env:PATH = 'C:\hab\bin;' + $env:PATH
+        kitchen test end-to-end-${{ matrix.os }}
 
   mac_x86_64:
     strategy:
@@ -176,4 +178,5 @@ jobs:
           sudo kitchen --version
           sudo which kitchen
       - name: Kitchen Test
-        run: HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen test end-to-end-${{ matrix.os }}
+        # run: HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
