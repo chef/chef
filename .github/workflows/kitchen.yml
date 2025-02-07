@@ -23,16 +23,28 @@ jobs:
         os:
           - windows-2019
           - windows-2022
+          - windows-2025
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
+      HAB_LICENSE: accept-no-persist
     steps:
     - uses: actions/checkout@v4
-    - name: Install Chef
-      uses: actionshub/chef-install@3.0.0
+    - name: Install chef-test-kitchen-enterprise
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+        $env:PATH = 'C:\hab\bin;' + $env:PATH
+        hab license accept
+        hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+        hab --version
+        kitchen --version
+      shell: pwsh
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: |
+        $env:PATH = 'C:\hab\bin;' + $env:PATH
+        kitchen test end-to-end-${{ matrix.os }}
 
   mac_x86_64:
     strategy:
@@ -43,23 +55,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-            clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+          clean: true
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          # hab license 'accept-no-persist'
+          sudo HAB_LICENSE='accept-no-persist' /usr/local/bin/hab pkg install --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo hab --version
+          sudo kitchen --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - macos-14 # currently macos-latest
+          - macos-14
           - macos-15
     runs-on: ${{ matrix.os }}
     env:
@@ -70,10 +88,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          # hab license 'accept-no-persist'
+          sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo hab --version
+          sudo kitchen --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: sudo hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -91,9 +114,8 @@ jobs:
           - oraclelinux-9
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-2004
           - ubuntu-2204
-          # - ubuntu-2404
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -102,8 +124,13 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          # hab license 'accept-no-persist'
+          sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo hab --version
+          sudo kitchen --version
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -112,7 +139,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - amazonlinux-2
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
@@ -120,15 +146,12 @@ jobs:
           - debian-12
           - fedora-latest
           - opensuse-leap-15
-          - oracle-7
           - oracle-8
           - oracle-9
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-1804
-          - ubuntu-2004
           - ubuntu-2204
-          # - ubuntu-2404
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
@@ -142,10 +165,18 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox-7.0
+          sudo apt-get install -y vagrant virtualbox-7.1
           sudo vagrant --version
           sudo VBoxManage --version
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+      - name: Install chef-test-kitchen-enterprise
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          # hab license 'accept-no-persist'
+          sudo HAB_LICENSE='accept-no-persist' hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-vagrant
+          sudo hab --version
+          sudo kitchen --version
+          sudo which kitchen
       - name: Kitchen Test
-        run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen test end-to-end-${{ matrix.os }}
+        # run: HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
