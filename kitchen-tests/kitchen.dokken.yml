@@ -28,7 +28,7 @@ lifecycle:
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /hab/hab pkg install core/git --binlink --force
     - remote: /hab/hab pkg exec chef/chef-infra-client gem install specific_install appbundler --no-doc
-    - remote: /hab/hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater
+    - remote: /hab/hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater -b main
       # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
