@@ -35,7 +35,7 @@ lifecycle:
         - opensuse-leap-15
         - debian-11
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: /hab/hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: /hab/hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: /hab/hab pkg exec chef/chef-infra-client chef-client --chef-license accept
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /hab/hab pkg exec chef/chef-infra-client chef-client -v

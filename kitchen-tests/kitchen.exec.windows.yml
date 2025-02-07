@@ -12,6 +12,9 @@ lifecycle:
   pre_converge:
     - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     - remote: echo TEST1
+    - remote: (get-command hab.bat).Path
+    - remote: (get-command hab).Path
+    - remote: echo $env:PATH
     - remote: Get-Childitem C:\\ -Name hab.* -Recurse # -ErrorAction SilentlyContinue
     - remote: echo TEST2
     - remote: Get-Childitem -Path C:\\ -Include *hab* -File -Recurse # -ErrorAction SilentlyContinue
@@ -40,7 +43,7 @@ lifecycle:
 #     - remote: c:\hab\bin\hab pkg exec chef/chef-infra-client gem uninstall -I libyajl2
 #     - remote: c:\hab\bin\hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
 #     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-#     - remote: c:\hab\bin\hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+#     - remote: c:\hab\bin\hab pkg exec chef/chef-infra-client appbundle-updater chef chef- <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
 #     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
 #     - remote: Write-Output "Installed Chef / Ohai release:"
 #     - remote: c:\hab\bin\hab pkg exec chef/chef-infra-client chef-client -v
