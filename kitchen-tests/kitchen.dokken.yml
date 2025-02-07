@@ -26,7 +26,8 @@ lifecycle:
     - remote: /hab/hab pkg exec chef/chef-infra-client chef-client -v
     - remote: /hab/hab pkg exec chef/chef-infra-client ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: /hab/hab pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
+    - remote: /hab/hab pkg exec chef/chef-infra-client gem install specific_install appbundler --no-doc
+    - remote: /hab/hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater --no-doc
       # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
