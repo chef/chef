@@ -178,5 +178,4 @@ jobs:
           sudo kitchen --version
           sudo which kitchen
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
-        # run: HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}
+        run: HAB_LICENSE='accept-no-persist' hab pkg exec chef/chef-test-kitchen-enterprise kitchen test end-to-end-${{ matrix.os }}

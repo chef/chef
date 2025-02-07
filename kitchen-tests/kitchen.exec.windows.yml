@@ -10,7 +10,7 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+    # - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     - remote: echo TEST1
     - remote: (get-command hab.bat).Path
     - remote: (get-command hab).Path
