@@ -35,10 +35,7 @@ jobs:
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-        echo $env:PATH
-        (Get-Command hab).Path
         $env:PATH = 'C:\hab\bin;' + $env:PATH
-        (Get-Command hab).Path
         hab license accept
         hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
         hab --version
