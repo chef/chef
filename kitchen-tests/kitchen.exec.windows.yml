@@ -10,11 +10,10 @@ transport:
 
 lifecycle:
   pre_converge:
-    # - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+    - remote: iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
     - remote: C:\ProgramData\Habitat\hab.exe license accept
     - remote: C:\ProgramData\Habitat\hab.exe pkg install --binlink --force chef/chef-infra-client --channel unstable
     - remote: C:\ProgramData\Habitat\hab.exe --version
-    - remote: chef-client --version
     - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client chef-client -v
     - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client ohai -v
     - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client rake --version
@@ -34,9 +33,10 @@ lifecycle:
     # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
     # libyajl2 build if already present. gem install seems to build anyway.
     - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client gem uninstall -I libyajl2
-    - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client gem install appbundler appbundle-updater --no-doc
+    - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client gem install specific_install appbundler --no-doc
+    - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater -b main
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client appbundle-updater chef chef- <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - remote: Write-Output "Installed Chef / Ohai release:"
     - remote: C:\ProgramData\Habitat\hab.exe pkg exec chef/chef-infra-client chef-client -v
