@@ -190,6 +190,7 @@ class Chef
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"
+
       run_data["resources"] = updated_resources.map do |action_record|
         for_json(action_record)
       end

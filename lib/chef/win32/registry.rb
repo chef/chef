@@ -385,6 +385,9 @@ class Chef
         key = reg_path.join("\\")
       end
 
+      def state_for_resource_reporter
+
+      end
     end
   end
 end

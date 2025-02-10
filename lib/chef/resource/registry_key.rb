@@ -50,6 +50,7 @@ class Chef
           :type => :binary,
           :data => [0, 1, 2].map(&:chr).join
         }]
+
         action :create
       end
       ```
@@ -150,6 +151,7 @@ class Chef
       }
       property :recursive, [TrueClass, FalseClass], default: false
       property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
+      property :only_record_changes, [TrueClass, FalseClass], default: false
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):

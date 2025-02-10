@@ -1,10 +1,13 @@
-$:.unshift(File.dirname(__FILE__) + "/lib")
+# on Windows, the directory location starts with "(eval at " because it's
+# being evaled in
+file_directory=File.dirname(__FILE__).gsub(/\(eval at /, "")
+$:.unshift(File.join(file_directory, "lib"))
 vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir__)
 
 if File.exist?(vs_path)
   # include chef-utils/lib in the path if we're inside of chef vs. chef-utils gem
   # but add it to the end of the search path
-  $: << (File.dirname(__FILE__) + "/chef-utils/lib")
+  $: << File.join(file_directory, "chef-utils", "lib")
 end
 # if the path doesn't exist then we're just in the wild gem and not in the git repo
 require "chef-utils/version_string"

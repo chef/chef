@@ -40,18 +40,39 @@ describe Chef::Resource::RegistryKey, :unix_only do
   end
 end
 
-describe Chef::Resource::RegistryKey, :windows_only, broken: true do
+describe Chef::Resource::RegistryKey, :windows_only do
+  class ::Chef::Resource::RegistryKey
+    def scrub_values(values)
+      values
+    end
+  end
+
+  instance_eval do
+    def context_let(symbol, &block)
+      # this is for a let call outside of example groups
+      define_method(symbol) do
+        return instance_variable_get(:"@#{symbol}") if instance_variable_defined?(:"@#{symbol}")
+        instance_variable_set(:"@#{symbol}", block.call)
+      end
+
+      # this is for a let call _inside_ of example groups
+      define_singleton_method(symbol) do
+        return instance_variable_get(:"@#{symbol}") if instance_variable_defined?(:"@#{symbol}")
+        instance_variable_set(:"@#{symbol}", block.call)
+      end
+    end
+  end
 
   # parent and key must be single keys, not paths
-  let(:parent) { "Opscode" }
-  let(:child) { "Whatever" }
-  let(:key_parent) { "SOFTWARE\\" + parent }
-  let(:key_child) { "SOFTWARE\\" + parent + "\\" + child }
+  context_let(:parent) { "Opscode" }
+  context_let(:child) { "Whatever" }
+  context_let(:key_parent) { "SOFTWARE\\" + parent }
+  context_let(:key_child) { "SOFTWARE\\" + parent + "\\" + child }
   # must be under HKLM\SOFTWARE for WOW64 redirection to work
-  let(:reg_parent) { "HKLM\\" + key_parent }
-  let(:reg_child) { "HKLM\\" + key_child }
-  let(:hive_class) { ::Win32::Registry::HKEY_LOCAL_MACHINE }
-  let(:resource_name) { "This is the name of my Resource" }
+  context_let(:reg_parent) { "HKLM\\" + key_parent }
+  context_let(:reg_child) { "HKLM\\" + key_child }
+  context_let(:hive_class) { ::Win32::Registry::HKEY_LOCAL_MACHINE }
+  context_let(:resource_name) { "This is the name of my Resource" }
 
   def clean_registry
     if windows64?
@@ -74,7 +95,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
 
   def create_deletable_keys
     # create them both 32-bit and 64-bit
-    [ 0x0100, 0x0200 ].each do |flag|
+    [0x0100, 0x0200].each do |flag|
       hive_class.create(key_parent + "\\Opscode", Win32::Registry::KEY_WRITE | flag)
       hive_class.open(key_parent + "\\Opscode", Win32::Registry::KEY_ALL_ACCESS | flag) do |reg|
         reg["Color", Win32::Registry::REG_SZ] = "Orange"
@@ -101,6 +122,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     @node.consume_external_attrs(ohai.data, {})
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
+    @action_collection = Chef::ActionCollection.new(@events)
     @new_resource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
     @registry = Chef::Win32::Registry.new(@run_context)
 
@@ -112,19 +134,28 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     @node.name("windowsbox")
 
     @rest_client = double("Chef::ServerAPI (mock)")
-    allow(@rest_client).to receive(:create_url).and_return("reports/nodes/windowsbox/runs/#{@run_id}")
-    allow(@rest_client).to receive(:raw_http_request).and_return({ "result" => "ok" })
-    allow(@rest_client).to receive(:post_rest).and_return({ "uri" => "https://example.com/reports/nodes/windowsbox/runs/#{@run_id}" })
+
+    @rest_client.define_singleton_method :create_url do |*args|
+      "reports/nodes/windowsbox/run/#{@run_id}"
+    end
+    @rest_client.define_singleton_method :raw_http_request do |*args|
+      { "result" => "ok" }
+    end
+    @rest_client.define_singleton_method :post do |*args|
+      { "uri" => "https://example.com/reports/nodes/windowbox/runs/#{@run_id}" }
+    end
 
     @resource_reporter = Chef::ResourceReporter.new(@rest_client)
     @events.register(@resource_reporter)
+    @events.register(@action_collection)
+    @resource_reporter.action_collection_registration(@action_collection)
     @run_status = Chef::RunStatus.new(@node, @events)
     @resource_reporter.run_started(@run_status)
     @run_id = @resource_reporter.run_id
 
     @new_resource.cookbook_name = "monkey"
     @cookbook_version = double("Cookbook::Version", version: "1.2.3")
-    @new_resource.cookbook_version(@cookbook_version)
+    allow(@new_resource).to receive(:cookbook_version).and_return(@cookbook_version)
   end
 
   after(:all) do
@@ -154,8 +185,13 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     end
 
     it "does not create the key if it already exists with same value and type but datatype of data differs" do
+      first_resource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
+      first_resource.key(reg_child)
+      first_resource.values([{ name: "number", type: :dword, data: 12344 }])
+      first_resource.run_action(:create)
+
       @new_resource.key(reg_child)
-      @new_resource.values([{ name: "number", type: :dword, data: "12345" }])
+      @new_resource.values([{ name: "number", type: :dword, data: "12344" }])
       @new_resource.run_action(:create)
 
       expect(@new_resource).not_to be_updated_by_last_action
@@ -244,7 +280,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       @new_resource.recursive(true)
       @new_resource.run_action(:create)
 
-      @new_resource.each_value do |value|
+      @new_resource.values.each do |value|
         expect(@registry.value_exists?(reg_child, value)).to eq(true)
       end
     end
@@ -258,7 +294,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
         @registry.architecture = :machine
       end
       it "creates a key in a 32-bit registry that is not viewable in 64-bit" do
-        @new_resource.key(reg_child + "\\Atraxi" )
+        @new_resource.key(reg_child + "\\Atraxi")
         @new_resource.values([{ name: "OC", type: :string, data: "Data" }])
         @new_resource.recursive(true)
         @new_resource.architecture(:i386)
@@ -271,25 +307,26 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     end
 
     it "prepares the reporting data for action :create" do
-      presource = Chef::Resource::RegistryKey.new(resource_name, @run_context)
-      presource.key(reg_child + "\\Ood")
-      presource.values([{ name: "TheBefore", type: :multi_string, data: ["abc", "def"] }])
-      presource.recursive(true)
-      presource.run_action(:create)
+      registry = Chef::Win32::Registry.new(@run_context)
+      registry.create_key(reg_child + "\\Ood", true)
+      registry.set_value(reg_child + "\\Ood", { name: "TheBefore", type: :multi_string, data: ["abc", "def"] })
+      registry.set_value(reg_child + "\\Ood", { name: "ReportingVal1", type: :dword, data: 1234 })
 
       @new_resource.key(reg_child + "\\Ood")
-      key_values = [{ name: "ReportingVal1", type: :dword, data: rand(0..10000)}]
+      key_values = [{ name: "ReportingVal1", type: :string, data: rand(0..10000) }]
+
       @new_resource.values(key_values)
       @new_resource.recursive(true)
+      @new_resource.only_record_changes(true)
       @new_resource.run_action(:create)
       @report = @resource_reporter.prepare_run_data
 
       expect(@report["action"]).to eq("end")
-      expect(@report["resources"][0]["type"]).to eq("registry_key")
+      expect(@report["resources"][0]["type"]).to eq(:registry_key)
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_child + "\\Ood")
       expect(@report["resources"][0]["after"][:values]).to eq(key_values)
-      expect(@report["resources"][0]["before"][:values]).to eq([])
+      expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportingVal1", type: :dword, data: 1234 }])
       expect(@report["resources"][0]["result"]).to eq("create")
       expect(@report["status"]).to eq("success")
       expect(@report["total_res_count"]).to eq("1")
@@ -436,7 +473,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       @new_resource.recursive(true)
       @new_resource.run_action(:create_if_missing)
 
-      @new_resource.each_value do |value|
+      @new_resource.values.each do |value|
         expect(@registry.value_exists?(reg_child + "\\Adipose", value)).to eq(true)
       end
     end
@@ -452,7 +489,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       expect(@report["resources"][0]["type"]).to eq("registry_key")
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_child + "\\Judoon")
-      expect(@report["resources"][0]["after"][:values]).to eq([{ name: "ReportingVal3", type: :string, data: "report3" }])
+      expect(@report["resources"][0]["after"][:values]).to eq([{ name: "Reportingal3", type: :string, data: "report3" }])
       expect(@report["resources"][0]["before"][:values]).to eq([])
       expect(@report["resources"][0]["result"]).to eq("create_if_missing")
       expect(@report["status"]).to eq("success")
@@ -574,7 +611,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_parent + "\\ReportKey")
       expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportVal4", type: :string, data: "report4" },
-                                                            { name: "ReportVal5", type: :string, data: "report5" }])
+                                                                { name: "ReportVal5", type: :string, data: "report5" }])
       # Not testing for after values to match since after -> new_resource values.
       expect(@report["resources"][0]["result"]).to eq("delete")
       expect(@report["status"]).to eq("success")
