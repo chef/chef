@@ -42,6 +42,7 @@ end
 
 describe Chef::Resource::RegistryKey, :windows_only do
   class ::Chef::Resource::RegistryKey
+    # for test purposes only, don't scrub the values
     def scrub_values(values)
       values
     end
