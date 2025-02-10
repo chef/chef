@@ -517,7 +517,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       @report = @resource_reporter.prepare_run_data
 
       expect(@report["action"]).to eq("end")
-      expect(@report["resources"][0]["type"]).to eq("registry_key")
+      expect(@report["resources"][0]["type"]).to eq(:registry_key)
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_child + "\\Judoon")
       expect(@report["resources"][0]["after"][:values]).to eq([{ name: "Reportingal3", type: :string, data: "report3" }])
@@ -638,7 +638,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
       expect(@report["action"]).to eq("end")
       expect(@report["resources"].count).to eq(1)
-      expect(@report["resources"][0]["type"]).to eq("registry_key")
+      expect(@report["resources"][0]["type"]).to eq(:registry_key)
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_parent + "\\ReportKey")
       expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportVal4", type: :string, data: "report4" },
@@ -716,7 +716,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
 
       @report = @resource_reporter.prepare_run_data
       expect(@report["action"]).to eq("end")
-      expect(@report["resources"][0]["type"]).to eq("registry_key")
+      expect(@report["resources"][0]["type"]).to eq(:registry_key)
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_parent + "\\ReportKey")
       # Not testing for before or after values to match since
