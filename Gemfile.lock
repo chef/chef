@@ -34,6 +34,13 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
+
 PATH
   remote: .
   specs:
@@ -245,7 +252,10 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.16.3)
-    ffi-libarchive (1.1.14)
+    ffi (1.16.3-x64-mingw-ucrt)
+    ffi (1.16.3-x64-mingw32)
+    ffi (1.16.3-x86-mingw32)
+    ffi-libarchive (1.1.3)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
@@ -254,7 +264,10 @@ GEM
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
-    hashdiff (1.1.2)
+    gyoku (1.4.0)
+      builder (>= 2.1.2)
+      rexml (~> 3.0)
+    hashdiff (1.1.1)
     hashie (4.1.0)
     http-accept (1.7.0)
     http-cookie (1.0.8)
@@ -458,6 +471,7 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.2)
@@ -525,6 +539,7 @@ DEPENDENCIES
   rdoc (~> 6.4.1)
   rest-client!
   rspec
+  ruby-shadow!
   webmock
 
 BUNDLED WITH
