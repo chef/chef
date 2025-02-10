@@ -1,6 +1,6 @@
 # on Windows, the directory location starts with "(eval at " because it's
 # being evaled in
-file_directory=File.dirname(__FILE__).gsub(/\(eval at /, "")
+file_directory = File.dirname(__FILE__).gsub(/\(eval at /, "")
 $:.unshift(File.join(file_directory, "lib"))
 vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir__)
 
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.name = "chef"
   s.version = Chef::VERSION
   s.platform = Gem::Platform::RUBY
-  s.extra_rdoc_files = ["README.md", "LICENSE" ]
+  s.extra_rdoc_files = ["README.md", "LICENSE"]
   s.summary = "A systems integration framework, built to bring the benefits of configuration management to your entire infrastructure."
   s.description = s.summary
   s.license = "Apache-2.0"
@@ -71,8 +71,8 @@ Gem::Specification.new do |s|
   s.add_dependency "vault", "~> 0.18.2" # hashi vault official client gem
   s.add_dependency "chef-licensing", ">= 0.7.5"
 
-  s.bindir       = "bin"
-  s.executables  = %w{ }
+  s.bindir = "bin"
+  s.executables = %w{ }
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} +
@@ -81,11 +81,11 @@ Gem::Specification.new do |s|
     Dir.glob("tasks/rspec.rb")
 
   s.metadata = {
-    "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
-    "changelog_uri"     => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
+    "bug_tracker_uri" => "https://github.com/chef/chef/issues",
+    "changelog_uri" => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
     "documentation_uri" => "https://docs.chef.io/",
-    "homepage_uri"      => "https://www.chef.io",
-    "mailing_list_uri"  => "https://discourse.chef.io/",
-    "source_code_uri"   => "https://github.com/chef/chef/",
+    "homepage_uri" => "https://www.chef.io",
+    "mailing_list_uri" => "https://discourse.chef.io/",
+    "source_code_uri" => "https://github.com/chef/chef/",
   }
 end
