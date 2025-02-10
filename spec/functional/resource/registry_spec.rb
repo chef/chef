@@ -53,12 +53,14 @@ describe Chef::Resource::RegistryKey, :windows_only do
       # this is for a let call outside of example groups
       define_method(symbol) do
         return instance_variable_get(:"@#{symbol}") if instance_variable_defined?(:"@#{symbol}")
+
         instance_variable_set(:"@#{symbol}", block.call)
       end
 
       # this is for a let call _inside_ of example groups
       define_singleton_method(symbol) do
         return instance_variable_get(:"@#{symbol}") if instance_variable_defined?(:"@#{symbol}")
+
         instance_variable_set(:"@#{symbol}", block.call)
       end
     end
@@ -310,7 +312,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
     it "prepares the reporting data for action :create" do
       registry = Chef::Win32::Registry.new(@run_context)
       registry.create_key(reg_child + "\\Ood", true)
-      registry.set_value(reg_child + "\\Ood", { name: "TheBefore", type: :multi_string, data: ["abc", "def"] })
+      registry.set_value(reg_child + "\\Ood", { name: "TheBefore", type: :multi_string, data: %w[abc def] })
       registry.set_value(reg_child + "\\Ood", { name: "ReportingVal1", type: :dword, data: 1234 })
 
       @new_resource.key(reg_child + "\\Ood")
