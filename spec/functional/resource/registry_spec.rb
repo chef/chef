@@ -313,7 +313,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       reg_key = reg_child + "\\Ood"
       registry = Chef::Win32::Registry.new(@run_context)
       registry.create_key(reg_key, true)
-      registry.set_value(reg_key, { name: "TheBefore", type: :multi_string, data: %w[abc def] })
+      registry.set_value(reg_key, { name: "TheBefore", type: :multi_string, data: %w{abc def} })
       registry.set_value(reg_key, { name: "ReportingVal1", type: :dword, data: 1234 })
 
       @new_resource.key(reg_key)
@@ -340,7 +340,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       reg_key = reg_child + "\\Ood2"
       registry = Chef::Win32::Registry.new(@run_context)
       registry.create_key(reg_key, true)
-      registry.set_value(reg_key, { name: "TheBefore", type: :multi_string, data: %w[abc def] })
+      registry.set_value(reg_key, { name: "TheBefore", type: :multi_string, data: %w{abc def} })
       registry.set_value(reg_key, { name: "ReportingVal1", type: :dword, data: 1234 })
 
       @new_resource.key(reg_key)
@@ -357,7 +357,7 @@ describe Chef::Resource::RegistryKey, :windows_only do
       expect(@report["resources"][0]["name"]).to eq(resource_name)
       expect(@report["resources"][0]["id"]).to eq(reg_key)
       expect(@report["resources"][0]["after"][:values]).to eq(key_values)
-      expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportingVal1", type: :dword, data: 1234 }, { name: "TheBefore", type: :multi_string, data: %w[abc def] }])
+      expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportingVal1", type: :dword, data: 1234 }, { name: "TheBefore", type: :multi_string, data: %w{abc def} }])
       expect(@report["resources"][0]["result"]).to eq("create")
       expect(@report["status"]).to eq("success")
       expect(@report["total_res_count"]).to eq("1")
