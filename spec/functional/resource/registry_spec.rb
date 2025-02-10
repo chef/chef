@@ -309,13 +309,14 @@ describe Chef::Resource::RegistryKey, :windows_only do
       end
     end
 
-    it "prepares the reporting data for action :create" do
+    it "prepares the reporting data for action :create with only changed values" do
+      reg_key = reg_child + "\\Ood"
       registry = Chef::Win32::Registry.new(@run_context)
-      registry.create_key(reg_child + "\\Ood", true)
-      registry.set_value(reg_child + "\\Ood", { name: "TheBefore", type: :multi_string, data: %w[abc def] })
-      registry.set_value(reg_child + "\\Ood", { name: "ReportingVal1", type: :dword, data: 1234 })
+      registry.create_key(reg_key, true)
+      registry.set_value(reg_key, { name: "TheBefore", type: :multi_string, data: %w[abc def] })
+      registry.set_value(reg_key, { name: "ReportingVal1", type: :dword, data: 1234 })
 
-      @new_resource.key(reg_child + "\\Ood")
+      @new_resource.key(reg_key)
       key_values = [{ name: "ReportingVal1", type: :string, data: rand(0..10000) }]
 
       @new_resource.values(key_values)
@@ -327,9 +328,36 @@ describe Chef::Resource::RegistryKey, :windows_only do
       expect(@report["action"]).to eq("end")
       expect(@report["resources"][0]["type"]).to eq(:registry_key)
       expect(@report["resources"][0]["name"]).to eq(resource_name)
-      expect(@report["resources"][0]["id"]).to eq(reg_child + "\\Ood")
+      expect(@report["resources"][0]["id"]).to eq(reg_key)
       expect(@report["resources"][0]["after"][:values]).to eq(key_values)
       expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportingVal1", type: :dword, data: 1234 }])
+      expect(@report["resources"][0]["result"]).to eq("create")
+      expect(@report["status"]).to eq("success")
+      expect(@report["total_res_count"]).to eq("1")
+    end
+
+    it "prepares the reporting data for action :create" do
+      reg_key = reg_child + "\\Ood2"
+      registry = Chef::Win32::Registry.new(@run_context)
+      registry.create_key(reg_key, true)
+      registry.set_value(reg_key, { name: "TheBefore", type: :multi_string, data: %w[abc def] })
+      registry.set_value(reg_key, { name: "ReportingVal1", type: :dword, data: 1234 })
+
+      @new_resource.key(reg_key)
+      key_values = [{ name: "ReportingVal1", type: :string, data: rand(0..10000) }]
+
+      @new_resource.values(key_values)
+      @new_resource.recursive(true)
+      @new_resource.only_record_changes(false)
+      @new_resource.run_action(:create)
+      @report = @resource_reporter.prepare_run_data
+
+      expect(@report["action"]).to eq("end")
+      expect(@report["resources"][0]["type"]).to eq(:registry_key)
+      expect(@report["resources"][0]["name"]).to eq(resource_name)
+      expect(@report["resources"][0]["id"]).to eq(reg_key)
+      expect(@report["resources"][0]["after"][:values]).to eq(key_values)
+      expect(@report["resources"][0]["before"][:values]).to eq([{ name: "ReportingVal1", type: :dword, data: 1234 }, { name: "TheBefore", type: :multi_string, data: %w[abc def] }])
       expect(@report["resources"][0]["result"]).to eq("create")
       expect(@report["status"]).to eq("success")
       expect(@report["total_res_count"]).to eq("1")
