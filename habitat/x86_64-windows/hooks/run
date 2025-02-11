@@ -1,0 +1,5 @@
+$path = "C:\hab\studios\*\hab\pkgs\core\visual-cpp-redist-2015\*\*\bin"
+$file1 = "msvcp140.dll"
+
+$files = Get-ChildItem -Path $path -Include $file1 -Recurse -ErrorAction SilentlyContinue
+$env:Path = $files.DirectoryName + ";" + $env:Path
