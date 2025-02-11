@@ -221,7 +221,7 @@ describe Chef::Resource::RegistryKey do
 
         context "missing data key" do
           let(:registry_key) { "#{reg_child}\\MissingDataKey" }
-          let(:registry_key_values) { [{ name: "SomeValue", type: :string}] }
+          let(:registry_key_values) { [{ name: "SomeValue", type: :string }] }
           it "raises RegKeyValuesTypeMissing" do
             expect { subject }.to raise_error(Chef::Exceptions::RegKeyValuesDataMissing)
           end
@@ -270,51 +270,51 @@ describe Chef::Resource::RegistryKey do
           expect(registry.key_exists?(registry_key)).to eq(true)
           registry_key_values.each do |value|
             expect(registry.value_exists?(registry_key, value)).to be true
+          end
         end
 
-      end
+        context "when only_record_changes is true" do
+          before do
+            new_resource.only_record_changes(true)
+            prepopulate(registry_key, prepopulated_values)
+          end
+          let(:registry_key) { "#{reg_child}\\OnlyRecordChanges" }
+          let(:registry_key_values) { [{ name: "ReportingVal1", type: :string, data: rand(1235..10000) }] }
 
-      context "when only_record_changes is true" do
-        before do
-          new_resource.only_record_changes(true)
-          prepopulate(registry_key, prepopulated_values)
-        end
-        let(:registry_key) { "#{reg_child}\\OnlyRecordChanges" }
-        let(:registry_key_values) { [{ name: "ReportingVal1", type: :string, data: rand(1235..10000) }] }
+          it "should only report the changed value" do
+            subject
+            report = resource_reporter.prepare_run_data
 
-        it "should only report the changed value" do
-          subject
-          report = resource_reporter.prepare_run_data
-
-          expect(report["action"]).to eq("end")
-          expect(report["resources"][0]["type"]).to eq(:registry_key)
-          expect(report["resources"][0]["name"]).to eq(resource_name)
-          expect(report["resources"][0]["id"]).to eq(registry_key)
-          expect(report["resources"][0]["after"][:values]).to eq(registry_key_values)
-          expect(report["resources"][0]["before"][:values]).to eq(prepopulated_values.select { |ppv| ppv[:name] == "ReportingVal1" })
-          expect(report["resources"][0]["result"]).to eq("create")
-          expect(report["status"]).to eq("success")
-          expect(report["total_res_count"]).to eq("1")
-        end
-      end
-
-      context "when only_record_changes is the default(false)" do
-        before do
-          prepopulate(registry_key, prepopulated_values)
-        end
-        let(:registry_key) { "#{reg_child}\\RecordItAll" }
-        let(:registry_key_values) { [{ name: "ReportingVal1", type: :string, data: rand(1235..10000) }] }
-
-        it "should only report the changed value" do
-          subject
-          report = resource_reporter.prepare_run_data
-
-          expect(report["resources"][0]["after"][:values]).to eq(registry_key_values)
-          expect(report["resources"][0]["before"][:values]).to eq(prepopulated_values)
-          expect(report["status"]).to eq("success")
-          expect(report["total_res_count"]).to eq("1")
+            expect(report["action"]).to eq("end")
+            expect(report["resources"][0]["type"]).to eq(:registry_key)
+            expect(report["resources"][0]["name"]).to eq(resource_name)
+            expect(report["resources"][0]["id"]).to eq(registry_key)
+            expect(report["resources"][0]["after"][:values]).to eq(registry_key_values)
+            expect(report["resources"][0]["before"][:values]).to eq(prepopulated_values.select { |ppv| ppv[:name] == "ReportingVal1" })
+            expect(report["resources"][0]["result"]).to eq("create")
+            expect(report["status"]).to eq("success")
+            expect(report["total_res_count"]).to eq("1")
+          end
         end
 
+        context "when only_record_changes is the default(false)" do
+          before do
+            prepopulate(registry_key, prepopulated_values)
+          end
+          let(:registry_key) { "#{reg_child}\\RecordItAll" }
+          let(:registry_key_values) { [{ name: "ReportingVal1", type: :string, data: rand(1235..10000) }] }
+
+          it "should only report the changed value" do
+            subject
+            report = resource_reporter.prepare_run_data
+
+            expect(report["resources"][0]["after"][:values]).to eq(registry_key_values)
+            expect(report["resources"][0]["before"][:values]).to eq(prepopulated_values)
+            expect(report["status"]).to eq("success")
+            expect(report["total_res_count"]).to eq("1")
+          end
+
+        end
       end
     end
   end
