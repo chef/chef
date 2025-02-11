@@ -206,6 +206,7 @@ describe Chef::Resource::RegistryKey do
           let(:registry_key) { "#{reg_child}\\DoesNotExist" }
           before { new_resource.recursive(false) }
           it "creates the child if the parent exists" do
+            subject
             expect(registry.key_exists?(registry_key)).to eq(true)
             expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
           end
@@ -244,10 +245,12 @@ describe Chef::Resource::RegistryKey do
         context "recursive true" do
           before { new_resource.recursive(true) }
           it "creates the child" do
+            subject
             expect(registry.key_exists?(registry_key)).to eq(true)
             expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
           end
         end
+
         context "recursive false" do
           before { new_resource.recursive(false) }
           it "raises Win32RegNoRecursive" do
