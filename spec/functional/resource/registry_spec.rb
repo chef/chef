@@ -19,12 +19,12 @@
 require "spec_helper"
 
 describe Chef::Resource::RegistryKey do
-  around do
+  around(:example) do |example|
     original_method = described_class.instance_method(:scrub_values)
     described_class.define_method(:scrub_values) do |values|
       values
     end
-    yield
+    example.run
     described_class.define_method(original_method.name, original_method)
   end
 
