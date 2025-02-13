@@ -65,27 +65,6 @@ describe Chef::Resource::RegistryKey do
     hive_class.create(key_parent, Win32::Registry::KEY_WRITE | 0x0200)
   end
 
-  # this is moderately brittle, but it seems to be the order of operations
-  # necessary to get a report out of the resource reporter
-  before do
-    events
-    node
-    node.name(node_name)
-    ohai
-    ohai.all_plugins
-    node.consume_external_attrs(ohai.data, {})
-    run_context
-    action_collection
-    new_resource
-    registry
-
-    reset_registry
-  end
-
-  after do
-    clean_registry
-  end
-
   context "when running on non-Windows", :unix_only do
     let(:registry_key) { "HKCU\\Software\\Opscode" }
     let(:registry_key_values) { [{ name: "Color", type: :string, data: "Orange" }] }
@@ -100,6 +79,26 @@ describe Chef::Resource::RegistryKey do
   end
 
   context "when running on Windows", :windows_only do
+    # this is moderately brittle, but it seems to be the order of operations
+    # necessary to get a report out of the resource reporter
+    before do
+      events
+      node
+      node.name(node_name)
+      ohai
+      ohai.all_plugins
+      node.consume_external_attrs(ohai.data, {})
+      run_context
+      action_collection
+      new_resource
+      registry
+
+      reset_registry
+    end
+
+    after do
+      clean_registry
+    end
     subject do
       resource_reporter
       events.register(resource_reporter)
