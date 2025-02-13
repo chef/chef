@@ -1,7 +1,7 @@
 $env:HAB_BLDR_CHANNEL = "stable"
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
-$pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
+$pkg_version=(Get-Content $PLAN_CONTEXT/../../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
 $pkg_maintainer="The Chef Maintainers <maintainers@chef.io>"
 $pkg_upstream_url="https://github.com/chef/chef"
@@ -17,6 +17,7 @@ $pkg_deps=@(
   "core/libarchive"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
+  "core/visual-cpp-redist-2015/14.0.24215/20240108064521"
 )
 $pkg_build_deps=@( "core/git")
 
@@ -53,7 +54,7 @@ function Invoke-Download() {
         Write-Output "Invoke-Download Function: Original path: $(Get-Location)"
 
         # just doing a test example here, should show my resolved-path, for those not sure what the resolved path does
-        $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../").Path
+        $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../../").Path
         Write-Output "Invoke-Download Function: Resolved target path: $resolvedPath"
 
         # Push-Location to move into the new directory and stack the current directory, neat way to use cd
@@ -148,6 +149,7 @@ function Invoke-Build {
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
+        push-location $PLAN_CONTEXT
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
