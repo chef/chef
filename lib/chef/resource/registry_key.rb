@@ -43,7 +43,7 @@ class Chef
 
       ```ruby
       **Suppress reporting of the current value of sibling values in a registry key**
-      registry 'HKEY_LOCAL_MACHINE\SYSTEM\CURRENTCONTROLSET\CONTROL\Session Manager' do
+      registry 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\CONTROL\Session Manager' do
         values [{
           name: 'ProtectionMode',
           type: :dword,
