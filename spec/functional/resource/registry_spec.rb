@@ -1,11 +1,31 @@
+#
+# Author:: Thomas Powell (<powell@progress.com>)
+# Copyright:: Copyright (c) 2025 Progress Chef Software Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require "spec_helper"
 
 describe Chef::Resource::RegistryKey do
-  class ::Chef::Resource::RegistryKey
-    # for test purposes only, don't scrub the values
-    def scrub_values(values)
+  around(:example) do |example|
+    original_method = described_class.instance_method(:scrub_values)
+    described_class.define_method(:scrub_values) do |values|
       values
     end
+    example.run
+    described_class.define_method(original_method.name, original_method)
   end
 
   let(:events) { Chef::EventDispatch::Dispatcher.new }
