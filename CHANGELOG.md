@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.15 -->
-## [v18.6.15](https://github.com/chef/chef/tree/v18.6.15) (2025-02-11)
+<!-- latest_release 18.6.16 -->
+## [v18.6.16](https://github.com/chef/chef/tree/v18.6.16) (2025-02-13)
 
 #### Merged Pull Requests
-- [chef-18] Updating Train-winrm and other dependencies [#14841](https://github.com/chef/chef/pull/14841) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18] Correcting missing files error [#14843](https://github.com/chef/chef/pull/14843) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-18] Correcting missing files error [#14843](https://github.com/chef/chef/pull/14843) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.16 -->
 - [chef-18] Updating Train-winrm and other dependencies [#14841](https://github.com/chef/chef/pull/14841) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.15 -->
 - Housekeeping changes for Knife [#14831](https://github.com/chef/chef/pull/14831) ([neha-p6](https://github.com/neha-p6)) <!-- 18.6.14 -->
 - Changes required for the knife standalone release [#14820](https://github.com/chef/chef/pull/14820) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.13 -->
