@@ -192,7 +192,7 @@ describe Chef::Resource::RegistryKey do
         end
 
         context "same value, different type, data type differs" do
-          let(:registry_key_values) { [{ name: "SomeValue", type: :multi_string, data: ["3321", "2231"] }] }
+          let(:registry_key_values) { [{ name: "SomeValue", type: :multi_string, data: %w{3321 2231} }] }
 
           it "updates the key if the value type is different" do
             subject
