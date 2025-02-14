@@ -535,7 +535,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
+  ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (~> 6.8)
   ohai!
   openssl (= 3.2.0)
