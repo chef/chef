@@ -43,6 +43,17 @@ describe Chef::Provider::Package::Snap do
     allow(status).to receive(:error!).with(no_args).and_return(false)
     status
   end
+  let(:snap_status_with_tab_delimiter) do
+    stdout = <<~SNAP_S
+      path:   "/tmp/hello_20.snap"
+      name:   hello
+      summary:  GNU Hello, the "hello world" snap
+      version:  2.10 -
+    SNAP_S
+    status = double(stdout: stdout, stderr: "", exitstatus: 0)
+    allow(status).to receive(:error!).with(no_args).and_return(false)
+    status
+  end
 
   before(:each) do
     allow(provider).to receive(:shell_out_compacted!).with("snap", "info", source, timeout: 900).and_return(snap_status)
@@ -94,6 +105,16 @@ describe Chef::Provider::Package::Snap do
         expect(provider.current_resource.package_name).to eq("hello")
         expect(provider.get_current_versions).to eq(["1.15.71"])
         expect(provider.candidate_version).to eq([version])
+      end
+
+      describe 'snap info returns status using tab delimiter' do
+        before do
+          allow(provider).to receive(:shell_out_compacted!).with("snap", "info", source, timeout: 900).and_return(snap_status_with_tab_delimiter)
+        end
+
+        it "checks the installed and local candidate versions" do
+          check_version("2.10")
+        end
       end
 
       it "checks the installed and local candidate versions" do

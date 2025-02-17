@@ -254,7 +254,7 @@ class Chef
         end
 
         def get_version_from_stdout(stdout)
-          stdout.match(/version: (\S+)/)[1]
+          stdout.match(/version:\s+(\S+)/)[1]
         end
 
         def install_snap_from_source(name, path)
