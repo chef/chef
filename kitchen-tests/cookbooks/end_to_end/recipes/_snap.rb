@@ -6,6 +6,13 @@ service "snapd" do
   action :start
 end
 
+snap_package "core" do
+  action :install
+  channel "stable"
+  retries 2
+  retry_delay 15
+end
+
 snap_package "hello" do
   # there was originally a 5 second sleep before this
   action :install
