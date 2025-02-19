@@ -7,6 +7,7 @@ service "snapd" do
 end
 
 snap_package "core" do
+  # this is an attempt to keep Ubuntu 18.04 from failing
   action :install
   channel "stable"
   retries 2
