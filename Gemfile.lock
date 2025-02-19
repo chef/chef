@@ -237,10 +237,9 @@ GEM
       net-http
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
-    ffi (1.16.3-x64-mingw32)
-    ffi (1.16.3-x86-mingw32)
+    ffi (1.17.1)
+    ffi (1.17.1-arm64-darwin)
+    ffi (1.17.1-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -321,11 +320,6 @@ GEM
     mixlib-log (3.0.9)
     mixlib-shellout (3.3.6)
       chef-utils
-    mixlib-shellout (3.3.6-universal-mingw32)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     mixlib-shellout (3.3.6-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
@@ -464,6 +458,7 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (0.13.1)
@@ -523,8 +518,6 @@ PLATFORMS
   arm64-darwin-21
   ruby
   x64-mingw-ucrt
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   appbundler
