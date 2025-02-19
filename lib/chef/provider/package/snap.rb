@@ -223,7 +223,7 @@ class Chef
             when "Do", "Doing", "Undoing", "Undo"
               # Continue
             when "Abort", "Hold", "Error"
-              raise result
+              raise "#{result["result"]["summary"]} - #{result["result"]["status"]} - #{result["result"]["err"]}"
             when "Done"
               waiting = false
             else
