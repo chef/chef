@@ -18,7 +18,7 @@ GIT
       wmi-lite (~> 1.0)
 
 GIT
-  remote: https://github.com/chef/rest-client
+  remote: https://github.com/chef/rest-client.git
   revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
   branch: jfm/ucrt_update1
   specs:
@@ -547,4 +547,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.6.4
