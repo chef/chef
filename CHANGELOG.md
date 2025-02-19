@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.87 -->
-## [v19.0.87](https://github.com/chef/chef/tree/v19.0.87) (2025-02-13)
+<!-- latest_release 19.0.88 -->
+## [v19.0.88](https://github.com/chef/chef/tree/v19.0.88) (2025-02-19)
 
 #### Merged Pull Requests
-- Use instance_method / refine_method to patch Chef::Resource::Registry [#14845](https://github.com/chef/chef/pull/14845) ([tpowell-progress](https://github.com/tpowell-progress))
+- raise a string instead of a hash object, patch 18.04 snap [#14853](https://github.com/chef/chef/pull/14853) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- raise a string instead of a hash object, patch 18.04 snap [#14853](https://github.com/chef/chef/pull/14853) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.88 -->
 - Use instance_method / refine_method to patch Chef::Resource::Registry [#14845](https://github.com/chef/chef/pull/14845) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.87 -->
 - Allow the suppression of other values in a key for the &quot;before&quot; report [#14767](https://github.com/chef/chef/pull/14767) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.86 -->
 - [Metadata#recipes_from_cookbook_version] Use end_with? [#14830](https://github.com/chef/chef/pull/14830) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.85 -->
