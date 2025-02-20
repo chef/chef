@@ -1015,14 +1015,8 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-<<<<<<< HEAD
   ffi (>= 1.15.5, < 1.17.0)
   inspec-core-bin (~> 6.8)
-=======
-  ffi (>= 1.15.5, <= 1.17.0)
-  inspec!
-  inspec-core!
->>>>>>> 34313d2698 (Updating support for Inspec-7)
   ohai!
   openssl (= 3.2.0)
   pry (= 0.13.0)
