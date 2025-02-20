@@ -564,7 +564,8 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.17.0)
+    ffi (1.16.3)
+    ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -1001,8 +1002,6 @@ PLATFORMS
   arm64-darwin-21
   ruby
   x64-mingw-ucrt
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   appbundler
@@ -1016,9 +1015,8 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5, <= 1.17.0)
-  inspec!
-  inspec-core!
+  ffi (>= 1.15.5, < 1.17.0)
+  inspec-core-bin (~> 6.8)
   ohai!
   openssl (= 3.2.0)
   pry (= 0.13.0)
@@ -1033,4 +1031,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.3.27
