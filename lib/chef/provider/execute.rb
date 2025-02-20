@@ -27,7 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env, :timeout, :input, :login
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env, :timeout, :input, :login, :cgroup
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -96,6 +96,7 @@ class Chef
         opts[:default_env] = default_env
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
+        opts[:cgroup]      = cgroup if cgroup
         if (logger.info? || live_stream?) && !sensitive?
           if run_context.events.formatter?
             opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, name: :execute)
