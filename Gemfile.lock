@@ -49,7 +49,7 @@ PATH
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5)
+      ffi (>= 1.15.5, <= 1.17.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -85,7 +85,7 @@ PATH
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5)
+      ffi (>= 1.15.5, <= 1.17.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -239,8 +239,6 @@ GEM
       net-ssh
     ffi (1.16.3)
     ffi (1.16.3-x64-mingw-ucrt)
-    ffi (1.16.3-x64-mingw32)
-    ffi (1.16.3-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -523,8 +521,6 @@ PLATFORMS
   arm64-darwin-21
   ruby
   x64-mingw-ucrt
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   appbundler
@@ -538,7 +534,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
+  ffi (>= 1.15.5, < 1.17.0)
   inspec-core-bin (~> 6.8)
   ohai!
   openssl (= 3.2.0)
@@ -554,4 +550,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.7
+   2.3.27
