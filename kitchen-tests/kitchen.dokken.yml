@@ -20,13 +20,12 @@ provisioner:
 
 lifecycle:
   pre_converge:
-    # Install habitat first here as it is not available in the dokken images
-    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-    - remote: sudo hab license accept
-    - remote: sudo hab --version
+    # Access hab from host
+    - remote: hab/hab hab license accept
+    - remote: hab/hab --version
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: hab pkg exec chef/chef-infra-client chef-client -v
-    - remote: hab pkg exec chef/chef-infra-client ohai -v
+    - remote: hab/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: hab/hab pkg exec chef/chef-infra-client ohai -v
     # - remote: echo "Installing appbundler and appbundle-updater gems:"
     # - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     # # back compat for pre-unified-/usr distros, do not add new OSes
