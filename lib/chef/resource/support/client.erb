@@ -49,7 +49,7 @@ data_collector.token <%= @data_collector_token.inspect %>
   # Do not crash if a start handler is missing / not installed yet
   begin
   <% @start_handlers.each do |handler| -%>
-    start_handlers << <%= @handler %>
+    start_handlers << <%= handler %>
   <% end -%>
   rescue NameError => e
     Chef::Log.error e
@@ -59,7 +59,7 @@ data_collector.token <%= @data_collector_token.inspect %>
   # Do not crash if a report handler is missing / not installed yet
   begin
   <% @report_handlers.each do |handler| -%>
-    report_handlers << <%= @handler %>
+    report_handlers << <%= handler %>
   <% end -%>
   rescue NameError => e
     Chef::Log.error e
@@ -69,7 +69,7 @@ data_collector.token <%= @data_collector_token.inspect %>
   # Do not crash if an exception handler is missing / not installed yet
   begin
   <% @exception_handlers.each do |handler| -%>
-    exception_handlers << <%= @handler %>
+    exception_handlers << <%= handler %>
   <% end -%>
   rescue NameError => e
     Chef::Log.error e
