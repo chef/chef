@@ -20,9 +20,11 @@ provisioner:
 
 lifecycle:
   pre_converge:
-     - remote: echo "Chef container's Chef / Ohai release:"
-     - remote: hab pkg exec chef/chef-infra-client chef-client -v
-     - remote: hab pkg exec chef/chef-infra-client ohai -v
+    # Whereis habitat installed
+    - remote: echo "Habitat installed at: $(which hab)" 
+    # - remote: echo "Chef container's Chef / Ohai release:"
+    # - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    # - remote: hab pkg exec chef/chef-infra-client ohai -v
     # - remote: echo "Installing appbundler and appbundle-updater gems:"
     # - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     # # back compat for pre-unified-/usr distros, do not add new OSes
