@@ -30,7 +30,7 @@ lifecycle:
     - remote: hab/hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
     - remote: hab/hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: hab/hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: hab/hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: echo "Installed Chef / Ohai release:"
     - remote: hab/hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab/hab pkg exec chef/chef-infra-client ohai -v
