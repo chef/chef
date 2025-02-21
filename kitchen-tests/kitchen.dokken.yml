@@ -21,7 +21,7 @@ provisioner:
 lifecycle:
   pre_converge:
     # Access hab from host
-    - remote: hab/hab hab license accept
+    - remote: hab/hab license accept
     - remote: hab/hab --version
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: hab/hab pkg exec chef/chef-infra-client chef-client -v
