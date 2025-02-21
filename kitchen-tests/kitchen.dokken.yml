@@ -21,7 +21,7 @@ provisioner:
 lifecycle:
   pre_converge:
     # Whereis habitat installed
-     - remote: echo "Habitat installed at: $(which hab)" 
+     - remote: echo $(which hab)
     #  - remote: echo "Chef container's Chef / Ohai release:"
     #  - remote: hab pkg exec chef/chef-infra-client chef-client -v
     #  - remote: hab pkg exec chef/chef-infra-client ohai -v
