@@ -37,6 +37,7 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
+  gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
   # gem "inspec-core-bin", "~> 6.8" # need to provide the binaries for inspec
   gem "chef-vault"
 end
