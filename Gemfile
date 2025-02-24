@@ -16,9 +16,6 @@ install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && plat
   gem "openssl", "= 3.2.0"
 end
 
-# since we are using ruby 3.1.x, rdoc needs to be on 6.4.1.1 so we use this
-gem "rdoc", "~> 6.4.1"
-
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
