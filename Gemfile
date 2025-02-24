@@ -4,7 +4,6 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
-gem "inspec", git: "https://github.com/inspec/inspec.git", branch: "inspec-7"
 gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
