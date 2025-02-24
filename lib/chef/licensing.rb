@@ -6,12 +6,8 @@ class Chef
   class Licensing
     class << self
       def fetch_and_persist
-        if ENV["TEST_KITCHEN"]
-          puts "Temporarily bypassing licensing check in Kitchen"
-        else
-          Chef::Log.info "Fetching and persisting license..."
-          license_keys = ChefLicensing.fetch_and_persist
-        end
+        Chef::Log.info "Fetching and persisting license..."
+        license_keys = ChefLicensing.fetch_and_persist
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
         Chef::Log.error "Chef Infra cannot execute without valid licenses." # TODO: Replace Infra with the product name dynamically
         Chef::Application.exit! "License not set", 174 # 174 is the exit code for LICENSE_NOT_SET defined in lib/chef/application/exit_code.rb
