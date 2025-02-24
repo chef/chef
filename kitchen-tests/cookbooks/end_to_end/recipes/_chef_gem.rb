@@ -15,3 +15,8 @@ chef_gem gem_name do
   action :install
   compile_time false
 end
+
+chef_gem "awk-sdk-ec2" do
+  action :install
+  compile_time false
+end
