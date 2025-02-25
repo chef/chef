@@ -4,9 +4,9 @@ gem "rake", ">= 12.3.3" # required to build some native extensions
 gem "chef", path: ".."
 gem "knife", path: "../knife"
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main" # avoids failures when we bump chef major
-gem "chef-cli"
-gem "kitchen-dokken", ">= 2.0"
+gem "chef-cli", git: "https://github.com/chef/chef-cli.git", branch: "jfm/chef19-update"
+gem "kitchen-dokken", git: "https://github.com/chef/kitchen-dokken.git", branch: "main"
 gem "kitchen-vagrant", ">= 1.0"
 gem "kitchen-inspec"
 gem "inspec", ">= 5.0", "< 6"
-gem "test-kitchen"
+gem "chef-test-kitchen-enterprise", git: "https://github.com/chef/chef-test-kitchen-enterprise", branch: "jfm/chef19-update"
