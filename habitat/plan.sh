@@ -127,7 +127,7 @@ do_install() {
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
 
     build_line "** output env"
-    build_line `find ${pkg_prefix}`
+    build_line `find ${pkg_prefix} -print`
 
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
