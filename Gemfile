@@ -13,6 +13,8 @@ gem "ffi", ">= 1.15.5", "< 1.17.0"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "jfm/chef19-update"
+gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "jfm/chef19-update"
+gem "win32-api", git: "https://github.com/chef/win32-api.git", branch: "jfm/chef19-win32-api-update"
 
 # required for FIPS or bundler will pick up default openssl
 install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" } } do
