@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
+
 gem "rake", ">= 12.3.3" # required to build some native extensions
 gem "chef", path: ".."
 gem "knife", path: "../knife"
