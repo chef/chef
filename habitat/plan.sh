@@ -100,7 +100,7 @@ do_prepare() {
     bundle config --local retry 5
     bundle config --local silence_root_warning 1
   )
- 
+
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
@@ -125,6 +125,10 @@ do_install() {
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
+
+    build_line "** output env"
+    build_line `find ${pkg_prefix}`
+
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
