@@ -578,7 +578,7 @@ class Chef
         description: "Use a login shell to run the commands instead of inheriting the existing execution environment."
 
       property :cgroup, [String],
-        introduced: "18.5",
+        introduced: "19.0",
         description: "Linux only: Run the command within a specific cgroup, creating it if it doesn't exist."
 
       alias :env :environment
