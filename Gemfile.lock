@@ -1,18 +1,26 @@
 GIT
+  remote: https://github.com/chef/ffi-libarchive.git
+  revision: 2184305c2188c215dc044816f139411224d77a27
+  branch: jfm/chef19-update
+  specs:
+    ffi-libarchive (1.1.14)
+      ffi (>= 1.15.5, < 1.17.0)
+
+GIT
   remote: https://github.com/chef/ohai.git
-  revision: df8ab43680c6bd0a12b686f2a810bfe408b6dfd0
+  revision: 2eb803c65f97baef0bccf1e2a4646983452a8745
   branch: main
   specs:
-    ohai (19.0.7)
+    ohai (19.0.8)
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
-      ffi (~> 1.9)
+      ffi (>= 1.15.5, < 1.17.0)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
       mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (~> 3.2, >= 3.2.5)
+      mixlib-shellout (~> 3.3.6)
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
@@ -91,7 +99,6 @@ PATH
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5, < 1.17.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       license-acceptance (>= 1.0.5, < 3)
@@ -126,7 +133,6 @@ PATH
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5, < 1.17.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       iso8601 (>= 0.12.1, < 0.14)
@@ -317,8 +323,6 @@ GEM
       net-ssh
     ffi (1.16.3)
     ffi (1.16.3-x64-mingw-ucrt)
-    ffi-libarchive (1.1.14)
-      ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
     ffi-yajl (2.6.0)
@@ -357,8 +361,6 @@ GEM
     mime-types-data (3.2025.0204)
     minitest (5.25.4)
     mixlib-archive (1.1.7)
-      mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
@@ -517,7 +519,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
-    win32-api (1.10.1-universal-mingw32)
+    win32-api (1.10.1)
     win32-certstore (0.6.16)
       chef-powershell
       ffi
@@ -560,6 +562,7 @@ DEPENDENCIES
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5, < 1.17.0)
+  ffi-libarchive!
   inspec-core!
   inspec-core-bin!
   ohai!
