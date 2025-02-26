@@ -47,7 +47,7 @@ describe Chef::Cookbook::ManifestV0 do
 
   let(:expected_hash) do
     {
-      "attributes" => [{ "name" => "default.rb", "path" => "attributes/default.rb", "checksum" => "a88697db56181498a8828d5531271ad9", "specificity" => "default" }],
+      "attributes" => [{ "name" => "default.rb", "path" => "attributes/default.rb", "checksum" => "1215d7548e4753d1e3206736bb9c29f0", "specificity" => "default" }],
       "chef_type" => "cookbook_version",
       "cookbook_name" => "tatft",
       "definitions" => [{ "name" => "runit_service.rb", "path" => "definitions/runit_service.rb", "checksum" => "c40cf9b4c6eb15a8e49e31602f701161", "specificity" => "default" }],
@@ -58,7 +58,7 @@ describe Chef::Cookbook::ManifestV0 do
       "providers" => [{ "name" => "lwp.rb", "path" => "providers/lwp.rb", "checksum" => "bc189d68f77bb054d1070aeff7669557", "specificity" => "default" }],
       "recipes" => [{ "name" => "default.rb", "path" => "recipes/default.rb", "checksum" => "09bc749f00c68717d288de9c8d7c644f", "specificity" => "default" }],
       "resources" => [{ "name" => "lwr.rb", "path" => "resources/lwr.rb", "checksum" => "609c40d3d3f269e7edf230277a240ef5", "specificity" => "default" }],
-      "root_files" => [{ "name" => "README.rdoc", "path" => "README.rdoc", "checksum" => "cd7be9a1b9b1f33e3bcd9c3f4bc8dde5", "specificity" => "default" }],
+      "root_files" => [{ "name" => "README.rdoc", "path" => "README.rdoc", "checksum" => "81f6fa2730a3e5e75a637feb1a2e4e2d", "specificity" => "default" }],
       "templates" => [{ "name" => "configuration.erb", "path" => "templates/default/configuration.erb", "checksum" => "d41d8cd98f00b204e9800998ecf8427e", "specificity" => "default" }],
       "version" => "1.2.3",
     }
