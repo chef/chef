@@ -4,7 +4,8 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
-gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
+gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core.gemspec"
+gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
@@ -14,7 +15,10 @@ gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(F
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "jfm/chef19-update"
 gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "jfm/chef19-update"
-gem "win32-api", git: "https://github.com/chef/win32-api.git", branch: "jfm/chef19-win32-api-update"
+
+if RUBY_PLATFORM == "x64-mingw-ucrt"
+   "win32-api", git: "https://github.com/chef/win32-api.git", branch: "jfm/chef19-win32-api-update"
+end
 
 # required for FIPS or bundler will pick up default openssl
 install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" } } do

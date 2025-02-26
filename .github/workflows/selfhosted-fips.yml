@@ -59,7 +59,7 @@ jobs:
         id: upgrade
         run: |
           OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
-          sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater:19.0.2.rc.1 --no-doc
+          sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
           sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github $GITHUB_REPOSITORY
           echo "Installed Chef / Ohai release:"
           /opt/chef/bin/chef-client -v

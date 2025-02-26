@@ -9,4 +9,4 @@ gem "kitchen-dokken", git: "https://github.com/chef/kitchen-dokken.git", branch:
 gem "kitchen-vagrant", ">= 1.0"
 gem "kitchen-inspec"
 gem "inspec", ">= 5.0", "< 6"
-gem "chef-test-kitchen-enterprise", git: "https://github.com/chef/chef-test-kitchen-enterprise", branch: "jfm/chef19-update"
+gem "test-kitchen"
