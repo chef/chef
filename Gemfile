@@ -13,6 +13,12 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "ffi", ">= 1.15.5", "< 1.17.0"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "jfm/chef19-update"
+gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "jfm/chef19-update"
+
+if RUBY_PLATFORM == "x64-mingw-ucrt"
+  gem "win32-api", git: "https://github.com/chef/win32-api.git", branch: "jfm/chef19-win32-api-update"
+end
 
 # required for FIPS or bundler will pick up default openssl
 install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" } } do
@@ -21,6 +27,9 @@ end
 
 # since we are using ruby 3.1.x, rdoc needs to be on 6.4.1.1 so we use this
 gem "rdoc", "~> 6.4.1"
+
+# Moving webmock here - the testers keep filtering this out and tests are failing
+gem "webmock"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
@@ -35,7 +44,7 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  # gem "inspec-core-bin", "~> 6.8" # need to provide the binaries for inspec
+  # gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
   gem "chef-vault"
 end
 
@@ -65,7 +74,7 @@ end
 group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
-  gem "webmock"
+  # gem "webmock"
   gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end
