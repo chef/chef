@@ -17,7 +17,7 @@ gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch:
 gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "jfm/chef19-update"
 
 if RUBY_PLATFORM == "x64-mingw-ucrt"
-   "win32-api", git: "https://github.com/chef/win32-api.git", branch: "jfm/chef19-win32-api-update"
+   gem "win32-api", git: "https://github.com/chef/win32-api.git", branch: "jfm/chef19-win32-api-update"
 end
 
 # required for FIPS or bundler will pick up default openssl
