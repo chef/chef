@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/chef/appbundler
+  revision: 5d8b8fdaa8a3e45c25bd449f3d4274c821d65c41
+  branch: tp/appbundler-debug
+  specs:
+    appbundler (0.13.5)
+      mixlib-cli (>= 1.4, < 3.0)
+      mixlib-shellout (>= 2.0, < 4.0)
+
+GIT
   remote: https://github.com/chef/ohai.git
   revision: 0129eb894e3382e33c88be3cc3f97d1841544c30
   branch: main
@@ -186,9 +195,6 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    appbundler (0.13.4)
-      mixlib-cli (>= 1.4, < 3.0)
-      mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
     aws-eventstream (1.3.1)
     aws-partitions (1.1055.0)
@@ -524,7 +530,7 @@ PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
-  appbundler
+  appbundler!
   chef!
   chef-bin!
   chef-config!
