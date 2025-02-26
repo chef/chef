@@ -85,7 +85,7 @@ jobs:
           - almalinux-9
           - debian-11
           - debian-12
-          - fedora-latest
+          - fedora-40
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
