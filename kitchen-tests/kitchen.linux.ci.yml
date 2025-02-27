@@ -25,6 +25,7 @@ lifecycle:
         - ubuntu-18.04
     - remote: sudo dnf install -y openssl cronie
       includes:
+        - fedora-40
         - fedora-latest
     - remote: sudo pkg update && sudo pkg install -y git gcc gmake autoconf automake libtool
       includes:
@@ -59,6 +60,7 @@ platforms:
   - name: amazonlinux-2023
   - name: debian-12
   - name: debian-11
+  - name: fedora-40
   - name: fedora-latest
   - name: freebsd-13
   - name: freebsd-14
