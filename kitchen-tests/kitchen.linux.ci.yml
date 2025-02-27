@@ -25,6 +25,7 @@ lifecycle:
         - ubuntu-18.04
     - remote: sudo dnf install -y openssl cronie
       includes:
+        - fedora-40
         - fedora-latest
     - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
@@ -55,6 +56,7 @@ platforms:
   - name: amazonlinux-2023
   - name: debian-12
   - name: debian-11
+  - name: fedora-40
   - name: fedora-latest
   - name: opensuse-leap-15
   - name: oracle-7
