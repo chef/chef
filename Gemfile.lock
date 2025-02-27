@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/appbundler
-  revision: 5d8b8fdaa8a3e45c25bd449f3d4274c821d65c41
+  revision: c61f8469a9e6193c81f49c9aa8291eaed4680d17
   branch: tp/appbundler-debug
   specs:
     appbundler (0.13.5)
