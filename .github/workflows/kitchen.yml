@@ -86,6 +86,7 @@ jobs:
           - debian-11
           - debian-12
           - fedora-40
+          # fedora-latest
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
@@ -119,6 +120,7 @@ jobs:
           - debian-11
           - debian-12
           - fedora-40
+          # fedora-latest
           - opensuse-leap-15
           - oracle-7
           - oracle-8
