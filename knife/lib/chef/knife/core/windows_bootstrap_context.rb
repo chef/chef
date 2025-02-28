@@ -169,13 +169,13 @@ class Chef
         end
 
         def start_chef
-          c_opscode_dir = ChefConfig::PathHelper.cleanpath(ChefConfig::Config.c_opscode_dir, windows: true)
+          bin_dir = ChefConfig::PathHelper.cleanpath(ChefConfig::Config.bin_dir, windows: true)
           client_rb = clean_etc_chef_file("client.rb")
           first_boot = clean_etc_chef_file("first-boot.json")
 
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
 
-          start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
+          start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{bin_dir}\\bin;#{bin_dir}\\embedded\\bin\;%PATH%\"\n"
           start_chef << "#{ChefUtils::Dist::Infra::CLIENT} -c #{client_rb} -j #{first_boot}#{bootstrap_environment_option}\n"
         end
 
