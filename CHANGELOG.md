@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.18 -->
-## [v18.6.18](https://github.com/chef/chef/tree/v18.6.18) (2025-02-25)
+<!-- latest_release 18.6.19 -->
+## [v18.6.19](https://github.com/chef/chef/tree/v18.6.19) (2025-02-28)
 
 #### Merged Pull Requests
-- [Chef18] dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14836](https://github.com/chef/chef/pull/14836) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Backport 18] Remove rdoc since 3.1.6 has patch version already [#14857](https://github.com/chef/chef/pull/14857) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Backport 18] Remove rdoc since 3.1.6 has patch version already [#14857](https://github.com/chef/chef/pull/14857) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.19 -->
 - [Chef18] dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14836](https://github.com/chef/chef/pull/14836) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.18 -->
 - [chef-18] Updating Train-Winrm support [#14842](https://github.com/chef/chef/pull/14842) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.17 -->
 - [Chef-18] Correcting missing files error [#14843](https://github.com/chef/chef/pull/14843) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.16 -->
