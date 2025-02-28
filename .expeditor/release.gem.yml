@@ -1,0 +1,18 @@
+expeditor:
+  accounts:
+    - aws/chef-artifactory
+  defaults:
+    buildkite:
+      timeout_in_minutes: 45
+
+steps:
+
+  - label: "push gem to artifactory"
+    commands:
+      - .expeditor/scripts/release-gem.sh
+    expeditor:
+      executor:
+        docker:
+          privileged: true
+      accounts:
+        - aws/chef-artifactory
