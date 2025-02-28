@@ -33,7 +33,7 @@ $project_root = "$(git rev-parse --show-toplevel)"
 Set-Location $project_root
 
 Write-Host "--- :construction: Building $Plan"
-$env:DO_CHECK=$true; hab pkg build . --refresh-channel LTS-2024
+$env:DO_CHECK=$true; $env:HAB_REFRESH_CHANNEL="LTS-2024"; hab pkg build .
 if (-not $?) { throw "unable to build"}
 
 . results/last_build.ps1

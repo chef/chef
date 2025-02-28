@@ -6,6 +6,14 @@ service "snapd" do
   action :start
 end
 
+snap_package "core" do
+  # this is an attempt to keep Ubuntu 18.04 from failing
+  action :install
+  channel "stable"
+  retries 2
+  retry_delay 15
+end
+
 snap_package "hello" do
   # there was originally a 5 second sleep before this
   action :install

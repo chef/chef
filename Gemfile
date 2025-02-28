@@ -7,7 +7,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "ffi", ">= 1.15.5"
+gem "ffi", ">= 1.15.5", "< 1.17.0"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
@@ -15,9 +15,6 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && platform.os == "darwin" } } do
   gem "openssl", "= 3.2.0"
 end
-
-# since we are using ruby 3.1.x, rdoc needs to be on 6.4.1.1 so we use this
-gem "rdoc", "~> 6.4.1"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
