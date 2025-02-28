@@ -4,6 +4,10 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+
+gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
+gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
+
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
@@ -16,6 +20,9 @@ install_if -> { !Gem.platforms.any? { |platform| !platform.is_a?(String) && plat
   gem "openssl", "= 3.2.0"
 end
 
+# Moving webmock here - the testers keep filtering this out and tests are failing
+gem "webmock"
+
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
@@ -27,9 +34,8 @@ end
 gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
-  gem "appbundler"
+  gem "appbundler", git: "https://github.com/chef/appbundler", branch: "tp/appbundler-debug"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 6.8" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
