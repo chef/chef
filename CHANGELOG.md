@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.20 -->
-## [v18.6.20](https://github.com/chef/chef/tree/v18.6.20) (2025-02-28)
+<!-- latest_release 18.6.21 -->
+## [v18.6.21](https://github.com/chef/chef/tree/v18.6.21) (2025-02-28)
 
 #### Merged Pull Requests
-- [Chef18][RemoteFileVendor#get_filename] Do O(1) search for filename [#14835](https://github.com/chef/chef/pull/14835) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Chef18][Metadata#recipes_from_cookbook_version] Use end_with? [#14837](https://github.com/chef/chef/pull/14837) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef18][Metadata#recipes_from_cookbook_version] Use end_with? [#14837](https://github.com/chef/chef/pull/14837) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.21 -->
 - [Chef18][RemoteFileVendor#get_filename] Do O(1) search for filename [#14835](https://github.com/chef/chef/pull/14835) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.20 -->
 - [Backport 18] Remove rdoc since 3.1.6 has patch version already [#14857](https://github.com/chef/chef/pull/14857) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.19 -->
 - [Chef18] dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14836](https://github.com/chef/chef/pull/14836) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.18 -->
