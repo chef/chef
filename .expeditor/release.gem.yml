@@ -1,0 +1,17 @@
+expeditor:
+  accounts:
+    - aws/chef-artifactory
+  defaults:
+    buildkite:
+      timeout_in_minutes: 45
+
+steps:
+
+  - label: "push gem to artifactory"
+    commands:
+      - .expeditor/scripts/release-gem.sh
+    agents:
+      queue: omnibus-ubuntu-20.04-x86_64
+    expeditor:
+      accounts:
+        - aws/chef-artifactory
