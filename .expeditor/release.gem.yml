@@ -16,4 +16,5 @@ steps:
         - aws/chef-artifactory
       executor:
         docker:
+          image: ruby:3.2 
           privileged: true
