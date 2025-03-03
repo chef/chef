@@ -10,10 +10,9 @@ steps:
   - label: "push gem to artifactory"
     commands:
       - .expeditor/scripts/release-gem.sh
-    agents:
-      queue=default-privileged
     expeditor:
-      linux:
-        privileged: true
-      accounts:
+     executor:
+      docker:
+       privileged: true
+    accounts:
         - aws/chef-artifactory
