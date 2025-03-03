@@ -33,7 +33,7 @@ end
 gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
-  gem "inspec-core-bin"
+  # gem "inspec-core-bin"
   gem "appbundler", git: "https://github.com/chef/appbundler", branch: "tp/appbundler-debug"
   gem "rb-readline"
   gem "chef-vault"
