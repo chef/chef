@@ -36,7 +36,7 @@ lifecycle:
     - remote: sudo /opt/chef/embedded/bin/gem install appbundler --no-doc
     - remote: cd /tmp
     - remote: sudo wget https://github.com/chef/appbundle-updater/archive/refs/heads/tp/skip-inspec-cor-bin.tar.gz -O appbundle-updater.tar.gz
-    - remote: sudo tar -zxf appbundle-updater.tar.gz
+    - remote: sudo tar zxf appbundle-updater.tar.gz
     - remote: cd appbundle-updater
     - remote: sudo /opt/chef/embedded/bin/gem build appbundle-updater.gemspec
     - remote: sudo /opt/chef/embedded/bin/gem install appbundle-updater-*.gem
