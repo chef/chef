@@ -17,5 +17,5 @@ steps:
       executor:
         linux:
           docker:
-            image: ruby:3.2 
+            image: ruby:3.2
             privileged: true
