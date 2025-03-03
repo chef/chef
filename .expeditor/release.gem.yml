@@ -11,8 +11,12 @@ steps:
     commands:
       - .expeditor/scripts/release-gem.sh
     expeditor:
-     executor:
-      docker:
-       privileged: true
-    accounts:
+      secrets:
+        GITHUB_TOKEN:
+          account: github/chef
+          field: token
+      accounts:
         - aws/chef-artifactory
+      executor:
+        docker:
+          privileged: true
