@@ -20,5 +20,5 @@ steps:
         - aws/chef-artifactory
       executor:
         docker:
-          image: chefes/buildkite:3.3.0
+          image: ruby:3.4.2
           privileged: true
