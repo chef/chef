@@ -15,7 +15,8 @@ steps:
       accounts:
         - aws/chef-artifactory
       executor:
-        image: chefes/expeditor:latest
+        docker:
+          image: ruby:3.4.1-slim
           environment:
             - DOCKER_HOST=tcp://docker:2375
           privileged: true
