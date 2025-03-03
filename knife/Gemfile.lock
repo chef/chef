@@ -21,15 +21,6 @@ GIT
   remote: https://github.com/inspec/inspec.git
   revision: 433e5002bd644b801a6161b4ce824dcf303e943e
   branch: inspec-7
-  glob: inspec-bin/inspec-core-bin.gemspec
-  specs:
-    inspec-core-bin (7.0.36)
-      inspec-core (= 7.0.36)
-
-GIT
-  remote: https://github.com/inspec/inspec.git
-  revision: 433e5002bd644b801a6161b4ce824dcf303e943e
-  branch: inspec-7
   glob: inspec-core.gemspec
   specs:
     inspec-core (7.0.36)
@@ -549,7 +540,6 @@ DEPENDENCIES
   cookstyle (>= 7.32.8)
   crack (< 0.4.6)
   inspec-core!
-  inspec-core-bin!
   knife!
   ohai!
   pry

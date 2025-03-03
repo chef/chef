@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem "knife", path: "."
 
 gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
-gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
+# gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
 
 group(:development, :test) do
   gem "cheffish", ">= 14" # testing only , but why didn't this need to explicit in chef?
