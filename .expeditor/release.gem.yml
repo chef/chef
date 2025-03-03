@@ -20,7 +20,5 @@ steps:
         - aws/chef-artifactory
       executor:
         docker:
-          image: ruby:3.4.1-slim
-          environment:
-            - DOCKER_HOST=tcp://docker:2375
+          image: chefes/buildkite:3.3.0
           privileged: true
