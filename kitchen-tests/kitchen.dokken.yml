@@ -29,10 +29,15 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
+
+      # Install gcc using habitat
+    - remote: hab pkg install core/gcc/12.2.0/20241017105633
+    - remote: hab pkg exec core/gcc/12.2.0/20241017105633 gcc --version
+    - remote: ENV PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$(hab pkg path core/glibc)/bin:$PATH"
+
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
-    # Install development tools for building native gem extensions
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
@@ -45,19 +50,15 @@ lifecycle:
       includes:
         - centos-7
         - oraclelinux-7
-    - remote: sudo apt-get install -y ruby-dev libgmp-dev
-      includes:
-        - debian-11
-        - debian-12
-        - ubuntu-18.04
-        - ubuntu-20.04
-        - ubuntu-22.04
-        - ubuntu-24.04
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
       excludes:
         - centos-7
         - oraclelinux-7
+    - remote: echo "Print mkmf.log bigdecimal"
+    - remote: cat /hab/pkgs/core/ruby3_1/3.1.6/20241017135756/lib/ruby/gems/3.1.0/extensions/x86_64-linux/3.1.0/bigdecimal-3.1.8/mkmf.log
+    - remote: echo "Print mkmf.log ruby-shadow"
+    - remote: cat /hab/pkgs/core/ruby3_1/3.1.6/20241017135756/lib/ruby/gems/3.1.0/extensions/x86_64-linux/3.1.0/ruby-shadow-2.5.1/mkmf.log
     - remote: echo "Installed Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
