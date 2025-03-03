@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 set -eou pipefail
 
 echo "Installing dependencies.."
