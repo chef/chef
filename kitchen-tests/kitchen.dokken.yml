@@ -25,10 +25,8 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: sudo /opt/chef/embedded/bin/gem install appbundler --no-doc
-    - remote: sudo curl -L https://github.com/chef/appbundle-updater/archive/refs/heads/tp/skip-inspec-cor-bin.tar.gz -o appbundle-updater.tar.gz
-    - remote: sudo tar zxf appbundle-updater.tar.gz
-    - remote: sudo /opt/chef/embedded/bin/gem build appbundle-updater-tp-skip-inspec-cor-bin/appbundle-updater.gemspec
-    - remote: sudo /opt/chef/embedded/bin/gem install appbundle-updater-*.gem
+    - remote: git clone --branch tp/skip-inspec-cor-bin https://github.com/chef/appbundle-updater
+    - remote: appbundle-updater/install-self.sh
     # back compat for pre-unified-/usr distros, do not add new OSes
     #
     - remote: sudo ln -s /usr/bin/install /bin/install
