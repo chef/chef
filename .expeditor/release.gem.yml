@@ -12,6 +12,10 @@ steps:
       - chmod +x .expeditor/scripts/release-gem.sh
       - .expeditor/scripts/release-gem.sh
     expeditor:
+      secrets:
+        GITHUB_TOKEN:
+          account: github/chef
+          field: token
       accounts:
         - aws/chef-artifactory
       executor:
