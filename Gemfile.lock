@@ -47,15 +47,6 @@ GIT
   remote: https://github.com/inspec/inspec.git
   revision: 433e5002bd644b801a6161b4ce824dcf303e943e
   branch: inspec-7
-  glob: inspec-bin/inspec-core-bin.gemspec
-  specs:
-    inspec-core-bin (7.0.36)
-      inspec-core (= 7.0.36)
-
-GIT
-  remote: https://github.com/inspec/inspec.git
-  revision: 433e5002bd644b801a6161b4ce824dcf303e943e
-  branch: inspec-7
   glob: inspec-core.gemspec
   specs:
     inspec-core (7.0.36)
@@ -545,7 +536,6 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5, < 1.17.0)
   inspec-core!
-  inspec-core-bin!
   ohai!
   openssl (= 3.2.0)
   pry (= 0.13.0)

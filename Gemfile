@@ -6,7 +6,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 
 gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
-gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
+#gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
@@ -65,7 +65,6 @@ end
 group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
-  gem "webmock"
   gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end
