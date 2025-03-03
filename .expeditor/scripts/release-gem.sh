@@ -1,12 +1,11 @@
 #!/bin/bash
-set -x
 set -eou pipefail
 
  sudo yum update -y
 sudo yum install gcc
  gpg2 --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 curl -sSL https://get.rvm.io | bash -s stable
-source ~/.rvm/scripts/rvm
+source /home/ec2-user/.rvm/scripts/rvm
 rvm install 3.2
 ruby --version
  gem install bundler --no-document
