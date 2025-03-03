@@ -45,19 +45,14 @@ lifecycle:
       includes:
         - centos-7
         - oraclelinux-7
-    - remote: sudo apt-get install -y ruby-dev libgmp-dev
-      includes:
-        - debian-11
-        - debian-12
-        - ubuntu-18.04
-        - ubuntu-20.04
-        - ubuntu-22.04
-        - ubuntu-24.04
     - remote: echo "Updating Chef using appbundler-updater:"
     - remote: hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
       excludes:
         - centos-7
         - oraclelinux-7
+    # print contents of /hab/pkgs/core/ruby3_1/3.1.6/20241017135756/lib/ruby/gems/3.1.0/extensions/x86_64-linux/3.1.0/bigdecimal-3.1.8/mkmf.log
+    - remote: echo "Printing mkmf.log"
+    - remote: cat /hab/pkgs/core/ruby3_1/3.1.6/20241017135756/lib/ruby/gems/3.1.0/extensions/x86_64-linux/3.1.0/bigdecimal-3.1.8/mkmf.log
     - remote: echo "Installed Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
