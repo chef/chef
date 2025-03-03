@@ -9,8 +9,8 @@ steps:
 
   - label: "push gem to artifactory"
     commands:
-      - sudo apt-get update
-      - sudo apt-get install -y ruby-full build-essential
+      - sudo yum update
+      - sudo yum install -y ruby-full build-essential
       - gem install bundler --no-document
       - .expeditor/scripts/release-gem.sh
     agents:
