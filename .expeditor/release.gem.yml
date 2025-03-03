@@ -9,6 +9,7 @@ steps:
 
   - label: "push gem to artifactory"
     commands:
+      - chmod +x .expeditor/scripts/release-gem.sh
       - .expeditor/scripts/release-gem.sh
     expeditor:
       secrets:
