@@ -2,8 +2,8 @@
 set -x
 set -eou pipefail
 
- sudo yum update
- sudo yum install -y ruby-full build-essential
+ sudo yum update -y
+ sudo yum install -y ruby-full build-essential 
  gem install bundler --no-document
 echo "Installing dependencies.."
 bundle config set --local without docgen chefstyle development test
