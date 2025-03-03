@@ -9,9 +9,6 @@ steps:
 
   - label: "push gem to artifactory"
     commands:
-      - sudo yum update
-      - sudo yum install -y ruby-full build-essential
-      - gem install bundler --no-document
       - .expeditor/scripts/release-gem.sh
     agents:
       queue=default-privileged
