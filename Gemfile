@@ -6,7 +6,6 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 
 gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-core.gemspec"
-#gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "inspec-7", glob: "inspec-bin/inspec-core-bin.gemspec"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
@@ -34,6 +33,7 @@ end
 gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
+  gem "inspec-core-bin"
   gem "appbundler", git: "https://github.com/chef/appbundler", branch: "tp/appbundler-debug"
   gem "rb-readline"
   gem "chef-vault"
