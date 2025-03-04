@@ -63,4 +63,9 @@ describe Chef::Resource::AptPackage, "initialize" do
     resource.response_file_variables({ variables: true })
     expect(resource.response_file_variables).to eql({ variables: true })
   end
+
+  it "accepts a hash for environment variables" do
+    resource.environment({ variables: true })
+    expect(resource.environment).to eql({ variables: true })
+  end
 end
