@@ -33,7 +33,7 @@ lifecycle:
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: sudo /opt/chef/embedded/bin/gem install appbundler --no-doc
+    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: sudo /opt/chef/embedded/bin/gem install specific_install --no-doc
     - remote: sudo /opt/chef/embedded/bin/gem specific_install -l https://github.com/chef/appbundle-updater -b tp/skip-inspec-core-bin-chef-18
     - remote: scl enable devtoolset-7 'sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
