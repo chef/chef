@@ -34,7 +34,7 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: sudo cat /opt/chef/embedded/bin/appbundle-updater | sudo /opt/chef/embedded/bin/ruby -pe '$_ = "" if /"inspec-core-bin" =>  %w{development},/' > /opt/chef/embedded/bin/appbundle-updater.new
+    - remote: sudo cat /opt/chef/embedded/bin/appbundle-updater | sudo /opt/chef/embedded/bin/ruby -pe '$_ = "" if $_.match?("inspec-core-bin")' > /opt/chef/embedded/bin/appbundle-updater.new
     - remote: sudo mv /opt/chef/embedded/bin/appbundle-updater.new /opt/chef/embedded/bin/appbundle-updater
     - remote: scl enable devtoolset-7 'sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
