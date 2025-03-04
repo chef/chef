@@ -24,7 +24,8 @@ lifecycle:
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: /opt/chef/embedded/bin/gem install appbundler --no-doc
+    - remote: /opt/chef/embedded/bin/gem install appbundle-updater -v "~> 1.0.36" --no-doc
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
