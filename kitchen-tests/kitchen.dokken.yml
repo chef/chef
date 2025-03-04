@@ -33,7 +33,7 @@ lifecycle:
     - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
     # Install chef/chef-cli habitat package on container
-    - remote: hab pkg install chef/chef-cli
+    - remote: hab pkg install chef/chef-cli --channel unstable
     # Install development tools for building native gem extensions
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
