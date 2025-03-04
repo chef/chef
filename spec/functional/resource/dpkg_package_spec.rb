@@ -165,6 +165,12 @@ describe Chef::Resource::DpkgPackage, :requires_root, :debian_family_only, arch:
       dpkg_package.run_action(action)
       expect(dpkg_package).not_to be_updated_by_last_action
     end
+
+    it "should use environment variables" do
+      dpkg_package.environment "FOO" => "BAR"
+      dpkg_package.run_action(:install)
+      expect(dpkg_package).to receive(:shell_out!).and_return(double("shell_out", stdout: /^FOO=BAR/))
+    end
   end
 
   context "action :upgrade" do
