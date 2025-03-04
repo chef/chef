@@ -250,7 +250,7 @@ class Chef
         end
 
         def dnf(*args)
-          shell_out!("dnf", *args)
+          shell_out!("dnf", *args, env: new_resource.environment)
         end
 
         def safe_version_array
