@@ -8,7 +8,7 @@ provisioner:
   name: chef_infra
   product_name: chef
   product_version: latest
-  channel: current
+  channel: unstable
   retry_on_exit_code:
     - 35 # 35 is the exit code signaling that the node is rebooting
   client_rb:
@@ -16,34 +16,29 @@ provisioner:
     always_dump_stacktrace: true
   deprecations_as_errors: true
   chef_license: accept-no-persist
+  chef_license_key: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
   slow_resource_report: true
 
 lifecycle:
   pre_converge:
-    - remote: sudo apt-get update && sudo apt-get install -y curl
-      includes:
-        - ubuntu-18.04
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-40
         - fedora-latest
-    - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
-    - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
+    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: hab license accept
+    - remote: hab pkg install --binlink --force chef/chef-infra-client --channel unstable
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    - remote: hab pkg exec chef/chef-infra-clientchef-client -v
+    - remote: hab pkg exec chef/chef-infra-clientohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: scl enable devtoolset-7 'sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - oraclelinux-7
+    - remote: sudo hab pkg exec chef/chef-infra-clientgem install appbundler appbundle-updater --no-doc
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - oraclelinux-7
+    - remote: sudo hab pkg exec chef/chef-infra-client appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: hab pkg exec chef/chef-infra-client chef-client --chef-license accept
     - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: hab pkg exec chef/chef-infra-client ohai -v
 
 verifier:
   name: inspec
@@ -52,20 +47,16 @@ verifier:
 platforms:
   - name: almalinux-8
   - name: almalinux-9
-  - name: amazonlinux-2
   - name: amazonlinux-2023
   - name: debian-12
   - name: debian-11
   - name: fedora-40
   - name: fedora-latest
   - name: opensuse-leap-15
-  - name: oracle-7
   - name: oracle-8
   - name: oracle-9
   - name: rockylinux-8
   - name: rockylinux-9
-  - name: ubuntu-18.04
-  - name: ubuntu-20.04
   - name: ubuntu-22.04
   - name: ubuntu-24.04
 
