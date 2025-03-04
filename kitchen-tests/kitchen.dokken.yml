@@ -29,32 +29,32 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
-    - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
-    - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
-    # Install chef/chef-cli habitat package on container
-    - remote: hab pkg install chef/chef-cli --channel unstable
-    # Install development tools for building native gem extensions
-    # back compat for pre-unified-/usr distros, do not add new OSes
-    - remote: sudo ln -s /usr/bin/install /bin/install
-      includes:
-        - opensuse-leap-15
-        - debian-11
-    - remote: sudo yum install centos-release-scl
-      includes:
-        - centos-7
-    - remote: scl enable devtoolset-7 'hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - centos-7
-        - oraclelinux-7
-    - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - centos-7
-        - oraclelinux-7
-    - remote: echo "Installed Chef / Ohai release:"
-    - remote: hab pkg exec chef/chef-infra-client chef-client -v
-    - remote: hab pkg exec chef/chef-infra-client ohai -v
+    # - remote: echo "Installing appbundler and appbundle-updater gems:"
+    # - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
+    # - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
+    # # Install chef/chef-cli habitat package on container
+    # - remote: hab pkg install chef/chef-cli --channel unstable
+    # # Install development tools for building native gem extensions
+    # # back compat for pre-unified-/usr distros, do not add new OSes
+    # - remote: sudo ln -s /usr/bin/install /bin/install
+    #   includes:
+    #     - opensuse-leap-15
+    #     - debian-11
+    # - remote: sudo yum install centos-release-scl
+    #   includes:
+    #     - centos-7
+    # - remote: scl enable devtoolset-7 'hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
+    #   includes:
+    #     - centos-7
+    #     - oraclelinux-7
+    # - remote: echo "Updating Chef using appbundler-updater:"
+    # - remote: hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    #   excludes:
+    #     - centos-7
+    #     - oraclelinux-7
+    # - remote: echo "Installed Chef / Ohai release:"
+    # - remote: hab pkg exec chef/chef-infra-client chef-client -v
+    # - remote: hab pkg exec chef/chef-infra-client ohai -v
 
 platforms:
   - name: amazonlinux-2
