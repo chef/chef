@@ -24,7 +24,7 @@ lifecycle:
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-update --no-doc
+    - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: sudo cat /opt/chef/embedded/bin/appbundle-updater | sudo /opt/chef/embedded/bin/ruby -pe '$_ = "" if $_.match?("inspec-core-bin")' > /tmp/appbundle-updater.new
     - remote: sudo mv /tmp/appbundle-updater.new /opt/chef/embedded/bin/appbundle-updater
     - remote: sudo ln -s /usr/bin/install /bin/install
