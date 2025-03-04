@@ -13,8 +13,8 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "core/openssl"
-  "core/libarchive"
+  "core/openssl/3.0.9/20241220111939"
+  "core/libarchive/3.7.4/20241220131127"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015/14.0.24215/20240108064521"
