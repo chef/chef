@@ -49,8 +49,10 @@ lifecycle:
       excludes:
         - centos-7
         - oraclelinux-7
-    - remote: echo "Print mkmf.log"
+    - remote: echo "Print mkmf.log bigdecimal"
     - remote: cat /hab/pkgs/core/ruby3_1/3.1.6/20241017135756/lib/ruby/gems/3.1.0/extensions/x86_64-linux/3.1.0/bigdecimal-3.1.8/mkmf.log
+    - remote: echo "Print mkmf.log ruby-shadow"
+    - remote: cat /hab/pkgs/core/ruby3_1/3.1.6/20241017135756/lib/ruby/gems/3.1.0/extensions/x86_64-linux/3.1.0/ruby-shadow-2.5.1/mkmf.log
     - remote: echo "Installed Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
