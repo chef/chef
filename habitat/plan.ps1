@@ -16,7 +16,7 @@ $pkg_bin_dirs=@(
 $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
-  "core/libarchive"
+  "core/libarchive/3.7.4/20241220131127"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
 )
