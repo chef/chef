@@ -100,7 +100,7 @@ do_prepare() {
     bundle config --local retry 5
     bundle config --local silence_root_warning 1
   )
- 
+
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
