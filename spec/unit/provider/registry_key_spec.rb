@@ -43,6 +43,7 @@ shared_examples_for "a registry key" do
       end
 
       it "should set the unscrubbed values of the current resource to the values it got from the registry" do
+        @new_resource.only_record_changes false
         expect(@provider.current_resource.unscrubbed_values).to eq([ testval2 ])
       end
     end
@@ -303,7 +304,7 @@ describe Chef::Provider::RegistryKey do
       end
 
       it "does not make a change for datatype of data value differing" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( dword_passed_as_integer )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [dword_passed_as_integer] )
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
