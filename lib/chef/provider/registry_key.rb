@@ -52,7 +52,6 @@ class Chef
         if registry.key_exists?(new_resource.key)
           current_registry_values = registry.get_values(new_resource.key) || []
 
-          if current_registry_values.is_a? Hash
           if new_resource.only_record_changes
             current_registry_values.select! { |v| new_resource.values.any? { |nv| nv[:name] == v[:name] } }
           end
