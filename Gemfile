@@ -20,10 +20,6 @@ install_if -> { RUBY_VERSION < "3.1" } do
   gem "mixlib-log", ">= 2.0.3", "<= 3.1.1"
 end
 
-install_if -> { RUBY_VERSION >= "3.1" } do
-  gem "mixlib-log", ">= 3.2.0", "< 4.0"
-end
-
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
