@@ -16,13 +16,13 @@ install_if -> { RUBY_PLATFORM !~ /darwin/ } do
   gem "openssl", "= 3.2.0"
 end
 
-if RUBY_PLATFORM =~ /aix/ && RUBY_VERSION < "3.1"
+install_if -> { RUBY_VERSION < 3.1 } do
   gem "mixlib-log", ">= 2.0.3", "<= 3.1.1"
-else
-  gem "mixlib-log", ">= 3.2.0", "< 4.0"
 end
 
-gem "rdoc", "~> 6.4.1" # 6.4.1.1 required for CVE-2024-27281, allow patch upgrades
+install_if -> { RUBY_VERSION >= 3.1 } do
+  gem "mixlib-log", ">= 3.2.0", "< 4.0"
+end
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
