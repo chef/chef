@@ -16,11 +16,11 @@ install_if -> { RUBY_PLATFORM !~ /darwin/ } do
   gem "openssl", "= 3.2.0"
 end
 
-install_if -> { RUBY_VERSION < 3.1 } do
+install_if -> { RUBY_VERSION < "3.1" } do
   gem "mixlib-log", ">= 2.0.3", "<= 3.1.1"
 end
 
-install_if -> { RUBY_VERSION >= 3.1 } do
+install_if -> { RUBY_VERSION >= "3.1" } do
   gem "mixlib-log", ">= 3.2.0", "< 4.0"
 end
 
