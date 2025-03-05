@@ -13,6 +13,7 @@ end
 require "chef-utils/version_string"
 require "chef/version"
 
+
 Gem::Specification.new do |s|
   s.name = "chef"
   s.version = Chef::VERSION
@@ -34,7 +35,7 @@ Gem::Specification.new do |s|
   if RUBY_PLATFORM =~ /aix/
     s.add_dependency "mixlib-log", "= 3.1.1"
   else
-    s.add_dependency "mixlib-log", ">= 3.2.0"
+    s.add_runtime_dependency "mixlib-log", [">= 3.2.0", "< 4.0"]
   end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
