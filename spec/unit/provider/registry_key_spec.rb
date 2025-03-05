@@ -27,6 +27,7 @@ shared_examples_for "a registry key" do
       before(:each) do
         expect(@double_registry).to receive(:key_exists?).with(keyname).and_return(true)
         expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval2] )
+        @new_resource.only_record_changes false
         @provider.load_current_resource
       end
 
@@ -43,7 +44,6 @@ shared_examples_for "a registry key" do
       end
 
       it "should set the unscrubbed values of the current resource to the values it got from the registry" do
-        @new_resource.only_record_changes false
         expect(@provider.current_resource.unscrubbed_values).to eq([ testval2 ])
       end
     end
