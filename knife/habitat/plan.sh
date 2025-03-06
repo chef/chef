@@ -1,5 +1,6 @@
 # Package metadata
-export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_BLDR_CHANNEL="stable"
+export HAB_REFRESH_CHANNEL="LTS-2024"
 pkg_name=knife
 # _chef_client_ruby="core/ruby3_1"
 ruby_pkg="core/ruby3_1"
@@ -92,11 +93,16 @@ do_build() {
   build_line "Building the Knife gem from the gemspec"
 
   pushd "$HAB_CACHE_SRC_PATH/$pkg_dirname/knife"
-    bundle install --jobs=3 --retry=3
-    gem build knife.gemspec
+      bundle config --local without integration development omnibus_package chefstyle
+      bundle config --local jobs 4
+      bundle config --local retry 5
+      bundle config --local silence_root_warning 1
+    bundle install
     build_line "Installing gems from git repos properly ..."
 
     ruby ./../post-bundle-install.rb
+        gem build knife.gemspec
+
     build_line "Installing this project's gems ..."
     # bundle exec rake install:local
 

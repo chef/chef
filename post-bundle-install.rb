@@ -8,11 +8,25 @@ puts "fixing bundle installed gems in #{gem_home}"
 # you can simply gem build + gem install the resulting gem, so nothing fancy.  This does not use
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
 #
-Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
+Dir["#{gem_home}/bundler/gems/*"].reverse.each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
-
   gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
+  if gem_name == "chef-universal-mingw-ucrt"
+    gem_name = "chef"
+    Dir.chdir("#{gempath}/chef-utils") do
+      puts "re-installing chef-utils..."
+      system("gem build chef-utils.gemspec") or raise "gem build failed"
+      system("gem install chef-utils*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    end
+    Dir.chdir("#{gempath}/chef-config") do
+      puts "re-installing chef-config..."
+      system("gem build chef-config.gemspec") or raise "gem build failed"
+      system("gem install chef-config*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    end
+
+
+  end
   # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
   next unless gem_name
@@ -21,9 +35,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next if %w{chef-universal-mingw-ucrt proxifier}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
-
   Dir.chdir(gempath) do
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
-    system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document --ignore-dependencies") or raise "gem install failed"
   end
 end

@@ -22,8 +22,8 @@ group(:chefstyle) do
 end
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
-gem "chef", git:"https://github.com/chef/chef", branch: "main"
+gem "chef", git:"https://github.com/chef/chef", branch: "ashiqueps/test-knife"
 # gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist?(File.expand_path("../chef-utils", __dir__))
 # gem "chef-config", path: File.expand_path("../chef-config", __dir__) if File.exist?(File.expand_path("../chef-config", __dir__))
-gem "chef-config", git: "https://github.com/chef/chef", branch: "main", glob: "chef-config/chef-config.gemspec"
-gem "chef-utils", git: "https://github.com/chef/chef", branch: "main", glob: "chef-utils/chef-utils.gemspec"
+gem "chef-config", git: "https://github.com/chef/chef", branch: "ashiqueps/test-knife", glob: "chef-config/chef-config.gemspec"
+gem "chef-utils", git: "https://github.com/chef/chef", branch: "ashiqueps/test-knife", glob: "chef-utils/chef-utils.gemspec"
