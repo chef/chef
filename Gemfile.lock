@@ -131,7 +131,7 @@ PATH
   specs:
     chef-config (19.0.93)
       addressable
-      chef-utils (= 19.0.93)
+      chef-utils (>= 16.0, < 20)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
