@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
-  s.add_dependency "chef-utils", "= #{Chef::VERSION}"
+  s.add_dependency "chef-utils", ">= 16.0", "< 20"
   s.add_dependency "train-core", "~> 3.10", "<= 3.12.7" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.17"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
