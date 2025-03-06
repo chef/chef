@@ -140,7 +140,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.0.93)
+    chef-utils (>= 16.0, < 20)
       concurrent-ruby
 
 GEM
