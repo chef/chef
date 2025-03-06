@@ -51,9 +51,8 @@ class Chef
         current_resource.recursive(new_resource.recursive)
         if registry.key_exists?(new_resource.key)
           current_registry_values = registry.get_values(new_resource.key) || []
+
           if new_resource.only_record_changes
-            p current_registry_values
-            p new_resource.values
             current_registry_values.select! { |v| new_resource.values.any? { |nv| nv[:name] == v[:name] } }
           end
           current_resource.values(current_registry_values)
