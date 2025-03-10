@@ -35,6 +35,12 @@ describe Chef::Util::Powershell::PSCredential do
       end
     end
 
+    context "when inspect is called" do
+      it "should not contain the password" do
+        expect(ps_credential.inspect).not_to match(/#{password}/)
+      end
+    end
+
     context "when to_text is called" do
       it "should not contain the password" do
         allow(ps_credential).to receive(:encrypt).with(password).and_return("encrypted")
