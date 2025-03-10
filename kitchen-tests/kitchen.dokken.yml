@@ -2,8 +2,7 @@
 driver:
   name: dokken
   privileged: true
-  chef_image: chef/chef
-  chef_version: current
+  chef_version: unstable
 
 transport:
   name: dokken
@@ -14,6 +13,7 @@ provisioner:
     diff_disabled: true
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
+  chef_license_key: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
   deprecations_as_errors: true
   slow_resource_report: true
   clean_dokken_sandbox: false
@@ -21,39 +21,27 @@ provisioner:
 lifecycle:
   pre_converge:
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    # - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: /hab/hab license accept
+    - remote: /hab/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: /hab/hab pkg exec chef/chef-infra-client ohai -v
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    # back compat for pre-unified-/usr distros, do not add new OSes
+    - remote: /hab/hab pkg install core/git --binlink --force
+    - remote: /hab/hab pkg exec chef/chef-infra-client gem install specific_install appbundler --no-doc
+    - remote: /hab/hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater -b main
+      # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
         - opensuse-leap-15
         - debian-11
-    - remote: sudo yum install centos-release-scl
-      includes:
-        - centos-7
-    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
-      includes:
-        - centos-7
-        - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - centos-7
-        - oraclelinux-7
+    - remote: /hab/hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: /hab/hab pkg exec chef/chef-infra-client chef-client --chef-license accept
     - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    - remote: /hab/hab pkg exec chef/chef-infra-client chef-client -v
+    - remote: /hab/hab pkg exec chef/chef-infra-client ohai -v
 
 platforms:
-  - name: amazonlinux-2
-    driver:
-      image: dokken/amazonlinux-2
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
   - name: amazonlinux-2023
     driver:
       image: dokken/amazonlinux-2023
@@ -76,16 +64,6 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-  - name: centos-7
-    driver:
-      image: dokken/centos-7
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN yum -y install e2fsprogs
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN yum install -y centos-release-scl
-        - RUN yum install -y devtoolset-7
 
   - name: almalinux-8
     driver:
@@ -123,17 +101,6 @@ platforms:
         - RUN mkdir -p /etc/sysconfig/network-scripts
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-  - name: oraclelinux-7
-    driver:
-      image: dokken/oraclelinux-7
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN yum -y install e2fsprogs
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN wget --no-check-certificate -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
-        - RUN printf "[centos-sclo-rh]\nname=CentOS-7 - SCLo rh\nbaseurl=https://archive.kernel.org/centos-vault/7.8.2003/sclo/x86_64/rh/\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-        - RUN yum install -y devtoolset-7
-
   - name: oraclelinux-8
     driver:
       image: dokken/oraclelinux-8
@@ -169,22 +136,6 @@ platforms:
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
         - RUN dnf -y install python3-libdnf python3-dnf
-
-  - name: ubuntu-18.04
-    driver:
-      image: dokken/ubuntu-18.04
-      pid_one_command: /bin/systemd
-      intermediate_instructions:
-        - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-  - name: ubuntu-20.04
-    driver:
-      image: dokken/ubuntu-20.04
-      pid_one_command: /bin/systemd
-      intermediate_instructions:
-        - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
   - name: ubuntu-22.04
     driver:
