@@ -118,11 +118,12 @@ subscriptions:
   - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:promote_artifactory_artifact
+      - bash:.expeditor/promote-docker-images.sh
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
-      # - bash:.expeditor/update_dockerfile.sh
-      # - bash:.expeditor/promote-docker-images.sh
+      - bash:.expeditor/update_dockerfile.sh
+      - bash:.expeditor/promote-docker-images.sh
       - bash:.expeditor/publish-release-notes.sh
       - bash:.expeditor/announce-release.sh
       - built_in:publish_rubygems
@@ -165,6 +166,7 @@ subscriptions:
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
       - trigger_pipeline:habitat/test
+      - trigger_pipeline:docker/build
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
