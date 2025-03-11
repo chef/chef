@@ -14,5 +14,8 @@ steps:
       executor:
         docker:
           privileged: true
+          propagate-environment: true
+          environment:
+            ARTIFACTORY_API_KEY
       accounts:
         - aws/chef-artifactory
