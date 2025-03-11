@@ -145,6 +145,14 @@ do_after() {
   # only Chef's for package verification.
   find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
       | while read spec_dir; do rm -r "$spec_dir"; done
+
+  # we need the built gems outside of the studio
+  build_line "Copying gems to ${SRC_PATH}"
+  mkdir -p "${SRC_PATH}/pkg" "${SRC_PATH}/chef-bin/pkg" "${SRC_PATH}/chef-config/pkg" "${SRC_PATH}/chef-utils/pkg"
+  cp "${CACHE_PATH}/pkg/chef-${pkg_version}.gem" "${SRC_PATH}/pkg"
+  cp "${CACHE_PATH}/chef-bin/pkg/chef-bin-${pkg_version}.gem" "${SRC_PATH}/chef-bin/pkg"
+  cp "${CACHE_PATH}/chef-config/pkg/chef-config-${pkg_version}.gem" "${SRC_PATH}/chef-config/pkg"
+  cp "${CACHE_PATH}/chef-utils/pkg/chef-utils-${pkg_version}.gem" "${SRC_PATH}/chef-utils/pkg"
 }
 
 do_end() {
