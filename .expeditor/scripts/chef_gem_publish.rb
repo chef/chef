@@ -32,7 +32,7 @@ if (project_name == 'chef') && (ENV['ADHOC'] != 'true')
 
   gems_to_publish.each do |gem_path|
     puts 'Publishing gem ' + gem_path
-    upload_path = "#{artifactory_url}/api/gems/omnibus-gems-local"
+    upload_path = "#{artifactory_endpoint}/api/gems/omnibus-gems-local"
     # This mimics the behavior of the gem command line, and is a public api:
     # http://docs.seattlerb.org/rubygems/Gem/Command.html
     gem_pusher = Gem::Commands::PushCommand.new
