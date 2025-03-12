@@ -91,7 +91,7 @@ module TinyServer
 
     def create_server(**extra_options)
       server = WEBrick::HTTPServer.new(**options, **extra_options)
-      server.mount("/", Rack::Handler::WEBrick, API.instance)
+      server.mount("/", Rackup::Handler::WEBrick, API.instance)
       server
     end
   end
