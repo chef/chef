@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.23 -->
-## [v18.6.23](https://github.com/chef/chef/tree/v18.6.23) (2025-03-06)
+<!-- latest_release 18.6.24 -->
+## [v18.6.24](https://github.com/chef/chef/tree/v18.6.24) (2025-03-12)
 
 #### Merged Pull Requests
-- [Backport 18] Reverse the default for only_record_changes  [#14883](https://github.com/chef/chef/pull/14883) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating omnibus and chef-foundation [#14894](https://github.com/chef/chef/pull/14894) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating omnibus and chef-foundation [#14894](https://github.com/chef/chef/pull/14894) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.24 -->
 - [Backport 18] Reverse the default for only_record_changes  [#14883](https://github.com/chef/chef/pull/14883) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.23 -->
 - Pin appbundle-updater gem install to ~&gt; 1.0.36 to avoid hab version [#14870](https://github.com/chef/chef/pull/14870) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.22 -->
 - [Chef18][Metadata#recipes_from_cookbook_version] Use end_with? [#14837](https://github.com/chef/chef/pull/14837) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.21 -->
