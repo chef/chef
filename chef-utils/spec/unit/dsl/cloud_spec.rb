@@ -85,6 +85,10 @@ RSpec.describe ChefUtils::DSL::Cloud do
     cloud_reports_true_for(:cloud?, :softlayer?, node: { "softlayer" => {}, "cloud" => {} })
   end
 
+  context "on oci" do
+    cloud_reports_true_for(:cloud?, :oci?, node: { "oci" => {}, "cloud" => {} })
+  end
+
   context "on virtualbox" do
     it "does not return true for cloud?" do
       expect(described_class.cloud?({ "virtualbox" => {}, "cloud" => nil })).to be false
