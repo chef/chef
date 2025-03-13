@@ -30,7 +30,7 @@ lifecycle:
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
       # Install gcc using habitat
-    - remote: hab pkg core/gcc/12.2.0/20241017105633
+    - remote: hab pkg install core/gcc/12.2.0/20241017105633
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
