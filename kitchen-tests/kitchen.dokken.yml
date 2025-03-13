@@ -35,7 +35,7 @@ lifecycle:
     - remote: hab pkg exec core/gcc/12.2.0/20241017105633 gcc --version
     - remote: echo "PATH before: $PATH"
       # Add gcc to PATH
-    - remote: ENV PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$(hab pkg path core/glibc)/bin:$PATH"
+    - remote: export PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$(hab pkg path core/glibc)/bin:$PATH"
     - remote: echo "PATH after: $PATH"
 
     - remote: echo "Installing appbundler and appbundle-updater gems:"
