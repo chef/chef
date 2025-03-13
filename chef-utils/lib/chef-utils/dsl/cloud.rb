@@ -149,6 +149,17 @@ module ChefUtils
         node.key?("softlayer")
       end
 
+      # Determine if the current node is running in Oracle Cloud Infrastructure (OCI).
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 19.1
+      #
+      # @return [Boolean]
+      #
+      def oci?(node = __getnode)
+        node.key?("oci")
+      end
+
       extend self
     end
   end
