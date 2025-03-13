@@ -295,9 +295,8 @@ describe Chef::Resource::RegistryKey do
           end
         end
 
-        context "when only_record_changes is true" do
+        context "when only_record_changes is the default (true)" do
           before do
-            new_resource.only_record_changes(true)
             prepopulate(registry_key, prepopulated_values)
           end
           let(:registry_key) { "#{reg_child}\\OnlyRecordChanges" }
@@ -319,8 +318,9 @@ describe Chef::Resource::RegistryKey do
           end
         end
 
-        context "when only_record_changes is the default(false)" do
+        context "when only_record_changes is false" do
           before do
+            new_resource.only_record_changes(false)
             prepopulate(registry_key, prepopulated_values)
           end
           let(:registry_key) { "#{reg_child}\\RecordItAll" }
