@@ -127,7 +127,6 @@ jobs:
           - oracle-9
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-1804
           - ubuntu-2004
           - ubuntu-2204
           # - ubuntu-2404
