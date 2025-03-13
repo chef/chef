@@ -173,7 +173,9 @@ module TinyServer
 
     def initialize(response_code = 200, data = nil, headers = nil, &block)
       @response_code, @data = response_code, data
-      @response_headers = headers ? HEADERS.merge(headers) : HEADERS
+      # .merge creates a new hash, headers is sometimes passed as nil, @response_headers gets mutated somewhere
+      # in processing
+      @response_headers = HEADERS.merge(headers || {})
       @block = block_given? ? block : nil
     end
 
