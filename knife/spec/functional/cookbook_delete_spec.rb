@@ -52,6 +52,7 @@ describe Chef::Knife::CookbookDelete do
 
     it "logs an error and exits" do
       expect { knife.run }.to raise_error(SystemExit)
+
       expect(knife_stderr.string).to match(/Cannot find a cookbook named no-such-cookbook to delete/)
     end
 
