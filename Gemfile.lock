@@ -64,7 +64,6 @@ PATH
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
@@ -100,7 +99,6 @@ PATH
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
@@ -333,8 +331,8 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-log (3.2.0)
-      ffi (~> 1.9, <= 1.17.0)
+    mixlib-log (3.1.1)
+      ffi (< 1.17.0)
     mixlib-shellout (3.3.6)
       chef-utils
     mixlib-shellout (3.3.6-x64-mingw-ucrt)
@@ -525,6 +523,7 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (>= 5, < 6)
+  mixlib-log (>= 2.0.3, <= 3.1.1)
   ohai!
   openssl (= 3.2.0)
   pry (= 0.13.0)
