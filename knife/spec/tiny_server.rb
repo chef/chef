@@ -19,6 +19,7 @@
 require "webrick"
 require "webrick/https"
 require "rack"
+require "rackup"
 require "singleton"
 require "open-uri"
 require "chef/config"
