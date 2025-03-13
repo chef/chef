@@ -277,7 +277,7 @@ class Chef
         end
 
         def yum(*args)
-          shell_out!(yum_binary, *args)
+          shell_out!(yum_binary, *args, env: new_resource.environment)
         end
 
         def safe_version_array
