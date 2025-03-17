@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.6.29 -->
-## [v18.6.29](https://github.com/chef/chef/tree/v18.6.29) (2025-03-14)
+<!-- latest_release 18.7.0 -->
+## [v18.7.0](https://github.com/chef/chef/tree/v18.7.0) (2025-03-17)
 
 #### Merged Pull Requests
-- removing mac11 from pipeline as its EOL and make 12 as builder [#14782](https://github.com/chef/chef/pull/14782) ([muthuja](https://github.com/muthuja))
+- fix visual c++ depdendency issue for windows habitat package [#14906](https://github.com/chef/chef/pull/14906) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.6.2 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix visual c++ depdendency issue for windows habitat package [#14906](https://github.com/chef/chef/pull/14906) ([rishichawda](https://github.com/rishichawda)) <!-- 18.7.0 -->
 - removing mac11 from pipeline as its EOL and make 12 as builder [#14782](https://github.com/chef/chef/pull/14782) ([muthuja](https://github.com/muthuja)) <!-- 18.6.29 -->
 - [Chef-18] Updating for Mixlib-Log [#14905](https://github.com/chef/chef/pull/14905) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.28 -->
 - chef-zero update for chef-18 and build fixes [#14904](https://github.com/chef/chef/pull/14904) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.27 -->
