@@ -109,13 +109,31 @@ do_prepare() {
 
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
-    build_line "Installing gem dependencies ..."
-    bundle install --jobs=3 --retry=3
-    build_line "Installing gems from git repos properly ..."
+    # we're on new-enough bundler, we need at least rubygems 3.4.14 to get the
+    # spec.ignored? method, except you cannot change the habitat read-only
+    # ruby install. So as a temporary workaround, we provide that method
+    # as a monkeypatch that will be required at runtime
 
-    ruby ./post-bundle-install.rb
+    build_line "Creating monkey_patch_ignored.rb"
+    cat <<'EOF' > monkey_patch_ignored.rb
+class Gem::Specification
+  def ignored?
+    false
+  end unless method_defined?(:ignored?)
+end
+EOF
+
+    build_line "Installing gem dependencies ..."
+    RUBYOPT="-r${CACHE_PATH}/monkey_patch_ignored.rb" \
+      ruby -S bundle install --jobs=3 --retry=3
+
+    build_line "Installing gems from git repos properly ..."
+    RUBYOPT="-r${CACHE_PATH}/monkey_patch_ignored.rb" \
+      ruby ./post-bundle-install.rb
+
     build_line "Installing this project's gems ..."
-    bundle exec rake install:local
+    RUBYOPT="-r${CACHE_PATH}/monkey_patch_ignored.rb" \
+      bundle exec rake install:local
   )
 }
 
@@ -125,10 +143,43 @@ do_install() {
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
+
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
+
+    build_line "** copying monkey_patch_ignored.rb into package"
+    cp "${CACHE_PATH}/monkey_patch_ignored.rb" "$pkg_prefix/vendor/"
+
+    build_line "** configuring bundle to load monkey_patch"
+    mkdir -p "$pkg_prefix/vendor/bundler/setup"
+    cat <<'EOF' > "$pkg_prefix/vendor/bundler/setup.rb"
+# preload monkeypatch and continue loading bundler
+require_relative '../monkey_patch_ignored'
+require 'bundler/setup'
+EOF
+
+    cat <<EOF > "$pkg_prefix/bin/bundler"
+#!/bin/sh
+RUBYLIB="$pkg_prefix/vendor" exec ruby -r"bundler/setup" "$(hab pkg path core/bundler)/bin/bundler" "\$@"
+EOF
+    chmod +x "$pkg_prefix/bin/bundler"
+
+    # but all that doesn't seem to work for rspec, I think because the hab
+    # tests don't use 'bundle exec', so...
+    # monkeypatch rspec to require monkey_patch_ignored.rb before anything else
+    build_line "** patching rspec binstub to preload monkey_patch"
+    # Rename original binstub
+    mv "$pkg_prefix/vendor/bin/rspec" "$pkg_prefix/vendor/bin/rspec.real"
+
+    # Write a new wrapper
+    cat <<EOF > "$pkg_prefix/vendor/bin/rspec"
+#!/bin/sh
+RUBYLIB="$pkg_prefix/vendor" exec ruby -r"monkey_patch_ignored.rb" "\$0".real "\$@"
+EOF
+
+    chmod +x "$pkg_prefix/vendor/bin/rspec"
   )
 }
 
