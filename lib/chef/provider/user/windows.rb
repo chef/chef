@@ -85,7 +85,12 @@ class Chef
           @net_user.update(**set_options)
         end
 
+        def clear_account_rights(name)
+          Chef::ReservedNames::Win32::Security.clear_account_rights(name)
+        end
+
         def remove_user
+          clear_account_rights(new_resource.username)
           @net_user.delete
         end
 

@@ -157,7 +157,7 @@ class Chef
         raise TypeError, "curve must be a string" unless curve.is_a?(String)
         raise ArgumentError, "Specified curve is not available on this system" unless %w{prime256v1 secp384r1 secp521r1}.include?(curve)
 
-        ::OpenSSL::PKey::EC.new(curve).generate_key
+        ::OpenSSL::PKey::EC.generate(curve)
       end
 
       # generate pem format of the public key given a private key
@@ -170,18 +170,7 @@ class Chef
         key_content = ::File.exist?(priv_key) ? File.read(priv_key) : priv_key
         key = ::OpenSSL::PKey::EC.new key_content, priv_key_password
 
-        # Get curve type (prime256v1...)
-        group = ::OpenSSL::PKey::EC::Group.new(key.group.curve_name)
-        # Get Generator point & public point (priv * generator)
-        generator = group.generator
-        pub_point = generator.mul(key.private_key)
-        key.public_key = pub_point
-
-        # Public Key in pem
-        public_key = ::OpenSSL::PKey::EC.new
-        public_key.group = group
-        public_key.public_key = pub_point
-        public_key.to_pem
+        key.public_to_pem
       end
 
       # generate a pem file given a cipher, key, an optional key_password

@@ -18,7 +18,8 @@ class Chef
     class SelinuxInstall < Chef::Resource
       unified_mode true
 
-      provides :selinux_install
+      provides :selinux_install, target_mode: true
+      target_mode support: :full
 
       description "Use **selinux_install** resource to encapsulates the set of selinux packages to install in order to manage selinux. It also ensures the directory `/etc/selinux` is created."
       introduced "18.0"

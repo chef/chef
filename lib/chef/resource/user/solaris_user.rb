@@ -22,8 +22,9 @@ class Chef
     class User
       class SolarisUser < Chef::Resource::User
 
-        provides :solaris_user
-        provides :user, os: %w{omnios solaris2}
+        provides :solaris_user, target_mode: true
+        provides :user, os: %w{omnios solaris2}, target_mode: true
+        target_mode support: :full
       end
     end
   end

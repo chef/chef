@@ -18,6 +18,7 @@
 
 require_relative "deploy/cp"
 require_relative "deploy/mv_unix"
+require_relative "deploy/target_io"
 if ChefUtils.windows?
   require_relative "deploy/mv_windows"
 end
@@ -26,7 +27,9 @@ class Chef
   class FileContentManagement
     class Deploy
       def self.strategy(atomic_update)
-        if atomic_update
+        if ChefConfig::Config.target_mode?
+          TargetIO::Deploy.new
+        elsif atomic_update
           ChefUtils.windows? ? MvWindows.new : MvUnix.new
         else
           Cp.new

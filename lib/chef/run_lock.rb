@@ -151,6 +151,9 @@ class Chef
         # will return false
         if runlock.flock(File::LOCK_NB | File::LOCK_EX) == 0
           true
+        # Target mode does not have run locks, because concurrency is intended
+        elsif Chef::Config.target_mode?
+          true
         else
           false
         end

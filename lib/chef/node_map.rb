@@ -58,7 +58,7 @@ class Chef
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, override: nil, chef_version: nil, target_mode: nil, &block)
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, override: nil, chef_version: nil, target_mode: nil, agent_mode: true, &block)
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
@@ -67,6 +67,7 @@ class Chef
       new_matcher[:block] = block if block
       new_matcher[:override] = override if override
       new_matcher[:target_mode] = target_mode
+      new_matcher[:agent_mode] = agent_mode
 
       if chef_version && Chef::VERSION !~ chef_version
         return map
@@ -262,12 +263,23 @@ class Chef
       !!filters[:target_mode]
     end
 
+    # Succeeds if:
+    # - we are in agent mode, and the agent_mode filter is true
+    # - we are not in agent mode
+    #
+    def matches_agent_mode?(filters)
+      return true if Chef::Config.target_mode?
+
+      !!filters[:agent_mode]
+    end
+
     def filters_match?(node, filters)
       matches_block_allow_list?(node, filters, :os) &&
         matches_block_allow_list?(node, filters, :platform_family) &&
         matches_block_allow_list?(node, filters, :platform) &&
         matches_version_list?(node, filters, :platform_version) &&
-        matches_target_mode?(filters)
+        matches_target_mode?(filters) &&
+        matches_agent_mode?(filters)
     end
 
     def block_matches?(node, block)

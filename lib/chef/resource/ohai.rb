@@ -26,7 +26,8 @@ class Chef
   class Resource
     class Ohai < Chef::Resource
 
-      provides :ohai
+      provides :ohai, target_mode: true
+      target_mode support: :full
 
       description "Use the **ohai** resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{ChefUtils::Dist::Infra::PRODUCT} run."
 
@@ -90,6 +91,7 @@ class Chef
           # the path are picked up by ohai.
           ohai.all_plugins new_resource.plugin
           node.automatic_attrs.merge! ohai.data
+          node.fix_automatic_attributes
           logger.info("#{new_resource} reloaded")
         end
       end

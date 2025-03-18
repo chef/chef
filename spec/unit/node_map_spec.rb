@@ -145,14 +145,14 @@ describe Chef::NodeMap do
   describe "deleting classes" do
     it "deletes a class and removes the mapping completely" do
       node_map.set(:thing, Bar)
-      expect( node_map.delete_class(Bar) ).to include({ thing: [{ klass: Bar, target_mode: nil }] })
+      expect( node_map.delete_class(Bar) ).to include({ thing: [{ klass: Bar, target_mode: nil, agent_mode: true }] })
       expect( node_map.get(node, :thing) ).to eql(nil)
     end
 
     it "deletes a class and leaves the mapping that still has an entry" do
       node_map.set(:thing, Bar)
       node_map.set(:thing, Foo)
-      expect( node_map.delete_class(Bar) ).to eql({ thing: [{ klass: Bar, target_mode: nil }] })
+      expect( node_map.delete_class(Bar) ).to eql({ thing: [{ klass: Bar, target_mode: nil, agent_mode: true }] })
       expect( node_map.get(node, :thing) ).to eql(Foo)
     end
 
@@ -160,7 +160,7 @@ describe Chef::NodeMap do
       node_map.set(:thing1, Bar)
       node_map.set(:thing2, Bar)
       node_map.set(:thing2, Foo)
-      expect( node_map.delete_class(Bar) ).to eql({ thing1: [{ klass: Bar, target_mode: nil }], thing2: [{ klass: Bar, target_mode: nil }] })
+      expect( node_map.delete_class(Bar) ).to eql({ thing1: [{ klass: Bar, target_mode: nil, agent_mode: true }], thing2: [{ klass: Bar, target_mode: nil, agent_mode: true }] })
       expect( node_map.get(node, :thing1) ).to eql(nil)
       expect( node_map.get(node, :thing2) ).to eql(Foo)
     end

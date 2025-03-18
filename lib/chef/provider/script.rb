@@ -24,13 +24,13 @@ class Chef
     class Script < Chef::Provider::Execute
       extend Forwardable
 
-      provides :bash
-      provides :csh
-      provides :ksh
-      provides :perl
-      provides :python
-      provides :ruby
-      provides :script
+      provides :bash, target_mode: true
+      provides :csh, target_mode: true
+      provides :ksh, target_mode: true
+      provides :perl, target_mode: true
+      provides :python, target_mode: true
+      provides :ruby, target_mode: true
+      provides :script, target_mode: true
 
       def_delegators :new_resource, :interpreter, :flags, :code
 

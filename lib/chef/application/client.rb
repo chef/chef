@@ -40,6 +40,10 @@ class Chef::Application::Client < Chef::Application::Base
     long: "--config CONFIG",
     description: "The configuration file to use."
 
+  option :credentials,
+    long: "--credentials CREDENTIALS",
+    description: "Credentials file to use. Default: ~/.chef/credentials"
+
   unless ChefUtils.windows?
     option :daemonize,
       short: "-d [WAIT]",
@@ -123,6 +127,14 @@ class Chef::Application::Client < Chef::Application::Base
       end
       Chef::Config.target_mode.enabled = true
       Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
+    end
+
+    if config[:credentials]
+      unless File.exist?(config[:credentials])
+        Chef::Application.fatal!("credentials file #{config[:credentials]} not found")
+      end
+
+      Chef::Config.credentials = config[:credentials]
     end
 
     if Chef::Config[:daemonize]

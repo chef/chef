@@ -24,8 +24,8 @@ class Chef
   class Provider
     class User
       class Solaris < Chef::Provider::User
-        provides :solaris_user
-        provides :user, os: %w{openindiana illumos omnios solaris2 smartos}
+        provides :solaris_user, target_mode: true
+        provides :user, os: %w{openindiana illumos omnios solaris2 smartos}, target_mode: true
 
         PASSWORD_FILE = "/etc/shadow".freeze
 
@@ -46,7 +46,7 @@ class Chef
         end
 
         def check_lock
-          user = IO.read(PASSWORD_FILE).match(/^#{Regexp.escape(new_resource.username)}:([^:]*):/)
+          user = TargetIO::IO.read(PASSWORD_FILE).match(/^#{Regexp.escape(new_resource.username)}:([^:]*):/)
 
           # If we're in whyrun mode, and the user is not created, we assume it will be
           return false if whyrun_mode? && user.nil?
@@ -122,7 +122,7 @@ class Chef
         # a pipe to passwd(1) or evaluating modern ruby-shadow.  See https://github.com/chef/chef/pull/721
         def write_shadow_file
           buffer = Tempfile.new("shadow", "/etc")
-          ::File.open(PASSWORD_FILE) do |shadow_file|
+          ::TargetIO::File.open(PASSWORD_FILE) do |shadow_file|
             shadow_file.each do |entry|
               user = entry.split(":").first
               if user == new_resource.username
@@ -140,10 +140,10 @@ class Chef
           uid  = s.uid
           gid  = s.gid
 
-          FileUtils.chown uid, gid, buffer.path
-          FileUtils.chmod mode, buffer.path
+          TargetIO::FileUtils.chown uid, gid, buffer.path
+          TargetIO::FileUtils.chmod mode, buffer.path
 
-          FileUtils.mv buffer.path, PASSWORD_FILE
+          TargetIO::FileUtils.mv buffer.path, PASSWORD_FILE
         end
 
         def updated_password(entry)

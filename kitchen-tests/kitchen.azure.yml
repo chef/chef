@@ -7,23 +7,6 @@ driver_config:
   location: West US2
   machine_size: Standard_B4ms
 
-provisioner:
-  name: chef_zero
-  deprecations_as_errors: true
-  chef_license: accept-no-persist
-  product_name: chef
-  slow_resource_report: true
-  client_rb:
-    diff_disabled: true
-    always_dump_stacktrace: true
-
-transport:
-  name: winrm
-
-verifier:
-  name: inspec
-  format: progress
-
 platforms:
 - name: windows-10
   driver:
@@ -33,8 +16,3 @@ platforms:
       Set-WSManQuickConfig -Force -SkipNetworkProfileCheck
       netsh advfirewall firewall set rule name="Windows Remote Management (HTTP-In)" profile=public protocol=tcp localport=5985 remoteip=localsubnet new remoteip=any
       Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-
-suites:
-  - name: end-to-end
-    run_list:
-      - recipe[end_to_end::windows]

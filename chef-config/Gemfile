@@ -5,6 +5,6 @@ gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist
 gemspec
 
 group(:development, :test) do
-  gem "rake"
+  gem "rake", ">= 12.3.3"
   gem "rspec"
 end

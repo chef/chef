@@ -37,7 +37,8 @@ class Chef
         def [](*args)
           ret = super
           key = args.first
-          next_path = [ __path__, convert_key(key) ].flatten.compact
+          next_path = [ __path__, convert_key(key) ].flatten
+          next_path.compact!
           copy_state_to(ret, next_path)
         end
 
@@ -45,7 +46,8 @@ class Chef
           ret = super
           key = args.first
           value = args.last
-          next_path = [ __path__, convert_key(key) ].flatten.compact
+          next_path = [ __path__, convert_key(key) ].flatten
+          next_path.compact!
           send_attribute_changed_event(next_path, value)
           copy_state_to(ret, next_path)
         end
@@ -77,7 +79,8 @@ class Chef
         end
 
         def send_reset_cache(path = nil, key = nil)
-          next_path = [ path, key ].flatten.compact
+          next_path = [ path, key ].flatten
+          next_path.compact!
           __root__.reset_cache(next_path.first) if !__root__.nil? && __root__.respond_to?(:reset_cache)
         end
 

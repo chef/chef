@@ -23,8 +23,9 @@ require_relative "../resource"
 class Chef
   class Resource
     class CronAccess < Chef::Resource
-      provides :cron_access
+      provides :cron_access, target_mode: true
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
+      target_mode support: :full
 
       introduced "14.4"
       description "Use the **cron_access** resource to manage cron's cron.allow and cron.deny files. Note: This resource previously shipped in the `cron` cookbook as `cron_manage`, which it can still be used as for backwards compatibility with existing Chef Infra Client releases."

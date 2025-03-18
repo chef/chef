@@ -20,7 +20,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class HabitatService < Chef::Resource
-      provides :habitat_service
+      provides :habitat_service, target_mode: true
+      target_mode support: :full
 
       description "Use the **habitat_service** resource to manage Chef Habitat services. This requires that `core/hab-sup` be running as a service. See the `habitat_sup` resource documentation for more information. Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource."
       introduced "17.3"
@@ -181,7 +182,7 @@ class Chef
         http_uri = "http://#{remote_sup_http}"
 
         begin
-          TCPSocket.new(URI(http_uri).host, URI(http_uri).port).close
+          TCPSocket.new(URI(http_uri).host, URI(http_uri).port).close unless Chef::Config.target_mode?
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
           Chef::Log.debug("Could not connect to #{http_uri} to retrieve status for #{service_name}")
           return false
@@ -190,7 +191,7 @@ class Chef
         begin
           headers = {}
           headers["Authorization"] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
-          svcs = Chef::HTTP::SimpleJSON.new(http_uri).get("/services", headers)
+          svcs = TargetIO::HTTP::SimpleJSON.new(http_uri).get("/services", headers)
         rescue
           Chef::Log.debug("Could not connect to #{http_uri}/services to retrieve status for #{service_name}")
           return false
@@ -337,10 +338,13 @@ class Chef
         end
 
         unless current_resource.loaded && !modified
-          execute "test" do
+          execute "load service" do
             command "hab svc load #{new_resource.service_name} #{options.join(" ")}"
             retry_delay 10
             retries 5
+
+            # compensate for lack of TCPSocket support in TM by retries
+            returns [0, 1] if Chef::Config.target_mode?
           end
         end
       end

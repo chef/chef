@@ -23,7 +23,7 @@ require_relative "file"
 class Chef
   class Provider
     class Template < Chef::Provider::File
-      provides :template
+      provides :template, target_mode: true
 
       def initialize(new_resource, run_context)
         @content_class = Chef::Provider::Template::Content

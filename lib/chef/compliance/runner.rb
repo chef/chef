@@ -1,4 +1,9 @@
-autoload :Inspec, "inspec"
+# Requiring inspec instead of lazy loading temporarily to get past License validation failures in Inspec 6.
+# When compliance phase of Infra Client is run, the lazy loading ends up calling production environment values for few variables(such as Licensing server URL)
+# which are set as default in Inspec, instead of the test values passed in pipelines
+#
+# autoload :Inspec, "inspec"
+require "inspec"
 
 require_relative "default_attributes"
 
@@ -116,6 +121,7 @@ class Chef
 
       def report(report = nil)
         logger.info "Starting Chef Infra Compliance Phase"
+        Chef::Licensing.check_software_entitlement_compliance_phase! if ChefUtils::Dist::Inspec::EXEC == "inspec"
         report ||= generate_report
         # This is invoked at report-time instead of with the normal validations at node loaded,
         # because we want to ensure that it is visible in the output - and not lost in back-scroll.
@@ -131,6 +137,8 @@ class Chef
           @reporters[reporter_type].send_report(report)
         end
         logger.info "Chef Infra Compliance Phase Complete"
+      rescue Chef::Licensing::EntitlementError => e
+        logger.error "Skipping Chef Infra Compliance Phase because the license does not have the required entitlement for Chef InSpec."
       end
 
       def inputs_from_attributes
@@ -207,6 +215,16 @@ class Chef
 
         logger.debug "Options are set to: #{opts}"
         runner = ::Inspec::Runner.new(opts)
+
+        # Switch from local to remote backend for Target Mode
+        if ChefConfig::Config.target_mode?
+          logger.info "Configure InSpec backend to use established connection"
+
+          connection = Chef.run_context.transport_connection
+          backend = Inspec::Backend.new(connection)
+
+          runner.set_backend(backend)
+        end
 
         if profiles.empty?
           failed_report("No #{Inspec::Dist::PRODUCT_NAME} profiles are defined.")
@@ -368,7 +386,12 @@ class Chef
       end
 
       def requested_reporters
-        (Array(node["audit"]["reporter"]) + ["cli"]).uniq
+        if node["audit"]["quiet"]
+          logger.info "node[\"audit\"][\"quiet\"] is set to true, skipping cli reporter"
+          Array(node["audit"]["reporter"]).uniq - ["cli"]
+        else
+          (Array(node["audit"]["reporter"]) + ["cli"]).uniq
+        end
       end
 
       def create_timestamp_file

@@ -60,7 +60,7 @@ class Chef
 
       def use_tempfile_if_missing(file)
         tempfile = nil
-        unless File.exist?(file)
+        unless TargetIO::File.exist?(file)
           Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
@@ -130,6 +130,19 @@ class Chef
 
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
         diff_output_threshold = Chef::Config[:diff_output_threshold]
+
+        # Download files for diffs in Target Mode, then work locally
+        if ChefConfig::Config.target_mode?
+          connection = Chef.run_context&.transport_connection
+
+          old_copy = Tempfile.new(old_file)
+          connection.download(old_file, old_copy.path) if connection.file(old_file).exist?
+          old_file = old_copy.path
+
+          new_copy = Tempfile.new(new_file)
+          connection.download(new_file, new_copy.path) if connection.file(new_file).exist?
+          new_file = new_copy.path
+        end
 
         if ::File.size(old_file) > diff_filesize_threshold || ::File.size(new_file) > diff_filesize_threshold
           return "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)"

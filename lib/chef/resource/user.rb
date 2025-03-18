@@ -23,6 +23,7 @@ class Chef
     class User < Chef::Resource
 
       description "Use the **user** resource to add users, update existing users, remove users, and to lock/unlock user passwords."
+      target_mode support: :full
 
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock

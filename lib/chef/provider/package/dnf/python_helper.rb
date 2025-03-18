@@ -211,7 +211,7 @@ class Chef
             else
               raise e if output.empty?
 
-              raise "dnf-helper.py had stderr/stdout output:\n\n#{output}"
+              raise "dnf_helper.py had stderr/stdout output:\n\n#{output}"
             end
           end
         end

@@ -31,7 +31,7 @@ class Chef
     #     device 'eth1'
     #   end
     class Ifconfig < Chef::Provider
-      provides :ifconfig
+      provides :ifconfig, target_mode: true
 
       attr_accessor :config_template
       attr_accessor :config_path

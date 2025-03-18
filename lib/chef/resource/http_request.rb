@@ -23,7 +23,8 @@ class Chef
   class Resource
     class HttpRequest < Chef::Resource
 
-      provides :http_request
+      provides :http_request, target_mode: true
+      target_mode support: :full
 
       description "Use the **http_request** resource to send an HTTP request (`GET`, `PUT`, `POST`, `DELETE`, `HEAD`, or `OPTIONS`) with an arbitrary message. This resource is often useful when custom callbacks are necessary."
 

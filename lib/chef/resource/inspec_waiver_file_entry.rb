@@ -23,7 +23,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class InspecWaiverFileEntry < Chef::Resource
-      provides :inspec_waiver_file_entry
+      provides :inspec_waiver_file_entry, target_mode: true
+      target_mode support: :full
 
       description "Use the **inspec_waiver_file_entry** resource to add or remove entries from an InSpec waiver file. This can be used in conjunction with the Compliance Phase."
       introduced "17.1"

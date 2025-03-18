@@ -20,7 +20,8 @@ class Chef
     class SelinuxBoolean < Chef::Resource
       unified_mode true
 
-      provides :selinux_boolean
+      provides :selinux_boolean, target_mode: true
+      target_mode support: :full
 
       description "Use **selinux_boolean** resource to set SELinux boolean values."
       introduced "18.0"

@@ -96,13 +96,13 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "nethack"
+homebrew_package "dos2unix"
 
-homebrew_package "nethack" do
+homebrew_package "dos2unix" do
   action :purge
 end
 
-homebrew_cask "do-not-disturb"
+homebrew_cask "1password"
 
 include_recipe "::_dmg_package"
 include_recipe "::_macos_userdefaults"

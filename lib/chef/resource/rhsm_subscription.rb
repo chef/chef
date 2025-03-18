@@ -21,7 +21,8 @@ class Chef
   class Resource
     class RhsmSubscription < Chef::Resource
 
-      provides(:rhsm_subscription) { true }
+      provides(:rhsm_subscription, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **rhsm_subscription** resource to add or remove Red Hat Subscription Manager subscriptions from your host. This can be used when a host's activation_key does not attach all necessary subscriptions to your host."
       introduced "14.0"
@@ -50,10 +51,9 @@ class Chef
 
       action_class do
         def subscription_attached?(subscription)
-          # FIXME: use shell_out
-          cmd = Mixlib::ShellOut.new("subscription-manager list --consumed | grep #{subscription}", env: { LANG: "en_US" })
-          cmd.run_command
-          !cmd.stdout.match(/Pool ID:\s+#{subscription}$/).nil?
+          cmd = "subscription-manager list --consumed | grep #{subscription}"
+          stdout = shell_out(cmd, env: { LANG: "en_US" }).stdout
+          !stdout.match(/Pool ID:\s+#{subscription}$/).nil?
         end
 
         def serials_by_pool
@@ -61,10 +61,10 @@ class Chef
           pool = nil
           serial = nil
 
-          # FIXME: use shell_out
-          cmd = Mixlib::ShellOut.new("subscription-manager list --consumed", env: { LANG: "en_US" })
-          cmd.run_command
-          cmd.stdout.lines.each do |line|
+          cmd = "subscription-manager list --consumed"
+          stdout = shell_out(cmd, env: { LANG: "en_US" }).stdout
+
+          stdout.lines.each do |line|
             line.strip!
             key, value = line.split(/:\s+/, 2)
             next unless ["Pool ID", "Serial"].include?(key)

@@ -97,8 +97,11 @@ module ChefConfig
     # @return [String] the platform-specific path
     #
     def self.var_chef_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
-      PathHelper.cleanpath(path, windows: windows)
+      @var_chef_dir ||= {}
+      @var_chef_dir[windows] ||= begin
+        path = windows ? c_chef_dir : PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
+        PathHelper.cleanpath(path, windows: windows)
+      end
     end
 
     # On *nix, /var, on Windows C:\
@@ -107,8 +110,11 @@ module ChefConfig
     # @return [String] the platform-specific path
     #
     def self.var_root_dir(windows: ChefUtils.windows?)
-      path = windows ? "C:\\" : "/var"
-      PathHelper.cleanpath(path, windows: windows)
+      @var_root_dir ||= {}
+      @var_root_dir[windows] ||= begin
+        path = windows ? "C:\\" : "/var"
+        PathHelper.cleanpath(path, windows: windows)
+      end
     end
 
     # On windows, C:/chef/
@@ -415,7 +421,14 @@ module ChefConfig
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { PathHelper.join(file_cache_path, "#{ChefUtils::Dist::Infra::CLIENT}-running.pid") }
+    # In Target Mode, the node name will be used as a prefix to allow
+    # parallel execution of Chef against different targets
+    default(:lockfile) do
+      prefix = ""
+      prefix = "#{ChefConfig::Config.node_name}-" if ChefConfig::Config.target_mode?
+
+      PathHelper.join(file_cache_path, "#{prefix}#{ChefUtils::Dist::Infra::CLIENT}-running.pid")
+    end
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -1046,16 +1059,6 @@ module ChefConfig
     default :blocked_default_attributes, nil
     default :blocked_normal_attributes, nil
     default :blocked_override_attributes, nil
-
-    # deprecated config options that will be removed in Chef Infra Client 18
-    default :automatic_attribute_blacklist, nil
-    default :default_attribute_blacklist, nil
-    default :normal_attribute_blacklist, nil
-    default :override_attribute_blacklist, nil
-    default :automatic_attribute_whitelist, nil
-    default :default_attribute_whitelist, nil
-    default :normal_attribute_whitelist, nil
-    default :override_attribute_whitelist, nil
 
     # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
     # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network

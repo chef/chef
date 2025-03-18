@@ -29,7 +29,7 @@ class Chef
       module ClassMethods
         # We want to mix these in as class methods
         def writable?(path)
-          ::File.writable?(path)
+          ::TargetIO::File.writable?(path)
         end
       end
 
@@ -120,7 +120,7 @@ class Chef
         return nil if resource.nil? || resource.group.nil?
 
         if resource.group.is_a?(String)
-          diminished_radix_complement( Etc.getgrnam(resource.group).gid )
+          diminished_radix_complement( TargetIO::Etc.getgrnam(resource.group).gid )
         elsif resource.group.is_a?(Integer)
           resource.group
         else
@@ -222,9 +222,9 @@ class Chef
 
       def stat
         if manage_symlink_attrs?
-          @stat ||= File.lstat(file)
+          @stat ||= TargetIO::File.lstat(file)
         else
-          @stat ||= File.stat(file)
+          @stat ||= TargetIO::File.stat(file)
         end
       end
 
@@ -237,20 +237,20 @@ class Chef
       def chmod(mode, file)
         if manage_symlink_attrs?
           begin
-            File.lchmod(mode, file)
+            TargetIO::File.lchmod(mode, file)
           rescue NotImplementedError
             Chef::Log.warn("#{file} mode not changed: File.lchmod is unimplemented on this OS and Ruby version")
           end
         else
-          File.chmod(mode, file)
+          TargetIO::File.chmod(mode, file)
         end
       end
 
       def chown(uid, gid, file)
         if manage_symlink_attrs?
-          File.lchown(uid, gid, file)
+          TargetIO::File.lchown(uid, gid, file)
         else
-          File.chown(uid, gid, file)
+          TargetIO::File.chown(uid, gid, file)
         end
       end
 
@@ -269,7 +269,7 @@ class Chef
         return nil if resource.nil? || resource.owner.nil?
 
         if resource.owner.is_a?(String)
-          diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
+          diminished_radix_complement( TargetIO::Etc.getpwnam(resource.owner).uid )
         elsif resource.owner.is_a?(Integer)
           resource.owner
         else

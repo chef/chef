@@ -23,7 +23,7 @@ class Chef
     class Service
       class Invokercd < Chef::Provider::Service::Init
 
-        provides :service, platform_family: "debian", override: true do
+        provides :service, platform_family: "debian", override: true, target_mode: true do
           invokercd?
         end
 

@@ -25,8 +25,9 @@ require_relative "../provider/package/openbsd"
 class Chef
   class Resource
     class OpenbsdPackage < Chef::Resource::Package
-      provides :openbsd_package
-      provides :package, os: "openbsd"
+      provides :openbsd_package, target_mode: true
+      provides :package, os: "openbsd", target_mode: true
+      target_mode support: :full
 
       description "Use the **openbsd_package** resource to manage packages for the OpenBSD platform."
       introduced "12.1"

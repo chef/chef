@@ -18,7 +18,8 @@ class Chef
     class SelinuxModule < Chef::Resource
       unified_mode true
 
-      provides :selinux_module
+      provides :selinux_module, target_mode: true
+      target_mode support: :full
 
       description "Use **selinux_module** module resource to create an SELinux policy module from a cookbook file or content provided as a string."
       introduced "18.0"
@@ -103,7 +104,7 @@ class Chef
           notifies :run, "execute[Install SELinux module '#{selinux_module_filepath("pp")}']", :immediately
         end
 
-        raise "Compilation must have failed, no 'pp' file found at: '#{selinux_module_filepath("pp")}'" unless ::File.exist?(selinux_module_filepath("pp"))
+        raise "Compilation must have failed, no 'pp' file found at: '#{selinux_module_filepath("pp")}'" unless ::TargetIO::File.exist?(selinux_module_filepath("pp"))
 
         execute "Install SELinux module '#{selinux_module_filepath("pp")}'" do
           command "semodule --install '#{selinux_module_filepath("pp")}'"
@@ -113,7 +114,7 @@ class Chef
 
       action :delete, description: "Remove module source files from `/etc/selinux/local`." do
         %w{fc if pp te}.each do |type|
-          next unless ::File.exist?(selinux_module_filepath(type))
+          next unless ::TargetIO::File.exist?(selinux_module_filepath(type))
 
           file selinux_module_filepath(type) do
             action :delete
@@ -122,7 +123,7 @@ class Chef
       end
 
       action :install, description: "Install a compiled module into the system." do
-        raise "Module must be compiled before it can be installed, no 'pp' file found at: '#{selinux_module_filepath("pp")}'" unless ::File.exist?(selinux_module_filepath("pp"))
+        raise "Module must be compiled before it can be installed, no 'pp' file found at: '#{selinux_module_filepath("pp")}'" unless ::TargetIO::File.exist?(selinux_module_filepath("pp"))
 
         unless list_installed_modules.include? new_resource.module_name
           converge_by "Install SELinux module #{selinux_module_filepath("pp")}" do

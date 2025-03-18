@@ -23,7 +23,8 @@ class Chef
   class Resource
     class Reboot < Chef::Resource
 
-      provides :reboot
+      provides :reboot, target_mode: true
+      target_mode support: :full
 
       description "Use the **reboot** resource to reboot a node, a necessary step with some"\
                   " installations on certain platforms. This resource is supported for use on"\

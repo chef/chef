@@ -1,17 +1,15 @@
 name             "end_to_end"
 license          "Apache-2.0"
 description      "Installs/Configures base"
-version          "1.0.0"
-
-gem              "chef-sugar"
+version          "2.0.0"
 
 depends          "logrotate"
-depends          "multipackage"
 depends          "nscd"
 depends          "ntp"
+depends          "chrony"
 depends          "openssh"
 depends          "resolver"
-depends          "users", "< 7.1" # 7.1 breaks macos / opensuse
+depends          "users"
 depends          "git"
 
 supports         "ubuntu"

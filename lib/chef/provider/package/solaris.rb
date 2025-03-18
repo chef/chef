@@ -26,7 +26,7 @@ class Chef
 
         include Chef::Mixin::GetSourceFromPackage
 
-        provides :solaris_package
+        provides :solaris_package, target_mode: true
 
         # def initialize(*args)
         #   super
@@ -50,7 +50,7 @@ class Chef
           current_resource.package_name(new_resource.package_name)
 
           if new_resource.source
-            @package_source_found = ::File.exist?(new_resource.source)
+            @package_source_found = ::TargetIO::File.exist?(new_resource.source)
             if @package_source_found
               logger.trace("#{new_resource} checking pkg status")
               shell_out("pkginfo", "-l", "-d", new_resource.source, new_resource.package_name).stdout.each_line do |line|
@@ -101,7 +101,7 @@ class Chef
         def install_package(name, version)
           logger.trace("#{new_resource} package install options: #{options}")
           if options.nil?
-            command = if ::File.directory?(new_resource.source) # CHEF-4469
+            command = if ::TargetIO::File.directory?(new_resource.source) # CHEF-4469
                         [ "pkgadd", "-n", "-d", new_resource.source, new_resource.package_name ]
                       else
                         [ "pkgadd", "-n", "-d", new_resource.source, "all" ]
@@ -109,7 +109,7 @@ class Chef
             shell_out!(command)
             logger.trace("#{new_resource} installed version #{new_resource.version} from: #{new_resource.source}")
           else
-            command = if ::File.directory?(new_resource.source) # CHEF-4469
+            command = if ::TargetIO::File.directory?(new_resource.source) # CHEF-4469
                         [ "pkgadd", "-n", options, "-d", new_resource.source, new_resource.package_name ]
                       else
                         [ "pkgadd", "-n", options, "-d", new_resource.source, "all" ]

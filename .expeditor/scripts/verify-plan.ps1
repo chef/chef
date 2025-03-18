@@ -8,6 +8,7 @@ param(
 )
 
 $env:HAB_ORIGIN = 'ci'
+$env:HAB_BLDR_CHANNEL = "LTS-2024"
 $Plan = 'chef-infra-client'
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
@@ -32,7 +33,7 @@ $project_root = "$(git rev-parse --show-toplevel)"
 Set-Location $project_root
 
 Write-Host "--- :construction: Building $Plan"
-$env:DO_CHECK=$true; hab pkg build .
+$env:DO_CHECK=$true; $env:HAB_REFRESH_CHANNEL="LTS-2024"; hab pkg build .
 if (-not $?) { throw "unable to build"}
 
 . results/last_build.ps1

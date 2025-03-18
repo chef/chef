@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
-        provides :service, platform_family: "debian" do
+        provides :service, platform_family: "debian", target_mode: true do
           debianrcd?
         end
 
@@ -46,7 +46,7 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             update_rcd = "/usr/sbin/update-rc.d"
-            a.assertion { ::File.exist? update_rcd }
+            a.assertion { ::TargetIO::File.exist? update_rcd }
             a.failure_message Chef::Exceptions::Service, "#{update_rcd} does not exist!"
             # no whyrun recovery - this is a base system component of debian
             # distros and must be present
@@ -73,10 +73,10 @@ class Chef
 
         # returns a list of levels that the service should be stopped or started on
         def parse_init_file(path)
-          return [] unless ::File.exist?(path)
+          return [] unless ::TargetIO::File.exist?(path)
 
           in_info = false
-          ::File.readlines(path).each_with_object([]) do |line, acc|
+          ::TargetIO::File.readlines(path).each_with_object([]) do |line, acc|
             if /^### BEGIN INIT INFO/.match?(line)
               in_info = true
             elsif /^### END INIT INFO/.match?(line)
@@ -95,7 +95,7 @@ class Chef
 
           levels = parse_init_file(@init_command)
           levels.each do |level|
-            rc_files.push Dir.glob("/etc/rc#{level}.d/[SK][0-9][0-9]#{current_resource.service_name}")
+            rc_files.push TargetIO::Dir.glob("/etc/rc#{level}.d/[SK][0-9][0-9]#{current_resource.service_name}")
           end
 
           rc_files.flatten.each do |line|

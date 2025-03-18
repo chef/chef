@@ -25,8 +25,8 @@ class Chef
     class Package
       class Bff < Chef::Provider::Package
 
-        provides :package, os: "aix"
-        provides :bff_package
+        provides :package, os: "aix", target_mode: true
+        provides :bff_package, target_mode: true
 
         include Chef::Mixin::GetSourceFromPackage
 
@@ -134,7 +134,7 @@ class Chef
         end
 
         def package_source_found?
-          @package_source_found ||= new_resource.source && ::File.exist?(new_resource.source)
+          @package_source_found ||= new_resource.source && ::TargetIO::File.exist?(new_resource.source)
         end
 
       end

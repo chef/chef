@@ -27,7 +27,7 @@ require "etc" unless defined?(Etc)
 
 class Chef
   module Mixin
-    module HomebrewUser
+    module Homebrew
       include Chef::Mixin::ShellOut
 
       ##
@@ -57,15 +57,19 @@ class Chef
         @homebrew_owner_username
       end
 
+      # Use homebrew_bin_path to return the path to the brew binary
+      # @param [String, Array(String)] brew_bin_path
+      # @return [String] path to the brew binary
       def homebrew_bin_path(brew_bin_path = nil)
         if brew_bin_path && ::File.exist?(brew_bin_path)
           brew_bin_path
         else
-          [which("brew"), "/opt/homebrew/bin/brew", "/usr/local/bin/brew", "/home/linuxbrew/.linuxbrew/bin/brew"].uniq.select do |x|
-            next if x == false
-
-            ::File.exist?(x) && ::File.executable?(x)
-          end.first || nil
+          brew_path = which("brew", prepend_path: %w{/opt/homebrew/bin /usr/local/bin /home/linuxbrew/.linuxbrew/bin})
+          unless brew_path
+            raise Chef::Exceptions::CannotDetermineHomebrewPath,
+              'Couldn\'t find the "brew" executable anywhere on the path.'
+          end
+          brew_path
         end
       end
 
@@ -73,18 +77,11 @@ class Chef
 
       def calculate_owner
         brew_path = homebrew_bin_path
-        if brew_path
-          # By default, this follows symlinks which is what we want
-          owner = ::File.stat(brew_path).uid
-        else
-          raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-            'Couldn\'t find the "brew" executable anywhere on the path.'
-        end
-
-        Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"
-        owner
+        # By default, this follows symlinks which is what we want
+        owner_uid = ::File.stat(brew_path).uid
+        Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner_uid).name}; executing `brew` commands as them"
+        owner_uid
       end
-
     end
   end
 end

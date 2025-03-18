@@ -74,7 +74,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       current_resource.run_as_user(config_info.service_start_name)    if config_info.service_start_name
       current_resource.display_name(config_info.display_name)         if config_info.display_name
       current_resource.delayed_start(current_delayed_start)           if current_delayed_start
-      current_resource.description(config_info.description)           if new_resource.description
     end
 
     current_resource

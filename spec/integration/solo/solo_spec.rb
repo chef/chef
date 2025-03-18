@@ -18,7 +18,8 @@ describe ChefUtils::Dist::Solo::EXEC do
 
   let(:cookbook_ancient_100_metadata_rb) { cb_metadata("ancient", "1.0.0") }
 
-  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai --always-dump-stacktrace" }
+  let(:bundler_prefix) { hab_test? ? "" : "bundle exec " }
+  let(:chef_solo) { "#{bundler_prefix}#{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai --always-dump-stacktrace" }
 
   when_the_repository "creates nodes" do
     let(:nodes_dir) { File.join(@repository_dir, "nodes") }

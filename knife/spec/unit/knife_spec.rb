@@ -320,6 +320,9 @@ describe Chef::Knife do
       end
 
       it "sets the default log_level to warn so we can issue Chef::Log.warn" do
+        # Reset the log level to the default value
+        Chef::Config[:log_level] = :auto
+
         knife_command = KnifeSpecs::TestYourself.new([])
         knife_command.configure_chef
         expect(Chef::Config[:log_level]).to eql(:warn)

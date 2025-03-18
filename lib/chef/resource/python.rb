@@ -21,7 +21,8 @@ class Chef
   class Resource
     class Python < Chef::Resource::Script
 
-      provides :python
+      provides :python, target_mode: true
+      target_mode support: :full
 
       def initialize(name, run_context = nil)
         super

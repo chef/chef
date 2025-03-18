@@ -20,7 +20,7 @@ require_relative "init"
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
-  provides :service, platform_family: "arch"
+  provides :service, platform_family: "arch", target_mode: true
 
   def self.supports?(resource, action)
     service_script_exist?(:etc_rcd, resource.service_name)
@@ -32,8 +32,8 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   end
 
   def load_current_resource
-    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exist?("/etc/rc.conf")
-    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless /DAEMONS=\((.*)\)/m.match?(::File.read("/etc/rc.conf"))
+    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::TargetIO::File.exist?("/etc/rc.conf")
+    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless /DAEMONS=\((.*)\)/m.match?(::TargetIO::File.read("/etc/rc.conf"))
 
     super
 
@@ -50,7 +50,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   #   )
   def daemons
     entries = []
-    if ::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
+    if ::TargetIO::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
       entries += $1.gsub(/\\?[\r\n]/, " ").gsub(/# *[^ ]+/, " ").split(" ") if $1.length > 0
     end
 
@@ -61,8 +61,8 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   # FIXME: Multiple entries of DAEMONS will cause very bad results :)
   def update_daemons(entries)
-    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(" ")})")
-    ::File.open("/etc/rc.conf", "w") do |f|
+    content = ::TargetIO::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(" ")})")
+    ::TargetIO::File.open("/etc/rc.conf", "w") do |f|
       f.write(content)
     end
   end

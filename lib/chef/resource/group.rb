@@ -22,6 +22,9 @@ class Chef
     class Group < Chef::Resource
       state_attrs :members
 
+      target_mode support: :full,
+        platforms: %i{aix bsd linux macos_x solaris}
+
       description "Use the **group** resource to manage a local group."
 
       examples <<~EXAMPLES
@@ -48,7 +51,7 @@ class Chef
       ```
       EXAMPLES
 
-      provides :group
+      provides :group, target_mode: true
 
       allowed_actions :create, :remove, :modify, :manage
       default_action :create

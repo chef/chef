@@ -7,6 +7,10 @@ name: kitchen-fips
     branches:
       - main
 
+concurrency:
+  group: kitchen-fips-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows:
     strategy:
@@ -16,7 +20,7 @@ jobs:
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |

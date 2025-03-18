@@ -24,7 +24,8 @@ class Chef
   class Resource
     class SshKnownHostsEntry < Chef::Resource
 
-      provides :ssh_known_hosts_entry
+      provides :ssh_known_hosts_entry, target_mode: true
+      target_mode support: :full
 
       description "Use the **ssh_known_hosts_entry** resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."
       introduced "14.3"

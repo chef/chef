@@ -158,6 +158,7 @@ describe Chef::Provider::User::Windows do
 
   describe "when removing the user" do
     it "should call @net_user.delete" do
+      allow(Chef::ReservedNames::Win32::Security).to receive(:clear_account_rights)
       expect(@net_user).to receive(:delete)
       @provider.remove_user
     end

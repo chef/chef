@@ -59,8 +59,8 @@ This stage indicates a previously deprecated release version, which is no longer
 
 ### Generally Available Release Schedule
 
-  - **Minor releases**: 2nd week of each month
-  - **Major releases**: Once a year in April
+  - **Minor releases**: As needed
+  - **Major releases**: To be announced
 
 ### Deprecated Release Schedule
 

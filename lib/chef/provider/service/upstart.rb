@@ -124,9 +124,9 @@ class Chef
             end
           end
           # Get enabled/disabled state by reading job configuration file
-          if ::File.exist?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
+          if ::TargetIO::File.exist?("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
             logger.trace("#{@new_resource} found #{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}")
-            ::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}", "r") do |file|
+            ::TargetIO::File.open("#{@upstart_job_dir}/#{@new_resource.service_name}#{@upstart_conf_suffix}", "r") do |file|
               while line = file.gets
                 case line
                 when /^start on/

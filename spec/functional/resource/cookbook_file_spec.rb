@@ -57,7 +57,7 @@ describe Chef::Resource::CookbookFile do
     create_resource
   end
 
-  it_behaves_like "a file resource"
+  it_behaves_like "a file resource", :not_supported_on_windows_11
 
   # These examples cover CHEF-3467 where unexpected and incorrect
   # permissions can result on Windows because CookbookFile's

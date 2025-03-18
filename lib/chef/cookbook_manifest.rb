@@ -173,9 +173,9 @@ class Chef
     def files_for(part)
       return root_files if part.to_s == "root_files"
 
+      part_match = "#{part}/"
       manifest[:all_files].select do |file|
-        seg = file[:name].split("/")[0]
-        part.to_s == seg
+        file[:name].start_with?(part_match)
       end
     end
 

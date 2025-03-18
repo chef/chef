@@ -24,7 +24,7 @@ class Chef
   class Provider
     class Package
       class Rpm < Chef::Provider::Package
-        provides :rpm_package
+        provides :rpm_package, target_mode: true
 
         include Chef::Mixin::GetSourceFromPackage
 
@@ -51,7 +51,7 @@ class Chef
           current_resource.package_name(new_resource.package_name)
 
           if new_resource.source
-            unless uri_scheme?(new_resource.source) || ::File.exist?(new_resource.source)
+            unless uri_scheme?(new_resource.source) || ::TargetIO::File.exist?(new_resource.source)
               @package_source_exists = false
               return
             end

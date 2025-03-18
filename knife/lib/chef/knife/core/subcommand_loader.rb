@@ -160,7 +160,7 @@ class Chef
 
       #
       # Utility function for finding an element in a hash given an array
-      # of words and a separator.  We find the the longest key in the
+      # of words and a separator.  We find the longest key in the
       # hash composed of the given words joined by the separator.
       #
       def find_longest_key(hash, words, sep = "_")

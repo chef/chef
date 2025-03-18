@@ -24,7 +24,9 @@ class Chef
     # @since 14.0.0
     class Hostname < Chef::Resource
 
-      provides :hostname
+      provides :hostname, target_mode: true
+      target_mode support: :full,
+        platforms: %i{aix bsd linux macos_x solaris}
 
       description "Use the **hostname** resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"
@@ -99,7 +101,7 @@ class Chef
 
       action_class do
         def append_replacing_matching_lines(path, regex, string)
-          text = IO.read(path).split("\n")
+          text = TargetIO::IO.read(path).split("\n")
           text.reject! { |s| s =~ regex }
           text += [ string ]
           file path do
@@ -107,7 +109,7 @@ class Chef
             owner "root"
             group node["root_group"]
             mode "0644"
-            not_if { IO.read(path).split("\n").include?(string) }
+            not_if { TargetIO::IO.read(path).split("\n").include?(string) }
           end
         end
 
@@ -181,14 +183,14 @@ class Chef
             end
           when linux?
             case
-            when ::File.exist?("/usr/bin/hostnamectl") && !docker?
+            when ::TargetIO::File.exist?("/usr/bin/hostnamectl") && !docker?
               # use hostnamectl whenever we find it on linux (as systemd takes over the world)
               # this must come before other methods like /etc/hostname and /etc/sysconfig/network
               execute "hostnamectl set-hostname #{new_resource.hostname}" do
                 notifies :reload, "ohai[reload hostname]"
                 not_if { shell_out!("hostnamectl status", returns: [0, 1]).stdout =~ /Static hostname:\s*#{new_resource.hostname}\s*$/ }
               end
-            when ::File.exist?("/etc/hostname")
+            when ::TargetIO::File.exist?("/etc/hostname")
               # debian family uses /etc/hostname
               # arch also uses /etc/hostname
               # the "platform: iox_xr, platform_family: wrlinux, os: linux" platform also hits this
@@ -201,10 +203,10 @@ class Chef
                 group node["root_group"]
                 mode "0644"
               end
-            when ::File.file?("/etc/sysconfig/network")
+            when ::TargetIO::File.file?("/etc/sysconfig/network")
               # older non-systemd RHEL/Fedora derived
               append_replacing_matching_lines("/etc/sysconfig/network", /^HOSTNAME\s*=/, "HOSTNAME=#{new_resource.hostname}")
-            when ::File.exist?("/etc/HOSTNAME")
+            when ::TargetIO::File.exist?("/etc/HOSTNAME")
               # SuSE/openSUSE uses /etc/HOSTNAME
               file "/etc/HOSTNAME" do
                 content "#{new_resource.hostname}\n"
@@ -212,7 +214,7 @@ class Chef
                 group node["root_group"]
                 mode "0644"
               end
-            when ::File.exist?("/etc/conf.d/hostname")
+            when ::TargetIO::File.exist?("/etc/conf.d/hostname")
               # Gentoo
               file "/etc/conf.d/hostname" do
                 content "hostname=\"#{new_resource.hostname}\"\n"
@@ -226,7 +228,7 @@ class Chef
               # that manage sysctls on linux.
               append_replacing_matching_lines("/etc/sysctl.conf", /^\s+kernel\.hostname\s+=/, "kernel.hostname=#{new_resource.hostname}")
             end
-          when ::File.exist?("/etc/rc.conf")
+          when ::TargetIO::File.exist?("/etc/rc.conf")
             # *BSD systems with /etc/rc.conf + /etc/myname
             append_replacing_matching_lines("/etc/rc.conf", /^\s+hostname\s+=/, "hostname=#{new_resource.hostname}")
 
@@ -236,7 +238,7 @@ class Chef
               group node["root_group"]
               mode "0644"
             end
-          when ::File.exist?("/usr/sbin/svccfg") # solaris 5.11
+          when ::TargetIO::File.exist?("/usr/sbin/svccfg") # solaris 5.11
             execute "svccfg -s system/identity:node setprop config/nodename=\'#{new_resource.hostname}\'" do
               notifies :run, "execute[svcadm refresh]", :immediately
               notifies :run, "execute[svcadm restart]", :immediately
@@ -259,6 +261,7 @@ class Chef
           WINDOWS_EC2_CONFIG = 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml'.freeze
 
           raise "Windows hostnames cannot contain a period." if new_resource.hostname.include?(".")
+          raise "Windows not supported in Target Mode" if ChefConfig::Config.target_mode?
 
           # suppress EC2 config service from setting our hostname
           if ::File.exist?(WINDOWS_EC2_CONFIG)

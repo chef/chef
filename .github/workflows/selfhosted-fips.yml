@@ -6,7 +6,12 @@ name: selfhosted-fips
   push:
     branches:
       - main
-jobs: 
+
+concurrency:
+  group: selfhosted-fips-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
   linux:
     strategy:
       fail-fast: false
@@ -40,7 +45,7 @@ jobs:
           fi
           set -e
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
             clean: false
       - name: 'Install Chef/Ohai from Omnitruck'

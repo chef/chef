@@ -620,6 +620,7 @@ class Chef
       # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
       # A negative value can occur when a resource changes the system time backwards
       @elapsed_time = 0 if @elapsed_time < 0
+
       events.resource_completed(self)
     end
 
@@ -1218,9 +1219,9 @@ class Chef
     #
 
     # FORBIDDEN_IVARS do not show up when the resource is converted to JSON (ie. hidden from data_collector and sending to the chef server via #to_json/to_h/as_json/inspect)
-    FORBIDDEN_IVARS = %i{@run_context @logger @not_if @only_if @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner @action_descriptions}.freeze
+    FORBIDDEN_IVARS = %i{@run_context @logger @not_if @only_if @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @target_mode @skip_docs @executed_by_runner @action_descriptions}.freeze
     # HIDDEN_IVARS do not show up when the resource is displayed to the user as text (ie. in the error inspector output via #to_text)
-    HIDDEN_IVARS = %i{@allowed_actions @resource_name @source_line @run_context @logger @name @not_if @only_if @elapsed_time @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @skip_docs @executed_by_runner @action_descriptions}.freeze
+    HIDDEN_IVARS = %i{@allowed_actions @resource_name @source_line @run_context @logger @name @not_if @only_if @elapsed_time @enclosing_provider @description @introduced @examples @validation_message @deprecated @default_description @target_mode @skip_docs @executed_by_runner @action_descriptions}.freeze
 
     include Chef::Mixin::ConvertToClassName
     extend Chef::Mixin::ConvertToClassName
@@ -1488,6 +1489,14 @@ class Chef
         @default_description = default_description
       end
       @default_description
+    end
+
+    # Documentation-only keyword
+    def self.target_mode(target_mode = "NOT_PASSED")
+      if target_mode != "NOT_PASSED"
+        @target_mode = target_mode
+      end
+      @target_mode
     end
 
     # Use a partial code fragment.  This can be used for code sharing between multiple resources.

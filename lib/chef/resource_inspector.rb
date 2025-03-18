@@ -44,6 +44,7 @@ class Chef
     def self.extract_resource(resource, complete = false)
       data = {}
       data[:description] = resource.description
+      data[:target_mode] = resource.target_mode
       data[:default_action] = resource.default_action
       data[:actions] = {}
       resource.allowed_actions.each do |action|
@@ -63,6 +64,7 @@ class Chef
       data[:properties] = properties.each_with_object([]) do |(n, k), acc|
         opts = k.options
         acc << { name: n, description: opts[:description],
+                 target_mode: opts[:target_mode] || false,
                  introduced: opts[:introduced], is: opts[:is],
                  deprecated: opts[:deprecated] || false,
                  required: opts[:required] || false,
@@ -79,19 +81,37 @@ class Chef
       Array(equal_to).map(&:inspect)
     end
 
+    def self.load_from_resources(resources, complete)
+      resources.each_with_object({}) do |r, res|
+        pth = r["full_path"]
+        # Here we do some magic to extract resources from files where there are multiple resources
+        # in a file - to do this, we load the file, and take the delta of which resources
+        # exist in object space
+        existing_classes = []
+        ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each { |klass| existing_classes << klass }
+        # Load the set of resources from this file
+        Chef::Resource::LWRPBase.build_from_file(name, pth, Chef::RunContext.new(Chef::Node.new, nil, nil))
+        # Finally, process every new class added to the object space by that
+        ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each do |klass|
+          unless existing_classes.include?(klass)
+            # Skip over anything which creates resources that start with exactly this - that happens
+            # because if there is no non-classed resource in here, LWRPBase.build_from_file builds a
+            # dummy object from it - we don't need that polluting out output!
+            next if klass.resource_name.start_with?("Chef__ResourceInspector")
+
+            res[klass.resource_name] = extract_resource(klass, complete)
+          end
+        end
+      end
+    end
+
     def self.extract_cookbook(path, complete)
       path = File.expand_path(path)
       dir, name = File.split(path)
       Chef::Cookbook::FileVendor.fetch_from_disk(path)
       loader = Chef::CookbookLoader.new(dir)
       cookbook = loader.load_cookbook(name)
-      resources = cookbook.files_for(:resources)
-
-      resources.each_with_object({}) do |r, res|
-        pth = r["full_path"]
-        cur = Chef::Resource::LWRPBase.build_from_file(name, pth, Chef::RunContext.new(Chef::Node.new, nil, nil))
-        res[cur.resource_name] = extract_resource(cur, complete)
-      end
+      load_from_resources(cookbook.files_for(:resources), complete)
     end
 
     # If we're given no resources, dump all of Chef's built ins

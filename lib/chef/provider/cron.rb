@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Cron < Chef::Provider
 
-      provides :cron, os: ["!aix", "!solaris2"]
+      provides :cron, os: ["!aix", "!solaris2"], target_mode: true
 
       SPECIAL_TIME_VALUES = %i{reboot yearly annually monthly weekly daily midnight hourly}.freeze
       CRON_ATTRIBUTES = %i{minute hour day month weekday time command mailto path shell home environment}.freeze
@@ -204,7 +204,15 @@ class Chef
 
       def write_crontab(crontab)
         write_exception = false
-        so = shell_out!("crontab -u #{new_resource.user} -", input: crontab)
+
+        tempname = Dir::Tmpname.create(["crontab-"]) {}
+        TargetIO::File.open(tempname, "w") do |tempfile|
+          tempfile.write(crontab)
+        end
+
+        so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
+
+        TargetIO::File.unlink(tempname)
       rescue => e
         raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"
       end

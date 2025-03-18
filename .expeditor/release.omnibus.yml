@@ -20,6 +20,10 @@ builder-to-testers-map:
       #    - amazon-2022-aarch64
       #  amazon-2022-x86_64:
       #    - amazon-2022-x86_64
+  amazon-2023-aarch64:
+    - amazon-2023-aarch64
+  amazon-2023-x86_64:
+    - amazon-2023-x86_64
   debian-9-x86_64:
     - debian-9-x86_64
     - debian-10-x86_64
@@ -53,17 +57,16 @@ builder-to-testers-map:
   freebsd-12-amd64:
     - freebsd-12-amd64
     - freebsd-13-amd64
-  mac_os_x-10.15-x86_64:
-    - mac_os_x-10.15-x86_64
-    - mac_os_x-11-x86_64
-    - mac_os_x-12-x86_64
-  mac_os_x-11-arm64:
-    - mac_os_x-11-arm64
-    - mac_os_x-12-arm64
+  # mac_os_x-11-x86_64:         Temporarily removed due to build failures
+  #   - mac_os_x-11-x86_64
+  #   - mac_os_x-12-x86_64
+  # mac_os_x-11-arm64:
+  #   - mac_os_x-11-arm64
+  #   - mac_os_x-12-arm64
   rocky-8-x86_64:
     - rocky-8-x86_64
   rocky-9-x86_64:
-    - rocky-9-x86_64  
+    - rocky-9-x86_64
   sles-12-s390x:
     - sles-12-s390x
     - sles-15-s390x
@@ -86,8 +89,6 @@ builder-to-testers-map:
     - ubuntu-20.04-x86_64
     - ubuntu-22.04-x86_64
   windows-10-x86_64:
-    - windows-2012-x86_64
-    - windows-2012r2-x86_64
     - windows-2016-x86_64
     - windows-2019-x86_64
     - windows-2022-x86_64

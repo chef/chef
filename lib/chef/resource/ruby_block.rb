@@ -26,6 +26,8 @@ class Chef
     class RubyBlock < Chef::Resource
 
       provides :ruby_block, target_mode: true
+      target_mode support: :full,
+        description: "Ruby code will be run locally and not on the target node. Use the **ruby** resource for this."
 
       description "Use the **ruby_block** resource to execute Ruby code during a #{ChefUtils::Dist::Infra::PRODUCT} run. Ruby code in the `ruby_block` resource is evaluated with other resources during convergence, whereas Ruby code outside of a `ruby_block` resource is evaluated before other resources, as the recipe is compiled."
       examples <<~'DOC'

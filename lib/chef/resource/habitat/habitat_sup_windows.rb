@@ -23,6 +23,7 @@ class Chef
     class HabitatSupWindows < HabitatSup
       provides :habitat_sup, os: "windows"
       provides :habitat_sup_windows
+      target_mode support: false
 
       service_file = ::File.expand_path("../support/HabService.dll.config.erb")
       win_service_config = "C:/hab/svc/windows-service/HabService.dll.config"

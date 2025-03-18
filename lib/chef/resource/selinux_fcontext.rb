@@ -20,7 +20,8 @@ class Chef
     class SelinuxFcontext < Chef::Resource
       unified_mode true
 
-      provides :selinux_fcontext
+      provides :selinux_fcontext, target_mode: true
+      target_mode support: :full
 
       description "Use the **selinux_fcontext** resource to set the SELinux context of files using the `semanage fcontext` command."
       introduced "18.0"
@@ -95,7 +96,7 @@ class Chef
           # if path is not absolute, ignore it and search everything
           common = "/" if common[0] != "/"
 
-          if ::File.exist? common
+          if ::TargetIO::File.exist? common
             shell_out!("find #{common.shellescape} -ignore_readdir_race -regextype posix-egrep -regex #{spec.shellescape} -prune -print0 | xargs -0 restorecon -iRv")
           end
         end

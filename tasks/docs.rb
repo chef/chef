@@ -276,6 +276,7 @@ namespace :docs_site do
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
       r["actions_list"] = action_list(data["actions"], data["default_action"] )
       r["properties_list"] = properties_list(properties)
+      r["target_mode"] = data["target_mode"]
       r["examples"] = data["examples"]
 
       r

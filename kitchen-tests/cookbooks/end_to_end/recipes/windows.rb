@@ -264,3 +264,4 @@ windows_feature_powershell "RSAT-AD-PowerShell" do
 end
 
 include_recipe "::_chef_gem"
+include_recipe "::_openssl"

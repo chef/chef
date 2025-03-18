@@ -30,7 +30,7 @@ class Chef
       end
 
       def backup!
-        if @new_resource.backup != false && @new_resource.backup > 0 && ::File.exist?(path)
+        if @new_resource.backup != false && @new_resource.backup > 0 && ::TargetIO::File.exist?(path)
           do_backup
           # Clean up after the number of backups
           slice_number = @new_resource.backup

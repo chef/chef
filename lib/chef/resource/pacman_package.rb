@@ -22,7 +22,8 @@ class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
 
-      provides :pacman_package
+      provides :pacman_package, target_mode: true
+      target_mode support: :full
 
       allowed_actions :install, :upgrade, :remove, :purge
 

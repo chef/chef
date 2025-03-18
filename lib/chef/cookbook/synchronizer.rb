@@ -61,6 +61,11 @@ class Chef
 
     def cleanup_file_cache
       unless Chef::Config[:solo_legacy_mode] || skip_removal
+        if Chef::Config.target_mode?
+          TargetIO::FileUtils.rm_rf(Chef::Config[:file_cache_path])
+          return
+        end
+
         # Delete each file in the cache that we didn't encounter in the
         # manifest.
         cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_filename|
@@ -280,8 +285,9 @@ class Chef
     end
 
     def ensure_cookbook_paths
+      cookbook_path = File.join(Chef::Config[:file_cache_path], "cookbooks")
       cookbooks.each do |cookbook|
-        cb_dir = File.join(Chef::Config[:file_cache_path], "cookbooks", cookbook.name)
+        cb_dir = File.join(cookbook_path, cookbook.name)
         cookbook.root_paths = Array(cb_dir)
       end
     end
