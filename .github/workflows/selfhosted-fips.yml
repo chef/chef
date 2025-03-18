@@ -67,6 +67,8 @@ jobs:
       - name: 'Verify FIPS is enabled'
         id: run
         run: |
+          # temporary hack until packaged bundler supports the force_ruby_platform option for gems
+          sudo /opt/chef/embedded/bin/ruby -pi -e 'gsub("#!/usr/bin/env ruby", "#!/opt/chef/embedded/bin/ruby")' /opt/chef/embedded/bin/bundle
           sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
           sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
           sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
