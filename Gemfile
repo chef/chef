@@ -2,12 +2,15 @@ source "https://rubygems.org"
 
 gem "chef", path: "."
 
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
+gem "ohai", git: "https://github.com/jaymzh/ohai.git", branch: "ffi-ver"
 
-# Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
+# Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
+# Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "ffi", ">= 1.15.5", "< 1.17.0"
+gem "mixlib-log", git: "https://github.com/stanhu/mixlib-log.git", branch: "sh-relax-ffi"
+
+gem "ffi", ">= 1.15.5", force_ruby_platform: true
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 

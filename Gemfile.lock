@@ -1,23 +1,4 @@
 GIT
-  remote: https://github.com/chef/ohai.git
-  revision: fb50e0151df1e9caf80a8ef1979901b8214139dc
-  branch: main
-  specs:
-    ohai (19.0.5)
-      chef-config (>= 14.12, < 20)
-      chef-utils (>= 16.0, < 20)
-      ffi (~> 1.9)
-      ffi-yajl (~> 2.2)
-      ipaddress
-      mixlib-cli (>= 1.7.0)
-      mixlib-config (>= 2.0, < 4.0)
-      mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (~> 3.2, >= 3.2.5)
-      plist (~> 3.1)
-      train-core
-      wmi-lite (~> 1.0)
-
-GIT
   remote: https://github.com/chef/rest-client
   revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
   branch: jfm/ucrt_update1
@@ -33,6 +14,32 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+
+GIT
+  remote: https://github.com/jaymzh/ohai.git
+  revision: 1c349288a94c245bce20a10b17da2ab9c2079f32
+  branch: ffi-ver
+  specs:
+    ohai (19.0.9)
+      chef-config (>= 14.12, < 20)
+      chef-utils (>= 16.0, < 20)
+      ffi-yajl (~> 2.2)
+      ipaddress
+      mixlib-cli (>= 1.7.0)
+      mixlib-config (>= 2.0, < 4.0)
+      mixlib-log (>= 2.0.1, < 4.0)
+      mixlib-shellout (~> 3.3.6)
+      plist (~> 3.1)
+      train-core
+      wmi-lite (~> 1.0)
+
+GIT
+  remote: https://github.com/stanhu/mixlib-log.git
+  revision: 6aff216dfe097018468c4a4a899eb0f8899dbcd6
+  branch: sh-relax-ffi
+  specs:
+    mixlib-log (3.2.2)
+      ffi (>= 1.15.5)
 
 PATH
   remote: .
@@ -260,7 +267,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -335,7 +341,6 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-log (3.0.9)
     mixlib-shellout (3.3.6)
       chef-utils
     mixlib-shellout (3.3.6-x64-mingw-ucrt)
@@ -525,8 +530,9 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5, < 1.17.0)
+  ffi (>= 1.15.5)
   inspec-core-bin (~> 7.0.38.beta)
+  mixlib-log!
   ohai!
   openssl (= 3.2.0)
   pry (= 0.13.0)
@@ -540,4 +546,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.27
+   2.5.22
