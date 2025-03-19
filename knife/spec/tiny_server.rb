@@ -19,6 +19,7 @@
 require "webrick"
 require "webrick/https"
 require "rack"
+require "rackup"
 require "singleton"
 require "open-uri"
 require "chef/config"
@@ -91,7 +92,7 @@ module TinyServer
 
     def create_server(**extra_options)
       server = WEBrick::HTTPServer.new(**options, **extra_options)
-      server.mount("/", Rack::Handler::WEBrick, API.instance)
+      server.mount("/", Rackup::Handler::WEBrick, API.instance)
       server
     end
   end
@@ -172,7 +173,9 @@ module TinyServer
 
     def initialize(response_code = 200, data = nil, headers = nil, &block)
       @response_code, @data = response_code, data
-      @response_headers = headers ? HEADERS.merge(headers) : HEADERS
+      # .merge creates a new hash, headers is sometimes passed as nil, @response_headers gets mutated somewhere
+      # in processing
+      @response_headers = HEADERS.merge(headers || {})
       @block = block_given? ? block : nil
     end
 
