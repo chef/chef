@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.4 -->
-## [v19.1.4](https://github.com/chef/chef/tree/v19.1.4) (2025-03-19)
+<!-- latest_release 19.1.5 -->
+## [v19.1.5](https://github.com/chef/chef/tree/v19.1.5) (2025-03-21)
 
 #### Merged Pull Requests
-- updating rack and chef-zero in main [#14913](https://github.com/chef/chef/pull/14913) ([johnmccrae](https://github.com/johnmccrae))
+- Add cgroup attribute to execute module [#14848](https://github.com/chef/chef/pull/14848) ([ImanolBarba](https://github.com/ImanolBarba))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add cgroup attribute to execute module [#14848](https://github.com/chef/chef/pull/14848) ([ImanolBarba](https://github.com/ImanolBarba)) <!-- 19.1.5 -->
 - updating rack and chef-zero in main [#14913](https://github.com/chef/chef/pull/14913) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.4 -->
 - Chef::Util::Powershell::PSCredential leaks plaintext on .inspect [#14887](https://github.com/chef/chef/pull/14887) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 19.1.3 -->
 - Knife supermarket share error when cookbook exists [#14876](https://github.com/chef/chef/pull/14876) ([sanghinitin](https://github.com/sanghinitin)) <!-- 19.1.2 -->
