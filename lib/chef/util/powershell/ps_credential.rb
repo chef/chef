@@ -31,8 +31,18 @@ class Chef
           "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
         end
 
+        def to_plaintext
+          "#<Chef::Util::Powershell::PSCredential:#{object_id} @username=#{@username.inspect}>"
+        end
+
+        # These leak an encrypted password, however we can't rely on no-one using
+        # these assuming that behavior.
         alias to_s to_psobject
         alias to_text to_psobject
+
+        # Inspect has no business leaking anything but the username, and to be honest
+        # even that one could be dicey
+        alias inspect to_plaintext
 
         private
 

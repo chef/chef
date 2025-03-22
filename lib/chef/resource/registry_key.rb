@@ -165,9 +165,9 @@ class Chef
       property :recursive, [TrueClass, FalseClass], default: false
       property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
       property :only_record_changes, [TrueClass, FalseClass],
-               default: false,
+               default: true,
                introduced: "19.0",
-               description: "Suppress reporting of the current value of sibling values in a registry key."
+               description: "Suppress reporting of the current value of sibling values in a registry key. Setting this to false may result in a large number of values reported."
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):
