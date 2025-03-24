@@ -44,7 +44,8 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LANG "en_US.UTF-8"
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 
-    Set-RuntimeEnv -f -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin;$env:RUBY_DLL_PATH"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
 }
 
 function Invoke-Download() {
