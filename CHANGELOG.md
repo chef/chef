@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.6 -->
-## [v19.1.6](https://github.com/chef/chef/tree/v19.1.6) (2025-03-25)
+<!-- latest_release 19.1.7 -->
+## [v19.1.7](https://github.com/chef/chef/tree/v19.1.7) (2025-03-25)
 
 #### Merged Pull Requests
-- [Port] Updating Hab paths for openssl [#14915](https://github.com/chef/chef/pull/14915) ([johnmccrae](https://github.com/johnmccrae))
+- added nil check for current_record in resource skipped [#14582](https://github.com/chef/chef/pull/14582) ([jamespdo](https://github.com/jamespdo))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- added nil check for current_record in resource skipped [#14582](https://github.com/chef/chef/pull/14582) ([jamespdo](https://github.com/jamespdo)) <!-- 19.1.7 -->
 - [Port] Updating Hab paths for openssl [#14915](https://github.com/chef/chef/pull/14915) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.6 -->
 - Add cgroup attribute to execute module [#14848](https://github.com/chef/chef/pull/14848) ([ImanolBarba](https://github.com/ImanolBarba)) <!-- 19.1.5 -->
 - updating rack and chef-zero in main [#14913](https://github.com/chef/chef/pull/14913) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.4 -->
