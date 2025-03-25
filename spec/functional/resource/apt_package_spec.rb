@@ -191,6 +191,21 @@ describe Chef::Resource::AptPackage, metadata do
 
       end
 
+      describe "when environment variables are added" do
+        let(:package_resource) do
+          r = base_resource
+          r.environment("FOO" => "BAR")
+          r
+        end
+
+        it "installs the package with environment variables prefixed to the install command" do
+          Chef::Log.level = :debug
+          expect do
+            package_resource.run_action(:install)
+          end.to match(/^FOO=BAR/)
+        end
+      end
+
       describe "when preseeding the install" do
 
         let(:file_cache_path) { Dir.mktmpdir }
