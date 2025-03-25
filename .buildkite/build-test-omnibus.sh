@@ -162,7 +162,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.91:"
+    echo "  - chef/omnibus#676f3a70d6e8c2e9fdec43bd9e085a75e621a688:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
@@ -185,7 +185,7 @@ then
     echo "  agents:"
     [[ $platform == *"arm"* ]] && echo "    queue: omnibus-mac_os_x-12-arm64" || echo "    queue: omnibus-mac_os_x-12-x86_64" || echo "    queue: omnibus-mac_os_x-13-x86_64" || echo "    queue: omnibus-mac_os_x-13-arm64" || echo "    queue: omnibus-mac_os_x-14-x86_64" || echo "    queue: omnibus-mac_os_x-14-arm64"
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.91:"
+    echo "  - chef/omnibus#676f3a70d6e8c2e9fdec43bd9e085a75e621a688:"
     echo "      config: omnibus/omnibus.rb"
     [[ $platform == *"arm"* ]] && echo "      remote-host: buildkite-omnibus-mac_os_x-12-arm64" || echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64" || echo "      remote-host: buildkite-omnibus-mac_os_x-13-x86_64" || echo "      remote-host: buildkite-omnibus-mac_os_x-13-arm64" || echo "      remote-host: buildkite-omnibus-mac_os_x-14-x86_64" || echo "      remote-host: buildkite-omnibus-mac_os_x-14-arm64"
     echo "      notarize-macos-package: chef"
@@ -206,7 +206,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.91:"
+  echo "  - chef/omnibus#676f3a70d6e8c2e9fdec43bd9e085a75e621a688:"
   echo "      create-build-record: chef"
 fi
 
@@ -301,7 +301,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.91:"
+    echo "  - chef/omnibus#676f3a70d6e8c2e9fdec43bd9e085a75e621a688:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -327,6 +327,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.91:"
+  echo "  - chef/omnibus#676f3a70d6e8c2e9fdec43bd9e085a75e621a688:"
   echo "      promote: chef"
 fi
