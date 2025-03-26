@@ -5,7 +5,9 @@ steps:
     queue: docker-linux
   command: .expeditor/build-docker-images.sh amd64
 
-# Commenting out the arm64 as we are not supporting it in RC1
+# Commenting this as Habitat doesn't support arm64 builds yet
+# TODO:
+# Add the pipelines for the arm64 builds once Habitat supports it
 #- label: ":docker: build chef-hab arm64"
 #  agents:
 #    queue: docker-linux-arm64
