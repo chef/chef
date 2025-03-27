@@ -139,11 +139,11 @@ module Shell
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
 
-      conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > "
+      conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
       conf.return_format  = " => %s \n"
       conf.prompt_i       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
-      conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} ?> "
-      conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}%l> "
+      conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}(#{Chef::VERSION})?> "
+      conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}(#{Chef::VERSION})%l> "
       conf.use_tracer     = false
       conf.instance_variable_set(:@use_multiline, false)
       conf.instance_variable_set(:@use_singleline, false)
