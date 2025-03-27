@@ -295,7 +295,7 @@ subscriptions:
     actions:
       - bash:.expeditor/update_bundler_dep.sh
   # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
-  - workload: chef/chefstyle:main_completed:pull_request_merged:chef/chefstyle:main:*
+  - workload: chef/cookstyle:main_completed:pull_request_merged:chef/cookstyle:main:*
     actions:
       - bash:.expeditor/update_bundler_dep.sh
   - workload: ruby_gem_published:train-rest-*

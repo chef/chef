@@ -95,7 +95,7 @@ do_prepare() {
         --with-xml2-include=$(pkg_path_for libxml2)/include/libxml2 \
         --with-xml2-lib=$(pkg_path_for libxml2)/lib"
     bundle config --local jobs "$(nproc)"
-    bundle config --local without server docgen maintenance pry travis integration ci chefstyle
+    bundle config --local without server docgen maintenance pry travis integration ci cookstyle
     bundle config --local shebang "$(pkg_path_for "$_chef_client_ruby")/bin/ruby"
     bundle config --local retry 5
     bundle config --local silence_root_warning 1

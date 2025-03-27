@@ -127,7 +127,7 @@ function Invoke-Prepare {
         $env:Path += ";c:\\Program Files\\Git\\bin;"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
-        bundle config --local without server docgen maintenance pry travis integration ci chefstyle
+        bundle config --local without server docgen maintenance pry travis integration ci cookstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1

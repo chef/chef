@@ -17,7 +17,7 @@ group(:omnibus_package, :pry) do
   gem "pry-stack_explorer"
 end
 
-group(:chefstyle) do
+group(:cookstyle) do
   gem "cookstyle", ">= 7.32.8"
 end
 

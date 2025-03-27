@@ -94,7 +94,7 @@ class Chef
         acl = Chef::ReservedNames::Win32::Security::ACL.create(aces)
 
         # This actually applies the modified DACL to the file
-        # Use parentheses to bypass RuboCop / ChefStyle warning
+        # Use parentheses to bypass RuboCop / Cookstyle warning
         # about useless setter
         (securable_object.dacl = acl)
       end
