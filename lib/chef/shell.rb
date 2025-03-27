@@ -139,7 +139,6 @@ module Shell
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
 
-      puts "-- #{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > --"
       conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
       conf.return_format  = " => %s \n"
       conf.prompt_i       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
