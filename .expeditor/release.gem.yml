@@ -1,6 +1,4 @@
 expeditor:
-  accounts:
-    - aws/chef-artifactory
   defaults:
     buildkite:
       timeout_in_minutes: 45
@@ -16,6 +14,4 @@ steps:
           privileged: true
           propagate-environment: true
           environment:
-            ARTIFACTORY_API_KEY
-      accounts:
-        - aws/chef-artifactory
+            - ARTIFACTORY_API_KEY

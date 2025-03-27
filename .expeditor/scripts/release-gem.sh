@@ -2,20 +2,6 @@
 
 set -eou pipefail
 
-# echo "Installing dependencies.."
-# bundle config set --local without docgen chefstyle development test
-# bundle install --jobs=2 --retry=3 --without docgen chefstyle development test
-
-# echo "Running post-bundle-install.rb.."
-# ruby post-bundle-install.rb
-
-# echo "Building gems.."
-# rake install:local
-# gem build chef.gemspec
-
-lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
-export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
-
 export HAB_ORIGIN="chef"
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
