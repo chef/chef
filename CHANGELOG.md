@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.7 -->
-## [v19.1.7](https://github.com/chef/chef/tree/v19.1.7) (2025-03-25)
+<!-- latest_release 19.1.8 -->
+## [v19.1.8](https://github.com/chef/chef/tree/v19.1.8) (2025-03-27)
 
 #### Merged Pull Requests
-- added nil check for current_record in resource skipped [#14582](https://github.com/chef/chef/pull/14582) ([jamespdo](https://github.com/jamespdo))
+- update pre-command hook for pushing gem [#14917](https://github.com/chef/chef/pull/14917) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update pre-command hook for pushing gem [#14917](https://github.com/chef/chef/pull/14917) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.8 -->
 - added nil check for current_record in resource skipped [#14582](https://github.com/chef/chef/pull/14582) ([jamespdo](https://github.com/jamespdo)) <!-- 19.1.7 -->
 - [Port] Updating Hab paths for openssl [#14915](https://github.com/chef/chef/pull/14915) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.6 -->
 - Add cgroup attribute to execute module [#14848](https://github.com/chef/chef/pull/14848) ([ImanolBarba](https://github.com/ImanolBarba)) <!-- 19.1.5 -->
