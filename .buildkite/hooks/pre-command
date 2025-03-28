@@ -83,9 +83,3 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
     export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
   fi
 fi
-
-# Only export if it is on gem-push pipeline.
-if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]] && [[ $BUILDKITE_PIPELINE_SLUG = "gem-push" ]]; then
-  lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
-  export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
-fi
