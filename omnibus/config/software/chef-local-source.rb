@@ -67,7 +67,7 @@ build do
   env = with_standard_compiler_flags(with_embedded_path)
 
   # The --without groups here MUST match groups in https://github.com/chef/chef/blob/main/Gemfile
-  excluded_groups = %w{docgen chefstyle}
+  excluded_groups = %w{docgen}
   excluded_groups << "ruby_prof" if aix?
   excluded_groups << "ruby_shadow" if aix?
   excluded_groups << "ed25519" if solaris2?
@@ -75,7 +75,7 @@ build do
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
-  bundle "config set --local without docgen chefstyle development test", env: env
+  bundle "config set --local without docgen development test", env: env
   bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
   ruby "post-bundle-install.rb", env: env
 

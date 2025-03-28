@@ -64,12 +64,6 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-gem "chefstyle"
-# group(:chefstyle) do
-#   # for testing new chefstyle rules
-#   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
-# end
-
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,

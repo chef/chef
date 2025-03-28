@@ -51,7 +51,7 @@ function Invoke-SetupEnvironment {
 
 function Invoke-Download() {
     Write-BuildLine "*** Start Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
-    
+
     try {
         # what is my actual path here before push-location
         Write-Output "Invoke-Download Function: Original path: $(Get-Location)"
@@ -63,23 +63,23 @@ function Invoke-Download() {
         # Push-Location to move into the new directory and stack the current directory, neat way to use cd
         Push-Location $resolvedPath
         Write-Output "Path after Push-Location: $(Get-Location) "
-        
+
         # Generate the archive using git, fixing perms as well
         write-output "*** Invoke-Download Function: fixing permissions on docker container git config --global --add safe.directory C:/src"
         git config --global --add safe.directory C:/src
         Write-Output "*** Invoke-Download Function: Creating archive at ${HAB_CACHE_SRC_PATH}\${pkg_filename}... "
         git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\${pkg_filename}" HEAD
-        
+
         # Check if the file exists and has a valid size (non-zero), or fail the build
         $archiveFile = Get-Item "${HAB_CACHE_SRC_PATH}\${pkg_filename}"
-        if (-not $archiveFile) { 
+        if (-not $archiveFile) {
             throw "Invoke-Download Function: Archive file not created. "
         } elseif ($archiveFile.Length -eq 0) {
             throw "Invoke-Download Function: Archive file is 0 bytes. Archive creation failed. "
         }
 
         Write-Output "*** Invoke-Download Function: Archive created successfully: $($archiveFile.FullName) with size $($archiveFile.Length) bytes"
-        
+
     } catch {
         # Capture any errors from git archive or other commands
         Write-Output "Invoke-Download Function: Error occurred: $_ "
@@ -127,7 +127,7 @@ function Invoke-Prepare {
         $env:Path += ";c:\\Program Files\\Git\\bin;"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
-        bundle config --local without server docgen maintenance pry travis integration ci chefstyle
+        bundle config --local without server docgen maintenance pry travis integration ci
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1

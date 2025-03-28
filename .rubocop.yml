@@ -33,6 +33,11 @@ Lint/DeprecatedConstants:
   Exclude:
     - lib/chef/node/attribute.rb # false alarms
 
+# Disable these until we upgrade to a modern Rubocop release
+Layout/ArgumentAlignment:
+  Enabled: false
+Layout/HashAlignment:
+  Enabled: false
 
 # This cop shouldn't alert on the helper / specs itself
 Chef/Ruby/LegacyPowershellOutMethods:
