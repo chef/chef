@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.9 -->
-## [v19.1.9](https://github.com/chef/chef/tree/v19.1.9) (2025-03-27)
+<!-- latest_release 19.1.10 -->
+## [v19.1.10](https://github.com/chef/chef/tree/v19.1.10) (2025-03-28)
 
 #### Merged Pull Requests
-- [CHEF-16732] Pipelines to build the client with habitat and deploy to chef/chef-hab docker repo [#14707](https://github.com/chef/chef/pull/14707) ([ashiqueps](https://github.com/ashiqueps))
+- Migrate from chefstyle -&gt; cookstyle [#14922](https://github.com/chef/chef/pull/14922) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Migrate from chefstyle -&gt; cookstyle [#14922](https://github.com/chef/chef/pull/14922) ([tas50](https://github.com/tas50)) <!-- 19.1.10 -->
 - [CHEF-16732] Pipelines to build the client with habitat and deploy to chef/chef-hab docker repo [#14707](https://github.com/chef/chef/pull/14707) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.9 -->
 - update pre-command hook for pushing gem [#14917](https://github.com/chef/chef/pull/14917) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.8 -->
 - added nil check for current_record in resource skipped [#14582](https://github.com/chef/chef/pull/14582) ([jamespdo](https://github.com/jamespdo)) <!-- 19.1.7 -->
