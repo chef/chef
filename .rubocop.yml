@@ -38,6 +38,10 @@ Layout/ArgumentAlignment:
   Enabled: false
 Layout/HashAlignment:
   Enabled: false
+Layout/AssignmentIndentation:
+  Enabled: false
+Layout/HeredocIndentation:
+  Enabled: false
 
 # This cop shouldn't alert on the helper / specs itself
 Chef/Ruby/LegacyPowershellOutMethods:
