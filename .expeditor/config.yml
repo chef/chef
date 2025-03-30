@@ -53,6 +53,7 @@ pipelines:
       trigger: default
   - habitat/build
   - habitat/test:
+      public: true
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
   - hab-export:
