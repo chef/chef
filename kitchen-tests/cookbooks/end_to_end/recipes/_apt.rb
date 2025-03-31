@@ -26,6 +26,6 @@ end
 apt_repository "test" do
   uri "http://ftp.be.debian.org/debian/"
   distribution "bookworm"
-  components %w[main contrib non-free]
+  components %w{main contrib non-free}
   key "https://ftp-master.debian.org/keys/archive-key-12.asc"
 end
