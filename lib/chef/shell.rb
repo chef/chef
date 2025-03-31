@@ -153,7 +153,7 @@ module Shell
       end
       conf.prompt_i       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
       conf.return_format  = " => %s \n"
-     conf.use_tracer     = false
+      conf.use_tracer     = false
       conf.instance_variable_set(:@use_multiline, false)
       conf.instance_variable_set(:@use_singleline, false)
     end

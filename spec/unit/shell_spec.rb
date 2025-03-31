@@ -87,16 +87,16 @@ describe Shell do
       conf.main = Chef::Recipe.new(nil, nil, Chef::RunContext.new(Chef::Node.new, {}, events))
       Shell.irb_conf[:IRB_RC].call(conf)
       if RUBY_VERSION >= "3.3.0"
-        expect(conf.prompt_c).to      eq("chef:recipe > ")
-        expect(conf.prompt_n).to      eq("chef:recipe ?> ")
-        expect(conf.prompt_s).to      eq("chef:recipe%l> ")
+        expect(conf.prompt_c).to eq("chef:recipe > ")
+        expect(conf.prompt_n).to eq("chef:recipe ?> ")
+        expect(conf.prompt_s).to eq("chef:recipe%l> ")
       else
-        expect(conf.prompt_c).to      eq("chef:recipe (#{Chef::VERSION})> ")
-        expect(conf.prompt_n).to      eq("chef:recipe(#{Chef::VERSION})?> ")
-        expect(conf.prompt_s).to      eq("chef:recipe(#{Chef::VERSION})%l> ")
+        expect(conf.prompt_c).to eq("chef:recipe (#{Chef::VERSION})> ")
+        expect(conf.prompt_n).to eq("chef:recipe(#{Chef::VERSION})?> ")
+        expect(conf.prompt_s).to eq("chef:recipe(#{Chef::VERSION})%l> ")
       end
 
-      expect(conf.prompt_i).to      eq("chef:recipe (#{Chef::VERSION})> ")
+      expect(conf.prompt_i).to eq("chef:recipe (#{Chef::VERSION})> ")
     end
 
     it "has a prompt like ``chef:attributes > '' in attributes/node context" do
@@ -107,13 +107,13 @@ describe Shell do
       Shell.irb_conf[:IRB_RC].call(conf)
 
       if RUBY_VERSION >= "3.3.0"
-        expect(conf.prompt_c).to      eq("chef:attributes > ")
-        expect(conf.prompt_n).to      eq("chef:attributes ?> ")
-        expect(conf.prompt_s).to      eq("chef:attributes%l> ")
+        expect(conf.prompt_c).to eq("chef:attributes > ")
+        expect(conf.prompt_n).to eq("chef:attributes ?> ")
+        expect(conf.prompt_s).to eq("chef:attributes%l> ")
       else
-        expect(conf.prompt_c).to      eq("chef:attributes (#{Chef::VERSION})> ")
-        expect(conf.prompt_n).to      eq("chef:attributes(#{Chef::VERSION})?> ")
-        expect(conf.prompt_s).to      eq("chef:attributes(#{Chef::VERSION})%l> ")
+        expect(conf.prompt_c).to eq("chef:attributes (#{Chef::VERSION})> ")
+        expect(conf.prompt_n).to eq("chef:attributes(#{Chef::VERSION})?> ")
+        expect(conf.prompt_s).to eq("chef:attributes(#{Chef::VERSION})%l> ")
       end
       expect(conf.prompt_i).to      eq("chef:attributes (#{Chef::VERSION})> ")
     end
