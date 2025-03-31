@@ -48,7 +48,7 @@ class Chef
       # required for the alias to pass validation
       allowed_actions :set, :enable
 
-      DAYS = %W{Everyday Monday Tuesday Wednesday Thursday Friday Saturday Sunday}.freeze
+      DAYS = %w{Everyday Monday Tuesday Wednesday Thursday Friday Saturday Sunday}.freeze
       UPDATE_OPTIONS = {
                         notify: 2,
                         download_and_notify: 3,

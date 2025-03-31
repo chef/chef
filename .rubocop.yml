@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7 # this cannot be bumped until we upgrade RuboCop
   Exclude:
     - "spec/data/**/*"
     - "knife/spec/data/**/*"
@@ -37,6 +37,10 @@ Lint/DeprecatedConstants:
 Layout/ArgumentAlignment:
   Enabled: false
 Layout/HashAlignment:
+  Enabled: false
+Layout/AssignmentIndentation:
+  Enabled: false
+Layout/HeredocIndentation:
   Enabled: false
 
 # This cop shouldn't alert on the helper / specs itself

@@ -46,12 +46,12 @@ end
 describe "rest_resource using query-based addressing" do
   let(:train) {
     Train.create(
-    "rest", {
+      "rest", {
       endpoint:   "https://api.example.com/api/v1/",
       debug_rest: true,
       logger:     Chef::Log,
     }
-  ).connection
+    ).connection
   }
 
   let(:run_context) do
@@ -313,12 +313,12 @@ end
 describe "rest_resource using path-based addressing" do
   let(:train) {
     Train.create(
-    "rest", {
+      "rest", {
       endpoint:   "https://api.example.com/api/v1/",
       debug_rest: true,
       logger:     Chef::Log,
     }
-  ).connection
+    ).connection
   }
 
   let(:run_context) do
