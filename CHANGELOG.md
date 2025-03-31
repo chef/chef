@@ -1,10 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 18.7.4 -->
+## [v18.7.4](https://github.com/chef/chef/tree/v18.7.4) (2025-03-31)
+
+#### Merged Pull Requests
+- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=18.7.3 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.4 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
