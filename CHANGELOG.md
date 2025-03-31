@@ -1,51 +1,49 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.3 -->
-## [v18.7.3](https://github.com/chef/chef/tree/v18.7.3) (2025-03-22)
-
-#### Merged Pull Requests
-- fix RUBY_DLL_PATH setting in hab plan [#14914](https://github.com/chef/chef/pull/14914) ([mwrock](https://github.com/mwrock))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.6.2 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- fix RUBY_DLL_PATH setting in hab plan [#14914](https://github.com/chef/chef/pull/14914) ([mwrock](https://github.com/mwrock)) <!-- 18.7.3 -->
-- Bump inspec-core, inspec-core-bin to 5.22.72 [#14909](https://github.com/chef/chef/pull/14909) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.2 -->
-- pick latest version of chef-foundation [#14907](https://github.com/chef/chef/pull/14907) ([muthuja](https://github.com/muthuja)) <!-- 18.7.1 -->
-- fix visual c++ depdendency issue for windows habitat package [#14906](https://github.com/chef/chef/pull/14906) ([rishichawda](https://github.com/rishichawda)) <!-- 18.7.0 -->
-- removing mac11 from pipeline as its EOL and make 12 as builder [#14782](https://github.com/chef/chef/pull/14782) ([muthuja](https://github.com/muthuja)) <!-- 18.6.29 -->
-- [Chef-18] Updating for Mixlib-Log [#14905](https://github.com/chef/chef/pull/14905) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.28 -->
-- chef-zero update for chef-18 and build fixes [#14904](https://github.com/chef/chef/pull/14904) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.27 -->
-- Chef::Util::Powershell::PSCredential leaks plaintext on .inspect [#14897](https://github.com/chef/chef/pull/14897) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.26 -->
-- Backport of #14131 Support Signed-By option for apt repository [#14896](https://github.com/chef/chef/pull/14896) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.25 -->
-- Updating omnibus and chef-foundation [#14894](https://github.com/chef/chef/pull/14894) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.24 -->
-- [Backport 18] Reverse the default for only_record_changes  [#14883](https://github.com/chef/chef/pull/14883) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.23 -->
-- Pin appbundle-updater gem install to ~&gt; 1.0.36 to avoid hab version [#14870](https://github.com/chef/chef/pull/14870) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.22 -->
-- [Chef18][Metadata#recipes_from_cookbook_version] Use end_with? [#14837](https://github.com/chef/chef/pull/14837) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.21 -->
-- [Chef18][RemoteFileVendor#get_filename] Do O(1) search for filename [#14835](https://github.com/chef/chef/pull/14835) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.20 -->
-- [Backport 18] Remove rdoc since 3.1.6 has patch version already [#14857](https://github.com/chef/chef/pull/14857) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.19 -->
-- [Chef18] dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14836](https://github.com/chef/chef/pull/14836) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.6.18 -->
-- [chef-18] Updating Train-Winrm support [#14842](https://github.com/chef/chef/pull/14842) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.17 -->
-- [Chef-18] Correcting missing files error [#14843](https://github.com/chef/chef/pull/14843) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.16 -->
-- [chef-18] Updating Train-winrm and other dependencies [#14841](https://github.com/chef/chef/pull/14841) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.15 -->
-- Housekeeping changes for Knife [#14831](https://github.com/chef/chef/pull/14831) ([neha-p6](https://github.com/neha-p6)) <!-- 18.6.14 -->
-- Changes required for the knife standalone release [#14820](https://github.com/chef/chef/pull/14820) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.13 -->
-- Updating rexml to get past a cve [#14823](https://github.com/chef/chef/pull/14823) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.6.12 -->
-- [backport] quiet mode fix for compliance phase [#14817](https://github.com/chef/chef/pull/14817) ([rishichawda](https://github.com/rishichawda)) <!-- 18.6.11 -->
-- [CHEF-18381] Fixed the issues with knife bootstrap failing on the airgapped envs [#14777](https://github.com/chef/chef/pull/14777) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.10 -->
-- Updated the license warning message [#14795](https://github.com/chef/chef/pull/14795) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.6.9 -->
-- Limit ffi to 1.17.0 max via Ohai bump. [#14809](https://github.com/chef/chef/pull/14809) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.8 -->
-- try symlink for install (#14799) [#14802](https://github.com/chef/chef/pull/14802) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.7 -->
-- [Backport] remove EOL&#39;d OS docker tests [#14791](https://github.com/chef/chef/pull/14791) ([Stromweld](https://github.com/Stromweld)) <!-- 18.6.6 -->
-- [Chef-18] Shorten the rspec test data file names which end throwing file not found error on windows upon gem installation [#14780](https://github.com/chef/chef/pull/14780) ([neha-p6](https://github.com/neha-p6)) <!-- 18.6.5 -->
-- update glob string for chef-log.dll [#14672](https://github.com/chef/chef/pull/14672) ([rishichawda](https://github.com/rishichawda)) <!-- 18.6.4 -->
-- Backport the bundle update removal on GA unit spec [#14783](https://github.com/chef/chef/pull/14783) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.6.3 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.7.3](https://github.com/chef/chef/tree/v18.7.3) (2025-03-31)
+
+#### Merged Pull Requests
+- Backport the bundle update removal on GA unit spec [#14783](https://github.com/chef/chef/pull/14783) ([tpowell-progress](https://github.com/tpowell-progress))
+- update glob string for chef-log.dll [#14672](https://github.com/chef/chef/pull/14672) ([rishichawda](https://github.com/rishichawda))
+- [Chef-18] Shorten the rspec test data file names which end throwing file not found error on windows upon gem installation [#14780](https://github.com/chef/chef/pull/14780) ([neha-p6](https://github.com/neha-p6))
+- [Backport] remove EOL&#39;d OS docker tests [#14791](https://github.com/chef/chef/pull/14791) ([Stromweld](https://github.com/Stromweld))
+- try symlink for install (#14799) [#14802](https://github.com/chef/chef/pull/14802) ([tpowell-progress](https://github.com/tpowell-progress))
+- Limit ffi to 1.17.0 max via Ohai bump. [#14809](https://github.com/chef/chef/pull/14809) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updated the license warning message [#14795](https://github.com/chef/chef/pull/14795) ([ashiqueps](https://github.com/ashiqueps))
+- [CHEF-18381] Fixed the issues with knife bootstrap failing on the airgapped envs [#14777](https://github.com/chef/chef/pull/14777) ([ashiqueps](https://github.com/ashiqueps))
+- [backport] quiet mode fix for compliance phase [#14817](https://github.com/chef/chef/pull/14817) ([rishichawda](https://github.com/rishichawda))
+- Updating rexml to get past a cve [#14823](https://github.com/chef/chef/pull/14823) ([johnmccrae](https://github.com/johnmccrae))
+- Changes required for the knife standalone release [#14820](https://github.com/chef/chef/pull/14820) ([ashiqueps](https://github.com/ashiqueps))
+- Housekeeping changes for Knife [#14831](https://github.com/chef/chef/pull/14831) ([neha-p6](https://github.com/neha-p6))
+- [chef-18] Updating Train-winrm and other dependencies [#14841](https://github.com/chef/chef/pull/14841) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18] Correcting missing files error [#14843](https://github.com/chef/chef/pull/14843) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-18] Updating Train-Winrm support [#14842](https://github.com/chef/chef/pull/14842) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef18] dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14836](https://github.com/chef/chef/pull/14836) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Backport 18] Remove rdoc since 3.1.6 has patch version already [#14857](https://github.com/chef/chef/pull/14857) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef18][RemoteFileVendor#get_filename] Do O(1) search for filename [#14835](https://github.com/chef/chef/pull/14835) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Chef18][Metadata#recipes_from_cookbook_version] Use end_with? [#14837](https://github.com/chef/chef/pull/14837) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Pin appbundle-updater gem install to ~&gt; 1.0.36 to avoid hab version [#14870](https://github.com/chef/chef/pull/14870) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Backport 18] Reverse the default for only_record_changes  [#14883](https://github.com/chef/chef/pull/14883) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating omnibus and chef-foundation [#14894](https://github.com/chef/chef/pull/14894) ([johnmccrae](https://github.com/johnmccrae))
+- Backport of #14131 Support Signed-By option for apt repository [#14896](https://github.com/chef/chef/pull/14896) ([tpowell-progress](https://github.com/tpowell-progress))
+- Chef::Util::Powershell::PSCredential leaks plaintext on .inspect [#14897](https://github.com/chef/chef/pull/14897) ([tpowell-progress](https://github.com/tpowell-progress))
+- chef-zero update for chef-18 and build fixes [#14904](https://github.com/chef/chef/pull/14904) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef-18] Updating for Mixlib-Log [#14905](https://github.com/chef/chef/pull/14905) ([johnmccrae](https://github.com/johnmccrae))
+- removing mac11 from pipeline as its EOL and make 12 as builder [#14782](https://github.com/chef/chef/pull/14782) ([muthuja](https://github.com/muthuja))
+- fix visual c++ depdendency issue for windows habitat package [#14906](https://github.com/chef/chef/pull/14906) ([rishichawda](https://github.com/rishichawda))
+- pick latest version of chef-foundation [#14907](https://github.com/chef/chef/pull/14907) ([muthuja](https://github.com/muthuja))
+- Bump inspec-core, inspec-core-bin to 5.22.72 [#14909](https://github.com/chef/chef/pull/14909) ([neha-p6](https://github.com/neha-p6))
+- fix RUBY_DLL_PATH setting in hab plan [#14914](https://github.com/chef/chef/pull/14914) ([mwrock](https://github.com/mwrock))
+<!-- latest_stable_release -->
+
 ## [v18.6.2](https://github.com/chef/chef/tree/v18.6.2) (2024-12-13)
 
 #### Merged Pull Requests
@@ -89,7 +87,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Updating Windows file resource tests [#14746](https://github.com/chef/chef/pull/14746) ([johnmccrae](https://github.com/johnmccrae))
 - Revert &quot;[CHEF-18] Remove Freebsd testing&quot; [#14749](https://github.com/chef/chef/pull/14749) ([johnmccrae](https://github.com/johnmccrae))
 - Empty commit to bump the version [#14756](https://github.com/chef/chef/pull/14756) ([sean-simmons-progress](https://github.com/sean-simmons-progress))
-<!-- latest_stable_release -->
 
 ## [v18.5.0](https://github.com/chef/chef/tree/v18.5.0) (2024-07-09)
 
