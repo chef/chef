@@ -22,3 +22,10 @@ end
 apt_preference "libmysqlclient16" do
   action :remove
 end
+
+apt_repository "test" do
+  uri "http://ftp.be.debian.org/debian/"
+  distribution "bookworm"
+  components ["main", "contrib", "non-free"]
+  key "https://ftp-master.debian.org/keys/archive-key-12.asc"
+end
