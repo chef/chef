@@ -308,8 +308,8 @@ class Chef
         def install_key_from_uri(key)
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
           keyfile_path = ::File.join(Chef::Config[:file_cache_path], key_name)
-          tmp_dir = TargetIO::Dir.mktmpdir(".gpg")
-          at_exit { TargetIO::FileUtils.remove_entry(tmp_dir) }
+          tmp_dir = Dir.mktmpdir(".gpg")
+          at_exit { FileUtils.remove_entry(tmp_dir) }
 
           if new_resource.signed_by
             keyfile_path = keyring_path
