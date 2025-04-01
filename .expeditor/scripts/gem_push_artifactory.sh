@@ -15,8 +15,6 @@ lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-
 artifactory_api_key=$(echo -n "lita:${lita_password}" | base64)
 export GEM_HOST_API_KEY="Basic ${artifactory_api_key}"
 
-gem install artifactory -v 3.0.17 --no-document
-
 echo "Generating origin key"
 hab origin key generate "$HAB_ORIGIN"
 
@@ -24,4 +22,5 @@ echo "Building gems via habitat"
 hab pkg build . --refresh-channel LTS-2024 || echo "failed to build package"
 
 echo "Push gems to artifactory"
-ruby .expeditor/scripts/chef_gem_publish.rb
+gem install artifactory -v 3.0.17 --no-document
+ruby .expeditor/scripts/gem_push_artifactory.rb

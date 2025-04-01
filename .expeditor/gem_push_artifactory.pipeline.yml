@@ -7,7 +7,7 @@ steps:
 
   - label: "push gem to artifactory"
     commands:
-      - .expeditor/scripts/release-gem.sh
+      - .expeditor/scripts/gem_push_artifactory.sh
     expeditor:
       executor:
         docker:

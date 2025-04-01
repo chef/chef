@@ -77,6 +77,9 @@ pipelines:
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
+  - gem_push_artifactory:
+      description: Builds and uploads the gems to artifactory
+      definition: .expeditor/gem_push_artifactory.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -112,6 +115,7 @@ subscriptions:
     actions:
       # - trigger_pipeline:docker/build
       - trigger_pipeline:macos_universal_package
+      - trigger_pipeline:gem_push_artifactory
   # - workload: artifact_published:current:chef:{{version_constraint}}
   #   actions:
   #     - bash:.expeditor/promote-docker-images.sh
