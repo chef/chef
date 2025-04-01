@@ -77,6 +77,8 @@ class Chef
           @resource.updated
         rescue Mixlib::ShellOut::ShellCommandFailed
           nil
+        rescue ChefPowerShell::PowerShellExceptions::PowerShellCommandFailed
+          nil
         end
       end
 

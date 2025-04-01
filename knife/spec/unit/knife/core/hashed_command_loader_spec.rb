@@ -105,7 +105,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
       expect(loader.subcommand_for_args(%w{cooler b})).to eq("cooler_b")
     end
 
-    it "returns nil if the the subcommand isn't in our manifest" do
+    it "returns nil if the subcommand isn't in our manifest" do
       expect(loader.subcommand_for_args(["cooler c"])).to eq(nil)
     end
   end

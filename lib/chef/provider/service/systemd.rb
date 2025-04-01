@@ -26,7 +26,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   include Chef::Mixin::Which
 
-  provides :service, os: "linux", target_mode: true do |node|
+  provides(:service, os: "linux", target_mode: true) do |node|
     systemd?
   end
 
@@ -51,6 +51,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
         current_resource.running(false)
         current_resource.enabled(false)
         current_resource.masked(false)
+        current_resource.static(false)
         current_resource.indirect(false)
       end
     else
@@ -59,6 +60,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
     current_resource.enabled(is_enabled?)
     current_resource.masked(is_masked?)
+    current_resource.static(is_static?)
     current_resource.indirect(is_indirect?)
     current_resource
   end
@@ -104,7 +106,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     if new_resource.user
       raise NotImplementedError, "#{new_resource} does not support the user property on a target_mode host (yet)" if Chef::Config.target_mode?
 
-      uid = Etc.getpwnam(new_resource.user).uid
+      uid = TargetIO::Etc.getpwnam(new_resource.user).uid
       options = {
         environment: {
           "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
@@ -168,20 +170,29 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     end
   end
 
-  def enable_service
-    if current_resource.masked || current_resource.indirect
-      logger.debug("#{new_resource} cannot be enabled: it is masked or indirect")
-      return
+  def enableable?(action)
+    if current_resource.masked
+      logger.debug("#{new_resource} cannot be #{action}d: it is masked")
+      return false
     end
+    if current_resource.static
+      logger.debug("#{new_resource} cannot be #{action}d: it is static")
+      return false
+    end
+    if current_resource.indirect
+      logger.debug("#{new_resource} cannot be #{action}d: it is indirect")
+      return false
+    end
+    true
+  end
+
+  def enable_service
+    # This function can safely assume that enableable? is true
     options, args = get_systemctl_options_args
     shell_out!(systemctl_path, args, "enable", new_resource.service_name, **options)
   end
 
   def disable_service
-    if current_resource.masked || current_resource.indirect
-      logger.debug("#{new_resource} cannot be disabled: it is masked or indirect")
-      return
-    end
     options, args = get_systemctl_options_args
     shell_out!(systemctl_path, args, "disable", new_resource.service_name, **options)
   end
@@ -215,6 +226,10 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def is_indirect?
     systemd_service_status["UnitFileState"] == "indirect"
+  end
+
+  def is_static?
+    systemd_service_status["UnitFileState"] == "static"
   end
 
   def is_masked?

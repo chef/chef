@@ -24,8 +24,8 @@ class Chef
     class Package
       class Pacman < Chef::Provider::Package
 
-        provides :package, platform: "arch"
-        provides :pacman_package
+        provides :package, platform: "arch", target_mode: true
+        provides :pacman_package, target_mode: true
 
         use_multipackage_api
         allow_nils
@@ -37,8 +37,8 @@ class Chef
 
           repos = %w{extra core community}
 
-          if ::File.exist?("/etc/pacman.conf")
-            pacman = ::File.read("/etc/pacman.conf")
+          if ::TargetIO::File.exist?("/etc/pacman.conf")
+            pacman = ::TargetIO::File.read("/etc/pacman.conf")
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 

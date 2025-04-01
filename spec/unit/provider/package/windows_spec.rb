@@ -106,27 +106,27 @@ describe Chef::Provider::Package::Windows, :windows_only do
         provider.package_provider
       end
 
-      it "sets the package provider to MSI if the the installer type is :msi" do
+      it "sets the package provider to MSI if the installer type is :msi" do
         allow(provider).to receive(:installer_type).and_return(:msi)
         expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::MSI)
       end
 
-      it "sets the package provider to Exe if the the installer type is :inno" do
+      it "sets the package provider to Exe if the installer type is :inno" do
         allow(provider).to receive(:installer_type).and_return(:inno)
         expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
       end
 
-      it "sets the package provider to Exe if the the installer type is :nsis" do
+      it "sets the package provider to Exe if the installer type is :nsis" do
         allow(provider).to receive(:installer_type).and_return(:nsis)
         expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
       end
 
-      it "sets the package provider to Exe if the the installer type is :wise" do
+      it "sets the package provider to Exe if the installer type is :wise" do
         allow(provider).to receive(:installer_type).and_return(:wise)
         expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
       end
 
-      it "sets the package provider to Exe if the the installer type is :installshield" do
+      it "sets the package provider to Exe if the installer type is :installshield" do
         allow(provider).to receive(:installer_type).and_return(:installshield)
         expect(provider.package_provider).to be_a(Chef::Provider::Package::Windows::Exe)
       end

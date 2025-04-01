@@ -170,7 +170,7 @@ class Chef
     class PowershellCmdletException < RuntimeError; end
     class LCMParser < RuntimeError; end
 
-    class CannotDetermineHomebrewOwner < Package; end
+    class CannotDetermineHomebrewPath < Package; end
     class CannotDetermineWindowsInstallerType < Package; end
     class NoWindowsPackageSource < Package; end
 

@@ -25,7 +25,8 @@ class Chef
     class Link < Chef::Resource
       include Chef::Mixin::Securable
 
-      provides :link
+      provides :link, target_mode: true
+      target_mode support: :full
 
       description "Use the **link** resource to create symbolic or hard links.\n\n"\
                   "A symbolic link—sometimes referred to as a soft link—is a directory entry"\
@@ -46,7 +47,7 @@ class Chef
         description: "An optional property to set the target file if it differs from the resource block's name.",
         name_property: true
 
-      property :to, String,
+      property :to, [String, nil],
         description: "The actual file to which the link is to be created."
 
       property :link_type, [String, Symbol],

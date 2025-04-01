@@ -78,7 +78,7 @@ class Chef
           if check_load_path
             files = $LOAD_PATH.map do |load_path|
               Dir["#{File.expand_path glob, ChefConfig::PathHelper.escape_glob_dir(load_path)}#{Gem.suffix_pattern}"]
-            end.flatten.select { |file| File.file? file.untaint }
+            end.flatten.select { |file| File.file? file }
 
           end
 
@@ -114,7 +114,7 @@ class Chef
 
           glob = File.join(ChefConfig::PathHelper.escape_glob_dir(spec.full_gem_path, dirs), glob)
 
-          Dir[glob].map(&:untaint)
+          Dir[glob]
         end
 
         def from_different_chef_version?(path)

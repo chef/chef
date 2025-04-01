@@ -414,16 +414,20 @@ class Chef
     def apply_computed_config
       Chef::Config[:color] = config[:color]
 
-      case Chef::Config[:verbosity]
-      when 0, nil
-        Chef::Config[:log_level] = :warn
-      when 1
-        Chef::Config[:log_level] = :info
-      when 2
-        Chef::Config[:log_level] = :debug
-      else
-        Chef::Config[:log_level] = :trace
-      end
+      # If the verbosity is not set, use what is already present on the log_level config.
+      Chef::Config[:log_level] = case Chef::Config[:verbosity]
+                                 when 0
+                                   :warn
+                                 when 1
+                                   :info
+                                 when 2
+                                   :debug
+                                 when nil
+                                   # The default log_level is auto and that is not a valid log_level.
+                                   Chef::Config[:log_level] == :auto ? :warn : Chef::Config[:log_level]
+                                 else
+                                   :trace
+                                 end
 
       Chef::Config[:log_level] = :trace if ENV["KNIFE_DEBUG"]
 

@@ -22,10 +22,34 @@ class Chef
   class Resource
     class SnapPackage < Chef::Resource::Package
 
-      provides :snap_package
+      provides :snap_package, target_mode: true
+      target_mode support: :full
 
       description "Use the **snap_package** resource to manage snap packages on Debian and Ubuntu platforms."
       introduced "15.0"
+      examples <<~DOC
+      **Install a package**
+
+      ```ruby
+      snap_package 'hello'
+      ```
+
+      **Upgrade a package**
+
+      ```ruby
+      snap_package 'hello' do
+        action :upgrade
+      end
+      ```
+
+      **Install a package with classic confinement**
+
+      ```ruby
+      snap_package 'hello' do
+        options 'classic'
+      end
+      ```
+      DOC
 
       allowed_actions :install, :upgrade, :remove, :purge
 

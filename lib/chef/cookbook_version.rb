@@ -576,13 +576,13 @@ class Chef
     # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def relative_paths_by_name(records)
-      records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:path]; memo }
+      records.select { |record| record[:name].end_with?(".rb") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:path]; memo }
     end
 
     # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(records)
-      records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
+      records.select { |record| record[:name].end_with?(".rb") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
     end
 
     # Filters YAML files from the superset of provided files.

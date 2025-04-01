@@ -56,6 +56,9 @@ end
 # cron resource
 #
 
+# Opensuse leap doesn't have a crontab till a user creates one causing these resources to fail
+return if platform_family?("suse")
+
 cron "some random cron job" do
   minute  0
   hour    23

@@ -285,7 +285,7 @@ class Chef
     def loaded_recipe(cookbook, recipe)
       fully_qualified_recipe = "#{cookbook}::#{recipe}"
 
-      automatic_attrs[:recipes] << fully_qualified_recipe unless Array(self[:recipes]).include?(fully_qualified_recipe)
+      automatic_attrs[:recipes] << fully_qualified_recipe unless Array(automatic_attrs[:recipes]).include?(fully_qualified_recipe)
     end
 
     # Returns true if this Node expects a given role, false if not.
@@ -401,9 +401,31 @@ class Chef
       normal[:tags]
     end
 
+    # Add the list of tags to the node.
+    #
+    # === Parameters
+    # tags<Array>:: A list of tags
+    #
+    # === Returns
+    # tags<Array>:: The current list of run_context.node.tags
     def tag(*args)
       args.each do |tag|
         tags.push(tag.to_s) unless tags.include? tag.to_s
+      end
+
+      tags
+    end
+
+    # Removes the list of tags from the node.
+    #
+    # === Parameters
+    # tags<Array>:: A list of tags
+    #
+    # === Returns
+    # tags<Array>:: The current list of run_context.node.tags
+    def untag(*args)
+      args.each do |tag|
+        tags.delete(tag.to_s)
       end
 
       tags

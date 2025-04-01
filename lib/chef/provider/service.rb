@@ -80,7 +80,19 @@ class Chef
         end
       end
 
+      # This is a hook for subclasses to be able to tell the super class that a
+      # service is or is not enable-able. For example, on systemd, static and
+      # indirect units are not enable-able.
+      #
+      # In addition, this method offloads the messaging to the user. If the
+      # method returns `false`, it should say why `action` couldn't be taken
+      def enableable?(action)
+        true
+      end
+
       action :enable do
+        return unless enableable?(:enable)
+
         if current_resource.enabled
           logger.debug("#{new_resource} already enabled - nothing to do")
         else
@@ -94,6 +106,8 @@ class Chef
       end
 
       action :disable do
+        return unless enableable?(:disable)
+
         if current_resource.enabled
           converge_by("disable service #{new_resource}") do
             disable_service

@@ -86,7 +86,8 @@ describe Shell do
       ENV["TERM"] = "vt100" if ["", "unknown"].include?(ENV["TERM"].to_s)
 
       config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-      reader, writer, pid = PTY.spawn("bundle exec #{ChefUtils::Dist::Infra::SHELL} --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
+      bundler_prefix = hab_test? ? "" : "bundle exec "
+      reader, writer, pid = PTY.spawn("#{bundler_prefix}#{ChefUtils::Dist::Infra::SHELL} --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
       read_until(reader, "chef (#{Chef::VERSION})>")
       yield reader, writer if block_given?
       writer.puts('"done"')

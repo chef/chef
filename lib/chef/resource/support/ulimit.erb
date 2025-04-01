@@ -2,6 +2,18 @@
 
 # Limits settings for <%= @ulimit_user %>
 
+<% unless @as_limit.nil? -%>
+<%= @ulimit_user -%> - as <%= @as_limit %>
+<% else -%><% unless @as_soft_limit.nil? -%><%= @ulimit_user -%> soft as <%= @as_soft_limit %><% end -%>
+<% unless @as_hard_limit.nil? -%><%= @ulimit_user -%> hard as <%= @as_hard_limit %><% end -%>
+<% end -%>
+
+<% unless @cpu_limit.nil? -%>
+<%= @ulimit_user -%> - cpu <%= @cpu_limit %>
+<% else -%><% unless @cpu_soft_limit.nil? -%><%= @ulimit_user -%> soft cpu <%= @cpu_soft_limit %><% end -%>
+<% unless @cpu_hard_limit.nil? -%><%= @ulimit_user -%> hard cpu <%= @cpu_hard_limit %><% end -%>
+<% end -%>
+
 <% unless @filehandle_limit.nil? -%>
 <%= @ulimit_user -%> - nofile <%= @filehandle_limit %>
 <% else -%><% unless @filehandle_soft_limit.nil? -%><%= @ulimit_user -%> soft nofile <%= @filehandle_soft_limit %><% end -%>
@@ -14,8 +26,24 @@
 <% unless @process_hard_limit.nil? -%><%= @ulimit_user -%> hard nproc <%= @process_hard_limit %><% end -%>
 <% end -%>
 
+<% unless @locks_limit.nil? -%>
+<%= @ulimit_user -%> - locks <%= @locks_limit %>
+<% end -%>
+
 <% unless @memory_limit.nil? -%>
 <%= @ulimit_user -%> - memlock <%= @memory_limit %>
+<% end -%>
+
+<% unless @maxlogins_limit.nil? -%>
+<%= @ulimit_user -%> - maxlogins <%= @maxlogins_limit %>
+<% else -%><% unless @maxlogins_soft_limit.nil? -%><%= @ulimit_user -%> soft maxlogins <%= @maxlogins_soft_limit %><% end -%>
+<% unless @maxlogins_hard_limit.nil? -%><%= @ulimit_user -%> hard maxlogins <%= @maxlogins_hard_limit %><% end -%>
+<% end -%>
+
+<% unless @msgqueue_limit.nil? -%>
+<%= @ulimit_user -%> - msgqueue <%= @msgqueue_limit %>
+<% else -%><% unless @msgqueue_soft_limit.nil? -%><%= @ulimit_user -%> soft msgqueue <%= @msgqueue_soft_limit %><% end -%>
+<% unless @msgqueue_hard_limit.nil? -%><%= @ulimit_user -%> hard msgqueue <%= @msgqueue_hard_limit %><% end -%>
 <% end -%>
 
 <% unless @core_limit.nil? -%>
@@ -24,10 +52,22 @@
 <% unless @core_hard_limit.nil? -%><%= @ulimit_user -%> hard core <%= @core_hard_limit %><% end -%>
 <% end -%>
 
+<% unless @sigpending_limit.nil? -%>
+<%= @ulimit_user -%> - sigpending <%= @sigpending_limit %>
+<% else -%><% unless @sigpending_soft_limit.nil? -%><%= @ulimit_user -%> soft sigpending <%= @sigpending_soft_limit %><% end -%>
+<% unless @sigpending_hard_limit.nil? -%><%= @ulimit_user -%> hard sigpending <%= @sigpending_hard_limit %><% end -%>
+<% end -%>
+
 <% unless @stack_limit.nil? -%>
 <%= @ulimit_user -%> - stack <%= @stack_limit %>
 <% else -%><% unless @stack_soft_limit.nil? -%><%= @ulimit_user -%> soft stack <%= @stack_soft_limit %><% end -%>
 <% unless @stack_hard_limit.nil? -%><%= @ulimit_user -%> hard stack <%= @stack_hard_limit %><% end -%>
+<% end -%>
+
+<% unless @rss_limit.nil? -%>
+<%= @ulimit_user -%> - rss <%= @rss_limit %>
+<% else -%><% unless @rss_soft_limit.nil? -%><%= @ulimit_user -%> soft rss <%= @rss_soft_limit %><% end -%>
+<% unless @rss_hard_limit.nil? -%><%= @ulimit_user -%> hard rss <%= @rss_hard_limit %><% end -%>
 <% end -%>
 
 <% unless @rtprio_limit.nil? -%>

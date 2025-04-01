@@ -170,7 +170,7 @@ describe Chef::Compliance::Reporter::ChefServerAutomate do
           "X-Ops-Userid" => "spec-node",
           "X-Remote-Request-Id" => /.+/,
         }
-      ).to_return(status: 200)
+      ).to_return(status: 200, body: "OK")
 
     expect(reporter.send_report(inspec_report)).to eq(true)
 

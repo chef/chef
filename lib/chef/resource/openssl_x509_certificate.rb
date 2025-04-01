@@ -212,13 +212,17 @@ class Chef
         end
 
         def subject
+          if new_resource.common_name.nil? && new_resource.subject_alt_name.empty?
+            Chef.deprecated(:common_name_and_subject_alt_name_empty, "According to RFC5280 subsection 4.1.2.6, certificates must have one of a common_name or a subject_alt_name entry. Neither common_name nor subject_alt_name specified, one is required.")
+          end
+
           OpenSSL::X509::Name.new.tap do |csr_subject|
             csr_subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
             csr_subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
             csr_subject.add_entry("L", new_resource.city) unless new_resource.city.nil?
             csr_subject.add_entry("O", new_resource.org) unless new_resource.org.nil?
             csr_subject.add_entry("OU", new_resource.org_unit) unless new_resource.org_unit.nil?
-            csr_subject.add_entry("CN", new_resource.common_name)
+            csr_subject.add_entry("CN", new_resource.common_name) unless new_resource.common_name.nil?
             csr_subject.add_entry("emailAddress", new_resource.email) unless new_resource.email.nil?
           end
         end

@@ -18,7 +18,6 @@ require_relative "../util/threaded_job_queue"
 require_relative "../server_api"
 require "singleton" unless defined?(Singleton)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
-require "set" unless defined?(Set)
 
 class Chef
 
@@ -62,6 +61,11 @@ class Chef
 
     def cleanup_file_cache
       unless Chef::Config[:solo_legacy_mode] || skip_removal
+        if Chef::Config.target_mode?
+          TargetIO::FileUtils.rm_rf(Chef::Config[:file_cache_path])
+          return
+        end
+
         # Delete each file in the cache that we didn't encounter in the
         # manifest.
         cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_filename|
@@ -240,8 +244,8 @@ class Chef
       @cookbooks_by_name.each_key do |cookbook_name|
         cache_file_hash[cookbook_name].each_key do |segment|
           manifest_segment = cookbook_segment(cookbook_name, segment)
-          manifest_record_paths = manifest_segment.map { |manifest_record| manifest_record["path"] }.to_set
-          to_be_removed = cache_file_hash[cookbook_name][segment].keys.to_set - manifest_record_paths
+          manifest_record_paths = manifest_segment.map { |manifest_record| manifest_record["path"] }
+          to_be_removed = cache_file_hash[cookbook_name][segment].keys - manifest_record_paths
           to_be_removed.each do |path|
             cache_file = cache_file_hash[cookbook_name][segment][path]
 
@@ -281,8 +285,9 @@ class Chef
     end
 
     def ensure_cookbook_paths
+      cookbook_path = File.join(Chef::Config[:file_cache_path], "cookbooks")
       cookbooks.each do |cookbook|
-        cb_dir = File.join(Chef::Config[:file_cache_path], "cookbooks", cookbook.name)
+        cb_dir = File.join(cookbook_path, cookbook.name)
         cookbook.root_paths = Array(cb_dir)
       end
     end

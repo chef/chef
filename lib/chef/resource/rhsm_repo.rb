@@ -21,7 +21,8 @@ class Chef
   class Resource
     class RhsmRepo < Chef::Resource
 
-      provides(:rhsm_repo) { true }
+      provides(:rhsm_repo, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **rhsm_repo** resource to enable or disable Red Hat Subscription Manager repositories that are made available via attached subscriptions."
       introduced "14.0"
@@ -65,9 +66,8 @@ class Chef
 
       action_class do
         def repo_enabled?(repo)
-          # FIXME: use shell_out()
-          cmd = Mixlib::ShellOut.new("subscription-manager repos --list-enabled", env: { LANG: "en_US" })
-          cmd.run_command
+          # FIXME: Add `env` support
+          cmd = shell_out("subscription-manager repos --list-enabled", env: { LANG: "en_US" })
           repo == "*" || !cmd.stdout.match(/Repo ID:\s+#{repo}$/).nil?
         end
       end

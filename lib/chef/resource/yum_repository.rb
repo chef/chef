@@ -22,7 +22,8 @@ class Chef
   class Resource
     class YumRepository < Chef::Resource
 
-      provides(:yum_repository) { true }
+      provides(:yum_repository, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **yum_repository** resource to manage a Yum repository configuration file located at `/etc/yum.repos.d/repositoryid.repo` on the local machine. This configuration file specifies which repositories to reference, how to handle cached data, etc."
       introduced "12.14"

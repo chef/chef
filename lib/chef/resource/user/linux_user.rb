@@ -22,9 +22,9 @@ class Chef
     class User
       class LinuxUser < Chef::Resource::User
 
-        provides :linux_user
-        provides :user, os: "linux"
-
+        provides :linux_user, target_mode: true
+        provides :user, os: "linux", target_mode: true
+        target_mode support: :full
       end
     end
   end

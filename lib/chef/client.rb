@@ -292,6 +292,7 @@ class Chef
         Chef.provider_handler_map.lock!
 
         setup_run_context
+        setup_targetmode if Chef::Config.target_mode?
 
         load_required_recipe(@rest, run_context) unless Chef::Config[:solo_legacy_mode]
 
@@ -304,8 +305,6 @@ class Chef
 
         # keep this inside the main loop to get exception backtraces
         end_profiling
-
-        warn_if_eol
 
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
@@ -334,19 +333,6 @@ class Chef
     # Private API
     # @todo make this stuff protected or private
     #
-
-    # @api private
-    def warn_if_eol
-      require_relative "version"
-
-      # We make a release every year so take the version you're on + 2006 and you get
-      # the year it goes EOL
-      eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
-
-      if Time.now > Time.new(eol_year, 5, 01)
-        logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
-      end
-    end
 
     # @api private
     def configure_formatters
@@ -584,6 +570,15 @@ class Chef
         logger.debug("Saving the current state of node #{node_name}")
         node.save
       end
+    end
+
+    #
+    # Setup conditions for Target Mode.
+    #
+    # @api private
+    #
+    def setup_targetmode
+      TargetIO::FileUtils.mkdir_p(Chef::Config[:file_cache_path])
     end
 
     #
@@ -1105,4 +1100,3 @@ end
 require_relative "cookbook_loader"
 require_relative "cookbook_version"
 require_relative "cookbook/synchronizer"
-

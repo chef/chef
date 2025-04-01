@@ -47,6 +47,10 @@ Vagrantfile
 kitchen-tests/nodes/*
 kitchen-tests/Gemfile.lock
 kitchen-tests/Berksfile.lock
+kitchen-tests/Policyfile.lock.json
+kitchen-tests/.kitchen
+*/kitchen.local.yml
+
 
 # Temporary files present during spec runs
 spec/data/test-dir

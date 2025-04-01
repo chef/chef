@@ -63,7 +63,7 @@ class Chef
       allowed_actions :install, :upgrade, :remove, :purge
 
       property :homebrew_user, [ String, Integer ],
-        description: "The name or uid of the Homebrew owner to be used by #{ChefUtils::Dist::Infra::PRODUCT} when executing a command.\n\n#{ChefUtils::Dist::Infra::PRODUCT}, by default, will attempt to execute a Homebrew command as the owner of the `/usr/local/bin/brew` executable on x86_64 machines or `/opt/homebrew/bin/brew` executable on arm64 machines. If that executable does not exist, #{ChefUtils::Dist::Infra::PRODUCT} will attempt to find the user by executing `which brew`. If that executable cannot be found, #{ChefUtils::Dist::Infra::PRODUCT} will print an error message: `Could not find the 'brew' executable in /usr/local/bin, /opt/homebrew/bin, or anywhere on the path.`.\n\nSet this property to specify the Homebrew owner for situations where Chef Infra Client cannot automatically detect the correct owner.'"
+        description: "The name or UID of the Homebrew owner to be used by #{ChefUtils::Dist::Infra::PRODUCT} when executing a command.\n\n#{ChefUtils::Dist::Infra::PRODUCT}, by default, will attempt to execute a Homebrew command as the owner of the `/usr/local/bin/brew` executable on x86_64 machines or `/opt/homebrew/bin/brew` executable on arm64 machines. If that executable doesn't exist, #{ChefUtils::Dist::Infra::PRODUCT} will attempt to find the user by executing `which brew`. If that executable can't be found, #{ChefUtils::Dist::Infra::PRODUCT} will print an error message: `Couldn't find the 'brew' executable anywhere on the path.`.\n\nSet this property to specify the Homebrew owner for situations where Chef Infra Client cannot automatically detect the correct owner.'"
 
     end
   end

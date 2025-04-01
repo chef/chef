@@ -17,11 +17,14 @@ require_relative "../http"
 require_relative "../json_compat"
 require_relative "../resource"
 
+require "tmpdir" unless defined?(Dir::Tmpname)
+
 class Chef
   class Resource
     class HabitatConfig < Chef::Resource
 
-      provides :habitat_config
+      provides :habitat_config, target_mode: true
+      target_mode support: :full
 
       description "Use the **habitat_config** resource to apply a configuration to a Chef Habitat service."
       introduced "17.3"
@@ -60,12 +63,23 @@ class Chef
         description: "Name of user key to use for encryption. Passes `--user` to `hab config apply`."
 
       load_current_value do
+        def census(http_uri)
+          headers = {}
+          headers["Authorization"] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
+
+          if Chef::Config.target_mode?
+            raw = TargetIO::HTTP.new(http_uri).get("/census", headers)
+            response = from_json(raw)
+          else
+            response = Chef::HTTP::SimpleJSON.new(http_uri).get("/census", headers)
+          end
+
+          Mash.new(response)
+        end
+
         http_uri = "http://#{remote_sup_http}"
 
         begin
-          headers = {}
-          headers["Authorization"] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
-          census = Mash.new(Chef::HTTP::SimpleJSON.new(http_uri).get("/census", headers))
           sc = census["census_groups"][service_group]["service_config"]["value"]
         rescue
           # Default to a blank config if anything (http error, json parsing, finding
@@ -85,15 +99,15 @@ class Chef
           opts << ["--remote-sup", new_resource.remote_sup] if new_resource.remote_sup
           opts << ["--user", new_resource.user] if new_resource.user
 
-          tempfile = Tempfile.new(["habitat_config", ".toml"])
-          begin
+          tempname = Dir::Tmpname.create(["habitat_config", ".toml"]) {}
+          TargetIO::File.open(tempname, "w") do |tempfile|
             tempfile.write(render_toml(new_resource.config))
-            tempfile.close
+          end
 
-            hab("config", "apply", opts, new_resource.service_group, incarnation, tempfile.path)
+          begin
+            hab("config", "apply", opts, new_resource.service_group, incarnation, tempname)
           ensure
-            tempfile.close
-            tempfile.unlink
+            TargetIO::File.unlink(tempname)
           end
         end
       end

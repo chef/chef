@@ -1,0 +1,33 @@
+expeditor:
+  secrets:
+    PIPELINE_HAB_AUTH_TOKEN:
+      path: account/static/habitat/chef-ci
+      field: auth_token # Production Builder
+      # acceptance_auth_token = acceptance
+  accounts:
+    - aws/chef-cd
+  defaults:
+    buildkite:
+      timeout_in_minutes: 45
+      env:
+        HAB_ORIGIN: "chef"
+        PIPELINE_HAB_BLDR_URL: "https://bldr.habitat.sh"
+        # Necessary to prevent old studios from poisoning builds after core plans refreshes
+        HAB_STUDIO_SECRET_HAB_PREFER_LOCAL_CHEF_DEPS: "true"
+        HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: "unstable"
+
+steps:
+
+  - label: "[:linux: build hab-pkg-export-tar and upload to :amazon-s3:]"
+    command:
+      - echo "--- testing hab export tar chef/chef-infra-client"
+      - hab pkg export tar chef/chef-infra-client --channel unstable
+      - mkdir -p upload && find . -name "chef-chef-infra-client-*.tar.gz" | grep -E 'chef-chef-infra-client-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.tar\.gz' | xargs -I {} cp {} upload/
+      - cd upload/ && buildkite-agent artifact upload "*.tar.gz" && aws s3 sync . s3://unstable-habitat-tarball/ --exclude "*" --include "*.tar.gz" --region us-west-2 --profile chef-cd
+
+    expeditor:
+      executor:
+        docker:
+          privileged: true
+          environment:
+            - BUILD_PKG_TARGET=x86_64-linux

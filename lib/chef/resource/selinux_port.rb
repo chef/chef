@@ -19,7 +19,8 @@ class Chef
     class SelinuxPort < Chef::Resource
       unified_mode true
 
-      provides :selinux_port
+      provides :selinux_port, target_mode: true
+      target_mode support: :full
 
       description "Use the **selinux_port** resource to assign a network port to a specific SELinux context. For example, running a web server on a non-standard port."
       introduced "18.0"

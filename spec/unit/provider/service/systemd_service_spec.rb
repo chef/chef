@@ -56,6 +56,7 @@ describe Chef::Provider::Service::Systemd do
       allow(provider).to receive(:is_active?).and_return(false)
       allow(provider).to receive(:is_enabled?).and_return(false)
       allow(provider).to receive(:is_masked?).and_return(false)
+      allow(provider).to receive(:is_static?).and_return(false)
       allow(provider).to receive(:is_indirect?).and_return(false)
     end
 

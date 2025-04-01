@@ -22,12 +22,12 @@ class Chef
   class Provider
     class User
       class Pw < Chef::Provider::User
-        provides :pw_user
-        provides :user, os: "freebsd"
+        provides :pw_user, target_mode: true
+        provides :user, os: "freebsd", target_mode: true
 
         def load_current_resource
           super
-          raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{new_resource}" unless ::File.exist?("/usr/sbin/pw")
+          raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{new_resource}" unless ::TargetIO::File.exist?("/usr/sbin/pw")
         end
 
         def create_user

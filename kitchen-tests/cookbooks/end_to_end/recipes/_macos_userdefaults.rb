@@ -17,13 +17,11 @@ macos_userdefaults "Enable macOS firewall" do
   domain "/Library/Preferences/com.apple.alf"
   key "globalstate"
   value "1"
-  type "int"
 end
 
 # test short domain name
 macos_userdefaults "Set the dock size" do
   domain "com.apple.dock"
-  type "int"
   key "tilesize"
   value "20"
 end
@@ -31,7 +29,6 @@ end
 # test that we can properly handle spaces
 macos_userdefaults "Value with space" do
   domain "/Library/Preferences/ManagedInstalls"
-  type "string"
   key "LogFile"
   value "/Library/Managed Installs/Logs/ManagedSoftwareUpdate2.log"
 end
@@ -39,7 +36,6 @@ end
 # test that we can set an array
 macos_userdefaults "Bogus key with array value" do
   domain "/Library/Preferences/ManagedInstalls"
-  type "array"
   key "LogFileArray"
   value [ "/Library/Managed Installs/fake.log", "/Library/Managed Installs/also_fake.log"]
 end
@@ -47,7 +43,6 @@ end
 # test that we can set a dict
 macos_userdefaults "Bogus key with dict value" do
   domain "/Library/Preferences/ManagedInstalls"
-  type "dict"
   key "LogFileDict"
   value "User": "/Library/Managed Installs/way_fake.log"
 end
@@ -55,7 +50,6 @@ end
 # test that we can set an array with dict value
 macos_userdefaults "Bogus key with array value with dict items" do
   domain "/Library/Preferences/ManagedInstalls"
-  type "array"
   key "ArrayWithDict"
   value [ { "User": "/Library/Managed Installs/way_fake.log" } ]
 end
@@ -65,7 +59,6 @@ macos_userdefaults "Bogus key with boolean value" do
   domain "/Library/Preferences/ManagedInstalls"
   key "LoggingIsTheThingToDoRight"
   value "yes"
-  type "bool"
 end
 
 # test that we can handle the 2nd client run with :delete

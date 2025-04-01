@@ -94,7 +94,71 @@ describe Chef::FileCache do
     it "searches for cached files by globbing" do
       expect(Chef::FileCache.find("snappy/**/*")).to eq(%w{snappy/patter})
     end
+  end
 
+  describe "#find handles regex-unsafe unix paths" do
+    before(:each) do
+      # Dir.mktmpdir doesn't allow regex unsafe characters (the nerve!), so we'll have to fake file lookups
+      @file_cache_path = "/tmp/[foo* ^bar]"
+      escaped_file_cache_path = '/tmp/\[foo\* ^bar\]'
+      Chef::Config[:file_cache_path] = @file_cache_path
+      allow(Chef::Util::PathHelper).to receive(:escape_glob_dir).and_return(escaped_file_cache_path)
+      allow(Dir).to receive(:[]).with(File.join(escaped_file_cache_path, "snappy/**/*")).and_return([
+        File.join(@file_cache_path, "snappy"),
+        File.join(@file_cache_path, "snappy", "patter"),
+      ])
+      allow(Dir).to receive(:[]).with(escaped_file_cache_path).and_return([
+        @file_cache_path,
+      ])
+      [
+        File.join(@file_cache_path, "snappy", "patter"),
+        File.join(@file_cache_path, "whiz", "bang"),
+      ].each do |f|
+        allow(File).to receive(:file?).with(f).and_return(true)
+      end
+      [
+        File.join(@file_cache_path, "snappy"),
+        File.join(@file_cache_path, "whiz"),
+      ].each do |f|
+        allow(File).to receive(:file?).with(f).and_return(false)
+      end
+    end
+
+    it "searches for cached files by globbing" do
+      expect(Chef::FileCache.find("snappy/**/*")).to eq(%w{snappy/patter})
+    end
+  end
+
+  describe "#find handles Windows paths" do
+    before(:each) do
+      allow(ChefUtils).to receive(:windows?).and_return(true)
+      @file_cache_path = 'C:\tmp\fakecache'
+      escaped_file_cache_path = "C:\\tmp\\fakecache"
+      Chef::Config[:file_cache_path] = @file_cache_path
+      allow(Chef::Util::PathHelper).to receive(:escape_glob_dir).and_return(escaped_file_cache_path)
+      allow(Dir).to receive(:[]).with(File.join(escaped_file_cache_path, "snappy/**/*")).and_return([
+        File.join(@file_cache_path, "snappy"),
+        File.join(@file_cache_path, "snappy", "patter"),
+      ])
+      allow(Dir).to receive(:[]).with(escaped_file_cache_path).and_return([
+        @file_cache_path,
+      ])
+      [
+        File.join(@file_cache_path, "snappy", "patter"),
+        File.join(@file_cache_path, "whiz", "bang"),
+      ].each do |f|
+        allow(File).to receive(:file?).with(f).and_return(true)
+      end
+      [
+        File.join(@file_cache_path, "snappy"),
+        File.join(@file_cache_path, "whiz"),
+      ].each do |f|
+        allow(File).to receive(:file?).with(f).and_return(false)
+      end
+    end
+    it "searches for cached files by globbing" do
+      expect(Chef::FileCache.find("snappy/**/*")).to eq(%w{snappy/patter})
+    end
   end
 
   describe "when checking for the existence of a file" do

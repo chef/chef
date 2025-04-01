@@ -21,7 +21,8 @@ class Chef
   class Resource
     class SwapFile < Chef::Resource
 
-      provides(:swap_file) { true }
+      provides(:swap_file, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **swap_file** resource to create or delete swap files on Linux systems, and optionally to manage the swappiness configuration for a host."
       introduced "14.0"
@@ -84,7 +85,7 @@ class Chef
 
       action :remove, description: "Remove a swapfile and disable swap." do
         swapoff if swap_enabled?
-        remove_swapfile if ::File.exist?(new_resource.path)
+        remove_swapfile if ::TargetIO::File.exist?(new_resource.path)
       end
 
       action_class do
@@ -129,7 +130,7 @@ class Chef
 
         def remove_swapfile
           converge_by "remove swap file #{new_resource.path}" do
-            ::FileUtils.rm(new_resource.path)
+            ::TargetIO::FileUtils.rm(new_resource.path)
           end
         end
 
@@ -186,7 +187,7 @@ class Chef
         def compatible_kernel
           fallocate_location = shell_out("which fallocate").stdout
           Chef::Log.debug("#{new_resource} fallocate location is '#{fallocate_location}'")
-          ::File.exist?(fallocate_location.chomp)
+          ::TargetIO::File.exist?(fallocate_location.chomp)
         end
 
         def compatible_filesystem?
@@ -205,7 +206,7 @@ class Chef
 
         def persist
           fstab = "/etc/fstab"
-          contents = ::File.readlines(fstab)
+          contents = ::TargetIO::File.readlines(fstab)
           addition = "#{new_resource.path} swap swap defaults 0 0"
 
           if contents.any? { |line| line.strip == addition }
@@ -214,7 +215,7 @@ class Chef
             Chef::Log.info("#{new_resource} adding entry to #{fstab} for #{new_resource.path}")
 
             contents << "#{addition}\n"
-            ::File.open(fstab, "w") { |f| f.write(contents.join("")) }
+            ::TargetIO::File.open(fstab, "w") { |f| f.write(contents.join("")) }
           end
         end
       end

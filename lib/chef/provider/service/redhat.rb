@@ -28,7 +28,7 @@ class Chef
         # @api private
         attr_accessor :current_run_levels
 
-        provides :service, platform_family: "rpm_based" do
+        provides :service, platform_family: "rpm_based", target_mode: true do
           redhatrcd?
         end
 
@@ -56,7 +56,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             chkconfig_file = "/sbin/chkconfig"
-            a.assertion { ::File.exist? chkconfig_file }
+            a.assertion { ::TargetIO::File.exist? chkconfig_file }
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
 
@@ -80,7 +80,7 @@ class Chef
 
           super
 
-          if ::File.exist?("/sbin/chkconfig")
+          if ::TargetIO::File.exist?("/sbin/chkconfig")
             chkconfig = shell_out!("/sbin/chkconfig --list #{current_resource.service_name}", returns: [0, 1])
             unless run_levels.nil? || run_levels.empty?
               all_levels_match = true

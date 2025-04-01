@@ -29,6 +29,9 @@ class Chef
       extend Chef::Platform::ServiceHelpers
 
       provides :service, target_mode: true
+      target_mode support: :full,
+        introduced: "15.1",
+        updated: "19.0"
 
       description "Use the **service** resource to manage a service."
 
@@ -92,6 +95,9 @@ class Chef
 
       # if the service is masked or not
       property :masked, [ TrueClass, FalseClass ], skip_docs: true
+
+      # if the service is static or not
+      property :static, [ TrueClass, FalseClass ], skip_docs: true
 
       # if the service is indirect or not
       property :indirect, [ TrueClass, FalseClass ], skip_docs: true

@@ -1,6 +1,16 @@
 #! /bin/bash
 set -eu -o pipefail
 
+if [[ "${BUILDKITE_LABEL:-}" =~ "el-.*-x86_64" || \
+      "${BUILDKITE_LABEL:-}" =~ "el-.*-ppc64" || \
+      "${BUILDKITE_LABEL:-}" =~ "el-.*aarch" || \
+      "${BUILDKITE_LABEL:-}" =~ "ubuntu-" || \
+      "${BUILDKITE_LABEL:-}" =~ "amazon-2023" ]]
+then
+  echo "%% Installing with OPENSSL_FIPS=1 %%"
+  export OPENSSL_FIPS=1
+fi
+
 echo "--- Installing package from BuildKite"
 
 if [[ $OSTYPE == "msys" ]]; then
@@ -33,6 +43,14 @@ fi
 #       ;;
 #   esac
 # fi
+
+echo "--- Setting CHEF_LICENSE_SERVER environment variable"
+# Get the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Use SCRIPT_DIR to refer to files relative to the script’s location
+export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
+echo "--- Script dir is $SCRIPT_DIR"
+echo "--- License serverl url is $CHEF_LICENSE_SERVER"
 
 echo "--- Installing ${package_file}"
 FILE_TYPE="${package_file##*.}"

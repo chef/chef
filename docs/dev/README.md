@@ -30,3 +30,4 @@ A good first start is our [How Chef Infra Is Built](./design_documents/how_chef_
 - [Gem Installation via Metadata](./design_documents/gem_installation_via_metadata.md)
 - [Client Exit Codes](./design_documents/client_exit_codes.md)
 - [Server Enforced Recipes](./design_documents/server_enforced_recipes.md)
+- [Bootstrap with Train](./design_documents/bootstrap_with_train.md)

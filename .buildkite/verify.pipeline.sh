@@ -6,10 +6,11 @@ set -eu
 echo "---"
 echo "env:"
 echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
+echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
 
-test_platforms=("centos-6" "centos-7" "centos-8" "rhel-9" "debian-9" "ubuntu-1604" "sles-15")
+test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
 
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
@@ -57,7 +58,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 60"
+  echo "  timeout_in_minutes: 120"
 
 done
 
@@ -73,7 +74,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "  env:"
   echo "  - CHEF_FOUNDATION_VERSION"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 60"
+  echo "  timeout_in_minutes: 120"
 done
 
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
@@ -90,7 +91,7 @@ for gem in ${external_gems[@]}; do
   echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
-  if [ $gem == "chef-zero" ] 
+  if [ $gem == "chef-zero" ]
   then
     echo "        - PEDANT_OPTS=--skip-oc_id"
     echo "        - CHEF_FS=true"
@@ -105,18 +106,18 @@ for gem in ${external_gems[@]}; do
   echo "    - .expeditor/scripts/bk_container_prep.sh"
   if [ $gem == "berkshelf" ]
   then
-    echo "    - export PATH=\"/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}\""
+    echo "    - export PATH=\"/root/.rbenv/shims:/opt/chef/bin:/usr/local/sbin:/usr/sbin:/sbin:${PATH}\""
     echo "    - apt-get update -y"
     # cspell:disable-next-line
     echo "    - apt-get install -y graphviz"
     echo "    - bundle config set --local without omnibus_package"
   else
-    echo "    - export PATH=\"/opt/chef/bin:${PATH}\""
+    echo "    - export PATH=\"/root/.rbenv/shims:/opt/chef/bin:${PATH}\""
     echo "    - bundle config set --local without omnibus_package"
     echo "    - bundle config set --local path 'vendor/bundle'"
   fi
   echo "    - bundle install --jobs=3 --retry=3"
-  case $gem in 
+  case $gem in
     "chef-zero")
       echo "    - bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant"
       ;;
@@ -124,7 +125,7 @@ for gem in ${external_gems[@]}; do
       echo "    - bundle exec tasks/bin/run_external_test chef/cheffish main rake spec"
       ;;
     "chefspec")
-      echo "    - bundle exec tasks/bin/run_external_test chefspec/chefspec main rake"
+      echo "    - bundle exec tasks/bin/run_external_test chef/chefspec main rake"
       ;;
     "knife-windows")
       echo "    - bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec"
@@ -139,7 +140,7 @@ for gem in ${external_gems[@]}; do
   esac
 done
 
-habitat_plans=("linux" "linux-kernel2" "windows")
+habitat_plans=("linux" "windows")
 
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""

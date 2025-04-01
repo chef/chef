@@ -23,7 +23,8 @@ class Chef
   class Resource
     class AptUpdate < Chef::Resource
 
-      provides(:apt_update) { true }
+      provides(:apt_update, target_mode: true) { true }
+      target_mode support: :full
 
       description "Use the **apt_update** resource to manage APT repository updates on Debian and Ubuntu platforms."
       introduced "12.7"
@@ -62,8 +63,8 @@ class Chef
         #
         # @return [Boolean]
         def apt_up_to_date?
-          ::File.exist?("#{STAMP_DIR}/update-success-stamp") &&
-            ::File.mtime("#{STAMP_DIR}/update-success-stamp") > Time.now - new_resource.frequency
+          ::TargetIO::File.exist?("#{STAMP_DIR}/update-success-stamp") &&
+            ::TargetIO::File.mtime("#{STAMP_DIR}/update-success-stamp") > Time.now - new_resource.frequency
         end
 
         def do_update

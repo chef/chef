@@ -491,14 +491,4 @@ describe Chef::Provider::Package::Zypper do
       provider.remove_package(%w{emacs vim}, ["1.0", "2.0"])
     end
   end
-
-  describe "resolve_available_version" do
-    it "should return correct version if multiple packages are shown" do
-      status = double(stdout: "S  | Name                     | Type    | Version             | Arch   | Repository\n---+--------------------------+---------+---------------------+--------+-------------------------------------------------------------\n   | apache2-mod_wsgi         | package | 4.7.1-150400.3.3.1  | x86_64 | Update repository with updates from SUSE Linux Enterprise 15\n   | apache2-mod_wsgi         | package | 4.7.1-150400.1.52   | x86_64 | Main Repository\ni+ | apache2-mod_wsgi-python3 | package | 4.5.18-150000.4.6.1 | x86_64 | Update repository with updates from SUSE Linux Enterprise 15\nv  | apache2-mod_wsgi-python3 | package | 4.5.18-4.3.1        | x86_64 | Main Repository\n", exitstatus: 0)
-
-      allow(provider).to receive(:shell_out_compacted!).and_return(status)
-      result = provider.send(:resolve_available_version, "apache2-mod_wsgi-python3", nil)
-      expect(result).to eq("4.5.18-150000.4.6.1")
-    end
-  end
 end

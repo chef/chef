@@ -22,7 +22,8 @@ class Chef
   class Resource
     class Bash < Chef::Resource::Script
 
-      provides :bash
+      provides :bash, target_mode: true
+      target_mode support: :full
 
       description "Use the **bash** resource to execute scripts using the Bash interpreter. This resource may also use any of the actions and properties that are available to the **execute** resource. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use `not_if` and `only_if` to guard this resource for idempotence."
       examples <<~'DOC'

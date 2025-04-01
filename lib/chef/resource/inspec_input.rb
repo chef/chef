@@ -19,7 +19,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class InspecInput < Chef::Resource
-      provides :inspec_input
+      provides :inspec_input, target_mode: true
+      target_mode support: :full
 
       description "Use the **inspec_input** resource to add an input to the Compliance Phase."
       introduced "17.5"
@@ -105,6 +106,8 @@ class Chef
         def build_source
           return new_resource.source unless new_resource.source.nil?
           return nil unless new_resource.input.count(::File::SEPARATOR) > 0 || (::File::ALT_SEPARATOR && new_resource.input.count(::File::ALT_SEPARATOR) > 0 )
+
+          # InSpec gets processed locally, so no TargetIO
           return nil unless ::File.exist?(new_resource.input)
 
           new_resource.input

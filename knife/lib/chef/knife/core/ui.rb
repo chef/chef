@@ -41,6 +41,7 @@ class Chef
       def_delegator :@presenter, :format_list_for_display
       def_delegator :@presenter, :format_for_display
       def_delegator :@presenter, :format_cookbook_list_for_display
+      def_delegator :@presenter, :attribute_field_separator
 
       def initialize(stdout, stderr, stdin, config)
         @stdout, @stderr, @stdin, @config = stdout, stderr, stdin, config

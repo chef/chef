@@ -25,6 +25,9 @@ class Chef
     class Execute < Chef::Resource
 
       provides :execute, target_mode: true
+      target_mode support: :full,
+        introduced: "15.1",
+        updated: "19.0"
 
       description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use `not_if` and `only_if` to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
 
@@ -442,14 +445,14 @@ class Chef
         NetworkService have this right when running as a service. This is necessary
         even if the user is an Administrator.
 
-        This right can be added and checked in a recipe using this example:
+        This right can be added and checked in a recipe using this example (will not take effect in the same Chef run):
 
         ```ruby
-        # Add 'SeAssignPrimaryTokenPrivilege' for the user
-        Chef::ReservedNames::Win32::Security.add_account_right('<user>', 'SeAssignPrimaryTokenPrivilege')
-
-        # Check if the user has 'SeAssignPrimaryTokenPrivilege' rights
-        Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAssignPrimaryTokenPrivilege')
+        windows_user_privilege 'add assign token privilege' do
+          principal '<user>'
+          privilege 'SeAssignPrimaryTokenPrivilege'
+          action :add
+        end
         ```
 
         The following example shows how to run `mkdir test_dir` from a Chef Infra Client
@@ -492,9 +495,11 @@ class Chef
 
         **Run a command with an external input file**:
 
+        ```ruby
         execute 'md5sum' do
           input File.read(__FILE__)
         end
+        ```
       EXAMPLES
 
       # The ResourceGuardInterpreter wraps a resource's guards in another resource.  That inner resource
@@ -571,6 +576,10 @@ class Chef
       property :login, [ TrueClass, FalseClass ], default: false,
         introduced: "17.0",
         description: "Use a login shell to run the commands instead of inheriting the existing execution environment."
+
+      property :cgroup, [String],
+        introduced: "19.0",
+        description: "Linux only: Run the command within a specific cgroup, creating it if it doesn't exist."
 
       alias :env :environment
 

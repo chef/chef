@@ -13,7 +13,7 @@ This page endeavors to explain the vagaries of building out Chef Client and its 
 
 
 
-### Contact Us: #eng-infra-chef in Slack
+### Contact Us: #chef-infra-dev in Slack
 
 **Codebase**: [chef-powershell-shim](https://github.com/chef/chef-powershell-shim)
 

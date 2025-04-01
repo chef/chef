@@ -29,8 +29,8 @@ class Chef
       class SmartOS < Chef::Provider::Package
         attr_accessor :is_virtual_package
 
-        provides :package, platform: "smartos"
-        provides :smartos_package
+        provides :package, platform: "smartos", target_mode: true
+        provides :smartos_package, target_mode: true
 
         def load_current_resource
           logger.trace("#{new_resource} loading current resource")
