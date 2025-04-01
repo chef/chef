@@ -67,6 +67,7 @@ jobs:
       - name: 'Verify FIPS is enabled'
         id: run
         run: |
+          export PATH=$PATH:/opt/chef/embedded/bin/ruby
           sudo find /opt/chef -name 'ruby'
           sudo cat /opt/chef/embedded/bin/bundle
           sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
