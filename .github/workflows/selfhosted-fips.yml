@@ -64,12 +64,10 @@ jobs:
           echo "Installed Chef / Ohai release:"
           /opt/chef/bin/chef-client -v
           /opt/chef/bin/ohai -v
-          echo "/opt/chef/embedded/bin" >> $GITHUB_PATH
       - name: 'Verify FIPS is enabled'
         id: run
         run: |
-          sudo find /opt/chef -name 'ruby'
-          sudo cat /opt/chef/embedded/bin/bundle
+          export PATH="/opt/chef/embedded/bin:$PATH"
           sudo /opt/chef/embedded/bin/bundle config set --local without 'omnibus_package'
           sudo /opt/chef/embedded/bin/bundle config set --local path 'vendor/bundle'
           sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3
