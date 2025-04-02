@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.11 -->
-## [v19.1.11](https://github.com/chef/chef/tree/v19.1.11) (2025-03-31)
+<!-- latest_release 19.1.12 -->
+## [v19.1.12](https://github.com/chef/chef/tree/v19.1.12) (2025-04-02)
 
 #### Merged Pull Requests
-- Fix cookstyle issues from the now enabled cops [#14924](https://github.com/chef/chef/pull/14924) ([tas50](https://github.com/tas50))
+- publish infra 19 gem to artifactory [#14921](https://github.com/chef/chef/pull/14921) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- publish infra 19 gem to artifactory [#14921](https://github.com/chef/chef/pull/14921) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.12 -->
 - Fix cookstyle issues from the now enabled cops [#14924](https://github.com/chef/chef/pull/14924) ([tas50](https://github.com/tas50)) <!-- 19.1.11 -->
 - Migrate from chefstyle -&gt; cookstyle [#14922](https://github.com/chef/chef/pull/14922) ([tas50](https://github.com/tas50)) <!-- 19.1.10 -->
 - [CHEF-16732] Pipelines to build the client with habitat and deploy to chef/chef-hab docker repo [#14707](https://github.com/chef/chef/pull/14707) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.9 -->

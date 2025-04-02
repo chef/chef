@@ -1,8 +1,8 @@
 PATH
   remote: ..
   specs:
-    chef (19.1.11)
-    chef (19.1.11-universal-mingw-ucrt)
+    chef (19.1.12)
+    chef (19.1.12-universal-mingw-ucrt)
 
 PLATFORMS
   ruby
