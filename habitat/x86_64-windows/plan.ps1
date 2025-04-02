@@ -182,7 +182,6 @@ function Invoke-Build {
             Write-BuildLine "Install attempt $install_attempt"
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
-        gem uninstall rexml -v '<3.3.6' -a -x -I
 
     } finally {
         Pop-Location

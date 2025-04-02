@@ -152,4 +152,24 @@ If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
+Write-Output "Verifying REXML gem version..."
+$rexml_versions = & $embedded_bin_dir\gem.bat list rexml
+If ($rexml_versions -match "rexml \(([\d., ]+)\)") {
+    $versions = $matches[1].Split(",").Trim()
+    $min_version = [System.Version]"3.3.6"
+    $old_versions = $versions | Where-Object {
+        $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
+        $v -lt $min_version
+    }
+
+    if ($old_versions) {
+        Write-Error "Found old REXML versions: $($old_versions -join ', '). Minimum required version is 3.3.6"
+        $exit = 1
+    }
+    Write-Output "REXML version check passed"
+} else {
+    Write-Error "Could not determine REXML gem version"
+    $exit = 1
+}
+
 If ($exit -ne 0) { Throw $exit }
