@@ -141,3 +141,28 @@ else
   sudo bundle install --jobs=3 --retry=3
   sudo bundle exec rspec --profile -f progress
 fi
+
+if [ $? -ne 0 ]; then
+  echo "Tests failed"
+  exit 1
+fi
+
+echo "Verifying REXML gem version..."
+rexml_versions=$("$EMBEDDED_BIN_DIR/gem" list rexml)
+if [[ $rexml_versions =~ rexml\ \((.*)\) ]]; then
+  old_versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | while read -r version; do
+    if [[ $(echo "$version" | tr -d ' ' | cut -d'.' -f1-3) < "3.3.6" ]]; then
+      echo "$version"
+    fi
+  done)
+
+  if [[ -n "$old_versions" ]]; then
+    echo "Error: Found old REXML versions: $old_versions"
+    echo "Minimum required version is 3.3.6"
+    exit 1
+  fi
+  echo "REXML version check passed"
+else
+  echo "Error: Could not determine REXML gem version"
+  exit 1
+fi
