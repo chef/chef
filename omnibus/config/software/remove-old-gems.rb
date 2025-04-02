@@ -3,8 +3,6 @@ name "remove-old-gems"
 license :project_license
 skip_transitive_dependency_licensing true
 
-dependency "ruby"
-
 build do
   block "Removing old versions of rexml < 3.3.6" do
     puts "Removing old versions of rexml < 3.3.6"
