@@ -183,7 +183,7 @@ function Invoke-Build {
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
 
-        # remove [-a]ll rexml < 3.3.6 including e[-x]ecutables and [-I]gnore dependencies
+        # remove [-a] all rexml < 3.3.6 including [-x] executables, [-I] ignore dependencies
         gem uninstall rexml -v '<3.3.6' -a -x -I
 
     } finally {
