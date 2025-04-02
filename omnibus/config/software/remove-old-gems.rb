@@ -7,6 +7,7 @@ dependency "ruby"
 
 build do
   block "Removing old versions of rexml < 3.3.6" do
+    puts "Removing old versions of rexml < 3.3.6"
     env = with_standard_compiler_flags(with_embedded_path)
 
     # remove [-a]ll rexml < 3.3.6 including e[-x]ecutables and [-I]gnore dependencies
