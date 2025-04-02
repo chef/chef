@@ -98,6 +98,7 @@ do_build() {
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
+    rexml -v '<3.3.6' -a -x -I
   )
 }
 
