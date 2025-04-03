@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
 
   if RUBY_PLATFORM =~ /aix/
     s.required_ruby_version = ">= 3.0.3"
-    s.add_dependency "mixlib-log", "= 3.1.1"
   else
     s.required_ruby_version = ">= 3.1.0"
   end
