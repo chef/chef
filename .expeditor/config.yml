@@ -115,7 +115,6 @@ subscriptions:
     actions:
       # - trigger_pipeline:docker/build
       - trigger_pipeline:macos_universal_package
-      - trigger_pipeline:gem_push_artifactory
   # - workload: artifact_published:current:chef:{{version_constraint}}
   #   actions:
   #     - bash:.expeditor/promote-docker-images.sh
@@ -169,6 +168,7 @@ subscriptions:
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
       - trigger_pipeline:habitat/test
+      - trigger_pipeline:gem_push_artifactory
       - trigger_pipeline:docker/build
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
