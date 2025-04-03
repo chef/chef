@@ -21,7 +21,7 @@ $pkg_deps=@(
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015"
 )
-$pkg_build_deps=@( "core/git")
+$pkg_build_deps=@( "core/git" )
 
 function Invoke-Begin {
     write-output "*** Start Invoke-Begin Function"
@@ -146,8 +146,70 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
+        # openssl will install msys2
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+ 
+        # install autotools to get autoreconf
+        #$msys2_shell = (Get-ChildItem -Recurse -Filter bash.exe $devkit_root | Select-Object -First 1).FullName
+        bash -lc "pacman -Sy --noconfirm autoconf automake"
+        bash -lc "mkdir -p /tmp; chmod 1777 /tmp"
+
+        # find autoreconf.exe in devkit
+        #$autoreconf_path = Get-ChildItem -Recurse -Filter autoreconf.exe $devkit_root | Select-Object -First 1
+        #if ($autoreconf_path) {
+        #    $bin_dir = $autoreconf_path.DirectoryName
+        #    Write-BuildLine "Found autoreconf.exe at: $($autoreconf_path.FullName)"
+        #    $env:PATH = "$bin_dir;$env:PATH"
+        #} else {
+        #    Write-Warning "autoreconf.exe not found in chef/ruby31-plus-devkit"
+        #}
+#
+#        Write-BuildLine " ** First-pass at bundler run without FFI extensions"
+#        bundle config --local build.ffi "--disable-ext"
+#        bundle install || Write-Host "Ignoring ffi build failure"
+#
+#        Write-BuildLine " ** Attempting to run autoconf in libffi dir"
+#        $ffi_libffi = Get-ChildItem -Path "$env:GEM_HOME" -Recurse -Directory |
+#            Where-Object { $_.Name -eq 'libffi' } |
+#            Select-Object -First 1
+#
+#         function Convert-ToMsysPath ($windowsPath) {
+#            # C:\path\to\something → /c/path/to/something
+#            $drive, $rest = $windowsPath -replace '\\', '/' -split ':/', 2
+#            return "/$($drive.ToLower())/$rest"
+#        }
+#
+#        # now, go run autoreconf since the gem build doesn't
+#        if ($ffi_libffi) {
+#            Write-Host "Running autoreconf on $($ffi_libffi.FullName)"
+#            $ffi_libffi_path = Convert-ToMsysPath $ffi_libffi.FullName
+#            & $msys2_shell -lc "cd $ffi_libffi_path && autoreconf -i"
+#
+#            # copy files... I guess.
+#            $automake_dir = Get-ChildItem -Recurse -Directory -Filter "automake-*" $devkit_root | Select-Object -First 1
+#            $autotools_files = @("ltmain.sh", "compile", "install-sh", "config.guess", "config.sub")
+#
+#            foreach ($file in $autotools_files) {
+#                $src = Join-Path $automake_dir.FullName $file
+#                $dst = Join-Path $ffi_libffi.FullName $file
+#                if (Test-Path $src) {
+#                    Copy-Item $src $dst -Force
+#                } else {
+#                    Write-Warning "Missing autotool helper: $file"
+#                }
+#            }
+#        } else {
+#            Write-Warning "Couldn't locate ffi/libffi for autoreconf"
+#            Get-ChildItem -Path "$env:GEM_HOME" -Recurse -Directory | Where-Object { $_.Name -eq 'libffi' } | Format-List FullName
+#        }
+#
+#        # now rebuild ffi properly
+#        Write-BuildLine " ** Reinstalling ffi with extensions"
+#        bundle config unset build.ffi
+#        bundle pristine ffi
+
+        # then make sure the bundle is correct
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
