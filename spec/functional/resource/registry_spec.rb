@@ -40,6 +40,7 @@ describe Chef::Resource::RegistryKey do
   let(:key_child) { "#{key_parent}\\#{child}" }
   let(:reg_parent) { "HKLM\\#{key_parent}" }
   let(:reg_child) { "HKLM\\#{key_child}" }
+  let(:reg_child_expanded) { "HKEY_LOCAL_MACHINE\\#{key_child}" }
   let(:hive_class) { ::Win32::Registry::HKEY_LOCAL_MACHINE }
   let(:resource_name) { "This is the name of my Resource" }
 
@@ -180,81 +181,83 @@ describe Chef::Resource::RegistryKey do
         end
       end
 
-      context "an existing key" do
-        let(:registry_key) { "#{reg_child}\\ExistingValue" }
-        let(:initial_values) { [{ name: "SomeValue", type: :dword, data: 3321 }] }
+      %i[reg_child reg_child_expanded].each do |prepop_key|
+        context "an existing key" do
+          let(:registry_key) { "#{send(prepop_key)}\\ExistingValue" }
+          let(:initial_values) { [{ name: "SomeValue", type: :dword, data: 3321 }] }
 
-        before do
-          prepopulate(registry_key, initial_values)
-        end
-
-        context "same value, type, and data" do
-          let(:registry_key_values) { initial_values }
-
-          it "doesn't update the key if the values are the same" do
-            subject
-            expect(new_resource).not_to be_updated_by_last_action
-            expect(registry.key_exists?(registry_key)).to be true
-            expect(registry.value_exists?(registry_key, initial_values[-1])).to be true
+          before do
+            prepopulate(registry_key, initial_values)
           end
-        end
 
-        context "same value, type, but datatype of data differs" do
-          let(:registry_key_values) { [{ name: "SomeValue", type: :dword, data: "3321" }] }
+          context "same value, type, and data" do
+            let(:registry_key_values) { initial_values }
 
-          it "updates the key if the value type is different" do
-            subject
-            expect(new_resource).not_to be_updated_by_last_action
-            expect(registry.key_exists?(registry_key)).to be true
-            expect(registry.value_exists?(registry_key, initial_values[-1])).to be true
+            it "doesn't update the key if the values are the same" do
+              subject
+              expect(new_resource).not_to be_updated_by_last_action
+              expect(registry.key_exists?(registry_key)).to be true
+              expect(registry.value_exists?(registry_key, initial_values[-1])).to be true
+            end
           end
-        end
 
-        context "same value, different type, data type differs" do
-          let(:registry_key_values) { [{ name: "SomeValue", type: :multi_string, data: %w{3321 2231} }] }
+          context "same value, type, but datatype of data differs" do
+            let(:registry_key_values) { [{ name: "SomeValue", type: :dword, data: "3321" }] }
 
-          it "updates the key if the value type is different" do
-            subject
-            expect(new_resource).to be_updated_by_last_action
-            expect(registry.key_exists?(registry_key)).to be true
-            expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
+            it "updates the key if the value type is different" do
+              subject
+              expect(new_resource).not_to be_updated_by_last_action
+              expect(registry.key_exists?(registry_key)).to be true
+              expect(registry.value_exists?(registry_key, initial_values[-1])).to be true
+            end
           end
-        end
 
-        context "parent exists, but not child" do
-          let(:registry_key) { "#{reg_child}\\DoesNotExist" }
-          before { new_resource.recursive(false) }
-          it "creates the child if the parent exists" do
-            subject
-            expect(registry.key_exists?(registry_key)).to eq(true)
-            expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
+          context "same value, different type, data type differs" do
+            let(:registry_key_values) { [{ name: "SomeValue", type: :multi_string, data: %w{3321 2231} }] }
+
+            it "updates the key if the value type is different" do
+              subject
+              expect(new_resource).to be_updated_by_last_action
+              expect(registry.key_exists?(registry_key)).to be true
+              expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
+            end
           end
-        end
 
-        context "missing type key" do
-          let(:registry_key) { "#{reg_child}\\MissingTypeKey" }
-          let(:registry_key_values) { [{ name: "SomeValue", data: "3321" }] }
-          it "raises RegKeyValuesTypeMissing" do
-            expect { subject }.to raise_error(Chef::Exceptions::RegKeyValuesTypeMissing)
+          context "parent exists, but not child" do
+            let(:registry_key) { "#{reg_child}\\DoesNotExist" }
+            before { new_resource.recursive(false) }
+            it "creates the child if the parent exists" do
+              subject
+              expect(registry.key_exists?(registry_key)).to eq(true)
+              expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
+            end
           end
-        end
 
-        context "missing data key" do
-          let(:registry_key) { "#{reg_child}\\MissingDataKey" }
-          let(:registry_key_values) { [{ name: "SomeValue", type: :string }] }
-          it "raises RegKeyValuesTypeMissing" do
-            expect { subject }.to raise_error(Chef::Exceptions::RegKeyValuesDataMissing)
+          context "missing type key" do
+            let(:registry_key) { "#{reg_child}\\MissingTypeKey" }
+            let(:registry_key_values) { [{ name: "SomeValue", data: "3321" }] }
+            it "raises RegKeyValuesTypeMissing" do
+              expect { subject }.to raise_error(Chef::Exceptions::RegKeyValuesTypeMissing)
+            end
           end
-        end
 
-        context "new value" do
-          let(:registry_key_values) { [{ name: "NewValue", type: :string, data: "Green" }] }
+          context "missing data key" do
+            let(:registry_key) { "#{reg_child}\\MissingDataKey" }
+            let(:registry_key_values) { [{ name: "SomeValue", type: :string }] }
+            it "raises RegKeyValuesTypeMissing" do
+              expect { subject }.to raise_error(Chef::Exceptions::RegKeyValuesDataMissing)
+            end
+          end
 
-          it "creates a value if it does not exist" do
-            subject
-            expect(new_resource).to be_updated_by_last_action
-            expect(registry.key_exists?(registry_key)).to be true
-            expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
+          context "new value" do
+            let(:registry_key_values) { [{ name: "NewValue", type: :string, data: "Green" }] }
+
+            it "creates a value if it does not exist" do
+              subject
+              expect(new_resource).to be_updated_by_last_action
+              expect(registry.key_exists?(registry_key)).to be true
+              expect(registry.value_exists?(registry_key, registry_key_values[-1])).to be true
+            end
           end
         end
       end
