@@ -184,10 +184,12 @@ describe Chef::Resource::RegistryKey do
       %i[reg_child reg_child_expanded].each do |prepop_key|
         context "an existing key" do
           let(:registry_key) { "#{send(prepop_key)}\\ExistingValue" }
+          let(:alt_key) { "#{send(prepop_key)}\\AltValue" }
           let(:initial_values) { [{ name: "SomeValue", type: :dword, data: 3321 }] }
 
           before do
             prepopulate(registry_key, initial_values)
+            prepopulate(alt_key, initial_values)
           end
 
           context "same value, type, and data" do
