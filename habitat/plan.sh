@@ -98,6 +98,9 @@ do_build() {
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
+
+    # remove [-a] all rexml < 3.3.6 including [-x] executables, [-I] ignore dependencies
+    gem uninstall rexml -v '<3.3.6' -a -x -I
   )
 }
 

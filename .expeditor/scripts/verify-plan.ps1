@@ -45,3 +45,21 @@ if (-not $?) { throw "unable to install this build"}
 Write-Host "--- :mag_right: Testing $Plan"
 powershell -File "./habitat/tests/test.ps1" -PackageIdentifier $pkg_ident
 if (-not $?) { throw "package didn't pass the test suite" }
+
+Write-Host "--- :gem: Verifying REXML gem version"
+$rexml_output = & hab pkg exec $pkg_ident gem list rexml
+if ($rexml_output -match "rexml \(([\d., ]+)\)") {
+    $versions = $matches[1].Split(",").Trim()
+    $min_version = [System.Version]"3.3.6"
+    $old_versions = $versions | Where-Object {
+        $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
+        $v -lt $min_version
+    }
+
+    if ($old_versions) {
+        throw "Found old REXML versions: $($old_versions -join ', '). Minimum required version is 3.3.6"
+    }
+    Write-Host "REXML version check passed"
+} else {
+    throw "Could not determine REXML gem version"
+}
