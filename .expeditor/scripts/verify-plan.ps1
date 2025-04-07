@@ -48,6 +48,13 @@ if (-not $?) { throw "package didn't pass the test suite" }
 
 Write-Host "--- :gem: Verifying REXML gem version"
 $rexml_output = & hab pkg exec $pkg_ident gem list rexml
+# Print rexml gem installation path
+$rexml_path = & hab pkg exec $pkg_ident bundle show rexml
+if ($rexml_path -match "REXML \(([\d., ]+)\)") {
+    Write-Host "REXML gem path: $rexml_path"
+} else {
+    throw "Could not determine REXML gem path"
+}
 if ($rexml_output -match "rexml \(([\d., ]+)\)") {
     $versions = $matches[1].Split(",").Trim()
     $min_version = [System.Version]"3.3.6"
