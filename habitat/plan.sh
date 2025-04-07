@@ -98,9 +98,6 @@ do_build() {
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
-
-    # remove [-a] all rexml < 3.3.6 including [-x] executables, [-I] ignore dependencies
-    gem uninstall rexml -v '<3.3.6' -a -x -I
   )
 }
 
@@ -130,6 +127,33 @@ do_after() {
   # only Chef's for package verification.
   find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
       | while read spec_dir; do rm -r "$spec_dir"; done
+
+  # List installed rexml gem versions
+  rexml_output=$($pkg_prefix/bin/gem list rexml)
+  if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
+    versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)
+    min_version="3.3.6"
+    old_versions=()
+
+    # Identify versions less than 3.3.6
+    for version in $versions; do
+      if [[ $(printf '%s\n' "$version" "$min_version" | sort -V | head -n1) == "$version" && "$version" != "$min_version" ]]; then
+        old_versions+=("$version")
+      fi
+    done
+
+    # Uninstall old versions
+    if [[ ${#old_versions[@]} -gt 0 ]]; then
+      for version in "${old_versions[@]}"; do
+        build_line "Uninstalling rexml version $version"
+        $pkg_prefix/bin/gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
+      done
+    else
+      build_line "No old versions of rexml found"
+    fi
+  else
+    build_line "Unable to determine rexml gem versions"
+  fi
 }
 
 do_end() {

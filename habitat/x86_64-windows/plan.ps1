@@ -225,6 +225,26 @@ function Invoke-After {
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
 
+    # Uninstall old versions of the rexml gem
+    write-output "*** Checking and uninstalling old versions of rexml gem"
+    $rexml_output = & $pkg_prefix/bin/gem list rexml
+    if ($rexml_output -match "rexml \(([\d., ]+)\)") {
+        $versions = $matches[1].Split(",").Trim()
+        $min_version = [System.Version]"3.3.6"
+        $old_versions = $versions | Where-Object {
+            $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
+            $v -lt $min_version
+        }
+
+        foreach ($version in $old_versions) {
+            write-output "*** Uninstalling rexml version $version"
+            & $pkg_prefix/bin/gem uninstall rexml -v $version --force
+            if (-not $?) { throw "Failed to uninstall REXML version $version" }
+        }
+    } else {
+        write-output "*** No old versions of rexml found or unable to determine versions"
+    }
+
     # Disable long file name support
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
 }

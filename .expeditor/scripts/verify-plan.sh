@@ -36,3 +36,27 @@ hab pkg install "${project_root}/results/$pkg_artifact" || error 'unable to inst
 
 echo "--- :mag_right: Testing $PLAN"
 ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during test of executables'
+
+echo "--- :gem: Verifying no outdated REXML gem versions exist"
+rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml)
+if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
+  versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)
+  min_version="3.3.6"
+  outdated_versions=()
+
+  for version in $versions; do
+    if [[ $(printf '%s\n' "$version" "$min_version" | sort -V | head -n1) == "$version" && "$version" != "$min_version" ]]; then
+      outdated_versions+=("$version")
+    fi
+  done
+
+  if [[ ${#outdated_versions[@]} -gt 0 ]]; then
+    echo "ERROR: Found outdated REXML gem versions: ${outdated_versions[*]}. Minimum required version is $min_version."
+    exit 1
+  else
+    echo "REXML version check passed. No outdated versions found."
+  fi
+else
+  echo "ERROR: Unable to determine REXML gem versions."
+  exit 1
+fi
