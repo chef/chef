@@ -42,6 +42,30 @@ Write-Host "--- :hammer_and_wrench: Installing $pkg_ident"
 hab pkg install results/$pkg_artifact
 if (-not $?) { throw "unable to install this build"}
 
+Write-Host "--- :gem: Verifying REXML gem version"
+$rexml_output = & hab pkg exec $pkg_ident gem list rexml
+if ($rexml_output -match "rexml \(([\d., ]+)\)") {
+    $versions = $matches[1].Split(",").Trim()
+    $min_version = [System.Version]"3.3.6"
+    $old_versions = $versions | Where-Object {
+        $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
+        $v -lt $min_version
+    }
+
+    if ($old_versions) {
+        Write-Host "--- :warning: Found old REXML versions: $($old_versions -join ', '). Uninstalling..."
+        foreach ($version in $old_versions) {
+            & hab pkg exec $pkg_ident gem uninstall rexml -v $version --force
+            if (-not $?) { throw "Failed to uninstall REXML version $version" }
+        }
+        Write-Host "--- :white_check_mark: Old REXML versions uninstalled"
+    } else {
+        Write-Host "REXML version check passed"
+    }
+} else {
+    throw "Unable to determine REXML gem versions"
+}
+
 Write-Host "--- :mag_right: Testing $Plan"
 powershell -File "./habitat/tests/test.ps1" -PackageIdentifier $pkg_ident
 if (-not $?) { throw "package didn't pass the test suite" }
