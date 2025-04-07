@@ -187,12 +187,14 @@ describe Chef::Resource::RegistryKey do
         let(:registry_key_values) { initial_values }
 
         it "doesn't update the key if the values are the same" do
+          new_resource.recursive(true)
           subject
           expect(new_resource).not_to be_updated_by_last_action
           expect(registry.key_exists?(registry_key)).to be true
           expect(registry.value_exists?(registry_key, initial_values[-1])).to be true
 
           resource2 = Chef::Resource::RegistryKey.new(resource_name, run_context)
+          resource2.recursive(true)
           resource2.key(registry_key)
           resource2.values(registry_key_values)
           resource2.run_action(:create)
