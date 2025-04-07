@@ -129,7 +129,7 @@ do_after() {
       | while read spec_dir; do rm -r "$spec_dir"; done
 
   # List installed rexml gem versions
-  rexml_output=$($pkg_prefix/vendor/bin/gem list rexml)
+  rexml_output=$("$(pkg_path_for $_chef_client_ruby)/bin/gem" list rexml)
   if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
     versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)
     min_version="3.3.6"
@@ -146,7 +146,7 @@ do_after() {
     if [[ ${#old_versions[@]} -gt 0 ]]; then
       for version in "${old_versions[@]}"; do
         build_line "Uninstalling rexml version $version"
-        $pkg_prefix/vendor/bin/gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
+        $(pkg_path_for $_chef_client_ruby)/bin/gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
       done
     else
       build_line "No old versions of rexml found"

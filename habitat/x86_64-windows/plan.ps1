@@ -227,7 +227,7 @@ function Invoke-After {
 
     # Uninstall old versions of the rexml gem
     write-output "*** Checking and uninstalling old versions of rexml gem"
-    $rexml_output = & $pkg_prefix/vendor/bin/gem list rexml
+    $rexml_output = & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" list rexml
     if ($rexml_output -match "rexml \(([\d., ]+)\)") {
         $versions = $matches[1].Split(",").Trim()
         $min_version = [System.Version]"3.3.6"
@@ -238,7 +238,8 @@ function Invoke-After {
 
         foreach ($version in $old_versions) {
             write-output "*** Uninstalling rexml version $version"
-            & $pkg_prefix/vendor/bin/gem uninstall rexml -v $version --force
+            # Uninstall the old version of rexml
+            & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
             if (-not $?) { throw "Failed to uninstall REXML version $version" }
         }
     } else {
