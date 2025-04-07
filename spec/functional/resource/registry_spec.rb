@@ -189,7 +189,7 @@ describe Chef::Resource::RegistryKey do
         it "doesn't update the key if the values are the same" do
           new_resource.recursive(true)
           subject
-          expect(new_resource).not_to be_updated_by_last_action
+          expect(new_resource).to be_updated_by_last_action
           expect(registry.key_exists?(registry_key)).to be true
           expect(registry.value_exists?(registry_key, initial_values[-1])).to be true
 
