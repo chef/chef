@@ -328,8 +328,18 @@ class Chef
           end
 
           # If signed by is true, then we don't need to
-          # add to the default keyring
-          unless new_resource.signed_by
+          # add to the default keyring. Instead make sure it's dearmored
+          if new_resource.signed_by
+            execute "gpg dearmor key" do
+              input ::File.read(keyfile_path)
+              command [ "gpg", "--batch", "--yes", "--dearmor", "-o", keyfile_path ]
+              default_env true
+              sensitive new_resource.sensitive
+              action :run
+              only_if { ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
+              notifies :run, "execute[apt-cache gencaches]", :immediately
+            end
+          else
             execute "apt-key add #{keyfile_path}" do
               command [ "apt-key", "add", keyfile_path ]
               default_env true
