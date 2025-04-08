@@ -41,45 +41,6 @@ echo "--- :gem: Verifying no outdated REXML gem versions exist"
 rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml -d)
 echo "REXML gem versions: $rexml_output"
 
-# Check for REXML in system Ruby installations
-echo "--- :mag: Checking for REXML in system Ruby installations"
-# Find system Ruby installations
-if command -v ruby >/dev/null 2>&1; then
-  system_ruby=$(command -v ruby)
-  system_gem="${system_ruby%/ruby}/gem"
-  if [[ -x "$system_gem" ]]; then
-    echo "Checking system Ruby gem: $system_gem"
-    system_rexml=$("$system_gem" list rexml -d)
-    echo "$system_rexml"
-    
-    if [[ $system_rexml =~ Installed\ at:\ (.+) ]]; then
-      paths="${BASH_REMATCH[1]}"
-      echo "REXML gem installation path(s) in system Ruby: $paths"
-    fi
-  fi
-fi
-
-# Check for REXML in other Habitat Ruby packages
-echo "--- :package: Checking for REXML in other Habitat packages"
-hab_ruby_packages=$(hab pkg list | grep -E 'ruby|chef')
-if [[ -n "$hab_ruby_packages" ]]; then
-  while IFS= read -r pkg; do
-    pkg_id=$(echo "$pkg" | awk '{print $1}')
-    if [[ -n "$pkg_id" ]] && [[ "$pkg_id" != "$pkg_ident" ]]; then
-      echo "Checking Habitat package: $pkg_id"
-      if hab pkg exec "$pkg_id" gem list rexml >/dev/null 2>&1; then
-        pkg_rexml=$(hab pkg exec "$pkg_id" gem list rexml -d)
-        echo "$pkg_rexml"
-        
-        if [[ $pkg_rexml =~ Installed\ at:\ (.+) ]]; then
-          paths="${BASH_REMATCH[1]}"
-          echo "REXML gem installation path(s) in $pkg_id: $paths"
-        fi
-      fi
-    fi
-  done <<< "$hab_ruby_packages"
-fi
-
 # Print REXML gem versions
 if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
   versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)

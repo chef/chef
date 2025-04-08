@@ -129,6 +129,9 @@ do_after() {
       | while read spec_dir; do rm -r "$spec_dir"; done
 
   # List installed rexml gem versions
+  # Print the path $(pkg_path_for $_chef_client_ruby) on terminal output
+  # to help with debugging
+  build_line "Checking installed rexml gem versions at ruby path $(pkg_path_for $_chef_client_ruby)"
   rexml_output=$("$(pkg_path_for $_chef_client_ruby)/bin/gem" list rexml)
   if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
     versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)

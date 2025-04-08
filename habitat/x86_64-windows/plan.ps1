@@ -226,88 +226,27 @@ function Invoke-After {
         | Remove-Item -Force
 
     # Uninstall old versions of the rexml gem
-    # write-output "*** Checking and uninstalling old versions of rexml gem"
-    # $rexml_output = & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" list rexml
-    # if ($rexml_output -match "rexml \(([\d., ]+)\)") {
-    #     $versions = $matches[1].Split(",").Trim()
-    #     $min_version = [System.Version]"3.3.6"
-    #     $old_versions = $versions | Where-Object {
-    #         $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
-    #         $v -lt $min_version
-    #     }
-
-    #     foreach ($version in $old_versions) {
-    #         write-output "*** Uninstalling rexml version $version"
-    #         # Uninstall the old version of rexml
-    #         & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
-    #         if (-not $?) { throw "Failed to uninstall REXML version $version" }
-    #     }
-    # } else {
-    #     write-output "*** No old versions of rexml found or unable to determine versions"
-    # }
-
-    # Uninstall old versions of the rexml gem from the Habitat package Ruby
-    write-output "*** Checking and uninstalling rexml gem from all Ruby installations"
-
+    write-output "*** Checking and uninstalling old versions of rexml gem"
     # 1. Uninstall from the Ruby used by this Habitat package
-    $habRubyGem = "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem"
-    write-output "*** Checking Habitat Ruby installation: $habRubyGem"
-    $rexml_output = & $habRubyGem list rexml
+    write-output "*** Ruby path: $(pkg_path_for chef/ruby31-plus-devkit)"
+    $rexml_output = & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem" list rexml
     if ($rexml_output -match "rexml \(([\d., ]+)\)") {
         $versions = $matches[1].Split(",").Trim()
-        foreach ($version in $versions) {
-            write-output "*** Uninstalling rexml version $version from Habitat Ruby"
-            & $habRubyGem uninstall rexml -v $version --force
-            if (-not $?) { write-output "Warning: Could not uninstall rexml version $version from Habitat Ruby" }
+        $min_version = [System.Version]"3.3.6"
+        $old_versions = $versions | Where-Object {
+            $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
+            $v -lt $min_version
         }
-    }
 
-    # 2. Check if system Ruby is installed and uninstall rexml from there
-    if (Test-Path -Path "C:\Ruby*\bin\gem.cmd") {
-        Get-ChildItem -Path "C:\Ruby*\bin\gem.cmd" | ForEach-Object {
-            $systemGem = $_.FullName
-            write-output "*** Checking system Ruby installation: $systemGem"
-            $rexml_output = & $systemGem list rexml
-            if ($rexml_output -match "rexml \(([\d., ]+)\)") {
-                $versions = $matches[1].Split(",").Trim()
-                foreach ($version in $versions) {
-                    write-output "*** Uninstalling rexml version $version from system Ruby"
-                    & $systemGem uninstall rexml -v $version --force
-                    if (-not $?) { write-output "Warning: Could not uninstall rexml version $version from system Ruby" }
-                }
-            }
+        foreach ($version in $old_versions) {
+            write-output "*** Uninstalling rexml version $version"
+            # Uninstall the old version of rexml
+            & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
+            if (-not $?) { throw "Failed to uninstall REXML version $version" }
         }
+    } else {
+        write-output "*** No old versions of rexml found or unable to determine versions"
     }
-
-    # 3. Check if there are any user-installed gems
-    $userGemPaths = @(
-        "$env:USERPROFILE\.gem\ruby"
-        "$env:LOCALAPPDATA\gem\ruby"
-    )
-
-    foreach ($gemPath in $userGemPaths) {
-        if (Test-Path -Path $gemPath) {
-            write-output "*** Found user gem path: $gemPath"
-            Get-ChildItem -Path "$gemPath\*\bin\gem.cmd" -ErrorAction SilentlyContinue | ForEach-Object {
-                $userGem = $_.FullName
-                write-output "*** Checking user Ruby installation: $userGem"
-                $rexml_output = & $userGem list rexml
-                if ($rexml_output -match "rexml \(([\d., ]+)\)") {
-                    $versions = $matches[1].Split(",").Trim()
-                    foreach ($version in $versions) {
-                        write-output "*** Uninstalling rexml version $version from user Ruby"
-                        & $userGem uninstall rexml -v $version --force
-                        if (-not $?) { write-output "Warning: Could not uninstall rexml version $version from user Ruby" }
-                    }
-                }
-            }
-        }
-    }
-
-    write-output "*** Completed rexml gem removal checks"
-
-    # Disable long file name support
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
 }
 
 function Remove-StudioPathFrom {

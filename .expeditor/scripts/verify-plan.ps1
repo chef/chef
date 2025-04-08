@@ -50,19 +50,6 @@ Write-Host "--- :gem: Verifying REXML gem version"
 $rexml_output = & hab pkg exec $pkg_ident gem list rexml -d
 Write-Host "REXML gem list output: $rexml_output"
 
-# Check for rexml in other Ruby installations
-Write-Host "--- :mag: Checking for rexml in system Ruby installations"
-
-# Check system Ruby installations
-if (Test-Path -Path "C:\Ruby*\bin\gem.cmd") {
-    Get-ChildItem -Path "C:\Ruby*\bin\gem.cmd" | ForEach-Object {
-        $systemGemPath = $_.FullName
-        Write-Host "Checking $systemGemPath"
-        $output = & $systemGemPath list rexml -d
-        Write-Host $output
-    }
-}
-
 # Print rexml gem version
 if ($rexml_output -match "rexml \(([\d., ]+)\)") {
     $versions = $matches[1].Split(",").Trim()
