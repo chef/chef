@@ -95,11 +95,12 @@ class Chef
             do_upload("#{tmp_cookbook_dir}/#{cookbook_name}.tgz", category, Chef::Config[:node_name], Chef::Config[:client_key])
             ui.info("Upload complete")
             Chef::Log.trace("Removing local staging directory at #{tmp_cookbook_dir}")
-            FileUtils.rm_rf tmp_cookbook_dir
           rescue => e
             ui.error("Error uploading cookbook #{cookbook_name} to Supermarket: #{e.message}. Increase log verbosity (-VV) for more information.")
             Chef::Log.trace("\n#{e.backtrace.join("\n")}")
             exit(1)
+          ensure
+            FileUtils.rm_rf tmp_cookbook_dir
           end
 
         else
@@ -132,7 +133,7 @@ class Chef
         res = Chef::JSONCompat.from_json(http_resp.body)
         if http_resp.code.to_i != 201
           if res["error_messages"]
-            if /Version already exists/.match?(res["error_messages"][0])
+            if res["error_messages"][0].match?(/Version (already exists|has already been taken)/)
               ui.error "The same version of this cookbook already exists on Supermarket."
               exit(1)
             else

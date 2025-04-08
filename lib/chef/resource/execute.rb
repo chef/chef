@@ -577,6 +577,10 @@ class Chef
         introduced: "17.0",
         description: "Use a login shell to run the commands instead of inheriting the existing execution environment."
 
+      property :cgroup, [String],
+        introduced: "19.0",
+        description: "Linux only: Run the command within a specific cgroup, creating it if it doesn't exist."
+
       alias :env :environment
 
       def self.set_guard_inherited_attributes(*inherited_attributes)

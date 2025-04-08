@@ -70,13 +70,13 @@ include_recipe "::_chef_gem"
 
 unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
   include_recipe value_for_platform(
-                   opensuseleap: { "default" => "ntp" },
-                   amazon: { "2" => "ntp" },
-                   oracle: { "<= 8" => "ntp" },
-                   centos: { "<= 8" => "ntp" },
-                   rhel: { "<= 8" => "ntp" },
-                   default: "chrony"
-                 )
+    opensuseleap: { "default" => "ntp" },
+    amazon: { "2" => "ntp" },
+    oracle: { "<= 8" => "ntp" },
+    centos: { "<= 8" => "ntp" },
+    rhel: { "<= 8" => "ntp" },
+    default: "chrony"
+  )
 end
 
 resolver_config "/etc/resolv.conf" do

@@ -34,3 +34,11 @@ From there you should see a zoom link that links you to the meeting.
 - [Win32-Api](https://github.com/chef/win32-api)
 - [Win32-Eventlog](https://github.com/chef/win32-eventlog)
 - [Ffi-Win32-Extensions](https://github.com/chef/ffi-win32-extensions)
+
+## Peripheral projects
+- [Chef Zero](https://github.com/chef/chef-zero)
+- [ffi-yajl](https://github.com/chef/ffi-yajl)
+- [Fauxhai](https://github.com/chef/fauxhai)
+- [Chefspec](https://github.com/chef/chefspec)
+- [Shared Github Workflows](https://github.com/chef/github-workflows)
+

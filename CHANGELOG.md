@@ -1,17 +1,41 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.0.85 -->
-## [v19.0.85](https://github.com/chef/chef/tree/v19.0.85) (2025-02-04)
+<!-- latest_release 19.1.14 -->
+## [v19.1.14](https://github.com/chef/chef/tree/v19.1.14) (2025-04-04)
 
 #### Merged Pull Requests
-- [Metadata#recipes_from_cookbook_version] Use end_with? [#14830](https://github.com/chef/chef/pull/14830) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- add omnibus_chef_publish.rb [#14935](https://github.com/chef/chef/pull/14935) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- add omnibus_chef_publish.rb [#14935](https://github.com/chef/chef/pull/14935) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.14 -->
+- Add oci? helper [#14902](https://github.com/chef/chef/pull/14902) ([wormsik](https://github.com/wormsik)) <!-- 19.1.13 -->
+- publish infra 19 gem to artifactory [#14921](https://github.com/chef/chef/pull/14921) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.12 -->
+- Fix cookstyle issues from the now enabled cops [#14924](https://github.com/chef/chef/pull/14924) ([tas50](https://github.com/tas50)) <!-- 19.1.11 -->
+- Migrate from chefstyle -&gt; cookstyle [#14922](https://github.com/chef/chef/pull/14922) ([tas50](https://github.com/tas50)) <!-- 19.1.10 -->
+- [CHEF-16732] Pipelines to build the client with habitat and deploy to chef/chef-hab docker repo [#14707](https://github.com/chef/chef/pull/14707) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.9 -->
+- update pre-command hook for pushing gem [#14917](https://github.com/chef/chef/pull/14917) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.8 -->
+- added nil check for current_record in resource skipped [#14582](https://github.com/chef/chef/pull/14582) ([jamespdo](https://github.com/jamespdo)) <!-- 19.1.7 -->
+- [Port] Updating Hab paths for openssl [#14915](https://github.com/chef/chef/pull/14915) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.6 -->
+- Add cgroup attribute to execute module [#14848](https://github.com/chef/chef/pull/14848) ([ImanolBarba](https://github.com/ImanolBarba)) <!-- 19.1.5 -->
+- updating rack and chef-zero in main [#14913](https://github.com/chef/chef/pull/14913) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.4 -->
+- Chef::Util::Powershell::PSCredential leaks plaintext on .inspect [#14887](https://github.com/chef/chef/pull/14887) ([jaymzjulian](https://github.com/jaymzjulian)) <!-- 19.1.3 -->
+- Knife supermarket share error when cookbook exists [#14876](https://github.com/chef/chef/pull/14876) ([sanghinitin](https://github.com/sanghinitin)) <!-- 19.1.2 -->
+- feat: Support Signed-By option for apt repository [#14131](https://github.com/chef/chef/pull/14131) ([tmccombs](https://github.com/tmccombs)) <!-- 19.1.1 -->
+- Remove 18.04 kitchen tests from main as cleanup [#14891](https://github.com/chef/chef/pull/14891) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.0 -->
+- Updated for 7.0.38.beta inspec [#14879](https://github.com/chef/chef/pull/14879) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.94 -->
+- Reverse the default for only_record_changes [#14881](https://github.com/chef/chef/pull/14881) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.93 -->
+- [CookbookVersion] Use end_with? [#14839](https://github.com/chef/chef/pull/14839) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.92 -->
+- Add other commonly-reviewed community PR projects [#14838](https://github.com/chef/chef/pull/14838) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.91 -->
+- Remove rdoc since 3.1.6 has patch version already [#14858](https://github.com/chef/chef/pull/14858) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.90 -->
+- [knife] Migrate from Chefstyle to Cookstyle gem [#14563](https://github.com/chef/chef/pull/14563) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.89 -->
+- raise a string instead of a hash object, patch 18.04 snap [#14853](https://github.com/chef/chef/pull/14853) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.88 -->
+- Use instance_method / refine_method to patch Chef::Resource::Registry [#14845](https://github.com/chef/chef/pull/14845) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.87 -->
+- Allow the suppression of other values in a key for the &quot;before&quot; report [#14767](https://github.com/chef/chef/pull/14767) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.0.86 -->
 - [Metadata#recipes_from_cookbook_version] Use end_with? [#14830](https://github.com/chef/chef/pull/14830) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.85 -->
 - dnf: ignore sack excludes in &#39;whatinstalled&#39; [#14821](https://github.com/chef/chef/pull/14821) ([vmagro](https://github.com/vmagro)) <!-- 19.0.84 -->
 - [RemoteFileVendor#get_filename] Do O(1) search for filename [#14829](https://github.com/chef/chef/pull/14829) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.0.83 -->

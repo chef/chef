@@ -17,10 +17,6 @@ group(:omnibus_package, :pry) do
   gem "pry-stack_explorer"
 end
 
-group(:chefstyle) do
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
-end
-
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 gem "chef", path: ".."
 gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist?(File.expand_path("../chef-utils", __dir__))
