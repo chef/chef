@@ -229,8 +229,7 @@ function Invoke-After {
     write-output "*** Checking and uninstalling old versions of rexml gem"
     # 1. Uninstall from the Ruby used by this Habitat package
     write-output "*** Ruby path: $(pkg_path_for chef/ruby31-plus-devkit)"
-    # List installed rexml gems
-    $rexml_output = gem list rexml
+    $rexml_output = & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem -d" list rexml
     write-output "REXML gem list output: $rexml_output"
     if ($rexml_output -match "rexml \(([\d., ]+)\)") {
         $versions = $matches[1].Split(",").Trim()
@@ -243,7 +242,7 @@ function Invoke-After {
         foreach ($version in $old_versions) {
             write-output "*** Uninstalling rexml version $version"
             # Uninstall the old version of rexml
-            & gem uninstall rexml -v $version --force
+            & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
             if (-not $?) { throw "Failed to uninstall REXML version $version" }
         }
     } else {
