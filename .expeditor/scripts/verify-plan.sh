@@ -39,6 +39,7 @@ ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during tes
 
 echo "--- :gem: Verifying no outdated REXML gem versions exist"
 rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml)
+echo "REXML gem versions: $rexml_output"
 # Print REXML gem installation path
 rexml_path=$(hab pkg exec "$pkg_ident" gem which rexml)
 echo "REXML gem path: $rexml_path"

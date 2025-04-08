@@ -48,6 +48,8 @@ if (-not $?) { throw "package didn't pass the test suite" }
 
 Write-Host "--- :gem: Verifying REXML gem version"
 $rexml_output = & hab pkg exec $pkg_ident gem list rexml
+Write-Host "REXML gem list output: $rexml_output"
+
 # Print rexml gem installation path
 $rexml_path = & hab pkg exec $pkg_ident gem which rexml
 Write-Host "REXML gem path: $rexml_path"
