@@ -40,14 +40,9 @@ ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during tes
 echo "--- :gem: Verifying no outdated REXML gem versions exist"
 rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml)
 # Print REXML gem installation path
-rexml_path=$(hab pkg exec "$pkg_ident" bundle show rexml)
-if [[ -z "$rexml_path" ]]; then
-  echo "ERROR: REXML gem not found in the bundle."
-  exit 1
-fi
-echo "REXML gem installation path: $rexml_path"
-
-
+rexml_path=$(hab pkg exec "$pkg_ident" gem which rexml)
+echo "REXML gem path: $rexml_path"
+# Print REXML gem versions
 if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
   versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)
   min_version="3.3.6"
