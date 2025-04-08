@@ -151,7 +151,7 @@ do_after() {
     if [[ ${#old_versions[@]} -gt 0 ]]; then
       for version in "${old_versions[@]}"; do
         build_line "Uninstalling rexml version $version"
-        $(gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
+        gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
       done
     else
       build_line "No old versions of rexml found"
