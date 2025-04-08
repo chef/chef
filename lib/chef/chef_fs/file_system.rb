@@ -264,6 +264,45 @@ class Chef
       class << self
         private
 
+
+        def should_freeze?(src_entry)
+          # Check if the cookbook version is already frozen
+          versioned_cookbook_dir = src_entry.instance_variable_get(:@parent)
+          cookbook_version = versioned_cookbook_dir.instance_variable_get(:@chef_object)
+          frozen_value = cookbook_version.instance_variable_get(:@frozen)
+          frozen_value
+        end
+
+        def update_frozen_status_in_metadata_if_needed(src_entry, new_dest_parent, ui)
+          if src_entry.name == "metadata.json"
+            # dest_path = /cookbooks/my_cookbook-0.1.0/metadata.json
+            # [10] pry(Chef::ChefFS::FileSystem)> new_dest_parent.file_path
+            # => "/home/ubuntu/chef_backups/organizations/myorg/cookbooks/my_cookbook-0.1.0"
+            ui.output "metadata.path value #{new_dest_parent.file_path}" if ui
+            metadata_location_on_fs = File.join(new_dest_parent.file_path, "metadata.json")
+
+            if File.exist?(metadata_location_on_fs) && should_freeze?(src_entry)
+              metadata = JSON.parse(File.read(metadata_location_on_fs))
+              # Only update metadata if the version matches
+              src_version = src_entry.parent.name.split("-").last
+              dest_version = metadata["version"]
+
+              if src_version != dest_version
+                ui.output "Skipping metadata.json update: version mismatch (src: #{src_version}, metadata: #{dest_version})"
+                return false
+              end
+
+              # Update the metadata.json file
+              metadata["frozen"] = true
+              # File.write(metadata_location_on_fs, JSON.pretty_generate(metadata))
+              File.open(metadata_location_on_fs, "w") do |file|
+                file.write(JSON.pretty_generate(metadata))
+              end
+              ui.output "Updated metadata.json with frozen: true at #{metadata_location_on_fs}" if ui
+            end
+          end # end if src_entry.name eq metadata.json
+        end
+
         # Copy two entries (could be files or dirs)
         def copy_entries(src_entry, dest_entry, new_dest_parent, recurse_depth, options, ui, format_path)
           # A NOTE about this algorithm:
@@ -281,6 +320,11 @@ class Chef
           begin
             dest_path = format_path.call(dest_entry) if ui
             src_path = format_path.call(src_entry) if ui
+            # this is for when the file may already exist and there are no changes
+            # to the files other than updates to frozen status
+            if src_entry.name == "metadata.json"
+              update_frozen_status_in_metadata_if_needed(src_entry, new_dest_parent, ui)
+            end
             if !src_entry.exists?
               if options[:purge]
                 # If we would not have uploaded it, we will not purge it.
@@ -308,6 +352,7 @@ class Chef
                 if new_dest_parent.respond_to?(:create_child_from)
                   if options[:dry_run]
                     ui.output "Would create #{dest_path}" if ui
+                    # ui.output "Created #{dest_path} since dest dir did not exist" if ui
                   else
                     new_dest_parent.create_child_from(src_entry)
                     ui.output "Created #{dest_path}" if ui
@@ -321,6 +366,7 @@ class Chef
                     new_dest_dir = new_dest_parent.child(src_entry.name)
                   else
                     new_dest_dir = new_dest_parent.create_child(src_entry.name, nil)
+                    # ui.output "Created #{dest_path} since it was present in src_dir" if ui
                     ui.output "Created #{dest_path}" if ui
                   end
                   # Directory creation is recursive.
@@ -337,10 +383,13 @@ class Chef
                   else
                     child = new_dest_parent.create_child(src_entry.name, src_entry.read)
                     ui.output "Created #{format_path.call(child)}" if ui
+                    # ui.output "Created #{format_path.call(child)} since newer dirs found as we recurse" if ui
+                    # this is for when the status is --frozen but the file does not previously exist
+                    # ui.output "The status is frozen but the file does not previously exist" if ui
+                    update_frozen_status_in_metadata_if_needed(src_entry, new_dest_parent, ui)
                   end
                 end
               end
-
             else
               # Both exist.
               # If the entry can do a copy directly, do that.
@@ -353,6 +402,8 @@ class Chef
                     dest_entry.copy_from(src_entry, options)
                     result["success_count"] += 1
                     ui.output "Updated #{dest_path}" if ui
+                    # ui.output "compare #{src_path} and #{dest_path}" if ui
+                    update_frozen_status_in_metadata_if_needed(src_entry, new_dest_parent, ui) if src_entry.name == "metadata.json"
                   end
                 end
                 return
@@ -397,6 +448,7 @@ class Chef
                       dest_entry.write(src_value)
                       result["success_count"] += 1
                       ui.output "Updated #{dest_path}" if ui
+                      update_frozen_status_in_metadata_if_needed(src_entry, new_dest_parent, ui) if src_entry.name == "metadata.json"
                     end
                   end
                 end
