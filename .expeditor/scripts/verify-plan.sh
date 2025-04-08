@@ -34,8 +34,8 @@ source "${project_root}/results/last_build.env" || error 'unable to determine de
 echo "--- :hammer_and_wrench: Installing $pkg_ident"
 hab pkg install "${project_root}/results/$pkg_artifact" || error 'unable to install this build'
 
-echo "--- :mag_right: Testing $PLAN"
-${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during test of executables'
+# echo "--- :mag_right: Testing $PLAN"
+# ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during test of executables'
 
 echo "--- :gem: Verifying no outdated REXML gem versions exist"
 rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml)

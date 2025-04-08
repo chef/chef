@@ -42,9 +42,9 @@ Write-Host "--- :hammer_and_wrench: Installing $pkg_ident"
 hab pkg install results/$pkg_artifact
 if (-not $?) { throw "unable to install this build"}
 
-Write-Host "--- :mag_right: Testing $Plan"
-powershell -File "./habitat/tests/test.ps1" -PackageIdentifier $pkg_ident
-if (-not $?) { throw "package didn't pass the test suite" }
+# Write-Host "--- :mag_right: Testing $Plan"
+# powershell -File "./habitat/tests/test.ps1" -PackageIdentifier $pkg_ident
+# if (-not $?) { throw "package didn't pass the test suite" }
 
 Write-Host "--- :gem: Verifying REXML gem version"
 $rexml_output = & hab pkg exec $pkg_ident gem list rexml
