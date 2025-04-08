@@ -38,11 +38,9 @@ hab pkg install "${project_root}/results/$pkg_artifact" || error 'unable to inst
 # ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during test of executables'
 
 echo "--- :gem: Verifying no outdated REXML gem versions exist"
-rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml)
+rexml_output=$(hab pkg exec "$pkg_ident" gem list rexml -d)
 echo "REXML gem versions: $rexml_output"
-# Print REXML gem installation path
-rexml_path=$(hab pkg exec "$pkg_ident" gem which rexml)
-echo "REXML gem path: $rexml_path"
+
 # Print REXML gem versions
 if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
   versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)
