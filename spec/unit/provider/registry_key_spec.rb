@@ -27,7 +27,6 @@ shared_examples_for "a registry key" do
       before(:each) do
         expect(@double_registry).to receive(:key_exists?).with(keyname).and_return(true)
         expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval2] )
-        @new_resource.only_record_changes false
         @provider.load_current_resource
       end
 
