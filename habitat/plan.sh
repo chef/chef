@@ -132,7 +132,9 @@ do_after() {
   # Print the path $(pkg_path_for $_chef_client_ruby) on terminal output
   # to help with debugging
   build_line "Checking installed rexml gem versions at ruby path $(pkg_path_for $_chef_client_ruby)"
-  rexml_output=$("$(pkg_path_for $_chef_client_ruby)/bin/gem" list rexml)
+  # List installed rexml gem versions
+  rexml_output=$(gem list rexml)
+  build_line "REXML gem versions: $rexml_output"
   if [[ $rexml_output =~ rexml\ \(([0-9.,\ ]+)\) ]]; then
     versions=$(echo "${BASH_REMATCH[1]}" | tr ',' '\n' | xargs)
     min_version="3.3.6"
@@ -149,7 +151,7 @@ do_after() {
     if [[ ${#old_versions[@]} -gt 0 ]]; then
       for version in "${old_versions[@]}"; do
         build_line "Uninstalling rexml version $version"
-        $(pkg_path_for $_chef_client_ruby)/bin/gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
+        $(gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
       done
     else
       build_line "No old versions of rexml found"
