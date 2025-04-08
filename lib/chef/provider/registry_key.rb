@@ -51,7 +51,6 @@ class Chef
         current_resource.recursive(new_resource.recursive)
         if registry.key_exists?(new_resource.key)
           current_registry_values = registry.get_values(new_resource.key) || []
-
           current_resource.values(current_registry_values)
         end
         values_to_hash(current_resource.unscrubbed_values)
