@@ -139,6 +139,13 @@ do_after() {
     min_version="3.3.6"
     old_versions=()
 
+    # Capture the installation path of the rexml gem
+    if [[ $rexml_output =~ Installed\ at:\ ([^\n]+) ]]; then
+      gem_install_path="${BASH_REMATCH[1]}"
+    else
+      exit_with "Unable to determine the installation path for rexml gem" 1
+    fi
+
     # Identify versions less than 3.3.6
     for version in $versions; do
       if [[ $(printf '%s\n' "$version" "$min_version" | sort -V | head -n1) == "$version" && "$version" != "$min_version" ]]; then
@@ -149,8 +156,8 @@ do_after() {
     # Uninstall old versions
     if [[ ${#old_versions[@]} -gt 0 ]]; then
       for version in "${old_versions[@]}"; do
-        build_line "Uninstalling rexml version $version"
-        $(pkg_path_for $_chef_client_ruby)/bin/gem uninstall rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
+        build_line "Uninstalling rexml version $version from $gem_install_path"
+        $(pkg_path_for $_chef_client_ruby)/bin/gem uninstall -i "$gem_install_path" rexml -v "$version" --force || exit_with "Failed to uninstall rexml version $version" 1
       done
     else
       build_line "No old versions of rexml found"

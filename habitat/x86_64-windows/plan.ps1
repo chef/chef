@@ -225,6 +225,9 @@ function Invoke-After {
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
 
+    # Disable long file name support
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
+
     # Uninstall old versions of the rexml gem
     write-output "*** Checking and uninstalling old versions of rexml gem"
     $default_gem_path = "$(Get-HabPackagePath chef/ruby31-plus-devkit)/lib/ruby/gems/3.1.0"
@@ -234,8 +237,9 @@ function Invoke-After {
     write-output "*** Ruby path: $(Get-HabPackagePath chef/ruby31-plus-devkit)"
     $rexml_output = & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" list rexml -d
     write-output "REXML gem list output: $rexml_output"
-    if ($rexml_output -match "rexml \(([\d., ]+)\)") {
+    if ($rexml_output -match "rexml \(([\d., ]+)\).*?Installed at: (.+)") {
         $versions = $matches[1].Split(",").Trim()
+        $install_path = $matches[2].Trim()
         $min_version = [System.Version]"3.3.6"
         $old_versions = $versions | Where-Object {
             $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
@@ -243,10 +247,10 @@ function Invoke-After {
         }
 
         foreach ($version in $old_versions) {
-            write-output "*** Uninstalling rexml version $version"
+            write-output "*** Uninstalling rexml version $version from $install_path"
             # Uninstall the old version of rexml
-            & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
-            if (-not $?) { throw "Failed to uninstall REXML version $version" }
+            & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version -i $install_path --force
+            if (-not $?) { throw "Failed to uninstall REXML version $version from $install_path" }
         }
     } else {
         write-output "*** No old versions of rexml found or unable to determine versions"
