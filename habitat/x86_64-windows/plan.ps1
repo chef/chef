@@ -237,23 +237,54 @@ function Invoke-After {
     write-output "*** Ruby path: $(Get-HabPackagePath chef/ruby31-plus-devkit)"
     $rexml_output = & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" list rexml -d
     write-output "REXML gem list output: $rexml_output"
-    if ($rexml_output -match "rexml \(([\d., ]+)\).*?Installed at: (.+)") {
-        $versions = $matches[1].Split(",").Trim()
-        $install_path = $matches[2].Trim()
-        $min_version = [System.Version]"3.3.6"
-        $old_versions = $versions | Where-Object {
-            $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
-            $v -lt $min_version
-        }
 
-        foreach ($version in $old_versions) {
-            write-output "*** Uninstalling rexml version $version from $install_path"
-            # Uninstall the old version of rexml
-            & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version -i $install_path --force
-            if (-not $?) { throw "Failed to uninstall REXML version $version from $install_path" }
+    # Parse the output to extract versions and installation paths
+    if ($rexml_output -match "rexml \(([\d., ]+)\)") {
+        $versions_str = $matches[1]
+        $versions = $versions_str.Split(",").Trim()
+        write-output "Found rexml versions: $versions_str"
+        
+        # Extract installation paths
+        if ($rexml_output -match "Installed at: (.+)") {
+            $paths_str = $matches[1]
+            $paths = $paths_str.Split(",").Trim()
+            write-output "Installation paths: $paths_str"
+            
+            # Process each version and path
+            $min_version = [System.Version]"3.3.6"
+            
+            for ($i = 0; $i -lt $versions.Count; $i++) {
+                $version = $versions[$i]
+                $path = $paths[$i]
+                
+                # Compare version with 3.3.6
+                try {
+                    $v = [System.Version]($version -replace '^(\d+\.\d+\.\d+).*$', '$1')
+                    if ($v -lt $min_version) {
+                        write-output "Uninstalling rexml version $version from path $path"
+                        
+                        # Extract the gem installation directory from the path
+                        $gem_home = Split-Path (Split-Path $path)
+                        write-output "Using gem home: $gem_home for uninstall"
+                        
+                        # Uninstall with -i flag to specify installation directory
+                        & "$ruby_path/bin/gem" uninstall rexml -v $version -i $gem_home --force
+                        if ($LASTEXITCODE -ne 0) {
+                            write-output "Warning: Failed to uninstall rexml version $version from $path"
+                        }
+                    } else {
+                        write-output "Keeping rexml version $version (>= $min_version)"
+                    }
+                }
+                catch {
+                    write-output "Error processing version $version: $_"
+                }
+            }
+        } else {
+            write-output "Could not determine installation paths for rexml gems"
         }
     } else {
-        write-output "*** No old versions of rexml found or unable to determine versions"
+        write-output "No rexml gems found in output"
     }
 }
 
