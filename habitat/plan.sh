@@ -129,7 +129,7 @@ do_after() {
       | while read spec_dir; do rm -r "$spec_dir"; done
 
   # Update GEM_PATH to also include default gem path for ruby along with the existing value set in this file
-  export GEM_PATH = "$GEM_PATH:$(pkg_path_for $_chef_client_ruby)/lib/ruby/gems/3.1.0"
+  export GEM_PATH="$GEM_PATH:$(pkg_path_for $_chef_client_ruby)/lib/ruby/gems/3.1.0"
 
   # List installed rexml gem versions
   # Print the path $(pkg_path_for $_chef_client_ruby) on terminal output

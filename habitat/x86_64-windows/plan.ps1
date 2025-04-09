@@ -227,12 +227,12 @@ function Invoke-After {
 
     # Uninstall old versions of the rexml gem
     write-output "*** Checking and uninstalling old versions of rexml gem"
-    # Update GEM_PATH to also include default path for ruby
-    default_gem_path = "$(pkg_path_for chef/ruby31-plus-devkit)/lib/ruby/gems/3.1.0"
+    default_gem_path = "$(Get-HabPackagePath chef/ruby31-plus-devkit)/lib/ruby/gems/3.1.0"
+    # Set the GEM_PATH to include the vendor directory also the default gem path
     $env:GEM_PATH = "$pkg_prefix/vendor;$default_gem_path"
     # 1. Uninstall from the Ruby used by this Habitat package
-    write-output "*** Ruby path: $(pkg_path_for chef/ruby31-plus-devkit)"
-    $rexml_output = & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem -d" list rexml
+    write-output "*** Ruby path: $(Get-HabPackagePath chef/ruby31-plus-devkit)"
+    $rexml_output = & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" list rexml -d
     write-output "REXML gem list output: $rexml_output"
     if ($rexml_output -match "rexml \(([\d., ]+)\)") {
         $versions = $matches[1].Split(",").Trim()
@@ -245,7 +245,7 @@ function Invoke-After {
         foreach ($version in $old_versions) {
             write-output "*** Uninstalling rexml version $version"
             # Uninstall the old version of rexml
-            & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
+            & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" uninstall rexml -v $version --force
             if (-not $?) { throw "Failed to uninstall REXML version $version" }
         }
     } else {
