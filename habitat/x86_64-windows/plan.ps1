@@ -228,7 +228,8 @@ function Invoke-After {
     # Uninstall old versions of the rexml gem
     write-output "*** Checking and uninstalling old versions of rexml gem"
     # Update GEM_PATH to also include default path for ruby
-    $env:GEM_PATH = "$pkg_prefix/vendor;$(pkg_path_for chef/ruby31-plus-devkit)/lib/ruby/gems/3.1.0"
+    default_gem_path = "$(pkg_path_for chef/ruby31-plus-devkit)/lib/ruby/gems/3.1.0"
+    $env:GEM_PATH = "$pkg_prefix/vendor;$default_gem_path"
     # 1. Uninstall from the Ruby used by this Habitat package
     write-output "*** Ruby path: $(pkg_path_for chef/ruby31-plus-devkit)"
     $rexml_output = & "$(pkg_path_for chef/ruby31-plus-devkit)/bin/gem -d" list rexml
