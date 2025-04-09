@@ -230,7 +230,6 @@ function Invoke-After {
     $default_gem_path = "$(Get-HabPackagePath chef/ruby31-plus-devkit)/lib/ruby/gems/3.1.0"
     # Set the GEM_PATH and GEM_HOME to include the vendor directory also the default gem path
     $env:GEM_PATH = "$pkg_prefix/vendor;$default_gem_path"
-    $env:GEM_HOME = "$pkg_prefix/vendor:$default_gem_path"
     # 1. Uninstall from the Ruby used by this Habitat package
     write-output "*** Ruby path: $(Get-HabPackagePath chef/ruby31-plus-devkit)"
     $rexml_output = & "$(Get-HabPackagePath chef/ruby31-plus-devkit)/bin/gem" list rexml -d
