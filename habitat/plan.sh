@@ -128,14 +128,10 @@ do_after() {
   find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
       | while read spec_dir; do rm -r "$spec_dir"; done
 
-  # Update GEM_PATH to also include default gem path for ruby along with the existing value set in this file
-  export GEM_PATH="$GEM_PATH:$(pkg_path_for $_chef_client_ruby)/lib/ruby/gems/3.1.0"
-
-  # List installed rexml gem versions
-  # Print the path $(pkg_path_for $_chef_client_ruby) on terminal output
-  # to help with debugging
   build_line "Checking installed rexml gem versions at ruby path $(pkg_path_for $_chef_client_ruby)"
-  
+  # Update GEM_PATH and GEM_HOME to also include default gem path for ruby along with the existing value set in this file
+  export GEM_PATH="$GEM_PATH:$(pkg_path_for $_chef_client_ruby)/lib/ruby/gems/3.1.0"
+  export GEM_HOME="$GEM_HOME:$(pkg_path_for $_chef_client_ruby)/lib/ruby/gems/3.1.0"
 
   rexml_output=$("$(pkg_path_for $_chef_client_ruby)/bin/gem" list rexml -d)
   build_line "REXML gem versions: $rexml_output"
