@@ -2,10 +2,6 @@ source "https://rubygems.org"
 
 gem "chef", path: "."
 
-# Mixlib-log 3.1.1 has a regression fixed in 3.1.2. 3.1.2 was not released to rubygems.org so loading it from GitHub repo.
-# 3.2.0 was released to rubygems but has issues with ruby 3.0 and aix according to this Pr https://github.com/chef/chef/pull/14905
-gem "mixlib-log", git: "https://github.com/chef/mixlib-log.git", tag: "v3.1.2"
-
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
 
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
