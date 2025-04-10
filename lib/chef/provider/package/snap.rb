@@ -380,6 +380,10 @@ class Chef
             Chef::Log.debug("Channel is nil, using default snap version: #{json['result'][0]['version']}")
             json["result"][0]["version"]
           else
+            # Ensure compatibility from pre Chef 19 when the resource hardcoded `latest` and enforced risk levels.
+            if %w{edge beta candidate stable}.include?(channel)
+              channel = "latest/#{channel}"
+            end
             unless json["result"][0]["channels"][channel]
               raise Chef::Exceptions::Package, "No version of #{name} in channel #{channel}", caller
             end
