@@ -42,6 +42,15 @@ class Chef
       end
       ```
 
+      **Install a package from a specific channel track**
+
+      ```ruby
+      snap_package 'firefox' do
+        channel 'esr/stable'
+        action :upgrade
+      end
+      ```
+
       **Install a package with classic confinement**
 
       ```ruby
@@ -54,9 +63,7 @@ class Chef
       allowed_actions :install, :upgrade, :remove, :purge
 
       property :channel, String,
-        description: "The default channel. For example: stable.",
-        default: "stable",
-        equal_to: %w{edge beta candidate stable},
+        description: "The desired channel. For example: `latest/stable` or `0.x/edge`. If nil, the resource will install the snap's default version.",
         desired_state: false
     end
   end
