@@ -377,7 +377,7 @@ class Chef
 
           # If no channel is passed, use the snap's default version
           if channel.nil?
-            Chef::Log.debug("Channel is nil, using default snap version: #{json['result'][0]['version']}")
+            Chef::Log.debug("Channel is nil, using default snap version: #{json["result"][0]["version"]}")
             json["result"][0]["version"]
           else
             # Ensure compatibility from pre Chef 19 when the resource hardcoded `latest` and enforced risk levels.
