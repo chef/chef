@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
-  s.add_dependency "mixlib-log", ">= 2.0.3", "<= 3.1.2"
+  s.add_dependency "mixlib-log", ">= 2.0.3", "< 3.2"
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
