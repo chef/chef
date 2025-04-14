@@ -627,7 +627,7 @@ describe Chef::DataCollector do
           events.resource_action_start(new_resource, :create)
           events.resource_current_state_loaded(new_resource, :create, current_resource)
 
-          events.resource_action_start(implementation_resource , :create)
+          events.resource_action_start(implementation_resource, :create)
           events.resource_current_state_loaded(implementation_resource, :create, implementation_resource)
           events.resource_updated(implementation_resource, :create)
           events.resource_after_state_loaded(implementation_resource, :create, implementation_resource)
@@ -876,7 +876,6 @@ describe Chef::DataCollector do
           send_run_failed_or_completed_event
         end
       end
-
     end
   end
 
@@ -966,6 +965,111 @@ describe Chef::DataCollector do
         Chef::Config[:data_collector][:raise_on_failure] = false
         expect(Chef::Log).to receive(:debug).with(/This is normal if you do not have Chef Automate/)
         data_collector.send(:send_to_data_collector, message)
+      end
+    end
+
+    context "when processing Windows registry keys" do
+      let(:total_resource_count) { 1 }
+      let(:updated_resource_count) { 1 }
+      let(:status) { "success" }
+
+      before do
+        allow(ChefUtils).to receive(:windows?).and_return(true)
+        run_status.stop_clock
+      end
+
+      it "removes registry key values not present in after state" do
+        resource = {
+          "type" => :registry_key,
+          "before" => {
+            values: [
+              { name: "key1", value: "val1" },
+              { name: "key2", value: "val2" },
+              { name: "key3", value: "val3" },
+            ],
+          },
+          "after" => {
+            values: [
+              { name: "key1", value: "new_val1" },
+              { name: "key3", value: "new_val3" },
+            ],
+          },
+        }
+
+        message = {
+          "resources" => [resource],
+        }
+
+        # Verify that key2 was removed from before values
+        expected_before_values = [
+          { name: "key1", value: "val1" },
+          { name: "key3", value: "val3" },
+        ]
+
+        expect(http_client).to receive(:post).with(
+          nil,
+          hash_including("message_type" => "run_start"),
+          { "Content-Type" => "application/json" }
+        )
+
+        expect(http_client).to receive(:post).with(
+          nil,
+          hash_including(
+            "resources" => array_including(
+              hash_including(
+                "before" => hash_including(
+                  values: array_including(expected_before_values)
+                )
+              )
+            )
+          ),
+          { "Content-Type" => "application/json" }
+        )
+        allow(Chef::DataCollector::RunEndMessage).to receive(:construct_message).and_return(message)
+        data_collector.send(:send_run_completion, message)
+      end
+
+      it "handles missing values gracefully" do
+        resource = {
+          "type" => :registry_key,
+          "before" => {},
+          "after" => { values: [] },
+        }
+
+        message = {
+          "resources" => [resource],
+        }
+
+        expect(http_client).to receive(:post).with(
+          nil,
+          hash_including("message_type" => "run_start"),
+          { "Content-Type" => "application/json" }
+        )
+
+        expect(http_client).to receive(:post).with(nil, message, { "Content-Type" => "application/json" })
+
+        allow(Chef::DataCollector::RunEndMessage).to receive(:construct_message).and_return(message)
+        expect { data_collector.send(:send_run_completion, "success") }.not_to raise_error
+      end
+
+      it "ignores non-registry resources" do
+        resource = {
+          "type" => :file,
+          "before" => { content: "old" },
+          "after" => { content: "new" },
+        }
+
+        message = {
+          "resources" => [resource],
+        }
+        expect(http_client).to receive(:post).with(nil,
+          hash_including("message_type" => "run_start"),
+          { "Content-Type" => "application/json" })
+
+        expect(http_client).to receive(:post).with(nil, message, { "Content-Type" => "application/json" })
+
+        allow(Chef::DataCollector::RunEndMessage).to receive(:construct_message).and_return(message)
+        expect { data_collector.send(:send_run_completion, "success") }.not_to raise_error
       end
     end
   end
