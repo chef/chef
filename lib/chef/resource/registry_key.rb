@@ -154,7 +154,8 @@ class Chef
       property :only_record_changes, [TrueClass, FalseClass],
          default: true,
          introduced: "18.7.3",
-         description: "(no-op) disabled functionality to only record registry value changes"
+         description: "(no-op) disabled functionality to only record registry value changes",
+         deprecated: true
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):
