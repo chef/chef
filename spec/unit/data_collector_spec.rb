@@ -156,7 +156,7 @@ describe Chef::DataCollector do
   end
 
   def resource_has_diff(new_resource, status)
-    new_resource.respond_to?(:diff) && %w(updated failed).include?(status)
+    new_resource.respond_to?(:diff) && %w{updated failed}.include?(status)
   end
 
   def resource_record_for(new_resource, before_resource, after_resource, action, status, duration)
