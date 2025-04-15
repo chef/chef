@@ -23,7 +23,7 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           conn_port = port
         end
 
-        Chef::Log.debug("opening connection to #{conn_addr}:#{conn_port}...")
+        Chef::Log.trace("opening connection to #{conn_addr}:#{conn_port}...")
         s = Timeout.timeout(@open_timeout, Net::OpenTimeout) {
           begin
             TCPSocket.open(conn_addr, conn_port, @local_host, @local_port)
@@ -33,7 +33,6 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           end
         }
         s.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
-        Chef::Log.debug("opened")
         if use_ssl?
           if proxy?
             plain_sock = BufferedIO.new(s, read_timeout: @read_timeout,
