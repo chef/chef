@@ -841,7 +841,7 @@ describe Chef::DataCollector do
         let(:status) { "success" }
         before do
           Chef::Config[:blocked_default_attributes] = [
-            %w(secret key_to_the_kingdom),
+            %w{secret key_to_the_kingdom},
           ]
           node.default = {
             "secret" => { "key_to_the_kingdom" => "under the flower pot to the left of the drawbridge" },
@@ -861,7 +861,7 @@ describe Chef::DataCollector do
         let(:status) { "success" }
         before do
           Chef::Config[:allowed_default_attributes] = [
-            %w(public entrance),
+            %w{public entrance},
           ]
           node.default = {
             "public" => { "entrance" => "is the drawbridge" },
@@ -1009,7 +1009,8 @@ describe Chef::DataCollector do
         expect(http_client).to receive(:post).with(
           nil,
           hash_including("message_type" => "run_start"),
-          { "Content-Type" => "application/json" })
+          { "Content-Type" => "application/json" }
+        )
 
         expect(http_client).to receive(:post).with(
           nil,
@@ -1042,7 +1043,8 @@ describe Chef::DataCollector do
         expect(http_client).to receive(:post).with(
           nil,
           hash_including("message_type" => "run_start"),
-          { "Content-Type" => "application/json" })
+          { "Content-Type" => "application/json" }
+        )
 
         expect(http_client).to receive(:post).with(nil, message, { "Content-Type" => "application/json" })
 
