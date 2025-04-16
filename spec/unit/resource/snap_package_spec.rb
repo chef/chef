@@ -47,14 +47,11 @@ describe Chef::Resource::SnapPackage, "initialize" do
     expect { resource.action :upgrade }.not_to raise_error
   end
 
-  it "channel defaults to stable" do
-    expect(resource.channel).to eql("stable")
-  end
-
   it "supports all channel values" do
     expect { resource.channel "stable" }.not_to raise_error
     expect { resource.channel "edge" }.not_to raise_error
     expect { resource.channel "beta" }.not_to raise_error
     expect { resource.channel "candidate" }.not_to raise_error
+    expect { resource.channel "latest/stable" }.not_to raise_error
   end
 end
