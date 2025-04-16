@@ -277,7 +277,7 @@ class Chef
             message["resources"]&.each do |resource|
               next unless resource["type"] == :registry_key
 
-              resource["before"][:values].reject! { |value| !resource["after"][:values].any? { |after_value| after_value[:name] == value[:name] } }
+              resource["before"][:values]&.reject! { |value| !resource["after"][:values].any? { |after_value| after_value[:name] == value[:name] } }
             end
           end
         rescue StandardError => e
