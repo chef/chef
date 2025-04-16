@@ -373,14 +373,14 @@ class Chef
             raise Chef::Exceptions::Package, json["result"], caller
           end
 
-          Chef::Log.debug("snapd API result: #{json}\n")
+          Chef::Log.debug("snapd API response: #{json}\n")
 
           # If no channel is passed, use the snap's default version
           if channel.nil?
             Chef::Log.debug("Channel is nil, using default snap version: #{json["result"][0]["version"]}")
             json["result"][0]["version"]
           else
-            # Ensure compatibility from pre Chef 19 when the resource hardcoded `latest` and enforced risk levels.
+            # Before Chef 19, this resource hardcoded `latest`.
             if %w{edge beta candidate stable}.include?(channel)
               channel = "latest/#{channel}"
             end
