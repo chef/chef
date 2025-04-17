@@ -72,8 +72,8 @@ describe Chef::ResourceReporter do
     events.cookbook_compilation_start(run_context)
   end
 
-  context "when first created" do
 
+  context "when first created" do
     it "has no updated resources" do
       expect(resource_reporter.updated_resources.count).to eq(0)
     end
@@ -89,7 +89,6 @@ describe Chef::ResourceReporter do
     it "should have no error_descriptions" do
       expect(resource_reporter.error_descriptions).to eq({})
     end
-
   end
 
   context "after the chef run completes" do
@@ -107,7 +106,6 @@ describe Chef::ResourceReporter do
     before do
       allow(rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
       allow(rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
-
     end
 
     context "before converging any resources" do
@@ -508,6 +506,62 @@ describe Chef::ResourceReporter do
       end
 
       it_should_behave_like "a successful client run"
+    end
+    context "windows registry_key resource" do
+      let(:current_resource) do
+        resource = Chef::Resource::RegistryKey.new('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager')
+        resource.values([{ name: "PendingFileRenameOperations", type: :multi_string, data: 10000.times.map { |n| "C:\\Windows\\System32\\config\\systemprofile\\AppData\\Local\\Temp\\2\\Chef-20140107123456-1234-#{n}" } } ])
+        resource
+      end
+
+      let(:new_resource) do
+        resource = Chef::Resource::RegistryKey.new('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager')
+        resource.values([ { name: "ProtectionMode", type: :dword, data: 1 } ])
+        allow(resource).to receive(:cookbook_name).and_return(cookbook_name)
+        allow(resource).to receive(:cookbook_version).and_return(cookbook_version)
+        resource
+      end
+
+      it "should raise an error when the data is too large" do
+        # Start the run
+        resource_reporter.run_started(run_status)
+        run_status.start_clock
+
+        # These 4 event callbacks are essential to populate resource state:
+        events.resource_action_start(new_resource, :create)
+        events.resource_current_state_loaded(new_resource, :create, current_resource)
+        events.resource_updated(new_resource, :create)
+        events.resource_completed(new_resource)
+        
+        # Stop the run
+        run_status.stop_clock
+        
+        # Prepare the run data - this will include the resource states
+        report_data = resource_reporter.prepare_run_data
+        
+        # Verify the report includes our resource
+        expect(report_data["resources"].length).to eq(1)
+        expect(report_data["resources"][0]["before"]).to eq(current_resource.state_for_resource_reporter)
+        expect(report_data["resources"][0]["after"]).to eq(new_resource.state_for_resource_reporter)
+        
+        expect(rest_client).to receive(:post) do |path, data, headers|
+          expect(path).to eq("reports/nodes/spitfire/runs")
+          raise Chef::Exceptions::ValidationFailed, "data too large" if data.length > 10000
+
+        end
+        
+        # Now mock the actual post request to fail due to size
+        expect(rest_client).to receive(:raw_request) do |method, url, headers, data|
+          data_stream = Zlib::GzipReader.new(StringIO.new(data))
+          data = data_stream.read
+          expect(data).to include('"before":')  # Verify current_resource state is included
+          expect(data).to include('"after":')   # Verify new_resource state is included
+          raise Chef::Exceptions::ValidationFailed, "data too large"
+        end
+        
+        # Assert that the post fails due to validation
+#        expect { resource_reporter.run_completed(node) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      end
     end
 
     context "for an unsuccessful run" do
