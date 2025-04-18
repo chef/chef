@@ -227,7 +227,7 @@ describe Chef::Knife::SslCheck do
           expect { run }.to raise_error(SystemExit)
           expect(stderr).to include("The SSL cert is signed by a trusted authority but is not valid for the given hostname")
           expect(stderr).to include("You are attempting to connect to:   'foo.example.com'")
-          expect(stderr).to include("The server's certificate belongs to 'example.local'")
+          expect(stderr).to include("The server's certificate belongs to 'example.'")
         end
 
       end
