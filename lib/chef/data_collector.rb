@@ -270,7 +270,6 @@ class Chef
         send_run_start unless sent_run_start?
 
         message = Chef::DataCollector::RunEndMessage.construct_message(self, status)
-        send_to_data_collector(message)
 
         begin
           if ChefUtils.windows?
@@ -284,6 +283,8 @@ class Chef
         rescue StandardError => e
           Chef::Log.warn("Error while processing registry key values: #{e.message}, #{e.backtrace[0..5]}")
         end
+
+        send_to_data_collector(message)
         send_to_output_locations(message)
       end
 
