@@ -271,6 +271,19 @@ class Chef
 
         message = Chef::DataCollector::RunEndMessage.construct_message(self, status)
         send_to_data_collector(message)
+
+        begin
+          if ChefUtils.windows?
+            # Remove registry key values that are not present in the after state - CHEF-9126
+            message["resources"]&.each do |resource|
+              next unless resource["type"] == :registry_key
+
+              resource["before"][:values].reject! { |value| !resource["after"][:values].any? { |after_value| after_value[:name] == value[:name] } }
+            end
+          end
+        rescue StandardError => e
+          Chef::Log.warn("Error while processing registry key values: #{e.message}, #{e.backtrace[0..5]}")
+        end
         send_to_output_locations(message)
       end
 
