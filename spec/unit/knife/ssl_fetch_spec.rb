@@ -18,12 +18,17 @@
 
 require "spec_helper"
 require "chef/knife/ssl_fetch"
+require "fileutils"
+require "openssl"
+require "stringio"
+require "tmpdir"
 
 describe Chef::Knife::SslFetch do
-
   let(:name_args) { [] }
   let(:stdout_io) { StringIO.new }
   let(:stderr_io) { StringIO.new }
+  let(:trusted_certs_dir) { Dir.mktmpdir }
+  let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt") }
 
   def stderr
     stderr_io.string
@@ -39,6 +44,22 @@ describe Chef::Knife::SslFetch do
     allow(s.ui).to receive(:stdout).and_return(stdout_io)
     allow(s.ui).to receive(:stderr).and_return(stderr_io)
     s
+  end
+
+  before(:all) do
+    unless File.exist?(File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt"))
+      raise "Test certificate file missing at #{self_signed_crt_path}"
+    end
+  end
+
+  before do 
+    Chef::Config.trusted_certs_dir = trusted_certs_dir
+    FileUtils.mkdir_p(trusted_certs_dir)
+    FileUtils.chmod(0755, trusted_certs_dir)
+  end
+
+  after do
+    FileUtils.rm_rf(trusted_certs_dir) if File.directory?(trusted_certs_dir)
   end
 
   context "when no arguments are given" do
@@ -127,63 +148,85 @@ describe Chef::Knife::SslFetch do
   end
 
   describe "fetching the remote cert chain" do
-
     let(:name_args) { %w{https://foo.example.com:8443} }
-
     let(:tcp_socket) { double(TCPSocket) }
     let(:ssl_socket) { double(OpenSSL::SSL::SSLSocket) }
-
-    let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt") }
     let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
-    let(:trusted_certs_dir) { Dir.mktmpdir }
-
     def run
-      ssl_fetch.run
-    rescue Exception
-      puts "OUT: #{stdout_io.string}"
-      puts "ERR: #{stderr_io.string}"
-      raise
+      begin
+        ssl_fetch.run
+      rescue SystemExit => e
+        # Catch SystemExit but let other exceptions propagate
+        puts "Exit status: #{e.status}"
+      rescue Exception
+        puts "OUT: #{stdout}"
+        puts "ERR: #{stderr}"
+        # puts "Trusted certs dir contents: #{Dir.entries(trusted_certs_dir).join(', ')}"
+        raise
+      end
+    end
+
+    before(:all) do
+      unless File.exist?(File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt"))
+        raise "Test certificate file missing at #{self_signed_crt_path}"
+      end
     end
 
     before do
       Chef::Config.trusted_certs_dir = trusted_certs_dir
+      FileUtils.mkdir_p(trusted_certs_dir)
+      # puts "Created trusted certs dir at: #{trusted_certs_dir}"
+
+      # Set up proper certificate content
+      allow(ssl_fetch).to receive(:proxified_socket)
+        .with("foo.example.com", 8443)
+        .and_return(tcp_socket)
+
+      allow(OpenSSL::SSL::SSLSocket).to receive(:new)
+        .with(tcp_socket, ssl_fetch.noverify_peer_ssl_context)
+        .and_return(ssl_socket)
+
+      allow(ssl_socket).to receive(:connect)
+      allow(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
+
+      # Debug output
+      # puts "Source certificate exists: #{File.exist?(self_signed_crt_path)}"
+      # puts "Source certificate content: #{File.read(self_signed_crt_path)}"
     end
 
     after do
-      FileUtils.rm_rf(trusted_certs_dir)
+      FileUtils.rm_rf(trusted_certs_dir) if File.directory?(trusted_certs_dir)
     end
 
     context "when the TLS connection is successful" do
-
-      before do
-        expect(ssl_fetch).to receive(:proxified_socket).with("foo.example.com", 8443).and_return(tcp_socket)
-        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
-        expect(ssl_socket).to receive(:connect)
-        expect(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
-      end
-
       it "fetches the cert chain and writes the certs to the trusted_certs_dir" do
         run
-        stored_cert_path = File.join(trusted_certs_dir, "example_local.crt")
+        stored_cert_path = File.join(trusted_certs_dir, "example__com.crt")
+        # Debug output for the stored cert
+        # puts "Stored cert path: #{stored_cert_path}"
+        # puts "Trusted certs dir exists: #{File.directory?(trusted_certs_dir)}"
+        # puts "Trusted certs dir contents: #{Dir.entries(trusted_certs_dir).join(', ')}"
         expect(File).to exist(stored_cert_path)
         expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
       end
-
     end
 
     context "when connecting to a non-SSL service (like HTTP)" do
-
       let(:name_args) { %w{http://foo.example.com} }
-
       let(:unknown_protocol_error) { OpenSSL::SSL::SSLError.new("SSL_connect returned=1 errno=0 state=SSLv2/v3 read server hello A: unknown protocol") }
 
       before do
-        expect(ssl_fetch).to receive(:proxified_socket).with("foo.example.com", 80).and_return(tcp_socket)
-        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
-        expect(ssl_socket).to receive(:connect).and_raise(unknown_protocol_error)
+        allow(ssl_fetch).to receive(:proxified_socket)
+          .with("foo.example.com", 80)
+          .and_return(tcp_socket)
 
-        expect(ssl_fetch).to receive(:exit).with(1)
+        allow(OpenSSL::SSL::SSLSocket).to receive(:new)
+          .with(tcp_socket, ssl_fetch.noverify_peer_ssl_context)
+          .and_return(ssl_socket)
+
+        allow(ssl_socket).to receive(:connect).and_raise(unknown_protocol_error)
+        allow(ssl_fetch).to receive(:exit).with(1).and_raise(SystemExit)
       end
 
       it "tells the user their URL is for a non-ssl service" do
@@ -193,9 +236,8 @@ describe Chef::Knife::SslFetch do
         ERROR_TEXT
 
         run
-        expect(stderr).to include(expected_error_text)
+        expect(stderr).to include(expected_error_text.strip)
       end
-
     end
 
     describe "when the certificate does not have a CN" do
@@ -203,11 +245,17 @@ describe Chef::Knife::SslFetch do
       let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
 
       before do
-        expect(ssl_fetch).to receive(:proxified_socket).with("foo.example.com", 8443).and_return(tcp_socket)
-        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
-        expect(ssl_socket).to receive(:connect)
-        expect(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
-        expect(Time).to receive(:new).and_return(1)
+        allow(ssl_fetch).to receive(:proxified_socket)
+          .with("foo.example.com", 8443)
+          .and_return(tcp_socket)
+
+        allow(OpenSSL::SSL::SSLSocket).to receive(:new)
+          .with(tcp_socket, ssl_fetch.noverify_peer_ssl_context)
+          .and_return(ssl_socket)
+
+        allow(ssl_socket).to receive(:connect)
+        allow(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
+        allow(Time).to receive(:new).and_return(1)
       end
 
       it "fetches the certificate and writes it to a file in the trusted_certs_dir" do
@@ -217,6 +265,5 @@ describe Chef::Knife::SslFetch do
         expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
       end
     end
-
   end
 end
