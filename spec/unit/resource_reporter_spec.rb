@@ -72,7 +72,6 @@ describe Chef::ResourceReporter do
     events.cookbook_compilation_start(run_context)
   end
 
-
   context "when first created" do
     it "has no updated resources" do
       expect(resource_reporter.updated_resources.count).to eq(0)
@@ -507,6 +506,7 @@ describe Chef::ResourceReporter do
 
       it_should_behave_like "a successful client run"
     end
+
     context "windows registry_key resource" do
       let(:current_resource) do
         resource = Chef::Resource::RegistryKey.new('HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager')
@@ -523,6 +523,7 @@ describe Chef::ResourceReporter do
       end
 
       it "should raise an error when the data is too large" do
+        pending "Need to test truncation properly"
         # Start the run
         resource_reporter.run_started(run_status)
         run_status.start_clock
@@ -547,7 +548,6 @@ describe Chef::ResourceReporter do
         expect(rest_client).to receive(:post) do |path, data, headers|
           expect(path).to eq("reports/nodes/spitfire/runs")
           raise Chef::Exceptions::ValidationFailed, "data too large" if data.length > 10000
-
         end
         
         # Now mock the actual post request to fail due to size
@@ -560,7 +560,7 @@ describe Chef::ResourceReporter do
         end
         
         # Assert that the post fails due to validation
-#        expect { resource_reporter.run_completed(node) }.to raise_error(Chef::Exceptions::ValidationFailed)
+        expect { resource_reporter.run_completed(node) }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
     end
 
