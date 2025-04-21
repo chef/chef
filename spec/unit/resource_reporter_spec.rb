@@ -533,23 +533,23 @@ describe Chef::ResourceReporter do
         events.resource_current_state_loaded(new_resource, :create, current_resource)
         events.resource_updated(new_resource, :create)
         events.resource_completed(new_resource)
-        
+
         # Stop the run
         run_status.stop_clock
-        
+
         # Prepare the run data - this will include the resource states
         report_data = resource_reporter.prepare_run_data
-        
+
         # Verify the report includes our resource
         expect(report_data["resources"].length).to eq(1)
         expect(report_data["resources"][0]["before"]).to eq(current_resource.state_for_resource_reporter)
         expect(report_data["resources"][0]["after"]).to eq(new_resource.state_for_resource_reporter)
-        
+
         expect(rest_client).to receive(:post) do |path, data, headers|
           expect(path).to eq("reports/nodes/spitfire/runs")
           raise Chef::Exceptions::ValidationFailed, "data too large" if data.length > 10000
         end
-        
+
         # Now mock the actual post request to fail due to size
         expect(rest_client).to receive(:raw_request) do |method, url, headers, data|
           data_stream = Zlib::GzipReader.new(StringIO.new(data))
@@ -558,7 +558,7 @@ describe Chef::ResourceReporter do
           expect(data).to include('"after":')   # Verify new_resource state is included
           raise Chef::Exceptions::ValidationFailed, "data too large"
         end
-        
+
         # Assert that the post fails due to validation
         expect { resource_reporter.run_completed(node) }.to raise_error(Chef::Exceptions::ValidationFailed)
       end
