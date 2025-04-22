@@ -1,23 +1,51 @@
 # This script gets a container ready to run our various tests in BuildKite
 
-# source /etc/os-release
-# echo $PRETTY_NAME
+. /etc/os-release
+echo $NAME
+echo $ID
+
+PACKAGE_MANAGER=""
+PACKAGES="jq"
+
+# Set package manager based on os type
+case "$ID" in
+  ubuntu|debian)
+    PACKAGE_MANAGER="apt-get"
+    PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev"
+    ;;
+  rhel|rocky)
+    PACKAGE_MANAGER="yum"
+    # PACKAGES="$PACKAGES "
+    ;;
+esac
+
+if [[ "$PACKAGE_MANAGER" == "" ]]; then
+  echo "Invalid OS type: $ID"
+  exit 1
+fi
+
+echo "--- Installing packages"
+
+echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
+sudo $PACKAGE_MANAGER update
+sudo $PACKAGE_MANAGER install $PACKAGES -y
 
 # Install Ruby to get the bundler gem.
 echo "--- Ruby Config..."
-sudo apt-get install jq -y
+
 RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
 export RUBY_VERSION
-sudo apt install git curl libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev -y
+
 curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 . ~/.bashrc
+
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
-gem install bundler -v $(cat .buildkite-platform.json | jq -r '.bundler_version')
-export PATH="/root/.rbenv/shims:$PATH"
 
+gem install bundler -v $(cat .buildkite-platform.json | jq -r '.bundle_version')
+export PATH="/root/.rbenv/shims:$PATH"
 
 echo "--- Container Config..."
 echo "ruby version:"
