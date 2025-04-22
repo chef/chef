@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.14 -->
-## [v19.1.14](https://github.com/chef/chef/tree/v19.1.14) (2025-04-04)
+<!-- latest_release 19.1.15 -->
+## [v19.1.15](https://github.com/chef/chef/tree/v19.1.15) (2025-04-22)
 
 #### Merged Pull Requests
-- add omnibus_chef_publish.rb [#14935](https://github.com/chef/chef/pull/14935) ([rishichawda](https://github.com/rishichawda))
+- Cleanup debug in net-http monkeypatch [#14958](https://github.com/chef/chef/pull/14958) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Cleanup debug in net-http monkeypatch [#14958](https://github.com/chef/chef/pull/14958) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.15 -->
 - add omnibus_chef_publish.rb [#14935](https://github.com/chef/chef/pull/14935) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.14 -->
 - Add oci? helper [#14902](https://github.com/chef/chef/pull/14902) ([wormsik](https://github.com/wormsik)) <!-- 19.1.13 -->
 - publish infra 19 gem to artifactory [#14921](https://github.com/chef/chef/pull/14921) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.12 -->
