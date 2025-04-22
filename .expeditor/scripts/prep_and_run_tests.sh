@@ -14,6 +14,9 @@ then
     mkdir spec/data/nodes && touch spec/data/nodes/test.rb && touch spec/data/nodes/default.rb && touch spec/data/nodes/test.example.com.rb
 fi
 
+ruby -v
+bundle -v
+
 echo "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3 
 
