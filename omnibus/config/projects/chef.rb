@@ -98,9 +98,8 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  # Update this if you start getting a "SignTool Error: No certificates were found that met all the given criteria." error in adhoc builds
-  signing_identity "13B510D1CF1B3467856A064F1BEA12D0884D2528", machine_store: true
-  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
+  signing_identity ENV.fetch("OMNIBUS_SIGNING_IDENTITY", "769E6AF679126F184850AAC7C5C823A80DB3ADAA"), machine_store: false, keypair_alias: "key_495941360"
+  parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw-ucrt/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 
