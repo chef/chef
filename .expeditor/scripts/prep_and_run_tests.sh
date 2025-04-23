@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+echo "--- what is inside .rbenv?"
+ls /root/.rbenv/shims
+
 if [ -z "$1" ]
   then
     echo "No TestType supplied"

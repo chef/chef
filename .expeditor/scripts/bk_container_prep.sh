@@ -43,7 +43,8 @@ rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
 
 gem install bundler -v $(cat .buildkite-platform.json | awk -F'"' '/"bundle_version"/ {print $4}')
-export PATH="/root/.rbenv/shims:$PATH"
+echo 'export PATH="/root/.rbenv/shims:$PATH"' >> ~/.bashrc
+. ~/.bashrc
 
 echo "--- Container Config..."
 echo "ruby version:"
