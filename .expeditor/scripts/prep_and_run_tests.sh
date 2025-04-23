@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-echo "--- what is inside .rbenv?"
-ls /root/.rbenv/shims
+echo "--- Update PATH and activate ruby and bundle"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 
 if [ -z "$1" ]
   then
