@@ -35,16 +35,13 @@ RUBY_VERSION=$(cat .buildkite-platform.json | awk -F'"' '/"ruby_version"/ {print
 export RUBY_VERSION
 
 curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-. ~/.bashrc
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
 
 gem install bundler -v $(cat .buildkite-platform.json | awk -F'"' '/"bundle_version"/ {print $4}')
-echo 'export PATH="/root/.rbenv/shims:$PATH"' >> ~/.bashrc
-. ~/.bashrc
 
 echo "--- Container Config..."
 echo "ruby version:"
