@@ -1,23 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.6 -->
-## [v18.7.6](https://github.com/chef/chef/tree/v18.7.6) (2025-04-21)
-
-#### Merged Pull Requests
-- Truncate resource reporter :before to empty hash if over 500_000 bytes [#14961](https://github.com/chef/chef/pull/14961) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.7.3 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Truncate resource reporter :before to empty hash if over 500_000 bytes [#14961](https://github.com/chef/chef/pull/14961) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.6 -->
-- Add unimplemented property back [#14957](https://github.com/chef/chef/pull/14957) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.5 -->
-- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.4 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.7.6](https://github.com/chef/chef/tree/v18.7.6) (2025-04-23)
+
+#### Merged Pull Requests
+- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add unimplemented property back [#14957](https://github.com/chef/chef/pull/14957) ([tpowell-progress](https://github.com/tpowell-progress))
+- Truncate resource reporter :before to empty hash if over 500_000 bytes [#14961](https://github.com/chef/chef/pull/14961) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
 ## [v18.7.3](https://github.com/chef/chef/tree/v18.7.3) (2025-03-31)
 
 #### Merged Pull Requests
@@ -52,7 +50,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - pick latest version of chef-foundation [#14907](https://github.com/chef/chef/pull/14907) ([muthuja](https://github.com/muthuja))
 - Bump inspec-core, inspec-core-bin to 5.22.72 [#14909](https://github.com/chef/chef/pull/14909) ([neha-p6](https://github.com/neha-p6))
 - fix RUBY_DLL_PATH setting in hab plan [#14914](https://github.com/chef/chef/pull/14914) ([mwrock](https://github.com/mwrock))
-<!-- latest_stable_release -->
 
 ## [v18.6.2](https://github.com/chef/chef/tree/v18.6.2) (2024-12-13)
 
