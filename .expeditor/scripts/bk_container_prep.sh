@@ -4,14 +4,18 @@
 echo $NAME
 echo $ID
 
-PACKAGE_MANAGER=""
-PACKAGES="jq"
-
+echo "--- Installing packages"
 # Set package manager based on os type
+PACKAGE_MANAGER=""
+PACKAGES=""
 case "$ID" in
   ubuntu|debian)
     PACKAGE_MANAGER="apt-get"
     PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev"
+
+    echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
+    sudo $PACKAGE_MANAGER update
+    sudo $PACKAGE_MANAGER install $PACKAGES -y
     ;;
   rhel|rocky)
     PACKAGE_MANAGER="yum"
@@ -24,16 +28,10 @@ if [[ "$PACKAGE_MANAGER" == "" ]]; then
   exit 1
 fi
 
-echo "--- Installing packages"
-
-echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
-sudo $PACKAGE_MANAGER update
-sudo $PACKAGE_MANAGER install $PACKAGES -y
-
 # Install Ruby to get the bundler gem.
 echo "--- Ruby Config..."
 
-RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
+RUBY_VERSION=$(cat .buildkite-platform.json | awk -F'"' '/"ruby_version"/ {print $4}')
 export RUBY_VERSION
 
 curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
@@ -44,7 +42,7 @@ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 rbenv install ${RUBY_VERSION}
 rbenv global ${RUBY_VERSION}
 
-gem install bundler -v $(cat .buildkite-platform.json | jq -r '.bundle_version')
+gem install bundler -v $(cat .buildkite-platform.json | awk -F'"' '/"bundle_version"/ {print $4}')
 export PATH="/root/.rbenv/shims:$PATH"
 
 echo "--- Container Config..."
