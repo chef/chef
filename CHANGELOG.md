@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.15 -->
-## [v19.1.15](https://github.com/chef/chef/tree/v19.1.15) (2025-04-22)
+<!-- latest_release 19.1.16 -->
+## [v19.1.16](https://github.com/chef/chef/tree/v19.1.16) (2025-04-23)
 
 #### Merged Pull Requests
-- Cleanup debug in net-http monkeypatch [#14958](https://github.com/chef/chef/pull/14958) ([jaymzh](https://github.com/jaymzh))
+- Support arbitrary channel names in snap_package [#14950](https://github.com/chef/chef/pull/14950) ([williamtheaker](https://github.com/williamtheaker))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support arbitrary channel names in snap_package [#14950](https://github.com/chef/chef/pull/14950) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.16 -->
 - Cleanup debug in net-http monkeypatch [#14958](https://github.com/chef/chef/pull/14958) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.15 -->
 - add omnibus_chef_publish.rb [#14935](https://github.com/chef/chef/pull/14935) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.14 -->
 - Add oci? helper [#14902](https://github.com/chef/chef/pull/14902) ([wormsik](https://github.com/wormsik)) <!-- 19.1.13 -->
