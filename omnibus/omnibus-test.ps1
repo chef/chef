@@ -137,7 +137,7 @@ $format="progress"
 If ($Env:OMNIBUS_TEST_FORMAT) {
   $format = $Env:OMNIBUS_TEST_FORMAT
 }
-
+c:\opscode\chef\embedded\bin\gem uninstall -a bigdecimal -v "> 2.0.0"
 bundle exec rspec -f $format --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
