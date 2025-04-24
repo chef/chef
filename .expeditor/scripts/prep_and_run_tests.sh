@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-echo "--- Update PATH and activate ruby and bundle"
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-
 if [ -z "$1" ]
   then
     echo "No TestType supplied"
@@ -18,11 +14,20 @@ then
     mkdir spec/data/nodes && touch spec/data/nodes/test.rb && touch spec/data/nodes/default.rb && touch spec/data/nodes/test.example.com.rb
 fi
 
+echo "--- Update PATH and activate ruby and bundle"
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
 ruby -v
 bundle -v
 
 echo "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3 
+bundle install --jobs=3 --retry=3
+
+echo "--- gem info openssl"
+gem info openssl
+echo "--- system openssl"
+openssl version
 
 case $TestType in
 
