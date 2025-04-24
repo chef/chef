@@ -18,6 +18,7 @@
 #
 
 # we need this to resolve files required by lib/chef/dist
+# This is to test whether tests pass in CI
 $LOAD_PATH.unshift(File.expand_path("chef-config/lib", __dir__))
 
 begin
