@@ -115,7 +115,7 @@ $Env:CHEF_LICENSE = "accept-no-persist"
 winrm quickconfig -quiet
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
-bundle
+bundle --no-document
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # buildkite changes the casing of the Path variable to PATH
@@ -137,7 +137,23 @@ $format="progress"
 If ($Env:OMNIBUS_TEST_FORMAT) {
   $format = $Env:OMNIBUS_TEST_FORMAT
 }
-c:\opscode\chef\embedded\bin\gem uninstall -a bigdecimal -v "> 2.0.0"
+
+# Add these lines to properly handle bigdecimal
+# Configure bigdecimal version with error handling
+Write-Output "Configuring bigdecimal version..."
+try {
+    & $embedded_bin_dir\gem.bat uninstall -a bigdecimal
+    & $embedded_bin_dir\gem.bat install bigdecimal -v "2.0.0" --no-document
+    bundle config set --local force_ruby_platform true
+    
+    # Verify installation
+    $bigdecimal_version = & $embedded_bin_dir\gem.bat list bigdecimal
+    Write-Output "Installed bigdecimal version: $bigdecimal_version"
+} catch {
+    Write-Error "Failed to configure bigdecimal: $_"
+    throw $_
+}
+
 bundle exec rspec -f $format --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
