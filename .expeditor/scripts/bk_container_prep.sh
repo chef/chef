@@ -3,27 +3,46 @@
 . /etc/os-release
 echo $NAME
 echo $ID
+echo $VERSION_ID
 
 echo "--- Installing packages"
 # Set package manager based on os type
 PACKAGE_MANAGER=""
 PACKAGES=""
+
+# for debian 9, we need to update the source list.
+if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
+  echo "sources.list before:"
+  sudo cat /etc/apt/sources.list
+
+  echo "updating sources.list:"
+  sudo tee /etc/apt/sources.list <<EOF
+deb https://cdn-aws.deb.debian.org/debian-archive/debian stretch main
+deb https://archive.debian.org/debian-security stretch/updates main
+deb https://cdn-aws.deb.debian.org/debian-archive/debian-security stretch/updates main
+EOF
+
+  echo "sources.list after:"
+  sudo cat /etc/apt/sources.list
+fi
+
 case "$ID" in
   ubuntu|debian)
     PACKAGE_MANAGER="apt-get"
-    PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev"
+    PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev"
 
     echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
     sudo $PACKAGE_MANAGER update
     sudo $PACKAGE_MANAGER install $PACKAGES -y
     ;;
   rhel|rocky)
-    PACKAGE_MANAGER="yum"
-    # PACKAGES="$PACKAGES "
+    PACKAGE_MANAGER="dnf"
+    PACKAGES="$PACKAGES openssl-devel libarchive-devel"
+    sudo $PACKAGE_MANAGER install $PACKAGES -y
     ;;
 esac
 
-if [[ "$PACKAGE_MANAGER" == "" ]]; then
+if [[ "$PACKAGE_MANAGER" = "" ]]; then
   echo "Invalid OS type: $ID"
   exit 1
 fi
