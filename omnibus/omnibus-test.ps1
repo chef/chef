@@ -115,7 +115,7 @@ $Env:CHEF_LICENSE = "accept-no-persist"
 winrm quickconfig -quiet
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
-bundle --no-document
+bundle
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # buildkite changes the casing of the Path variable to PATH
