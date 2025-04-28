@@ -234,5 +234,49 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
         expect(bootstrap_context.msi_url("machine", "arch", "ctx")).to eq(custom_url)
       end
     end
+
+    context "with licensing changes" do
+      let(:config) { { channel: "stable", bootstrap_version: "latest" } }
+
+      it "should return the old omnitruck api in case license not present" do
+        nil_license_obj = Chef::Utils::LicensingHandler.new(nil, nil)
+        expect(Chef::Utils::LicensingHandler).to receive(:validate!).and_return(nil_license_obj)
+        b = Chef::Knife::Bootstrap.new([])
+        b.send(:fetch_license)
+        config.merge!(b.config)
+
+        expect(bootstrap_context.msi_url).to eq("https://omnitruck.chef.io/chef/download?p=windows&channel=stable&v=latest")
+      end
+
+      it "should return the correct msi_url for trial license" do
+        license_obj_trial = Chef::Utils::LicensingHandler.new("key-trial-123", "trial")
+        expect(Chef::Utils::LicensingHandler).to receive(:validate!).and_return(license_obj_trial)
+
+        b = Chef::Knife::Bootstrap.new([])
+        b.send(:fetch_license)
+        config.merge!(b.config)
+        expect(bootstrap_context.msi_url).to eq("https://chefdownload-trial.chef.io/stable/chef/download?license_id=key-trial-123&p=windows&v=latest")
+      end
+
+      it "should return the correct msi_url for commercial license" do
+        license_obj_commercial = Chef::Utils::LicensingHandler.new("key-commercial-123", "commercial")
+        expect(Chef::Utils::LicensingHandler).to receive(:validate!).and_return(license_obj_commercial)
+
+        b = Chef::Knife::Bootstrap.new([])
+        b.send(:fetch_license)
+        config.merge!(b.config)
+        expect(bootstrap_context.msi_url).to eq("https://chefdownload-commerical.chef.io/stable/chef/download?license_id=key-commercial-123&p=windows&v=latest")
+      end
+
+      it "should return the omnitruck url in case of airgapped env" do
+        # In case of connection issues with the licensing service, the library will raise this exception
+        expect(ChefLicensing::LicenseKeyFetcher).to receive(:fetch).and_raise(ChefLicensing::RestfulClientConnectionError)
+
+        b = Chef::Knife::Bootstrap.new([])
+        b.send(:fetch_license)
+        config.merge!(b.config)
+        expect(bootstrap_context.msi_url).to eq("https://omnitruck.chef.io/chef/download?p=windows&channel=stable&v=latest")
+      end
+    end
   end
 end

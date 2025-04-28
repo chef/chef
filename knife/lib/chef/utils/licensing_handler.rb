@@ -1,3 +1,20 @@
+#
+# Copyright:: Copyright (c) Chef Software Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 require_relative "licensing_config"
 
 class Chef
@@ -19,9 +36,11 @@ class Chef
       end
 
       def omnitruck_url
-        url = OMNITRUCK_URLS[license_type] || LEGACY_OMNITRUCK_URL
+        url = OMNITRUCK_URLS[license_type]
+        is_legacy = url.nil?
+        url ||= LEGACY_OMNITRUCK_URL
 
-        "#{url}/%s#{license_key ? "?license_id=#{license_key}" : ""}"
+        "#{url}/%s#{is_legacy ? "" : "?license_id=#{license_key}"}"
       end
 
       def install_sh_url

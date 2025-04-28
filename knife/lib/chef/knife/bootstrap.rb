@@ -456,6 +456,10 @@ class Chef
         end
       end
 
+      # This method was renamed to check_eula_license to better reflect its purpose.
+      # Some of the knife plugins may still be using the old name, so we keep it for backward compatibility.
+      alias_method :check_license, :check_eula_license
+
       # The default bootstrap template to use to bootstrap a server.
       # This is a public API hook which knife plugins use or inherit and override.
       #
@@ -1199,6 +1203,7 @@ class Chef
         config[:license_url] = license.install_sh_url
         config[:license_id] = license.license_key
         config[:license_type] = license.license_type
+        config[:omnitruck_url] = license.omnitruck_url
       end
 
       def warn_license_usage
