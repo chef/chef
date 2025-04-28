@@ -115,7 +115,29 @@ $Env:CHEF_LICENSE = "accept-no-persist"
 winrm quickconfig -quiet
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
-bundle
+# # Clear any existing bundle configs
+# bundle config --delete force_ruby_platform
+# bundle config --delete specific_platform
+
+# # Set new configs
+# bundle config set --local force_ruby_platform false
+# bundle config set --local specific_platform true
+# bundle config set --local platform x64-mingw32
+
+Write-Output "Current directory: $(Get-Location)"
+Write-Output "Gemfile location: $(Get-ChildItem Gemfile -ErrorAction SilentlyContinue | Select-Object FullName | Format-Table -HideTableHeaders | Out-String)".Trim()
+
+# Add before bundle install command
+Write-Output "Current BUNDLE_GEMFILE: $env:BUNDLE_GEMFILE"
+Write-Output "Current directory: $(Get-Location)"
+Write-Output "Available Gemfiles:"
+Get-ChildItem -Recurse -Filter "Gemfile" | ForEach-Object {
+    Write-Output "  $($_.FullName)"
+}
+
+bundle config list
+
+bundle install
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # buildkite changes the casing of the Path variable to PATH
@@ -138,21 +160,32 @@ If ($Env:OMNIBUS_TEST_FORMAT) {
   $format = $Env:OMNIBUS_TEST_FORMAT
 }
 
-# Add these lines to properly handle bigdecimal
-# Configure bigdecimal version with error handling
-Write-Output "Configuring bigdecimal version..."
-try {
-    & $embedded_bin_dir\gem.bat uninstall -a bigdecimal
-    & $embedded_bin_dir\gem.bat install bigdecimal -v "2.0.0" --no-document
-    bundle config set --local force_ruby_platform true
+# # Add these lines to properly handle gem dependencies
+# Write-Output "Configuring bundler and gem environment..."
+# try {
+#     # Set bundler configs
+#     bundle config set --local force_ruby_platform true
+#     bundle config set --local specific_platform true
     
-    # Verify installation
-    $bigdecimal_version = & $embedded_bin_dir\gem.bat list bigdecimal
-    Write-Output "Installed bigdecimal version: $bigdecimal_version"
-} catch {
-    Write-Error "Failed to configure bigdecimal: $_"
-    throw $_
-}
+#     # Clean and reinstall critical gems with --force flag
+#     & $embedded_bin_dir\gem.bat uninstall -a bigdecimal
+#     & $embedded_bin_dir\gem.bat install bigdecimal -v "2.0.0" --no-document
+#     # & $embedded_bin_dir\gem.bat install ffi -v "1.15.5" --platform=ruby --no-document
+#     # & $embedded_bin_dir\gem.bat install ffi-yajl --no-document
+    
+#     # Update bundle
+#     # bundle update --conservative
+#     # bundle install
+    
+#     # Verify installations
+#     Write-Output "Installed versions:"
+#     & $embedded_bin_dir\gem.bat list bigdecimal
+#     & $embedded_bin_dir\gem.bat list ffi
+#     & $embedded_bin_dir\gem.bat list ffi-yajl
+# } catch {
+#     Write-Error "Failed to configure gems: $_"
+#     throw $_
+# }
 
 bundle exec rspec -f $format --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }

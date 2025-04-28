@@ -27,6 +27,12 @@ GIT
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw32)
+      ffi (~> 1.15)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
 
 PATH
   remote: .
@@ -44,7 +50,7 @@ PATH
       erubis (~> 2.7)
       ffi (>= 1.15)
       ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
+      ffi-yajl (= 2.4.0)
       highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
@@ -70,6 +76,7 @@ PATH
     chef (16.18.42-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.1)
+      bigdecimal (= 2.0.0)
       bundler (>= 1.10)
       chef-config (= 16.18.42)
       chef-powershell (~> 1.0.12)
@@ -81,7 +88,7 @@ PATH
       erubis (~> 2.7)
       ffi (>= 1.15)
       ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
+      ffi-yajl (= 2.4.0)
       highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
@@ -150,6 +157,7 @@ GEM
     bcrypt_pbkdf (1.1.0)
     bcrypt_pbkdf (1.1.0-x64-mingw32)
     bcrypt_pbkdf (1.1.0-x86-mingw32)
+    bigdecimal (2.0.0)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)

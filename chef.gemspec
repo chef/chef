@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
 
   # s.add_dependency "ffi", ">= 1.9.25"
   s.add_dependency "ffi", ">= 1.15"
-  s.add_dependency "ffi-yajl", "~> 2.2"
+  s.add_dependency "ffi-yajl", "= 2.4.0"
   s.add_dependency "net-ssh", ">= 5.1", "< 7"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0"

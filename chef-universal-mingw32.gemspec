@@ -16,6 +16,7 @@ gemspec.add_dependency "win32-taskscheduler", "~> 2.0"
 gemspec.add_dependency "iso8601", ">= 0.12.1", "< 0.14" # validate 0.14 when it comes out
 gemspec.add_dependency "win32-certstore", "~> 0.5.0" # 0.5+ required for specifying user vs. system store
 gemspec.add_dependency "chef-powershell", "~> 1.0.12"
+gemspec.add_dependency "bigdecimal", "= 2.0.0"
 gemspec.extensions << "ext/win32-eventlog/Rakefile"
 gemspec.files += Dir.glob("{distro,ext}/**/*")
 
