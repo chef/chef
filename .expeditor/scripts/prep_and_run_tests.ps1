@@ -25,8 +25,39 @@ if(-not ($installed_version -match ('^2'))){
 
 }
 
+try {
+    $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
+    $ruby_version = $buildkiteJSONData.ruby_version
+    
+    Write-Output "--- Fetching ruby package at $ruby_version.*"
+    # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
+    # for 3.1.6
+    $allVersions = choco search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
+    Write-Output "Found ruby versions: $allVersions"
+    if ($allVersions.Count -eq 0) {
+        throw "No version found matching ruby $ruby_version.*"
+    }
+
+    $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
+
+    Write-Output "--- Installing ruby version $latestMatchingVersion"
+    choco install ruby --version=$latestMatchingVersion -y 
+
+    $env:Path += ";C:\ProgramData\chocolatey\lib\ruby\tools\ruby\bin"
+
+    ruby -v
+    
+    $bundler_version = $buildkiteJSONData.bundle_version
+    gem install bundler -v $bundler_version
+    bundle -v
+
+} catch {
+    Write-Output "Error setting up ruby environment"
+    Write-Output $_
+}
+
 Write-Output "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3
+bundle install --jobs=3 --retry=3 
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
