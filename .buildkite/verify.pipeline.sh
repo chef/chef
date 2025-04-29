@@ -10,58 +10,57 @@ echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-
 echo "steps:"
 echo ""
 
-test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
+# test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
 
-for platform in ${test_platforms[@]}; do
-  echo "- label: \"{{matrix}} $platform :ruby:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
-  echo "    queue: default-privileged"
-  echo "  matrix:"
-  echo "    - \"Unit\""
-  echo "    - \"Integration\""
-  echo "    - \"Functional\""
-  echo "  plugins:"
-  echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
-  echo "      privileged: true"
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
-  echo "      propagate-environment: true"
-  echo "  commands:"
-  echo "    - .expeditor/scripts/bk_container_prep.sh"
-  echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
-  echo "  timeout_in_minutes: 60"
-done
-
-# win_test_platforms=("windows-2019:windows-2019")
-
-# for platform in ${win_test_platforms[@]}; do
-#   echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
+# for platform in ${test_platforms[@]}; do
+#   echo "- label: \"{{matrix}} $platform :ruby:\""
 #   echo "  retry:"
 #   echo "    automatic:"
 #   echo "      limit: 1"
 #   echo "  agents:"
-#   echo "    queue: default-${platform%:*}-privileged"
+#   echo "    queue: default-privileged"
 #   echo "  matrix:"
 #   echo "    - \"Unit\""
 #   echo "    - \"Integration\""
+#   echo "    - \"Functional\""
 #   echo "  plugins:"
 #   echo "  - docker#v3.5.0:"
 #   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
-#   echo "      shell:"
-#   echo "      - powershell"
-#   echo "      - \"-Command\""
+#   echo "      privileged: true"
 #   echo "      environment:"
 #   echo "        - CHEF_FOUNDATION_VERSION"
 #   echo "      propagate-environment: true"
 #   echo "  commands:"
-#   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-#   echo "  timeout_in_minutes: 120"
-
+#   echo "    - .expeditor/scripts/bk_container_prep.sh"
+#   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
+#   echo "  timeout_in_minutes: 60"
 # done
+
+win_test_platforms=("windows-2019:windows-2019")
+
+for platform in ${win_test_platforms[@]}; do
+  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  agents:"
+  echo "    queue: default-${platform%:*}-privileged"
+  echo "  matrix:"
+  echo "    - \"Unit\""
+  echo "    - \"Integration\""
+  echo "  plugins:"
+  echo "  - docker#v3.5.0:"
+  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      shell:"
+  echo "      - powershell"
+  echo "      - \"-Command\""
+  echo "      environment:"
+  echo "        - CHEF_FOUNDATION_VERSION"
+  echo "      propagate-environment: true"
+  echo "  commands:"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "  timeout_in_minutes: 120"
+done
 
 # for platform in ${win_test_platforms[@]}; do
 #   echo "- label: \"Functional ${platform#*:} :windows:\""
