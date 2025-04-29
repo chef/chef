@@ -201,7 +201,7 @@ class Chef
           }
         )
         full_path = create_cache_path(path, false)
-        File.exist?(full_path)) || false
+        File.exist?(full_path) || false
       end
 
       alias_method :has_key?, :key?
