@@ -9,24 +9,60 @@ if ($TestType -eq 'Functional') {
     winrm quickconfig -q
 }
 
-Write-Output "--- Checking the Chocolatey version"
-$installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
-if(-not ($installed_version -match ('^2'))){
-    Write-Output "--- Now Upgrading Choco"
-    try {
-        choco feature enable -n=allowGlobalConfirmation
-        choco upgrade chocolatey
-    }
-    catch {
-        Write-Output "Upgrade Failed"
-        Write-Output $_
-        <#Do this if a terminating exception happens#>
+# Write-Output "--- Checking the Chocolatey version"
+# $installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
+# if(-not ($installed_version -match ('^2'))){
+#     Write-Output "--- Now Upgrading Choco"
+#     try {
+#         choco feature enable -n=allowGlobalConfirmation
+#         choco upgrade chocolatey
+#     }
+#     catch {
+#         Write-Output "Upgrade Failed"
+#         Write-Output $_
+#         <#Do this if a terminating exception happens#>
+#     }
+
+# }
+
+try {
+    $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
+    $ruby_version = $buildkiteJSONData.ruby_version
+    
+    Write-Output "--- Fetching ruby package at $ruby_version.*"
+    # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
+    # for 3.1.6
+    $allVersions = choco search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
+    Write-Output "Found ruby versions: $allVersions"
+    if ($allVersions.Count -eq 0) {
+        throw "No version found matching ruby $ruby_version.*"
     }
 
+    $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
+
+    Write-Output "--- Installing ruby version $latestMatchingVersion"
+    choco install ruby --version=$latestMatchingVersion -y 
+
+    # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
+    $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
+    $installedVersion = $installedVersion -replace '\.', ''
+    $env:Path += ";C:\tools\ruby$installedVersion\bin"
+
+    ruby -v
+
+    $bundler_version = $buildkiteJSONData.bundle_version
+
+    Write-Output "--- Installing bundler $bundler_version"
+    gem install bundler -v $bundler_version
+    bundle -v
+
+} catch {
+    Write-Output "Error setting up ruby environment"
+    Write-Output $_
 }
 
 Write-Output "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3
+bundle install --jobs=3 --retry=3 
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
