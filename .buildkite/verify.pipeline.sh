@@ -62,20 +62,20 @@ for platform in ${win_test_platforms[@]}; do
   echo "  timeout_in_minutes: 120"
 done
 
-# for platform in ${win_test_platforms[@]}; do
-#   echo "- label: \"Functional ${platform#*:} :windows:\""
-#   echo "  retry:"
-#   echo "    automatic:"
-#   echo "      limit: 1"
-#   echo "  commands:"
-#   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
-#   echo "  agents:"
-#   echo "    queue: single-use-windows-2019-privileged"
-#   echo "  env:"
-#   echo "  - CHEF_FOUNDATION_VERSION"
-#   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-#   echo "  timeout_in_minutes: 120"
-# done
+for platform in ${win_test_platforms[@]}; do
+  echo "- label: \"Functional ${platform#*:} :windows:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  commands:"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
+  echo "  agents:"
+  echo "    queue: single-use-windows-2019-privileged"
+  echo "  env:"
+  echo "  - CHEF_FOUNDATION_VERSION"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "  timeout_in_minutes: 120"
+done
 
 # external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
 
