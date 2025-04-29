@@ -34,10 +34,10 @@ class Chef
       target_mode support: :full,
         introduced: "15.1"
 
-      description "Use the **log** resource to create log entries. The log resource behaves"\
-                  " like any other resource: built into the resource collection during the"\
-                  " compile phase, and then run during the execution phase. (To create a log"\
-                  " entry that is not built into the resource collection, use Chef::Log instead"\
+      description "Use the **log** resource to create log entries. The log resource behaves" \
+                  " like any other resource: built into the resource collection during the" \
+                  " compile phase, and then run during the execution phase. (To create a log" \
+                  " entry that is not built into the resource collection, use Chef::Log instead" \
                   " of the log resource.)"
 
       property :message, String,

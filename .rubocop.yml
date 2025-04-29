@@ -4,6 +4,7 @@ AllCops:
     - "spec/data/**/*"
     - "knife/spec/data/**/*"
     - "vendor/**/*"
+    - "*/vendor/**/*"
     - "pkg/**/*"
     - "chef-config/pkg/**/*"
     - "habitat/**/*"

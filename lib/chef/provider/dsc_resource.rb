@@ -114,7 +114,7 @@ class Chef
           r = case found.length
               when 0
                 raise Chef::Exceptions::ResourceNotFound,
-                  "Could not find #{dsc_resource_name}. Check to make "\
+                  "Could not find #{dsc_resource_name}. Check to make " \
                   "sure that it shows up when running Get-DscResource"
               when 1
                 if found[0]["Module"].nil?
@@ -162,7 +162,7 @@ class Chef
 
       def invoke_resource(method)
         properties = translate_type(new_resource.properties)
-        switches = "-Method #{method} -Name #{new_resource.resource}"\
+        switches = "-Method #{method} -Name #{new_resource.resource}" \
                    " -Property #{properties} -Module #{module_info_object} -Verbose"
         Timeout.timeout(new_resource.timeout) {
           powershell_exec!("Invoke-DscResource #{switches}")

@@ -87,7 +87,7 @@ iface <%= new_resource.device %> <%= new_resource.family %> static
           directory INTERFACES_DOT_D_DIR
 
           # roll our own file_edit resource, this will not get reported until we have a file_edit resource
-          interfaces_dot_d_for_regexp = INTERFACES_DOT_D_DIR.gsub(/\./, "\\.") # escape dots for the regexp
+          interfaces_dot_d_for_regexp = INTERFACES_DOT_D_DIR.gsub(".", "\\.") # escape dots for the regexp
           regexp = %r{^\s*source\s+#{interfaces_dot_d_for_regexp}/\*\s*$}
 
           return if ::TargetIO::File.exist?(INTERFACES_FILE) && regexp.match(IO.read(INTERFACES_FILE))

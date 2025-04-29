@@ -25,12 +25,12 @@ class Chef
       provides :package, target_mode: true
       target_mode support: :full
 
-      description "Use the **package** resource to manage packages. When the package is"\
-                  " installed from a local file (such as with RubyGems, dpkg, or RPM"\
-                  " Package Manager), the file must be added to the node using the remote_file"\
-                  " or cookbook_file resources.\n\nThis resource is the base resource for"\
-                  " several other resources used for package management on specific platforms."\
-                  " While it is possible to use each of these specific resources, it is"\
+      description "Use the **package** resource to manage packages. When the package is" \
+                  " installed from a local file (such as with RubyGems, dpkg, or RPM" \
+                  " Package Manager), the file must be added to the node using the remote_file" \
+                  " or cookbook_file resources.\n\nThis resource is the base resource for" \
+                  " several other resources used for package management on specific platforms." \
+                  " While it is possible to use each of these specific resources, it is" \
                   " recommended to use the package resource as often as possible."
 
       default_action :install

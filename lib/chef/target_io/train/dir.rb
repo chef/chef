@@ -59,7 +59,7 @@ module TargetIO
 
           tmpdir = ::Dir.tmpdir
           t = Time.now.strftime("%Y%m%d%s")
-          path = "#{prefix}#{t}-#{$$}-#{random}" "#{suffix || ""}"
+          path = "#{prefix}#{t}-#{$$}-#{random}" + "#{suffix || ""}"
           path = ::File.join(tmpdir, path)
 
           ::TargetIO::FileUtils.mkdir(path)

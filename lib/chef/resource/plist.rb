@@ -206,7 +206,7 @@ class Chef
               end
         entry_with_arg = ["\"#{entry}\"", arg].join(sep).strip
         subcommand = "#{subcommand.capitalize} :#{entry_with_arg}"
-        [PLISTBUDDY_EXECUTABLE, "-c", "\'#{subcommand}\'", "\"#{path}\""].join(" ")
+        [PLISTBUDDY_EXECUTABLE, "-c", "'#{subcommand}'", "\"#{path}\""].join(" ")
       end
 
       def setting_from_plist(entry, path)

@@ -1208,7 +1208,7 @@ module ChefConfig
                 end
               end
 
-      return proxy unless fuzzy_hostname_match_any?(host, ENV["no_proxy"])
+      proxy unless fuzzy_hostname_match_any?(host, ENV["no_proxy"])
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt

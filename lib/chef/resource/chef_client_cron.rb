@@ -141,7 +141,7 @@ class Chef
         description: "The process priority to run the #{ChefUtils::Dist::Infra::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
         introduced: "16.5",
         coerce: proc { |x| Integer(x) },
-        callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
+        callbacks: { "should be an Integer between -20 and 19" => proc { |v| v.between?(-20, 19) } }
 
       action :add, description: "Add a cron job to run #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists

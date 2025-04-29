@@ -106,7 +106,7 @@ class Chef
       property :custom_detection_frequency, Integer, default: 22, description: "If you decided to override the OS default detection frequency, specify your choice here. Valid choices are 0 - 22",
       callbacks: {
         "should be a valid detection frequency (0-22)" => lambda { |p|
-          p >= 0 && p <= 22
+          p.between?(0, 22)
         },
       }
       # a time period of between 0 and 22 hours to check for new updates

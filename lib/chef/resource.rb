@@ -255,7 +255,7 @@ class Chef
         when "before"
           notifies_before(action, resource)
         else
-          raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
+          raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} " \
             "Valid timings are: :delayed, :immediate, :immediately, :before"
         end
       end

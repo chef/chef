@@ -233,7 +233,7 @@ class Chef
 
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
-        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v.between?(0, 10) } }
 
       property :disallow_start_if_on_batteries, [TrueClass, FalseClass],
         introduced: "14.4", default: false,
@@ -300,7 +300,7 @@ class Chef
 
       # Validate the passed value is numeric values only if it is a string
       def numeric_value_in_string?(val)
-        return true if Integer(val)
+        true if Integer(val)
       rescue ArgumentError
         false
       end

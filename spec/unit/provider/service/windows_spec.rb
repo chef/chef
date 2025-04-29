@@ -955,7 +955,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       expect(provider.grant_service_logon(username)).to equal true
     end
 
-    it "strips '.\' from user name when sending to win32 api" do
+    it "strips '.' from user name when sending to win32 api" do
       expect(Chef::ReservedNames::Win32::Security).to receive(:add_account_right).with(username, service_right)
       expect(provider.grant_service_logon(".\\#{username}")).to equal true
     end

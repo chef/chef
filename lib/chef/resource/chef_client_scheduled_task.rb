@@ -145,7 +145,7 @@ class Chef
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
         introduced: "17.5",
-        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v.between?(0, 10) } }
 
       action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
