@@ -119,11 +119,6 @@ class Chef
               yield result
             end
 
-          when :both_nonexistent
-          when :added_cannot_upload
-          when :deleted_cannot_download
-          when :same
-            # Skip these silently
           when :error
             if error.is_a?(Chef::ChefFS::FileSystem::OperationFailedError)
               ui.error "#{format_path.call(error.entry)} failed to #{error.operation}: #{error.message}" if ui
@@ -133,6 +128,12 @@ class Chef
             else
               raise error
             end
+          else
+            # when :both_nonexistent
+            # when :added_cannot_upload
+            # when :deleted_cannot_download
+            # when :same
+            # Skip these silently
           end
         end
         unless found_match
