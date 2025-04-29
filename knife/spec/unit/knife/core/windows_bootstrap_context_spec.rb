@@ -209,7 +209,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       end
 
       it "returns a chef.io msi url with provided url parameters substituted" do
-        reference_url = "https://omnitruck.chef.io/chef/download?p=windows&pv=machine&m=arch&DownloadContext=ctx&channel=stable&v=something"
+        reference_url = "https://omnitruck.chef.io/chef/download?p=windows&channel=stable&pv=machine&m=arch&DownloadContext=ctx&v=something"
         expect(bootstrap_context.msi_url("machine", "arch", "ctx")).to eq(reference_url)
       end
 
