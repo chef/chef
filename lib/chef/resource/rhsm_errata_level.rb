@@ -36,7 +36,7 @@ class Chef
       DOC
 
       property :errata_level, String,
-        coerce: proc { |x| x.downcase },
+        coerce: proc(&:downcase),
         equal_to: %w{critical moderate important low},
         description: "An optional property for specifying the errata level of packages to install if it differs from the resource block's name.",
         name_property: true

@@ -99,7 +99,7 @@ class Chef::Application::Base < Chef::Application
     short: "-l LEVEL",
     long: "--log_level LEVEL",
     description: "Set the log level (auto, trace, debug, info, warn, error, fatal).",
-    proc: lambda { |l| l.to_sym }
+    proc: lambda(&:to_sym)
 
   option :log_location_cli,
     short: "-L LOGLOCATION",
@@ -141,7 +141,7 @@ class Chef::Application::Base < Chef::Application
     short: "-i SECONDS",
     long: "--interval SECONDS",
     description: "Run #{ChefUtils::Dist::Infra::PRODUCT} periodically, in seconds.",
-    proc: lambda { |s| s.to_i }
+    proc: lambda(&:to_i)
 
   option :json_attribs,
     short: "-j JSON_ATTRIBS",
@@ -159,7 +159,7 @@ class Chef::Application::Base < Chef::Application
     short: "-s SECONDS",
     long: "--splay SECONDS",
     description: "The splay time for running at intervals, in seconds.",
-    proc: lambda { |s| s.to_i }
+    proc: lambda(&:to_i)
 
   option :environment,
     short: "-E ENVIRONMENT",
@@ -191,7 +191,7 @@ class Chef::Application::Base < Chef::Application
   option :run_lock_timeout,
     long: "--run-lock-timeout SECONDS",
     description: "Set maximum duration to wait for another client run to finish, default is indefinitely.",
-    proc: lambda { |s| s.to_i }
+    proc: lambda(&:to_i)
 
   option :version,
     short: "-v",
