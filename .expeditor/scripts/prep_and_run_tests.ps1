@@ -9,21 +9,21 @@ if ($TestType -eq 'Functional') {
     winrm quickconfig -q
 }
 
-Write-Output "--- Checking the Chocolatey version"
-$installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
-if(-not ($installed_version -match ('^2'))){
-    Write-Output "--- Now Upgrading Choco"
-    try {
-        choco feature enable -n=allowGlobalConfirmation
-        choco upgrade chocolatey
-    }
-    catch {
-        Write-Output "Upgrade Failed"
-        Write-Output $_
-        <#Do this if a terminating exception happens#>
-    }
+# Write-Output "--- Checking the Chocolatey version"
+# $installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
+# if(-not ($installed_version -match ('^2'))){
+#     Write-Output "--- Now Upgrading Choco"
+#     try {
+#         choco feature enable -n=allowGlobalConfirmation
+#         choco upgrade chocolatey
+#     }
+#     catch {
+#         Write-Output "Upgrade Failed"
+#         Write-Output $_
+#         <#Do this if a terminating exception happens#>
+#     }
 
-}
+# }
 
 try {
     $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
@@ -43,11 +43,16 @@ try {
     Write-Output "--- Installing ruby version $latestMatchingVersion"
     choco install ruby --version=$latestMatchingVersion -y 
 
-    $env:Path += ";C:\ProgramData\chocolatey\lib\ruby\tools\ruby\bin"
+    # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
+    $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
+    $installedVersion = $installedVersion -replace '\.', ''
+    $env:Path += ";C:\tools\ruby$installedVersion\bin"
 
     ruby -v
-    
+
     $bundler_version = $buildkiteJSONData.bundle_version
+
+    Write-Output "--- Installing bundler $bundler_version"
     gem install bundler -v $bundler_version
     bundle -v
 
