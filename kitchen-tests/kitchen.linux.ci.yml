@@ -3,6 +3,7 @@ driver:
   name: vagrant
   box_auto_update: true
   box_auto_prune: true
+  boot_timeout: 600
 
 provisioner:
   name: chef_infra
