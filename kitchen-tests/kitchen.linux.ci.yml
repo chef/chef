@@ -3,6 +3,9 @@ driver:
   name: vagrant
   box_auto_update: true
   box_auto_prune: true
+  vagrant__config:
+    # wait 10 minute for boot instead of 5
+    vm.boot_timeout: 600
 
 provisioner:
   name: chef_infra
