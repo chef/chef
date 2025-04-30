@@ -14,13 +14,28 @@
 # in this file and also tag that image as "latest" on Docker Hub. Additionally major and minor tags will be
 # applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
 
-FROM busybox
+
+FROM almalinux:8
 LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 
 ARG CHANNEL=stable
 ARG VERSION=18.7.6
 ARG ARCH=x86_64
-ARG PKG_VERSION=9
+ARG PKG_VERSION=8
+
+RUN dnf -y upgrade && \
+    dnf -y --skip-broken \
+    install \
+    libxcrypt-compat \
+    hostname \
+    libffi-devel \ 
+    gcc \
+    gcc-c++ \
+    make \ 
+    rpm2cpio \ 
+    wget \
+    cpio
+
 
 RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/${PKG_VERSION}/chef-${VERSION}-1.el${PKG_VERSION}.${ARCH}.rpm" -O /tmp/chef-client.rpm && \
     rpm2cpio /tmp/chef-client.rpm | cpio -idmv && \
