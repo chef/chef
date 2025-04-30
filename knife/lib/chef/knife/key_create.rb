@@ -89,11 +89,7 @@ class Chef
           key.name(@config[:key_name])
         end
 
-        if @config[:expiration_date]
-          key.expiration_date(@config[:expiration_date])
-        else
-          key.expiration_date("infinity")
-        end
+        key.expiration_date(@config[:expiration_date] || "infinity")
 
         output = edit_hash(key)
         key = create_key_from_hash(output)

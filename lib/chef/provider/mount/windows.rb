@@ -30,7 +30,7 @@ class Chef
         provides :mount, os: "windows"
 
         def is_volume(name)
-          /^\\\\\?\\Volume\{[\w-]+\}\\$/.match?(name) ? true : false
+          /^\\\\\?\\Volume\{[\w-]+\}\\$/.match?(name) || false
         end
 
         def initialize(new_resource, run_context)

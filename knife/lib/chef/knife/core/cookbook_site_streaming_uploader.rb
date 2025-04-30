@@ -218,11 +218,7 @@ class Chef
 
             how_much_current_part = @parts[@part_no].size - @part_offset
 
-            how_much_current_part = if how_much_current_part > how_much
-                                      how_much
-                                    else
-                                      how_much_current_part
-                                    end
+            how_much_current_part = [how_much_current_part, how_much].min
 
             how_much_next_part = how_much - how_much_current_part
 

@@ -47,11 +47,11 @@ class Chef
 
         def find_subcommands_via_rubygems
           files = find_files_latest_gems "chef/knife/*.rb"
-          version_file_match = /#{Regexp.escape(File.join('chef', 'knife', 'version'))}$/
+          version_file_match = /#{Regexp.escape(File.join("chef", "knife", "version"))}$/
           subcommand_files = {}
           files.each do |file|
 
-            rel_path = file[/(.*)(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 2]
+            rel_path = file[/(.*)(#{Regexp.escape File.join("chef", "knife", "")}.*)\.rb/, 2]
 
             # When not installed as a gem (ChefDK/appbundler in particular), AND
             # a different version of Chef is installed via gems, `files` will

@@ -282,15 +282,13 @@ class Chef
         # validate that peers have been passed with a port # for toml file
         def peer_list_with_port
           if new_resource.peer
-            peer_list = []
-            new_resource.peer.each do |p|
-              peer_list << if !/.*:.*/.match?(p)
-                             p + ":9632"
-                           else
-                             p
-                           end
+            peer_list = new_resource.peer.map do |p|
+              if !/.*:.*/.match?(p)
+                p + ":9632"
+              else
+                p
+              end
             end
-            peer_list
           end
         end
 

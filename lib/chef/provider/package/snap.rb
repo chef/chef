@@ -130,7 +130,7 @@ class Chef
             "Accept: application/json\r\n" +
             "Content-Type: application/json\r\n"
           if method == "POST"
-            pdata = post_data.to_json.to_s
+            pdata = post_data.to_json
             request.concat("Content-Length: #{pdata.bytesize}\r\n\r\n#{pdata}")
           end
           request.concat("\r\n")

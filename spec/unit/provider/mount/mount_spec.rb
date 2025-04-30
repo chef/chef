@@ -241,7 +241,7 @@ describe Chef::Provider::Mount::Mount do
     end
 
     it "should ignore commented lines in fstab " do
-      fstab = "\# #{@new_resource.device}  #{@new_resource.mount_point}  ext3  defaults  1 2\n"
+      fstab = "# #{@new_resource.device}  #{@new_resource.mount_point}  ext3  defaults  1 2\n"
       allow(::File).to receive(:foreach).with("/etc/fstab").and_yield fstab
 
       @provider.load_current_resource

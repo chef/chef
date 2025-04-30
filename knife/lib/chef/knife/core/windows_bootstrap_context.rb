@@ -175,7 +175,7 @@ class Chef
 
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
 
-          start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
+          start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin;%PATH%\"\n"
           start_chef << "#{ChefUtils::Dist::Infra::CLIENT} -c #{client_rb} -j #{first_boot}#{bootstrap_environment_option}\n"
         end
 
@@ -187,7 +187,7 @@ class Chef
             path = WScript.Arguments.Named("path")
             proxy = null
             '* Vaguely attempt to handle file:// scheme urls by url unescaping and switching all
-            '* / into \.  Also assume that file:/// is a local absolute path and that file://<foo>
+            '* / into .  Also assume that file:/// is a local absolute path and that file://<foo>
             '* is possibly a network file path.
             If InStr(url, "file://") = 1 Then
             url = Unescape(url)
@@ -373,7 +373,7 @@ class Chef
                 @move "%CHEF_CLIENT_MSI_LOG_PATH%" "!OLDLOGLOCATION!" > NUL
                 @echo WARNING: Saving installation log of failure at !OLDLOGLOCATION!
                 @echo WARNING: Retrying installation with local context...
-                @schtasks /create /f  /sc once /st 00:00:00 /tn chefclientbootstraptask /ru SYSTEM /rl HIGHEST /tr \"cmd /c #{command} & sleep 2 & waitfor /s %computername% /si chefclientinstalldone\"
+                @schtasks /create /f  /sc once /st 00:00:00 /tn chefclientbootstraptask /ru SYSTEM /rl HIGHEST /tr "cmd /c #{command} & sleep 2 & waitfor /s %computername% /si chefclientinstalldone"
 
                 @if ERRORLEVEL 1 (
                     @echo ERROR: Failed to create #{ChefUtils::Dist::Infra::PRODUCT} installation scheduled task with status code !ERRORLEVEL! > "&2"

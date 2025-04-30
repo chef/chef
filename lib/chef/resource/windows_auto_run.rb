@@ -32,7 +32,7 @@ class Chef
       ```ruby
       windows_auto_run 'BGINFO' do
         program 'C:/Sysinternals/bginfo.exe'
-        args    '\'C:/Sysinternals/Config.bgi\' /NOLICPROMPT /TIMER:0'
+        args    "'C:/Sysinternals/Config.bgi' /NOLICPROMPT /TIMER:0"
         action  :create
       end
       ```

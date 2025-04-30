@@ -50,9 +50,9 @@ class Chef
 
               # Windows does not support the sticky or setuid bits
               if ChefUtils.windows?
-                Integer(m) <= 0777 && Integer(m) >= 0
+                Integer(m).between?(0, 0777)
               else
-                Integer(m) <= 07777 && Integer(m) >= 0
+                Integer(m).between?(0, 07777)
               end
             end,
           }

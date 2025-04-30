@@ -35,7 +35,7 @@ class Chef
       body_hash = {
         groupname: "#{groupname}",
         actors: {
-          "users" => group["actors"].concat([username]),
+          "users" => group["actors"].push(username),
           "groups" => group["groups"],
         },
       }

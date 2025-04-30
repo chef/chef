@@ -161,7 +161,7 @@ class Chef
         description: "The path to a package in the local file system or the URL of a remote file that will be downloaded."
 
       property :checksum, String,
-        desired_state: false, coerce: (proc { |c| c.downcase }),
+        desired_state: false, coerce: (proc(&:downcase)),
         description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{ChefUtils::Dist::Infra::PRODUCT} does not download it. Use when a URL is specified by the `source` property."
 
       property :remote_file_attributes, Hash,

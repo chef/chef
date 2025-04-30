@@ -330,13 +330,9 @@ class Chef
         # @return [Array] Array of handler data
         #
         def format_handler(handler_property)
-          handler_data = []
-
-          handler_property.each do |handler|
-            handler_data << "#{handler["class"]}.new(#{handler["arguments"].join(",")})"
+          handler_data = handler_property.map do |handler|
+            "#{handler["class"]}.new(#{handler["arguments"].join(",")})"
           end
-
-          handler_data
         end
       end
     end

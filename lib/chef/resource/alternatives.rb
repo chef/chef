@@ -92,7 +92,7 @@ class Chef
         description: "The absolute path to the original application binary such as `/usr/bin/ruby27`."
 
       property :priority, [String, Integer],
-        coerce: proc { |n| n.to_i },
+        coerce: proc(&:to_i),
         description: "The priority of the alternative."
 
       def define_resource_requirements

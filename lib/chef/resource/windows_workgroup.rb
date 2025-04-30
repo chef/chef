@@ -107,7 +107,7 @@ class Chef
         # return [String] the appropriate PS command to joint the workgroup
         def join_command
           cmd = ""
-          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;" if new_resource.password
+          cmd << "$pswd = ConvertTo-SecureString '#{new_resource.password}' -AsPlainText -Force;" if new_resource.password
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);" if new_resource.password
           cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name}"
           cmd << " -Credential $credential" if new_resource.password
