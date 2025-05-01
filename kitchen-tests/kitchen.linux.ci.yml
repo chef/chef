@@ -54,8 +54,8 @@ platforms:
   - name: almalinux-9
   - name: amazonlinux-2
   - name: amazonlinux-2023
-  - name: debian-12
   - name: debian-11
+  - name: debian-12
   - name: fedora-40
   - name: fedora-latest
   - name: opensuse-leap-15
