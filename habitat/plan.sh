@@ -44,6 +44,7 @@ pkg_version() {
 
 do_before() {
   do_default_before
+  hab pkg install core/bundler -c unstable
   update_pkg_version
   # We must wait until we update the pkg_version to use the pkg_version
   pkg_filename="${pkg_name}-${pkg_version}.tar.gz"
