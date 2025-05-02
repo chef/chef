@@ -120,7 +120,7 @@ jobs:
           - debian-11
           - debian-12
           - fedora-40
-          # fedora-latest
+          # - fedora-latest
           - opensuse-leap-15
           - oracle-7
           - oracle-8
@@ -130,7 +130,7 @@ jobs:
           - ubuntu-2004
           - ubuntu-2204
           # - ubuntu-2404
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
@@ -149,4 +149,11 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
+        run: |
+          # To debug, uncomment these
+          #export VAGRANT_LOG=debug
+          #export VBOX_LOG=all.e.l.f
+          #export VBOX_LOG_DEST=stdout
+          #export K_DEBUG_OPTS="--log-level=debug"
+          export LOGNAME=$USER
+          kitchen test end-to-end-${{ matrix.os }} $K_DEBUG_OPTS
