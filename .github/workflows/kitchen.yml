@@ -95,7 +95,7 @@ jobs:
           - ubuntu-2004
           - ubuntu-2204
 #          - ubuntu-2404 not officially supported and errors occurring
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
@@ -133,7 +133,7 @@ jobs:
           - ubuntu-2004
           - ubuntu-2204
 #          - ubuntu-2404 not officially supported and errors occurring.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
