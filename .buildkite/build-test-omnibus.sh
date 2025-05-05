@@ -305,7 +305,7 @@ then
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
-    if [[ ${platform%:*} == mac_os_x*x86_64 ]]
+    if [[ ${platform%:*} == mac_os_x* ]]
     then
       echo "      remote-host: buildkite-omnibus-${platform%:*}"
     fi
