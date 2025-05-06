@@ -12,7 +12,7 @@ plugins), `chef-apply`, `chef-solo`, `chef-client -z`, etc.
 
 * Requests for new or alternative functionality should be made to [feedback.chef.io](https://feedback.chef.io/forums/301644-chef-product-feedback/category/110832-chef-client)
 * [Chef Server issues](https://github.com/chef/chef-server/issues/new)
-* [ChefDK issues](https://github.com/chef/chef-dk/issues/new)
+* [Chef Workstation issues](https://github.com/chef/chef-workstation/issues/new)
 * Cookbook Issues (see the https://github.com/chef-cookbooks repos or search [Supermarket](https://supermarket.chef.io) or GitHub/Google)
 
 -->
