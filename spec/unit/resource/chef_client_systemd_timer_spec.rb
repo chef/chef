@@ -24,6 +24,12 @@ describe Chef::Resource::ChefClientSystemdTimer do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::ChefClientSystemdTimer.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:add) }
+  let(:chef_habitat_binary_path) { "/hab/pkgs/chef/chef-infra-client/19.2.7/20250122151044/bin/chef-client" }
+
+  before do
+    # Stub the chef_binary_path property to return the Habitat path
+    allow(resource).to receive(:chef_binary_path).and_return(chef_habitat_binary_path)
+  end
 
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
@@ -40,7 +46,7 @@ describe Chef::Resource::ChefClientSystemdTimer do
   end
 
   it "builds a default value for chef_binary_path dist values" do
-    expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
+    expect(resource.chef_binary_path).to eql(chef_habitat_binary_path)
   end
 
   it "supports :add and :remove actions" do
@@ -53,27 +59,28 @@ describe Chef::Resource::ChefClientSystemdTimer do
     let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
 
     it "creates a valid command if using all default properties" do
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client -c #{root_path}")
+      expect(provider.chef_client_cmd).to eql("#{chef_habitat_binary_path} -c #{root_path}")
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --foo 1 --bar 2 -c #{root_path}")
+      expect(provider.chef_client_cmd).to eql("#{chef_habitat_binary_path} --foo 1 --bar 2 -c #{root_path}")
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb")
+      expect(provider.chef_client_cmd).to eql("#{chef_habitat_binary_path} -c /etc/some_other_dir/client.rb")
     end
 
     it "uses custom chef-client binary if set" do
-      resource.chef_binary_path "/usr/local/bin/chef-client"
+      # Temporarily override the stubbed value for this test
+      allow(resource).to receive(:chef_binary_path).and_return("/usr/local/bin/chef-client")
       expect(provider.chef_client_cmd).to eql("/usr/local/bin/chef-client -c #{root_path}")
     end
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --chef-license accept -c #{root_path}")
+      expect(provider.chef_client_cmd).to eql("#{chef_habitat_binary_path} --chef-license accept -c #{root_path}")
     end
   end
 

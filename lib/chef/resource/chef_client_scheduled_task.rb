@@ -68,6 +68,7 @@ class Chef
       DOC
 
       resource_name :chef_client_scheduled_task
+      extend Chef::ResourceHelpers::PathHelpers
 
       property :task_name, String,
         description: "The name of the scheduled task to create.",
@@ -136,7 +137,7 @@ class Chef
 
       property :chef_binary_path, String,
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
-        default: "C:/#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
+        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path }
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
