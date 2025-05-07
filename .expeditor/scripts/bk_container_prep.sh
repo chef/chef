@@ -29,7 +29,7 @@ fi
 case "$ID" in
   ubuntu|debian)
     PACKAGE_MANAGER="apt-get"
-    PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev"
+    PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev"
 
     echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
     sudo $PACKAGE_MANAGER update

@@ -64,6 +64,11 @@ try {
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3 
 
+Write-Output "--- gem info openssl"
+gem info openssl
+Write-Output "--- system openssl"
+openssl version
+
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
     "Integration"   {[string[]]$RakeTest = "spec:integration"; break}
