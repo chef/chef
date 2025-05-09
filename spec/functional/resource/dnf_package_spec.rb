@@ -140,6 +140,18 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         end.should_not_be_updated
         expect_matching_installed_version("^chef_rpm-1.2-1.i686$")
       end
+
+      it "should use environment variables for the install command" do
+        flush_cache
+        expect do
+          dns_package "chef_rpm" do
+            options default_options
+            action :install
+            environment({ "FOO" => "BAR" })
+          end.should_be_updated
+        end.to receive(:shell_out!).and_return(double("shell_out", stdout: /^FOO=BAR/))
+        expect_matching_installed_version("^chef_rpm-1.10-1.#{pkg_arch}$")
+      end
     end
 
     context "expanded idempotency checks with version variants" do
