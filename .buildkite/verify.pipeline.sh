@@ -47,7 +47,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "    queue: default-${platform%:*}-privileged"
   echo "  matrix:"
   echo "    - \"Unit\""
-  # echo "    - \"Integration\""
+  echo "    - \"Integration\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
