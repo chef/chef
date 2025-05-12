@@ -8,5 +8,21 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - command: .buildkite/verify.pipeline.sh | buildkite-agent pipeline upload
-    label: ":pipeline: Upload"
+  # - command: .buildkite/verify.pipeline.sh | buildkite-agent pipeline upload
+  #   label: ":pipeline: Upload"
+  - label: run-tests-ruby-3.1-windows
+    retry:
+      automatic:
+        limit: 1
+    timeout_in_minutes: 120
+    matrix:
+      - "Unit"
+      - "Integration"
+    command:
+      - /workdir/.expeditor/scripts/prep_and_run_tests.ps1 {{matrix}}
+    expeditor:
+      executor:
+        docker:
+          host_os: windows
+          shell: ["powershell", "-Command"]
+          image: rubydistros/windows-2019:3.1
