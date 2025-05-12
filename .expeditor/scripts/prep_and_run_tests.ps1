@@ -61,6 +61,17 @@ try {
     Write-Output $_
 }
 
+Write-Output "--- Installing OpenSSL via Chocolatey"
+choco install openssl --version=3.1.1 -y
+$env:Path = "C:\Program Files\OpenSSL-Win64\bin;" + $env:Path
+
+$openssl_dir = (Get-Item (Get-Command openssl).Source).Directory.Parent.FullName
+$env:SSL_CERT_FILE = "$openssl_dir\ssl\cert.pem"
+
+Write-Output "Configure bundle to build openssl gem with $openssl_dir"
+bundle config build.openssl --with-openssl-dir=$openssl_dir
+gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3 
 
