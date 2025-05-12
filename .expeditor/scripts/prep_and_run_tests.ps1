@@ -3,7 +3,7 @@ param(
     [Parameter(Position=0)][String]$TestType
 )
 
-$env:Path = 'C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\ContainerAdministrator\AppData\Local\Microsoft\WindowsApps;'
+$env:Path = 'C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\ContainerAdministrator\AppData\Local\Microsoft\WindowsApps;' + $env:Path
 
 if ($TestType -eq 'Functional') {
     winrm quickconfig -q
@@ -22,44 +22,62 @@ if ($TestType -eq 'Functional') {
 #         Write-Output $_
 #         <#Do this if a terminating exception happens#>
 #     }
-
 # }
 
-try {
-    $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
-    $ruby_version = $buildkiteJSONData.ruby_version
+# try {
+#     $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
+#     $ruby_version = $buildkiteJSONData.ruby_version
     
-    Write-Output "--- Fetching ruby package at $ruby_version.*"
-    # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
-    # for 3.1.6
-    $allVersions = choco search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
-    Write-Output "Found ruby versions: $allVersions"
-    if ($allVersions.Count -eq 0) {
-        throw "No version found matching ruby $ruby_version.*"
-    }
+#     Write-Output "--- Fetching ruby package at $ruby_version.*"
+#     # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
+#     # for 3.1.6
+#     & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all
+#     $allVersions = & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
+#     Write-Output "Found ruby versions: $allVersions"
+#     if ($allVersions.Count -eq 0) {
+#         throw "No version found matching ruby $ruby_version.*"
+#     }
 
-    $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
+#     $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
 
-    Write-Output "--- Installing ruby version $latestMatchingVersion"
-    choco install ruby --version=$latestMatchingVersion -y 
+#     Write-Output "--- Installing ruby version $latestMatchingVersion"
+#     & "$env:ChocolateyInstall\choco.exe" install ruby --version=$latestMatchingVersion -y 
 
-    # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
-    $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
-    $installedVersion = $installedVersion -replace '\.', ''
-    $env:Path += ";C:\tools\ruby$installedVersion\bin"
+#     # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
+#     $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
+#     $installedVersion = $installedVersion -replace '\.', ''
+#     $env:Path += ";C:\tools\ruby$installedVersion\bin"
 
-    ruby -v
+#     ruby -v
 
-    $bundler_version = $buildkiteJSONData.bundle_version
+#     $bundler_version = $buildkiteJSONData.bundle_version
 
-    Write-Output "--- Installing bundler $bundler_version"
-    gem install bundler -v $bundler_version
-    bundle -v
+#     Write-Output "--- Installing bundler $bundler_version"
+#     gem install bundler -v $bundler_version
+#     bundle -v
 
-} catch {
-    Write-Output "Error setting up ruby environment"
-    Write-Output $_
-}
+# } catch {
+#     Write-Output "Error setting up ruby environment"
+#     Write-Output $_
+# }
+
+# Write-Output "ruby version.."
+# ruby -v
+
+# Write-Output "bundler version.."
+# bundle -v
+
+Write-Output "--- Installing OpenSSL via Chocolatey"
+choco install openssl --version=3.1.1 -y
+$env:Path = "C:\Program Files\OpenSSL-Win64\bin;" + $env:Path
+
+$openssl_dir = (Get-Item (Get-Command openssl).Source).Directory.Parent.FullName
+# $env:SSL_CERT_FILE = "$openssl_dir\ssl\cert.pem"
+# $env:OPENSSL_CONF = "$openssl_dir\bin\openssl.cfg"
+
+Write-Output "Configure bundle to build openssl gem with $openssl_dir"
+bundle config build.openssl --with-openssl-dir=$openssl_dir
+gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
 
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3 
