@@ -268,7 +268,6 @@ class Chef
         # this is necessary to send a run_start message when we fail before the run_started chef event.
         # we adhere to a contract that run_start + run_completion events happen in pairs.
         send_run_start unless sent_run_start?
-
         message = Chef::DataCollector::RunEndMessage.construct_message(self, status)
 
         begin
