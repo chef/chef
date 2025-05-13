@@ -76,7 +76,7 @@ class Chef
       ```ruby
       windows_user_privilege 'Create Pagefile' do
         privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\\Guests']
+        principal      'BUILTIN\\Guests'
         action         :remove
       end
       ```
