@@ -53,6 +53,12 @@ describe Chef::Resource::DnfPackage, "defaults" do
     expect { resource.action :unlock }.not_to raise_error
     expect { resource.action :upgrade }.not_to raise_error
   end
+
+  it "accepts a hash for environment variables" do
+    resource.environment({ variables: true })
+    expect(resource.environment).to eql({ variables: true })
+  end
+
 end
 
 describe Chef::Resource::DnfPackage, "flush_cache" do
