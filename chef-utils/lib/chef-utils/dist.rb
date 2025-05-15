@@ -67,6 +67,9 @@ module ChefUtils
 
       # The client's container image
       CONTAINER_REF = "chef/chef-hab"
+
+      # Package name for Infra Client's habitat package
+      HABITAT_PKG = "chef-infra-client"
     end
 
     class Inspec

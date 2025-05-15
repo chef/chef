@@ -28,6 +28,7 @@ jobs:
         bundler-cache: false
     - run: |
         bundle install
+        gem pristine date -v '3.4.0'
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
     strategy:
