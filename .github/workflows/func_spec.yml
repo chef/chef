@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [windows-2019, windows-2022]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['3.1.6']
+        ruby: ['3.1']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -28,6 +28,7 @@ jobs:
         bundler-cache: false
     - run: |
         bundle install
+        gem pristine date -v '3.4.0'
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
     strategy:
