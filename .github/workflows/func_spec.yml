@@ -27,6 +27,8 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
     - run: |
+        gem uninstall date --all --ignore-dependencies || true
+        gem install date --version 3.3.3 --platform=ruby
         bundle install
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
