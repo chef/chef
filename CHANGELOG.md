@@ -1,31 +1,28 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.10 -->
-## [v18.7.10](https://github.com/chef/chef/tree/v18.7.10) (2025-05-16)
-
-#### Merged Pull Requests
-- Updating chef-18 for train-core 3.2.13 [#15003](https://github.com/chef/chef/pull/15003) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.7.6 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Updating chef-18 for train-core 3.2.13 [#15003](https://github.com/chef/chef/pull/15003) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.10 -->
-- pick latest version of omnibus-buildkite-plugin [#14992](https://github.com/chef/chef/pull/14992) ([muthuja](https://github.com/muthuja)) <!-- 18.7.9 -->
-- [CHEF-20336][CHEF-19378] Knife 18 bug fixes [#14970](https://github.com/chef/chef/pull/14970) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.7.8 -->
-- fix: ensure apt_repository keys are always dearmored (#14944) [#14967](https://github.com/chef/chef/pull/14967) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.7 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.7.10](https://github.com/chef/chef/tree/v18.7.10) (2025-05-19)
+
+#### Merged Pull Requests
+- fix: ensure apt_repository keys are always dearmored (#14944) [#14967](https://github.com/chef/chef/pull/14967) ([tpowell-progress](https://github.com/tpowell-progress))
+- [CHEF-20336][CHEF-19378] Knife 18 bug fixes [#14970](https://github.com/chef/chef/pull/14970) ([ashiqueps](https://github.com/ashiqueps))
+- pick latest version of omnibus-buildkite-plugin [#14992](https://github.com/chef/chef/pull/14992) ([muthuja](https://github.com/muthuja))
+- Updating chef-18 for train-core 3.2.13 [#15003](https://github.com/chef/chef/pull/15003) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v18.7.6](https://github.com/chef/chef/tree/v18.7.6) (2025-04-23)
 
 #### Merged Pull Requests
 - Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress))
 - Add unimplemented property back [#14957](https://github.com/chef/chef/pull/14957) ([tpowell-progress](https://github.com/tpowell-progress))
 - Truncate resource reporter :before to empty hash if over 500_000 bytes [#14961](https://github.com/chef/chef/pull/14961) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v18.7.3](https://github.com/chef/chef/tree/v18.7.3) (2025-03-31)
 
