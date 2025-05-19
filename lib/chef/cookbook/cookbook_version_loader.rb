@@ -217,6 +217,7 @@ class Chef
           top_path = File.join(cookbook_path, top_filename)
           next if top_filename.start_with?(".") && File.directory?(top_path)
           next unless File.exist?(top_path)
+
           # Use Find.find because it:
           # (a) returns any children, recursively
           # (b) includes top_path as well
