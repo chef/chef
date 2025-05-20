@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.22 -->
-## [v19.1.22](https://github.com/chef/chef/tree/v19.1.22) (2025-05-13)
+<!-- latest_release 19.1.23 -->
+## [v19.1.23](https://github.com/chef/chef/tree/v19.1.23) (2025-05-20)
 
 #### Merged Pull Requests
-- Fix windows_user_privilege example. [#14988](https://github.com/chef/chef/pull/14988) ([williamtheaker](https://github.com/williamtheaker))
+- Temporary bandaid to fix choco spec failures in GHA [#15004](https://github.com/chef/chef/pull/15004) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Temporary bandaid to fix choco spec failures in GHA [#15004](https://github.com/chef/chef/pull/15004) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.23 -->
 - Fix windows_user_privilege example. [#14988](https://github.com/chef/chef/pull/14988) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.22 -->
 - Replace reference to ChefDK with Chef Workstation (obvious fix) [#14986](https://github.com/chef/chef/pull/14986) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.21 -->
 - Forward port resource reporter truncation [#14980](https://github.com/chef/chef/pull/14980) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.20 -->
