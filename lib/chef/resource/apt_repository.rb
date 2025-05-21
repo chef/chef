@@ -242,7 +242,8 @@ class Chef
         #
         # @return [Boolean] is the key valid or not
         def keyring_key_is_valid?(keyring, key)
-          valid = shell_out("gpg", "--no-default-keyring", "--keyring", keyring, "--list-public-keys", key).stdout.each_line.none?(/\[(expired|revoked):/)
+          out = shell_out("gpg", "--no-default-keyring", "--keyring", keyring, "--list-public-keys", key)
+          valid = out.exitstatus == 0 && out.stdout.each_line.none?(/\[(expired|revoked):/)
 
           logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
           valid
