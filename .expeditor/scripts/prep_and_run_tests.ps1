@@ -9,21 +9,20 @@ if ($TestType -eq 'Functional') {
     winrm quickconfig -q
 }
 
-# Write-Output "--- Checking the Chocolatey version"
-# $installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
-# if(-not ($installed_version -match ('^2'))){
-#     Write-Output "--- Now Upgrading Choco"
-#     try {
-#         choco feature enable -n=allowGlobalConfirmation
-#         choco upgrade chocolatey
-#     }
-#     catch {
-#         Write-Output "Upgrade Failed"
-#         Write-Output $_
-#         <#Do this if a terminating exception happens#>
-#     }
-
-# }
+Write-Output "--- Checking the Chocolatey version"
+$installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
+if(-not ($installed_version -match ('^2'))){
+    Write-Output "--- Now Upgrading Choco"
+    try {
+        choco feature enable -n=allowGlobalConfirmation
+        choco upgrade chocolatey
+    }
+    catch {
+        Write-Output "Upgrade Failed"
+        Write-Output $_
+        <#Do this if a terminating exception happens#>
+    }
+}
 
 try {
     $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
@@ -32,7 +31,8 @@ try {
     Write-Output "--- Fetching ruby package at $ruby_version.*"
     # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
     # for 3.1.6
-    $allVersions = choco search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
+    & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all
+    $allVersions = & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
     Write-Output "Found ruby versions: $allVersions"
     if ($allVersions.Count -eq 0) {
         throw "No version found matching ruby $ruby_version.*"
@@ -41,7 +41,7 @@ try {
     $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
 
     Write-Output "--- Installing ruby version $latestMatchingVersion"
-    choco install ruby --version=$latestMatchingVersion -y 
+    & "$env:ChocolateyInstall\choco.exe" install ruby --version=$latestMatchingVersion -y 
 
     # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
     $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
@@ -66,7 +66,8 @@ choco install openssl --version=3.1.1 -y
 $env:Path = "C:\Program Files\OpenSSL-Win64\bin;" + $env:Path
 
 $openssl_dir = (Get-Item (Get-Command openssl).Source).Directory.Parent.FullName
-$env:SSL_CERT_FILE = "$openssl_dir\ssl\cert.pem"
+# $env:SSL_CERT_FILE = "$openssl_dir\ssl\cert.pem"
+# $env:OPENSSL_CONF = "$openssl_dir\bin\openssl.cfg"
 
 Write-Output "Configure bundle to build openssl gem with $openssl_dir"
 bundle config build.openssl --with-openssl-dir=$openssl_dir
