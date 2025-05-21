@@ -157,4 +157,3 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 | [Chef 0.5.6](https://www.chef.io/blog/2009/03/06/chef-0-5-6/) | 2009-03-06 | Sean Cribbs |
 | [Chef 0.5.4](https://www.chef.io/blog/2009/02/13/chef-0-5-4/) | 2009-02-13 | Arjuna Christensen |
 | [Chef 0.5.2](https://www.chef.io/blog/2009/02/01/chef-0-5-2-and-ohai-0-1-4/) | 2009-02-01 | Bryan McLellan |
-

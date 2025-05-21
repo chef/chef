@@ -10,4 +10,3 @@ license          ''
 description      'Installs/Configures incomplete-metadata'
 long_description 'Installs/Configures incomplete-metadata'
 version          '0.1.0'
-

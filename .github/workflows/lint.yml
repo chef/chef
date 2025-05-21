@@ -35,3 +35,12 @@ jobs:
           curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
       - uses: streetsidesoftware/cspell-action@v2.12.0
 
+  linelint:
+    runs-on: ubuntu-latest
+    name: Check if all files end in newline
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Linelint
+        uses: fernandrone/linelint@master
+        id: linelint

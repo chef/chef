@@ -13,4 +13,3 @@ SHA1: 43c5653a9a5b9419849173a4ec3a9855cf0327a3
 MD5sum: 4b05bace483dbca54efc21f97ee47e1d
 Description: Chef integration tests for APT in Cucumber
  This package is used for cucumber integration testing in Chef.
-

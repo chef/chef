@@ -89,4 +89,3 @@ Create a PR that performs the following:
 - Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.
 
 ### Step 6. Have a github admin update the branch protections for the new release branch.
-
