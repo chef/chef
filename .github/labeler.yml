@@ -3,4 +3,3 @@ documentation:
   - 'CODE_OF_CONDUCT.md'
   - 'CONTRIBUTING.md'
   - 'lib/chef/resource/**/*'
-
