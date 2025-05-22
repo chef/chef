@@ -237,16 +237,26 @@ class Chef
           valid
         end
 
-        # validate the key against the a gpg keyring to see if that version is expired
+        # validate the key against the gpg keyring to see if that version is expired or revoked
         # @param [String] key
+        # @param [String] keyring
         #
-        # @return [Boolean] is the key valid or not
+        # @return [Boolean] if the key valid or not
         def keyring_key_is_valid?(keyring, key)
           out = shell_out("gpg", "--no-default-keyring", "--keyring", keyring, "--list-public-keys", key)
           valid = out.exitstatus == 0 && out.stdout.each_line.none?(/\[(expired|revoked):/)
 
           logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
           valid
+        end
+
+        # validate the key against the gpg keyring to see if the key is present
+        # @param [String] key
+        # @param [String] keyring
+        #
+        # @return [Boolean] if the key present
+        def keyring_key_is_present?(keyring, key)
+          shell_out(*%W{gpg --no-default-keyring --keyring #{keyring} --list-public-keys --with-fingerprint --with-colons #{key}}).exitstatus == 0
         end
 
         # return the specified cookbook name or the cookbook containing the
@@ -414,8 +424,7 @@ class Chef
             default_env true
             sensitive new_resource.sensitive
             not_if do
-              present = shell_out(*%W{gpg --no-default-keyring --keyring #{keyring} --list-public-keys --with-fingerprint --with-colons #{key}}).exitstatus != 0
-              present && keyring_key_is_valid?(keyring, key.upcase)
+              keyring_key_is_present?(keyring, key.upcase) && keyring_key_is_valid?(keyring, key.upcase)
             end
             notifies :run, "execute[apt-cache gencaches]", :immediately
           end
