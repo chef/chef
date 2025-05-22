@@ -50,7 +50,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "    - \"Integration\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: rubydistros/windows-2019:3.1"
+  echo "      image: ruby:3.1-bullseye"
   echo "      shell:"
   echo "      - powershell"
   echo "      - \"-Command\""

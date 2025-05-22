@@ -61,6 +61,12 @@ if(-not ($installed_version -match ('^2'))){
 #     Write-Output $_
 # }
 
+Write-Output "ruby version.."
+ruby -v
+
+Write-Output "bundler version.."
+bundle -v
+
 Write-Output "--- Installing OpenSSL via Chocolatey"
 choco install openssl --version=3.1.1 -y
 $env:Path = "C:\Program Files\OpenSSL-Win64\bin;" + $env:Path
