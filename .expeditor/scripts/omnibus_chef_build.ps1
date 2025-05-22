@@ -200,13 +200,9 @@ function Get-Certificate {
 function Install-ChefFoundation {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true)]
+      # this is to pass into the msiURL, for now its static, but if we want to change it in the future for a different version we can.
         [string]$Version = $env:CHEF_FOUNDATION_VERSION,
-        
-        [Parameter(Mandatory = $false)]
         [string]$WindowsVersion = "2022",
-        
-        [Parameter(Mandatory = $false)]
         [string]$Architecture = "x64"
     )
     
