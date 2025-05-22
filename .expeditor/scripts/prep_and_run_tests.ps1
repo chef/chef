@@ -24,42 +24,42 @@ if(-not ($installed_version -match ('^2'))){
     }
 }
 
-try {
-    $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
-    $ruby_version = $buildkiteJSONData.ruby_version
+# try {
+#     $buildkiteJSONData = Get-Content -Path ".buildkite-platform.json" -Raw | ConvertFrom-Json
+#     $ruby_version = $buildkiteJSONData.ruby_version
     
-    Write-Output "--- Fetching ruby package at $ruby_version.*"
-    # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
-    # for 3.1.6
-    & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all
-    $allVersions = & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
-    Write-Output "Found ruby versions: $allVersions"
-    if ($allVersions.Count -eq 0) {
-        throw "No version found matching ruby $ruby_version.*"
-    }
+#     Write-Output "--- Fetching ruby package at $ruby_version.*"
+#     # find out a matching version. e.g. 3.1.6 will match 3.1.6.1. otherwise, choco fails because it doesn't find an exact match
+#     # for 3.1.6
+#     & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all
+#     $allVersions = & "$env:ChocolateyInstall\choco.exe" search ruby --exact --all | foreach Split "ruby " | Where-Object { $_ -match "^$ruby_version" }
+#     Write-Output "Found ruby versions: $allVersions"
+#     if ($allVersions.Count -eq 0) {
+#         throw "No version found matching ruby $ruby_version.*"
+#     }
 
-    $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
+#     $latestMatchingVersion = $allVersions | Sort-Object -Descending | Select-Object -First 1 
 
-    Write-Output "--- Installing ruby version $latestMatchingVersion"
-    & "$env:ChocolateyInstall\choco.exe" install ruby --version=$latestMatchingVersion -y 
+#     Write-Output "--- Installing ruby version $latestMatchingVersion"
+#     & "$env:ChocolateyInstall\choco.exe" install ruby --version=$latestMatchingVersion -y 
 
-    # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
-    $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
-    $installedVersion = $installedVersion -replace '\.', ''
-    $env:Path += ";C:\tools\ruby$installedVersion\bin"
+#     # $installedVersion = (choco list -lo ruby | Select-String -Pattern "ruby (\d+\.\d+)").Matches.Groups[1].Value
+#     $installedVersion = (echo $ruby_version | Select-String -Pattern "(\d+\.\d+)").Matches.Groups[1].Value
+#     $installedVersion = $installedVersion -replace '\.', ''
+#     $env:Path += ";C:\tools\ruby$installedVersion\bin"
 
-    ruby -v
+#     ruby -v
 
-    $bundler_version = $buildkiteJSONData.bundle_version
+#     $bundler_version = $buildkiteJSONData.bundle_version
 
-    Write-Output "--- Installing bundler $bundler_version"
-    gem install bundler -v $bundler_version
-    bundle -v
+#     Write-Output "--- Installing bundler $bundler_version"
+#     gem install bundler -v $bundler_version
+#     bundle -v
 
-} catch {
-    Write-Output "Error setting up ruby environment"
-    Write-Output $_
-}
+# } catch {
+#     Write-Output "Error setting up ruby environment"
+#     Write-Output $_
+# }
 
 Write-Output "--- Installing OpenSSL via Chocolatey"
 choco install openssl --version=3.1.1 -y
