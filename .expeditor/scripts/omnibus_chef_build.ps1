@@ -1,5 +1,4 @@
 #Requires -Version 5.1
-# filepath: /home/ssimmons/gitorgs/chef/github/chef/.expeditor/scripts/omnibus_chef_build.ps1
 
 [CmdletBinding()]
 param()
