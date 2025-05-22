@@ -158,7 +158,8 @@ try {
   }
 } catch {
   Write-Error "An error occurred during signing verification: $_"
-  exit 1
+  If ($LASTEXITCODE -ne 0) { Exit $LASTEXITCODE }
+  Exit 1  # Fallback in case $LASTEXITCODE is not set
 }
 
 write-output "--- smctl credentials delete just to clean up"
