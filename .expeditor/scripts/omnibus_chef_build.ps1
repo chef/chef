@@ -15,22 +15,30 @@ else
     Write-Output "--- setting up auth for smctl"
     $SM_CLIENT_CERT_FILE_JSON = "sm-client-cert-file.json"
     aws ssm get-parameter --name "sm-client-cert-file" --with-decryption --region "us-west-1" --query Parameter.Value --output text | Set-Content -Path $SM_CLIENT_CERT_FILE_JSON
+    if ( -not $? ) { throw "Failed to get sm-client-cert-file parameter" }
+    
     # this just grabs the secret as its a json object, converts it, then selects the cert_content_base64, then creates the file to c:\digicert\certificate_pkcs12.p12 while decoding the base64 #
     $smClientCertJson = Get-Content $SM_CLIENT_CERT_FILE_JSON | ConvertFrom-Json | Select-Object -ExpandProperty cert_content_base64
+    if ( -not $? ) { throw "Failed to parse sm-client-cert-file JSON" }
+    
     $decodedFilePath = "c:\digicert\certificate_pkcs12.p12"
     write-output "decoding CLIENT_CERT_FILE_CONTENT c:\digicert\certificate_pkcs12.p12"
     [System.IO.File]::WriteAllBytes($decodedFilePath, [System.Convert]::FromBase64String($smClientCertJson))
+    if ( -not $? ) { throw "Failed to write certificate file" }
   } catch {
-      throw $_
+      Write-Error $_.Exception.Message
+      exit 1
   }
   try {
       $file = Get-ChildItem -Path "c:\digicert\certificate_pkcs12.p12"
+      if ( -not $? ) { throw "Failed to get certificate file" }
 
       if ($file.Length -eq 2902) {
           Write-Output "File attribute length is 2902. Which is correct"
       }
       else {
-          write-error "File attribute length is not 2902. Which means it likely failed the previous step at [System.IO.File]::WriteAllBytes!" -ErrorAction Stop
+          Write-Error "File attribute length is not 2902. Which means it likely failed the previous step at [System.IO.File]::WriteAllBytes!" -ErrorAction Stop
+          exit 1
       }
   } catch {
       throw $_
@@ -38,16 +46,25 @@ else
 
   Write-Output "--- smtcl env settings"
   try {
-      $SM_API_KEY_VALUE = aws ssm get-parameter --name "sm-api-key" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $SM_CLIENT_CERT_PASSWORD_VALUE = aws ssm get-parameter --name "sm-client-cert-password" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $SM_HOST_VALUE = aws ssm get-parameter --name "sm-host" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $env:SM_API_KEY_FILE=${SM_API_KEY_VALUE}
-      $env:SM_HOST=${SM_HOST_VALUE}
-      $env:SM_CLIENT_CERT_FILE="c:\digicert\certificate_pkcs12.p12"
-      $env:SM_CLIENT_CERT_PASSWORD_FILE=${SM_CLIENT_CERT_PASSWORD_VALUE}
-      smctl credentials save ${SM_API_KEY_VALUE} ${SM_CLIENT_CERT_PASSWORD_VALUE}
+    $SM_API_KEY_VALUE = aws ssm get-parameter --name "sm-api-key" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+    if ( -not $? ) { throw "Failed to get sm-api-key parameter" }
+    
+    $SM_CLIENT_CERT_PASSWORD_VALUE = aws ssm get-parameter --name "sm-client-cert-password" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+    if ( -not $? ) { throw "Failed to get sm-client-cert-password parameter" }
+    
+    $SM_HOST_VALUE = aws ssm get-parameter --name "sm-host" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+    if ( -not $? ) { throw "Failed to get sm-host parameter" }
+    
+    $env:SM_API_KEY_FILE=${SM_API_KEY_VALUE}
+    $env:SM_HOST=${SM_HOST_VALUE}
+    $env:SM_CLIENT_CERT_FILE="c:\digicert\certificate_pkcs12.p12"
+    $env:SM_CLIENT_CERT_PASSWORD_FILE=${SM_CLIENT_CERT_PASSWORD_VALUE}
+    
+    smctl credentials save ${SM_API_KEY_VALUE} ${SM_CLIENT_CERT_PASSWORD_VALUE}
+    if ( -not $? ) { throw "Failed to save smctl credentials" }
   } catch {
-    throw $_
+    Write-Error $_.Exception.Message
+    exit 1
   }
 
 ####################################################################
@@ -62,6 +79,7 @@ smksp_cert_sync.exe
 
     # Get the certificate from the Current User's Personal store by thumbprint, this case its ContainerAdministrator
     $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
+    if ( -not $? ) { throw "Failed to retrieve certificates" }
 
     write-output "--- Display information about the retrieved certificate"
     if ($certificate) {
@@ -72,7 +90,8 @@ smksp_cert_sync.exe
         Write-output "Has Private key: $($certificate.HasPrivateKey)"
         $thumb = $thumbprint  # Set $thumb variable to $thumbprint
     } else {
-        Write-Output "Certificate with thumbprint $thumbprint not found. Check SMCTL commands, check to see if the sm_client_cert file is valid, check if the SM_API_KEY hasnt expired, check if SM_CLIENT_CERT_PASSWORD is valid"
+        Write-Error "Certificate with thumbprint $thumbprint not found. Check SMCTL commands, check to see if the sm_client_cert file is valid, check if the SM_API_KEY hasnt expired, check if SM_CLIENT_CERT_PASSWORD is valid" -ErrorAction Stop
+        exit 1
     }
     } catch {
       Write-Error $_.Exception.Message
@@ -122,14 +141,32 @@ bundle install
 if ( -not $? ) { throw "Running bundle install failed" }
 
 Write-Output "--- Building Chef"
-bundle exec omnibus build chef -l internal --override append_timestamp:false
-if ( -not $? ) { throw "omnibus build chef failed" }
+$ErrorActionPreference = "Stop" # Make all errors terminating
+try {
+    # Capture output and errors while running the command
+    $output = bundle exec omnibus build chef -l internal --override append_timestamp:false 2>&1
+    
+    # Display the output
+    $output | ForEach-Object { Write-Output $_ }
+    
+    # Check the exit code
+    if ($LASTEXITCODE -ne 0) {
+        throw "omnibus build chef failed with exit code $LASTEXITCODE"
+    }
+} 
+catch {
+    Write-Error "Chef build failed: $_"
+    exit 1
+}
 
-#confirm file is signed
+# Confirm file is signed
 try {
   $directoryPath = "C:\omnibus-ruby\pkg\"
   $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
-  write-output "--- test msi path"
+  if ( -not $? ) { throw "Failed to list MSI files" }
+  
+  Write-Output "--- test msi path"
+  
   # Check if an .msi file was found
   if ($msiFile -ne $null) {
     # Display the full path of the found .msi file
@@ -138,13 +175,28 @@ try {
 
     # Assign the full path to a variable ($fullPath) for later use
     $fullPathVariable = $fullPath
-    write-output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
+    Write-Output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
+    
+    # Run smctl sign verify and check its exit status
     smctl sign verify --input ${fullPathVariable}
+    if (-not $? ) {
+      Write-Error "Signing verification failed for file: ${fullPathVariable}" -ErrorAction Stop
+      exit 1
+    }
+
+    # Run signtool verify and check its exit status
+    Write-Output "--- Running signtool verify"
+    signtool verify /pa "${fullPathVariable}"
+    if (-not $? ) {
+      Write-Error "Signtool verification failed for file: ${fullPathVariable}" -ErrorAction Stop
+      exit 1
+    }
   } else {
-    Write-Output "No .msi files found in the directory: $directoryPath or its not signed"
+    Write-Error "No .msi files found in the directory: $directoryPath or the file is not signed" -ErrorAction Stop
+    exit 1
   }
 } catch {
-  Write-Output "An error occurred: $_"
+  Write-Error "An error occurred during signing verification: $_"
   exit 1
 }
 
