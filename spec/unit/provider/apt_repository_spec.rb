@@ -45,12 +45,33 @@ describe "Chef::Provider::AptRepository" do
     sub:-:2048:16:84080586D1CA74A1:2009-04-22::::
   EOF
 
+  # Output of the command:
+  # gpg --no-default-keyring --keyring ${keyring} --list-public-keys ${key}
+  APG_GPG_KEYS_EXPIRED = <<~EOF.freeze
+    pub   dsa1024 2009-04-22 [SC] [expired: 2018-02-22]
+          F36A89E33CC1BD0F71079007327574EE02A818DD
+    uid                      Cloudera Apt Repository
+    sub   elg2048 2009-04-22 [E] [expired: 2018-02-22]
+  EOF
+
+  # Output of the command:
+  # gpg --no-default-keyring --keyring ${keyring} --list-public-keys ${key}
+  APG_GPG_KEYS_REVOKED = <<~EOF.freeze
+    pub   dsa1024 2009-04-22 [SC] [revoked: 2018-02-22]
+          F36A89E33CC1BD0F71079007327574EE02A818DD
+    uid                      Cloudera Apt Repository
+    sub   elg2048 2009-04-22 [E] [revoked: 2018-02-22]
+  EOF
+
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:collection) { double("resource collection") }
   let(:new_resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
   let(:provider) { new_resource.provider_for_action(:add) }
+  let(:keyring) { "/etc/apt/keyrings/ring.gpg" }
+  let(:key) { "ASDF1234" }
+  let(:keyserver) { "keyserver.ubuntu.com" }
 
   let(:apt_key_finger_cmd) do
     %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}
@@ -70,9 +91,17 @@ describe "Chef::Provider::AptRepository" do
   end
 
   let(:gpg_shell_out_failure) do
-    double("shell_out", stderr: "gpg: no valid OpenPGP data found.\n
-                                    gpg: processing message failed: eof",
-                        exitstatus: 1, error?: true)
+    double("shell_out", stderr: "gpg: keybox '/etc/apt/keyrings/ring.gpg' created\ngpg: error reading key: No public key\n",
+                        stdout: "",
+                        exitstatus: 2, error?: true)
+  end
+
+  let(:gpg_shell_out_expired) do
+    double("shell_out", stdout: APG_GPG_KEYS_EXPIRED, exitstatus: 0, error?: false)
+  end
+
+  let(:gpg_shell_out_revoked) do
+    double("shell_out", stdout: APG_GPG_KEYS_REVOKED, exitstatus: 0, error?: false)
   end
 
   let(:apt_fingerprints) do
@@ -138,6 +167,40 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     it "returns 'test' when the cookbook property is set" do
       new_resource.cookbook("test")
       expect(provider.cookbook_name).to eq("test")
+    end
+  end
+
+  describe "#keyring_key_is_valid?" do
+    it "returns true for a valid key" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_success)
+      expect(provider.keyring_key_is_valid?(keyring, key)).to eql(true)
+    end
+
+    it "returns false when the key does not exist" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_failure)
+      expect(provider.keyring_key_is_valid?(keyring, key)).to eql(false)
+    end
+
+    it "returns false when the key is expired" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_expired)
+      expect(provider.keyring_key_is_valid?(keyring, key)).to eql(false)
+    end
+
+    it "returns false when the key has been revoked" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_revoked)
+      expect(provider.keyring_key_is_valid?(keyring, key)).to eql(false)
+    end
+  end
+
+  describe "#keyring_key_is_present?" do
+    it "returns true for a key that exists" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_success)
+      expect(provider.keyring_key_is_present?(keyring, key)).to eql(true)
+    end
+
+    it "returns false when the key is not present in the keyring" do
+      expect(provider).to receive(:shell_out).and_return(gpg_shell_out_failure)
+      expect(provider.keyring_key_is_present?(keyring, key)).to eql(false)
     end
   end
 
@@ -223,6 +286,20 @@ C5986B4F1257FFA86632CBA746181433FBB75451
     end
   end
 
+  describe "#install_key_from_keyserver_to_keyring" do
+    it "does not raise an error when the key is valid" do
+      expect(provider).to receive(:execute).and_return(nil)
+      expect(provider).to receive(:keyring_key_is_valid?).and_return(true)
+      expect { provider.install_key_from_keyserver_to_keyring(key, keyserver, keyring) }.not_to raise_error
+    end
+
+    it "raises an error with the key is invalid" do
+      expect(provider).to receive(:execute).and_return(nil)
+      expect(provider).to receive(:keyring_key_is_valid?).and_return(false)
+      expect { provider.install_key_from_keyserver_to_keyring(key, keyserver, keyring) }.to raise_error(RuntimeError)
+    end
+  end
+
   describe "#install_ppa_key" do
     let(:url) { "https://launchpad.net/api/1.0/~chef/+archive/main" }
     let(:key) { "C5986B4F1257FFA86632CBA746181433FBB75451" }
@@ -231,7 +308,7 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       simples = double("HTTP")
       allow(simples).to receive(:get).and_return("\"#{key}\"")
       expect(Chef::HTTP::Simple).to receive(:new).with(url, {}).and_return(simples)
-      expect(provider).to receive(:install_key_from_keyserver).with(key, "keyserver.ubuntu.com")
+      expect(provider).to receive(:install_key_from_keyserver).with(key, keyserver)
       provider.install_ppa_key("chef", "main")
     end
   end
