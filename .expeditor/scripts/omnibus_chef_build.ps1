@@ -146,15 +146,18 @@ function Register-SmctlCertificates {
     param()
     
     try {
-        Write-Output "--- smksp_registrar sync certs before chef install"
-        smksp_registrar.exe register
-        if ( -not $? ) { throw "Failed to register certificates" }
+        # Write-Output "--- smksp_registrar sync certs before chef install"
+        # smksp_registrar.exe register
+        # if ( -not $? ) { throw "Failed to register certificates" }
         
-        certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
-        if ( -not $? ) { throw "Failed to run certutil" }
+        # certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
+        # if ( -not $? ) { throw "Failed to run certutil" }
         
-        smksp_cert_sync.exe
-        if ( -not $? ) { throw "Failed to sync certificates" }
+        # smksp_cert_sync.exe
+        # if ( -not $? ) { throw "Failed to sync certificates" }
+        Write-Output "--- Installing Windows package signing certificate using smctl cli"
+        smctl windows certsync --keypair-alias=key_875762014
+        if ( -not $? ) { throw "Failed to sync certificates using smctl" }        
     }
     catch {
         Write-Error "Failed to register smctl certificates: $_"
