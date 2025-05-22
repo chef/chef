@@ -183,7 +183,9 @@ function Get-Certificate {
             Write-Output "Valid From: $($certificate.NotBefore)"
             Write-Output "Valid To: $($certificate.NotAfter)"
             Write-Output "Has Private key: $($certificate.HasPrivateKey)"
-            return $thumbprint
+            
+            # Return only the thumbprint string, not the Write-Output results
+            return $thumbprint.ToString()
         } else {
             throw "Certificate with thumbprint $thumbprint not found"
         }
@@ -369,6 +371,9 @@ try {
         Register-SmctlCertificates
         $thumbprint = Get-Certificate
     }
+    
+    # Make sure thumbprint is a clean string
+    $thumbprint = $thumbprint.Trim()
     
     Write-Output "THUMB=$thumbprint"
     
