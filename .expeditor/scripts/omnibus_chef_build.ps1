@@ -176,14 +176,14 @@ function Get-Certificate {
         $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
         if ( -not $? ) { throw "Failed to retrieve certificates" }
 
-        Write-Output "--- Display information about the retrieved certificate"
+        Write-Host "--- Display information about the retrieved certificate"
         
         if ($certificate) {
-            Write-Output "Certificate Subject: $($certificate.Subject)"
-            Write-Output "Issuer: $($certificate.Issuer)"
-            Write-Output "Valid From: $($certificate.NotBefore)"
-            Write-Output "Valid To: $($certificate.NotAfter)"
-            Write-Output "Has Private key: $($certificate.HasPrivateKey)"
+            Write-Host "Certificate Subject: $($certificate.Subject)"
+            Write-Host "Issuer: $($certificate.Issuer)"
+            Write-Host "Valid From: $($certificate.NotBefore)"
+            Write-Host "Valid To: $($certificate.NotAfter)"
+            Write-Host "Has Private key: $($certificate.HasPrivateKey)"
             
             # Return only the thumbprint string, not the Write-Output results
             return $thumbprint.ToString()
