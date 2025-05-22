@@ -125,11 +125,12 @@ Write-Output "--- Building Chef"
 bundle exec omnibus build chef -l internal --override append_timestamp:false
 if ( -not $? ) { throw "omnibus build chef failed" }
 
-#confirm file is signed
+# Confirm file is signed
 try {
   $directoryPath = "C:\omnibus-ruby\pkg\"
   $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
-  write-output "--- test msi path"
+  Write-Output "--- test msi path"
+  
   # Check if an .msi file was found
   if ($msiFile -ne $null) {
     # Display the full path of the found .msi file
@@ -138,13 +139,25 @@ try {
 
     # Assign the full path to a variable ($fullPath) for later use
     $fullPathVariable = $fullPath
-    write-output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
+    Write-Output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
+    
+    # Run smctl sign verify and check its exit status
     smctl sign verify --input ${fullPathVariable}
+    if (-not $? ) {
+      Write-Error "Signing verification failed for file: ${fullPathVariable}" -ErrorAction Stop
+    }
+
+    # Run signtool verify and check its exit status
+    Write-Output "--- Running signtool verify"
+    signtool verify /pa "${fullPathVariable}"
+    if (-not $? ) {
+      Write-Error "Signtool verification failed for file: ${fullPathVariable}" -ErrorAction Stop
+    }
   } else {
-    Write-Output "No .msi files found in the directory: $directoryPath or its not signed"
+    Write-Error "No .msi files found in the directory: $directoryPath or the file is not signed" -ErrorAction Stop
   }
 } catch {
-  Write-Output "An error occurred: $_"
+  Write-Error "An error occurred during signing verification: $_"
   exit 1
 }
 
