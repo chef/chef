@@ -199,12 +199,60 @@ function Get-Certificate {
 
 function Install-ChefFoundation {
     [CmdletBinding()]
-    param()
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Version = $env:CHEF_FOUNDATION_VERSION,
+        
+        [Parameter(Mandatory = $false)]
+        [string]$WindowsVersion = "2022",
+        
+        [Parameter(Mandatory = $false)]
+        [string]$Architecture = "x64"
+    )
     
     try {
-        Write-Output "--- Installing Chef Foundation ${env:CHEF_FOUNDATION_VERSION}"
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $env:CHEF_FOUNDATION_VERSION
-        if ( -not $? ) { throw "Failed to install Chef Foundation" }
+        Write-Output "--- Installing Chef Foundation ${Version}"
+        
+        # Create temp directory if it doesn't exist
+        $tempDir = Join-Path $env:TEMP "chef-foundation"
+        if (-not (Test-Path $tempDir)) {
+            New-Item -Path $tempDir -ItemType Directory -Force | Out-Null
+        }
+        
+        # Build MSI file URL and stops using old api and goes direct to packages.
+        $msiUrl = "https://packages.chef.io/files/current/chef-foundation/${Version}/windows/${WindowsVersion}/chef-foundation-${Version}-1-${Architecture}.msi"
+        $msiFile = Join-Path $tempDir "chef-foundation-$Version.msi"
+        
+        Write-Output "Downloading from $msiUrl to $msiFile"
+        
+        # Download the MSI
+        Invoke-WebRequest -Uri $msiUrl -OutFile $msiFile -UseBasicParsing
+        if (-not $?) { 
+            throw "Failed to download Chef Foundation MSI from $msiUrl" 
+        }
+        
+        # Verify file was downloaded and has content
+        if (-not (Test-Path $msiFile) -or (Get-Item $msiFile).Length -eq 0) {
+            throw "Downloaded MSI file is missing or empty: $msiFile"
+        }
+        
+        Write-Output "Installing MSI: $msiFile"
+        
+        # Install the MSI quietly
+        $p = Start-Process -FilePath "msiexec.exe" -ArgumentList "/qn /i `"$msiFile`"" -Passthru -Wait -NoNewWindow
+        
+        # Check installation result
+        if ($p.ExitCode -eq 1618) {
+            Write-Warning "Another MSI installation is in progress (exit code 1618), installation might be incomplete"
+        } 
+        elseif ($p.ExitCode -ne 0) {
+            throw "MSI installation failed with exit code $($p.ExitCode)"
+        }
+        
+        Write-Output "Chef Foundation $Version installed successfully"
+        
+        # Optional: Clean up the downloaded MSI
+        Remove-Item -Path $msiFile -Force -ErrorAction SilentlyContinue
     }
     catch {
         Write-Error "Failed to install Chef Foundation: $_"
