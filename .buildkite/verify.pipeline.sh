@@ -48,8 +48,6 @@ for platform in ${win_test_platforms[@]}; do
   echo "  matrix:"
   echo "    - \"Unit\""
   echo "    - \"Integration\""
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
   echo "  expeditor:"
   echo "    executor:"
   echo "      docker:"
@@ -58,6 +56,8 @@ for platform in ${win_test_platforms[@]}; do
   echo "          - powershell"
   echo "          - \"-Command\""
   echo "        propagate-environment: true"
+  echo "  commands:"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
   echo "  timeout_in_minutes: 120"
 done
 
