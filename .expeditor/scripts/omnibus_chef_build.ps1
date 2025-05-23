@@ -316,6 +316,9 @@ function Verify-SignedPackage {
     [CmdletBinding()]
     param()
     
+    $verificationFailed = $false
+    $errorMessage = ""
+    
     try {
         $directoryPath = "C:\omnibus-ruby\pkg\"
         $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
@@ -335,8 +338,8 @@ function Verify-SignedPackage {
             
             # Check for FAILED in the output
             if ($smctlOutput -match "FAILED" -or -not $?) {
-                Write-Error "smctl verification failed: $smctlOutput"
-                throw "Signing verification failed for file: $fullPath"
+                $verificationFailed = $true
+                $errorMessage = "smctl verification failed: $smctlOutput"
             }
             
             # Also check with signtool for additional verification
@@ -344,17 +347,39 @@ function Verify-SignedPackage {
             $signToolOutput = signtool verify /pa $fullPath 2>&1 | Out-String
             
             if ($LASTEXITCODE -ne 0) {
-                Write-Error "signtool verification failed: $signToolOutput"
-                throw "SignTool verification failed for file: $fullPath"
+                $verificationFailed = $true
+                $errorMessage = "signtool verification failed: $signToolOutput"
             }
             
-            Write-Output "MSI signing verification passed"
+            if (-not $verificationFailed) {
+                Write-Output "MSI signing verification passed"
+            }
         } else {
-            throw "No .msi files found in the directory: $directoryPath"
+            $verificationFailed = $true
+            $errorMessage = "No .msi files found in the directory: $directoryPath"
         }
     }
     catch {
-        Write-Error "Package verification failed: $_"
+        $verificationFailed = $true
+        $errorMessage = "Package verification failed: $_"
+    }
+    
+    # Always attempt to display logs regardless of verification result
+    try {
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- grabbing smctl logs"
+            Get-Content $home\.signingmanager\logs\smctl.log -ErrorAction SilentlyContinue
+            Get-Content $home\.signingmanager\logs\smksp.log -ErrorAction SilentlyContinue
+            Get-Content $home\.signingmanager\logs\smksp_cert_sync.log -ErrorAction SilentlyContinue
+        }
+    }
+    catch {
+        Write-Error "--- All smctl logs not found, please check smctl configuration"
+    }
+    
+    # Now handle the verification failure if it occurred
+    if ($verificationFailed) {
+        Write-Error $errorMessage
         exit 1
     }
 }
@@ -373,18 +398,6 @@ function Cleanup-SmctlCredentials {
         Write-Error "Failed to clean up smctl credentials: $_"
         # Not exiting with code 1 as this is a cleanup step
         Write-Warning "Continuing despite credential cleanup failure"
-    }
-    
-    try {
-        if ($env:DEBUGSMCTL -eq $true) {
-            Write-Output "--- grabbing smctl logs"
-            Get-Content $home\.signingmanager\logs\smctl.log -ErrorAction SilentlyContinue
-            Get-Content $home\.signinmanager\logs\smksp.log -ErrorAction SilentlyContinue
-            Get-Content $home\.signingmanager\logs\smksp_cert_sync.log -ErrorAction SilentlyContinue
-        }
-    }
-    catch {
-        Write-Error "--- All smctl logs not found, please check smctl configuration"
     }
 }
 
