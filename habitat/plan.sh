@@ -15,6 +15,7 @@ pkg_build_deps=(
   core/gcc
   core/git
   core/which
+  core/bundler
 )
 
 pkg_bin_dirs=(bin)
@@ -89,6 +90,7 @@ do_prepare() {
   git config --global --add safe.directory /src
 
   ( cd "$CACHE_PATH"
+    bundle --version
     bundle config --local build.nokogiri "--use-system-libraries \
         --with-zlib-dir=$(pkg_path_for zlib) \
         --with-xslt-dir=$(pkg_path_for libxslt) \
