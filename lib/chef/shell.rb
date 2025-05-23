@@ -66,7 +66,7 @@ module Shell
     parse_opts
     Chef::Config[:shell_config] = options.config
 
-   # Disabled licensing - To enable it revert this
+    # Disabled licensing - To enable it revert this
     # if ChefUtils::Dist::Infra::SHELL == "chef-shell"
     #   Chef::Licensing.fetch_and_persist
     #   Chef::Licensing.check_software_entitlement!
