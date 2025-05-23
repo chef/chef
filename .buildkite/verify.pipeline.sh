@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # exit immediately on failure, or if an undefined variable is used
+#!/bin/bash
 set -eux
 
+# Print environment section
 echo "---"
 echo "env:"
 echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
@@ -10,9 +12,9 @@ echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-
 echo "steps:"
 echo ""
 
+# Uncomment and customize this block to enable Linux test platforms
 # test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
-
-# for platform in ${test_platforms[@]}; do
+# for platform in "${test_platforms[@]}"; do
 #   echo "- label: \"{{matrix}} $platform :ruby:\""
 #   echo "  retry:"
 #   echo "    automatic:"
@@ -24,58 +26,56 @@ echo ""
 #   echo "    - \"Integration\""
 #   echo "    - \"Functional\""
 #   echo "  plugins:"
-#   echo "  - docker#v3.5.0:"
-#   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
-#   echo "      privileged: true"
-#   echo "      environment:"
-#   echo "        - CHEF_FOUNDATION_VERSION"
-#   echo "      propagate-environment: true"
+#   echo "    - docker#v3.5.0:"
+#   echo "        image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+#   echo "        privileged: true"
+#   echo "        environment:"
+#   echo "          - CHEF_FOUNDATION_VERSION"
+#   echo "        propagate-environment: true"
 #   echo "  commands:"
 #   echo "    - .expeditor/scripts/bk_container_prep.sh"
 #   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
 #   echo "  timeout_in_minutes: 60"
 # done
 
+# Windows test platforms
 win_test_platforms=("windows-2019:windows-2019")
 
-for platform in ${win_test_platforms[@]}; do
-  echo "- label: windows:2019"
+for platform in "${win_test_platforms[@]}"; do
+  echo "- label: \"${platform#*:}\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-windows-2019-privileged"
-  #echo "  matrix:"
-  # echo "    - \"Unit\""
-  # echo "    - \"Integration\""
-  # echo "  plugins:"
-  # echo "  - docker#v3.5.0:"
-  echo "      image: ruby:3.1-bullseye"
-  echo "      shell:"
-  echo "      - powershell"
-  echo "      - \"-Command\""
-  echo "      environment:"
-  echo "      propagate-environment: true"
+  echo "  plugins:"
+  echo "    - docker#v3.5.0:"
+  echo "        image: ruby:3.1-bullseye"
+  echo "        shell:"
+  echo "          - powershell"
+  echo "          - \"-Command\""
+  echo "        environment: []"
+  echo "        propagate-environment: true"
   echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1"
+  echo "    - .\\.expeditor\\scripts\\prep_and_run_tests.ps1"
   echo "  timeout_in_minutes: 120"
 done
 
-for platform in ${win_test_platforms[@]}; do
+# Functional tests for Windows
+for platform in "${win_test_platforms[@]}"; do
   echo "- label: \"Functional ${platform#*:} :windows:\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  agents:"
   echo "    queue: default-windows-2019-privileged"
   echo "  env:"
-  #echo "  - CHEF_FOUNDATION_VERSION"
-  #echo "  matrix:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1"
+  echo "    CHEF_FOUNDATION_VERSION: \$CHEF_FOUNDATION_VERSION"
+  echo "  commands:"
+  echo "    - .\\.expeditor\\scripts\\prep_and_run_tests.ps1 Functional"
   echo "  timeout_in_minutes: 120"
 done
+
 
 # external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
 
