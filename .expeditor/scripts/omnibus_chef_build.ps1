@@ -317,15 +317,26 @@ function Verify-SignedPackage {
             $fullPath = $msiFile.FullName
             Write-Output "Found .msi file: $fullPath"
 
-            # Assign the full path to a variable for later use
-            $fullPathVariable = $fullPath
-            Write-Output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
+            # Run smctl sign verify and capture its output
+            Write-Output "--- verify signed file using smctl"
+            $smctlOutput = smctl sign verify --input $fullPath 2>&1 | Out-String
             
-            # Run smctl sign verify and check its exit status
-            smctl sign verify --input ${fullPathVariable}
-            if (-not $? ) {
-                throw "Signing verification failed for file: ${fullPathVariable}"
+            # Check for FAILED in the output
+            if ($smctlOutput -match "FAILED" -or -not $?) {
+                Write-Error "smctl verification failed: $smctlOutput"
+                throw "Signing verification failed for file: $fullPath"
             }
+            
+            # Also check with signtool for additional verification
+            Write-Output "--- verify signed file using signtool"
+            $signToolOutput = signtool verify /pa $fullPath 2>&1 | Out-String
+            
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "signtool verification failed: $signToolOutput"
+                throw "SignTool verification failed for file: $fullPath"
+            }
+            
+            Write-Output "MSI signing verification passed"
         } else {
             throw "No .msi files found in the directory: $directoryPath"
         }
