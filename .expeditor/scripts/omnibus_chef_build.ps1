@@ -7,9 +7,6 @@ param()
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
-# to enable smctl debugging with digicert hsm signing uncomment:
-# $env:SM_LOG_LEVEL="TRACE"
-
 # Function definitions
 function Initialize-Environment {
     [CmdletBinding()]
@@ -163,6 +160,21 @@ function Register-SmctlCertificates {
         Write-Error "Failed to register smctl certificates: $_"
         exit 1
     }
+}
+
+function Smctl-Debug {
+    [CmdletBinding()]
+    param()
+    try {
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- Setting SM_LOG_LEVEL to TRACE as DEBUGSMCTL is true"        
+            $env:SM_LOG_LEVEL="TRACE"
+            if (not $?) { throw "Failed to set SM_LOG_LEVEL" }
+        }
+    }
+    catch {
+        Write-Error "--- Failed to set SM_LOG_LEVEL: $_"
+    }    
 }
 
 function Get-Certificate {
@@ -356,16 +368,23 @@ function Cleanup-SmctlCredentials {
         smctl windows certdesync
         if ( -not $? ) { throw "Failed to clean up smctl credentials" }
         
-        # Uncomment to gather logs when needed
-        # Write-Output "--- grabbing smctl logs"
-        # Get-Content $home\.signingmanager\logs\smctl.log
-        # Get-Content $home\.signinmanager\logs\smksp.log
-        # Get-Content $home\.signingmanager\logs\smksp_cert_sync.log
     }
     catch {
         Write-Error "Failed to clean up smctl credentials: $_"
         # Not exiting with code 1 as this is a cleanup step
         Write-Warning "Continuing despite credential cleanup failure"
+    }
+    
+    try {
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- grabbing smctl logs"
+            Get-Content $home\.signingmanager\logs\smctl.log -ErrorAction SilentlyContinue
+            Get-Content $home\.signinmanager\logs\smksp.log -ErrorAction SilentlyContinue
+            Get-Content $home\.signingmanager\logs\smksp_cert_sync.log -ErrorAction SilentlyContinue
+        }
+    }
+    catch {
+        Write-Error "--- All smctl logs not found, please check smctl configuration"
     }
 }
 
@@ -428,6 +447,7 @@ try {
     
     # Set up the build environment
     Initialize-Environment -ThumbprintValue $thumbprint
+    Smctl-Debug
     Install-ChefFoundation
     Install-OmnibusDependencies
     
