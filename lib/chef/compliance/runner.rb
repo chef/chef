@@ -138,8 +138,9 @@ class Chef
           @reporters[reporter_type].send_report(report)
         end
         logger.info "Chef Infra Compliance Phase Complete"
-      rescue Chef::Licensing::EntitlementError => e
-        logger.error "Skipping Chef Infra Compliance Phase because the license does not have the required entitlement for Chef InSpec."
+        # Disabled licensing - To enable it revert this
+        # rescue Chef::Licensing::EntitlementError => e
+        # logger.error "Skipping Chef Infra Compliance Phase because the license does not have the required entitlement for Chef InSpec."
       end
 
       def inputs_from_attributes
