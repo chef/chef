@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::Application do
-  include_context "license server stubs"
+  # include_context "license server stubs"
   before do
     @original_argv = ARGV.dup
     ARGV.clear

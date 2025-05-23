@@ -16,11 +16,13 @@
 # limitations under the License.
 
 require "spec_helper"
-require "chef-licensing"
+# Disabled licensing - To enable it revert this
+# require "chef-licensing"
 
 describe Chef::Application::Apply do
 
-  include_context "license server stubs"
+  # Disabled licensing - To enable it revert this
+  # include_context "license server stubs"
 
   before do
     @app = Chef::Application::Apply.new
@@ -94,25 +96,28 @@ describe Chef::Application::Apply do
     before do
       ARGV.clear
 
-      ChefLicensing.configure do |config|
-        config.logger = Logger.new(StringIO.new) # suppress log output
-      end
+      # Disabled licensing - To enable it revert this
+      # ChefLicensing.configure do |config|
+      #   config.logger = Logger.new(StringIO.new) # suppress log output
+      # end
     end
     it "should exit and log message" do
+      # Disabled licensing - To enable it revert this
       # The below log messages is because of the licensing check
-      allow(Chef::Log).to receive(:debug).with(/opening connection to .*/)
-      allow(Chef::Log).to receive(:debug).with(/opened/)
-      allow(Chef::Log).to receive(:debug).with(/starting SSL for .*/)
-      allow(Chef::Log).to receive(:debug).with(/SSL established, protocol:.*/)
-      expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
+      # allow(Chef::Log).to receive(:debug).with(/opening connection to .*/)
+      # allow(Chef::Log).to receive(:debug).with(/opened/)
+      # allow(Chef::Log).to receive(:debug).with(/starting SSL for .*/)
+      # allow(Chef::Log).to receive(:debug).with(/SSL established, protocol:.*/)
+      # expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
       expect { @app.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
 
-    after do
-      ChefLicensing.configure do |config|
-        config.logger = Chef::Log
-      end
-    end
+    # Disabled licensing - To enable it revert this
+    # after do
+    #   ChefLicensing.configure do |config|
+    #     config.logger = Chef::Log
+    #   end
+    # end
   end
   describe "when the json_attribs configuration option is specified" do
     let(:json_attribs) { { "a" => "b" } }
