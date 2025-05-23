@@ -45,7 +45,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-windows-2019-privileged"
-  echo "  matrix:"
+  #echo "  matrix:"
   # echo "    - \"Unit\""
   # echo "    - \"Integration\""
   # echo "  plugins:"
@@ -57,7 +57,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "      environment:"
   echo "      propagate-environment: true"
   echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1"
   echo "  timeout_in_minutes: 120"
 done
 
@@ -72,8 +72,8 @@ for platform in ${win_test_platforms[@]}; do
   echo "    queue: default-windows-2019-privileged"
   echo "  env:"
   #echo "  - CHEF_FOUNDATION_VERSION"
-  echo "  matrix:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  #echo "  matrix:"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1"
   echo "  timeout_in_minutes: 120"
 done
 
