@@ -24,9 +24,11 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "../daemon"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
-require "chef-licensing/cli_flags/mixlib_cli"
 require "chef/monkey_patches/net-http"
-require_relative "../licensing"
+
+# Disabled licensing - To enable it revert this
+# require "chef-licensing/cli_flags/mixlib_cli"
+# require_relative "../licensing"
 
 module Mixlib
   autoload :Archive, "mixlib/archive"
@@ -47,7 +49,9 @@ class Chef::Application::Base < Chef::Application
   include Chef::Mixin::ShellOut
   include ChefConfig::Mixin::DotD
   include LicenseAcceptance::CLIFlags::MixlibCLI
-  include ChefLicensing::CLIFlags::MixlibCLI
+
+  # Disabled licensing - To enable it revert this
+  # include ChefLicensing::CLIFlags::MixlibCLI
 
   # Mimic self_pipe sleep from Unicorn to capture signals safely
   SELF_PIPE = [] # rubocop:disable Style/MutableConstant
@@ -316,21 +320,22 @@ class Chef::Application::Base < Chef::Application
       end
     }
 
-  if ChefUtils::Dist::Infra::EXEC == "chef"
-    option :license_add,
-        long: "--license-add",
-        description: "Add a license key to the license pool.",
-        boolean: true,
-        proc: lambda { |v| Chef::Licensing.license_add },
-        exit: 0
+  # Disabled licensing - To enable it revert this
+  # if ChefUtils::Dist::Infra::EXEC == "chef"
+  #   option :license_add,
+  #       long: "--license-add",
+  #       description: "Add a license key to the license pool.",
+  #       boolean: true,
+  #       proc: lambda { |v| Chef::Licensing.license_add },
+  #       exit: 0
 
-    option :license_list,
-        long: "--license-list",
-        description: "List all license keys in the license pool.",
-        boolean: true,
-        proc: lambda { |v| Chef::Licensing.license_list },
-        exit: 0
-  end
+  #   option :license_list,
+  #       long: "--license-list",
+  #       description: "List all license keys in the license pool.",
+  #       boolean: true,
+  #       proc: lambda { |v| Chef::Licensing.license_list },
+  #       exit: 0
+  # end
 
   IMMEDIATE_RUN_SIGNAL = "1".freeze
   RECONFIGURE_SIGNAL = "H".freeze
@@ -341,7 +346,8 @@ class Chef::Application::Base < Chef::Application
     instance = new
     instance.parse_options([])
     puts instance.opt_parser
-    puts Chef::Licensing.licensing_help if ChefUtils::Dist::Infra::EXEC == "chef"
+    # Disabled licensing - To enable it revert this
+    # puts Chef::Licensing.licensing_help if ChefUtils::Dist::Infra::EXEC == "chef"
     exit 0
   end
 
@@ -370,10 +376,11 @@ class Chef::Application::Base < Chef::Application
 
   # Run the chef client, optionally daemonizing or looping at intervals.
   def run_application
-    if ENV["TEST_KITCHEN"]
-      puts "Temporarily bypassing licensing check in Kitchen"
-    else
-      Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
+    # Disabled licensing - To enable it revert this
+    # if ENV["TEST_KITCHEN"]
+    #   puts "Temporarily bypassing licensing check in Kitchen"
+    # else
+    #   Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
     end
     if Chef::Config[:version]
       puts "#{ChefUtils::Dist::Infra::PRODUCT} version: #{::Chef::VERSION}"
