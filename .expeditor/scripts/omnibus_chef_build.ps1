@@ -169,7 +169,7 @@ function Smctl-Debug {
         if ($env:DEBUGSMCTL -eq $true) {
             Write-Output "--- Setting SM_LOG_LEVEL to TRACE as DEBUGSMCTL is true"        
             $env:SM_LOG_LEVEL="TRACE"
-            if (not $?) { throw "Failed to set SM_LOG_LEVEL" }
+            if (-not $?) { throw "Failed to set SM_LOG_LEVEL" }
         }
     }
     catch {
