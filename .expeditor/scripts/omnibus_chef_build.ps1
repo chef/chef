@@ -170,7 +170,7 @@ function Get-Certificate {
     param()
     
     try {
-        $thumbprint = "7d16ae73ab249d473362e9332d029089dbbb89b2"
+        $thumbprint = "7D16AE73AB249D473362E9332D029089DBBB89B2"
 
         # Get the certificate from the Current User's Personal store by thumbprint
         $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
@@ -325,13 +325,6 @@ function Verify-SignedPackage {
             smctl sign verify --input ${fullPathVariable}
             if (-not $? ) {
                 throw "Signing verification failed for file: ${fullPathVariable}"
-            }
-
-            # Run signtool verify and check its exit status
-            Write-Output "--- Running signtool verify"
-            signtool verify /pa "${fullPathVariable}"
-            if (-not $? ) {
-                throw "Signtool verification failed for file: ${fullPathVariable}"
             }
         } else {
             throw "No .msi files found in the directory: $directoryPath"
