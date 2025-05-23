@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # exit immediately on failure, or if an undefined variable is used
-set -eu
+set -eux
 
 echo "---"
 echo "env:"
