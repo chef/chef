@@ -39,7 +39,7 @@ echo ""
 win_test_platforms=("windows-2019:windows-2019")
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
+  echo "- label: windows:2019"
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
