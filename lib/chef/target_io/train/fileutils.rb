@@ -1,14 +1,18 @@
+require_relative "../support.rb"
+
 module TargetIO
   module TrainCompat
     class FileUtils
       class << self
+        include TargetIO::Support
+
         def chmod(mode, list, noop: nil, verbose: nil)
           cmd = sprintf("chmod %s %s", __mode_to_s(mode), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def chmod_R(mode, list, noop: nil, verbose: nil, force: nil)
@@ -17,7 +21,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def chown(user, group, list, noop: nil, verbose: nil)
@@ -26,7 +30,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def chown_R(user, group, list, noop: nil, verbose: nil, force: nil)
@@ -35,14 +39,8 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
-
-        # cmp
-        # collect_method
-        # commands
-        # compare_file
-        # compare_stream
 
         def cp(src, dest, preserve: nil, noop: nil, verbose: nil)
           cmd = "cp#{preserve ? " -p" : ""} #{[src, dest].flatten.join(" ")}"
@@ -50,7 +48,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
         alias_method :copy, :cp
 
@@ -60,7 +58,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def cp_r(src, dest, preserve: nil, noop: nil, verbose: nil, dereference_root: true, remove_destination: nil)
@@ -69,7 +67,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         # getwd (alias pwd)
@@ -87,7 +85,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def ln(src, dest, force: nil, noop: nil, verbose: nil)
@@ -96,7 +94,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
         alias_method :link, :ln
 
@@ -106,7 +104,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
         alias_method :symlink, :ln_s
 
@@ -120,7 +118,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def mkdir_p(list, mode: nil, noop: nil, verbose: nil)
@@ -129,7 +127,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
         alias_method :makedirs, :mkdir_p
         alias_method :mkpath, :mkdir_p
@@ -140,15 +138,8 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
-
-        # options
-        # options_of
-        # pwd
-        # remove
-        # remove_entry_secure
-        # remove_file
 
         def rm(list, force: nil, noop: nil, verbose: nil)
           cmd = "rm#{force ? " -f" : ""} #{Array(list).join(" ")}"
@@ -156,7 +147,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def rm_f(list, force: nil, noop: nil, verbose: nil, secure: nil)
@@ -169,7 +160,7 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def rm_rf(list, noop: nil, verbose: nil, secure: nil)
@@ -185,16 +176,14 @@ module TargetIO
           Chef::Log.debug cmd if verbose
           return if noop
 
-          __run_command(cmd)
+          run_command(cmd)
         end
 
         def touch(list, noop: nil, verbose: nil, mtime: nil, nocreate: nil)
           return if noop
 
-          __run_command "touch #{nocreate ? "-c " : ""}#{mtime ? mtime.strftime("-t %Y%m%d%H%M.%S ") : ""}#{Array(list).join(" ")}"
+          run_command "touch #{nocreate ? "-c " : ""}#{mtime ? mtime.strftime("-t %Y%m%d%H%M.%S ") : ""}#{Array(list).join(" ")}"
         end
-
-        # uptodate?
 
         def method_missing(m, *_args, **_kwargs, &_block)
           raise "Unsupported #{self.class} method #{m}"
@@ -205,14 +194,6 @@ module TargetIO
         # TODO: Symbolic modes
         def __mode_to_s(mode)
           mode.to_s(8)
-        end
-
-        def __run_command(cmd)
-          __transport_connection.run_command(cmd)
-        end
-
-        def __transport_connection
-          Chef.run_context&.transport_connection
         end
       end
     end
