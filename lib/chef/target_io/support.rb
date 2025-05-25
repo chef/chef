@@ -1,4 +1,4 @@
-require 'tempfile'
+require "tempfile" unless defined?(::Tempfile)
 
 module TargetIO
   module Support
