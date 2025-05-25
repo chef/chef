@@ -1,3 +1,5 @@
+require_relative "../support.rb"
+
 module TargetIO
   module TrainCompat
     module Shadow

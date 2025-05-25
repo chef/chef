@@ -206,13 +206,13 @@ class Chef
         write_exception = false
 
         tempname = Dir::Tmpname.create(["crontab-"]) {}
-        TargetIO::File.open(tempname, "w") do |tempfile|
+        io = TargetIO::File.open(tempname, "w") do |tempfile|
           tempfile.write(crontab)
         end
 
-        so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
+        so = shell_out!("crontab -u #{new_resource.user} #{io.path}")
 
-        TargetIO::File.unlink(tempname)
+        TargetIO::File.unlink(io.path)
       rescue => e
         raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"
       end
