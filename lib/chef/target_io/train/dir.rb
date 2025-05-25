@@ -1,7 +1,7 @@
 require_relative "file"
 require_relative "fileutils"
 
-require_relative "../support.rb"
+require_relative "../support"
 
 module TargetIO
   module TrainCompat
