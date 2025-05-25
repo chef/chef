@@ -1,4 +1,4 @@
-require_relative "../support.rb"
+require_relative "../support"
 
 module TargetIO
   module TrainCompat

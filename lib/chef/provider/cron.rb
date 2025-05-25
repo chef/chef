@@ -210,9 +210,11 @@ class Chef
           tempfile.write(crontab)
         end
 
-        so = shell_out!("crontab -u #{new_resource.user} #{io.path}")
+        tempname = io.path if ChefConfig::Config.target_mode?
 
-        TargetIO::File.unlink(io.path)
+        so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
+
+        TargetIO::File.unlink(tempname)if ChefConfig::Config.target_mode?
       rescue => e
         raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"
       end
