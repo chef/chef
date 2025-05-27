@@ -8,10 +8,12 @@ $env:Path = 'C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Wi
 if ($TestType -eq 'Functional') {
     winrm quickconfig -q
 }
-
+Write-Output "--- check the path of ruby"
+which ruby
 Write-Output "ruby version.."
 ruby -v
-
+Write-Output "--- check the path of bundler"
+which bundle
 Write-Output "bundler version.."
 bundle -v
 
