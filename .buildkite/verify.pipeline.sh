@@ -56,6 +56,7 @@ for platform in "${win_test_platforms[@]}"; do
   echo "          - \"-Command\""
   echo "        environment: []"
   echo "        propagate-environment: true"
+  echo "  commands:"
   echo "    - powershell -ExecutionPolicy Bypass -File /workdir/.expeditor/scripts/prep_and_run_tests.ps1"
 
   echo "  timeout_in_minutes: 120"
