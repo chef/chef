@@ -2,7 +2,7 @@
 
 # exit immediately on failure, or if an undefined variable is used
 #!/bin/bash
-set -eux
+set -eu
 
 # Print environment section
 echo "---"
@@ -50,7 +50,7 @@ for platform in "${win_test_platforms[@]}"; do
   echo "    queue: default-windows-2019-privileged"
   echo "  plugins:"
   echo "    - docker#v3.5.0:"
-  echo "        image: ruby:3.4-bullseye"
+  echo "        image: rubydistros/windows-2019:3.1"
   echo "        shell:"
   echo "          - powershell"
   echo "          - \"-Command\""
@@ -72,7 +72,7 @@ for platform in "${win_test_platforms[@]}"; do
   echo "  env:"
   echo "  plugins:"
   echo "    - docker#v3.5.0:"
-  echo "        image: ruby:3.4-bullseye"
+  echo "        image: rubydistros/windows-2019:3.1"
   #echo "    CHEF_FOUNDATION_VERSION: \$CHEF_FOUNDATION_VERSION"
   echo "  commands:"
   echo "    - .\\.expeditor\\scripts\\prep_and_run_tests.ps1 Functional"
