@@ -143,12 +143,16 @@ function Register-SmctlCertificates {
     param()
     
     try {
-        # Write-Output "--- smksp_registrar sync certs before chef install"
-        # smksp_registrar.exe register
-        # if ( -not $? ) { throw "Failed to register certificates" }
+        Write-Output "--- smksp_registrar unregister first"
+        smksp_registrar.exe unregister
+
+        Write-Output "--- smksp_registrar sync certs before chef install"
+        smksp_registrar.exe register
+        if ( -not $? ) { throw "Failed to register certificates" }
         
-        # certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
-        # if ( -not $? ) { throw "Failed to run certutil" }
+        Write-Host "--- list all keys available to the current user"
+        certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
+        if ( -not $? ) { throw "Failed to run certutil" }
         
         # smksp_cert_sync.exe
         # if ( -not $? ) { throw "Failed to sync certificates" }
