@@ -20,14 +20,13 @@ LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 ARG CHANNEL=stable
 ARG VERSION=19.0.49
 ARG ARCH=x86_64
-ARG PKG_VERSION=6
-ARG INFRA_PACKAGE="chef/chef-infra-client"
+ARG I can INFRA_PACKAGE="chef/chef-infra-client"
 
 ARG HAB_CHANNEL=stable
 ARG HAB_VERSION="1.6.1041"
-ARG HABITAT_PACKAGE="core/hab/1.6.1041"
+ARG HABITAT_PACKAGE="core/hab/${HAB_VERSION}"
 
-ADD https://packages.chef.io/files/${HAB_CHANNEL}/habitat/${HAB_VERSION}/hab-x86_64-linux.tar.gz /tmp/hab.tar.gz
+ADD https://packages.chef.io/files/${HAB_CHANNEL}/habitat/${HAB_VERSION}/hab-${ARCH}-linux.tar.gz /tmp/hab.tar.gz
 
 RUN mkdir /tmp/hab
 RUN mkdir /hab
