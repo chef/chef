@@ -16,9 +16,11 @@ class Chef
       def chef_client_hab_binary_path
         begin
           gem_dir = Gem::Specification.find_by_name("chef").gem_dir.to_s
+          puts "************ gem_dir is #{gem_dir} ************"
           windows = RUBY_PLATFORM =~ /mswin|mingw|windows/ || defined?(ChefUtils) && ChefUtils.windows?
           base_path = "/hab/pkgs/chef/#{ChefUtils::Dist::Infra::HABITAT_PKG}"
           base_path = "C:/#{base_path}" if windows
+          puts "************ base_path is #{base_path} ************"
           if gem_dir.include?(base_path)
             # Split on vendor/gems portion
             vendor_split = "/vendor/gems/"
@@ -26,6 +28,7 @@ class Chef
             
             # Construct path to binary
             binary_path = File.join(hab_pkg_path, "bin", "#{ChefUtils::Dist::Infra::CLIENT}")
+            puts "************ binary path is #{binary_path} ************"
             File.exist?(binary_path) ? binary_path : ""
           else
             ""
