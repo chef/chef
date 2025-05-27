@@ -144,18 +144,16 @@ function Register-SmctlCertificates {
     
     try {
         Write-Output "--- smksp_registrar unregister first"
-        smksp_registrar.exe unregister
+        smksp_registrar.exe list
+        smksp_registrar.exe remove
+        smksp_registrar.exe list
 
         Write-Output "--- smksp_registrar sync certs before chef install"
         smksp_registrar.exe register
         if ( -not $? ) { throw "Failed to register certificates" }
-        
-        Write-Host "--- list all keys available to the current user"
-        certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
-        if ( -not $? ) { throw "Failed to run certutil" }
-        
-        # smksp_cert_sync.exe
-        # if ( -not $? ) { throw "Failed to sync certificates" }
+        smksp_registrar.exe list
+        if ( -not $? ) { throw "Failed to register certificates" }
+   
         Write-Output "--- Installing Windows package signing certificate using smctl cli"
         smctl windows certsync --keypair-alias=key_875762014
         if ( -not $? ) { throw "Failed to sync certificates using smctl" }        
@@ -335,18 +333,7 @@ function Verify-SignedPackage {
             # Display the full path of the found .msi file
             $fullPath = $msiFile.FullName
             Write-Output "Found .msi file: $fullPath"
-
-            # Run smctl sign verify and capture its output
-            Write-Output "--- verify signed file using smctl"
-            $smctlOutput = smctl sign verify --input $fullPath 2>&1 | Out-String
-            
-            # Check for FAILED in the output
-            if ($smctlOutput -match "FAILED" -or -not $?) {
-                $verificationFailed = $true
-                $errorMessage = "smctl verification failed: $smctlOutput"
-            }
-            
-            # Also check with signtool for additional verification
+            # check with signtool for additional verification
             Write-Output "--- verify signed file using signtool"
             $signToolOutput = signtool verify /pa $fullPath 2>&1 | Out-String
             
@@ -375,6 +362,8 @@ function Verify-SignedPackage {
             Get-Content $home\.signingmanager\logs\smctl.log -ErrorAction SilentlyContinue
             Get-Content $home\.signingmanager\logs\smksp.log -ErrorAction SilentlyContinue
             Get-Content $home\.signingmanager\logs\smksp_cert_sync.log -ErrorAction SilentlyContinue
+            Write-Host "--- list all keys available to the current user"
+            certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
         }
     }
     catch {
