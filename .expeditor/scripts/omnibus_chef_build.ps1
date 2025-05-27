@@ -1,5 +1,11 @@
 #Requires -Version 5.1
 
+# 
+# To enable extra debug messages in the build output, set the environment variable DEBUGSMCTL to true before running the script.
+# on the buildkite pipeline env options: DEBUGSMCTL="true" 
+# 
+
+
 [CmdletBinding()]
 param()
 
