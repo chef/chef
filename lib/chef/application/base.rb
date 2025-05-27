@@ -122,7 +122,10 @@ class Chef::Application::Base < Chef::Application
     description: "Show this help message.",
     on: :tail,
     boolean: true,
-    proc: proc { print_help }
+    show_options: true,
+    exit: 0
+    # Disabled licensing - To enable it revert this
+    # proc: proc { print_help }
 
   option :user,
     short: "-u USER",
@@ -342,14 +345,14 @@ class Chef::Application::Base < Chef::Application
 
   attr_reader :chef_client_json
 
-  def self.print_help
-    instance = new
-    instance.parse_options([])
-    puts instance.opt_parser
-    # Disabled licensing - To enable it revert this
-    # puts Chef::Licensing.licensing_help if ChefUtils::Dist::Infra::EXEC == "chef"
-    exit 0
-  end
+  # Disabled licensing - To enable it revert this
+  # def self.print_help
+  #   instance = new
+  #   instance.parse_options([])
+  #   puts instance.opt_parser
+  #   puts Chef::Licensing.licensing_help if ChefUtils::Dist::Infra::EXEC == "chef"
+  #   exit 0
+  # end
 
   def setup_application
     Chef::Daemon.change_privilege
