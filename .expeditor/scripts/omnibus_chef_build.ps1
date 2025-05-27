@@ -143,20 +143,32 @@ function Register-SmctlCertificates {
     param()
     
     try {
-        Write-Output "--- smksp_registrar unregister first"
-        smksp_registrar.exe list
-        smksp_registrar.exe remove
-        smksp_registrar.exe list
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- Debug SMCTLCert registration is enabled, adding some additional testing output"
+            smksp_registrar.exe list
+            smksp_registrar.exe remove
+            if ( -not $? ) { throw "Failed to remove DigiCert Signing Manager and Trust Manager KSP" }
+            smksp_registrar.exe list
 
-        Write-Output "--- smksp_registrar sync certs before chef install"
-        smksp_registrar.exe register
-        if ( -not $? ) { throw "Failed to register certificates" }
-        smksp_registrar.exe list
-        if ( -not $? ) { throw "Failed to register certificates" }
-   
-        Write-Output "--- Installing Windows package signing certificate using smctl cli"
-        smctl windows certsync --keypair-alias=key_875762014
-        if ( -not $? ) { throw "Failed to sync certificates using smctl" }        
+            Write-Output "--- smksp_registrar sync certs before chef install"
+            smksp_registrar.exe register
+            if ( -not $? ) { throw "Failed to register certificates" }
+            smksp_registrar.exe list
+            if ( -not $? ) { throw "Failed to register certificates" }
+        }
+        else {
+            Write-Output "--- smksp_registrar unregister first"
+            smksp_registrar.exe remove
+            if ( -not $? ) { throw "Failed to remove DigiCert Signing Manager and Trust Manager KSP" }
+            
+            Write-Output "--- smksp_registrar sync certs before chef install"
+            smksp_registrar.exe register
+            if ( -not $? ) { throw "Failed to register certificates" }
+    
+            Write-Output "--- Installing Windows package signing certificate using smctl cli"
+            smctl windows certsync --keypair-alias=key_875762014
+            if ( -not $? ) { throw "Failed to sync certificates using smctl" }   
+        }
     }
     catch {
         Write-Error "Failed to register smctl certificates: $_"
