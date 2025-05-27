@@ -47,7 +47,7 @@ for platform in "${win_test_platforms[@]}"; do
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
-  echo "    queue: default-windows-2022"
+  echo "    queue: default-windows-2019-privileged"
   echo "  plugins:"
   echo "    - docker#v3.5.0:"
   echo "        image: rubydistros/windows-2019:3.1"
@@ -56,8 +56,8 @@ for platform in "${win_test_platforms[@]}"; do
   echo "          - \"-Command\""
   echo "        environment: []"
   echo "        propagate-environment: true"
-  echo "  commands:"
-  echo "    - .\\.expeditor\\scripts\\prep_and_run_tests.ps1"
+  echo "    - powershell -ExecutionPolicy Bypass -File /workdir/.expeditor/scripts/prep_and_run_tests.ps1"
+
   echo "  timeout_in_minutes: 120"
 done
 
@@ -68,14 +68,14 @@ for platform in "${win_test_platforms[@]}"; do
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
-  echo "    queue: default-windows-2022"
+  echo "    queue: default-windows-2019-privileged"
   echo "  env:"
   echo "  plugins:"
   echo "    - docker#v3.5.0:"
   echo "        image: rubydistros/windows-2019:3.1"
   #echo "    CHEF_FOUNDATION_VERSION: \$CHEF_FOUNDATION_VERSION"
   echo "  commands:"
-  echo "    - .\\.expeditor\\scripts\\prep_and_run_tests.ps1 Functional"
+  echo "  - powershell -ExecutionPolicy Bypass -File /workdir/.expeditor/scripts/prep_and_run_tests.ps1 Functional"
   echo "  timeout_in_minutes: 120"
 done
 
