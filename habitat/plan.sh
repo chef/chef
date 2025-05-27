@@ -15,7 +15,6 @@ pkg_build_deps=(
   core/gcc
   core/git
   core/which
-  core/bundler
 )
 
 pkg_bin_dirs=(bin)
