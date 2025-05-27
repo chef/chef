@@ -10,15 +10,16 @@ then
   export OPENSSL_FIPS=1
 fi
 
-# Get the directory of the script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Define the path to the license server URL file relative to SCRIPT_DIR
-LICENSE_SERVER_FILE="$SCRIPT_DIR/../.expeditor/scripts/chef_license_server_url.txt"
-# Export the CHEF_LICENSE_SERVER environment variable using the file content
-export CHEF_LICENSE_SERVER=$(cat "$LICENSE_SERVER_FILE")
+# Disabled licensing - To enable it revert this
+# # Get the directory of the script
+# SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# # Define the path to the license server URL file relative to SCRIPT_DIR
+# LICENSE_SERVER_FILE="$SCRIPT_DIR/../.expeditor/scripts/chef_license_server_url.txt"
+# # Export the CHEF_LICENSE_SERVER environment variable using the file content
+# export CHEF_LICENSE_SERVER=$(cat "$LICENSE_SERVER_FILE")
 
-echo "--- Script dir is $SCRIPT_DIR"
-echo "--- License server URL is $CHEF_LICENSE_SERVER"
+# echo "--- Script dir is $SCRIPT_DIR"
+# echo "--- License server URL is $CHEF_LICENSE_SERVER"
 
 
 # Our tests hammer YUM pretty hard and the EL6 testers get corrupted
