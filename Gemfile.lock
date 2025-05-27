@@ -1,19 +1,18 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: ef0bce664bd9b3a95f9e06581eeb9a74fb1c364d
+  revision: fb50e0151df1e9caf80a8ef1979901b8214139dc
   branch: main
   specs:
     ohai (19.0.5)
-      base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
-      ffi (~> 1.15.5)
+      ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
       mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (~> 3.3.6)
+      mixlib-shellout (~> 3.2, >= 3.2.5)
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
@@ -548,4 +547,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.5.22
+   2.3.7
