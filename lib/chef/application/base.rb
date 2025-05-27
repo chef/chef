@@ -124,8 +124,8 @@ class Chef::Application::Base < Chef::Application
     boolean: true,
     show_options: true,
     exit: 0
-    # Disabled licensing - To enable it revert this
-    # proc: proc { print_help }
+  # Disabled licensing - To enable it revert this
+  # proc: proc { print_help }
 
   option :user,
     short: "-u USER",
