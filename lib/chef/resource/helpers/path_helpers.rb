@@ -4,35 +4,33 @@ class Chef
     # Helpers for path manipulation
     module PathHelpers
       extend self
-      # The habitat binary path for Infra Client
-      # @return [String]
+      # Returns the path to the active Chef Infra Client binary when installed via Habitat.
+      # This method uses following approach to locate the binary:
+      #    First, it attempts to find the currently running Chef gem and derives the 
+      #    binary path from there. This returns the exact version that's executing.
+      # @return [String] The full path to the chef-client binary in the Habitat package,
+      #                  or an empty string if the binary cannot be found.
+      # @example
+      #   chef_client_hab_binary_path
+      #   # => "/hab/pkgs/chef/chef-infra-client/19.2.7/20230822151044/bin/chef-client"
       def chef_client_hab_binary_path
-        # Find the most recent version by listing directories
-        # This is heavy operation and should be avoided but currently habitat does not create a symlink by default
-        # and binlink will be created only if `binlink` option is passed so we cannot assume binlink will be present.
-        windows = RUBY_PLATFORM =~ /mswin|mingw|windows/ || defined?(ChefUtils) && ChefUtils.windows?
-        base_path = "/hab/pkgs/chef/#{ChefUtils::Dist::Infra::HABITAT_PKG}"
-        base_path = "C:/#{base_path}" if windows
-        if File.directory?(base_path)
-          # Get all version directories
-          versions = Dir.glob("#{base_path}/*").select { |d| File.directory?(d) }
-
-          if versions.any?
-            # Get the latest version (based on modification time)
-            latest_version_dir = versions.max_by { |v| File.mtime(v) }
-
-            # Get all timestamp directories within this version
-            timestamps = Dir.glob("#{latest_version_dir}/*").select { |d| File.directory?(d) }
-
-            if timestamps.any?
-              # Use the latest timestamp
-              latest_dir = timestamps.max_by { |t| File.mtime(t) }
-              "#{latest_dir}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
-            else
-              ""
-            end
+        begin
+          gem_dir = Gem::Specification.find_by_name("chef").gem_dir.to_s
+          windows = RUBY_PLATFORM =~ /mswin|mingw|windows/ || defined?(ChefUtils) && ChefUtils.windows?
+          base_path = "/hab/pkgs/chef/#{ChefUtils::Dist::Infra::HABITAT_PKG}"
+          base_path = "C:/#{base_path}" if windows
+          if gem_dir.include?(base_path)
+            # Split on vendor/gems portion
+            vendor_split = "/vendor/gems/"
+            hab_pkg_path = gem_dir.split(vendor_split).first
+            
+            # Construct path to binary
+            binary_path = File.join(hab_pkg_path, "bin", "#{ChefUtils::Dist::Infra::CLIENT}")
+            File.exist?(binary_path) ? binary_path : ""
+          else
+            ""
           end
-        else
+        rescue Gem::MissingSpecError, StandardError => e
           ""
         end
       end
