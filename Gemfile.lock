@@ -3,7 +3,7 @@ GIT
   revision: ef0bce664bd9b3a95f9e06581eeb9a74fb1c364d
   branch: main
   specs:
-    ohai (19.0.5)
+    ohai (19.1.1)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
