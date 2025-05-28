@@ -11,6 +11,7 @@ pkg_bin_dirs=(
   vendor/bin
 )
 pkg_build_deps=(
+  core/glibc
   core/make
   core/gcc
   core/git
@@ -80,7 +81,9 @@ do_prepare() {
   export OPENSSL_DIR="$(pkg_path_for openssl)"
   export OPENSSL_INCLUDE_DIR="$(pkg_path_for openssl)/include"
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
-  export CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
+  export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
+  export CFLAGS="${CPPFLAGS}"
+  export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib"
   export HAB_BLDR_CHANNEL="LTS-2024"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
