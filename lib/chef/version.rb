@@ -23,7 +23,7 @@ require_relative "version_string"
 
 class Chef
   CHEF_ROOT = File.expand_path("..", __dir__)
-  VERSION = Chef::VersionString.new("19.1.24")
+  VERSION = Chef::VersionString.new("19.1.25")
 end
 
 #
