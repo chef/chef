@@ -27,12 +27,10 @@ ENV HAB_LICENSE="accept-no-persist"
 RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
     mkdir /tmp/hab && \
     tar -xzf /tmp/hab.tar.gz -C /tmp/hab && \
-    cp $(find /tmp/hab -type d -name "hab-*")/hab /bin/ && \
-    hab pkg install --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
-    echo '#!/bin/sh' > /bin/chef-client && \
-    echo 'export HAB_LICENSE="accept-no-persist"' >> /bin/chef-client && \
-    echo '/bin/hab pkg exec chef/chef-infra-client chef-client -- "$@"' >> /bin/chef-client && \
-    chmod +x /bin/chef-client && \
-    rm -rf /tmp/* /hab/cache
+    HAB_DIR=$(find /tmp/hab -type d -name "hab-*") && \
+    $HAB_DIR/hab pkg install --binlink --force --channel "stable" "core/hab" && \
+    rm -rf /tmp/* && \
+    hab pkg install --binlink --force --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
+    rm -rf /hab/cache
 
 VOLUME [ "/hab" ]
