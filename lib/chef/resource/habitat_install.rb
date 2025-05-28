@@ -73,7 +73,7 @@ class Chef
       action :install, description: "Installs Habitat. Does nothing if the `hab` binary is found in the default location for the system (`/bin/hab` on Linux, `/usr/local/bin/hab` on macOS, `C:/habitat/hab.exe` on Windows)" do
         if ::TargetIO::File.exist?(hab_path)
           cmd = shell_out!([hab_path, "--version"].flatten.compact.join(" "))
-          version = %r{hab (\d*\.\d*\.\d[^\/]*)}.match(cmd.stdout)[1]
+          version = %r{\w+ (\d*\.\d*\.\d[^\/]*)}.match(cmd.stdout)[1]
           return if version == new_resource.hab_version
         end
 
