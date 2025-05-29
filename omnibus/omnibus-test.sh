@@ -129,6 +129,10 @@ export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
 
+if [[ -z "${RSPEC_FORMAT}" ]]; then
+  RSPEC_FORMAT="progress"
+fi
+
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
@@ -136,10 +140,10 @@ rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   sudo -E bundle install --jobs=3 --retry=3
-  sudo -E bundle exec rspec --profile -f progress
+  sudo -E bundle exec rspec --profile -f $RSPEC_FORMAT
 else
   sudo bundle install --jobs=3 --retry=3
-  sudo bundle exec rspec --profile -f progress
+  sudo bundle exec rspec --profile -f $RSPEC_FORMAT
 fi
 
 if [ $? -ne 0 ]; then
