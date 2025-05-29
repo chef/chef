@@ -21,6 +21,10 @@ provisioner:
 verifier:
   name: inspec
   format: progress
+  reporter:
+    - kitchen_csv
+  extra_flags:
+    - --require ./test/helpers/test_helper.rb
 
 platforms:
   - name: almalinux-8
