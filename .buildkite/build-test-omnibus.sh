@@ -9,6 +9,8 @@ else
 fi
 
 FILTER="${OMNIBUS_FILTER:=*}"
+# Split the filter into an array by commas
+IFS=',' read -ra FILTER_PATTERNS <<< "$FILTER"
 
 # array of all container platforms in the format test-platform:build-platform
 container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "sles-15:sles-15" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9" "amazon-2023:amazon-2023" "amazon-2023-arm:amazon-2023-arm")
@@ -27,12 +29,21 @@ omnibus_test_platforms=()
 
 # build build array and test array based on filter
 for platform in ${container_platforms[@]}; do
-    case ${platform%:*} in
-        $FILTER)
-            omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
-            omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
-            ;;
-    esac
+    platform_name=${platform%:*}
+    match_found=false
+    
+    # Check against each filter pattern
+    for pattern in "${FILTER_PATTERNS[@]}"; do
+        if [[ "$platform_name" == $pattern ]]; then
+            match_found=true
+            break
+        fi
+    done
+    
+    if $match_found; then
+        omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
+        omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
+    fi
 done
 
 # remove duplicates from build array
@@ -49,12 +60,21 @@ then
 
   # build build array and test array based on filter
   for platform in ${esoteric_platforms[@]}; do
-    case ${platform%:*} in
-        $FILTER)
-            esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
-            esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
-            ;;
-    esac
+    platform_name=${platform%:*}
+    match_found=false
+    
+    # Check against each filter pattern
+    for pattern in "${FILTER_PATTERNS[@]}"; do
+        if [[ "$platform_name" == $pattern ]]; then
+            match_found=true
+            break
+        fi
+    done
+    
+    if $match_found; then
+        esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
+        esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
+    fi
   done
 
   # remove duplicates from build array
