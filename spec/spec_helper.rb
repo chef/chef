@@ -71,7 +71,7 @@ require "spec/support/local_gems" if File.exist?(File.join(File.dirname(__FILE__
 # Explicitly require spec helpers that need to load first
 require "spec/support/ruby_installer"
 require "spec/support/platform_helpers"
-require "spec/support/formatters/csv_report_formatter.rb"
+require "spec/support/formatters/csv_report_formatter"
 require "spec/support/shared/unit/mock_shellout"
 
 require "spec/support/recipe_dsl_helper"
