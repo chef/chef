@@ -53,6 +53,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "      shell:"
   echo "      - powershell"
   echo "      - \"-Command\""
+  echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
   echo "  timeout_in_minutes: 120"
