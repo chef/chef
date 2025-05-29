@@ -31,7 +31,7 @@ class CsvReportFormatter < RSpec::Core::Formatters::BaseFormatter
   def store_example(example)
     file_path = example.metadata[:file_path]
     relative_path = file_path.sub("#{Dir.pwd}/", "")
-    category = relative_path.split("/")[1] # Get folder after spec/
+    category = relative_path.match(/spec\/(.*?)(?:\/|$)/)[1] || "Uncategorized"
     
     # Build full test description from nested contexts/describes
     full_description = example.metadata[:full_description]
