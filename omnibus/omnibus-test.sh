@@ -133,6 +133,8 @@ if [[ -z "${RSPEC_FORMAT}" ]]; then
   RSPEC_FORMAT="progress"
 fi
 
+ruby -e 'puts "Gem: #{Gem::VERSION}"'
+
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
