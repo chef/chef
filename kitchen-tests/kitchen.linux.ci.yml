@@ -53,6 +53,8 @@ lifecycle:
 verifier:
   name: inspec
   format: progress
+  reporter:
+    - kitchen_csv
 
 platforms:
   - name: almalinux-8
