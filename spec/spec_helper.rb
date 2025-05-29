@@ -59,6 +59,7 @@ require "chef/api_client_v1"
 require "chef/mixin/versioned_api"
 require "chef/server_api_versions"
 
+
 if ENV["CHEF_FIPS"] == "1"
   Chef::Config.init_openssl
 end
@@ -70,6 +71,7 @@ require "spec/support/local_gems" if File.exist?(File.join(File.dirname(__FILE__
 # Explicitly require spec helpers that need to load first
 require "spec/support/ruby_installer"
 require "spec/support/platform_helpers"
+require "spec/support/formatters/csv_report_formatter.rb"
 require "spec/support/shared/unit/mock_shellout"
 
 require "spec/support/recipe_dsl_helper"
@@ -315,7 +317,6 @@ RSpec.configure do |config|
     ex.run
   rescue SystemExit => e
     raise UnexpectedSystemExit.from(e)
-
   end
 end
 
