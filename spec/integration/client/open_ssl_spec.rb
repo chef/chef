@@ -17,4 +17,8 @@ describe "openssl checks" do
       expect(OpenSSL.const_get("OPENSSL_#{method.upcase}")).to match(openssl_version_default), "OpenSSL doesn't match omnibus_overrides.rb"
     end
   end
+
+  example "check SSL_ENV_HACK", windows_only: true do
+    expect(SSL_ENV_HACK).to be_defined, "SSL_ENV_HACK is not defined, did you forget to include the openssl-customization.rb file in your project?"
+  end
 end
