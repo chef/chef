@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.11 -->
-## [v18.7.11](https://github.com/chef/chef/tree/v18.7.11) (2025-05-20)
+<!-- latest_release 18.7.12 -->
+## [v18.7.12](https://github.com/chef/chef/tree/v18.7.12) (2025-05-29)
 
 #### Merged Pull Requests
-- [chef-18] Backport temporary bandaid to fix choco spec failures in GHA [#15005](https://github.com/chef/chef/pull/15005) ([neha-p6](https://github.com/neha-p6))
+- Updating the builders to pull from the stable channel [#15023](https://github.com/chef/chef/pull/15023) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating the builders to pull from the stable channel [#15023](https://github.com/chef/chef/pull/15023) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.12 -->
 - [chef-18] Backport temporary bandaid to fix choco spec failures in GHA [#15005](https://github.com/chef/chef/pull/15005) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.11 -->
 <!-- release_rollup -->
 
