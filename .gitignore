@@ -62,9 +62,6 @@ spec/data/chef_guid
 vendor/
 kitchen-tests/vendor
 
-# Visual Studio Code files
-.vscode
-
 # ignore nodes generated during local testing
 nodes/
 
