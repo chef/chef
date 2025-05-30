@@ -153,6 +153,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+buildkite-agent artifact upload "pkg/*.csv"
+
 echo "Verifying REXML gem version..."
 rexml_versions=$("$EMBEDDED_BIN_DIR/gem" list rexml)
 if [[ $rexml_versions =~ rexml\ \((.*)\) ]]; then

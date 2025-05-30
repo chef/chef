@@ -1,5 +1,6 @@
 require "rspec/core/formatters/base_formatter"
 require "csv"
+require "fileutils"
 
 class CsvReportFormatter < RSpec::Core::Formatters::BaseFormatter
   RSpec::Core::Formatters.register self, :example_passed, :example_failed, :close
@@ -18,15 +19,35 @@ class CsvReportFormatter < RSpec::Core::Formatters::BaseFormatter
   end
 
   def close(_notification)
-    output.puts "\nTest Execution Report"
-    output.puts "Category,File,Test Name"
+    # Ensure pkg directory exists
+    FileUtils.mkdir_p("pkg")
     
-    @test_results.sort.each do |result|
-      output.puts result.join(",")
+    # Generate unique identifier using timestamp and process id
+    unique_id = "#{Time.now.strftime('%Y%m%d_%H%M%S')}_#{Process.pid}"
+    csv_filename = "pkg/test_report_#{unique_id}.csv"
+    
+    # Write to both console and file
+    write_report(output)
+    
+    # Write to CSV file
+    CSV.open(csv_filename, "w") do |csv|
+      csv << ["Category", "File", "Test Name"]
+      @test_results.sort.each do |result|
+        csv << result
+      end
     end
   end
 
   private
+
+  def write_report(output_target)
+    output_target.puts "\nTest Execution Report"
+    output_target.puts "Category,File,Test Name"
+    
+    @test_results.sort.each do |result|
+      output_target.puts result.join(",")
+    end
+  end
 
   def store_example(example)
     file_path = example.metadata[:file_path]
