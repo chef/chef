@@ -148,17 +148,17 @@ catch {
     exit 1
 }
 
-bundle exec rspec -f $env:RSPEC_FORMAT --profile -- ./spec/unit
+bundle exec rspec --require ./spec/support/formatters/csv_report_formatter.rb -f $env:RSPEC_FORMAT --profile -- ./spec/unit
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f $env:RSPEC_FORMAT --profile -- ./spec/functional
+bundle exec rspec --require ./spec/support/formatters/csv_report_formatter.rb -f $env:RSPEC_FORMAT --profile -- ./spec/functional
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
-bundle exec rspec -f $env:RSPEC_FORMAT --profile -- ./spec/integration
+bundle exec rspec --require ./spec/support/formatters/csv_report_formatter.rb -f $env:RSPEC_FORMAT --profile -- ./spec/integration
 If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""

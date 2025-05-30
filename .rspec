@@ -1,2 +1,0 @@
---require spec_helper
---require ./spec/support/formatters/csv_report_formatter

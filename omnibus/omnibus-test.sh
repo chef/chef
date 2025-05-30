@@ -142,10 +142,10 @@ rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   sudo -E bundle install --jobs=3 --retry=3
-  sudo -E bundle exec rspec --profile -f $RSPEC_FORMAT
+  sudo -E bundle exec rspec --profile --require ./spec/support/formatters/csv_report_formatter.rb -f $RSPEC_FORMAT
 else
   sudo bundle install --jobs=3 --retry=3
-  sudo bundle exec rspec --profile -f $RSPEC_FORMAT
+  sudo bundle exec rspec --profile --require ./spec/support/formatters/csv_report_formatter.rb -f $RSPEC_FORMAT
 fi
 
 if [ $? -ne 0 ]; then
