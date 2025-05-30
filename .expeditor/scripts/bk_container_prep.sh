@@ -1,9 +1,6 @@
 # This script gets a container ready to run our various tests in BuildKite
 
 . /etc/os-release
-echo $NAME
-echo $ID
-echo $VERSION_ID
 
 echo "--- Installing packages"
 # Set package manager based on os type
@@ -48,7 +45,7 @@ if [ "$PACKAGE_MANAGER" = "" ]; then
 fi
 
 # Install Ruby to get the bundler gem.
-echo "--- Ruby Config..."
+echo "--- Configuring Ruby..."
 
 RUBY_VERSION=$(cat .buildkite-platform.json | awk -F'"' '/"ruby_version"/ {print $4}')
 export RUBY_VERSION
@@ -62,7 +59,7 @@ rbenv global ${RUBY_VERSION}
 
 gem install bundler -v $(cat .buildkite-platform.json | awk -F'"' '/"bundle_version"/ {print $4}')
 
-echo "--- Container Config..."
+echo "Checking Ruby and Bundle version..."
 echo "ruby version:"
 ruby -v
 echo "bundler version:"
