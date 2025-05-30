@@ -15,20 +15,20 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 $env:Path = "C:\hab\bin;" + $env:Path # add hab bin path for binlinking
 $env:HAB_LICENSE = "accept-no-persist"
 
-Write-Output "--- Checking the Chocolatey version"
-$installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
-if(-not ($installed_version -match ('^2'))){
-    Write-Output "--- Now Upgrading Choco"
-    try {
-        choco feature enable -n=allowGlobalConfirmation
-        choco upgrade chocolatey
-    }
-    catch {
-        Write-Output "Upgrade Failed"
-        Write-Output $_
-        <#Do this if a terminating exception happens#>
-    }
-}
+# Write-Output "--- Checking the Chocolatey version"
+# $installed_version = Get-ItemProperty "${env:ChocolateyInstall}/choco.exe" | select-object -expandproperty versioninfo| select-object -expandproperty productversion
+# if(-not ($installed_version -match ('^2'))){
+#     Write-Output "--- Now Upgrading Choco"
+#     try {
+#         choco feature enable -n=allowGlobalConfirmation
+#         choco upgrade chocolatey
+#     }
+#     catch {
+#         Write-Output "Upgrade Failed"
+#         Write-Output $_
+#         <#Do this if a terminating exception happens#>
+#     }
+# }
 
 Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
 hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
@@ -75,7 +75,7 @@ Write-Output "--- Does ruby have openssl access?"
 ruby -e "require 'openssl'; puts 'OpenSSL loaded successfully: ' + OpenSSL::OPENSSL_VERSION"
 
 Write-Output "--- Running Chef bundle install"
-bundle install --jobs=3 --retry=3 
+bundle install --jobs=3 --retry=3
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
