@@ -21,7 +21,6 @@ $pkg_deps=@(
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015"
 )
-$pkg_build_deps=@( "core/git")
 
 function Invoke-Begin {
     write-output "*** Start Invoke-Begin Function"
@@ -124,7 +123,6 @@ function Invoke-Prepare {
 @"%~dp0ruby.exe" "%~dpn0" %*
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";c:\\Program Files\\Git\\bin;"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci
