@@ -72,7 +72,7 @@ Write-Output "--- Checking ruby, bundle, gem and openssl paths"
 (Get-Command openssl).Source
 
 Write-Output "--- Does ruby have openssl access?"
-ruby -e "require 'openssl'; puts 'OpenSSL loaded successfully: ' + OpenSSL::OPENSSL_VERSION"
+ruby -e "require 'openssl'; puts 'OpenSSL loaded successfully: ' + OpenSSL::OPENSSL_VERSION; puts 'OpenSSL gem version: ' + OpenSSL::VERSION;"
 
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
