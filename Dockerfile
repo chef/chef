@@ -15,7 +15,7 @@
 # applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
 
 FROM busybox
-LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
+LABEL maintainer="Progress Chef <docker@chef.io>"
 
 #TODO: Change back to stable when 19.x is GA
 ARG CHANNEL=unstable
