@@ -248,7 +248,7 @@ function Install-ChefFoundation {
         }
         
         # Build MSI file URL and stops using old api and goes direct to packages.
-        $msiUrl = "https://packages.chef.io/files/current/chef-foundation/${Version}/windows/${WindowsVersion}/chef-foundation-${Version}-1-${Architecture}.msi"
+        $msiUrl = "https://packages.chef.io/files/stable/chef-foundation/${Version}/windows/${WindowsVersion}/chef-foundation-${Version}-1-${Architecture}.msi"
         $msiFile = Join-Path $tempDir "chef-foundation-$Version.msi"
         
         Write-Output "Downloading from $msiUrl to $msiFile"
