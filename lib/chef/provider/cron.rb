@@ -214,7 +214,7 @@ class Chef
 
         so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
 
-        TargetIO::File.unlink(tempname) if ChefConfig::Config.target_mode?
+        TargetIO::File.unlink(tempname)
       rescue => e
         raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"
       end
