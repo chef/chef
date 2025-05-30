@@ -151,12 +151,3 @@ for plan in ${habitat_plans[@]}; do
     echo "    - sudo ./.expeditor/scripts/verify-plan.sh"
   fi
 done
-
-#include build and test omnibus pipeline
-if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
-  DIR="${BASH_SOURCE%/*}"
-  if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-  source "$DIR/build-test-omnibus.sh"
-else
-  echo "--- Finished with chef-oss"
-fi
