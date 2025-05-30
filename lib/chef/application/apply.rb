@@ -29,12 +29,14 @@ require_relative "../providers"
 require_relative "../resources"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
-require "chef-licensing/cli_flags/mixlib_cli"
-require_relative "../licensing"
+# Disabled licensing - To enable it revert this
+# require "chef-licensing/cli_flags/mixlib_cli"
+# require_relative "../licensing"
 
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
-  include ChefLicensing::CLIFlags::MixlibCLI
+  # Disabled licensing - To enable it revert this
+  # include ChefLicensing::CLIFlags::MixlibCLI
 
   banner "Usage: #{ChefUtils::Dist::Apply::EXEC} [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
@@ -136,21 +138,22 @@ class Chef::Application::Apply < Chef::Application
     description: "Only run the bare minimum Ohai plugins #{ChefUtils::Dist::Infra::PRODUCT} needs to function.",
     boolean: true
 
-  if ChefUtils::Dist::Apply::EXEC == "chef-apply"
-    option :license_add,
-        long: "--license-add",
-        description: "Add a license key to the license pool.",
-        boolean: true,
-        proc: lambda { |v| Chef::Licensing.license_add },
-        exit: 0
+  # Disabled licensing - To enable it revert this
+  # if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+  #   option :license_add,
+  #       long: "--license-add",
+  #       description: "Add a license key to the license pool.",
+  #       boolean: true,
+  #       proc: lambda { |v| Chef::Licensing.license_add },
+  #       exit: 0
 
-    option :license_list,
-        long: "--license-list",
-        description: "List all license keys in the license pool.",
-        boolean: true,
-        proc: lambda { |v| Chef::Licensing.license_list },
-        exit: 0
-  end
+  #   option :license_list,
+  #       long: "--license-list",
+  #       description: "List all license keys in the license pool.",
+  #       boolean: true,
+  #       proc: lambda { |v| Chef::Licensing.license_list },
+  #       exit: 0
+  # end
 
   attr_reader :json_attribs
 
@@ -158,7 +161,8 @@ class Chef::Application::Apply < Chef::Application
     instance = new
     instance.parse_options([])
     puts instance.opt_parser
-    puts Chef::Licensing.licensing_help if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    # Disabled licensing - To enable it revert this
+    # puts Chef::Licensing.licensing_help if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     exit 0
   end
 
@@ -254,7 +258,8 @@ class Chef::Application::Apply < Chef::Application
   end
 
   def run_application
-    Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    # Disabled licensing - To enable it revert this
+    # Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     parse_options
     run_chef_recipe
     Chef::Application.exit! "Exiting", 0
@@ -269,7 +274,8 @@ class Chef::Application::Apply < Chef::Application
   def run(enforce_license: false)
     reconfigure
     check_license_acceptance if enforce_license
-    Chef::Licensing.fetch_and_persist if ChefUtils::Dist::Apply::EXEC == "chef-apply"
+    # Disabled licensing - To enable it revert this
+    # Chef::Licensing.fetch_and_persist if ChefUtils::Dist::Apply::EXEC == "chef-apply"
     run_application
   end
 end
