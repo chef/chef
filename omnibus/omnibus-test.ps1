@@ -163,6 +163,8 @@ If ($lastexitcode -ne 0) { $exit = 1 }
 Write-Output "Last exit code: $lastexitcode"
 Write-Output ""
 
+C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.csv" 
+
 Write-Output "Verifying REXML gem version..."
 $rexml_versions = & $embedded_bin_dir\gem.bat list rexml
 If ($rexml_versions -match "rexml \(([\d., ]+)\)") {
