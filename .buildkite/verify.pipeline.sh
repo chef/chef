@@ -49,7 +49,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: rubydistros/windows-2019:3.1"
+  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      shell:"
   echo "      - powershell"
   echo "      - \"-Command\""
