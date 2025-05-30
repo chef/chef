@@ -1,6 +1,8 @@
 require "kitchen"
 require "csv"
 
+require_relative "inspec_csv_reporter"
+
 module Kitchen
   module TestCsvFormatter
     class Reporter < Kitchen::Logger::BaseReporter

@@ -24,7 +24,13 @@ verifier:
   reporter:
     - kitchen_csv
   extra_flags:
-    - --require ./test/helpers/test_helper.rb
+    - --require ./test/integration/helpers/test_helper.rb
+
+# Add the custom reporter to InSpec
+transport:
+  max_wait_until_ready: 600
+  require_inspec_plugins:
+    - test/integration/helpers/inspec_csv_reporter
 
 platforms:
   - name: almalinux-8
