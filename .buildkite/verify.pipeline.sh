@@ -42,7 +42,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
-  echo "    queue: default-windows-2019-privileged"
+  echo "    queue: default-${platform%:*}-privileged"
   echo "  matrix:"
   echo "    - \"Unit\""
   echo "    - \"Integration\""

@@ -24,11 +24,6 @@ bundle -v
 echo "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
-echo "--- gem info openssl"
-gem info openssl
-echo "--- system openssl"
-openssl version
-
 case $TestType in
 
     Unit)
