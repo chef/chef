@@ -21,7 +21,6 @@ $pkg_deps=@(
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015"
 )
-$pkg_build_deps=@( "core/git")
 
 function Invoke-Begin {
     write-output "*** Start Invoke-Begin Function"
@@ -148,6 +147,7 @@ function Invoke-Build {
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+ 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }

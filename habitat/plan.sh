@@ -114,9 +114,10 @@ do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
-    build_line "Installing gems from git repos properly ..."
 
+    build_line "Installing gems from git repos properly ..."
     ruby ./post-bundle-install.rb
+
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
   )
@@ -128,6 +129,7 @@ do_install() {
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
+
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
