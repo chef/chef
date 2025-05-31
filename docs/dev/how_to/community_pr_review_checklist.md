@@ -41,4 +41,3 @@ From there you should see a zoom link that links you to the meeting.
 - [Fauxhai](https://github.com/chef/fauxhai)
 - [Chefspec](https://github.com/chef/chefspec)
 - [Shared Github Workflows](https://github.com/chef/github-workflows)
-
