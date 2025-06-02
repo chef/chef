@@ -2,12 +2,25 @@
 
 exec 2>&1
 
-echo "Creating binlinks for Chef Infra Client..."
-# Use the pkg_ident env var that's available in hooks
-hab pkg binlink --force "${pkg_ident}" chef-client
-hab pkg binlink --force "${pkg_ident}" chef-solo
-hab pkg binlink --force "${pkg_ident}" chef-shell
-hab pkg binlink --force "${pkg_ident}" chef-apply
-hab pkg binlink --force "${pkg_ident}" ohai
-
-echo "Chef Infra Client binaries have been successfully linked to /bin"
+# Detect platform and execute appropriate binlinking
+if [ -n "$WINDIR" ] || [ -n "$windir" ]; then
+  # Windows environment detected
+  powershell -Command {
+    Write-Host "Creating binlinks for Chef Infra Client on Windows..."
+    hab pkg binlink --force $env:pkg_ident chef-client
+    hab pkg binlink --force $env:pkg_ident chef-solo
+    hab pkg binlink --force $env:pkg_ident chef-shell 
+    hab pkg binlink --force $env:pkg_ident chef-apply
+    hab pkg binlink --force $env:pkg_ident ohai
+    Write-Host "Chef Infra Client binaries have been successfully linked"
+  }
+else
+  # Linux environment
+  echo "Creating binlinks for Chef Infra Client on Linux..."
+  hab pkg binlink --force "${pkg_ident}" chef-client
+  hab pkg binlink --force "${pkg_ident}" chef-solo
+  hab pkg binlink --force "${pkg_ident}" chef-shell
+  hab pkg binlink --force "${pkg_ident}" chef-apply
+  hab pkg binlink --force "${pkg_ident}" ohai
+  echo "Chef Infra Client binaries have been successfully linked to /bin"
+fi
