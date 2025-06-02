@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.13 -->
-## [v18.7.13](https://github.com/chef/chef/tree/v18.7.13) (2025-06-02)
+<!-- latest_release 18.7.14 -->
+## [v18.7.14](https://github.com/chef/chef/tree/v18.7.14) (2025-06-02)
 
 #### Merged Pull Requests
-- Updating builders to switch to the stable channel [#15032](https://github.com/chef/chef/pull/15032) ([johnmccrae](https://github.com/johnmccrae))
+- Remove broken Resource Reporter spec from CHEF-9126 work that is fill… [#15034](https://github.com/chef/chef/pull/15034) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove broken Resource Reporter spec from CHEF-9126 work that is fill… [#15034](https://github.com/chef/chef/pull/15034) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.14 -->
 - Updating builders to switch to the stable channel [#15032](https://github.com/chef/chef/pull/15032) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.13 -->
 - Updating the builders to pull from the stable channel [#15023](https://github.com/chef/chef/pull/15023) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.12 -->
 - [chef-18] Backport temporary bandaid to fix choco spec failures in GHA [#15005](https://github.com/chef/chef/pull/15005) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.11 -->
