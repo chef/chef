@@ -50,3 +50,14 @@ export HAB_TEST="true"
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/integration
+
+# Add after existing tests
+echo "--- :link: Verifying binlinks were created"
+for binary in 'chef-client' 'ohai' 'chef-solo' 'chef-shell' 'chef-apply'; do
+  echo -en "\t$binary binlink = "
+  if [ -L "/bin/$binary" ]; then
+    echo "OK"
+  else
+    error "$binary binlink was not created"
+  fi
+done

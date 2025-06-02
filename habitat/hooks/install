@@ -1,0 +1,13 @@
+#!/bin/sh
+
+exec 2>&1
+
+echo "Creating binlinks for Chef Infra Client..."
+# Use the pkg_ident env var that's available in hooks
+hab pkg binlink --force "${pkg_ident}" chef-client
+hab pkg binlink --force "${pkg_ident}" chef-solo
+hab pkg binlink --force "${pkg_ident}" chef-shell
+hab pkg binlink --force "${pkg_ident}" chef-apply
+hab pkg binlink --force "${pkg_ident}" ohai
+
+echo "Chef Infra Client binaries have been successfully linked to /bin"

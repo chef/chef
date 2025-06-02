@@ -158,6 +158,9 @@ do_after() {
   cp "${CACHE_PATH}/chef-bin/pkg/chef-bin-${pkg_version}.gem" "${SRC_PATH}/chef-bin/pkg"
   cp "${CACHE_PATH}/chef-config/pkg/chef-config-${pkg_version}.gem" "${SRC_PATH}/chef-config/pkg"
   cp "${CACHE_PATH}/chef-utils/pkg/chef-utils-${pkg_version}.gem" "${SRC_PATH}/chef-utils/pkg"
+
+  build_line "Making install hook executable"
+  chmod 755 "${pkg_prefix}/hooks/install"
 }
 
 do_end() {
