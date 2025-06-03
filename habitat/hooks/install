@@ -5,22 +5,45 @@ exec 2>&1
 # Detect platform and execute appropriate binlinking
 if [ -n "$WINDIR" ] || [ -n "$windir" ]; then
   # Windows environment detected
-  powershell -Command "
-    Write-Host 'Creating binlinks for Chef Infra Client on Windows...'
-    hab pkg binlink --force $env:pkg_ident chef-client
-    hab pkg binlink --force $env:pkg_ident chef-solo
-    hab pkg binlink --force $env:pkg_ident chef-shell 
-    hab pkg binlink --force $env:pkg_ident chef-apply
-    hab pkg binlink --force $env:pkg_ident ohai
-    Write-Host 'Chef Infra Client binaries have been successfully linked'
-  "
+  powershell -Command '
+    Write-Host "Creating binlinks for Chef Infra Client on Windows..."
+
+    # Ensure the hab binary is available
+    if (-not (Get-Command hab -ErrorAction SilentlyContinue)) {
+      Write-Error 'Habitat binary not found. Ensure Habitat is installed.'
+      Exit 1
+    }
+    # Create binlinks
+    $binaries = @("chef-client", "chef-solo", "chef-shell", "chef-apply", "ohai")
+    foreach ($binary in $binaries) {
+        try {
+          hab pkg binlink --force $env:pkg_ident $binary
+          Write-Host "Successfully created binlink for $binary"
+        } catch {
+          Write-Error "Failed to create binlink for $binary"
+          Exit 1
+        }
+    }
+
+    Write-Host "Chef Infra Client binaries have been successfully linked"
+  '
 else
   # Linux environment
   echo "Creating binlinks for Chef Infra Client on Linux..."
-  hab pkg binlink --no-deps --force "${pkg_ident}" chef-client
-  hab pkg binlink --no-deps --force "${pkg_ident}" chef-solo
-  hab pkg binlink --no-deps --force "${pkg_ident}" chef-shell
-  hab pkg binlink --no-deps --force "${pkg_ident}" chef-apply
-  hab pkg binlink --no-deps --force "${pkg_ident}" ohai
+
+  # Ensure the 'hab' group exists
+  if ! getent group hab >/dev/null; then
+    echo "Creating 'hab' group..."
+    groupadd -r hab
+  fi
+
+  # Create binlinks
+  for binary in chef-client chef-solo chef-shell chef-apply ohai; do
+    if ! hab pkg binlink --no-deps --force "${pkg_ident}" "${binary}"; then
+      echo "Error: Failed to create binlink for ${binary}."
+      exit 1
+    fi
+  done
+
   echo "Chef Infra Client binaries have been successfully linked to /bin"
 fi
