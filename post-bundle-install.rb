@@ -87,6 +87,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     end
   end
 
+  system("gem pristine ffi-libarchive -v '~> 1.1.14'")
+
   puts "Leftover ffi dependency tree..."
   system("gem dependency ffi")
 end
