@@ -42,4 +42,3 @@ As `bootstrap` is a remote/distributed operation, there are several phases to it
 ## Knife Plugins
 
 The choice of mapping subcommand action to `Chef::Knife` subclass makes it easy to author knife custom plugins. These can help with extending knife capabilities for specific cloud platforms or customize knife behavior for a subset of subcommands. Follow the instructions [here](https://docs.chef.io/workstation/plugin_knife_custom/) to develop your own knife plugin. Detailed documentation on writing knife cloud plugins is available [here](https://github.com/chef/knife-cloud/blob/main/README.md).
-

@@ -109,5 +109,3 @@ Steps:
    ```
    OMNIBUS_BUILD_FILTER=windows*
    ```
-
-
