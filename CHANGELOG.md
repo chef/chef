@@ -1,17 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.26 -->
-## [v19.1.26](https://github.com/chef/chef/tree/v19.1.26) (2025-05-29)
+<!-- latest_release 19.1.30 -->
+## [v19.1.30](https://github.com/chef/chef/tree/v19.1.30) (2025-06-03)
 
 #### Merged Pull Requests
-- add editor config files [#15017](https://github.com/chef/chef/pull/15017) ([Stromweld](https://github.com/Stromweld))
+- Add line-lint linter [#15009](https://github.com/chef/chef/pull/15009) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add line-lint linter [#15009](https://github.com/chef/chef/pull/15009) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.30 -->
+- Drop FFI pin, plus a bunch of assorted other bits [#14911](https://github.com/chef/chef/pull/14911) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.29 -->
+- Updating the builders to pull from the stable channel [#15024](https://github.com/chef/chef/pull/15024) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.28 -->
+- Trying a different route for the gpg [#15030](https://github.com/chef/chef/pull/15030) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.27 -->
 - add editor config files [#15017](https://github.com/chef/chef/pull/15017) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.26 -->
 - Pull in latest ohai [#14972](https://github.com/chef/chef/pull/14972) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.25 -->
 - fix: ensure load_all_files ignores broken links in the cookbook dir CHEF-1958 [#15006](https://github.com/chef/chef/pull/15006) ([mauroseb](https://github.com/mauroseb)) <!-- 19.1.24 -->

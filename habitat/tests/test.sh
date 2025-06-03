@@ -50,4 +50,3 @@ export HAB_TEST="true"
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/integration
-
