@@ -12,6 +12,7 @@ if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
   gem "ffi", ">= 1.15.5"
 else
   gem "ffi", ">= 1.15.5", force_ruby_platform: true
+  gem "ffi-libarchive", "~> 1.1.14"
 end
 
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
