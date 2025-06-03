@@ -26,6 +26,12 @@ lifecycle:
   pre_converge:
     - remote: hab license accept
     - remote: hab --version
+    # Add these commands to create binlinks automatically after chef-client is available
+    - remote: echo "Creating binlinks for Chef Infra Client..."
+    - remote: hab pkg binlink --force chef/chef-infra-client chef-client
+    - remote: hab pkg binlink --force chef/chef-infra-client ohai
+    - remote: echo "Chef binlinks created successfully"
+
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
