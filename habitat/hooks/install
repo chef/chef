@@ -10,7 +10,7 @@ if [ -n "$WINDIR" ] || [ -n "$windir" ]; then
 
     # Ensure the hab binary is available
     if (-not (Get-Command hab -ErrorAction SilentlyContinue)) {
-      Write-Error 'Habitat binary not found. Ensure Habitat is installed.'
+      Write-Error "Habitat binary not found. Ensure Habitat is installed."
       Exit 1
     }
     # Create binlinks
@@ -34,7 +34,10 @@ else
   # Ensure the 'hab' group exists
   if ! getent group hab >/dev/null; then
     echo "Creating 'hab' group..."
-    groupadd -r hab
+    if ! groupadd -r hab; then
+      echo "Error: Failed to create 'hab' group. Ensure you have sufficient privileges."
+      exit 1
+    fi
   fi
 
   # Create binlinks

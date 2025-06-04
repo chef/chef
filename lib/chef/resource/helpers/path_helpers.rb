@@ -4,35 +4,35 @@ class Chef
     # Helpers for path manipulation
     module PathHelpers
       extend self
-      # Returns the path to the active Chef Infra Client binary when installed via Habitat.
-      # This method uses following approach to locate the binary:
-      #    First, it attempts to find the currently running Chef gem and derives the
-      #    binary path from there. This returns the exact version that's executing.
-      # @return [String] The full path to the chef-client binary in the Habitat package,
-      #                  or an empty string if the binary cannot be found.
+      # Returns the path to the Chef Infra Client binary when installed via Habitat.
+      # This method first checks for binlinks created during Habitat package installation.
+      # If no binlink is found, it falls back to checking the currently running script's path.
+      #
+      # @return [String] The path to the chef-client binary, or an empty string if not found.
       # @example
       #   chef_client_hab_binary_path
-      #   # => "/hab/pkgs/chef/chef-infra-client/19.2.7/20230822151044/bin/chef-client"
+      #   # => "/bin/chef-client" (Linux)
+      #   # => "C:/hab/bin/chef-client.bat" (Windows)
       def chef_client_hab_binary_path
-        gem_dir = Gem::Specification.find_by_name("chef").gem_dir.to_s
-        puts "************ gem_dir is #{gem_dir} ************"
+        client_name = ChefUtils::Dist::Infra::CLIENT
         windows = RUBY_PLATFORM =~ /mswin|mingw|windows/ || defined?(ChefUtils) && ChefUtils.windows?
-        base_path = "/hab/pkgs/chef/#{ChefUtils::Dist::Infra::HABITAT_PKG}"
-        base_path = "C:/#{base_path}" if windows
-        puts "************ base_path is #{base_path} ************"
-        if gem_dir.include?(base_path)
-          # Split on vendor/gems portion
-          vendor_split = "/vendor/gems/"
-          hab_pkg_path = gem_dir.split(vendor_split).first
 
-          # Construct path to binary
-          binary_path = File.join(hab_pkg_path, "bin", "#{ChefUtils::Dist::Infra::CLIENT}")
-          puts "************ binary path is #{binary_path} ************"
-          File.exist?(binary_path) ? binary_path : ""
-        else
-          ""
-        end
-      rescue Gem::MissingSpecError, StandardError => e
+        # Default binlink paths
+        binlink_path = if windows
+                         "C:/hab/bin/#{client_name}.bat"  # Default binlink location on Windows
+                       else
+                         "/bin/#{client_name}"            # Default binlink location on Linux
+                       end
+
+        # Return the path if the binlink exists
+        return binlink_path if File.exist?(binlink_path)
+
+        # Fallback to the currently running script's path
+        path = File.realpath($PROGRAM_NAME)
+        bin = File.basename(path)
+        return path if bin == client_name
+
+        # Return empty string if no valid path is found
         ""
       end
     end
