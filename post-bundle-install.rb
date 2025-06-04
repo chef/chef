@@ -27,3 +27,19 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
   end
 end
+
+Dir["#{gem_home}/**/openssl-*/lib/openssl.rb"].each do |openssl|
+  File.open(openssl, "r+") do |f|
+    unpatched_openssl_rb = f.read
+    if unpatched_openssl_rb =~ /require\s+['"]ssl_env_hack['"]/
+      puts "skipping #{openssl} as it already has ssl_env_hack"
+      next
+    end
+
+    f.rewind
+    # This is a workaround for the openssl gem not being able to find the CA bundle in omnibus installations
+    # and not setting SSL_CERT_FILE if it's not already set.
+    f.write("\nrequire 'ssl_env_hack'\n")
+    f.write(unpatched_openssl_rb)
+  end
+end
