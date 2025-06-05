@@ -30,10 +30,8 @@ end
 
 if RUBY_PLATFORM =~ /mswin|mingw|windows/
   puts "Found openssl.rb files in the following gem paths:"
-  Dir["#{gem_home}/**/openssl.rb"].each do |gempath|
+  Dir["#{gem_home}/**/openssl-*/lib/openssl.rb", "#{gem_home}/../../../openssl.rb"].each do |openssl|
     puts gempath
-  end
-  Dir["#{gem_home}/**/openssl-*/lib/openssl.rb"].each do |openssl|
     File.open(openssl, "r+") do |f|
       unpatched_openssl_rb = f.read
       if unpatched_openssl_rb =~ /require\s+['"]ssl_env_hack['"]/
