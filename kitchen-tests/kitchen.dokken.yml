@@ -2,7 +2,7 @@
 driver:
   name: dokken
   privileged: true
-  chef_version: unstable
+  chef_version: chef-chef-main-habitat-build
   # map habitat installation on host to the /bin/hab path for easy access
   binds:
     - /bin/hab:/bin/hab
