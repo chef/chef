@@ -29,6 +29,10 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 end
 
 if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+  puts "Found openssl.rb files in the following gem paths:"
+  Dir["#{gem_home}/**/openssl.rb"].each do |gempath|
+    puts gempath
+  end
   Dir["#{gem_home}/**/openssl-*/lib/openssl.rb"].each do |openssl|
     File.open(openssl, "r+") do |f|
       unpatched_openssl_rb = f.read
