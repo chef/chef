@@ -47,5 +47,9 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
       f.write("\nrequire 'ssl_env_hack'\n")
       f.write(unpatched_openssl_rb)
     end
+    puts "patched #{openssl} to include ssl_env_hack"
   end
+
+  require "openssl"
+  puts "::SSL_ENV_HACK is #{defined?(::SSL_ENV_HACK) ? 'defined' : 'not defined'}"
 end
