@@ -295,7 +295,7 @@ class Chef
         # @raise [Chef::Exceptions::FileNotFound] Key isn't remote or found in the current run
         #
         # @return [Symbol] :remote_file or :cookbook_file
-        def key_type(uri)
+        def key_resource_type(uri)
           if uri.start_with?("http")
             :remote_file
           elsif has_cookbook_file?(uri)
@@ -318,39 +318,47 @@ class Chef
         # @return [void]
         def install_key_from_uri(key)
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
-          keyfile_path = ::File.join(Chef::Config[:file_cache_path], key_name)
+          keyfile_tmp_path = ::File.join(Chef::Config[:file_cache_path], key_name)
+          keyfile_path = keyring_path
           tmp_dir = TargetIO::Dir.mktmpdir(".gpg")
           at_exit { TargetIO::FileUtils.remove_entry(tmp_dir) }
 
           if new_resource.signed_by
-            keyfile_path = keyring_path
-
             directory "/etc/apt/keyrings" do
               mode "0755"
             end
-          end
 
-          declare_resource(key_type(key), keyfile_path) do
-            source key
-            mode "0644"
-            sensitive new_resource.sensitive
-            action :create
-            verify "gpg --homedir #{tmp_dir} %{path}"
-          end
+            declare_resource(key_resource_type(key), keyfile_tmp_path) do
+              source key
+              mode "0644"
+              sensitive new_resource.sensitive
+              action :create
+              verify "gpg --homedir #{tmp_dir} %{path}"
+              notifies :delete, "file[#{keyfile_path}]", :immediately
+              notifies :run, "execute[dearmor #{keyfile_path}]", :immediately
+            end
 
-          # If signed by is true, then we don't need to
-          # add to the default keyring. Instead make sure it's dearmored
-          if new_resource.signed_by
-            execute "gpg dearmor key" do
-              input ::File.read(keyfile_path)
-              command [ "gpg", "--batch", "--yes", "--dearmor", "-o", keyfile_path ]
+            execute "dearmor #{keyfile_path}" do
+              command [ "gpg", "--batch", "--yes", "--dearmor", "-o", keyfile_path, keyfile_tmp_path ]
               default_env true
               sensitive new_resource.sensitive
-              action :run
-              only_if { ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
-              notifies :run, "execute[apt-cache gencaches]", :immediately
+              action :nothing
+              only_if { !::File.exist?(keyfile_path) || ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
+              notifies :run, "execute[dearmor #{keyfile_path}]", :immediately
+            end
+
+            file keyfile_path do
+              mode "0644"
             end
           else
+            declare_resource(key_resource_type(key), keyfile_path) do
+              source key
+              mode "0644"
+              sensitive new_resource.sensitive
+              action :create
+              verify "gpg --homedir #{tmp_dir} %{path}"
+            end
+
             execute "apt-key add #{keyfile_path}" do
               command [ "apt-key", "add", keyfile_path ]
               default_env true
