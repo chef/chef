@@ -139,11 +139,20 @@ module Shell
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
 
-      conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > "
-      conf.return_format  = " => %s \n"
+      # remove this clause for any Chef version that has upgraded to ruby >= 3.3.0
+      if RUBY_VERSION >= "3.3.0"
+        conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > "
+        conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} ?> "
+        conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}%l> "
+      else
+        # there's a bug if you use a left arrow and the alternative prompts
+        # ... looks like 3.1.0 < version < 3.3.0 have it, from my manual testing
+        conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
+        conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}(#{Chef::VERSION})?> "
+        conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}(#{Chef::VERSION})%l> "
+      end
       conf.prompt_i       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
-      conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} ?> "
-      conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}%l> "
+      conf.return_format  = " => %s \n"
       conf.use_tracer     = false
       conf.instance_variable_set(:@use_multiline, false)
       conf.instance_variable_set(:@use_singleline, false)
