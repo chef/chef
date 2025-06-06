@@ -53,7 +53,7 @@ class Chef
           # Below are incomplete/missing features for this package provider
           requirements.assert(:all_actions) do |a|
             a.assertion { !new_resource.source }
-            a.failure_message(Chef::Exceptions::Package, "The openbsd package provider does not support the source property")
+            a.failure_message Chef::Exceptions::Package, "The openbsd package provider does not support the source property"
           end
           requirements.assert(:all_actions) do |a|
             a.assertion do
@@ -63,7 +63,12 @@ class Chef
                 true
               end
             end
-            a.failure_message(Chef::Exceptions::Package, "The openbsd package provider does not support providing a version and flavor")
+            a.failure_message Chef::Exceptions::Package, "The openbsd package provider does not support providing a version and flavor"
+          end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !new_resource.environment }
+            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
           end
         end
 

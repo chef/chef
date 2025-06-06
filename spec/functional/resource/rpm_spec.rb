@@ -28,6 +28,7 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
     run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::RpmPackage.new(@pkg_name, run_context)
     new_resource.source @pkg_path
+    new_resource.environment("FOO" => "BAR")
     new_resource
   end
 
@@ -74,6 +75,7 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
   context "package install action" do
     it "should create a package" do
       new_resource.run_action(:install)
+      expect(new_resource).to receive(:shell_out!).and_return(double("shell_out", stdout: /^FOO=BAR/))
       rpm_pkg_should_be_installed(new_resource)
     end
 
