@@ -41,7 +41,7 @@ def patch_openssl(openssl)
     f.rewind
     # This is a workaround for the openssl gem not being able to find the CA bundle in omnibus installations
     # and not setting SSL_CERT_FILE if it's not already set.
-    f.write("\nrequire 'ssl_env_hack'\n")
+    f.write("\nrequire 'ssl_env_hack'\nputs '#{openssl} loaded ssl_env_hack'\n")
     f.write(unpatched_openssl_rb)
   end
   puts "patched #{openssl} to include ssl_env_hack"
