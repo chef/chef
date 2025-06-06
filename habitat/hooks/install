@@ -4,29 +4,27 @@ exec 2>&1
 
 # Detect platform and execute appropriate binlinking
 if [ -n "$WINDIR" ] || [ -n "$windir" ]; then
-  # Windows environment detected
-  powershell -Command '
-    Write-Host "Creating binlinks for Chef Infra Client on Windows..."
+  powershell -Command "
+    Write-Host 'Creating binlinks for Chef Infra Client on Windows...'
 
     # Ensure the hab binary is available
     if (-not (Get-Command hab -ErrorAction SilentlyContinue)) {
-      Write-Error "Habitat binary not found. Ensure Habitat is installed."
+      Write-Error 'Habitat binary not found. Ensure Habitat is installed.'
       Exit 1
     }
     # Create binlinks
-    $binaries = @("chef-client", "chef-solo", "chef-shell", "chef-apply", "ohai")
-    foreach ($binary in $binaries) {
-        try {
-          hab pkg binlink --force $env:pkg_ident $binary
-          Write-Host "Successfully created binlink for $binary"
-        } catch {
-          Write-Error "Failed to create binlink for $binary"
-          Exit 1
-        }
+    \$binaries = @('chef-client', 'chef-solo', 'chef-shell', 'chef-apply', 'ohai')
+    foreach (\$binary in \$binaries) {
+      try {
+        hab pkg binlink --force \$env:pkg_ident \$binary
+        Write-Host \"Successfully created binlink for \$binary\"
+      } catch {
+        Write-Error \"Failed to create binlink for \$binary\"
+        Exit 1
+      }
     }
-
-    Write-Host "Chef Infra Client binaries have been successfully linked"
-  '
+    Write-Host 'Chef Infra Client binaries have been successfully linked'
+  "
 else
   # Linux environment
   echo "Creating binlinks for Chef Infra Client on Linux..."
@@ -38,6 +36,12 @@ else
       echo "Error: Failed to create 'hab' group. Ensure you have sufficient privileges."
       exit 1
     fi
+  fi
+
+  # Ensure the 'hab' binary is available
+  if ! command -v hab >/dev/null 2>&1; then
+    echo "Error: Habitat binary not found. Ensure Habitat is installed and in the PATH."
+    exit 1
   fi
 
   # Create binlinks
