@@ -27,3 +27,41 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
   end
 end
+
+
+def patch_openssl(openssl)
+  puts openssl
+  File.open(openssl, "r+") do |f|
+    unpatched_openssl_rb = f.read
+    if unpatched_openssl_rb =~ /require\s+['"]ssl_env_hack['"]/
+      puts "skipping #{openssl} as it already has ssl_env_hack"
+      next
+    end
+
+    f.rewind
+    # This is a workaround for the openssl gem not being able to find the CA bundle in omnibus installations
+    # and not setting SSL_CERT_FILE if it's not already set.
+    f.write("\nrequire 'ssl_env_hack'\nputs '#{openssl} loaded ssl_env_hack'\n")
+    f.write(unpatched_openssl_rb)
+  end
+  puts "patched #{openssl} to include ssl_env_hack"
+end
+
+if RUBY_PLATFORM =~ /mswin|mingw|windows/
+  puts "Found openssl.rb files in the following gem paths:"
+  Dir["#{gem_home}/**/openssl-*/lib/openssl.rb"].each do |openssl|
+    patch_openssl(openssl)
+  end
+  $:.each do |lib|
+    openssl_rb = File.join(lib, "openssl.rb")
+    patch_openssl(openssl_rb) if File.exist?(openssl_rb)
+  end
+
+  require "openssl"
+  puts "::SSL_ENV_HACK is #{defined?(::SSL_ENV_HACK) ? 'defined' : 'not defined'}"
+  unless defined?(::SSL_ENV_HACK)
+    100.times do |i|
+      puts ">" * i + " SSL_ENV_HACK is not defined, did you forget to include the openssl-customization.rb file in your project?"
+    end
+  end
+end
