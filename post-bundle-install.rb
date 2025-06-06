@@ -59,5 +59,9 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
   require "openssl"
   puts "::SSL_ENV_HACK is #{defined?(::SSL_ENV_HACK) ? 'defined' : 'not defined'}"
-  exit 1 unless defined?(::SSL_ENV_HACK)
+  unless defined?(::SSL_ENV_HACK)
+    100.times do |i|
+      puts ">" * i + " SSL_ENV_HACK is not defined, did you forget to include the openssl-customization.rb file in your project?"
+    end
+  end
 end
