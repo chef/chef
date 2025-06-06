@@ -4,51 +4,48 @@ exec 2>&1
 
 # Detect platform and execute appropriate binlinking
 if [ -n "$WINDIR" ] || [ -n "$windir" ]; then
-  powershell -Command "
-    Write-Host 'Creating binlinks for Chef Infra Client on Windows...'
+  powershell -Command @'
+    Write-Host "Creating binlinks for Chef Infra Client on Windows..."
 
     # Ensure the hab binary is available
     if (-not (Get-Command hab -ErrorAction SilentlyContinue)) {
-      Write-Error 'Habitat binary not found. Ensure Habitat is installed.'
-      Exit 1
+      Write-Error "Habitat binary not found. Ensure Habitat is installed."
+      exit 1
     }
     # Create binlinks
-    \$binaries = @('chef-client', 'chef-solo', 'chef-shell', 'chef-apply', 'ohai')
-    foreach (\$binary in \$binaries) {
+    $binaries = @("chef-client", "chef-solo", "chef-shell", "chef-apply", "ohai")
+    foreach ($binary in $binaries) {
       try {
-        hab pkg binlink --force \$env:pkg_ident \$binary
-        Write-Host \"Successfully created binlink for \$binary\"
+        hab pkg binlink --force $env:pkg_ident $binary
+        Write-Host "Successfully created binlink for $binary"
       } catch {
-        Write-Error \"Failed to create binlink for \$binary\"
-        Exit 1
+        Write-Error "Failed to create binlink for $binary"
+        exit 1
       }
     }
-    Write-Host 'Chef Infra Client binaries have been successfully linked'
-  "
+    Write-Host "Chef Infra Client binaries have been successfully linked"
+'@
 else
   # Linux environment
   echo "Creating binlinks for Chef Infra Client on Linux..."
 
-  # Ensure the 'hab' group exists
-  if ! getent group hab >/dev/null; then
-    echo "Creating 'hab' group..."
-    if ! groupadd -r hab; then
-      echo "Error: Failed to create 'hab' group. Ensure you have sufficient privileges."
-      exit 1
-    fi
-  fi
+  # Create directory if it doesn't exist
+  mkdir -p /bin
 
-  # Ensure the 'hab' binary is available
-  if ! command -v hab >/dev/null 2>&1; then
-    echo "Error: Habitat binary not found. Ensure Habitat is installed and in the PATH."
-    exit 1
-  fi
+  # Get the binary path from pkg_path
+  BIN_SOURCE="${pkg_prefix}/bin"
 
-  # Create binlinks
+  # Create symlinks directly
   for binary in chef-client chef-solo chef-shell chef-apply ohai; do
-    if ! hab pkg binlink --no-deps --force "${pkg_ident}" "${binary}"; then
-      echo "Error: Failed to create binlink for ${binary}."
-      exit 1
+    if [ -f "${BIN_SOURCE}/${binary}" ]; then
+      # Remove existing symlink if it exists
+      rm -f "/bin/${binary}" 2>/dev/null
+
+      # Create the symlink
+      ln -sf "${BIN_SOURCE}/${binary}" "/bin/${binary}"
+      echo "Created symlink for ${binary}"
+    else
+      echo "Warning: Binary ${binary} not found in ${BIN_SOURCE}"
     fi
   done
 
