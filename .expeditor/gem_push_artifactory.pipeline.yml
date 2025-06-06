@@ -5,7 +5,7 @@ expeditor:
 
 steps:
 
-  - label: "push gem to artifactory"
+  - label: ":linux: push gem to artifactory"
     commands:
       - .expeditor/scripts/gem_push_artifactory.sh
     expeditor:
@@ -15,3 +15,11 @@ steps:
           propagate-environment: true
           environment:
             - ARTIFACTORY_API_KEY
+
+  - label: ":windows: push gem to artifactory"
+    commands:
+      - .expeditor/scripts/gem_push_artifactory.ps1
+    agents:
+      queue: single-use-windows-2019-privileged
+    env:
+      - ARTIFACTORY_API_KEY
