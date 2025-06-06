@@ -60,26 +60,6 @@ describe Chef::Provider::SystemdUnit, :linux_only do
     double("shell_out", exitstatus: 0, error?: false)
   end
 
-  let(:shell_out_failure) do
-    double("shell_out", exitstatus: 1, error?: true)
-  end
-
-  let(:shell_out_masked) do
-    double("shell_out", exitstatus: 0, error?: false, stdout: "masked")
-  end
-
-  let(:shell_out_static) do
-    double("shell_out", exitstatus: 0, error?: false, stdout: "static")
-  end
-
-  let(:shell_out_disabled) do
-    double("shell_out", exitstatus: 1, error?: true, stdout: "disabled")
-  end
-
-  let(:shell_out_indirect) do
-    double("shell_out", exitstatus: 0, error?: true, stdout: "indirect")
-  end
-
   before(:each) do
     allow(Etc).to receive(:getpwnam).and_return(OpenStruct.new(uid: 1000))
     allow(Chef::Resource::SystemdUnit).to receive(:new)
@@ -932,6 +912,11 @@ describe Chef::Provider::SystemdUnit, :linux_only do
           UnitFileState=masked
         STDOUT
 
+        bad_and_active = <<-STDOUT
+          ActiveState=active
+          UnitFileState=bad
+        STDOUT
+
         context "when a user is specified" do
           it "returns true when the unit is masked" do
             current_resource.user(user_name)
@@ -944,6 +929,12 @@ describe Chef::Provider::SystemdUnit, :linux_only do
             with_systemctl_show(systemctl_path, "--user", user_cmd_opts, enabled_and_active)
             expect(provider.masked?).to be false
           end
+
+          it "returns true when unit is masked and bad" do
+            current_resource.user(user_name)
+            with_systemctl_show(systemctl_path, "--user", user_cmd_opts, bad_and_active)
+            expect(provider.masked?).to be true
+          end
         end
 
         context "when no user is specified" do
@@ -955,6 +946,11 @@ describe Chef::Provider::SystemdUnit, :linux_only do
           it "returns false when the unit is not masked" do
             with_systemctl_show(systemctl_path, "--system", {}, enabled_and_active)
             expect(provider.masked?).to be false
+          end
+
+          it "returns true when the unit is masked and bad" do
+            with_systemctl_show(systemctl_path, "--system", {}, bad_and_active)
+            expect(provider.masked?).to be true
           end
         end
       end
