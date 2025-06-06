@@ -18,6 +18,7 @@ require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "helpers/cron_validations"
 require "digest/md5" unless defined?(Digest::MD5)
+require_relative "helpers/path_helpers"
 
 class Chef
   class Resource
@@ -53,6 +54,7 @@ class Chef
       DOC
 
       extend Chef::ResourceHelpers::CronValidations
+      extend Chef::ResourceHelpers::PathHelpers
 
       property :job_name, String,
         default: ChefUtils::Dist::Infra::CLIENT,
@@ -126,7 +128,7 @@ class Chef
         description: "Append to the log file instead of overwriting the log file on each run."
 
       property :chef_binary_path, String,
-        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}",
+        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path },
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary."
 
       property :daemon_options, Array,
