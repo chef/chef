@@ -206,11 +206,11 @@ class Chef
         write_exception = false
 
         tempname = Dir::Tmpname.create(["crontab-"]) {}
-        io = TargetIO::File.open(tempname, "w") do |tempfile|
+        staging_file = TargetIO::File.open(tempname, "w") do |tempfile|
           tempfile.write(crontab)
         end
 
-        tempname = io.path if ChefConfig::Config.target_mode?
+        tempname = staging_file if ChefConfig::Config.target_mode?
 
         so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
 
