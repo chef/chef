@@ -57,11 +57,8 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
     patch_openssl(openssl_rb) if File.exist?(openssl_rb)
   end
 
+  puts "Including openssl"
   require "openssl"
   puts "::SSL_ENV_HACK is #{defined?(::SSL_ENV_HACK) ? 'defined' : 'not defined'}"
-  unless defined?(::SSL_ENV_HACK)
-    100.times do |i|
-      puts ">" * i + " SSL_ENV_HACK is not defined, did you forget to include the openssl-customization.rb file in your project?"
-    end
-  end
+
 end
