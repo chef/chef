@@ -40,7 +40,7 @@ try {
     hab --help
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build .
+    hab pkg build -D .
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
