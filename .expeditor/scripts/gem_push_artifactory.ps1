@@ -9,6 +9,15 @@ $env:HAB_BLDR_CHANNEL = "LTS-2024"
 $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
+$env:HABITAT_VERSION = "1.6.1243"
+
+# install habitat
+If ([string]::IsNullOrEmpty($Env:HABITAT_VERSION)) { Throw "Env:HABITAT_VERSION must be set" }
+
+Write-Output "Install Chef Habitat ${Env:HABITAT_VERSION} ..."
+# Use TLS 1.2 for Windows 2016 Server and older
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-Expression "& { $(Invoke-RestMethod https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1) } -Version ${Env:HABITAT_VERSION}"
 
 try {
     # Get password from AWS SSM Parameter Store
@@ -40,7 +49,7 @@ try {
     hab --help
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build -f LTS-2024 .
+    hab pkg build . --refresh-channel LTS-2024
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
