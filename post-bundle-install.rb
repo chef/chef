@@ -48,6 +48,18 @@ def patch_openssl(openssl)
 end
 
 if RUBY_PLATFORM =~ /mswin|mingw|windows/
+  $:.each do |lib|
+    puts "checking for ssl_env_hack in #{lib}"
+    Dir["#{lib}/**/ssl_env_hack.rb"].each do |ssl_env_hack|
+      puts "found #{ssl_env_hack}"
+    end
+
+    puts "checking for openssl.rb in #{lib}"
+    Dir["#{lib}/**/openssl.rb"].each do |openssl|
+      puts "found #{openssl}"
+    end
+  end
+
   puts "Found openssl.rb files in the following gem paths:"
   Dir["#{gem_home}/**/openssl-*/lib/openssl.rb"].each do |openssl|
     patch_openssl(openssl)
