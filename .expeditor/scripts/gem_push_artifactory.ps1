@@ -10,6 +10,11 @@ $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
 
+ Write-Output "Install Chef Habitat  ..."
+# Use TLS 1.2 for Windows 2016 Server and older
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-Expression "& { $(Invoke-RestMethod https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1) } -Version 1.6.1243"
+
 try {
     # Get password from AWS SSM Parameter Store
     Write-Host "Retrieving artifactory password from AWS SSM..."
@@ -47,51 +52,6 @@ try {
         throw "Failed to build habitat package"
     }
 
- function installChoco {
-    $env:chocolateyVersion = "1.4.0"
-    if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
-        Write-Output "Chocolatey is not installed, proceeding to install"
-            try {
-                write-output "installing in 3..2..1.."
-                Set-ExecutionPolicy Bypass -Scope Process -Force
-                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-            }
-
-            catch {
-                  Write-Error $_.Exception.Message
-            }
-    }
-
-    else {
-        Write-Output "Chocolatey is already installed"
-    }
-  }
-
-  installChoco
-
-# Make `Update-SessionEnvironment` available
-Write-Output "Importing the Chocolatey profile module"
-$ChocolateyInstall = Convert-Path "$((Get-Command choco).path)\..\.."
-Import-Module "$ChocolateyInstall\helpers\chocolateyProfile.psm1"
-
-Write-Output "Refreshing the current PowerShell session's environment"
-Update-SessionEnvironment
-
-# Install Ruby using Chocolatey
-if (-not (Get-Command ruby.exe -ErrorAction SilentlyContinue)) {
-    Write-Output "Ruby not found. Installing Ruby..."
-    choco install ruby -y
-} else {
-    Write-Output "Ruby is already installed."
-}
-
-    #check ruby version
-    Write-Host "Checking Ruby version"
-    ruby --version
-    # check gem version
-    Write-Host "Checking gem version"
-    gem --version
     # Push gems to artifactory
     Write-Host "Push gems to artifactory"
     gem install artifactory -v 3.0.17 --no-document
