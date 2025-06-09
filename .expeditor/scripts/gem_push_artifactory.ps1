@@ -47,21 +47,45 @@ try {
         throw "Failed to build habitat package"
     }
 
- #install chocolatey if not installed
-    if (-not (Get-Command -Name "choco" -ErrorAction SilentlyContinue)) {
-        Write-Host "Chocolatey not found, installing Chocolatey..."
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+ function installChoco {
+    $env:chocolateyVersion = "1.4.0"
+    if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
+        Write-Output "Chocolatey is not installed, proceeding to install"
+            try {
+                write-output "installing in 3..2..1.."
+                Set-ExecutionPolicy Bypass -Scope Process -Force
+                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            }
+
+            catch {
+                  Write-Error $_.Exception.Message
+            }
     }
-    # Install Ruby via Chocolatey
-    if (-not (Get-Command -Name "ruby" -ErrorAction SilentlyContinue)) {
-        Write-Host "Ruby not found, installing Ruby..."
-        choco install ruby -y
-    } else {
-        Write-Host "Ruby is already installed"
+
+    else {
+        Write-Output "Chocolatey is already installed"
     }
+  }
+
+  installChoco
+
+# Make `Update-SessionEnvironment` available
+Write-Output "Importing the Chocolatey profile module"
+$ChocolateyInstall = Convert-Path "$((Get-Command choco).path)\..\.."
+Import-Module "$ChocolateyInstall\helpers\chocolateyProfile.psm1"
+
+Write-Output "Refreshing the current PowerShell session's environment"
+Update-SessionEnvironment
+
+# Install Ruby using Chocolatey
+if (-not (Get-Command ruby.exe -ErrorAction SilentlyContinue)) {
+    Write-Output "Ruby not found. Installing Ruby..."
+    choco install ruby -y
+} else {
+    Write-Output "Ruby is already installed."
+}
+
     #check ruby version
     Write-Host "Checking Ruby version"
     ruby --version
