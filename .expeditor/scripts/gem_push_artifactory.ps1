@@ -10,6 +10,25 @@ $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
 
+Write-Output "installing AWS CLI ..."
+# Install AWS CLI
+$awsCliPath = "C:\Program Files\Amazon\AWSCLIV2\aws.exe"
+if (-Not (Test-Path $awsCliPath)) {
+    $awsInstallerUrl = "https://awscli.amazonaws.com/AWSCLIV2.msi"
+    $awsInstallerPath = "$env:TEMP\AWSCLIV2.msi"
+    Invoke-WebRequest -Uri $awsInstallerUrl -OutFile $awsInstallerPath
+    Start-Process msiexec.exe -ArgumentList "/i `"$awsInstallerPath`" /quiet /norestart" -Wait
+    Remove-Item $awsInstallerPath -Force
+} else {
+    Write-Output "AWS CLI is already installed."
+}
+# Ensure AWS CLI is in the PATH
+$env:PATH += ";C:\Program Files\Amazon\AWSCLIV2"
+# Check if AWS CLI is installed
+if (-Not (Get-Command aws -ErrorAction SilentlyContinue)) {
+    Write-Host "AWS CLI installation failed or is not in the PATH." -ForegroundColor Red
+    exit 1
+}
  Write-Output "Install Chef Habitat  ..."
 # Use TLS 1.2 for Windows 2016 Server and older
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
