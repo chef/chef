@@ -34,7 +34,7 @@ try {
     }
     # check hab version
     Write-Host "Checking hab version"
-    $hab_version = hab --version
+    hab --version
     # Build gems via habitat
     Write-Host "Building gems via habitat"
     hab.exe pkg build . --refresh-channel LTS-2024
