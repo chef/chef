@@ -58,7 +58,7 @@ try {
     # Install Ruby via Chocolatey
     if (-not (Get-Command -Name "ruby" -ErrorAction SilentlyContinue)) {
         Write-Host "Ruby not found, installing Ruby..."
-        choco install ruby --version 3.4.2 -y
+        choco install ruby -y
     } else {
         Write-Host "Ruby is already installed"
     }
