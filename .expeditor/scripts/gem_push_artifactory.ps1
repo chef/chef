@@ -15,6 +15,13 @@ $env:HABITAT_VERSION = "1.6.1243"
 If ([string]::IsNullOrEmpty($Env:HABITAT_VERSION)) { Throw "Env:HABITAT_VERSION must be set" }
 
 Write-Output "Install Chef Habitat ${Env:HABITAT_VERSION} ..."
+
+# Try to remove the DLL if it exists, but ignore errors
+$path = "C:\ProgramData\Habitat\api-ms-win-core-console-l1-1-0.dll"
+if (Test-Path $path) {
+    Remove-Item $path -Force -ErrorAction SilentlyContinue
+}
+
 # Use TLS 1.2 for Windows 2016 Server and older
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-Expression "& { $(Invoke-RestMethod https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1) } -Version ${Env:HABITAT_VERSION}"
