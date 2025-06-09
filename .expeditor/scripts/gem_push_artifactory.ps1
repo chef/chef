@@ -37,7 +37,7 @@ try {
     hab --version
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build . -c LTS-2024
+    hab pkg build . -C LTS-2024
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
