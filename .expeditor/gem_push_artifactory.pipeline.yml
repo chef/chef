@@ -20,6 +20,6 @@ steps:
     commands:
       - .expeditor/scripts/gem_push_artifactory.ps1
     agents:
-      queue: default-windows-2019-privileged
+      queue: habitat-x86_64-windows
     env:
       - ARTIFACTORY_API_KEY
