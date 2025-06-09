@@ -1,7 +1,11 @@
 expeditor:
-  defaults:
+    secrets:
+      ARTIFACTORY_TOKEN:
+        path: account/static/artifactory/buildkite
+        field: token
+    defaults:
     buildkite:
-      timeout_in_minutes: 45
+    timeout_in_minutes: 45
 
 steps:
 
@@ -20,6 +24,7 @@ steps:
     commands:
       - .expeditor/scripts/gem_push_artifactory.ps1
     expeditor:
+      secrets: true
       executor:
         docker:
           host_os: windows
