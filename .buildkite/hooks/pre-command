@@ -65,7 +65,6 @@ fi
 # Only if on chef-canary or chef org
 # force regions on omnibus queues
 [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]]; then
-  export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
   export AWS_REGION="us-west-2"
 else
   export AWS_REGION="us-west-1"

@@ -9,13 +9,25 @@ $env:HAB_BLDR_CHANNEL = "LTS-2024"
 $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
-$env:HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
- Write-Output "Install Chef Habitat  ..."
-# Use TLS 1.2 for Windows 2016 Server and older
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-Expression "& { $(Invoke-RestMethod https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1) } -Version 1.6.1243"
+# Optional: Ensure script is running as administrator
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Warning "You must run this script as Administrator."
+    exit 1
+}
 
+# Install Ruby 3.1 with DevKit using winget
+winget install -e --id RubyInstallerTeam.RubyWithDevKit.3.1 --source winget
+
+
+# Set the path to the Ruby installation
+$env:RUBY_INSTALL_DIR = "C:\Ruby31-x64"
+$env:PATH = "$env:RUBY_INSTALL_DIR\bin;$env:PATH"
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Failed to install bundler gem" -ForegroundColor Red
+    exit 1
+}
 try {
     # Get password from AWS SSM Parameter Store
     Write-Host "Retrieving artifactory password from AWS SSM..."
