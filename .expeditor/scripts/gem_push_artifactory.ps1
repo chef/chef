@@ -37,7 +37,7 @@ try {
     hab --version
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab.exe pkg build . --refresh-channel LTS-2024
+    hab pkg build . --refresh-channel $env:HAB_BLDR_CHANNEL
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
