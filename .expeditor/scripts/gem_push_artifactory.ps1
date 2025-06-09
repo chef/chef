@@ -9,6 +9,7 @@ $env:HAB_BLDR_CHANNEL = "LTS-2024"
 $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
+$env:HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
  Write-Output "Install Chef Habitat  ..."
 # Use TLS 1.2 for Windows 2016 Server and older
