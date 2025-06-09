@@ -35,6 +35,9 @@ try {
     # check hab version
     Write-Host "Checking hab version"
     hab --version
+    # check hab help
+    Write-Host "Checking hab help"
+    hab --help
     # Build gems via habitat
     Write-Host "Building gems via habitat"
     hab pkg build . -C LTS-2024
