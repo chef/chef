@@ -47,6 +47,21 @@ try {
         throw "Failed to build habitat package"
     }
 
+ #install chocolatey if not installed
+    if (-not (Get-Command -Name "choco" -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey not found, installing Chocolatey..."
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    }
+    # Install Ruby via Chocolatey
+    if (-not (Get-Command -Name "ruby" -ErrorAction SilentlyContinue)) {
+        Write-Host "Ruby not found, installing Ruby..."
+        choco install ruby --version 3.4.2 -y
+    } else {
+        Write-Host "Ruby is already installed"
+    }
     #check ruby version
     Write-Host "Checking Ruby version"
     ruby --version
