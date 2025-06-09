@@ -47,6 +47,12 @@ try {
         throw "Failed to build habitat package"
     }
 
+    #check ruby version
+    Write-Host "Checking Ruby version"
+    ruby --version
+    # check gem version
+    Write-Host "Checking gem version"
+    gem --version
     # Push gems to artifactory
     Write-Host "Push gems to artifactory"
     gem install artifactory -v 3.0.17 --no-document
