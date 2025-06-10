@@ -23,7 +23,8 @@ class Chef
       def chef_client_hab_binary_path
         path = File.realpath($PROGRAM_NAME)
         bin = File.basename(path)
-        return path if bin == client_name
+        puts "************bin path #{path}************"
+        return path if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
 
         # Return empty string if no valid path is found
         ""
