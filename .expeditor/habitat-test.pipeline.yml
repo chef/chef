@@ -38,10 +38,8 @@ steps:
   commands:
     - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX current x86_64-linux
     - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS current x86_64-windows
-    - HAB_ACCEPTANCE_AUTH_TOKEN=$(aws ssm get-parameter --name "habitat-acceptance-auth-token" --with-decryption --query Parameter.Value --output text --region us-west-2)
-    # - HAB_PROD_AUTH_TOKEN=$(aws ssm get-parameter --name "habitat-prod-auth-token" --with-decryption --query Parameter.Value --output text --region us-west-2)
   expeditor:
     executor:
       docker:
         environment:
-          - HAB_AUTH_TOKEN=$HAB_ACCEPTANCE_AUTH_TOKEN
+          - HAB_AUTH_TOKEN
