@@ -12,7 +12,7 @@ else
 fi
 
 channel="${EXPEDITOR_CHANNEL:-unstable}"
-version="${EXPEDITOR_VERSION:?You must manually set the EXPEDITOR_VERSION environment variable to an existing semantic version.}"
+version=$(cat VERSION)
 
 echo "--- Building chef/chef-hab:${version} docker image for ${arch}"
 docker build \
