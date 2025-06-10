@@ -1,8 +1,6 @@
 #!/bin/bash
 
 set -eu
-#set expeditor_version equal to the version file
-export EXPEDITOR_VERSION=$(cat VERSION)
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
@@ -82,3 +80,6 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
     export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
   fi
 fi
+
+#set expeditor_version equal to the version file
+export EXPEDITOR_VERSION=$(cat VERSION)
