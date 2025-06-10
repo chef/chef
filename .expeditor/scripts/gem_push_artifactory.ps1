@@ -46,23 +46,18 @@ try {
         throw "Failed to build habitat package"
     }
 
-    # Ruby 3.4.2 (64-bit) installer URL
-# Ensure the Ruby installer URL is correct and points to the desired version
-# This URL is for RubyInstaller 3.4.2 (64-bit) for Windows
-write-host "Downloading Ruby installer"
-$installerUrl = "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.2-1/rubyinstaller-3.4.2-1-x64.exe"
+Write-Output "Downloading Ruby + Devkit Installer..."
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -OutFile "$env:TEMP\rubyinstaller-devkit-3.4.2-x64.exe" `
+    -Uri "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.2-1/rubyinstaller-devkit-3.4.2-1-x64.exe"
 
-# Temporary path for the installer
-$installerPath = "$env:TEMP\rubyinstaller-3.4.2-1-x64.exe"
+Write-Output "Installing Ruby + DevKit"
+Start-Process "$env:TEMP\rubyinstaller-devkit-3.4.2-x64.exe" `
+    -ArgumentList '/verysilent /allusers /dir=C:\ruby' -Wait
 
-# Download the Ruby installer
-Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+Write-Output "Cleaning up Ruby + DevKit Installation"
+Remove-Item "$env:TEMP\rubyinstaller-devkit-3.4.2-x64.exe" -Force -ErrorAction SilentlyContinue
 
-# Run the installer silently
-Start-Process -FilePath $installerPath -ArgumentList "/silent" -Wait
-
-# Remove the installer file
-Remove-Item $installerPath
 
 
     # Push gems to artifactory
