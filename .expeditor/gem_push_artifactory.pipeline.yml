@@ -1,11 +1,10 @@
 expeditor:
-    secrets:
-      ARTIFACTORY_TOKEN:
-        path: account/static/artifactory/buildkite
-        field: token
-    defaults:
+  defaults:
     buildkite:
-    timeout_in_minutes: 45
+      timeout_in_minutes: 30
+      retry:
+        automatic:
+          limit: 1
 
 steps:
 
