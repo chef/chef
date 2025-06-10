@@ -13,8 +13,13 @@ $env:ARTIFACTORY_USERNAME = "buildkite"
 powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
 if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+$env:Path = "C:\hab\bin;" + $env:Path # add hab bin path for binlinking so 'gem' command is found.
 
+Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
+hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
+if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 
+Write-Output "--- Building and pushing gems to Artifactory"
 try {
     # Get password from AWS SSM Parameter Store
     Write-Host "Retrieving artifactory password from AWS SSM..."
