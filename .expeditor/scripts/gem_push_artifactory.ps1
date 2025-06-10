@@ -14,6 +14,9 @@ $env:ARTIFACTORY_USERNAME = "buildkite"
 # if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
+Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
+hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
+if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 
 try {
     # Get password from AWS SSM Parameter Store
@@ -40,25 +43,12 @@ try {
 
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build -D .
+    hab pkg build . --refresh-channel LTS-2024
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
         throw "Failed to build habitat package"
     }
-
-Write-Output "Downloading Ruby + Devkit Installer..."
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -OutFile "$env:TEMP\rubyinstaller-devkit-3.4.2-x64.exe" `
-    -Uri "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.2-1/rubyinstaller-devkit-3.4.2-1-x64.exe"
-
-Write-Output "Installing Ruby + DevKit"
-Start-Process "$env:TEMP\rubyinstaller-devkit-3.4.2-x64.exe" `
-    -ArgumentList '/verysilent /allusers /dir=C:\ruby' -Wait
-
-Write-Output "Cleaning up Ruby + DevKit Installation"
-Remove-Item "$env:TEMP\rubyinstaller-devkit-3.4.2-x64.exe" -Force -ErrorAction SilentlyContinue
-
-
 
     # Push gems to artifactory
     Write-Host "Push gems to artifactory"
