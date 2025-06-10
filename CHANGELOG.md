@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.33 -->
-## [v19.1.33](https://github.com/chef/chef/tree/v19.1.33) (2025-06-05)
+<!-- latest_release 19.1.34 -->
+## [v19.1.34](https://github.com/chef/chef/tree/v19.1.34) (2025-06-10)
 
 #### Merged Pull Requests
-- Bug fix for apt_repository when creating a new keyring [#15008](https://github.com/chef/chef/pull/15008) ([leklund](https://github.com/leklund))
+- configure pipeline to push windows gem [#15045](https://github.com/chef/chef/pull/15045) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- configure pipeline to push windows gem [#15045](https://github.com/chef/chef/pull/15045) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.34 -->
 - Bug fix for apt_repository when creating a new keyring [#15008](https://github.com/chef/chef/pull/15008) ([leklund](https://github.com/leklund)) <!-- 19.1.33 -->
 - make sure the right paths get put in the native ffi gem runpath [#15038](https://github.com/chef/chef/pull/15038) ([mwrock](https://github.com/mwrock)) <!-- 19.1.32 -->
 - Suppress CHANGELOG.md linelint [#15039](https://github.com/chef/chef/pull/15039) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.31 -->
