@@ -46,6 +46,14 @@ try {
         throw "Failed to build habitat package"
     }
 
+# Check if winget is installed
+if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    Write-Host "winget is not installed. Opening Microsoft Store to install App Installer..."
+    Start-Process "ms-windows-store://pdp/?productid=9NBLGGH4NNS1"
+} else {
+    Write-Host "winget is already installed. Version:"
+    winget --version
+}
     # Install ruby via winget
     Write-Host "Installing Ruby via winget"
     winget install --id Ruby.Ruby --version 3.4.2 --source winget --accept-source-agreements --accept-package-agreements
