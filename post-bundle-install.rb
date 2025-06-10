@@ -51,6 +51,7 @@ def patch_ssl_env_hack(ssl_env_hack)
     f.write(ssl_env_hack_patch)
     f.write(unpatched_ssl_env_hack_rb)
   end
+  puts "patched #{ssl_env_hack} to include ::SSL_ENV_HACK"
 end
 
 def patch_openssl(openssl)
