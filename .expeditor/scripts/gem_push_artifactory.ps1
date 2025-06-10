@@ -16,19 +16,19 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 
 
 try {
-    # Get password from AWS SSM Parameter Store
-    Write-Host "Retrieving artifactory password from AWS SSM..."
-    $lita_password = aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region us-west-2
+    # # Get password from AWS SSM Parameter Store
+    # Write-Host "Retrieving artifactory password from AWS SSM..."
+    # $lita_password = aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region us-west-2
 
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to retrieve password from AWS SSM"
-    }
+    # if ($LASTEXITCODE -ne 0) {
+    #     throw "Failed to retrieve password from AWS SSM"
+    # }
 
-    # Create base64 encoded API key
-    $credentials = "lita:$lita_password"
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($credentials)
-    $artifactory_api_key = [System.Convert]::ToBase64String($bytes)
-    $env:GEM_HOST_API_KEY = "Basic $artifactory_api_key"
+    # # Create base64 encoded API key
+    # $credentials = "lita:$lita_password"
+    # $bytes = [System.Text.Encoding]::UTF8.GetBytes($credentials)
+    # $artifactory_api_key = [System.Convert]::ToBase64String($bytes)
+    # $env:GEM_HOST_API_KEY = "Basic $artifactory_api_key"
 
     # Generate origin key
     Write-Host "Generating origin key"
