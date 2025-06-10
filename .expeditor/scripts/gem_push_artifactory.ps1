@@ -10,24 +10,11 @@ $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
 
-# Optional: Ensure script is running as administrator
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Warning "You must run this script as Administrator."
-    exit 1
-}
-
-# Install Ruby 3.1 with DevKit using winget
-winget install -e --id RubyInstallerTeam.RubyWithDevKit.3.1 --source winget
+powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
+if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 
-# Set the path to the Ruby installation
-$env:RUBY_INSTALL_DIR = "C:\Ruby31-x64"
-$env:PATH = "$env:RUBY_INSTALL_DIR\bin;$env:PATH"
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Failed to install bundler gem" -ForegroundColor Red
-    exit 1
-}
 try {
     # Get password from AWS SSM Parameter Store
     Write-Host "Retrieving artifactory password from AWS SSM..."
@@ -50,15 +37,10 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to generate origin key"
     }
-    # check hab version
-    Write-Host "Checking hab version"
-    hab --version
-    # check hab help
-    Write-Host "Checking hab help"
-    hab --help
+
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build -D .
+    hab pkg build . --refresh-channel LTS-2024
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
