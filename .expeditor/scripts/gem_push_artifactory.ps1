@@ -10,6 +10,11 @@ $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
 
+powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
+if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+
 try {
     # Get password from AWS SSM Parameter Store
     Write-Host "Retrieving artifactory password from AWS SSM..."
