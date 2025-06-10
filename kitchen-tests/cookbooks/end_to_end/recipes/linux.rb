@@ -187,7 +187,7 @@ end
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
   # Temporarily setting chef_binary_path for test-kitchen with vagrant boxes using community test-kitchen
   # This allows recipes to run on both vagrant VMs and Habitat environments
-  chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
+  #chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
   interval "1hr"
   cpu_quota 50
   only_if { systemd? }
@@ -196,7 +196,7 @@ end
 chef_client_systemd_timer "a timer that does not exist" do
   # Temporarily setting chef_binary_path for test-kitchen with vagrant boxes using community test-kitchen
   # This allows recipes to run on both vagrant VMs and Habitat environments
-  chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
+  #chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
   action :remove
 end
 
