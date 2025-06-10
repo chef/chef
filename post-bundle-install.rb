@@ -52,11 +52,9 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
     puts "checking for ssl_env_hack in #{lib}"
     Dir["#{lib}/**/ssl_env_hack.rb"].each do |ssl_env_hack|
       puts "found #{ssl_env_hack}"
-    end
-
-    puts "checking for openssl.rb in #{lib}"
-    Dir["#{lib}/**/openssl.rb"].each do |openssl|
-      puts "found #{openssl}"
+      File.readlines(ssl_env_hack).each do |line|
+        puts line
+      end
     end
   end
 
@@ -67,6 +65,10 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   $:.each do |lib|
     openssl_rb = File.join(lib, "openssl.rb")
     patch_openssl(openssl_rb) if File.exist?(openssl_rb)
+    puts "dumping openssl.rb at #{lib}"
+    Dir["#{lib}/**/openssl.rb"].each do |openssl|
+      puts "found #{openssl}"
+    end
   end
 
   puts "Including openssl"
