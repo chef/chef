@@ -147,7 +147,7 @@ function Invoke-Build {
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
- 
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
@@ -222,6 +222,14 @@ function Invoke-After {
     # Remove the byproducts of compiling gems with extensions
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
+
+    # we need the built gems outside of the studio
+    write-output "Copying gems to ${SRC_PATH}"
+    New-Item -ItemType Directory -Force "${SRC_PATH}\pkg","${SRC_PATH}\chef-bin\pkg","${SRC_PATH}\chef-config\pkg","${SRC_PATH}\chef-utils\pkg"
+    Copy-Item "${CACHE_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem" "${SRC_PATH}\pkg"
+    Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg"
+    Copy-Item "${CACHE_PATH}\chef-config\pkg\chef-config-${pkg_version}.gem" "${SRC_PATH}\chef-config\pkg"
+    Copy-Item "${CACHE_PATH}\chef-utils\pkg\chef-utils-${pkg_version}.gem" "${SRC_PATH}\chef-utils\pkg"
 }
 
 function Remove-StudioPathFrom {
