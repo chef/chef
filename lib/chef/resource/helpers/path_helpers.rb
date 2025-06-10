@@ -21,9 +21,11 @@ class Chef
       #   # Or on Windows:
       #   # => "C:/hab/pkgs/chef/chef-infra-client/17.10.0/20230822151044/bin/chef-client"
       def chef_client_hab_binary_path
+        puts "*********Fetching binary path"
         path = File.realpath($PROGRAM_NAME)
-        bin = File.basename(path)
         puts "************bin path #{path}************"
+        bin = File.basename(path)
+        puts "************bin name #{bin}************"
         return path if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
 
         # Return empty string if no valid path is found
