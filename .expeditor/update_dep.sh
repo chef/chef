@@ -10,6 +10,7 @@
 ############################################################################
 
 set -evx
+#set expeditor_version match with the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
 
 REPONAME=$(echo $EXPEDITOR_REPO | cut -d '/' -f 2)

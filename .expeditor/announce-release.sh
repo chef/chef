@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -exou pipefail
+#set expeditor_version match with the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
 
 # Download the release-notes for our specific build

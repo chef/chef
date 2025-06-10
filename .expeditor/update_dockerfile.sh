@@ -11,4 +11,6 @@
 
 set -evx
 
+export EXPEDITOR_VERSION=$(cat VERSION)
+
 sed -i -r "s/^ARG VERSION=.+/ARG VERSION=${EXPEDITOR_VERSION}/" Dockerfile

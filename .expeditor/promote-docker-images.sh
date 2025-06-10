@@ -2,6 +2,7 @@
 set -eu -o pipefail
 
 export DOCKER_CLI_EXPERIMENTAL=enabled
+#set expeditor_version match with the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
 
 channel="${EXPEDITOR_CHANNEL:-unstable}"
