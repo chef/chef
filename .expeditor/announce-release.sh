@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -exou pipefail
+export EXPEDITOR_VERSION=$(cat VERSION)
 
 # Download the release-notes for our specific build
 curl -o release-notes.md "https://packages.chef.io/release-notes/${EXPEDITOR_PRODUCT_KEY}/${EXPEDITOR_VERSION}.md"

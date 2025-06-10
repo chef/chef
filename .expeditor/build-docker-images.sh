@@ -2,6 +2,7 @@
 set -eux -o pipefail
 
 arch=$1
+export EXPEDITOR_VERSION=$(cat VERSION)
 
 if [[ $arch == "arm64" ]]; then
   dockerfile_pkg_version="7"
