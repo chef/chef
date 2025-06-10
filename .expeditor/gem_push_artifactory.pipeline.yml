@@ -18,7 +18,7 @@ steps:
 
   - label: ":windows: push gem to artifactory"
     commands:
-      - /workdir/.expeditor/scripts/gem_push_artifactory_windows.ps1
+      - .expeditor/scripts/gem_push_artifactory.ps1
     agents:
       queue: habitat-x86_64-windows
     env:
