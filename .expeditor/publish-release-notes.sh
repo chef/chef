@@ -3,8 +3,7 @@
 set -eou pipefail
 
 rm -rf chef.wiki
-#set expeditor_version match with the version file
-export EXPEDITOR_VERSION=$(cat VERSION)
+
 git clone https://x-access-token:${GITHUB_TOKEN}@github.com/chef/chef.wiki.git
 
 pushd ./chef.wiki

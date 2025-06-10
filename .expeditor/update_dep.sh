@@ -10,8 +10,6 @@
 ############################################################################
 
 set -evx
-#set expeditor_version match with the version file
-export EXPEDITOR_VERSION=$(cat VERSION)
 
 REPONAME=$(echo $EXPEDITOR_REPO | cut -d '/' -f 2)
 DEPNAME="${EXPEDITOR_GEM_NAME:-${REPONAME:?Could not find gem name}}"
