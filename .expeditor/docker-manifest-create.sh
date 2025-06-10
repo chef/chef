@@ -4,7 +4,7 @@ set -eu -o pipefail
 export DOCKER_CLI_EXPERIMENTAL=enabled
 
 channel="${EXPEDITOR_CHANNEL:-unstable}"
-version=$(cat VERSION)
+version="${EXPEDITOR_VERSION:?You must manually set the EXPEDITOR_VERSION environment variable to an existing semantic version.}"
 
 function create_and_push_manifest() {
   manifest_tag="${1}"
