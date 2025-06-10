@@ -10,9 +10,9 @@ $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
 
-powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
-if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+# powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
+# if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
+# $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 
 try {
@@ -40,13 +40,26 @@ try {
 
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build . --refresh-channel LTS-2024
-
+    hab pkg build . D
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
         throw "Failed to build habitat package"
     }
 
+    # Ruby 3.4.2 (64-bit) installer URL
+$installerUrl = "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.4.2-1/rubyinstaller-3.4.2-1-x64.exe"
+
+# Temporary path for the installer
+$installerPath = "$env:TEMP\rubyinstaller-3.4.2-1-x64.exe"
+
+# Download the Ruby installer
+Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+
+# Run the installer silently
+Start-Process -FilePath $installerPath -ArgumentList "/silent" -Wait
+
+# Remove the installer file
+Remove-Item $installerPath
     # Push gems to artifactory
     Write-Host "Push gems to artifactory"
     gem install artifactory -v 3.0.17 --no-document

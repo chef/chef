@@ -1,38 +1,26 @@
 expeditor:
   defaults:
     buildkite:
-      timeout_in_minutes: 30
-      retry:
-        automatic:
-          limit: 1
+      timeout_in_minutes: 45
 
 steps:
 
-  # - label: ":linux: push gem to artifactory"
-  #   commands:
-  #     - .expeditor/scripts/gem_push_artifactory.sh
-  #   expeditor:
-  #     executor:
-  #       docker:
-  #         privileged: true
-  #         propagate-environment: true
-  #         environment:
-  #           - ARTIFACTORY_API_KEY
+  - label: ":linux: push gem to artifactory"
+    commands:
+      - .expeditor/scripts/gem_push_artifactory.sh
+    expeditor:
+      executor:
+        docker:
+          privileged: true
+          propagate-environment: true
+          environment:
+            - ARTIFACTORY_API_KEY
 
   - label: ":windows: push gem to artifactory"
     commands:
-      - .expeditor/scripts/gem_push_artifactory.ps1
-    expeditor:
-      secrets: true
-      executor:
-        docker:
-          host_os: windows
-          shell: ["powershell", "-Command"]
-          image: rubydistros/windows-2019:3.1
-          user: 'NT AUTHORITY\SYSTEM'
-          environment:
-            - FORCE_FFI_YAJL=ext
-            - EXPIRE_CACHE=true
-            - CHEF_LICENSE=accept-no-persist
-            - CHEF_LICENSE_SERVER=http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/
-            - HAB_AUTH_TOKEN
+      - .expeditor/scripts/gem_push_artifactory_windows.ps1
+    agents:
+      queue: habitat-x86_64-windows
+
+    env:
+      - ARTIFACTORY_API_KEY
