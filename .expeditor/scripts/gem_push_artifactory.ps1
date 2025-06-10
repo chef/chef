@@ -14,9 +14,6 @@ $env:ARTIFACTORY_USERNAME = "buildkite"
 # if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 # $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
-Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
-hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
-if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 
 try {
     # Get password from AWS SSM Parameter Store
@@ -43,12 +40,37 @@ try {
 
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build . --refresh-channel LTS-2024
-
+    hab pkg build -D .
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
         throw "Failed to build habitat package"
     }
+
+    # Install ruby via winget
+    Write-Host "Installing Ruby via winget"
+    winget install --id Ruby.Ruby --version 3.4.2 --source winget --accept-source-agreements --accept-package-agreements
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to install Ruby"
+    }
+    Write-Host "Ruby installation completed successfully" -ForegroundColor Green
+    # Add Ruby to PATH
+    $rubyPath = "C:\Program Files\Ruby 3.4.2\bin"
+    $env:Path += ";$rubyPath"
+    Write-Host "Ruby path added to environment variables" -ForegroundColor Green
+    # Verify Ruby installation
+    Write-Host "Verifying Ruby installation"
+    ruby --version
+    if ($LASTEXITCODE -ne 0) {
+        throw "Ruby verification failed"
+    }
+    Write-Host "Ruby verification completed successfully" -ForegroundColor Green
+    # Install bundler gem
+    Write-Host "Installing bundler gem"
+    gem install bundler --no-document
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to install bundler gem"
+    }
+    Write-Host "Bundler gem installation completed successfully" -ForegroundColor Green
 
     # Push gems to artifactory
     Write-Host "Push gems to artifactory"
