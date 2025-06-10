@@ -5,22 +5,21 @@ expeditor:
 
 steps:
 
-  - label: ":linux: push gem to artifactory"
-    commands:
-      - .expeditor/scripts/gem_push_artifactory.sh
-    expeditor:
-      executor:
-        docker:
-          privileged: true
-          propagate-environment: true
-          environment:
-            - ARTIFACTORY_API_KEY
+  # - label: ":linux: push gem to artifactory"
+  #   commands:
+  #     - .expeditor/scripts/gem_push_artifactory.sh
+  #   expeditor:
+  #     executor:
+  #       docker:
+  #         privileged: true
+  #         propagate-environment: true
+  #         environment:
+  #           - ARTIFACTORY_API_KEY
 
   - label: ":windows: push gem to artifactory"
     commands:
       - .expeditor/scripts/gem_push_artifactory_windows.ps1
     agents:
       queue: habitat-x86_64-windows
-
     env:
       - ARTIFACTORY_API_KEY
