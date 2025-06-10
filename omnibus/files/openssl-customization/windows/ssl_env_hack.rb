@@ -20,12 +20,7 @@
 # this environment variable is already configured, this script is a no-op.
 #
 # This is required to make Chef tools use https URLs out of the box.
-puts "Checking ::SSL_ENV_HACK"
-unless defined?(::SSL_ENV_HACK)
-  puts "::SSL_ENV_HACK is not defined, setting it to true"
-  ::SSL_ENV_HACK = true
-end
-puts "End checking ::SSL_ENV_HACK"
+
 
 unless ENV.key?("SSL_CERT_FILE")
   base_dirs = __dir__.split(File::SEPARATOR)
