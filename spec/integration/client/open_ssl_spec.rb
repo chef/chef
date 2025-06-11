@@ -1,4 +1,5 @@
 require "spec_helper"
+require "openssl"
 
 describe "openssl checks" do
   let(:openssl_version_default) do
