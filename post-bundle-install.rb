@@ -77,6 +77,7 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
     puts "checking for ssl_env_hack in #{lib}"
     Dir["#{lib}/**/ssl_env_hack.rb"].each do |ssl_env_hack|
       puts "found #{ssl_env_hack}"
+      patch_ssl_env_hack(ssl_env_hack)
       File.readlines(ssl_env_hack).each do |line|
         puts line
       end
