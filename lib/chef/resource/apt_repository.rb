@@ -344,7 +344,6 @@ class Chef
               sensitive new_resource.sensitive
               action :nothing
               only_if { !::File.exist?(keyfile_path) || ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
-              notifies :run, "execute[dearmor #{keyfile_path}]", :immediately
             end
 
             file keyfile_path do
