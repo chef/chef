@@ -4,6 +4,7 @@ expeditor:
       timeout_in_minutes: 45
 
 steps:
+
   - label: ":linux: push gem to artifactory"
     commands:
       - .expeditor/scripts/gem_push_artifactory.sh
@@ -19,6 +20,6 @@ steps:
     commands:
       - .expeditor/scripts/gem_push_artifactory.ps1
     agents:
-      queue: single-use-windows-2019-privileged
+      queue: default-windows-2019-privileged
     env:
       - ARTIFACTORY_API_KEY

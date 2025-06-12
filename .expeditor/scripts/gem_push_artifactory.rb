@@ -38,5 +38,7 @@ if (project_name == 'chef') && (ENV['ADHOC'] != 'true')
     gem_pusher = Gem::Commands::PushCommand.new
     gem_pusher.handle_options [gem_path, '--host', upload_path, '--verbose']
     gem_pusher.execute
+    #upload gem to the buildkite UI
+    system("C:\\buildkite-agent\\bin\\buildkite-agent.exe artifact upload \"#{gem_path}\"")
   end
 end

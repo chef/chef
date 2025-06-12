@@ -46,10 +46,12 @@ try {
     # Build gems via habitat
     Write-Host "Building gems via habitat"
     hab pkg build . --refresh-channel LTS-2024
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
         throw "Failed to build habitat package"
     }
+
     # Push gems to artifactory
     Write-Host "Push gems to artifactory"
     gem install artifactory -v 3.0.17 --no-document
