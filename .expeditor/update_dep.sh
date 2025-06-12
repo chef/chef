@@ -9,7 +9,7 @@
 # a PR. That way humans can do hard work and bots can open gem bump PRs.
 ############################################################################
 
-set -evx
+set -eou pipefail
 
 #set expeditor_version equal to the version file
 export EXPEDITOR_VERSION=$(cat VERSION)

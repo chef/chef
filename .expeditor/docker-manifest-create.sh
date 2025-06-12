@@ -1,5 +1,5 @@
 #! /bin/bash
-set -eu -o pipefail
+set -eou pipefail
 
 export DOCKER_CLI_EXPERIMENTAL=enabled
 #set expeditor_version equal to the version file

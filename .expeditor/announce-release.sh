@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exou pipefail
+set -eou pipefail
 
 #set expeditor_version equal to the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
