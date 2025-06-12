@@ -2,6 +2,8 @@
 set -eu -o pipefail
 
 export DOCKER_CLI_EXPERIMENTAL=enabled
+#set expeditor_version equal to the version file
+export EXPEDITOR_VERSION=$(cat VERSION)
 
 channel="${EXPEDITOR_CHANNEL:-unstable}"
 version="${EXPEDITOR_VERSION:?You must manually set the EXPEDITOR_VERSION environment variable to an existing semantic version.}"
