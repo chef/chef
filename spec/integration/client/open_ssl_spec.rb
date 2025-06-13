@@ -1,9 +1,5 @@
 require "spec_helper"
-puts "<<< before require openssl >>>"
 require "openssl"
-puts "openssl defined from"
-p $LOADED_FEATURES.grep(/openssl\.rb/)
-puts "<<< after require openssl >>>"
 
 describe "openssl checks" do
   let(:openssl_version_default) do
@@ -24,8 +20,6 @@ describe "openssl checks" do
   end
 
   example "check SSL_ENV_HACK", windows_only: true do
-    puts "openssl defined from"
-    p $LOADED_FEATURES.grep(/openssl\.rb/)
-    expect(OpenSSLHack::SSL_ENV_HACK).to be_defined, "OpenSSLHack::SSL_ENV_HACK is not defined, did you forget to include the openssl-customization.rb file in your project?"
+    expect(defined?(::SSL_ENV_CACERT_PATCH)).to be_truthy, "OpenSSLHack::SSL_ENV_HACK is not defined, did you forget to include the openssl-customization.rb file in your project?"
   end
 end
