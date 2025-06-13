@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.36 -->
-## [v19.1.36](https://github.com/chef/chef/tree/v19.1.36) (2025-06-11)
+<!-- latest_release 19.1.37 -->
+## [v19.1.37](https://github.com/chef/chef/tree/v19.1.37) (2025-06-13)
 
 #### Merged Pull Requests
-- Habitat authentication token [#15051](https://github.com/chef/chef/pull/15051) ([borisicbs](https://github.com/borisicbs))
+- Fix dearmoring idempotency [#15044](https://github.com/chef/chef/pull/15044) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix dearmoring idempotency [#15044](https://github.com/chef/chef/pull/15044) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.37 -->
 - Habitat authentication token [#15051](https://github.com/chef/chef/pull/15051) ([borisicbs](https://github.com/borisicbs)) <!-- 19.1.36 -->
 - Updating the github windows images [#15052](https://github.com/chef/chef/pull/15052) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.35 -->
 - configure pipeline to push windows gem [#15045](https://github.com/chef/chef/pull/15045) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.34 -->
