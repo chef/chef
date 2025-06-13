@@ -1,5 +1,8 @@
 #! /bin/bash
-set -eux -o pipefail
+set -eou pipefail
+
+#set expeditor_version equal to the version file
+export EXPEDITOR_VERSION=$(cat VERSION)
 
 arch=$1
 
