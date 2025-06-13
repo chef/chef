@@ -31,19 +31,16 @@ end
 
 def patch_ssl_env_hack(ssl_env_hack)
   ssl_env_hack_patch=<<-PATCH
-  puts "Checking ::SSL_ENV_HACK"
-  unless defined?(::SSL_ENV_HACK)
-    puts "::SSL_ENV_HACK is not defined, setting it to true"
-    ::SSL_ENV_HACK = true
+  module OpenSSLHack
+     SSL_ENV_HACK=true unless defined?(SSL_ENV_HACK)
   end
-  puts "End checking ::SSL_ENV_HACK"
   PATCH
 
   puts ssl_env_hack
   File.open(ssl_env_hack, "r+") do |f|
     unpatched_ssl_env_hack_rb = f.read
-    if unpatched_ssl_env_hack_rb =~ /::SSL_ENV_HACK/
-      puts "skipping #{ssl_env_hack} as it already has ::SSL_ENV_HACK"
+    if unpatched_ssl_env_hack_rb =~ /SSL_ENV_HACK/
+      puts "skipping #{ssl_env_hack} as it already has SSL_ENV_HACK"
       next
     end
 
@@ -51,7 +48,7 @@ def patch_ssl_env_hack(ssl_env_hack)
     f.write(ssl_env_hack_patch)
     f.write(unpatched_ssl_env_hack_rb)
   end
-  puts "patched #{ssl_env_hack} to include ::SSL_ENV_HACK"
+  puts "patched #{ssl_env_hack} to include SSL_ENV_HACK"
 end
 
 def patch_openssl(openssl)
@@ -99,5 +96,5 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
   puts "Including openssl"
   require "openssl"
-  puts "::SSL_ENV_HACK is #{defined?(::SSL_ENV_HACK) ? 'defined' : 'not defined'}"
+  puts "OpenSSLHack::SSL_ENV_HACK is #{defined?(OpenSSLHack::SSL_ENV_HACK) ? 'defined' : 'not defined'}"
 end
