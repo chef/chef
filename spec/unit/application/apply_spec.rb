@@ -104,6 +104,12 @@ describe Chef::Application::Apply do
       allow(Chef::Log).to receive(:debug).with(/opened/)
       allow(Chef::Log).to receive(:debug).with(/starting SSL for .*/)
       allow(Chef::Log).to receive(:debug).with(/SSL established, protocol:.*/)
+      # The below log message is because of the license usage telemetry
+      allow(Chef::Log).to receive(:debug).with(/Fetching license context for telemetry check.*/)
+      allow(Chef::Log).to receive(:debug).with(/Determined HTTP instance for telemetry.*/)
+      allow(Chef::Log).to receive(:debug).with(/Initiating telemetry for Chef.*/)
+      allow(Chef::Log).to receive(:debug).with(/Determined telemetry operation is not applicable and hence aborting it.*/)
+
       expect(Chef::Log).to receive(:debug).with(/^No recipe file provided/)
       expect { @app.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(1) }
     end
