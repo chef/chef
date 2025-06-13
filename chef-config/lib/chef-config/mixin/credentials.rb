@@ -56,6 +56,9 @@ module ChefConfig
       def credentials_file_path
         return Chef::Config[:credentials] if defined?(Chef::Config) && Chef::Config.key?(:credentials)
 
+        env_file = ENV["CHEF_CREDENTIALS_FILE"]
+        return env_file if env_file && File.file?(env_file)
+
         PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR, "credentials").freeze
       end
 
