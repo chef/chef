@@ -28,9 +28,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   end
 end
 
-
 def patch_ssl_env_hack(ssl_env_hack)
-  ssl_env_hack_patch=<<-PATCH
+  ssl_env_hack_patch = <<-PATCH
   SSL_ENV_CACERT_PATCH=true unless defined?(SSL_ENV_CACERT_PATCH)
   PATCH
 
@@ -60,7 +59,7 @@ def patch_openssl(openssl)
     f.rewind
     # This is a workaround for the openssl gem not being able to find the CA bundle in omnibus installations
     # and not setting SSL_CERT_FILE if it's not already set.
-    f.write("\nrequire 'ssl_env_hack'\nputs '#{openssl} loaded ssl_env_hack'\n")
+    f.write("\nrequire 'ssl_env_hack'\n")
     f.write(unpatched_openssl_rb)
   end
   puts "patched #{openssl} to include ssl_env_hack"
@@ -93,5 +92,5 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
 
   puts "Including openssl"
   require "openssl"
-  puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? 'defined' : 'not defined'}"
+  puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
 end
