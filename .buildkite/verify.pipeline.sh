@@ -46,7 +46,6 @@ for platform in ${win_test_platforms[@]}; do
   echo "  matrix:"
   echo "    - \"Unit\""
   echo "    - \"Integration\""
-  echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
@@ -56,6 +55,20 @@ for platform in ${win_test_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "  timeout_in_minutes: 120"
+done
+
+for platform in ${win_test_platforms[@]}; do
+  echo "- label: \"Functional ${platform#*:} :windows:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  agents:"
+  echo "    queue: single-use-windows-2019-privileged"
+  echo "  matrix:"
+  echo "    - \"Functional\""
+  echo "  commands:"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  timeout_in_minutes: 120"
 done
 
