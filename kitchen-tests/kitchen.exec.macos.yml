@@ -26,6 +26,12 @@ lifecycle:
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
 
+verifier:
+  name: inspec
+  format: progress
+  reporter:
+    - kitchen_csv
+
 platforms:
   - name: macos-latest # arm64
   - name: macos-15 # arm64

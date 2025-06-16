@@ -7,6 +7,12 @@ driver_config:
   location: West US2
   machine_size: Standard_B4ms
 
+verifier:
+  name: inspec
+  format: progress
+  reporter:
+    - kitchen_csv
+
 platforms:
 - name: windows-10
   driver:
