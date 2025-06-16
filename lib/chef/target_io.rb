@@ -1,3 +1,5 @@
+require_relative "target_io/support"
+
 require_relative "target_io/dir"
 require_relative "target_io/etc"
 require_relative "target_io/file"
