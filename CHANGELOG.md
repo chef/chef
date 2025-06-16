@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.16 -->
-## [v18.7.16](https://github.com/chef/chef/tree/v18.7.16) (2025-06-12)
+<!-- latest_release 18.7.17 -->
+## [v18.7.17](https://github.com/chef/chef/tree/v18.7.17) (2025-06-16)
 
 #### Merged Pull Requests
-- [chef-18] update chef foundation to 3.2.23 [#15054](https://github.com/chef/chef/pull/15054) ([rishichawda](https://github.com/rishichawda))
+- Fix dearmoring idempotency backport [#15056](https://github.com/chef/chef/pull/15056) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix dearmoring idempotency backport [#15056](https://github.com/chef/chef/pull/15056) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.17 -->
 - [chef-18] update chef foundation to 3.2.23 [#15054](https://github.com/chef/chef/pull/15054) ([rishichawda](https://github.com/rishichawda)) <!-- 18.7.16 -->
 - Update Gemfile.lock to 5.22.80 [#15042](https://github.com/chef/chef/pull/15042) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.15 -->
 - Remove broken Resource Reporter spec from CHEF-9126 work that is fill… [#15034](https://github.com/chef/chef/pull/15034) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.14 -->
