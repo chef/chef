@@ -6,7 +6,13 @@ import dnf
 import hawkey
 import signal
 import os
-import json
+
+# If python environment has ujson, prefer it
+# Decodes are much faster
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 base = None
 
