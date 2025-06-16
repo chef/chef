@@ -147,6 +147,19 @@ function Invoke-Build {
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        # Path to the ssl_env_hack.rb file
+        $sslEnvHackPath = "omnibus/files/openssl-customization/windows/ssl_env_hack.rb"
+        $hackContent = Get-Content $sslEnvHackPath -Raw
+
+        # Find all openssl.rb files in $env:GEM_HOME/**/openssl-*/lib/openssl.rb
+        $opensslFiles = Get-ChildItem -Path "$env:GEM_HOME" -Recurse -Filter "openssl.rb" | Where-Object {
+          $_.FullName -match "openssl-[^\\\/]+[\\\/]lib[\\\/]openssl\.rb$"
+        }
+
+        foreach ($file in $opensslFiles) {
+          $originalContent = Get-Content $file.FullName -Raw
+          Set-Content $file.FullName -Value "$hackContent`r`n$originalContent"
+        }
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
