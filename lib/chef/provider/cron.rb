@@ -210,7 +210,7 @@ class Chef
           tempfile.write(crontab)
         end
 
-        tempname = staging_file if ChefConfig::Config.target_mode?
+        tempname = staging_file if staging_file && ChefConfig::Config.target_mode?
 
         so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
 
