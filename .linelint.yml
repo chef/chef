@@ -5,8 +5,8 @@ rules:
     ignore:
       # manifest v1 specs have specific checksums of these files, so
       # leave them as-is
-      - knife/spec/data/cb_version_cookbooks/tatft
-      - spec/data/cb_version_cookbooks/tatft
+      # - knife/spec/data/cb_version_cookbooks/tatft
+      # - spec/data/cb_version_cookbooks/tatft
       # same with checksum helpers
-      - spec/data/checksum
-      - VERSION
+      # - spec/data/checksum
+      # - VERSION
