@@ -145,8 +145,8 @@ class Chef
           end
 
           def query(action, parameters)
+            json = build_query(action, parameters)
             with_helper do
-              json = build_query(action, parameters)
               Chef::Log.trace "sending '#{json}' to python helper"
               outpipe.puts json
               outpipe.flush
