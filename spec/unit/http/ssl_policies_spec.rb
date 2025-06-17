@@ -147,7 +147,7 @@ describe "HTTP SSL Policy" do
       end
 
       example "SSL_CERT_FILE should be set to the CA cert bundle" do
-        expect(ENV["SSL_CERT_FILE"]).to not_be_nil
+        expect(ENV["SSL_CERT_FILE"]).not_to be_nil
         expect(ENV["SSL_CERT_FILE"]).to match(/ssl\/certs\/cacert\.pem$/)
       end
 

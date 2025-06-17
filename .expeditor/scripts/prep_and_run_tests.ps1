@@ -75,6 +75,14 @@ $opensslFiles = Get-ChildItem -Path "$env:GEM_HOME" -Recurse -Filter "openssl.rb
   $_.FullName -match "openssl-[^\\\/]+[\\\/]lib[\\\/]openssl\.rb$"
 }
 
+$rubyDevkitPath = & hab pkg path chef/ruby31-plus-devkit/3.1.6
+if ($rubyDevkitPath) {
+  $devkitOpensslFiles = Get-ChildItem -Path $rubyDevkitPath -Recurse -Filter "openssl.rb" | Where-Object {
+    $_.FullName -match "openssl-[^\\\/]+[\\\/]lib[\\\/]openssl\.rb$"
+  }
+  $opensslFiles += $devkitOpensslFiles
+}
+
 foreach ($file in $opensslFiles) {
   $originalContent = Get-Content $file.FullName -Raw
   if ($originalContent -notlike "*$hackContent*") {
