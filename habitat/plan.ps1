@@ -158,7 +158,9 @@ function Invoke-Build {
 
         foreach ($file in $opensslFiles) {
           $originalContent = Get-Content $file.FullName -Raw
-          Set-Content $file.FullName -Value "$hackContent`r`n$originalContent"
+          if ($originalContent -notlike "*$hackContent*") {
+            Set-Content $file.FullName -Value "$hackContent`r`n$originalContent"
+          }
         }
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
