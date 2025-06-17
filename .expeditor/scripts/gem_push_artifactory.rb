@@ -20,9 +20,9 @@ if (project_name == 'chef') && (ENV['ADHOC'] != 'true')
   GEM_PACKAGE_PATTERN = '**/pkg/[^/]*\.gem'.freeze
   gem_base_name = project_name
 
-  project_source = File.expand_path(__FILE__ + '/../../..')
+  project_source = File.expand_path(File.join(__FILE__, '..', '..', '..'))
 
-  gems_found = Dir.glob("#{project_source}/#{GEM_PACKAGE_PATTERN}")
+  gems_found = Dir.glob(File.join(project_source,GEM_PACKAGE_PATTERN))
 
   # Sometimes there are multiple copies of a gem on disk -- only upload one copy.
   gems_to_publish = gems_found.uniq { |gem| File.basename(gem) }

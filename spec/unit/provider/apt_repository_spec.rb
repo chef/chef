@@ -228,17 +228,17 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 
   describe "#key_type" do
     it "returns :remote_file with an http URL" do
-      expect(provider.key_type("https://www.chef.io/key")).to eq(:remote_file)
+      expect(provider.key_resource_type("https://www.chef.io/key")).to eq(:remote_file)
     end
 
     it "returns :cookbook_file with a chef managed file" do
       expect(provider).to receive(:has_cookbook_file?).and_return(true)
-      expect(provider.key_type("/foo/bar.key")).to eq(:cookbook_file)
+      expect(provider.key_resource_type("/foo/bar.key")).to eq(:cookbook_file)
     end
 
     it "throws exception if an unknown file specified" do
       expect(provider).to receive(:has_cookbook_file?).and_return(false)
-      expect { provider.key_type("/foo/bar.key") }.to raise_error(Chef::Exceptions::FileNotFound)
+      expect { provider.key_resource_type("/foo/bar.key") }.to raise_error(Chef::Exceptions::FileNotFound)
     end
   end
 
