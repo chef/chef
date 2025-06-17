@@ -1,17 +1,25 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.30 -->
-## [v19.1.30](https://github.com/chef/chef/tree/v19.1.30) (2025-06-03)
+<!-- latest_release 19.1.38 -->
+## [v19.1.38](https://github.com/chef/chef/tree/v19.1.38) (2025-06-16)
 
 #### Merged Pull Requests
-- Add line-lint linter [#15009](https://github.com/chef/chef/pull/15009) ([jaymzh](https://github.com/jaymzh))
+- Add sudo capabilities to Target Mode; Cleanups [#15015](https://github.com/chef/chef/pull/15015) ([thheinen](https://github.com/thheinen))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add sudo capabilities to Target Mode; Cleanups [#15015](https://github.com/chef/chef/pull/15015) ([thheinen](https://github.com/thheinen)) <!-- 19.1.38 -->
+- Fix dearmoring idempotency [#15044](https://github.com/chef/chef/pull/15044) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.37 -->
+- Habitat authentication token [#15051](https://github.com/chef/chef/pull/15051) ([borisicbs](https://github.com/borisicbs)) <!-- 19.1.36 -->
+- Updating the github windows images [#15052](https://github.com/chef/chef/pull/15052) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.35 -->
+- configure pipeline to push windows gem [#15045](https://github.com/chef/chef/pull/15045) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.34 -->
+- Bug fix for apt_repository when creating a new keyring [#15008](https://github.com/chef/chef/pull/15008) ([leklund](https://github.com/leklund)) <!-- 19.1.33 -->
+- make sure the right paths get put in the native ffi gem runpath [#15038](https://github.com/chef/chef/pull/15038) ([mwrock](https://github.com/mwrock)) <!-- 19.1.32 -->
+- Suppress CHANGELOG.md linelint [#15039](https://github.com/chef/chef/pull/15039) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.31 -->
 - Add line-lint linter [#15009](https://github.com/chef/chef/pull/15009) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.30 -->
 - Drop FFI pin, plus a bunch of assorted other bits [#14911](https://github.com/chef/chef/pull/14911) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.29 -->
 - Updating the builders to pull from the stable channel [#15024](https://github.com/chef/chef/pull/15024) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.28 -->

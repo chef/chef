@@ -6,6 +6,9 @@ rm -rf chef.wiki
 
 git clone https://x-access-token:${GITHUB_TOKEN}@github.com/chef/chef.wiki.git
 
+#set expeditor_version equal to the version file
+export EXPEDITOR_VERSION=$(cat VERSION)
+
 pushd ./chef.wiki
   # Publish release notes to S3
   aws s3 cp Pending-Release-Notes-19.md "s3://chef-automate-artifacts/release-notes/${EXPEDITOR_PRODUCT_KEY}/${EXPEDITOR_VERSION}.md" --acl public-read --content-type "text/plain" --profile chef-cd

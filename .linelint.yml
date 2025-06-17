@@ -10,3 +10,5 @@ rules:
       # same with checksum helpers
       # - spec/data/checksum
       # - VERSION
+      # Automated update
+      # - CHANGELOG.md

@@ -97,6 +97,7 @@ do_prepare() {
         --with-xslt-dir=$(pkg_path_for libxslt) \
         --with-xml2-include=$(pkg_path_for libxml2)/include/libxml2 \
         --with-xml2-lib=$(pkg_path_for libxml2)/lib"
+    bundle config --local build.ffi "-Wl,-rpath,'${LD_RUN_PATH}'"
     bundle config --local jobs "$(nproc)"
     bundle config --local without server docgen maintenance pry travis integration ci
     bundle config --local shebang "$(pkg_path_for "$_chef_client_ruby")/bin/ruby"
