@@ -146,6 +146,11 @@ describe "HTTP SSL Policy" do
         expect(defined?(::SSL_ENV_CACERT_PATCH)).to be_truthy # double check that the SSL cert file is set
       end
 
+      example "SSL_CERT_FILE should be set to the CA cert bundle" do
+        expect(ENV["SSL_CERT_FILE"]).to not_be_nil
+        expect(ENV["SSL_CERT_FILE"]).to match(/ssl\/certs\/cacert\.pem$/)
+      end
+
       it "enables verification of cert chains" do
         # This cert is signed by DigiCert so it would be valid in normal SSL usage.
         # The chain goes:
@@ -158,7 +163,7 @@ describe "HTTP SSL Policy" do
         path = File.join(CHEF_SPEC_DATA, "trusted_certs", "opscode.pem")
         additional_pem = OpenSSL::X509::Certificate.new(File.binread(path))
 
-        expect(http_client.cert_store.verify(additional_pem)).to be_truthy
+        expect(http_client.cert_store.verify(additional_pem)).to be_truthy, "Test failed. DEFAULT CERT FILE IS AT #{OpenSSL::X509::DEFAULT_CERT_FILE}"
       end
 
       it "skips duplicate certs" do
