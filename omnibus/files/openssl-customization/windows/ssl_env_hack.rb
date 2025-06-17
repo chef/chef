@@ -21,6 +21,9 @@
 #
 # This is required to make Chef tools use https URLs out of the box.
 
+puts "<<< included the ssl_env_hack.rb script >>>"
+SSL_ENV_CACERT_PATCH = true unless defined?(SSL_ENV_CACERT_PATCH)
+
 unless ENV.key?("SSL_CERT_FILE")
   base_dirs = __dir__.split(File::SEPARATOR)
 

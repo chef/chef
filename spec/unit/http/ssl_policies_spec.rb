@@ -142,6 +142,10 @@ describe "HTTP SSL Policy" do
         expect(http_client.cert_store.verify(self_signed_crt)).to be_truthy
       end
 
+      example "SSL_ENV_CACERT_PATCH should be defined" do
+        expect(defined?(::SSL_ENV_CACERT_PATCH)).to be_truthy # double check that the SSL cert file is set
+      end
+
       it "enables verification of cert chains" do
         # This cert is signed by DigiCert so it would be valid in normal SSL usage.
         # The chain goes:
