@@ -90,6 +90,11 @@ foreach ($file in $opensslFiles) {
   }
 }
 
+Write-Output "--- Listing all cacert.pem files under c:/hab/pkgs"
+Get-ChildItem -Path "c:/hab/pkgs" -Recurse -Filter "cacert.pem" | ForEach-Object {
+  Write-Output $_.FullName
+}
+
 Write-Output "--- Checking ruby, bundle, gem and openssl paths"
 (Get-Command ruby).Source
 (Get-Command bundle).Source
