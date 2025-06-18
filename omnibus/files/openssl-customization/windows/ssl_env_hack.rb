@@ -28,8 +28,8 @@ unless ENV.key?("SSL_CERT_FILE")
   base_dirs = __dir__.split(File::SEPARATOR)
 
   (base_dirs.length - 1).downto(0) do |i|
-    candidate_ca_bundle = File.join(base_dirs[0..i] + [ "ssl/certs/cacert.pem" ])
-    if File.exist?(candidate_ca_bundle)
+    candidate_ca_bundle = Dir["c:/hab/pkgs/core/openssl/*/ssl/certs/cacert.pem"].first
+    if candidate_ca_bundle && File.exist?(candidate_ca_bundle)
       ENV["SSL_CERT_FILE"] = candidate_ca_bundle
       break
     end
