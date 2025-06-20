@@ -24,6 +24,7 @@
 puts "<<< included the ssl_env_hack.rb script >>>"
 SSL_ENV_CACERT_PATCH = true unless defined?(SSL_ENV_CACERT_PATCH)
 
+puts "SSL_CERT_FILE is #{ENV['SSL_CERT_FILE'] || 'not set'}"
 unless ENV.key?("SSL_CERT_FILE")
   base_dirs = __dir__.split(File::SEPARATOR)
 
