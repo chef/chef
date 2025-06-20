@@ -21,12 +21,16 @@
 #
 # This is required to make Chef tools use https URLs out of the box.
 
+puts "<<< included the ssl_env_hack.rb script >>>"
+SSL_ENV_CACERT_PATCH = true unless defined?(SSL_ENV_CACERT_PATCH)
+
 unless ENV.key?("SSL_CERT_FILE")
   base_dirs = __dir__.split(File::SEPARATOR)
 
   (base_dirs.length - 1).downto(0) do |i|
-    candidate_ca_bundle = File.join(base_dirs[0..i] + [ "ssl/certs/cacert.pem" ])
-    if File.exist?(candidate_ca_bundle)
+    candidate_ca_bundle = Dir["c:/hab/pkgs/core/cacerts/*/ssl/certs/cacert.pem"].first
+    puts "Checking for CA bundle at: #{candidate_ca_bundle}"
+    if candidate_ca_bundle && File.exist?(candidate_ca_bundle)
       ENV["SSL_CERT_FILE"] = candidate_ca_bundle
       break
     end

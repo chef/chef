@@ -65,6 +65,36 @@ Write-Output "PATH: $env:Path"
 Write-Output "SSL_CERT_FILE: $env:SSL_CERT_FILE"
 Write-Output "RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
 
+Write-Output "ssl_env_hack.rb"
+# Path to the ssl_env_hack.rb file
+$sslEnvHackPath = "omnibus/files/openssl-customization/windows/ssl_env_hack.rb"
+$hackContent = Get-Content $sslEnvHackPath -Raw
+
+# Find all openssl.rb files in $env:GEM_HOME/**/openssl-*/lib/openssl.rb
+$opensslFiles = Get-ChildItem -Path "$env:GEM_HOME" -Recurse -Filter "openssl.rb" | Where-Object {
+  $_.FullName -match "openssl-[^\\\/]+[\\\/]lib[\\\/]openssl\.rb$"
+}
+
+$rubyDevkitPath = & hab pkg path chef/ruby31-plus-devkit/3.1.6
+if ($rubyDevkitPath) {
+  $devkitOpensslFiles = Get-ChildItem -Path $rubyDevkitPath -Recurse -Filter "openssl.rb" | Where-Object {
+    $_.FullName -match "openssl-[^\\\/]+[\\\/]lib[\\\/]openssl\.rb$"
+  }
+  $opensslFiles += $devkitOpensslFiles
+}
+
+foreach ($file in $opensslFiles) {
+  $originalContent = Get-Content $file.FullName -Raw
+  if ($originalContent -notlike "*$hackContent*") {
+    Set-Content $file.FullName -Value "$hackContent`r`n$originalContent"
+  }
+}
+
+Write-Output "--- Listing all cacert.pem files under c:/hab/pkgs"
+Get-ChildItem -Path "c:/hab/pkgs" -Recurse -Filter "cacert.pem" | ForEach-Object {
+  Write-Output $_.FullName
+}
+
 Write-Output "--- Checking ruby, bundle, gem and openssl paths"
 (Get-Command ruby).Source
 (Get-Command bundle).Source
