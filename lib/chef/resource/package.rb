@@ -61,6 +61,11 @@ class Chef
         description: "The amount of time (in seconds) to wait before timing out.",
         desired_state: false
 
+      property :environment, Hash,
+        introduced: "19.0",
+        description: "A Hash of environment variables in the form of {'ENV_VARIABLE' => 'VALUE'} to be set before running the command.",
+        desired_state: false
+
     end
   end
 end

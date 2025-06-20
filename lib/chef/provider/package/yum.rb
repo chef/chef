@@ -76,13 +76,13 @@ class Chef
         end
 
         def define_resource_requirements
+          super
+
           requirements.assert(:install, :upgrade, :remove, :purge) do |a|
             a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end
-
-          super
         end
 
         def candidate_version
@@ -277,7 +277,7 @@ class Chef
         end
 
         def yum(*args)
-          shell_out!(yum_binary, *args)
+          shell_out!(yum_binary, *args, env: new_resource.environment)
         end
 
         def safe_version_array
