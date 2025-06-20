@@ -15,35 +15,22 @@
 # applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
 
 FROM busybox
-LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
+LABEL maintainer="Progress Chef <docker@chef.io>"
 
-ARG CHANNEL=stable
+#TODO: Change back to stable when 19.x is GA
+ARG CHANNEL=unstable
 ARG VERSION=19.0.49
 ARG ARCH=x86_64
-ARG PKG_VERSION=6
-ARG INFRA_PACKAGE="chef/chef-infra-client"
-
-ARG HAB_CHANNEL=stable
-ARG HAB_VERSION="1.6.1041"
-ARG HABITAT_PACKAGE="core/hab/1.6.1041"
-
-ADD https://packages.chef.io/files/${HAB_CHANNEL}/habitat/${HAB_VERSION}/hab-x86_64-linux.tar.gz /tmp/hab.tar.gz
-
-RUN mkdir /tmp/hab
-RUN mkdir /hab
-RUN tar -xzf /tmp/hab.tar.gz -C /tmp/hab && \
-    cd /tmp/hab && \
-    HAB_DIR=$(find . -type d -name "hab-*") && \
-    cp $HAB_DIR/hab /hab/hab
 
 ENV HAB_LICENSE="accept-no-persist"
-RUN /hab/hab pkg install --binlink --force --channel "${CHANNEL}" "${HABITAT_PACKAGE}"
-RUN rm /tmp/hab.tar.gz
-RUN rm -rf /tmp/hab
-
-RUN hab pkg install --channel "${CHANNEL}" "core/bash"
-RUN TMP=$(hab pkg path core/bash) && ln -s "${TMP}/bin/bash" /bin/bash
-
-RUN hab pkg install --binlink --force --channel "${CHANNEL}" "${INFRA_PACKAGE}/${VERSION}"
+# Download and extract hab binary and install infra-client habitat package
+RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
+    mkdir /tmp/hab && \
+    tar -xzf /tmp/hab.tar.gz -C /tmp/hab && \
+    HAB_DIR=$(find /tmp/hab -type d -name "hab-*") && \
+    $HAB_DIR/hab pkg install --binlink --force --channel "stable" "core/hab" && \
+    rm -rf /tmp/* && \
+    hab pkg install --binlink --force --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
+    rm -rf /hab/cache
 
 VOLUME [ "/hab" ]
