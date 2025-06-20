@@ -29,6 +29,7 @@ unless ENV.key?("SSL_CERT_FILE")
 
   (base_dirs.length - 1).downto(0) do |i|
     candidate_ca_bundle = Dir["c:/hab/pkgs/core/openssl/*/ssl/certs/cacert.pem"].first
+    puts "Checking for CA bundle at: #{candidate_ca_bundle}"
     if candidate_ca_bundle && File.exist?(candidate_ca_bundle)
       ENV["SSL_CERT_FILE"] = candidate_ca_bundle
       break
