@@ -36,17 +36,19 @@ module ChefConfig
       #
       def load_credentials(profile)
         # Tomlrb.load_file returns a hash with keys as strings
-        credentials = parse_credentials_file
-        if contains_split_fqdn?(credentials, profile)
+        credentials_config = parse_credentials_file
+        if contains_split_fqdn?(credentials_config, profile)
           logger.warn("Credentials file #{credentials_file_path} contains target '#{profile}' as a Hash, expected a string.")
           logger.warn("Hostnames must be surrounded by single quotes, e.g. ['host.example.org']")
         end
 
+        resolve_secrets(profile)
+
         # host names must be specified in credentials file as ['foo.example.org'] with quotes
-        if !credentials.nil? && !credentials[profile].nil?
-          credentials[profile].transform_keys(&:to_sym) # return symbolized keys to match Train.options()
+        if !credentials_config.nil? && !credentials_config[profile].nil?
+          credentials_config[profile].transform_keys(&:to_sym) # return symbolized keys to match Train.options()
         else
-          nil
+          raise NoCredentialsFound.new("No credentials found for profile '#{profile}'")
         end
       end
 
@@ -84,8 +86,11 @@ module ChefConfig
         tm_config = config.target_mode
         profile = tm_config.host
 
+        env_file = ENV["CHEF_CREDENTIALS_FILE"]
         credentials_file =
-          if tm_config.credentials_file && File.exist?(tm_config.credentials_file)
+          if env_file && File.exist?(env_file)
+            env_file
+          elsif tm_config.credentials_file && File.exist?(tm_config.credentials_file)
             tm_config.credentials_file
           elsif File.exist?(config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials"))
             config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials")
