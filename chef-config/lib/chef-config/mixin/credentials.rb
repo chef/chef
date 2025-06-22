@@ -116,8 +116,8 @@ module ChefConfig
       # @since 19.1
       # @return [Hash]
       def global_options
-        globals = credentials_config.filter{ |_, v| v.is_a? String }
-        globals.merge! credentials_config.filter { |k,_| GLOBAL_CONFIG_HASHES.include? k }
+        globals = credentials_config.filter { |_, v| v.is_a? String }
+        globals.merge! credentials_config.filter { |k, _| GLOBAL_CONFIG_HASHES.include? k }
       end
 
       SUPPORTED_SECRETS_PROVIDERS = %w{ hashicorp-vault }.freeze
@@ -128,7 +128,9 @@ module ChefConfig
       # @param profile [String] Profile to resolve secrets in.
       # @return [Hash]
       def resolve_secrets(profile)
-        secrets = credentials_config[profile].filter { |k,v| v.is_a?(Hash) && v.keys.include?("secret") }
+	return unless credentials_config
+
+        secrets = credentials_config[profile].filter { |k, v| v.is_a?(Hash) && v.keys.include?("secret") }
         return if secrets.empty?
 
         secrets.each do |option, secrets_config|
@@ -186,7 +188,7 @@ module ChefConfig
         vault_config[:address] = vault_config[:endpoint]
 
         # Lazy require due to Gem being part of Chef and rarely used functionality
-        require 'vault' unless defined? Vault
+        require "vault" unless defined? Vault
         @vault ||= Vault::Client.new(vault_config)
 
         secret = secrets_config["secret"]
@@ -203,7 +205,7 @@ module ChefConfig
 
         # Always JSON for Hashicorp Vault, but this is future compatible to other providers
         if secret_value.is_a?(Hash)
-          require 'jmespath' unless defined? ::JMESPath
+          require "jmespath" unless defined? ::JMESPath
           ::JMESPath.search(secrets_config["field"], secret_value)
         else
           secret_value
