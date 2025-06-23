@@ -35,13 +35,8 @@ lifecycle:
     - remote: hab pkg exec core/gcc gcc -- --version
 
     - remote: echo "Installing appbundler and appbundle-updater gems:"
-    # Temp for debugging
-    - remote: hab pkg install --binlink core/git
-    - remote: hab pkg exec core/git git --version
-    - remote: hab pkg exec chef/chef-infra-client gem install specific_install --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
-    - remote: hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater -b neha-p6/chef19_bundle_install_fix
-    # - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.4.rc.1 --no-doc
+    - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.2.rc.1 --no-doc
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
@@ -50,12 +45,12 @@ lifecycle:
     - remote: sudo yum install centos-release-scl
       includes:
         - centos-7
-    - remote: scl enable devtoolset-7 'hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %> --verbose --force'
+    - remote: scl enable devtoolset-7 'hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
       includes:
         - centos-7
         - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: bash -c 'export PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$PATH";hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV["GITHUB_SHA"] || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV["GITHUB_REPOSITORY"] || "chef/chef" %> --verbose --force'
+    - remote: bash -c 'export PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$PATH";hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV["GITHUB_SHA"] || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV["GITHUB_REPOSITORY"] || "chef/chef" %>'
       excludes:
         - centos-7
         - oraclelinux-7
