@@ -36,6 +36,8 @@ lifecycle:
 
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     # Temp for debugging
+    - remote: hab pkg install --binlink core/git
+    - remote: hab pkg exec core/git git --version
     - remote: hab pkg exec chef/chef-infra-client gem install specific_install --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater -b neha-p6/chef19_bundle_install_fix
