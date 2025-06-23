@@ -50,12 +50,12 @@ lifecycle:
     - remote: sudo yum install centos-release-scl
       includes:
         - centos-7
-    - remote: scl enable devtoolset-7 'hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
+    - remote: scl enable devtoolset-7 'hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %> --verbose --force'
       includes:
         - centos-7
         - oraclelinux-7
     - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: bash -c 'export PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$PATH";hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV["GITHUB_SHA"] || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV["GITHUB_REPOSITORY"] || "chef/chef" %>'
+    - remote: bash -c 'export PATH="$(hab pkg path core/binutils)/bin:$(hab pkg path core/gcc-base)/bin:$PATH";hab pkg exec chef/chef-infra-client appbundle-updater chef chef-infra-client <%= ENV["GITHUB_SHA"] || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV["GITHUB_REPOSITORY"] || "chef/chef" %> --verbose --force'
       excludes:
         - centos-7
         - oraclelinux-7
