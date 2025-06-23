@@ -35,8 +35,11 @@ lifecycle:
     - remote: hab pkg exec core/gcc gcc -- --version
 
     - remote: echo "Installing appbundler and appbundle-updater gems:"
+    # Temp for debugging
+    - remote: hab pkg exec chef/chef-infra-client gem install specific_install --no-doc
     - remote: hab pkg exec chef/chef-infra-client gem install appbundler --no-doc
-    - remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.4.rc.1 --no-doc
+    - remote: hab pkg exec chef/chef-infra-client gem specific_install -l https://github.com/chef/appbundle-updater -b neha-p6/chef19_bundle_install_fix
+    #- remote: hab pkg exec chef/chef-infra-client gem install appbundle-updater -v 19.0.4.rc.1 --no-doc
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
