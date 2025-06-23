@@ -34,7 +34,7 @@ describe Chef::Mixin::Checksum do
   end
 
   it "gets the checksum of a file" do
-    expect(@checksum_user.checksum(@file)).to eq("09ee9c8cc70501763563bcf9c218d71b2fbf4186bf8e1e0da07f0f42c80a3394")
+    expect(@checksum_user.checksum(@file)).to eq("dc6665c18676f5f30fdaa420343960edf1883790f83f51f437dbfa0ff678499d")
   end
 
   describe "short_cksum" do
@@ -66,14 +66,14 @@ describe Chef::Mixin::Checksum do
 
     context "when checksums do not match" do
       it "returns false" do
-        expect(@checksum_user.checksum_match?("u7ghbxikk3i9blsimmy2y2ionmxx", "09ee9c8cc70501763563bcf9c218")).to be false
+        expect(@checksum_user.checksum_match?("u7ghbxikk3i9blsimmy2y2ionmxx", "dc6665c18676f5f30fdaa4203439")).to be false
       end
     end
 
     context "when checksum is nil" do
       it "returns false" do
         expect(@checksum_user.checksum_match?("u7ghbxikk3i9blsimmy2y2ionmxx", nil)).to be false
-        expect(@checksum_user.checksum_match?(nil, "09ee9c8cc70501763563bcf9c218")).to be false
+        expect(@checksum_user.checksum_match?(nil, "dc6665c18676f5f30fdaa4203439")).to be false
         expect(@checksum_user.checksum_match?(nil, nil)).to be false
       end
     end

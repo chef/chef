@@ -1,17 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.37 -->
-## [v19.1.37](https://github.com/chef/chef/tree/v19.1.37) (2025-06-13)
+<!-- latest_release 19.1.39 -->
+## [v19.1.39](https://github.com/chef/chef/tree/v19.1.39) (2025-06-20)
 
 #### Merged Pull Requests
-- Fix dearmoring idempotency [#15044](https://github.com/chef/chef/pull/15044) ([tpowell-progress](https://github.com/tpowell-progress))
+- Update dockerfile [#15019](https://github.com/chef/chef/pull/15019) ([Stromweld](https://github.com/Stromweld))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update dockerfile [#15019](https://github.com/chef/chef/pull/15019) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.39 -->
+- Obvious fix: remove stale TODO [#15057](https://github.com/chef/chef/pull/15057) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.39 -->
+- Add sudo capabilities to Target Mode; Cleanups [#15015](https://github.com/chef/chef/pull/15015) ([thheinen](https://github.com/thheinen)) <!-- 19.1.38 -->
 - Fix dearmoring idempotency [#15044](https://github.com/chef/chef/pull/15044) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.37 -->
 - Habitat authentication token [#15051](https://github.com/chef/chef/pull/15051) ([borisicbs](https://github.com/borisicbs)) <!-- 19.1.36 -->
 - Updating the github windows images [#15052](https://github.com/chef/chef/pull/15052) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.35 -->
