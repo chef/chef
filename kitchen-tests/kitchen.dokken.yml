@@ -30,6 +30,14 @@ lifecycle:
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
     - remote: hab pkg exec chef/chef-infra-client ohai -v
 
+    # Print openssl version for debugging purposes.
+    - remote: echo "**** OpenSSL version inside infra client:"
+    - remote: hab pkg exec chef/chef-infra-client openssl version
+
+    # Print all openssl versions for debugging
+    - remote: echo "****** Verifying installed OpenSSL versions:"
+    - remote: ls -la /hab/pkgs/core/openssl/*/*/bin/openssl
+
       # Install gcc using habitat.
     - remote: hab pkg install --channel LTS-2024 core/gcc
     - remote: hab pkg exec core/gcc gcc -- --version
