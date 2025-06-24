@@ -5,7 +5,6 @@ driver:
   chef_version: unstable
   # map habitat installation on host to the /bin/hab path for easy access
   binds:
-    - /hab:/hab
     - /bin/hab:/bin/hab
 
 transport:
