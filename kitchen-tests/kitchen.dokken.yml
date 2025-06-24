@@ -5,6 +5,7 @@ driver:
   chef_version: unstable
   # map habitat installation on host to the /bin/hab path for easy access
   binds:
+    - /hab:/hab
     - /bin/hab:/bin/hab
 
 transport:
@@ -19,7 +20,7 @@ provisioner:
   chef_license_key: free-58e5ca65-d1cc-4838-bb79-42aa40ed3623-3835
   deprecations_as_errors: true
   slow_resource_report: true
-  clean_dokken_sandbox: true
+  clean_dokken_sandbox: false
 
 
 lifecycle:
