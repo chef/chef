@@ -14,6 +14,7 @@ if os.windows?
   end
 else
   openssl_paths = Dir.glob("/hab/pkgs/core/openssl/*/*/bin/openssl").sort
+  puts "**** openssl paths: #{openssl_paths.inspect} ****"
   openssl_bin = openssl_paths.last
 
   ca_file = "/etc/ssl_test/my_ca.crt"
