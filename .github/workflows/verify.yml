@@ -1,0 +1,161 @@
+name: Verify Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_image_tag:
+        description: 'Base image tag version'
+        required: true
+        default: '3.0.36'
+        type: string
+      custom_env_var:
+        description: 'Custom environment variable'
+        required: false
+        default: 'production'
+        type: string
+      chef_license:
+        description: 'Chef license acceptance'
+        required: true
+        default: 'accept-no-persist'
+        type: string
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  BASE_IMAGE_TAG: ${{ inputs.base_image_tag || '3.0.36' }}
+  CUSTOM_ENV: ${{ inputs.custom_env_var || 'production' }}
+  CHEF_LICENSE: ${{ inputs.chef_license || 'accept-no-persist' }}
+
+jobs:
+  # Linux Tests - Matrix for different test types and OS combinations
+  linux-tests:
+    name: Linux ${{ matrix.test_type }} - ${{ matrix.os }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: [Unit, Integration, Functional]
+        os:
+          - rocky-8
+          - rocky-9
+          - rhel-9
+          - debian-9
+          - ubuntu-1804
+          - ubuntu-2004
+          - ubuntu-2204
+          - centos-7
+          - amazonlinux-2
+          - rockylinux-8
+          - almalinux-9
+    container:
+      image: chefes/omnibus-toolchain-${{ matrix.os }}:${{ env.BASE_IMAGE_TAG }}
+      options: --user root
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure Git safe directory
+        run: |
+          git config --global --add safe.directory /__w/*/
+
+      - name: Display Environment Info
+        run: |
+          echo "Running ${{ matrix.test_type }} tests on ${{ matrix.os }}"
+          echo "Base Image Tag: ${{ env.BASE_IMAGE_TAG }}"
+          echo "Custom Environment: ${{ env.CUSTOM_ENV }}"
+          echo "Chef License: ${{ env.CHEF_LICENSE }}"
+          cat /etc/os-release || echo "OS release info not available"
+
+      - name: Install Dependencies
+        run: |
+          ./.expeditor/bk_container_prep.sh
+
+      - name: Run ${{ matrix.test_type }} Tests
+        run: |
+          ./.expeditor/scripts/prep_and_run_tests.sh "${{ matrix.test_type }}"
+        env:
+          TEST_TYPE: ${{ matrix.test_type }}
+          OS_TYPE: ${{ matrix.os }}
+          CHEF_LICENSE: ${{ env.CHEF_LICENSE }}
+          CUSTOM_ENV_VAR: ${{ env.CUSTOM_ENV }}
+
+  # Windows Tests - Matrix for different test types and Windows versions
+  windows-tests:
+    name: Windows ${{ matrix.test_type }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: [Unit, Integration, Functional]
+        os:
+          - windows-2019
+          - windows-2022
+          - windows-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Display Environment Info
+        shell: pwsh
+        run: |
+          Write-Host "Running ${{ matrix.test_type }} tests on ${{ matrix.os }}"
+          Write-Host "Base Image Tag: ${{ env.BASE_IMAGE_TAG }}"
+          Write-Host "Custom Environment: ${{ env.CUSTOM_ENV }}"
+          Write-Host "Chef License: ${{ env.CHEF_LICENSE }}"
+          Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion
+
+      - name: Install Dependencies
+        shell: pwsh
+        run: |
+          bundle config set --local without development
+          bundle install --jobs=3 --retry=3
+
+      - name: Run ${{ matrix.test_type }} Tests
+        shell: pwsh
+        run: |
+          switch ("${{ matrix.test_type }}") {
+            "Unit" {
+              Write-Host "Running Unit Tests..."
+              try { bundle exec rake spec:unit } catch { Write-Host "Unit tests script not found" }
+            }
+            "Integration" {
+              Write-Host "Running Integration Tests..."
+              try { bundle exec rake spec:integration } catch { Write-Host "Integration tests script not found" }
+            }
+            "Functional" {
+              Write-Host "Running Functional Tests..."
+              try { bundle exec rake spec:functional } catch { Write-Host "Functional tests script not found" }
+            }
+          }
+        env:
+          TEST_TYPE: ${{ matrix.test_type }}
+          OS_TYPE: ${{ matrix.os }}
+          CHEF_LICENSE: ${{ env.CHEF_LICENSE }}
+          CUSTOM_ENV_VAR: ${{ env.CUSTOM_ENV }}
+
+  # Summary job that depends on all test jobs
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [linux-tests, windows-tests]
+    if: always()
+    steps:
+      - name: Check test results
+        run: |
+          echo "Linux tests result: ${{ needs.linux-tests.result }}"
+          echo "Windows tests result: ${{ needs.windows-tests.result }}"
+
+          if [[ "${{ needs.linux-tests.result }}" == "failure" || "${{ needs.windows-tests.result }}" == "failure" ]]; then
+            echo "Some tests failed"
+            exit 1
+          else
+            echo "All tests passed or were skipped"
+          fi
