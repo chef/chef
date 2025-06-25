@@ -1,5 +1,8 @@
 name: Verify Pipeline
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
