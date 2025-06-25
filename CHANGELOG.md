@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.39 -->
-## [v19.1.39](https://github.com/chef/chef/tree/v19.1.39) (2025-06-20)
+<!-- latest_release 19.1.41 -->
+## [v19.1.41](https://github.com/chef/chef/tree/v19.1.41) (2025-06-25)
 
 #### Merged Pull Requests
-- Update dockerfile [#15019](https://github.com/chef/chef/pull/15019) ([Stromweld](https://github.com/Stromweld))
+- Prompts appear to need to be consistent for left arrow to calculate  [#14919](https://github.com/chef/chef/pull/14919) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Prompts appear to need to be consistent for left arrow to calculate  [#14919](https://github.com/chef/chef/pull/14919) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.41 -->
+- linelint -a on CHANGELOG.md [#15067](https://github.com/chef/chef/pull/15067) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.40 -->
 - Update dockerfile [#15019](https://github.com/chef/chef/pull/15019) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.39 -->
 - Obvious fix: remove stale TODO [#15057](https://github.com/chef/chef/pull/15057) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.39 -->
 - Add sudo capabilities to Target Mode; Cleanups [#15015](https://github.com/chef/chef/pull/15015) ([thheinen](https://github.com/thheinen)) <!-- 19.1.38 -->

@@ -6,6 +6,6 @@ rules:
       # these are not text files, leave them as-is
       - knife/spec/data/cb_version_cookbooks/tatft
       - spec/data/cb_version_cookbooks/tatft
-      # there are changed by automated processes, ignore
+      # these files are changed by automated processes
       - CHANGELOG.md
       - VERSION
