@@ -22,7 +22,7 @@ on:
         default: 'accept-no-persist'
         type: string
   push:
-    branches: [main]
+    branches: [main, tp/gh-verify]
   pull_request:
     branches: [main]
 
