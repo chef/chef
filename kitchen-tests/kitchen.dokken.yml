@@ -3,9 +3,6 @@ driver:
   name: dokken
   privileged: true
   chef_version: unstable
-  # map habitat installation on host to the /bin/hab path for easy access
-  binds:
-    - /bin/hab:/bin/hab
 
 transport:
   name: dokken
