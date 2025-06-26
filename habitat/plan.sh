@@ -105,6 +105,15 @@ do_prepare() {
     bundle config --local silence_root_warning 1
   )
 
+  # Needed for appbundler-updater to work properly
+  build_line "Extracting bundler version from Gemfile.lock"
+  BUNDLER_VERSION=$(grep -A 1 "BUNDLED WITH" "$CACHE_PATH/Gemfile.lock" | tail -n 1 | tr -d '[:space:]')
+  if [ -z "$BUNDLER_VERSION" ]; then
+    exit_with "Failed to extract bundler version from Gemfile.lock" 1
+  fi
+  build_line "Installing bundler version $BUNDLER_VERSION"
+  gem install bundler --version "$BUNDLER_VERSION" --no-document
+
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
