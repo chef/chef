@@ -13,23 +13,9 @@ if os.windows?
     openssl_bin = "C:\\opscode\\chef\\embedded\\bin\\openssl.exe"
   end
 else
-  begin
-    openssl_pkg_path = `hab pkg path core/openssl 2>/dev/null`.strip
-    puts "**** Hab OpenSSL pkg path: #{openssl_pkg_path} ****"
-    if !openssl_pkg_path.empty?
-      # Found the path, now build the full binary path
-      openssl_bin = File.join(openssl_pkg_path, "bin", "openssl")
-      puts "**** Using OpenSSL from Habitat package: #{openssl_bin} ****"
-      # Verify the binary exists and is executable
-      if !File.exist?(openssl_bin) || !File.executable?(openssl_bin)
-        puts "**** OpenSSL binary from Habitat not found or not executable ****"
-        openssl_bin = nil
-      end
-    end
-  rescue => e
-    puts "**** Error finding OpenSSL from Habitat: #{e.message} ****"
-    openssl_bin = nil
-  end
+
+  #for debugging
+  openssl_bin = "/hab/pkgs/core/openssl/3.2.4/20250528180615/bin/openssl"
 
   ca_file = "/etc/ssl_test/my_ca.crt"
   cert_file = "/etc/ssl_test/my_signed_cert.crt"
