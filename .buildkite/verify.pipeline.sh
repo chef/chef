@@ -27,10 +27,9 @@ for platform in ${test_platforms[@]}; do
   echo "  - docker#v3.5.0:"
   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      privileged: true"
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
   echo "      propagate-environment: true"
   echo "  commands:"
+  echo "    - .expeditor/scripts/bk_container_prep.sh"
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
   echo "  timeout_in_minutes: 60"
 done
@@ -53,13 +52,10 @@ for platform in ${win_test_platforms[@]}; do
   echo "      shell:"
   echo "      - powershell"
   echo "      - \"-Command\""
-  echo "      environment:"
-  echo "        - CHEF_FOUNDATION_VERSION"
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
   echo "  timeout_in_minutes: 120"
-
 done
 
 for platform in ${win_test_platforms[@]}; do
@@ -67,13 +63,12 @@ for platform in ${win_test_platforms[@]}; do
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  agents:"
   echo "    queue: single-use-windows-2019-privileged"
-  echo "  env:"
-  echo "  - CHEF_FOUNDATION_VERSION"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "  matrix:"
+  echo "    - \"Functional\""
+  echo "  commands:"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  timeout_in_minutes: 120"
 done
 
@@ -169,12 +164,3 @@ for plan in ${habitat_plans[@]}; do
     echo "    - sudo ./.expeditor/scripts/verify-plan.sh"
   fi
 done
-
-#include build and test omnibus pipeline
-if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
-  DIR="${BASH_SOURCE%/*}"
-  if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-  source "$DIR/build-test-omnibus.sh"
-else
-  echo "--- Finished with chef-oss"
-fi
