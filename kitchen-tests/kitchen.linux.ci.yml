@@ -27,6 +27,19 @@ lifecycle:
       includes:
         - fedora-40
         - fedora-latest
+    # Rocky Linux 9 specific setup to resolve dependency issues
+    - remote: sudo dnf update -y
+      includes:
+        - rockylinux-9
+    - remote: sudo dnf install -y epel-release
+      includes:
+        - rockylinux-9
+    - remote: sudo dnf config-manager --set-enabled crb
+      includes:
+        - rockylinux-9
+    - remote: sudo dnf install -y elfutils-libelf elfutils-libelf-devel
+      includes:
+        - rockylinux-9
     - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef container's Chef / Ohai release:"
