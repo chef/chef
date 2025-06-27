@@ -94,7 +94,7 @@ jobs:
           - rockylinux-9
           - ubuntu-2004
           - ubuntu-2204
-#          - ubuntu-2404 not officially supported and errors occurring
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
