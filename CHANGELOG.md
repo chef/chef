@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.20 -->
-## [v18.7.20](https://github.com/chef/chef/tree/v18.7.20) (2025-06-27)
+<!-- latest_release 18.7.21 -->
+## [v18.7.21](https://github.com/chef/chef/tree/v18.7.21) (2025-06-27)
 
 #### Merged Pull Requests
-- Rocky 9 backport [#15072](https://github.com/chef/chef/pull/15072) ([tpowell-progress](https://github.com/tpowell-progress))
+- backport #14919 for Chef 18 [#15069](https://github.com/chef/chef/pull/15069) ([fretb](https://github.com/fretb))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- backport #14919 for Chef 18 [#15069](https://github.com/chef/chef/pull/15069) ([fretb](https://github.com/fretb)) <!-- 18.7.21 -->
 - Rocky 9 backport [#15072](https://github.com/chef/chef/pull/15072) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.20 -->
 - Disable pre build tests for ssl hack [#15063](https://github.com/chef/chef/pull/15063) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.19 -->
 - Add test of loading of ssl_env_hack.rb and fix. [#15040](https://github.com/chef/chef/pull/15040) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.18 -->
