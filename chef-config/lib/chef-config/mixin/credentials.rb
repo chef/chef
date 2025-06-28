@@ -128,7 +128,7 @@ module ChefConfig
       # @param profile [String] Profile to resolve secrets in.
       # @return [Hash]
       def resolve_secrets(profile)
-	return unless credentials_config
+	      return unless credentials_config
 
         secrets = credentials_config[profile].filter { |k, v| v.is_a?(Hash) && v.keys.include?("secret") }
         return if secrets.empty?
