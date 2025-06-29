@@ -48,7 +48,7 @@ module ChefConfig
         if !credentials_config.nil? && !credentials_config[profile].nil?
           credentials_config[profile].transform_keys(&:to_sym) # return symbolized keys to match Train.options()
         else
-          raise NoCredentialsFound.new("No credentials found for profile '#{profile}'")
+          nil
         end
       end
 
@@ -119,7 +119,7 @@ module ChefConfig
         # Load the credentials file, and place any valid settings into the train configuration
         credentials = load_credentials(tm_config.host)
 
-        protocol = credentials[:transport_protocol] || tm_config.protocol
+        protocol = credentials&.dig(:transport_protocol) || tm_config.protocol
         train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
         logger.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
