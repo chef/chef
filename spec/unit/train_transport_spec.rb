@@ -35,7 +35,7 @@ describe Chef::TrainTransport do
     end
 
     it "returns nil if there is no match" do
-      expect(transport.load_credentials("router.unicorns.com")).to raise_error(ChefConfig::NoCredentialsFound)
+      expect(transport.load_credentials("router.unicorns.com")).to be_nil
     end
 
     # [foo.example.org]   => {"foo"=>{"example"=>{"org"=>{}}}}
@@ -45,7 +45,7 @@ describe Chef::TrainTransport do
       allow(transport).to receive(:parse_credentials_file).and_return({ "foo" => { "example" => { "org" => {} } } })
       expect(Chef::Log).to receive(:warn).with(/as a Hash/)
       expect(Chef::Log).to receive(:warn).with(/Hostnames must be surrounded by single quotes/)
-      expect(transport.load_credentials("foo.example.org")).to raise_error(ChefConfig::NoCredentialsFound)
+      expect(transport.load_credentials("foo.example.org")).to be_nil
     end
   end
 
