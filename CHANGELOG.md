@@ -1,17 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.18 -->
-## [v18.7.18](https://github.com/chef/chef/tree/v18.7.18) (2025-06-16)
+<!-- latest_release 18.7.22 -->
+## [v18.7.22](https://github.com/chef/chef/tree/v18.7.22) (2025-06-30)
 
 #### Merged Pull Requests
-- Add test of loading of ssl_env_hack.rb and fix. [#15040](https://github.com/chef/chef/pull/15040) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add Support Ubuntu-2404 [#15062](https://github.com/chef/chef/pull/15062) ([poorndm](https://github.com/poorndm))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Support Ubuntu-2404 [#15062](https://github.com/chef/chef/pull/15062) ([poorndm](https://github.com/poorndm)) <!-- 18.7.22 -->
+- backport #14919 for Chef 18 [#15069](https://github.com/chef/chef/pull/15069) ([fretb](https://github.com/fretb)) <!-- 18.7.21 -->
+- Rocky 9 backport [#15072](https://github.com/chef/chef/pull/15072) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.20 -->
+- Disable pre build tests for ssl hack [#15063](https://github.com/chef/chef/pull/15063) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.19 -->
 - Add test of loading of ssl_env_hack.rb and fix. [#15040](https://github.com/chef/chef/pull/15040) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.18 -->
 - Fix dearmoring idempotency backport [#15056](https://github.com/chef/chef/pull/15056) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.17 -->
 - [chef-18] update chef foundation to 3.2.23 [#15054](https://github.com/chef/chef/pull/15054) ([rishichawda](https://github.com/rishichawda)) <!-- 18.7.16 -->
