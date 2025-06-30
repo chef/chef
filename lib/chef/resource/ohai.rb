@@ -21,6 +21,7 @@
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "ohai" unless defined?(Ohai::System)
+require_relative "../extensions/ohai_plugin_loader"
 
 class Chef
   class Resource
@@ -76,21 +77,38 @@ class Chef
       property :plugin, String,
         description: "Specific Ohai attribute data to reload. This property behaves similar to specifying attributes when running Ohai on the command line and takes the attribute that you wish to reload instead of the actual plugin name. For instance, you can pass `ipaddress` to reload `node['ipaddress']` even though that data comes from the `Network` plugin. If this property is not specified, #{ChefUtils::Dist::Infra::PRODUCT} will reload all plugins."
 
+      property :ignore_failure, [TrueClass, FalseClass],
+        description: "Continue running a recipe if a resource fails.",
+        default: false,
+        default_description: "false (a resource failure will halt the Chef run)"
+
       def load_current_resource
         true
       end
 
       action :reload do
-        converge_by("re-run ohai and merge results into node attributes") do
-          ohai = ::Ohai::System.new
-
-          # If new_resource.plugin is nil, ohai will reload all the plugins
-          # Otherwise it will only reload the specified plugin
-          # Note that any changes to plugins, or new plugins placed on
-          # the path are picked up by ohai.
-          ohai.all_plugins new_resource.plugin
-          node.automatic_attrs.merge! ohai.data
-          logger.info("#{new_resource} reloaded")
+        converge_by("re-run ohai to reload plugin data") do
+          begin
+            if new_resource.plugin
+              # Reload only the specified plugin using our enhanced loader that handles errors
+              logger.info("Reloading Ohai plugin: #{new_resource.plugin}")
+              ohai = Chef::Extensions::OhaiPluginLoader.safe_reload_plugin(new_resource.plugin, node)
+            else
+              # Reload all plugins
+              logger.info("Reloading all Ohai plugins")
+              ohai = Chef::Extensions::OhaiPluginLoader.force_load_all_plugins
+              node.automatic_attrs.merge!(ohai.data)
+            end
+            
+            logger.info("#{new_resource} reloaded")
+          rescue => e
+            if new_resource.ignore_failure
+              logger.error("Failed to reload Ohai plugin: #{e.class}: #{e.message}")
+              logger.error("Ignoring failure and continuing.")
+            else
+              raise
+            end
+          end
         end
       end
     end

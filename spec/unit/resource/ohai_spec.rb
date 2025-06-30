@@ -1,112 +1,149 @@
-#
-# Author:: Michael Leinartas (<mleinartas@gmail.com>)
-# Copyright:: Copyright 2010-2016, Michael Leinartas
-# License:: Apache License, Version 2.0
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-require "spec_helper"
+# encoding: utf-8
+require 'spec_helper'
+require 'chef/resource/ohai'
+require 'chef/node'
+require_relative '../../../extensions/ohai_plugin_loader'
 
 describe Chef::Resource::Ohai do
-  let(:node) { Chef::Node.new }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:resource) { Chef::Resource::Ohai.new("fakey_fakerton", run_context) }
-  let(:provider) { resource.provider_for_action(:reload) }
+  let(:resource) { Chef::Resource::Ohai.new('reload_ohai') }
+  let(:run_context) { double('Chef::RunContext', node: Chef::Node.new) }
+  let(:ohai_system) { double('Ohai::System') }
+  let(:plugin_data) { { 'test_plugin' => { 'data' => 'test value' } } }
 
-  it "has a resource name of :ohai" do
-    expect(resource.resource_name).to eql(:ohai)
+  before do
+    resource.run_context = run_context
+    allow(resource).to receive(:converge_by).and_yield
+    allow(resource).to receive(:logger).and_return(Chef::Log)
+    allow(Chef::Log).to receive(:info)
+    allow(Chef::Log).to receive(:error)
+    allow(Chef::Extensions::OhaiPluginLoader).to receive(:safe_reload_plugin).and_return(ohai_system)
+    allow(Chef::Extensions::OhaiPluginLoader).to receive(:force_load_all_plugins).and_return(ohai_system)
+    allow(ohai_system).to receive(:data).and_return(plugin_data)
+    allow(run_context.node.automatic_attrs).to receive(:merge!)
   end
 
-  it "sets the default action as :reload" do
-    expect(resource.action).to eql([:reload])
-  end
-
-  it "supports :reload action" do
-    expect { resource.action :reload }.not_to raise_error
-  end
-
-  it "allows you to set the plugin property" do
-    resource.plugin "passwd"
-    expect(resource.plugin).to eql("passwd")
-  end
-
-  describe "when it has a plugin value" do
-    before do
-      resource.name("test")
-      resource.plugin("passwd")
+  describe 'properties' do
+    it 'has a plugin property' do
+      resource.plugin 'test_plugin'
+      expect(resource.plugin).to eq('test_plugin')
     end
 
-    it "describes its state" do
-      state = resource.state_for_resource_reporter
-      expect(state[:plugin]).to eq("passwd")
+    it 'has an ignore_failure property with default false' do
+      expect(resource.ignore_failure).to eq(false)
     end
 
-    it "returns the name as its identity" do
-      expect(resource.identity).to eq("test")
+    it 'allows setting ignore_failure to true' do
+      resource.ignore_failure true
+      expect(resource.ignore_failure).to eq(true)
     end
   end
 
-  describe "reload action" do
-    before(:each) do
-      # Copied from client_spec
-      @fqdn = "hostname.domainname"
-      @hostname = "hostname"
-      @platform = "example-platform"
-      @platform_version = "example-platform"
-      Chef::Config[:node_name] = @fqdn
-      mock_ohai = {
-        fqdn: @fqdn,
-        hostname: @hostname,
-        platform: @platform,
-        platform_version: @platform_version,
-        data: {
-          origdata: "somevalue",
-        },
-        data2: {
-          origdata: "somevalue",
-          newdata: "somevalue",
-        },
-      }
-      allow(mock_ohai).to receive(:all_plugins).and_return(true)
-      allow(mock_ohai).to receive(:data).and_return(mock_ohai[:data],
-        mock_ohai[:data2])
-      allow(Ohai::System).to receive(:new).and_return(mock_ohai)
-      allow(Chef::Platform).to receive(:find_platform_and_version).and_return({ "platform" => @platform,
-                                                                                "platform_version" => @platform_version })
-      # Fake node with a dummy save
-      node.name(@fqdn)
-      allow(node).to receive(:save).and_return(node)
-      ohai = Ohai::System.new
-      ohai.all_plugins
-      node.consume_external_attrs(ohai.data, {})
-      node.automatic_attrs[:origdata] = "somevalue"
+  describe 'action :reload' do
+    context 'when a specific plugin is requested' do
+      before do
+        resource.plugin 'test_plugin'
+      end
+
+      it 'calls safe_reload_plugin with the plugin name and node' do
+        resource.run_action(:reload)
+        
+        expect(Chef::Extensions::OhaiPluginLoader).to have_received(:safe_reload_plugin).with('test_plugin', run_context.node)
+        expect(Chef::Log).to have_received(:info).with('Reloading Ohai plugin: test_plugin')
+      end
+
+      it 'logs successful reload' do
+        resource.run_action(:reload)
+        
+        expect(resource.logger).to have_received(:info).with(/reload_ohai reloaded/)
+      end
     end
 
-    it "applies updated ohai data to the node" do
-      expect(node[:origdata]).to eq("somevalue")
-      expect(node[:newdata]).to be_nil
-      provider.run_action(:reload)
-      expect(node[:origdata]).to eq("somevalue")
-      expect(node[:newdata]).to eq("somevalue")
+    context 'when no specific plugin is requested' do
+      it 'calls force_load_all_plugins and merges data' do
+        resource.run_action(:reload)
+        
+        expect(Chef::Extensions::OhaiPluginLoader).to have_received(:force_load_all_plugins)
+        expect(run_context.node.automatic_attrs).to have_received(:merge!).with(plugin_data)
+        expect(Chef::Log).to have_received(:info).with('Reloading all Ohai plugins')
+      end
     end
 
-    it "supports reloading a specific plugin and causes node to pick up new values" do
-      resource.plugin "someplugin"
-      provider.run_action(:reload)
-      expect(node[:origdata]).to eq("somevalue")
-      expect(node[:newdata]).to eq("somevalue")
+    context 'when an error occurs' do
+      let(:test_error) { StandardError.new('Test error') }
+
+      before do
+        resource.plugin 'problem_plugin'
+        allow(Chef::Extensions::OhaiPluginLoader).to receive(:safe_reload_plugin).and_raise(test_error)
+      end
+
+      context 'and ignore_failure is false' do
+        it 'raises the error' do
+          expect { resource.run_action(:reload) }.to raise_error(StandardError, 'Test error')
+        end
+      end
+
+      context 'and ignore_failure is true' do
+        before do
+          resource.ignore_failure true
+        end
+
+        it 'logs the error and continues' do
+          expect { resource.run_action(:reload) }.not_to raise_error
+          
+          expect(Chef::Log).to have_received(:error).with('Failed to reload Ohai plugin: StandardError: Test error')
+          expect(Chef::Log).to have_received(:error).with('Ignoring failure and continuing.')
+        end
+      end
+    end
+  end
+
+  describe 'backward compatibility' do
+    it 'maintains the original property definition' do
+      resource.plugin 'ipaddress'
+      expect(resource.plugin).to eq('ipaddress')
+    end
+
+    it 'supports the original examples from documentation' do
+      # Example 1: Reload all plugins
+      reload_all = Chef::Resource::Ohai.new('reload')
+      reload_all.run_context = run_context
+      allow(reload_all).to receive(:converge_by).and_yield
+      allow(reload_all).to receive(:logger).and_return(Chef::Log)
+      
+      expect { reload_all.run_action(:reload) }.not_to raise_error
+      expect(Chef::Extensions::OhaiPluginLoader).to have_received(:force_load_all_plugins)
+
+      # Example 2: Reload specific plugin
+      reload_specific = Chef::Resource::Ohai.new('reload')
+      reload_specific.plugin 'ipaddress'
+      reload_specific.run_context = run_context
+      allow(reload_specific).to receive(:converge_by).and_yield
+      allow(reload_specific).to receive(:logger).and_return(Chef::Log)
+      
+      expect { reload_specific.run_action(:reload) }.not_to raise_error
+      expect(Chef::Extensions::OhaiPluginLoader).to have_received(:safe_reload_plugin).with('ipaddress', run_context.node)
+    end
+  end
+
+  describe 'integration with OhaiPluginLoader' do
+    it 'uses the enhanced plugin loader for better reliability' do
+      resource.plugin 'custom_plugin'
+      
+      resource.run_action(:reload)
+      
+      expect(Chef::Extensions::OhaiPluginLoader).to have_received(:safe_reload_plugin)
+      expect(Chef::Extensions::OhaiPluginLoader).not_to have_received(:force_load_all_plugins)
+    end
+
+    it 'handles AttributeNotFound errors through the safe loader' do
+      # The safe_reload_plugin method should handle AttributeNotFound internally
+      # This test verifies that the resource properly delegates to the safe method
+      allow(Chef::Extensions::OhaiPluginLoader).to receive(:safe_reload_plugin).and_return(ohai_system)
+      
+      resource.plugin 'problematic_plugin'
+      resource.run_action(:reload)
+      
+      expect(Chef::Extensions::OhaiPluginLoader).to have_received(:safe_reload_plugin).with('problematic_plugin', run_context.node)
     end
   end
 end

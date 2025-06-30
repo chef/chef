@@ -1,5 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Your Name (<your.email@example.com>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,20 +16,11 @@
 # limitations under the License.
 #
 
-require_relative "chef/version"
+module Chef
+  # The Extensions module is a namespace for all Chef extensions
+  module Extensions
+  end
+end
 
-require_relative "chef/mash"
-require_relative "chef/exceptions"
-require_relative "chef/log"
-require_relative "chef/config"
-require_relative "chef/providers"
-require_relative "chef/resources"
-require_relative "chef/extensions"
-
-require_relative "chef/daemon"
-
-require_relative "chef/run_status"
-require_relative "chef/handler"
-require_relative "chef/handler/json_file"
-require_relative "chef/event_dispatch/dsl"
-require_relative "chef/chef_class"
+# Load all extension modules
+require_relative "extensions/ohai_plugin_loader"
