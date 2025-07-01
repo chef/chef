@@ -1,0 +1,167 @@
+name: Verify
+
+on:
+  push:
+    branches: [main, feature/github-actions-migration]  # Add your temp branch here
+  pull_request:
+    branches: [main]
+
+env:
+  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/
+  CHEF_FOUNDATION_VERSION: ${{ vars.CHEF_FOUNDATION_VERSION || '3.2.12' }}
+  CHEF_LICENSE: accept-no-persist
+
+jobs:
+  linux-matrix:
+    name: ${{ matrix.test_type }} - ${{ matrix.os }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [rocky-8, rocky-9, rhel-9, debian-9, ubuntu-2004]
+        test_type: [Unit, Integration, Functional]
+    container:
+      image: chefes/omnibus-toolchain-${{ matrix.os }}:3.0.36
+      options: --privileged --user root
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Container prep
+        run: .expeditor/scripts/bk_container_prep.sh
+
+      - name: Run ${{ matrix.test_type }} tests
+        run: .expeditor/scripts/prep_and_run_tests.sh ${{ matrix.test_type }}
+        env:
+          CHEF_LICENSE_SERVER: ${{ env.CHEF_LICENSE_SERVER }}
+
+  windows-tests:
+    name: ${{ matrix.test_type }} - Windows 2019
+    runs-on: windows-2019
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: [Unit, Integration, Functional]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Run ${{ matrix.test_type }} tests
+        shell: pwsh
+        run: .\.expeditor\scripts\prep_and_run_tests.ps1 ${{ matrix.test_type }}
+        env:
+          CHEF_LICENSE_SERVER: ${{ env.CHEF_LICENSE_SERVER }}
+
+  gem-tests:
+    name: ${{ matrix.gem }} gem
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        gem: [chef-zero, cheffish, chefspec, knife-windows, berkshelf]
+        include:
+          - gem: chef-zero
+            test_cmd: bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant
+            env_vars: |
+              PEDANT_OPTS=--skip-oc_id
+              CHEF_FS=true
+          - gem: cheffish
+            test_cmd: bundle exec tasks/bin/run_external_test chef/cheffish main rake spec
+          - gem: chefspec
+            test_cmd: bundle exec tasks/bin/run_external_test chef/chefspec main rake
+          - gem: knife-windows
+            test_cmd: bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec
+          - gem: berkshelf
+            test_cmd: bundle exec tasks/bin/run_external_test chef/berkshelf main rake
+            pre_install: apt-get update -y && apt-get install -y graphviz
+    container:
+      image: chefes/omnibus-toolchain-ubuntu-1804:3.0.36
+      options: --user root
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Container prep
+        run: .expeditor/scripts/bk_container_prep.sh
+
+      - name: Set up environment
+        run: |
+          export PATH="/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin"
+          echo "PATH=$PATH" >> $GITHUB_ENV
+
+      - name: Pre-install dependencies
+        if: matrix.pre_install
+        run: ${{ matrix.pre_install }}
+
+      - name: Bundle install
+        run: |
+          bundle config set --local without omnibus_package
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs=3 --retry=3
+
+      - name: Run ${{ matrix.gem }} tests
+        run: ${{ matrix.test_cmd }}
+        env:
+          CHEF_FOUNDATION_VERSION: ${{ env.CHEF_FOUNDATION_VERSION }}
+          PEDANT_OPTS: ${{ matrix.gem == 'chef-zero' && '--skip-oc_id' || '' }}
+          CHEF_FS: ${{ matrix.gem == 'chef-zero' && 'true' || '' }}
+
+  habitat-linux-plan:
+    name: Habitat Linux Plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Habitat
+        run: sudo ./.expeditor/scripts/install-hab.sh 'x86_64-linux'
+
+      - name: Verify plan
+        run: sudo ./.expeditor/scripts/verify-plan.sh
+
+  habitat-windows-plan:
+    name: Habitat Windows Plan
+    runs-on: windows-2019
+    timeout-minutes: 60
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Verify Windows plan
+        shell: pwsh
+        run: ./.expeditor/scripts/verify-plan.ps1
+
+  verify-summary:
+    name: Verify Summary
+    runs-on: ubuntu-latest
+    needs: [linux-matrix, windows-tests, gem-tests, habitat-linux-plan, habitat-windows-plan]
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "Linux Matrix: ${{ needs.linux-matrix.result }}"
+          echo "Windows Tests: ${{ needs.windows-tests.result }}"
+          echo "Gem Tests: ${{ needs.gem-tests.result }}"
+          echo "Habitat Linux: ${{ needs.habitat-linux-plan.result }}"
+          echo "Habitat Windows: ${{ needs.habitat-windows-plan.result }}"
+
+          if [[ "${{ needs.linux-matrix.result }}" == "failure" || \
+                "${{ needs.windows-tests.result }}" == "failure" || \
+                "${{ needs.gem-tests.result }}" == "failure" || \
+                "${{ needs.habitat-linux-plan.result }}" == "failure" || \
+                "${{ needs.habitat-windows-plan.result }}" == "failure" ]]; then
+            echo "❌ Some tests failed"
+            exit 1
+          else
+            echo "✅ All tests passed or were skipped"
+          fi
