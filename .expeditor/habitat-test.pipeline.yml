@@ -12,9 +12,9 @@ steps:
 - label: ":linux: Validate Linux"
   commands:
     - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
-    - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
-    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
-    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
+    - echo "--- Installing chef/chef-infra-client/19.1.46/20250626201151"
+    - sudo hab pkg install chef/chef-infra-client/19.1.46/20250626201151
+    - sudo ./habitat/tests/test.sh chef/chef-infra-client/19.1.46/20250626201151
   expeditor:
     executor:
       linux:
@@ -23,7 +23,7 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
+    - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact chef/chef-infra-client/19.1.46/20250626201805
   expeditor:
     executor:
       windows:
@@ -32,14 +32,14 @@ steps:
         shell: ["powershell", "-Command"]
 
 # Wait for the package testing to succeed before promoting whatever was tested.
-- wait
+# - wait
 
-- label: ":habicat: Promoting packages to the current channel."
-  commands:
-    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX current x86_64-linux
-    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS current x86_64-windows
-  expeditor:
-    executor:
-      docker:
-        environment:
-          - HAB_AUTH_TOKEN
+# - label: ":habicat: Promoting packages to the current channel."
+#   commands:
+#     - hab pkg promote chef/chef-infra-client/19.1.46/20250626201151 current x86_64-linux
+#     - hab pkg promote chef/chef-infra-client/19.1.46/20250626201805 current x86_64-windows
+#   expeditor:
+#     executor:
+#       docker:
+#         environment:
+#           - HAB_AUTH_TOKEN
