@@ -98,7 +98,7 @@ jobs:
             test_cmd: bundle exec tasks/bin/run_external_test chef/berkshelf main rake
             pre_install: apt-get update -y && apt-get install -y graphviz
     container:
-      image: chefes/omnibus-toolchain-ubuntu-1804:3.0.36
+      image: chefes/omnibus-toolchain-ubuntu-2204:3.0.36
       options: --user root
     steps:
       - name: Check out code
