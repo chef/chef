@@ -14,7 +14,7 @@ env:
 jobs:
   linux-matrix:
     name: ${{ matrix.test_type }} - ${{ matrix.os }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -27,6 +27,15 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        # Skip checkout actions for debian-9 due to GLIBC incompatibility
+        if: matrix.os != 'debian-9'
+
+      - name: Manual checkout for Debian 9
+        if: matrix.os == 'debian-9'
+        run: |
+          apt-get update && apt-get install -y git
+          git clone https://github.com/${{ github.repository }} .
+          git checkout ${{ github.sha }}
 
       - name: Container prep
         run: .expeditor/scripts/bk_container_prep.sh
