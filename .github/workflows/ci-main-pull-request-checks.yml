@@ -1,0 +1,92 @@
+# stub to call common GitHub Action (GA) as part of Continuous Integration (CI) Pull Request process checks for main branch
+#
+# inputs are described in the <org>/common-github-actions/<GA.yml> with same name as this stub
+#
+
+name: CI Pull Request on Main Branch
+
+on: 
+  pull_request:
+    branches: [ main, release/** ]
+  push:
+    branches: [ main, release/** ]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  STUB_VERSION: "1.0.1" 
+  
+jobs: 
+  echo_version:
+    name: 'Echo stub version'
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo version of stub and inputs
+        run: |
+          echo "[ci-main-pull-request-stub-trufflehog-only.yml] version $STUB_VERSION"
+
+  call-ci-main-pr-check-pipeline:
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
+    secrets: inherit
+    permissions: 
+      id-token: write
+      contents: read
+    
+    with:   
+      visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
+      # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
+      
+      # complexity-checks
+      perform-complexity-checks: true
+      # scc-output-filename: 'scc-output.txt'
+      perform-language-linting: false    # Perform language-specific linting and pre-compilation checks
+
+      # trufflehog secret scanning
+      perform-trufflehog-scan: true
+      
+      # BlackDuck SAST (Polaris) and SCA scans
+      # requires secrets POLARIS_SERVER_URL and POLARIS_ACCESS_TOKEN
+      perform-blackduck-polaris: false
+      polaris-application-name: 'Chef-Chef360'  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services
+      polaris-project-name: ${{ github.event.repository.name }}  # typically the application name, followed by - and the repository name, for example Chef-Chef360-chef-vault'
+      perform-blackduck-sca-scan: false
+      
+      # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
+      build: false
+      # ga-build-profile: $chef-ga-build-profile   
+      # language: $chef-ga-build-language   # this will be removed from stub as autodetected in central GA
+      unit-tests: false
+ 
+      # perform SonarQube scan, with or wihout unit test coverage data
+      # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
+      perform-sonarqube-scan: false
+      # perform-sonar-build: true
+      # build-profile: 'default' 
+      # report-unit-test-coverage: true
+
+      # report to central developer dashboard
+      report-to-atlassian-dashboard: false
+      quality-product-name: ${{ github.event.repository.name }}   # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
+      # quality-sonar-app-name: 'YourSonarAppName'
+      # quality-testing-type: 'Integration' like Unit, Integration, e2e, api, Performance, Security
+      # quality-service-name: 'YourServiceOrRepoName'
+      # quality-junit-report: 'path/to/junit/report''
+
+      # perform native and Habitat packaging, publish to package repositories
+      package-binaries: false     # Package binaries (e.g., RPM, DEB, MSI, dpkg + signing + SHA)
+      habitat-build: false        # Create Habitat packages
+      publish-packages: false     # Publish packages (e.g., container from Dockerfile to ECR, go-releaser binary to releases page, omnibus to artifactory, gems, choco, homebrew, other app stores)
+
+      # generate and export Software Bill of Materials (SBOM) in various formats
+      generate-sbom: true
+      export-github-sbom: true      # SPDX JSON artifact on job instance  
+      generate-blackduck-sbom: false   # requires BlackDuck secrets and inputs as above for SAST scanning
+      generate-msft-sbom: false
+      license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
+      
+      # udf1: 'default' # user defined flag 1
+      # udf2: 'default' # user defined flag 2 
+      # udf3: 'default' # user defined flag 3
