@@ -49,8 +49,8 @@ describe Chef::Resource::ChefClientSystemdTimer do
   end
 
   describe "#chef_client_cmd" do
-
-    let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
+    let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
+    let(:root_path) { windows? ? "#{drive}\\chef/client.rb" : "/etc/chef/client.rb" }
 
     it "creates a valid command if using all default properties" do
       expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client -c #{root_path}")

@@ -313,7 +313,8 @@ describe Chef::Role do
       Chef::Config[:role_path] = ["/path1", "/path1/path2"]
     end
 
-    let(:root) { windows? ? "C:/path1" : "/path1" }
+    let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
+    let(:root) { windows? ? "#{drive}/path1" : "/path1" }
 
     it "should return a Chef::Role object from JSON" do
       expect(Dir).to receive(:glob).with(File.join(root, "**", "**")).exactly(1).times.and_return(["#{root}/lolcat.json"])

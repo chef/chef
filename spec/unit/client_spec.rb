@@ -809,8 +809,9 @@ describe Chef::Client do
     end
 
     context "when any directory of cookbook_path contains no cookbook" do
+      let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
       it "raises CookbookNotFound error" do
-        invalid_cookbook_path = windows? ? "C:/path/to/invalid/cookbook_path" : "/path/to/invalid/cookbook_path"
+        invalid_cookbook_path = windows? ? "#{drive}/path/to/invalid/cookbook_path" : "/path/to/invalid/cookbook_path"
         msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], [\"#{invalid_cookbook_path}\"], contain any cookbooks"
 
         expect do

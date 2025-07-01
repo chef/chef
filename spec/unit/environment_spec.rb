@@ -27,6 +27,8 @@ describe Chef::Environment do
     @environment = Chef::Environment.new
   end
 
+  let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
+
   describe "initialize" do
     it "should be a Chef::Environment" do
       expect(@environment).to be_a_kind_of(Chef::Environment)
@@ -452,11 +454,12 @@ describe Chef::Environment do
       it "should raise an error if the configured environment_path is invalid" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
 
+        env_path = windows? ? "#{drive}:/var/chef/environments" : "/var/chef/environments"
         expect do
           Chef::Environment.load("foo")
         end.to raise_error(
           an_instance_of(Chef::Exceptions::InvalidEnvironmentPath).and having_attributes(
-            message: "Environment path '#{windows? ? "C:/var/chef/environments" : "/var/chef/environments"}' is invalid"
+            message: "Environment path '#{env_path}' is invalid"
           )
         )
       end
