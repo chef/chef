@@ -51,8 +51,8 @@ jobs:
           CHEF_LICENSE_SERVER: ${{ env.CHEF_LICENSE_SERVER }}
 
   windows-tests:
-    name: ${{ matrix.test_type }} - Windows 2019
-    runs-on: windows-2019
+    name: ${{ matrix.test_type }} - Windows 2022
+    runs-on: windows-2022
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -145,7 +145,7 @@ jobs:
 
   habitat-windows-plan:
     name: Habitat Windows Plan
-    runs-on: windows-2019
+    runs-on: windows-2022
     timeout-minutes: 60
     steps:
       - name: Check out code
