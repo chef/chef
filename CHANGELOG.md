@@ -2,17 +2,18 @@
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
 
-<!-- latest_release 17.10.166 -->
-## [v17.10.166](https://github.com/chef/chef/tree/v17.10.166) (2024-09-10)
+<!-- latest_release 17.10.167 -->
+## [v17.10.167](https://github.com/chef/chef/tree/v17.10.167) (2025-07-01)
 
 #### Merged Pull Requests
-- CVE update [#14598](https://github.com/chef/chef/pull/14598) ([johnmccrae](https://github.com/johnmccrae))
+- Disable nightly builds in chef-17 [#15077](https://github.com/chef/chef/pull/15077) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.10.163 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable nightly builds in chef-17 [#15077](https://github.com/chef/chef/pull/15077) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 17.10.167 -->
 - CVE update [#14598](https://github.com/chef/chef/pull/14598) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.166 -->
 - Updating the builders and testers to remove EL-6 support [#14577](https://github.com/chef/chef/pull/14577) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.165 -->
 - bumping aix to openssl 3.0.9 [#14567](https://github.com/chef/chef/pull/14567) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.10.164 -->
