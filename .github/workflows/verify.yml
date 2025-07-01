@@ -1,0 +1,236 @@
+---
+name: Verify
+
+# Copilot Instructions:
+# - When suggesting changes to this workflow, always use Ubuntu 20.04 or newer for any new container images or runners,
+#   unless an older version (such as Ubuntu 18.04) is already present and required for compatibility.
+# - Do not downgrade any existing container or runner versions.
+# - Match the command structure, environment variables, and setup steps as closely as possible to the original Buildkite or legacy CI configuration when porting jobs.
+# - Always preserve any explicit PATH or environment variable manipulations present in the current workflow.
+# - Do not remove or alter jobs for legacy platforms unless specifically instructed.
+# - All new jobs or matrix entries must use Ubuntu 20.04 or later as the base unless otherwise justified.
+
+on:
+  push:
+    branches: [main, feature/github-actions-migration]  # Add your temp branch here
+  pull_request:
+    branches: [main]
+
+env:
+  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/
+  CHEF_FOUNDATION_VERSION: ${{ vars.CHEF_FOUNDATION_VERSION || '3.2.12' }}
+  CHEF_LICENSE: accept-no-persist
+  CHEF_GITHUB_ACTIONS: true
+
+jobs:
+  linux-matrix:
+    name: ${{ matrix.test_type }} - ${{ matrix.os }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [rocky-8, rocky-9, rhel-9, debian-9, ubuntu-2004]
+        test_type: [Unit, Integration, Functional]
+    container:
+      image: chefes/omnibus-toolchain-${{ matrix.os }}:3.0.36
+      options: --privileged --user root
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        # Skip checkout actions for debian-9 due to GLIBC incompatibility
+        if: matrix.os != 'debian-9'
+
+      - name: Manual checkout for Debian 9
+        if: matrix.os == 'debian-9'
+        run: |
+          # Clone the repository with full history to ensure all refs are available
+          git clone --no-checkout https://github.com/${{ github.repository }} .
+
+          # Fetch the specific ref if it's not available
+          git fetch origin ${{ github.ref }}:${{ github.ref }} || true
+          git fetch origin ${{ github.sha }} || true
+
+          git checkout ${{ github.sha }}
+
+      - name: Container prep
+        run: .expeditor/scripts/bk_container_prep.sh
+
+      - name: Run ${{ matrix.test_type }} tests
+        run: .expeditor/scripts/prep_and_run_tests.sh ${{ matrix.test_type }}
+        env:
+          CHEF_LICENSE_SERVER: ${{ env.CHEF_LICENSE_SERVER }}
+
+  windows-tests:
+    name: ${{ matrix.test_type }} - Windows 2022
+    runs-on: windows-2022
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        test_type: [Unit, Integration, Functional]
+    steps:
+      - name: Set Git to preserve LF endings
+        run: git config --global core.autocrlf input
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Run ${{ matrix.test_type }} tests
+        shell: pwsh
+        run: .\.expeditor\scripts\prep_and_run_tests.ps1 ${{ matrix.test_type }}
+        env:
+          CHEF_LICENSE_SERVER: ${{ env.CHEF_LICENSE_SERVER }}
+
+  gem-tests:
+    name: ${{ matrix.gem }} gem
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        gem: [chef-zero, cheffish, chefspec, knife-windows, berkshelf]
+        include:
+          - gem: chef-zero
+            test_cmd: bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant
+            extra_env: |
+              export PEDANT_OPTS=--skip-oc_id
+              export CHEF_FS=true
+          - gem: cheffish
+            test_cmd: bundle exec tasks/bin/run_external_test chef/cheffish main rake spec
+            extra_env: ""
+          - gem: chefspec
+            test_cmd: bundle exec tasks/bin/run_external_test chef/chefspec main rake
+            extra_env: ""
+          - gem: knife-windows
+            test_cmd: bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec
+            extra_env: ""
+          - gem: berkshelf
+            test_cmd: bundle exec tasks/bin/run_external_test chef/berkshelf main rake
+            extra_env: ""
+    container:
+      image: chefes/omnibus-toolchain-ubuntu-2004:3.0.36
+      options: --user root
+    env:
+      HOME: /github/home
+      GITHUB_ACTIONS: true
+      CI: true
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Container prep
+        run: .expeditor/scripts/bk_container_prep.sh
+
+      - name: Debug Ruby setup
+        run: |
+          echo "Checking rbenv status..."
+          /github/home/.rbenv/bin/rbenv versions || echo "rbenv versions failed"
+          echo "Checking Ruby in /github/home/.rbenv/shims..."
+          ls -la /github/home/.rbenv/shims/ || echo "/github/home/.rbenv/shims/ not found"
+          echo "Checking if bundle exists in rbenv shims..."
+          test -f /github/home/.rbenv/shims/bundle && echo "bundle found" || echo "bundle not found in rbenv shims"
+
+      - name: Set environment and PATH
+        run: |
+          echo "HOME=/github/home" >> $GITHUB_ENV
+          echo "PATH=/github/home/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin" >> $GITHUB_ENV
+
+      - name: Pre-install dependencies
+        if: matrix.gem == 'berkshelf'
+        run: |
+          apt-get update -y
+          apt-get install -y graphviz
+
+      - name: Verify bundle availability
+        run: |
+          echo "Using HOME: $HOME"
+          echo "Using PATH: $PATH"
+          echo "Checking bundle availability..."
+          which bundle || echo "bundle still not found"
+          if command -v bundle >/dev/null 2>&1; then
+            echo "Bundle found!"
+          else
+            echo "Bundle not available, checking available commands:"
+            ls /github/home/.rbenv/shims/ 2>/dev/null || echo "No rbenv shims found"
+          fi
+
+      - name: Bundle install
+        run: |
+          bundle config set --local without omnibus_package
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs=3 --retry=3
+
+      - name: Run ${{ matrix.gem }} tests
+        run: |
+          ${{ matrix.extra_env }}
+          ${{ matrix.test_cmd }}
+        env:
+          CHEF_FOUNDATION_VERSION: ${{ env.CHEF_FOUNDATION_VERSION }}
+
+  habitat-linux-plan:
+    name: Habitat Linux Plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Habitat
+        run: sudo ./.expeditor/scripts/install-hab.sh 'x86_64-linux'
+
+      - name: Verify plan
+        run: sudo ./.expeditor/scripts/verify-plan.sh
+        env:
+          HAB_LICENSE: accept-no-persist
+
+  habitat-windows-plan:
+    name: Habitat Windows Plan
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Accept Habitat License
+        shell: pwsh
+        run: |
+          $env:HAB_LICENSE = "accept-no-persist"
+          echo "HAB_LICENSE=accept-no-persist" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify Windows plan
+        shell: pwsh
+        run: ./.expeditor/scripts/verify-plan.ps1
+        env:
+          HAB_LICENSE: accept-no-persist
+
+  verify-summary:
+    name: Verify Summary
+    runs-on: ubuntu-latest
+    needs: [linux-matrix, windows-tests, gem-tests, habitat-linux-plan, habitat-windows-plan]
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "Linux Matrix: ${{ needs.linux-matrix.result }}"
+          echo "Windows Tests: ${{ needs.windows-tests.result }}"
+          echo "Gem Tests: ${{ needs.gem-tests.result }}"
+          echo "Habitat Linux: ${{ needs.habitat-linux-plan.result }}"
+          echo "Habitat Windows: ${{ needs.habitat-windows-plan.result }}"
+
+          if [[ "${{ needs.linux-matrix.result }}" == "failure" || \
+                "${{ needs.windows-tests.result }}" == "failure" || \
+                "${{ needs.gem-tests.result }}" == "failure" || \
+                "${{ needs.habitat-linux-plan.result }}" == "failure" || \
+                "${{ needs.habitat-windows-plan.result }}" == "failure" ]]; then
+            echo "❌ Some tests failed"
+            exit 1
+          else
+            echo "✅ All tests passed or were skipped"
+          fi

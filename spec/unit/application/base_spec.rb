@@ -29,9 +29,10 @@ describe Chef::Application::Base, "setup_application" do
   end
 
   context "when validation key is not supplied" do
+    let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
     it "should return default path for validation_key" do
       if windows?
-        expect(Chef::Config.validation_key).to eql("C:\\chef\\validation.pem")
+        expect(Chef::Config.validation_key).to eql("#{drive}\\chef\\validation.pem")
       else
         expect(Chef::Config.validation_key).to eql("/etc/chef/validation.pem")
       end
