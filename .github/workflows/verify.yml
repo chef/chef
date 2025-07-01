@@ -33,21 +33,13 @@ jobs:
       - name: Manual checkout for Debian 9
         if: matrix.os == 'debian-9'
         run: |
-          # Update sources.list to use archived repositories
-          cat > /etc/apt/sources.list << 'EOF'
-          deb http://archive.debian.org/debian stretch main
-          deb http://archive.debian.org/debian-security stretch/updates main
-          EOF
+          # Clone the repository with full history to ensure all refs are available
+          git clone --no-checkout https://github.com/${{ github.repository }} .
 
-          # Disable repository signature checking for archived repos
-          echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
-          echo 'Acquire::AllowInsecureRepositories "true";' > /etc/apt/apt.conf.d/99allow-insecure
+          # Fetch the specific ref if it's not available
+          git fetch origin ${{ github.ref }}:${{ github.ref }} || true
+          git fetch origin ${{ github.sha }} || true
 
-          # Update package lists and install git
-          apt-get update && apt-get install -y git
-
-          # Clone and checkout the repository
-          git clone https://github.com/${{ github.repository }} .
           git checkout ${{ github.sha }}
 
       - name: Container prep
