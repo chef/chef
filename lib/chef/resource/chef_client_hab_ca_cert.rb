@@ -23,7 +23,7 @@ class Chef
 
       provides :chef_client_hab_ca_cert, os: 'linux'
 
-      description "Use the **chef_client_hab_ca_cert** resource to add certificates to habitat #{ChefUtils::Dist::Infra::PRODUCT}'s CA bundle. This allows the #{ChefUtils::Dist::Infra::PRODUCT} to communicate with internal encrypted resources without errors. To make sure these CA certs take effect the `ssl_ca_file` should be configured to point to #{ca_cert_path}."
+      description "Use the **chef_client_hab_ca_cert** resource to add certificates to habitat #{ChefUtils::Dist::Infra::PRODUCT}'s CA bundle. This allows the #{ChefUtils::Dist::Infra::PRODUCT} to communicate with internal encrypted resources without errors. To make sure these CA certs take effect the `ssl_ca_file` should be configured to point to the CA Cert file path of `core/cacerts` habitat package."
       introduced "19.1"
       examples <<~DOC
       **Trust a self signed certificate**:
@@ -67,7 +67,7 @@ class Chef
         open(ca_cert_path, "a") do |f|
           f.puts "\nCert Bundle - #{new_resource.cert_name}"
           f.puts '==========================='
-          f.puts new_resoutce.certificate
+          f.puts new_resource.certificate
         end
       end
 
@@ -103,7 +103,7 @@ class Chef
             end
 
             if @hab_cacerts_pkg == nil
-              raise "Unable to find 'core/cacerts' package in dependencies. Faile to determine CA Certs."
+              raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
             end
 
             Open3.popen3("/hab/bin/hab pkg path #{hab_cacerts_pkg}") do | stdin, stdout, stderr, status|
