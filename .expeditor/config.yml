@@ -17,10 +17,11 @@ rubygems:
   - chef-bin
   - chef-utils
 
-schedules:
-  - name: adhoc_build_chef_17
-    description: "Run an adhoc build for chef-17, twice a week in the Buildkite pipeline"
-    cronline: "30 9 * * 0,3"
+# no active contributions, so disable
+#schedules:
+#  - name: adhoc_build_chef_17
+#    description: "Run an adhoc build for chef-17, twice a week in the Buildkite pipeline"
+#    cronline: "30 9 * * 0,3"
 
 pipelines:
   - verify:
@@ -247,6 +248,3 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:chef-17:adhoc_build_chef_17:*
-    actions:
-      - trigger_pipeline:omnibus/adhoc
