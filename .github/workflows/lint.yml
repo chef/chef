@@ -24,8 +24,8 @@ jobs:
           bundler-cache: false
       - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
       - run: |
-          gem install chefstyle
-          chefstyle -c .rubocop.yml
+          bundle install --jobs 4 --retry 3
+          cookstyle --chefstyle -c .rubocop.yml
 
   spellcheck:
     runs-on: ubuntu-latest
