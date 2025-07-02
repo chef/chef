@@ -109,6 +109,7 @@ class Chef
             if ca_path.error?
               raise "Unable to find path for the 'core/cacerts' habitat package."
             end
+
             path = ca_path.stdout.readline
 
             @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
