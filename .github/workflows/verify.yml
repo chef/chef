@@ -104,19 +104,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
+#      - name: Set up Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: '3.1'
+#          bundler-cache: true
 
       - name: Container prep
         run: .expeditor/scripts/bk_container_prep.sh
-
-      - name: Set up environment
-        run: |
-          export PATH="/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin"
-          echo "PATH=$PATH" >> $GITHUB_ENV
 
       - name: Pre-install dependencies
         if: matrix.pre_install
