@@ -37,7 +37,7 @@ describe Chef::Resource::ChefClientHabCaCert do
   end
 
   it "does not support :remove action" do
-    expect { resource.action :remove }.to_raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.action :remove }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   describe "#cert_path" do

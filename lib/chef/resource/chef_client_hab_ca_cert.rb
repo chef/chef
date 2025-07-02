@@ -21,7 +21,7 @@ class Chef
   class Resource
     class ChefClientHabCaCert < Chef::Resource
 
-      provides :chef_client_hab_ca_cert, os: "linux"
+      provides :chef_client_hab_ca_cert
 
       description "Use the **chef_client_hab_ca_cert** resource to add certificates to habitat #{ChefUtils::Dist::Infra::PRODUCT}'s CA bundle. This allows the #{ChefUtils::Dist::Infra::PRODUCT} to communicate with internal encrypted resources without errors. To make sure these CA certs take effect the `ssl_ca_file` should be configured to point to the CA Cert file path of `core/cacerts` habitat package."
       introduced "19.1"
@@ -90,13 +90,14 @@ class Chef
         def hab_cacerts_pkg_path
           @hab_cacerts_pkg_path ||= begin
             # The hab based installer packages `hab` binary inside `/hab/bin` - which can be expected to be available.
-            Open3.popen3("/hab/bin/hab pkg dependencies chef/chef-infra-client") do |stdin, stdout, stderr, status|
-              raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package." unless status.value.success?
+            ca_pkg = shell_out("hab pkg dependencies chef/chef-infra-client")
+            if ca_pkg.error?
+              raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
+            end
 
-              stdout.readlines.each do |line|
-                if line.index("core/cacerts")
-                  @hab_cacerts_pkg = line
-                end
+            ca_pkg.stdout.readlines.each do |line|
+              if line.index("core/cacerts")
+                @hab_cacerts_pkg = line
               end
             end
 
@@ -104,12 +105,13 @@ class Chef
               raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
             end
 
-            Open3.popen3("/hab/bin/hab pkg path #{hab_cacerts_pkg}") do |stdin, stdout, stderr, status|
-              raise "Unable to find path for the 'core/cacerts' habitat package." unless status.value.success?
-
-              path = stdout.readline
-              @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
+            ca_path = shell_out("/hab/bin/hab pkg path #{hab_cacerts_pkg}")
+            if ca_path.error?
+              raise "Unable to find path for the 'core/cacerts' habitat package."
             end
+            path = ca_path.stdout.readline
+
+            @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
           end
 
           @hab_cacerts_pkg_path
