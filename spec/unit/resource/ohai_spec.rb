@@ -108,5 +108,78 @@ describe Chef::Resource::Ohai do
       expect(node[:origdata]).to eq("somevalue")
       expect(node[:newdata]).to eq("somevalue")
     end
+
+    it "loads cookbook plugins when the ohai_segment_plugin_path directory exists and has content" do
+      # Setup mock plugin path
+      plugin_path = "/tmp/chef/ohai/cookbook_plugins"
+      Chef::Config[:ohai_segment_plugin_path] = plugin_path
+      
+      # Mock that the directory exists and has content
+      allow(Dir).to receive(:exist?).with(plugin_path).and_return(true)
+      allow(Dir).to receive(:empty?).with(plugin_path).and_return(false)
+      
+      # Mock the ohai system
+      ohai_mock = double("Ohai::System")
+      config_mock = double("config")
+      plugin_path_array = []
+      
+      allow(ohai_mock).to receive(:config).and_return(config_mock)
+      allow(config_mock).to receive(:[]).with(:plugin_path).and_return(plugin_path_array)
+      allow(ohai_mock).to receive(:all_plugins).with(nil)
+      allow(ohai_mock).to receive(:data).and_return({})
+      allow(Ohai::System).to receive(:new).and_return(ohai_mock)
+      
+      provider.run_action(:reload)
+      
+      # Verify that the plugin path was added to the ohai config
+      expect(plugin_path_array).to include(plugin_path)
+    end
+
+    it "does not attempt to load cookbook plugins when the ohai_segment_plugin_path directory does not exist" do
+      # Setup mock plugin path that doesn't exist
+      plugin_path = "/tmp/chef/ohai/cookbook_plugins"
+      Chef::Config[:ohai_segment_plugin_path] = plugin_path
+      
+      # Mock that the directory doesn't exist
+      allow(Dir).to receive(:exist?).with(plugin_path).and_return(false)
+      
+      # Mock the ohai system
+      ohai_mock = double("Ohai::System")
+      config_mock = spy("config")
+      
+      allow(ohai_mock).to receive(:config).and_return(config_mock)
+      allow(ohai_mock).to receive(:all_plugins).with(nil)
+      allow(ohai_mock).to receive(:data).and_return({})
+      allow(Ohai::System).to receive(:new).and_return(ohai_mock)
+      
+      provider.run_action(:reload)
+      
+      # Verify that the plugin path configuration was not accessed since directory doesn't exist
+      expect(config_mock).not_to have_received(:[]).with(:additional_plugin_path)
+    end
+
+    it "does not attempt to load cookbook plugins when the ohai_segment_plugin_path directory is empty" do
+      # Setup mock plugin path that exists but is empty
+      plugin_path = "/tmp/chef/ohai/cookbook_plugins"
+      Chef::Config[:ohai_segment_plugin_path] = plugin_path
+      
+      # Mock that the directory exists but is empty
+      allow(Dir).to receive(:exist?).with(plugin_path).and_return(true)
+      allow(Dir).to receive(:empty?).with(plugin_path).and_return(true)
+      
+      # Mock the ohai system
+      ohai_mock = double("Ohai::System")
+      config_mock = spy("config")
+      
+      allow(ohai_mock).to receive(:config).and_return(config_mock)
+      allow(ohai_mock).to receive(:all_plugins).with(nil)
+      allow(ohai_mock).to receive(:data).and_return({})
+      allow(Ohai::System).to receive(:new).and_return(ohai_mock)
+      
+      provider.run_action(:reload)
+      
+      # Verify that the plugin path configuration was not accessed since directory is empty
+      expect(config_mock).not_to have_received(:[]).with(:additional_plugin_path)
+    end
   end
 end
