@@ -104,6 +104,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
       - name: Container prep
         run: .expeditor/scripts/bk_container_prep.sh
 
