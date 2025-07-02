@@ -151,9 +151,17 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Accept Habitat License
+        shell: pwsh
+        run: |
+          $env:HAB_LICENSE = "accept-no-persist"
+          echo "HAB_LICENSE=accept-no-persist" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Verify Windows plan
         shell: pwsh
         run: ./.expeditor/scripts/verify-plan.ps1
+        env:
+          HAB_LICENSE: accept-no-persist
 
   verify-summary:
     name: Verify Summary
