@@ -12,10 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  chefstyle:
+  lint:
     runs-on: ubuntu-latest
-    env:
-      BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
