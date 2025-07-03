@@ -104,7 +104,7 @@ jobs:
               apt-get update -y
               apt-get install -y graphviz
     container:
-      image: chefes/omnibus-toolchain-ubuntu-1804:3.0.36
+      image: chefes/omnibus-toolchain-ubuntu-2004:3.0.36
       options: --user root
     steps:
       - name: Check out code
