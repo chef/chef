@@ -59,6 +59,7 @@ jobs:
 
       - name: Bundle install
         run: |
+          export PATH="/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin"
           bundle config set --local without omnibus_package
           bundle config set --local path 'vendor/bundle'
           bundle install --jobs=3 --retry=3
