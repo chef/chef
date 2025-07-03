@@ -54,17 +54,7 @@ jobs:
       - name: Container prep
         run: .expeditor/scripts/bk_container_prep.sh
 
-      - name: Set PATH for Ruby/Bundler
-        run: echo "PATH=/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin" >> $GITHUB_ENV
-
-      - name: Bundle install
-        run: |
-          export PATH="/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin"
-          bundle config set --local without omnibus_package
-          bundle config set --local path 'vendor/bundle'
-          bundle install --jobs=3 --retry=3
-
-      - name: Run ${{ matrix.test_type }} tests
+      - name: me: Run ${{ matrix.test_type }} tests
         run: .expeditor/scripts/prep_and_run_tests.sh ${{ matrix.test_type }}
         env:
           CHEF_LICENSE_SERVER: ${{ env.CHEF_LICENSE_SERVER }}
@@ -104,51 +94,50 @@ jobs:
         include:
           - gem: chef-zero
             test_cmd: bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant
-            extra_env: |
-              export PEDANT_OPTS=--skip-oc_id
-              export CHEF_FS=true
+            env_vars: |
+              PEDANT_OPTS=--skip-oc_id
+              CHEF_FS=true
           - gem: cheffish
             test_cmd: bundle exec tasks/bin/run_external_test chef/cheffish main rake spec
-            extra_env: ""
           - gem: chefspec
             test_cmd: bundle exec tasks/bin/run_external_test chef/chefspec main rake
-            extra_env: ""
           - gem: knife-windows
             test_cmd: bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec
-            extra_env: ""
           - gem: berkshelf
             test_cmd: bundle exec tasks/bin/run_external_test chef/berkshelf main rake
-            extra_env: ""
-            pre_install: |
-              apt-get update -y
-              apt-get install -y graphviz
+            pre_install: apt-get update -y && apt-get install -y graphviz
     container:
-      image: chefes/omnibus-toolchain-ubuntu-2004:3.0.36
+      image: chefes/omnibus-toolchain-ubuntu-2204:3.0.36
       options: --user root
     steps:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Pre-install dependencies
-        if: matrix.gem == 'berkshelf'
-        run: |
-          apt-get update -y
-          apt-get install -y graphviz
+#      - name: Set up Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: '3.1'
+#          bundler-cache: true
 
       - name: Container prep
+        run: .expeditor/scripts/bk_container_prep.sh
+
+      - name: Pre-install dependencies
+        if: matrix.pre_install
+        run: ${{ matrix.pre_install }}
+
+      - name: Bundle install
         run: |
-          .expeditor/scripts/bk_container_prep.sh
-          echo "PATH=/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin" >> $GITHUB_ENV
           bundle config set --local without omnibus_package
           bundle config set --local path 'vendor/bundle'
           bundle install --jobs=3 --retry=3
 
       - name: Run ${{ matrix.gem }} tests
-        run: |
-          ${{ matrix.extra_env }}
-          ${{ matrix.test_cmd }}
+        run: ${{ matrix.test_cmd }}
         env:
           CHEF_FOUNDATION_VERSION: ${{ env.CHEF_FOUNDATION_VERSION }}
+          PEDANT_OPTS: ${{ matrix.gem == 'chef-zero' && '--skip-oc_id' || '' }}
+          CHEF_FS: ${{ matrix.gem == 'chef-zero' && 'true' || '' }}
 
   habitat-linux-plan:
     name: Habitat Linux Plan
