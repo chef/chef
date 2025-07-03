@@ -1,7 +1,7 @@
 ---
 name: kitchen
 
-"on":
+on:
   pull_request:
   push:
     branches:
@@ -21,10 +21,10 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - windows-2019
           - windows-2022
     runs-on: ${{ matrix.os }}
     env:
+      EXPIRE_CACHE: true
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
@@ -42,6 +42,7 @@ jobs:
           - macos-13
     runs-on: ${{ matrix.os }}
     env:
+      EXPIRE_CACHE: true
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
@@ -63,6 +64,7 @@ jobs:
           - macos-15
     runs-on: ${{ matrix.os }}
     env:
+      EXPIRE_CACHE: true
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
@@ -97,6 +99,7 @@ jobs:
           - ubuntu-2404
     runs-on: ubuntu-latest
     env:
+      EXPIRE_CACHE: true
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
@@ -135,6 +138,7 @@ jobs:
           - ubuntu-2404
     runs-on: ubuntu-22.04
     env:
+      EXPIRE_CACHE: true
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
     steps:

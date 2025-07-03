@@ -11,6 +11,8 @@ gem "ffi", ">= 1.15.5", "<= 1.17.0"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
+gem "chef-zero", git: "https://github.com/chef/chef-zero", branch: "main" # for chef_zero_server resource
+
 # required for FIPS or bundler will pick up default openssl
 install_if -> { RUBY_PLATFORM !~ /darwin/ } do
   gem "openssl", "= 3.2.0"
@@ -63,11 +65,9 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-gem "chefstyle"
-# group(:chefstyle) do
-#   # for testing new chefstyle rules
-#   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
-# end
+group :style do
+  gem "cookstyle", "~> 8.2"
+end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
