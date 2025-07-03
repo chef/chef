@@ -21,10 +21,11 @@ rubygems:
 
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
-schedules:
-  - name: nightly_build_main
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "0 6 * * *"
+# For the moment, nightly builds do nothing useful because omnibus builds are disabled
+#schedules:
+#  - name: nightly_build_main
+#    description: "Run a nightly build in the Buildkite pipeline"
+#    cronline: "0 6 * * *"
 
 pipelines:
   - verify:
@@ -296,6 +297,7 @@ subscriptions:
   - workload: ruby_gem_published:train-winrm-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
-    actions:
-      - trigger_pipeline:validate/adhoc
+# now that omnibus is not part of the build, we're working to redefine what the nightly should be
+#  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
+#    actions:
+#      - trigger_pipeline:validate/adhoc
