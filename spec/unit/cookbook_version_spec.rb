@@ -97,7 +97,7 @@ describe Chef::CookbookVersion do
   end
 
   describe "with a cookbook directory named tatft" do
-    MD5 = /[0-9a-f]{32}/.freeze
+    MD5 = /[0-9a-f]{32}/
 
     let(:cookbook_paths_by_type) do
       {

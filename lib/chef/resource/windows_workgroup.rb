@@ -27,20 +27,20 @@ class Chef
       description "Use the **windows_workgroup** resource to join or change the workgroup of a Windows host."
       introduced "14.5"
       examples <<~DOC
-      **Join a workgroup**:
+        **Join a workgroup**:
 
-      ```ruby
-      windows_workgroup 'myworkgroup'
-      ```
+        ```ruby
+        windows_workgroup 'myworkgroup'
+        ```
 
-      **Join a workgroup using a specific user**:
+        **Join a workgroup using a specific user**:
 
-      ```ruby
-      windows_workgroup 'myworkgroup' do
-        user 'Administrator'
-        password 'passw0rd'
-      end
-      ```
+        ```ruby
+        windows_workgroup 'myworkgroup' do
+          user 'Administrator'
+          password 'passw0rd'
+        end
+        ```
       DOC
 
       property :workgroup_name, String,
@@ -107,7 +107,7 @@ class Chef
         # return [String] the appropriate PS command to joint the workgroup
         def join_command
           cmd = ""
-          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.password}\' -AsPlainText -Force;" if new_resource.password
+          cmd << "$pswd = ConvertTo-SecureString '#{new_resource.password}' -AsPlainText -Force;" if new_resource.password
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.user}\",$pswd);" if new_resource.password
           cmd << "Add-Computer -WorkgroupName #{new_resource.workgroup_name}"
           cmd << " -Credential $credential" if new_resource.password

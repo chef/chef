@@ -101,9 +101,9 @@ describe Chef::Provider::Mount::Windows do
 
       it "should mount the filesystem if it is not mounted" do
         expect(@vol).to receive(:add).with(remote: @new_resource.device,
-                                           username: @new_resource.username,
-                                           domainname: @new_resource.domain,
-                                           password: @new_resource.password)
+          username: @new_resource.username,
+          domainname: @new_resource.domain,
+          password: @new_resource.password)
         @provider.mount_fs
       end
 

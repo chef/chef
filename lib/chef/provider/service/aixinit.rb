@@ -22,7 +22,7 @@ class Chef
   class Provider
     class Service
       class AixInit < Chef::Provider::Service::Init
-        RC_D_SCRIPT_NAME = %r{/etc/rc.d/rc2.d/([SK])(\d\d|)}i.freeze
+        RC_D_SCRIPT_NAME = %r{/etc/rc.d/rc2.d/([SK])(\d\d|)}i
 
         def initialize(new_resource, run_context)
           super

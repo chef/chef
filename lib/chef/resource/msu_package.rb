@@ -54,7 +54,7 @@ class Chef
         default: lazy { package_name }
 
       property :checksum, String, desired_state: false,
-               description: "SHA-256 digest used to verify the checksum of the downloaded MSU package."
+        description: "SHA-256 digest used to verify the checksum of the downloaded MSU package."
 
       property :timeout, [String, Integer],
         default: 3600,

@@ -56,64 +56,64 @@ class Chef
 
       introduced "11.12"
       examples <<~DOC
-      **Install a package**:
+        **Install a package**:
 
-      ```ruby
-      windows_package '7zip' do
-        action :install
-        source 'C:\\7z920.msi'
-      end
-      ```
+        ```ruby
+        windows_package '7zip' do
+          action :install
+          source 'C:\\7z920.msi'
+        end
+        ```
 
-      **Specify a URL for the source attribute**:
+        **Specify a URL for the source attribute**:
 
-      ```ruby
-      windows_package '7zip' do
-        source 'http://www.7-zip.org/a/7z938-x64.msi'
-      end
-      ```
+        ```ruby
+        windows_package '7zip' do
+          source 'http://www.7-zip.org/a/7z938-x64.msi'
+        end
+        ```
 
-      **Specify path and checksum**:
+        **Specify path and checksum**:
 
-      ```ruby
-      windows_package '7zip' do
-        source 'http://www.7-zip.org/a/7z938-x64.msi'
-        checksum '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
-      end
-      ```
+        ```ruby
+        windows_package '7zip' do
+          source 'http://www.7-zip.org/a/7z938-x64.msi'
+          checksum '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
+        end
+        ```
 
-      **Modify remote_file resource attributes**:
+        **Modify remote_file resource attributes**:
 
-      The windows_package resource may specify a package at a remote location using the remote_file_attributes property. This uses the remote_file resource to download the contents at the specified URL and passes in a Hash that modifies the properties of the remote_file resource.
+        The windows_package resource may specify a package at a remote location using the remote_file_attributes property. This uses the remote_file resource to download the contents at the specified URL and passes in a Hash that modifies the properties of the remote_file resource.
 
-      ```ruby
-      windows_package '7zip' do
-        source 'http://www.7-zip.org/a/7z938-x64.msi'
-        remote_file_attributes ({
-          :path => 'C:\\7zip.msi',
-          :checksum => '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
-        })
-      end
-      ```
+        ```ruby
+        windows_package '7zip' do
+          source 'http://www.7-zip.org/a/7z938-x64.msi'
+          remote_file_attributes ({
+            :path => 'C:\\7zip.msi',
+            :checksum => '7c8e873991c82ad9cfcdbdf45254ea6101e9a645e12977dcd518979e50fdedf3'
+          })
+        end
+        ```
 
-      **Download a nsis (Nullsoft) package resource**:
+        **Download a nsis (Nullsoft) package resource**:
 
-      ```ruby
-      windows_package 'Mercurial 3.6.1 (64-bit)' do
-        source 'https://www.mercurial-scm.org/release/windows/Mercurial-3.6.1-x64.exe'
-        checksum 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d'
-      end
-      ```
+        ```ruby
+        windows_package 'Mercurial 3.6.1 (64-bit)' do
+          source 'https://www.mercurial-scm.org/release/windows/Mercurial-3.6.1-x64.exe'
+          checksum 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d'
+        end
+        ```
 
-      **Download a custom package**:
+        **Download a custom package**:
 
-      ```ruby
-      windows_package 'Microsoft Visual C++ 2005 Redistributable' do
-        source 'https://download.microsoft.com/download/6/B/B/6BB661D6-A8AE-4819-B79F-236472F6070C/vcredist_x86.exe'
-        installer_type :custom
-        options '/Q'
-      end
-      ```
+        ```ruby
+        windows_package 'Microsoft Visual C++ 2005 Redistributable' do
+          source 'https://download.microsoft.com/download/6/B/B/6BB661D6-A8AE-4819-B79F-236472F6070C/vcredist_x86.exe'
+          installer_type :custom
+          options '/Q'
+        end
+        ```
       DOC
 
       allowed_actions :install, :remove
@@ -161,7 +161,7 @@ class Chef
         description: "The path to a package in the local file system or the URL of a remote file that will be downloaded."
 
       property :checksum, String,
-        desired_state: false, coerce: (proc { |c| c.downcase }),
+        desired_state: false, coerce: (proc(&:downcase)),
         description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{ChefUtils::Dist::Infra::PRODUCT} does not download it. Use when a URL is specified by the `source` property."
 
       property :remote_file_attributes, Hash,

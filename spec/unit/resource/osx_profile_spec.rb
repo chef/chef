@@ -104,65 +104,65 @@ describe Chef::Resource::OsxProfile do
     end
     let(:profile_raw_xml) do
       <<~OUT
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-        <dict>
-            <key>tsmith</key>
-            <array>
-              <dict>
-                  <key>ProfileDisplayName</key>
-                  <string>Screensaver Settings</string>
-                  <key>ProfileIdentifier</key>
-                  <string>com.company.screensaver</string>
-                  <key>ProfileInstallDate</key>
-                  <string>2020-09-17 17:20:49 +0000</string>
-                  <key>ProfileItems</key>
-                  <array>
-                    <dict>
-                        <key>PayloadContent</key>
-                        <dict>
-                          <key>PayloadContentManagedPreferences</key>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+          <dict>
+              <key>tsmith</key>
+              <array>
+                <dict>
+                    <key>ProfileDisplayName</key>
+                    <string>Screensaver Settings</string>
+                    <key>ProfileIdentifier</key>
+                    <string>com.company.screensaver</string>
+                    <key>ProfileInstallDate</key>
+                    <string>2020-09-17 17:20:49 +0000</string>
+                    <key>ProfileItems</key>
+                    <array>
+                      <dict>
+                          <key>PayloadContent</key>
                           <dict>
-                              <key>com.apple.screensaver</key>
-                              <dict>
-                                <key>Forced</key>
-                                <array>
-                                    <dict>
-                                      <key>mcx_preference_settings</key>
+                            <key>PayloadContentManagedPreferences</key>
+                            <dict>
+                                <key>com.apple.screensaver</key>
+                                <dict>
+                                  <key>Forced</key>
+                                  <array>
                                       <dict>
-                                          <key>idleTime</key>
-                                          <integer>0</integer>
+                                        <key>mcx_preference_settings</key>
+                                        <dict>
+                                            <key>idleTime</key>
+                                            <integer>0</integer>
+                                        </dict>
                                       </dict>
-                                    </dict>
-                                </array>
-                              </dict>
+                                  </array>
+                                </dict>
+                            </dict>
                           </dict>
-                        </dict>
-                        <key>PayloadDisplayName</key>
-                        <string>com.apple.screensaver</string>
-                        <key>PayloadIdentifier</key>
-                        <string>com.company.screensaver</string>
-                        <key>PayloadType</key>
-                        <string>com.apple.ManagedClient.preferences</string>
-                        <key>PayloadUUID</key>
-                        <string>73fc30e0-1e57-0131-c32d-000c2944c108</string>
-                        <key>PayloadVersion</key>
-                        <integer>1</integer>
-                    </dict>
-                  </array>
-                  <key>ProfileOrganization</key>
-                  <string>Chef</string>
-                  <key>ProfileType</key>
-                  <string>Configuration</string>
-                  <key>ProfileUUID</key>
-                  <string>ed5e36c8-ea0b-5960-8f49-3c7d9121687e</string>
-                  <key>ProfileVersion</key>
-                  <integer>1</integer>
-              </dict>
-            </array>
-        </dict>
-      </plist>
+                          <key>PayloadDisplayName</key>
+                          <string>com.apple.screensaver</string>
+                          <key>PayloadIdentifier</key>
+                          <string>com.company.screensaver</string>
+                          <key>PayloadType</key>
+                          <string>com.apple.ManagedClient.preferences</string>
+                          <key>PayloadUUID</key>
+                          <string>73fc30e0-1e57-0131-c32d-000c2944c108</string>
+                          <key>PayloadVersion</key>
+                          <integer>1</integer>
+                      </dict>
+                    </array>
+                    <key>ProfileOrganization</key>
+                    <string>Chef</string>
+                    <key>ProfileType</key>
+                    <string>Configuration</string>
+                    <key>ProfileUUID</key>
+                    <string>ed5e36c8-ea0b-5960-8f49-3c7d9121687e</string>
+                    <key>ProfileVersion</key>
+                    <integer>1</integer>
+                </dict>
+              </array>
+          </dict>
+        </plist>
       OUT
     end
     let(:shell_out_profiles) do

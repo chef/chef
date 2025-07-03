@@ -27,27 +27,27 @@ class Chef
       description "Use the **snap_package** resource to manage snap packages on Debian and Ubuntu platforms."
       introduced "15.0"
       examples <<~DOC
-      **Install a package**
+        **Install a package**
 
-      ```ruby
-      snap_package 'hello'
-      ```
+        ```ruby
+        snap_package 'hello'
+        ```
 
-      **Upgrade a package**
+        **Upgrade a package**
 
-      ```ruby
-      snap_package 'hello' do
-        action :upgrade
-      end
-      ```
+        ```ruby
+        snap_package 'hello' do
+          action :upgrade
+        end
+        ```
 
-      **Install a package with classic confinement**
+        **Install a package with classic confinement**
 
-      ```ruby
-      snap_package 'hello' do
-        options 'classic'
-      end
-      ```
+        ```ruby
+        snap_package 'hello' do
+          options 'classic'
+        end
+        ```
       DOC
 
       allowed_actions :install, :upgrade, :remove, :purge

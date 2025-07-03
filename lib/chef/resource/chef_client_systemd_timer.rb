@@ -26,27 +26,27 @@ class Chef
       description "Use the **chef_client_systemd_timer** resource to setup the #{ChefUtils::Dist::Infra::PRODUCT} to run as a systemd timer."
       introduced "16.0"
       examples <<~DOC
-      **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
+        **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
-      ```ruby
-      chef_client_systemd_timer 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a systemd timer'
-      ```
+        ```ruby
+        chef_client_systemd_timer 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a systemd timer'
+        ```
 
-      **Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour**:
+        **Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour**:
 
-      ```ruby
-      chef_client_systemd_timer 'Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour' do
-        interval '1hr'
-      end
-      ```
+        ```ruby
+        chef_client_systemd_timer 'Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour' do
+          interval '1hr'
+        end
+        ```
 
-      **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
+        **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
-      ```ruby
-      chef_client_systemd_timer 'Run an override recipe' do
-        daemon_options ['--override-runlist mycorp_base::default']
-      end
-      ```
+        ```ruby
+        chef_client_systemd_timer 'Run an override recipe' do
+          daemon_options ['--override-runlist mycorp_base::default']
+        end
+        ```
       DOC
 
       property :job_name, String,

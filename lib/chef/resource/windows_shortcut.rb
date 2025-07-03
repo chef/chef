@@ -27,14 +27,14 @@ class Chef
       description "Use the **windows_shortcut** resource to create shortcut files on Windows."
       introduced "14.0"
       examples <<~DOC
-      **Create a shortcut with a description**:
+        **Create a shortcut with a description**:
 
-      ```ruby
-      windows_shortcut 'C:\\shortcut_dir.lnk' do
-        target 'C:\\original_dir'
-        description 'Make a shortcut to C:\\original_dir'
-      end
-      ```
+        ```ruby
+        windows_shortcut 'C:\\shortcut_dir.lnk' do
+          target 'C:\\original_dir'
+          description 'Make a shortcut to C:\\original_dir'
+        end
+        ```
       DOC
 
       property :shortcut_name, String,

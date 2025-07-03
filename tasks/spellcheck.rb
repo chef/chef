@@ -44,8 +44,8 @@ namespace :spellcheck do
                      end
 
     cspell_version.is_a?(String) || abort(<<~INSTALL_CSPELL)
-          cspell is needed to run the spellcheck tasks. Run `npm install -g cspell` to install.
-          For more information: https://www.npmjs.com/package/cspell
+      cspell is needed to run the spellcheck tasks. Run `npm install -g cspell` to install.
+      For more information: https://www.npmjs.com/package/cspell
     INSTALL_CSPELL
   end
 end

@@ -159,10 +159,10 @@ describe "knife config use", :workstation do
       before do
         ENV["CHEF_HOME"] = path_to("chefhome"); file("chefhome/tmp", "")
         file("chefhome/.chef/credentials", <<~EOH
-        [staging]
-        client_name = "testuser"
-        client_key = "testkey.pem"
-        chef_server_url = "https://example.com/organizations/testorg"
+          [staging]
+          client_name = "testuser"
+          client_key = "testkey.pem"
+          chef_server_url = "https://example.com/organizations/testorg"
         EOH
         )
       end
@@ -180,10 +180,10 @@ describe "knife config use", :workstation do
       before do
         ENV["KNIFE_HOME"] = path_to("knifehome"); file("knifehome/tmp", "")
         file("knifehome/.chef/credentials", <<~EOH
-        [development]
-        client_name = "testuser"
-        client_key = "testkey.pem"
-        chef_server_url = "https://example.com/organizations/testorg"
+          [development]
+          client_name = "testuser"
+          client_key = "testkey.pem"
+          chef_server_url = "https://example.com/organizations/testorg"
         EOH
         )
       end

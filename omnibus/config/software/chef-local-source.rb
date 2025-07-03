@@ -32,14 +32,14 @@ skip_transitive_dependency_licensing false
 # just ran omnibus build locally.
 version("local_source") do
   source path: "#{project.files_path}/../..",
-         # Since we are using the local repo, we try to not copy any files
-         # that are generated in the process of bundle installing omnibus.
-         # If the install steps are well-behaved, this should not matter
-         # since we only perform bundle and gem installs from the
-         # omnibus cache source directory, but we do this regardless
-         # to maintain consistency between what a local build sees and
-         # what a github based build will see.
-         options: { exclude: [ "omnibus/vendor" ] }
+    # Since we are using the local repo, we try to not copy any files
+    # that are generated in the process of bundle installing omnibus.
+    # If the install steps are well-behaved, this should not matter
+    # since we only perform bundle and gem installs from the
+    # omnibus cache source directory, but we do this regardless
+    # to maintain consistency between what a local build sees and
+    # what a github based build will see.
+    options: { exclude: [ "omnibus/vendor" ] }
 end
 
 # For any version other than "local_source", fetch from github.
@@ -56,7 +56,7 @@ ruby_version = ruby_version.split(".")[0..1].join(".")
 ruby_mmv = "#{ruby_version}.0"
 ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"
 gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
-bin_dirs bin_dirs.concat ["#{gem_dir}/gems/*/bin/**"]
+bin_dirs bin_dirs.push "#{gem_dir}/gems/*/bin/**"
 lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems/extensions/**", "#{gem_dir}/bundler/gems/*", "#{gem_dir}/bundler/gems/*/lib/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
 
 dependency "chef-foundation"

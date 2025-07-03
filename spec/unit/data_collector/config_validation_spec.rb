@@ -141,13 +141,13 @@ describe Chef::DataCollector::ConfigValidation do
     it "with invalid server URL" do
       Chef::Config[:data_collector][:server_url] = "not valid URL"
       expect { Chef::DataCollector::ConfigValidation.validate_server_url! }.to raise_error(Chef::Exceptions::ConfigurationError,
-         "Chef::Config[:data_collector][:server_url] (not valid URL) is not a valid URI.")
+        "Chef::Config[:data_collector][:server_url] (not valid URL) is not a valid URI.")
     end
 
     it "with invalid server URL without host" do
       Chef::Config[:data_collector][:server_url] = "no-host"
       expect { Chef::DataCollector::ConfigValidation.validate_server_url! }.to raise_error(Chef::Exceptions::ConfigurationError,
-         "Chef::Config[:data_collector][:server_url] (no-host) is a URI with no host. Please supply a valid URL.")
+        "Chef::Config[:data_collector][:server_url] (no-host) is a URI with no host. Please supply a valid URL.")
     end
 
     it "skip validation if output_locations is set" do

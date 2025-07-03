@@ -23,31 +23,31 @@ class Chef
       description "Use **selinux_install** resource to encapsulates the set of selinux packages to install in order to manage selinux. It also ensures the directory `/etc/selinux` is created."
       introduced "18.0"
       examples <<~DOC
-      **Default installation**:
+        **Default installation**:
 
-      ```ruby
-      selinux_install 'example'
-      ```
+        ```ruby
+        selinux_install 'example'
+        ```
 
-      **Install with custom packages**:
+        **Install with custom packages**:
 
-      ```ruby
-      selinux_install 'example' do
-        packages %w(policycoreutils selinux-policy selinux-policy-targeted)
-      end
-      ```
+        ```ruby
+        selinux_install 'example' do
+          packages %w(policycoreutils selinux-policy selinux-policy-targeted)
+        end
+        ```
 
-      **Uninstall**
-      ```ruby
-      selinux_install 'example' do
-        action :remove
-      end
-      ```
+        **Uninstall**
+        ```ruby
+        selinux_install 'example' do
+          action :remove
+        end
+        ```
       DOC
 
       property :packages, [String, Array],
-                default: lazy { default_install_packages },
-                description: "SELinux packages for system."
+        default: lazy { default_install_packages },
+        description: "SELinux packages for system."
 
       action_class do
         def do_package_action(action)

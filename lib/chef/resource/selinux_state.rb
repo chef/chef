@@ -24,48 +24,48 @@ class Chef
       description "Use **selinux_state** resource to manages the SELinux state on the system. It does this by using the `setenforce` command and rendering the `/etc/selinux/config` file from a template."
       introduced "18.0"
       examples <<~DOC
-      **Set SELinux state to permissive**:
+        **Set SELinux state to permissive**:
 
-      ```ruby
-      selinux_state 'permissive' do
-        action :permissive
-      end
-      ```
+        ```ruby
+        selinux_state 'permissive' do
+          action :permissive
+        end
+        ```
 
-      **Set SELinux state to enforcing**:
+        **Set SELinux state to enforcing**:
 
-      ```ruby
-      selinux_state 'enforcing' do
-        action :enforcing
-      end
-      ```
+        ```ruby
+        selinux_state 'enforcing' do
+          action :enforcing
+        end
+        ```
 
-      **Set SELinux state to disabled**:
-      ```ruby
-      selinux_state 'disabled' do
-        action :disabled
-      end
-      ```
+        **Set SELinux state to disabled**:
+        ```ruby
+        selinux_state 'disabled' do
+          action :disabled
+        end
+        ```
       DOC
 
       default_action :nothing
 
       property :config_file, String,
-                default: "/etc/selinux/config",
-                description: "Path to SELinux config file on disk."
+        default: "/etc/selinux/config",
+        description: "Path to SELinux config file on disk."
 
       property :persistent, [true, false],
-                default: true,
-                description: "Set the status update in the SELinux configuration file."
+        default: true,
+        description: "Set the status update in the SELinux configuration file."
 
       property :policy, String,
-                default: lazy { default_policy_platform },
-                equal_to: %w{default minimum mls src strict targeted},
-                description: "SELinux policy type."
+        default: lazy { default_policy_platform },
+        equal_to: %w{default minimum mls src strict targeted},
+        description: "SELinux policy type."
 
       property :automatic_reboot, [true, false, Symbol],
-                default: false,
-                description: "Perform an automatic node reboot if required for state change."
+        default: false,
+        description: "Perform an automatic node reboot if required for state change."
 
       deprecated_property_alias "temporary", "persistent", "The temporary property was renamed persistent in the 4.0 release of this cookbook. Please update your cookbooks to use the new property name."
 

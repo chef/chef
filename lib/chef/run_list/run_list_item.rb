@@ -18,10 +18,10 @@
 class Chef
   class RunList
     class RunListItem
-      QUALIFIED_RECIPE             = /^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$/.freeze
-      QUALIFIED_ROLE               = /^role\[([^\]]+)\]$/.freeze
-      VERSIONED_UNQUALIFIED_RECIPE = /^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$/.freeze
-      FALSE_FRIEND                 = /[\[\]]/.freeze
+      QUALIFIED_RECIPE             = /^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$/
+      QUALIFIED_ROLE               = /^role\[([^\]]+)\]$/
+      VERSIONED_UNQUALIFIED_RECIPE = /^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$/
+      FALSE_FRIEND                 = /[\[\]]/
 
       attr_reader :name, :type, :version
 

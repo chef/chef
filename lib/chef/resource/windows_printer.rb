@@ -35,41 +35,41 @@ class Chef
       description "Use the **windows_printer** resource to setup Windows printers. This resource will automatically install the driver specified in the `driver_name` property and will automatically create a printer port using either the `ipv4_address` property or the `port_name` property."
       introduced "14.0"
       examples <<~DOC
-      **Create a printer**:
+        **Create a printer**:
 
-      ```ruby
-      windows_printer 'HP LaserJet 5th Floor' do
-        driver_name 'HP LaserJet 4100 Series PCL6'
-        ipv4_address '10.4.64.38'
-      end
-      ```
+        ```ruby
+        windows_printer 'HP LaserJet 5th Floor' do
+          driver_name 'HP LaserJet 4100 Series PCL6'
+          ipv4_address '10.4.64.38'
+        end
+        ```
 
-      **Delete a printer**:
+        **Delete a printer**:
 
-      Note: this doesn't delete the associated printer port. See windows_printer_port above for how to delete the port.
+        Note: this doesn't delete the associated printer port. See windows_printer_port above for how to delete the port.
 
-      ```ruby
-      windows_printer 'HP LaserJet 5th Floor' do
-        action :delete
-      end
-      ```
+        ```ruby
+        windows_printer 'HP LaserJet 5th Floor' do
+          action :delete
+        end
+        ```
 
-      **Create a printer port and a printer that uses that port (new in 17.3)**
+        **Create a printer port and a printer that uses that port (new in 17.3)**
 
-      ```ruby
-      windows_printer_port '10.4.64.39' do
-        port_name 'My awesome printer port'
-        snmp_enabled true
-        port_protocol 2
-      end
+        ```ruby
+        windows_printer_port '10.4.64.39' do
+          port_name 'My awesome printer port'
+          snmp_enabled true
+          port_protocol 2
+        end
 
-      windows_printer 'HP LaserJet 5th Floor' do
-        driver_name 'HP LaserJet 4100 Series PCL6'
-        port_name 'My awesome printer port'
-        ipv4_address '10.4.64.38'
-        create_port false
-      end
-      ```
+        windows_printer 'HP LaserJet 5th Floor' do
+          driver_name 'HP LaserJet 4100 Series PCL6'
+          port_name 'My awesome printer port'
+          ipv4_address '10.4.64.38'
+          create_port false
+        end
+        ```
       DOC
 
       property :device_id, String,

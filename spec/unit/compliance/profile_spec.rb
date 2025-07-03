@@ -78,16 +78,16 @@ describe Chef::Compliance::Profile do
 
   it "inflates objects from YAML" do
     string = <<~EOH
-name: ssh-baseline#{" "}
-title: DevSec SSH Baseline#{" "}
-maintainer: DevSec Hardening Framework Team#{" "}
-copyright: DevSec Hardening Framework Team#{" "}
-copyright_email: hello@dev-sec.io#{" "}
-license: Apache-2.0#{" "}
-summary: Test-suite for best-practice SSH hardening#{" "}
-version: 2.6.4#{" "}
-supports:#{"     "}
-  - os-family: unix
+      name: ssh-baseline#{" "}
+      title: DevSec SSH Baseline#{" "}
+      maintainer: DevSec Hardening Framework Team#{" "}
+      copyright: DevSec Hardening Framework Team#{" "}
+      copyright_email: hello@dev-sec.io#{" "}
+      license: Apache-2.0#{" "}
+      summary: Test-suite for best-practice SSH hardening#{" "}
+      version: 2.6.4#{" "}
+      supports:#{"     "}
+        - os-family: unix
     EOH
     newprofile = Chef::Compliance::Profile.from_yaml(events, string, path, cookbook_name)
     expect(newprofile.data).to eql(data)
@@ -95,16 +95,16 @@ supports:#{"     "}
 
   it "inflates objects from files" do
     string = <<~EOH
-name: ssh-baseline#{" "}
-title: DevSec SSH Baseline#{" "}
-maintainer: DevSec Hardening Framework Team#{" "}
-copyright: DevSec Hardening Framework Team#{" "}
-copyright_email: hello@dev-sec.io#{" "}
-license: Apache-2.0#{" "}
-summary: Test-suite for best-practice SSH hardening#{" "}
-version: 2.6.4#{" "}
-supports:#{"     "}
-  - os-family: unix
+      name: ssh-baseline#{" "}
+      title: DevSec SSH Baseline#{" "}
+      maintainer: DevSec Hardening Framework Team#{" "}
+      copyright: DevSec Hardening Framework Team#{" "}
+      copyright_email: hello@dev-sec.io#{" "}
+      license: Apache-2.0#{" "}
+      summary: Test-suite for best-practice SSH hardening#{" "}
+      version: 2.6.4#{" "}
+      supports:#{"     "}
+        - os-family: unix
     EOH
     tempfile = Tempfile.new("chef-compliance-test")
     tempfile.write string

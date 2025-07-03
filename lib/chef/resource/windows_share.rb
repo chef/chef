@@ -31,24 +31,24 @@ class Chef
       description "Use the **windows_share** resource to create, modify and remove Windows shares."
       introduced "14.7"
       examples <<~DOC
-      **Create a share**:
+        **Create a share**:
 
-      ```ruby
-      windows_share 'foo' do
-        action :create
-        path 'C:\\foo'
-        full_users ['DOMAIN_A\\some_user', 'DOMAIN_B\\some_other_user']
-        read_users ['DOMAIN_C\\Domain users']
-      end
-      ```
+        ```ruby
+        windows_share 'foo' do
+          action :create
+          path 'C:\\foo'
+          full_users ['DOMAIN_A\\some_user', 'DOMAIN_B\\some_other_user']
+          read_users ['DOMAIN_C\\Domain users']
+        end
+        ```
 
-      **Delete a share**:
+        **Delete a share**:
 
-      ```ruby
-      windows_share 'foo' do
-        action :delete
-      end
-      ```
+        ```ruby
+        windows_share 'foo' do
+          action :delete
+        end
+        ```
       DOC
 
       # Specifies a name for the SMB share. The name may be composed of any valid file name characters, but must be less than 80 characters long. The names pipe and mailslot are reserved for use by the computer.
@@ -69,17 +69,17 @@ class Chef
       # Specifies which accounts are granted full permission to access the share. Use a comma-separated list to specify multiple accounts. An account may not be specified more than once in the FullAccess, ChangeAccess, or ReadAccess parameter lists, but may be specified once in the FullAccess, ChangeAccess, or ReadAccess parameter list and once in the NoAccess parameter list.
       property :full_users, Array,
         description: "The users that should have 'Full control' permissions on the share in domain\\username format.",
-        default: [], coerce: proc { |u| u.sort }
+        default: [], coerce: proc(&:sort)
 
       # Specifies which users are granted modify permission to access the share
       property :change_users, Array,
         description: "The users that should have 'modify' permission on the share in domain\\username format.",
-        default: [], coerce: proc { |u| u.sort }
+        default: [], coerce: proc(&:sort)
 
       # Specifies which users are granted read permission to access the share. Multiple users can be specified by supplying a comma-separated list.
       property :read_users, Array,
         description: "The users that should have 'read' permission on the share in domain\\username format.",
-        default: [], coerce: proc { |u| u.sort }
+        default: [], coerce: proc(&:sort)
 
       # Specifies the lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer. By default, new SMB shares are persistent, and non-temporary.
       property :temporary, [TrueClass, FalseClass],

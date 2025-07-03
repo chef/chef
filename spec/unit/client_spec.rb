@@ -144,7 +144,7 @@ shared_context "a client run" do
     #   previous step.
     expect(Chef::ServerAPI).to receive(:new)
       .with(Chef::Config[:chef_server_url], client_name: fqdn,
-                                           signing_key_filename: Chef::Config[:client_key])
+        signing_key_filename: Chef::Config[:client_key])
       .exactly(:once)
       .and_return(http_node_load)
 
@@ -223,7 +223,7 @@ shared_context "converge completed" do
 
     # --Client#save_updated_node
     expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], client_name: fqdn,
-                                                                                  signing_key_filename: Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
+      signing_key_filename: Chef::Config[:client_key], validate_utf8: false).and_return(http_node_save)
     expect(http_node_save).to receive(:put).with("nodes/#{fqdn}", node.for_json).and_return(true)
   end
 end

@@ -32,17 +32,17 @@ describe Chef::Resource::InspecInput do
   let(:collection) { double("resource collection") }
   let(:input_yaml) do
     <<~EOH
-ssh_custom_path: "/whatever2"
+      ssh_custom_path: "/whatever2"
     EOH
   end
   let(:input_json) do
     <<~EOH
-    { "ssh_custom_path": "/whatever2" }
+      { "ssh_custom_path": "/whatever2" }
     EOH
   end
   let(:input_toml) do
     <<~EOH
-ssh_custom_path = "/whatever2"
+      ssh_custom_path = "/whatever2"
     EOH
   end
   let(:input_hash) do

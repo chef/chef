@@ -24,30 +24,30 @@ class Chef
       description "Use the **windows_defender** resource to enable or disable the Microsoft Windows Defender service."
       introduced "17.3"
       examples <<~DOC
-      **Configure Windows Defender AV settings**:
+        **Configure Windows Defender AV settings**:
 
-      ```ruby
-      windows_defender 'Configure Defender' do
-        realtime_protection true
-        intrusion_protection_system true
-        lock_ui true
-        scan_archives true
-        scan_scripts true
-        scan_email true
-        scan_removable_drives true
-        scan_network_files false
-        scan_mapped_drives false
-        action :enable
-      end
-      ```
+        ```ruby
+        windows_defender 'Configure Defender' do
+          realtime_protection true
+          intrusion_protection_system true
+          lock_ui true
+          scan_archives true
+          scan_scripts true
+          scan_email true
+          scan_removable_drives true
+          scan_network_files false
+          scan_mapped_drives false
+          action :enable
+        end
+        ```
 
-      **Disable Windows Defender AV**:
+        **Disable Windows Defender AV**:
 
-      ```ruby
-      windows_defender 'Disable Defender' do
-        action :disable
-      end
-      ```
+        ```ruby
+        windows_defender 'Disable Defender' do
+          action :disable
+        end
+        ```
       DOC
 
       # DisableIOAVProtection

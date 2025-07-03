@@ -26,14 +26,14 @@ describe Chef::Resource::Alternatives do
   let(:provider) { resource.provider_for_action(:install) }
 
   let(:alternatives_display_exists) do
-    double("shellout", stdout: <<-STDOUT)
-    java - auto mode
-    link best version is /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
-    link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
-    link java is /usr/bin/java
-    slave java.1.gz is /usr/share/man/man1/java.1.gz
-/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java - priority 1081
-    slave java.1.gz: /usr/lib/jvm/java-8-openjdk-amd64/jre/man/man1/java.1.gz
+    double("shellout", stdout: <<~STDOUT)
+          java - auto mode
+          link best version is /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+          link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+          link java is /usr/bin/java
+          slave java.1.gz is /usr/share/man/man1/java.1.gz
+      /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java - priority 1081
+          slave java.1.gz: /usr/lib/jvm/java-8-openjdk-amd64/jre/man/man1/java.1.gz
     STDOUT
   end
 

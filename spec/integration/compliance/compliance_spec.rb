@@ -105,10 +105,10 @@ describe "chef-client with compliance phase" do
           end
         end
         file "attributes/default.rb", <<~FILE
-        default['audit']['reporter'] = "json-file"
-        default['audit']['json_file'] = {
-              "location" => "#{report_file}"
-            }
+          default['audit']['reporter'] = "json-file"
+          default['audit']['json_file'] = {
+                "location" => "#{report_file}"
+              }
         FILE
         file "recipes/default.rb", <<~FILE
           include_profile ".*::.*"

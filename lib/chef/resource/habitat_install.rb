@@ -24,28 +24,28 @@ class Chef
       description "Use the **habitat_install** resource to install Chef Habitat."
       introduced "17.3"
       examples <<~DOC
-      **Installation Without a Resource Name**
+        **Installation Without a Resource Name**
 
-      ```ruby
-      habitat_install
-      ```
+        ```ruby
+        habitat_install
+        ```
 
-      **Installation specifying a habitat builder URL**
+        **Installation specifying a habitat builder URL**
 
-      ```ruby
-      habitat_install 'install habitat' do
-        bldr_url 'http://localhost'
-      end
-      ```
+        ```ruby
+        habitat_install 'install habitat' do
+          bldr_url 'http://localhost'
+        end
+        ```
 
-      **Installation specifying version and habitat builder URL**
+        **Installation specifying version and habitat builder URL**
 
-      ```ruby
-      habitat_install 'install habitat' do
-        bldr_url 'http://localhost'
-        hab_version '1.5.50'
-      end
-      ```
+        ```ruby
+        habitat_install 'install habitat' do
+          bldr_url 'http://localhost'
+          hab_version '1.5.50'
+        end
+        ```
       DOC
 
       property :name, String, default: "install habitat",

@@ -30,13 +30,13 @@ class Chef
 
       description "Use the **windows_env** resource to manage environment keys in Microsoft Windows. After an environment key is set, Microsoft Windows must be restarted before the environment key will be available to the Task Scheduler.\n\nThis resource was previously called the **env** resource; its name was updated in #{ChefUtils::Dist::Infra::PRODUCT} 14.0 to reflect the fact that only Windows is supported. Existing cookbooks using `env` will continue to function, but should be updated to use the new name. Note: On UNIX-based systems, the best way to manipulate environment keys is with the `ENV` variable in Ruby; however, this approach does not have the same permanent effect as using the windows_env resource."
       examples <<~DOC
-      **Set an environment variable**:
+        **Set an environment variable**:
 
-      ```ruby
-      windows_env 'ComSpec' do
-        value 'C:\\Windows\\system32\\cmd.exe'
-      end
-      ```
+        ```ruby
+        windows_env 'ComSpec' do
+          value 'C:\\Windows\\system32\\cmd.exe'
+        end
+        ```
       DOC
 
       default_action :create

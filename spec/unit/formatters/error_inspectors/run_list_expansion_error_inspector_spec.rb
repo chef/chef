@@ -77,8 +77,8 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
       allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com",
-                                                       client_key: "/etc/chef/client.pem",
-                                                       chef_server_url: "http://chef.example.com")
+        client_key: "/etc/chef/client.pem",
+        chef_server_url: "http://chef.example.com")
 
       @inspector.add_explanation(@description)
     end

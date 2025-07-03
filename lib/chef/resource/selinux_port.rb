@@ -24,29 +24,29 @@ class Chef
       description "Use the **selinux_port** resource to assign a network port to a specific SELinux context. For example, running a web server on a non-standard port."
       introduced "18.0"
       examples <<~DOC
-      **Allow nginx/apache to bind to port 5678 by giving it the http_port_t context**:
+        **Allow nginx/apache to bind to port 5678 by giving it the http_port_t context**:
 
-      ```ruby
-      selinux_port '5678' do
-       protocol 'tcp'
-       secontext 'http_port_t'
-      end
-      ```
+        ```ruby
+        selinux_port '5678' do
+         protocol 'tcp'
+         secontext 'http_port_t'
+        end
+        ```
       DOC
 
       property :port, [Integer, String],
-                name_property: true,
-                regex: /^\d+$/,
-                description: "Port to modify."
+        name_property: true,
+        regex: /^\d+$/,
+        description: "Port to modify."
 
       property :protocol, String,
-                equal_to: %w{tcp udp},
-                required: %i{manage add modify},
-                description: "Protocol to modify."
+        equal_to: %w{tcp udp},
+        required: %i{manage add modify},
+        description: "Protocol to modify."
 
       property :secontext, String,
-                required: %i{manage add modify},
-                description: "SELinux context to assign to the port."
+        required: %i{manage add modify},
+        description: "SELinux context to assign to the port."
 
       action_class do
         include Chef::SELinux::CommonHelpers

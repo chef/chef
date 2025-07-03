@@ -24,38 +24,38 @@ class Chef
       introduced "16.3"
 
       examples <<~DOC
-      **Enable and Configure the Private Profile of the Windows Profile**:
+        **Enable and Configure the Private Profile of the Windows Profile**:
 
-      ```ruby
-      windows_firewall_profile 'Private' do
-        default_inbound_action 'Block'
-        default_outbound_action 'Allow'
-        allow_inbound_rules true
-        display_notification false
-        action :enable
-      end
-      ```
+        ```ruby
+        windows_firewall_profile 'Private' do
+          default_inbound_action 'Block'
+          default_outbound_action 'Allow'
+          allow_inbound_rules true
+          display_notification false
+          action :enable
+        end
+        ```
 
-      **Enable and Configure the Public Profile of the Windows Firewall**:
+        **Enable and Configure the Public Profile of the Windows Firewall**:
 
-      ```ruby
-      windows_firewall_profile 'Public' do
-        default_inbound_action 'Block'
-        default_outbound_action 'Allow'
-        allow_inbound_rules false
-        display_notification false
-        action :enable
-      end
-      ```
+        ```ruby
+        windows_firewall_profile 'Public' do
+          default_inbound_action 'Block'
+          default_outbound_action 'Allow'
+          allow_inbound_rules false
+          display_notification false
+          action :enable
+        end
+        ```
 
-      **Disable the Domain Profile of the Windows Firewall**:
+        **Disable the Domain Profile of the Windows Firewall**:
 
-      ```ruby
-      windows_firewall_profile 'Disable the Domain Profile of the Windows Firewall' do
-        profile 'Domain'
-        action :disable
-      end
-      ```
+        ```ruby
+        windows_firewall_profile 'Disable the Domain Profile of the Windows Firewall' do
+          profile 'Domain'
+          action :disable
+        end
+        ```
       DOC
 
       property :profile, String,

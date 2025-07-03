@@ -66,9 +66,9 @@ class Chef
           local true
           cookbook "habitat"
           variables exec_start_options: exec_start_options,
-                    bldr_url: new_resource.bldr_url,
-                    auth_token: new_resource.auth_token,
-                    gateway_auth_token: new_resource.gateway_auth_token
+            bldr_url: new_resource.bldr_url,
+            auth_token: new_resource.auth_token,
+            gateway_auth_token: new_resource.gateway_auth_token
           # win_launcher: win_version
           action :touch
         end

@@ -385,7 +385,7 @@ class Chef
     # @api private
     def rest
       @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: node_name,
-                                    signing_key_filename: Chef::Config[:client_key])
+        signing_key_filename: Chef::Config[:client_key])
     end
 
     # A rest object with validate_utf8 set to false.  This will not throw exceptions
@@ -397,7 +397,7 @@ class Chef
     def rest_clean
       @rest_clean ||=
         Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: node_name,
-                            signing_key_filename: Chef::Config[:client_key], validate_utf8: false)
+          signing_key_filename: Chef::Config[:client_key], validate_utf8: false)
     end
 
     #
@@ -1090,4 +1090,3 @@ end
 require_relative "cookbook_loader"
 require_relative "cookbook_version"
 require_relative "cookbook/synchronizer"
-

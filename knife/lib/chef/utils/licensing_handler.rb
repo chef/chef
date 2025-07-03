@@ -23,8 +23,8 @@ class Chef
       LEGACY_OMNITRUCK_URL = "https://omnitruck.chef.io".freeze
 
       OMNITRUCK_URLS = {
-        "free"       => "https://chefdownload-trial.chef.io",
-        "trial"      => "https://chefdownload-trial.chef.io",
+        "free" => "https://chefdownload-trial.chef.io",
+        "trial" => "https://chefdownload-trial.chef.io",
         "commercial" => "https://chefdownload-commerical.chef.io",
       }.freeze
 

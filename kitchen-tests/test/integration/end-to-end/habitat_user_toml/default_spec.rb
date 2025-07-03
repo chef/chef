@@ -14,10 +14,10 @@ describe command("hab -V") do
   its("exit_status") { should eq 0 }
 end
 
-nginx_content = <<-EOF
-worker_processes = 2
-[http]
-keepalive_timeout = 120
+nginx_content = <<~EOF
+  worker_processes = 2
+  [http]
+  keepalive_timeout = 120
 EOF
 
 describe file("/hab/user/nginx/config/user.toml") do

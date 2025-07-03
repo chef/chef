@@ -65,7 +65,7 @@ describe "Chef::Resource.property" do
     if properties.size == 1
       description = "With property #{properties.first}"
     else
-      description = "With properties #{english_join(properties.map { |property| (property.inspect).to_s })}"
+      description = "With properties #{english_join(properties.map { |property| (property.inspect) })}"
     end
     context description, *tags do
       before do

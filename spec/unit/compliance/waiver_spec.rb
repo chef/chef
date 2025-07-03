@@ -74,10 +74,10 @@ describe Chef::Compliance::Waiver do
 
   it "inflates objects from YAML" do
     string = <<~EOH
-ssh-01:
-  expiration_date: 2033-07-31
-  run: false
-  justification: "waived, yo"
+      ssh-01:
+        expiration_date: 2033-07-31
+        run: false
+        justification: "waived, yo"
     EOH
     newwaiver = Chef::Compliance::Waiver.from_yaml(events, string, path, cookbook_name)
     expect(newwaiver.data).to eql(data)
@@ -85,10 +85,10 @@ ssh-01:
 
   it "inflates objects from files" do
     string = <<~EOH
-ssh-01:
-  expiration_date: 2033-07-31
-  run: false
-  justification: "waived, yo"
+      ssh-01:
+        expiration_date: 2033-07-31
+        run: false
+        justification: "waived, yo"
     EOH
     tempfile = Tempfile.new("chef-compliance-test")
     tempfile.write string

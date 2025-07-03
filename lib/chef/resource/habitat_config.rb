@@ -26,18 +26,18 @@ class Chef
       description "Use the **habitat_config** resource to apply a configuration to a Chef Habitat service."
       introduced "17.3"
       examples <<~DOC
-      **Configure your nginx defaults**
+        **Configure your nginx defaults**
 
-      ```ruby
-      habitat_config 'nginx.default' do
-        config({
-          worker_count: 2,
-          http: {
-            keepalive_timeout: 120
-          }
-          })
-        end
-        ```
+        ```ruby
+        habitat_config 'nginx.default' do
+          config({
+            worker_count: 2,
+            http: {
+              keepalive_timeout: 120
+            }
+            })
+          end
+          ```
       DOC
 
       property :config, Mash, required: true, coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },

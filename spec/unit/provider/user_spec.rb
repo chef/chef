@@ -167,7 +167,7 @@ describe Chef::Provider::User do
               original_method = @provider.method(:require)
               expect(@provider).to receive(:require) { |*args| original_method.call(*args) }
               passwd_info = Struct::PasswdEntry.new(sp_namp: "adm ", sp_pwdp: "$1$T0N0Q.lc$nyG6pFI3Dpqa5cxUz/57j0", sp_lstchg: 14861, sp_min: 0, sp_max: 99999,
-                                                    sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
+                sp_warn: 7, sp_inact: -1, sp_expire: -1, sp_flag: -1)
               expect(Shadow::Passwd).to receive(:getspnam).with("notarealuser").and_return(passwd_info)
               @provider.load_current_resource
               @provider.action = :create

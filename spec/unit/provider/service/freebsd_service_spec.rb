@@ -579,7 +579,7 @@ describe Chef::Provider::Service::Freebsd do
 
     it "should remove commented out versions of it being enabled" do
       allow(current_resource).to receive(:enabled).and_return(false)
-      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
+      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "# #{new_resource.service_name}_enable=\"YES\"", "# #{new_resource.service_name}_enable=\"NO\""])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
       provider.enable_service
     end
@@ -613,7 +613,7 @@ describe Chef::Provider::Service::Freebsd do
 
     it "should remove commented out versions of it being disabled or enabled" do
       allow(current_resource).to receive(:enabled).and_return(true)
-      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
+      expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "# #{new_resource.service_name}_enable=\"YES\"", "# #{new_resource.service_name}_enable=\"NO\""])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
       provider.disable_service
     end

@@ -21,18 +21,18 @@ class Chef
       description "Use the **habitat_user_toml** to template a `user.toml` for Chef Habitat services. Configurations set in the  `user.toml` override the `default.toml` for a given package, which makes it an alternative to applying service group level configuration."
       introduced "17.3"
       examples <<~DOC
-      **Configure user specific settings to nginx**
+        **Configure user specific settings to nginx**
 
-      ```ruby
-      habitat_user_toml 'nginx' do
-        config({
-          worker_count: 2,
-          http: {
-            keepalive_timeout: 120
-          }
-          })
-        end
-        ```
+        ```ruby
+        habitat_user_toml 'nginx' do
+          config({
+            worker_count: 2,
+            http: {
+              keepalive_timeout: 120
+            }
+            })
+          end
+          ```
       DOC
 
       property :config, Mash, required: true, coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },
@@ -73,7 +73,7 @@ class Chef
         def wmi_property_from_query(wmi_property, wmi_query)
           @wmi = ::WIN32OLE.connect("winmgmts://")
           result = @wmi.ExecQuery(wmi_query)
-          return unless result.each.count > 0
+          return unless result.each.any?
 
           result.each.next.send(wmi_property)
         end

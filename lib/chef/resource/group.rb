@@ -25,27 +25,27 @@ class Chef
       description "Use the **group** resource to manage a local group."
 
       examples <<~EXAMPLES
-      The following examples demonstrate various approaches for using the **group** resource in recipes:
+        The following examples demonstrate various approaches for using the **group** resource in recipes:
 
-      Append users to groups:
+        Append users to groups:
 
-      ```ruby
-      group 'www-data' do
-        action :modify
-        members 'maintenance'
-        append true
-      end
-      ```
+        ```ruby
+        group 'www-data' do
+          action :modify
+          members 'maintenance'
+          append true
+        end
+        ```
 
-      Add a user to group on the Windows platform:
+        Add a user to group on the Windows platform:
 
-      ```ruby
-      group 'Administrators' do
-        members ['domain\\foo']
-        append true
-        action :modify
-      end
-      ```
+        ```ruby
+        group 'Administrators' do
+          members ['domain\\foo']
+          append true
+          action :modify
+        end
+        ```
       EXAMPLES
 
       provides :group
@@ -61,21 +61,21 @@ class Chef
         description: "The identifier for the group."
 
       property :members, [String, Array], default: [],
-               coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
-               description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: `members ['user1', 'user2']`."
+        coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
+        description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: `members ['user1', 'user2']`."
 
       property :excluded_members, [String, Array], default: [],
-               coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
-               description: "Remove users from a group. May only be used when `append` is set to `true`."
+        coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
+        description: "Remove users from a group. May only be used when `append` is set to `true`."
 
       property :append, [ TrueClass, FalseClass ], default: false,
-               description: "How members should be appended and/or removed from a group. When true, `members` are appended and `excluded_members` are removed. When `false`, group members are reset to the value of the `members` property."
+        description: "How members should be appended and/or removed from a group. When true, `members` are appended and `excluded_members` are removed. When `false`, group members are reset to the value of the `members` property."
 
       property :system, [ TrueClass, FalseClass ], default: false,
-               description: "Set to `true` if the group belongs to a system group."
+        description: "Set to `true` if the group belongs to a system group."
 
       property :non_unique, [ TrueClass, FalseClass ], default: false,
-               description: "Allow gid duplication. May only be used with the `Groupadd` user resource provider."
+        description: "Allow gid duplication. May only be used with the `Groupadd` user resource provider."
 
       property :comment, String,
         introduced: "14.9",

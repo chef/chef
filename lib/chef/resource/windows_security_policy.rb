@@ -51,39 +51,39 @@ class Chef
       introduced "16.0"
 
       examples <<~DOC
-      **Set Administrator Account to Enabled**:
+        **Set Administrator Account to Enabled**:
 
-      ```ruby
-      windows_security_policy 'EnableAdminAccount' do
-        secvalue       '1'
-        action         :set
-      end
-      ```
+        ```ruby
+        windows_security_policy 'EnableAdminAccount' do
+          secvalue       '1'
+          action         :set
+        end
+        ```
 
-      **Rename Administrator Account**:
+        **Rename Administrator Account**:
 
-      ```ruby
-      windows_security_policy 'NewAdministratorName' do
-        secvalue       'AwesomeChefGuy'
-        action         :set
-      end
-      ```
+        ```ruby
+        windows_security_policy 'NewAdministratorName' do
+          secvalue       'AwesomeChefGuy'
+          action         :set
+        end
+        ```
 
-      **Set Guest Account to Disabled**:
+        **Set Guest Account to Disabled**:
 
-      ```ruby
-      windows_security_policy 'EnableGuestAccount' do
-        secvalue       '0'
-        action         :set
-      end
-      ```
+        ```ruby
+        windows_security_policy 'EnableGuestAccount' do
+          secvalue       '0'
+          action         :set
+        end
+        ```
       DOC
 
       property :secoption, String, name_property: true, required: true, equal_to: policy_names,
-      description: "The name of the policy to be set on windows platform to maintain its security."
+        description: "The name of the policy to be set on windows platform to maintain its security."
 
       property :secvalue, String, required: true,
-      description: "Policy value to be set for policy name."
+        description: "Policy value to be set for policy name."
 
       load_current_value do |new_resource|
         current_state = load_security_options

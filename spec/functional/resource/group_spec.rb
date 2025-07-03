@@ -62,7 +62,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def compare_gid(resource, gid)
-    return resource.gid == Etc.getgrnam(resource.name).gid if unix?
+    resource.gid == Etc.getgrnam(resource.name).gid if unix?
   end
 
   def sid_string_from_user(user)

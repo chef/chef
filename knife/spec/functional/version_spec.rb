@@ -23,4 +23,3 @@ describe "Knife Version", :executables do
     expect(shell_out!("bundle exec knife -v", cwd: knife_dir).stdout.chomp).to match(/.*: #{Chef::Knife::VERSION}/)
   end
 end
-

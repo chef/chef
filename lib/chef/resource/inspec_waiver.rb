@@ -24,87 +24,87 @@ class Chef
       description "Use the **inspec_waiver** resource to add a waiver to the Compliance Phase."
       introduced "17.5"
       examples <<~DOC
-      **Activate the default waiver in the openssh cookbook's compliance segment**:
+        **Activate the default waiver in the openssh cookbook's compliance segment**:
 
-      ```ruby
-        inspec_waiver 'openssh' do
-          action :add
-        end
-      ```
+        ```ruby
+          inspec_waiver 'openssh' do
+            action :add
+          end
+        ```
 
-      **Activate all waivers in the openssh cookbook's compliance segment**:
+        **Activate all waivers in the openssh cookbook's compliance segment**:
 
-      ```ruby
-        inspec_waiver 'openssh::.*' do
-          action :add
-        end
-      ```
+        ```ruby
+          inspec_waiver 'openssh::.*' do
+            action :add
+          end
+        ```
 
-      **Add an InSpec waiver to the Compliance Phase**:
+        **Add an InSpec waiver to the Compliance Phase**:
 
-      ```ruby
-        inspec_waiver 'Add waiver entry for control' do
-          control 'my_inspec_control_01'
-          run_test false
-          justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
-          expiration '2022-01-01'
-          action :add
-        end
-      ```
+        ```ruby
+          inspec_waiver 'Add waiver entry for control' do
+            control 'my_inspec_control_01'
+            run_test false
+            justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
+            expiration '2022-01-01'
+            action :add
+          end
+        ```
 
-      **Add an InSpec waiver to the Compliance Phase using the 'name' property to identify the control**:
+        **Add an InSpec waiver to the Compliance Phase using the 'name' property to identify the control**:
 
-      ```ruby
-        inspec_waiver 'my_inspec_control_01' do
-          justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
-          action :add
-        end
-      ```
+        ```ruby
+          inspec_waiver 'my_inspec_control_01' do
+            justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
+            action :add
+          end
+        ```
 
-      **Add an InSpec waiver to the Compliance Phase using an arbitrary YAML, JSON, or TOML file**:
+        **Add an InSpec waiver to the Compliance Phase using an arbitrary YAML, JSON, or TOML file**:
 
-      ```ruby
-        # files ending in .yml or .yaml that exist are parsed as YAML
-        inspec_waiver "/path/to/my/waiver.yml"
+        ```ruby
+          # files ending in .yml or .yaml that exist are parsed as YAML
+          inspec_waiver "/path/to/my/waiver.yml"
 
-        inspec_waiver "my-waiver-name" do
-          source "/path/to/my/waiver.yml"
-        end
+          inspec_waiver "my-waiver-name" do
+            source "/path/to/my/waiver.yml"
+          end
 
-        # files ending in .json that exist are parsed as JSON
-        inspec_waiver "/path/to/my/waiver.json"
+          # files ending in .json that exist are parsed as JSON
+          inspec_waiver "/path/to/my/waiver.json"
 
-        inspec_waiver "my-waiver-name" do
-          source "/path/to/my/waiver.json"
-        end
+          inspec_waiver "my-waiver-name" do
+            source "/path/to/my/waiver.json"
+          end
 
-        # files ending in .toml that exist are parsed as TOML
-        inspec_waiver "/path/to/my/waiver.toml"
+          # files ending in .toml that exist are parsed as TOML
+          inspec_waiver "/path/to/my/waiver.toml"
 
-        inspec_waiver "my-waiver-name" do
-          source "/path/to/my/waiver.toml"
-        end
-      ```
+          inspec_waiver "my-waiver-name" do
+            source "/path/to/my/waiver.toml"
+          end
+        ```
 
-      **Add an InSpec waiver to the Compliance Phase using a hash**:
+        **Add an InSpec waiver to the Compliance Phase using a hash**:
 
-      ```ruby
-        my_hash = { "ssh-01" => {
-          "expiration_date" => "2033-07-31",
-          "run" => false,
-          "justification" => "because"
-        } }
+        ```ruby
+          my_hash = { "ssh-01" => {
+            "expiration_date" => "2033-07-31",
+            "run" => false,
+            "justification" => "because"
+          } }
 
-        inspec_waiver "my-waiver-name" do
-          source my_hash
-        end
-      ```
+          inspec_waiver "my-waiver-name" do
+            source my_hash
+          end
+        ```
 
-      Note that the **inspec_waiver** resource does not update and will not fire notifications (similar to the log resource). This is done to preserve the ability to use
-      the resource while not causing the updated resource count to be larger than zero. Since the resource does not update the state of the managed node, this behavior
-      is still consistent with the configuration management model. Instead, you should use events to observe configuration changes for the compliance phase. It is
-      possible to use the `notify_group` resource to chain notifications of the two resources, but notifications are the wrong model to use, and you should use pure ruby
-      conditionals instead. Compliance configuration should be independent of other resources and should only be conditional based on state/attributes, not other resources.
+        Note that the **inspec_waiver** resource does not update and will not fire notifications (similar to the log resource). This is done to preserve the ability to use
+        the resource while not causing the updated resource count to be larger than zero. Since the resource does not update the state of the managed node, this behavior
+        is still consistent with the configuration management model. Instead, you should use events to observe configuration changes for the compliance phase. It is
+        possible to use the `notify_group` resource to chain notifications of the two resources, but notifications are the wrong model to use, and you should use pure ruby
+        conditionals instead. Compliance configuration should be independent of other resources and should only be conditional based on state/attributes, not other resources.
       DOC
 
       property :control, String,

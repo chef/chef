@@ -34,75 +34,75 @@ class Chef
       description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 
       examples <<~'DOC'
-      **Download a file without checking the checksum**:
+        **Download a file without checking the checksum**:
 
-      ```ruby
-        remote_file '/tmp/remote.txt' do
-          source 'https://example.org/remote.txt'
-        end
-      ```
+        ```ruby
+          remote_file '/tmp/remote.txt' do
+            source 'https://example.org/remote.txt'
+          end
+        ```
 
-      **Download a file with a checksum to validate**:
+        **Download a file with a checksum to validate**:
 
-      ```ruby
-        remote_file '/tmp/test_file' do
-          source 'http://www.example.com/tempfiles/test_file'
-          mode '0755'
-          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
-        end
-      ```
+        ```ruby
+          remote_file '/tmp/test_file' do
+            source 'http://www.example.com/tempfiles/test_file'
+            mode '0755'
+            checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+          end
+        ```
 
-      **Download a file only if it's not already present**:
+        **Download a file only if it's not already present**:
 
-      ```ruby
-        remote_file '/tmp/remote.txt' do
-          source 'https://example.org/remote.txt'
-          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
-          action :create_if_missing
-        end
-      ```
+        ```ruby
+          remote_file '/tmp/remote.txt' do
+            source 'https://example.org/remote.txt'
+            checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+            action :create_if_missing
+          end
+        ```
 
-      **Using HTTP Basic Authentication in Headers**:
+        **Using HTTP Basic Authentication in Headers**:
 
-      ```ruby
-        remote_file '/tmp/remote.txt' do
-          source 'https://example.org/remote.txt'
-          headers('Authorization' => "Basic #{Base64.encode64("USERNAME_VALUE:PASSWORD_VALUE").delete("\n")}")
-          checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
-          action :create_if_missing
-        end
-      ```
+        ```ruby
+          remote_file '/tmp/remote.txt' do
+            source 'https://example.org/remote.txt'
+            headers('Authorization' => "Basic #{Base64.encode64("USERNAME_VALUE:PASSWORD_VALUE").delete("\n")}")
+            checksum '3a7dac00b1' # A SHA256 (or portion thereof) of the file.
+            action :create_if_missing
+          end
+        ```
 
-      **Downloading a file to the Chef file cache dir for execution**:
+        **Downloading a file to the Chef file cache dir for execution**:
 
-      ```ruby
-        remote_file '#{Chef::Config['file_cache_path']}/install.sh' do
-          source 'https://example.org/install.sh'
-          action :create_if_missing
-        end
+        ```ruby
+          remote_file '#{Chef::Config['file_cache_path']}/install.sh' do
+            source 'https://example.org/install.sh'
+            action :create_if_missing
+          end
 
-        execute '#{Chef::Config['file_cache_path']}/install.sh'
-      ```
+          execute '#{Chef::Config['file_cache_path']}/install.sh'
+        ```
 
-      **Specify advanced HTTP connection options including Net::HTTP (nethttp) options:**
+        **Specify advanced HTTP connection options including Net::HTTP (nethttp) options:**
 
-      ```ruby
-        remote_file '/tmp/remote.txt' do
-          source 'https://example.org/remote.txt'
-          http_options({
-            http_retry_delay: 0,
-            http_retry_count: 0,
-            keepalives: false,
-            nethttp: {
-              continue_timeout: 5,
-              max_retries: 5,
-              read_timeout: 5,
-              write_timeout: 5,
-              ssl_timeout: 5,
-            },
-          })
-        end
-      ```
+        ```ruby
+          remote_file '/tmp/remote.txt' do
+            source 'https://example.org/remote.txt'
+            http_options({
+              http_retry_delay: 0,
+              http_retry_count: 0,
+              keepalives: false,
+              nethttp: {
+                continue_timeout: 5,
+                max_retries: 5,
+                read_timeout: 5,
+                write_timeout: 5,
+                ssl_timeout: 5,
+              },
+            })
+          end
+        ```
       DOC
 
       def initialize(name, run_context = nil)
@@ -135,7 +135,7 @@ class Chef
       def parse_source_args(args)
         if args.empty?
           nil
-        elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
+        elsif args[0].is_a?(Chef::DelayedEvaluator) && args.one?
           args[0]
         elsif args.any?(Chef::DelayedEvaluator) && args.count > 1
           raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
@@ -168,23 +168,23 @@ class Chef
 
       property :headers, Hash, default: {},
         description: <<~'DOCS'
-        A Hash of custom headers. For example:
+          A Hash of custom headers. For example:
 
-        ```ruby
-        headers({ "Cookie" => "user=some_user; pass=p@ssw0rd!" })
-        ```
+          ```ruby
+          headers({ "Cookie" => "user=some_user; pass=p@ssw0rd!" })
+          ```
 
-        or:
+          or:
 
-        ```ruby
-        headers({ "Referer" => "#{header}" })
-        ```
+          ```ruby
+          headers({ "Referer" => "#{header}" })
+          ```
 
-        or:
+          or:
 
-        ```ruby
-        headers( "Authorization"=>"Basic #{ Base64.encode64("#{username}:#{password}").gsub("\n", "") }" )
-        ```
+          ```ruby
+          headers( "Authorization"=>"Basic #{ Base64.encode64("#{username}:#{password}").gsub("\n", "") }" )
+          ```
         DOCS
 
       property :show_progress, [ TrueClass, FalseClass ],

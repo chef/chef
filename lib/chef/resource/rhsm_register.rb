@@ -80,7 +80,7 @@ class Chef
 
       property :server_url, String,
         description: "The hostname of the subscription service to use. The default is Customer Portal Subscription Management, subscription.rhn.redhat.com. If you do not use this option, the system registers with Customer Portal Subscription Management.",
-          introduced: "17.8"
+        introduced: "17.8"
 
       property :base_url, String,
         description: "The hostname of the content delivery server to use to receive updates. Both Customer Portal Subscription Management and Subscription Asset Manager use Red Hat's hosted content delivery services, with the URL https://cdn.redhat.com. Since Satellite 6 hosts its own content, the URL must be used for systems registered with Satellite 6.",

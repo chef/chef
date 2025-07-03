@@ -106,8 +106,8 @@ describe Chef::Provider::RemoteFile::HTTP do
         context "and custom headers are provided" do
           before do
             new_resource.headers("x-myapp-header" => "app-specific-header",
-                                 "if-none-match" => "custom-etag",
-                                 "if-modified-since" => "custom-last-modified")
+              "if-none-match" => "custom-etag",
+              "if-modified-since" => "custom-last-modified")
           end
 
           it "preserves non-conflicting headers" do

@@ -6,8 +6,8 @@ describe powershell("(get-service habitat).Status") do
   its(:stdout) { should match(/Running/) }
 end
 
-restart_script = <<-EOH
-restart-service habitat
+restart_script = <<~EOH
+  restart-service habitat
 EOH
 
 describe powershell(restart_script) do

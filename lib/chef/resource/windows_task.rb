@@ -33,118 +33,118 @@ class Chef
       description "Use the **windows_task** resource to create, delete or run a Windows scheduled task."
       introduced "13.0"
       examples <<~DOC
-      **Create a scheduled task to run every 15 minutes as the Administrator user**:
+        **Create a scheduled task to run every 15 minutes as the Administrator user**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        user 'Administrator'
-        password 'password'
-        command 'chef-client'
-        run_level :highest
-        frequency :minute
-        frequency_modifier 15
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          user 'Administrator'
+          password 'password'
+          command 'chef-client'
+          run_level :highest
+          frequency :minute
+          frequency_modifier 15
+        end
+        ```
 
-      **Create a scheduled task to run every 2 days**:
+        **Create a scheduled task to run every 2 days**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        command 'chef-client'
-        run_level :highest
-        frequency :daily
-        frequency_modifier 2
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          command 'chef-client'
+          run_level :highest
+          frequency :daily
+          frequency_modifier 2
+        end
+        ```
 
-      **Create a scheduled task to run on specific days of the week**:
+        **Create a scheduled task to run on specific days of the week**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        command 'chef-client'
-        run_level :highest
-        frequency :weekly
-        day 'Mon, Thu'
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          command 'chef-client'
+          run_level :highest
+          frequency :weekly
+          day 'Mon, Thu'
+        end
+        ```
 
-      **Create a scheduled task to run only once**:
+        **Create a scheduled task to run only once**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        command 'chef-client'
-        run_level :highest
-        frequency :once
-        start_time '16:10'
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          command 'chef-client'
+          run_level :highest
+          frequency :once
+          start_time '16:10'
+        end
+        ```
 
-      **Create a scheduled task to run on current day every 3 weeks and delay upto 1 min**:
+        **Create a scheduled task to run on current day every 3 weeks and delay upto 1 min**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        command 'chef-client'
-        run_level :highest
-        frequency :weekly
-        frequency_modifier 3
-        random_delay '60'
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          command 'chef-client'
+          run_level :highest
+          frequency :weekly
+          frequency_modifier 3
+          random_delay '60'
+        end
+        ```
 
-      **Create a scheduled task to run weekly starting on Dec 28th 2018**:
+        **Create a scheduled task to run weekly starting on Dec 28th 2018**:
 
-      ```ruby
-      windows_task 'chef-client 8' do
-        command 'chef-client'
-        run_level :highest
-        frequency :weekly
-        start_day '12/28/2018'
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client 8' do
+          command 'chef-client'
+          run_level :highest
+          frequency :weekly
+          start_day '12/28/2018'
+        end
+        ```
 
-      **Create a scheduled task to run every Monday, Friday every 2 weeks**:
+        **Create a scheduled task to run every Monday, Friday every 2 weeks**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        command 'chef-client'
-        run_level :highest
-        frequency :weekly
-        frequency_modifier 2
-        day 'Mon, Fri'
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          command 'chef-client'
+          run_level :highest
+          frequency :weekly
+          frequency_modifier 2
+          day 'Mon, Fri'
+        end
+        ```
 
-      **Create a scheduled task to run when computer is idle with idle duration 20 min**:
+        **Create a scheduled task to run when computer is idle with idle duration 20 min**:
 
-      ```ruby
-      windows_task 'chef-client' do
-        command 'chef-client'
-        run_level :highest
-        frequency :on_idle
-        idle_time 20
-      end
-      ```
+        ```ruby
+        windows_task 'chef-client' do
+          command 'chef-client'
+          run_level :highest
+          frequency :on_idle
+          idle_time 20
+        end
+        ```
 
-      **Delete a task named "old task"**:
-      ```ruby
-      windows_task 'old task' do
-        action :delete
-      end
-      ```
+        **Delete a task named "old task"**:
+        ```ruby
+        windows_task 'old task' do
+          action :delete
+        end
+        ```
 
-      **Enable a task named "chef-client"**:
-      ```ruby
-      windows_task 'chef-client' do
-        action :enable
-      end
-      ```
+        **Enable a task named "chef-client"**:
+        ```ruby
+        windows_task 'chef-client' do
+          action :enable
+        end
+        ```
 
-      **Disable a task named "ProgramDataUpdater" with TaskPath "\\Microsoft\\Windows\\Application Experience\\ProgramDataUpdater"**
-      ```ruby
-      windows_task '\\Microsoft\\Windows\\Application Experience\\ProgramDataUpdater' do
-        action :disable
-      end
-      ```
+        **Disable a task named "ProgramDataUpdater" with TaskPath "\\Microsoft\\Windows\\Application Experience\\ProgramDataUpdater"**
+        ```ruby
+        windows_task '\\Microsoft\\Windows\\Application Experience\\ProgramDataUpdater' do
+          action :disable
+        end
+        ```
       DOC
 
       allowed_actions :create, :delete, :run, :end, :enable, :disable, :change
@@ -202,13 +202,13 @@ class Chef
         description: "Specifies the start time to run the task, in **HH:mm** format."
 
       property :day, [String, Integer],
-        description:  <<~DOCS
-        The day(s) on which the task runs.
-          * Use this property when setting `frequency` to `:monthly` or `:weekly`.
-          * Valid values with frequency `:weekly` are `MON`-`SUN` or `*`.
-          * Valid values with frequency `:monthly` are `1-31`, `MON`-`SUN`, and `LASTDAY`.
-          * Use `MON`-`SUN` or `LASTDAY` if you are setting `frequency_modifier` as "FIRST, SECOND, THIRD etc." else use 1-31.
-          * Multiple days should be comma separated. e.g `1, 2, 3` or `MON, WED, FRI`.
+        description: <<~DOCS
+          The day(s) on which the task runs.
+            * Use this property when setting `frequency` to `:monthly` or `:weekly`.
+            * Valid values with frequency `:weekly` are `MON`-`SUN` or `*`.
+            * Valid values with frequency `:monthly` are `1-31`, `MON`-`SUN`, and `LASTDAY`.
+            * Use `MON`-`SUN` or `LASTDAY` if you are setting `frequency_modifier` as "FIRST, SECOND, THIRD etc." else use 1-31.
+            * Multiple days should be comma separated. e.g `1, 2, 3` or `MON, WED, FRI`.
         DOCS
 
       property :months, String,
@@ -233,7 +233,7 @@ class Chef
 
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
-        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v.between?(0, 10) } }
 
       property :disallow_start_if_on_batteries, [TrueClass, FalseClass],
         introduced: "14.4", default: false,
@@ -300,7 +300,7 @@ class Chef
 
       # Validate the passed value is numeric values only if it is a string
       def numeric_value_in_string?(val)
-        return true if Integer(val)
+        true if Integer(val)
       rescue ArgumentError
         false
       end

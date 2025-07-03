@@ -365,9 +365,9 @@ describe Chef::Provider::Git do
     @resource.ssh_wrapper "do_it_this_way.sh"
     expected_cmd = "git clone \"git://github.com/opscode/chef.git\" \"/Application Support/with/space\""
     expect(@provider).to receive(:shell_out!).with(expected_cmd, user: "deployNinja",
-                                                                 log_tag: "git[web2.0 app]",
-                                                                 environment: { "HOME" => "/home/deployNinja",
-                                                                                "GIT_SSH" => "do_it_this_way.sh" })
+      log_tag: "git[web2.0 app]",
+      environment: { "HOME" => "/home/deployNinja",
+                     "GIT_SSH" => "do_it_this_way.sh" })
     @provider.clone
   end
 
@@ -403,9 +403,9 @@ describe Chef::Provider::Git do
   it "runs a checkout command when the local branch is set" do
     @resource.checkout_branch "deploy"
     expect(@provider).to receive(:shell_out!).with("git branch -f deploy d35af14d41ae22b19da05d7d03a0bafc321b244c", cwd: "/my/deploy/dir",
-                                                                                                                    log_tag: "git[web2.0 app]").ordered
+      log_tag: "git[web2.0 app]").ordered
     expect(@provider).to receive(:shell_out!).with("git checkout deploy", cwd: "/my/deploy/dir",
-                                                                          log_tag: "git[web2.0 app]").ordered
+      log_tag: "git[web2.0 app]").ordered
     @provider.checkout
   end
 
@@ -413,7 +413,7 @@ describe Chef::Provider::Git do
     @resource.enable_submodules true
     expected_cmd = "git submodule sync"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, cwd: "/my/deploy/dir",
-                                                                 log_tag: "git[web2.0 app]")
+      log_tag: "git[web2.0 app]")
     expected_cmd = "git submodule update --init --recursive"
     expect(@provider).to receive(:shell_out!).with(expected_cmd, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
     @provider.enable_submodules
@@ -443,19 +443,19 @@ describe Chef::Provider::Git do
 
     expected_cmd1 = "git fetch --prune origin"
     expect(@provider).to receive(:shell_out!).with(expected_cmd1, cwd: "/my/deploy/dir",
-                                                                  user: "whois", group: "thisis",
-                                                                  log_tag: "git[web2.0 app]",
-                                                                  environment: { "HOME" => "/home/whois" })
+      user: "whois", group: "thisis",
+      log_tag: "git[web2.0 app]",
+      environment: { "HOME" => "/home/whois" })
     expected_cmd2 = "git fetch origin --tags"
     expect(@provider).to receive(:shell_out!).with(expected_cmd2, cwd: "/my/deploy/dir",
-                                                                  user: "whois", group: "thisis",
-                                                                  log_tag: "git[web2.0 app]",
-                                                                  environment: { "HOME" => "/home/whois" })
+      user: "whois", group: "thisis",
+      log_tag: "git[web2.0 app]",
+      environment: { "HOME" => "/home/whois" })
     expected_cmd3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     expect(@provider).to receive(:shell_out!).with(expected_cmd3, cwd: "/my/deploy/dir",
-                                                                  user: "whois", group: "thisis",
-                                                                  log_tag: "git[web2.0 app]",
-                                                                  environment: { "HOME" => "/home/whois" })
+      user: "whois", group: "thisis",
+      log_tag: "git[web2.0 app]",
+      environment: { "HOME" => "/home/whois" })
     @provider.fetch_updates
   end
 

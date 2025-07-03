@@ -28,16 +28,16 @@ class Chef
 
       description "Use the **subversion** resource to manage source control resources that exist in a Subversion repository. Warning: The subversion resource has known bugs and may not work as expected. For more information see Chef GitHub issues, particularly [#4050](https://github.com/chef/chef/issues/4050) and [#4257](https://github.com/chef/chef/issues/4257)."
       examples <<~DOC
-      **Get the latest version of an application**
+        **Get the latest version of an application**
 
-      ```ruby
-      subversion 'CouchDB Edge' do
-        repository 'http://svn.apache.org/repos/asf/couchdb/trunk'
-        revision 'HEAD'
-        destination '/opt/my_sources/couch'
-        action :sync
-      end
-      ```
+        ```ruby
+        subversion 'CouchDB Edge' do
+          repository 'http://svn.apache.org/repos/asf/couchdb/trunk'
+          revision 'HEAD'
+          destination '/opt/my_sources/couch'
+          action :sync
+        end
+        ```
       DOC
 
       allowed_actions :force_export

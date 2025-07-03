@@ -25,36 +25,36 @@ class Chef
       description "Use the **selinux_fcontext** resource to set the SELinux context of files using the `semanage fcontext` command."
       introduced "18.0"
       examples <<~DOC
-      **Allow http servers (e.g. nginx/apache) to modify moodle files**:
+        **Allow http servers (e.g. nginx/apache) to modify moodle files**:
 
-      ```ruby
-      selinux_fcontext '/var/www/moodle(/.*)?' do
-        secontext 'httpd_sys_rw_content_t'
-      end
-      ```
+        ```ruby
+        selinux_fcontext '/var/www/moodle(/.*)?' do
+          secontext 'httpd_sys_rw_content_t'
+        end
+        ```
 
-      **Adapt a symbolic link**:
+        **Adapt a symbolic link**:
 
-      ```ruby
-      selinux_fcontext '/var/www/symlink_to_webroot' do
-        secontext 'httpd_sys_rw_content_t'
-        file_type 'l'
-      end
-      ```
+        ```ruby
+        selinux_fcontext '/var/www/symlink_to_webroot' do
+          secontext 'httpd_sys_rw_content_t'
+          file_type 'l'
+        end
+        ```
       DOC
 
       property :file_spec, String,
-                name_property: true,
-                description: "Path to or regex matching the files or directories to label."
+        name_property: true,
+        description: "Path to or regex matching the files or directories to label."
 
       property :secontext, String,
-                required: %i{add modify manage},
-                description: "SELinux context to assign."
+        required: %i{add modify manage},
+        description: "SELinux context to assign."
 
       property :file_type, String,
-                default: "a",
-                equal_to: %w{a f d c b s l p},
-                description: "The type of the file being labeled."
+        default: "a",
+        equal_to: %w{a f d c b s l p},
+        description: "The type of the file being labeled."
 
       action_class do
         include Chef::SELinux::CommonHelpers

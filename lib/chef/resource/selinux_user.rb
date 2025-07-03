@@ -24,30 +24,30 @@ class Chef
       description "Use the **selinux_user** resource to add, update, or remove SELinux users."
       introduced "18.1"
       examples <<~DOC
-      **Manage test_u SELinux user with a level and range of s0 and roles sysadm_r and staff_r**:
+        **Manage test_u SELinux user with a level and range of s0 and roles sysadm_r and staff_r**:
 
-      ```ruby
-      selinux_user 'test_u' do
-        level 's0'
-        range 's0'
-        roles %w(sysadm_r staff_r)
-      end
-      ```
+        ```ruby
+        selinux_user 'test_u' do
+          level 's0'
+          range 's0'
+          roles %w(sysadm_r staff_r)
+        end
+        ```
       DOC
 
       property :user, String,
-                name_property: true,
-                description: "An optional property to set the SELinux user value if it differs from the resource block's name."
+        name_property: true,
+        description: "An optional property to set the SELinux user value if it differs from the resource block's name."
 
       property :level, String,
-                description: "MLS/MCS security level for the SELinux user."
+        description: "MLS/MCS security level for the SELinux user."
 
       property :range, String,
-                description: "MLS/MCS security range for the SELinux user."
+        description: "MLS/MCS security range for the SELinux user."
 
       property :roles, Array,
-                description: "Associated SELinux roles for the user.",
-                coerce: proc { |r| Array(r).sort }
+        description: "Associated SELinux roles for the user.",
+        coerce: proc { |r| Array(r).sort }
 
       load_current_value do |new_resource|
         users = shell_out!("semanage user -l").stdout.split("\n")
