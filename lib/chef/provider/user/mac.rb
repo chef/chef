@@ -307,7 +307,9 @@ class Chef
 
         def remove_user
           cmd = ["-deleteUser", new_resource.username]
+          # rubocop:disable Lint/Void
           cmd << new_resource.manage_home ? "-secure" : "-keepHome"
+          # rubocop:enable Lint/Void
           if %i{admin_username admin_password}.all? { |p| prop_is_set?(p) }
             cmd += ["-adminUser", new_resource.admin_username]
             cmd += ["-adminPassword", new_resource.admin_password]

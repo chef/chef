@@ -24,14 +24,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               action :nothing
             end
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               notifies :run, "ruby_block[first block]", :delayed
             end
@@ -81,14 +81,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               notifies :run, "ruby_block[second block]", :delayed
             end
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               action :nothing
             end
@@ -137,14 +137,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               action :nothing
             end
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               notifies :run, "ruby_block[first block]", :immediate
             end
@@ -193,14 +193,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               notifies :run, "ruby_block[second block]", :immediate
             end
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               action :nothing
             end
@@ -248,7 +248,7 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               notifies :run, "ruby_block[second block]", :immediate
             end
@@ -298,14 +298,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               action :nothing
             end
             var = "bar"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               notifies :run, "ruby_block[second block]", :delayed
             end
@@ -356,14 +356,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               action :nothing
             end
             var = "bar"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               notifies :run, "ruby_block[second block]", :immediate
             end
@@ -415,13 +415,13 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
             end
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               subscribes :run, "ruby_block[first block]", :immediate
               action :nothing
@@ -471,7 +471,7 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               subscribes :run, "ruby_block[second block]", :immediate
               action :nothing
@@ -479,7 +479,7 @@ describe "Unified Mode" do
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
             end
             var = "baz"
@@ -527,13 +527,13 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
             end
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
               subscribes :run, "ruby_block[first block]", :delayed
               action :nothing
@@ -583,7 +583,7 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "first block" do
               block do
-                puts "\nfirst: \#\{var\}"
+                puts "\nfirst: \#{var}"
               end
               subscribes :run, "ruby_block[second block]", :delayed
               action :nothing
@@ -591,7 +591,7 @@ describe "Unified Mode" do
             var = "bar"
             ruby_block "second block" do
               block do
-                puts "\nsecond: \#\{var\}"
+                puts "\nsecond: \#{var}"
               end
             end
             var = "baz"
@@ -639,14 +639,14 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "notified block" do
               block do
-                puts "\nnotified: \#\{var\}"
+                puts "\nnotified: \#{var}"
               end
               action :nothing
             end
             var = "bar"
             whyrun_safe_ruby_block "notifying block" do
               block do
-                puts "\nnotifying: \#\{var\}"
+                puts "\nnotifying: \#{var}"
               end
               notifies :run, "ruby_block[notified block]", :before
             end
@@ -669,7 +669,7 @@ describe "Unified Mode" do
       EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
-      expect(result.stdout.scan(/notifying: bar/).length).to eql(2)
+      expect(result.stdout.scan("notifying: bar").length).to eql(2)
       expect(result.stdout).to include("Would execute the whyrun_safe_ruby_block notifying block")
       expect(result.stdout).to include("notified: bar")
       # no other actions should run
@@ -694,7 +694,7 @@ describe "Unified Mode" do
             var = "foo"
             ruby_block "notified block" do
               block do
-                puts "\nnotified: \#\{var\}"
+                puts "\nnotified: \#{var}"
               end
               subscribes :run, "whyrun_safe_ruby_block[notifying block]", :before
               action :nothing
@@ -702,7 +702,7 @@ describe "Unified Mode" do
             var = "bar"
             whyrun_safe_ruby_block "notifying block" do
               block do
-                puts "\nnotifying: \#\{var\}"
+                puts "\nnotifying: \#{var}"
               end
             end
             var = "baz"
@@ -724,7 +724,7 @@ describe "Unified Mode" do
       EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
-      expect(result.stdout.scan(/notifying: bar/).length).to eql(2)
+      expect(result.stdout.scan("notifying: bar").length).to eql(2)
       expect(result.stdout).to include("Would execute the whyrun_safe_ruby_block notifying block")
       expect(result.stdout).to include("notified: bar")
       # no other actions should run
@@ -749,14 +749,14 @@ describe "Unified Mode" do
             var = "foo"
             whyrun_safe_ruby_block "notifying block" do
               block do
-                puts "\nnotifying: \#\{var\}"
+                puts "\nnotifying: \#{var}"
               end
               notifies :run, "ruby_block[notified block]", :before
             end
             var = "bar"
             ruby_block "notified block" do
               block do
-                puts "\nnotified: \#\{var\}"
+                puts "\nnotified: \#{var}"
               end
               action :nothing
             end
@@ -799,13 +799,13 @@ describe "Unified Mode" do
             var = "foo"
             whyrun_safe_ruby_block "notifying block" do
               block do
-                puts "\nnotifying: \#\{var\}"
+                puts "\nnotifying: \#{var}"
               end
             end
             var = "bar"
             ruby_block "notified block" do
               block do
-                puts "\nnotified: \#\{var\}"
+                puts "\nnotified: \#{var}"
               end
               subscribes :run, "whyrun_safe_ruby_block[notifying block]", :before
               action :nothing
@@ -850,7 +850,7 @@ describe "Unified Mode" do
           var = "foo"
           ruby_block "first block" do
             block do
-              puts "\nfirst: \#\{var\}"
+              puts "\nfirst: \#{var}"
             end
           end
           var = "bar"

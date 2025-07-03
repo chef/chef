@@ -57,8 +57,8 @@ module ChefConfig
 
     def self.join(*args, windows: ChefUtils.windows?)
       path_separator_regex = Regexp.escape(windows ? "#{File::SEPARATOR}#{BACKSLASH}" : File::SEPARATOR)
-      trailing_slashes_regex = /[#{path_separator_regex}]+$/.freeze
-      leading_slashes_regex = /^[#{path_separator_regex}]+/.freeze
+      trailing_slashes_regex = /[#{path_separator_regex}]+$/
+      leading_slashes_regex = /^[#{path_separator_regex}]+/
       separator = path_separator(windows: windows)
 
       args.flatten!

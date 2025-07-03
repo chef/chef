@@ -238,7 +238,7 @@ class Chef
 
         def source_listing
           @source_listing ||= begin
-            lines = @template.split(/\n/)
+            lines = @template.split("\n")
             if line_number
               line_index = line_number - 1
               beginning_line = line_index <= SOURCE_CONTEXT_WINDOW ? 0 : line_index - SOURCE_CONTEXT_WINDOW

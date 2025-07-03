@@ -22,8 +22,8 @@ class Chef
   class Knife
     class SubcommandLoader
       class GemGlobLoader < Chef::Knife::SubcommandLoader
-        MATCHES_CHEF_GEM ||= %r{/chef-\d+\.\d+\.\d+}.freeze
-        MATCHES_THIS_CHEF_GEM ||= %r{/chef-#{Chef::VERSION}(-\w+)?(-\w+)?/}.freeze
+        MATCHES_CHEF_GEM ||= %r{/chef-\d+\.\d+\.\d+}
+        MATCHES_THIS_CHEF_GEM ||= %r{/chef-#{Chef::VERSION}(-\w+)?(-\w+)?/}
 
         def subcommand_files
           @subcommand_files ||= (gem_and_builtin_subcommands.values + site_subcommands).flatten.uniq
@@ -47,11 +47,11 @@ class Chef
 
         def find_subcommands_via_rubygems
           files = find_files_latest_gems "chef/knife/*.rb"
-          version_file_match = /#{Regexp.escape(File.join('chef', 'knife', 'version'))}$/
+          version_file_match = /#{Regexp.escape(File.join("chef", "knife", "version"))}$/
           subcommand_files = {}
           files.each do |file|
 
-            rel_path = file[/(.*)(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 2]
+            rel_path = file[/(.*)(#{Regexp.escape File.join("chef", "knife", "")}.*)\.rb/, 2]
 
             # When not installed as a gem (ChefDK/appbundler in particular), AND
             # a different version of Chef is installed via gems, `files` will

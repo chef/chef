@@ -32,27 +32,27 @@ describe Chef::Resource::InspecWaiver do
   let(:collection) { double("resource collection") }
   let(:waiver_yaml) do
     <<~EOH
-ssh-01:
-  expiration_date: 2033-07-31
-  run: false
-  justification: "waived, yo"
+      ssh-01:
+        expiration_date: 2033-07-31
+        run: false
+        justification: "waived, yo"
     EOH
   end
   let(:waiver_json) do
     <<~EOH
-{ "ssh-01": {
-  "expiration_date": "2033-07-31",
-  "run": false,
-  "justification": "waived, yo"
-  } }
+      { "ssh-01": {
+        "expiration_date": "2033-07-31",
+        "run": false,
+        "justification": "waived, yo"
+        } }
     EOH
   end
   let(:waiver_toml) do
     <<~EOH
-[ssh-01]
-expiration_date = 2033-07-31T00:00:00.000Z
-run = false
-justification = "waived, yo"
+      [ssh-01]
+      expiration_date = 2033-07-31T00:00:00.000Z
+      run = false
+      justification = "waived, yo"
     EOH
   end
   let(:waiver_hash) do

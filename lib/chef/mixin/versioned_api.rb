@@ -48,7 +48,7 @@ class Chef
           version = klass.send(:minimum_api_version)
           # min and max versions will be nil if we've not made a request to the server yet,
           # in which case we'll just start with the highest version and see what happens
-          ServerAPIVersions.instance.min_server_version.nil? || (version >= ServerAPIVersions.instance.min_server_version && version <= ServerAPIVersions.instance.send(type))
+          ServerAPIVersions.instance.min_server_version.nil? || (version.between?(ServerAPIVersions.instance.min_server_version, ServerAPIVersions.instance.send(type)))
         end
           .max_by { |a| a.send(:minimum_api_version) }
       end

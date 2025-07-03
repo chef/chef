@@ -31,33 +31,33 @@ class Chef
       description "Use the **homebrew_package** resource to manage packages for the macOS platform. Note: Starting with #{ChefUtils::Dist::Infra::PRODUCT} 16 the homebrew resource now accepts an array of packages for installing multiple packages at once."
       introduced "12.0"
       examples <<~DOC
-      **Install a package**:
+        **Install a package**:
 
-      ```ruby
-      homebrew_package 'git'
-      ```
+        ```ruby
+        homebrew_package 'git'
+        ```
 
-      **Install multiple packages at once**:
+        **Install multiple packages at once**:
 
-      ```ruby
-      homebrew_package %w(git fish ruby)
-      ```
+        ```ruby
+        homebrew_package %w(git fish ruby)
+        ```
 
-      **Specify the Homebrew user with a UUID**
+        **Specify the Homebrew user with a UUID**
 
-      ```ruby
-      homebrew_package 'git' do
-        homebrew_user 1001
-      end
-      ```
+        ```ruby
+        homebrew_package 'git' do
+          homebrew_user 1001
+        end
+        ```
 
-      **Specify the Homebrew user with a string**:
+        **Specify the Homebrew user with a string**:
 
-      ```ruby
-      homebrew_package 'vim' do
-        homebrew_user 'user1'
-      end
-      ```
+        ```ruby
+        homebrew_package 'vim' do
+          homebrew_user 'user1'
+        end
+        ```
       DOC
 
       allowed_actions :install, :upgrade, :remove, :purge

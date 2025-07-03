@@ -429,7 +429,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         # Unlocks the user
         #
         def unlock_user
-          auth_string = authentication_authority.gsub(/AuthenticationAuthority: /, "").gsub(/;DisabledUser;/, "").strip
+          auth_string = authentication_authority.gsub("AuthenticationAuthority: ", "").gsub(";DisabledUser;", "").strip
           run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
         end
 

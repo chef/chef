@@ -29,24 +29,24 @@ class Chef
       description "Use the **openssl_x509_crl** resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
       introduced "14.4"
       examples <<~DOC
-      **Create a certificate revocation file**
+        **Create a certificate revocation file**
 
-      ```ruby
-      openssl_x509_crl '/etc/ssl_test/my_ca.crl' do
-        ca_cert_file '/etc/ssl_test/my_ca.crt'
-        ca_key_file '/etc/ssl_test/my_ca.key'
-      end
-      ```
+        ```ruby
+        openssl_x509_crl '/etc/ssl_test/my_ca.crl' do
+          ca_cert_file '/etc/ssl_test/my_ca.crt'
+          ca_key_file '/etc/ssl_test/my_ca.key'
+        end
+        ```
 
-      **Create a certificate revocation file for a particular serial**
+        **Create a certificate revocation file for a particular serial**
 
-      ```ruby
-      openssl_x509_crl '/etc/ssl_test/my_ca.crl' do
-        ca_cert_file '/etc/ssl_test/my_ca.crt'
-        ca_key_file '/etc/ssl_test/my_ca.key'
-        serial_to_revoke C7BCB6602A2E4251EF4E2827A228CB52BC0CEA2F
-      end
-      ```
+        ```ruby
+        openssl_x509_crl '/etc/ssl_test/my_ca.crl' do
+          ca_cert_file '/etc/ssl_test/my_ca.crt'
+          ca_key_file '/etc/ssl_test/my_ca.key'
+          serial_to_revoke C7BCB6602A2E4251EF4E2827A228CB52BC0CEA2F
+        end
+        ```
       DOC
 
       property :path, String,

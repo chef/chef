@@ -29,26 +29,26 @@ class Chef
       description "Use the **windows_update_settings** resource to manage the various Windows Update patching options."
       introduced "17.3"
       examples <<~DOC
-      **Set Windows Update settings**:
+        **Set Windows Update settings**:
 
-      ```ruby
-      windows_update_settings 'Settings to Configure Windows Nodes to automatically receive updates' do
-        disable_os_upgrades true
-        elevate_non_admins true
-        block_windows_update_website true
-        automatically_install_minor_updates true
-        scheduled_install_day 'Friday'
-        scheduled_install_hour 18
-        update_other_ms_products true
-        action :enable
-      end
-      ```
+        ```ruby
+        windows_update_settings 'Settings to Configure Windows Nodes to automatically receive updates' do
+          disable_os_upgrades true
+          elevate_non_admins true
+          block_windows_update_website true
+          automatically_install_minor_updates true
+          scheduled_install_day 'Friday'
+          scheduled_install_hour 18
+          update_other_ms_products true
+          action :enable
+        end
+        ```
       DOC
 
       # required for the alias to pass validation
       allowed_actions :set, :enable
 
-      DAYS = %W{Everyday Monday Tuesday Wednesday Thursday Friday Saturday Sunday}.freeze
+      DAYS = %w{Everyday Monday Tuesday Wednesday Thursday Friday Saturday Sunday}.freeze
       UPDATE_OPTIONS = {
                         notify: 2,
                         download_and_notify: 3,
@@ -87,8 +87,8 @@ class Chef
       # HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU
 
       property :automatic_update_option, [Integer, Symbol], equal_to: UPDATE_OPTIONS.keys, coerce: proc { |x| UPDATE_OPTIONS.key(x) || x },
-                default: :download_and_schedule,
-                description: "Control what to do when updates are found. This allows you to notify, automatically download and notify to install, automatically download and schedule the install, or let the local admin decide what action to take."
+        default: :download_and_schedule,
+        description: "Control what to do when updates are found. This allows you to notify, automatically download and notify to install, automatically download and schedule the install, or let the local admin decide what action to take."
       # options: 2 - notify before download
       #          3 - auto download and notify
       #          4 - auto download and schedule - must also set day and time (below)
@@ -104,11 +104,11 @@ class Chef
       #          1 - yeah, buddy, i want to set my own interval for checking for updates - true
 
       property :custom_detection_frequency, Integer, default: 22, description: "If you decided to override the OS default detection frequency, specify your choice here. Valid choices are 0 - 22",
-      callbacks: {
-        "should be a valid detection frequency (0-22)" => lambda { |p|
-          p >= 0 && p <= 22
-        },
-      }
+        callbacks: {
+          "should be a valid detection frequency (0-22)" => lambda { |p|
+            p.between?(0, 22)
+          },
+        }
       # a time period of between 0 and 22 hours to check for new updates
       # this is a hex value - convert it from dec to hex
 
@@ -125,11 +125,11 @@ class Chef
       #          Sunday - Saturday day of the week to install, 1 == sunday
 
       property :scheduled_install_hour, Integer, description: "If you chose a scheduled day to install, then choose an hour on that day for you installation",
-                callbacks: {
-                  "should be a valid hour in a 24 hour clock" => lambda { |p|
-                    p > 0 && p < 25
-                  },
-                }
+        callbacks: {
+          "should be a valid hour in a 24 hour clock" => lambda { |p|
+            p > 0 && p < 25
+          },
+        }
       # options: --- 2-digit number representing an hour of the day, uses a 24-hour clock, 12 == noon, 24 == midnight
 
       property :update_other_ms_products, [true, false], default: true, description: "Allows for other Microsoft products to get updates too"

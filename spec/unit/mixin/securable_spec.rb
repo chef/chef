@@ -107,9 +107,9 @@ describe Chef::Mixin::Securable do
     end
 
     it "should accept Active Directory-style domain names pulled in via LDAP (on unix hosts)" do
-      expect { @securable.owner "domain\@user" }.not_to raise_error
+      expect { @securable.owner "domain@user" }.not_to raise_error
       expect { @securable.owner "domain\\user" }.not_to raise_error
-      expect { @securable.group "domain\@group" }.not_to raise_error
+      expect { @securable.group "domain@group" }.not_to raise_error
       expect { @securable.group "domain\\group" }.not_to raise_error
       expect { @securable.group "domain\\group^name" }.not_to raise_error
     end

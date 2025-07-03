@@ -239,17 +239,17 @@ class Chef
 
         def get_package_source_details
           powershell_exec! <<~EOH
-              $package_details = Get-PackageSource -Name '#{new_resource.source_name}' -ErrorAction SilentlyContinue
-              if ($package_details.ProviderName -match "PowerShellGet"){
-                return "PSRepository"
-              }
-              elseif ($package_details.ProviderName ) {
-                return "PackageSource"
-              }
-              elseif ($null -eq $package_details)
-              {
-                return "Unregistered"
-              }
+            $package_details = Get-PackageSource -Name '#{new_resource.source_name}' -ErrorAction SilentlyContinue
+            if ($package_details.ProviderName -match "PowerShellGet"){
+              return "PSRepository"
+            }
+            elseif ($package_details.ProviderName ) {
+              return "PackageSource"
+            }
+            elseif ($null -eq $package_details)
+            {
+              return "Unregistered"
+            }
           EOH
         end
 

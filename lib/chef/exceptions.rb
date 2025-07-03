@@ -532,7 +532,9 @@ class Chef
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|
           if r["Module"].nil?
+            # rubocop:disable Lint/Void
             "Resource #{r["Name"]} was found in #{r["Module"]["Name"]}"
+            # rubocop:enable Lint/Void
           else
             "Resource #{r["Name"]} is a binary resource"
           end

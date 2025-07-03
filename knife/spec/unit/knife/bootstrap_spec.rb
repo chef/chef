@@ -586,7 +586,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "creates /etc/chef/client.d" do
-        expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
+        expect(rendered_template).to match("mkdir -p /etc/chef/client.d")
       end
 
       context "a flat directory structure" do

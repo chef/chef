@@ -6,48 +6,48 @@ class Chef
       description "Use the chocolatey_installer resource to ensure that Chocolatey itself is installed to your specification. Use the Chocolatey Feature resource to customize your install. Then use the Chocolatey Package resource to install packages on Windows via Chocolatey."
       introduced "18.3"
       examples <<~DOC
-          **Install Chocolatey**
+        **Install Chocolatey**
 
-          ```ruby
-          chocolatey_installer 'latest' do
-            action :install
-          end
-          ```
+        ```ruby
+        chocolatey_installer 'latest' do
+          action :install
+        end
+        ```
 
-          **Uninstall Chocolatey**
+        **Uninstall Chocolatey**
 
-          ```ruby
-          chocolatey_installer 'Some random verbiage' do
-            action :uninstall
-          end
-          ```
+        ```ruby
+        chocolatey_installer 'Some random verbiage' do
+          action :uninstall
+        end
+        ```
 
-          **Install Chocolatey with Parameters**
+        **Install Chocolatey with Parameters**
 
-          ```ruby
-          chocolatey_installer 'latest' do
-            action :install
-            download_url "https://www.contoso.com/foo"
-            chocolatey_version '2.12.24'
-          end
-          ```
+        ```ruby
+        chocolatey_installer 'latest' do
+          action :install
+          download_url "https://www.contoso.com/foo"
+          chocolatey_version '2.12.24'
+        end
+        ```
 
-          ```ruby
-          chocolatey_installer 'latest' do
-            action :install
-            download_url "c:\\foo\foo.nupkg"
-            chocolatey_version '2.12.24'
-          end
-          ```
+        ```ruby
+        chocolatey_installer 'latest' do
+          action :install
+          download_url "c:\\foo\foo.nupkg"
+          chocolatey_version '2.12.24'
+        end
+        ```
 
-          **Upgrade Chocolatey with Parameters**
+        **Upgrade Chocolatey with Parameters**
 
-          ```ruby
-          chocolatey_installer 'latest' do
-            action :upgrade
-            chocolatey_version '2.12.24'
-          end
-          ```
+        ```ruby
+        chocolatey_installer 'latest' do
+          action :upgrade
+          chocolatey_version '2.12.24'
+        end
+        ```
       DOC
 
       allowed_actions :install, :uninstall, :upgrade

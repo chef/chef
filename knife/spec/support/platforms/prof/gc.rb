@@ -24,7 +24,7 @@ module RSpec
         # GC 1 invokes.
         # Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC time(ms)
         #     1               0.012               159240               212940                10647         0.00000000000001530000
-        LINE_PATTERN = /^\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)$/.freeze
+        LINE_PATTERN = /^\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)$/
 
         def start
           ::GC::Profiler.enable unless ::GC::Profiler.enabled?

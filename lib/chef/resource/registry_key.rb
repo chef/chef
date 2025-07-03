@@ -28,95 +28,95 @@ class Chef
 
       description "Use the **registry_key** resource to create and delete registry keys in Microsoft Windows. Note: 64-bit versions of Microsoft Windows have a 32-bit compatibility layer in the registry that reflects and redirects certain keys (and their values) into specific locations (or logical views) of the registry hive.\n\n#{ChefUtils::Dist::Infra::PRODUCT} can access any reflected or redirected registry key. The machine architecture of the system on which #{ChefUtils::Dist::Infra::PRODUCT} is running is used as the default (non-redirected) location. Access to the SysWow64 location is redirected must be specified. Typically, this is only necessary to ensure compatibility with 32-bit applications that are running on a 64-bit operating system.\n\nFor more information, see: [Registry Reflection](https://docs.microsoft.com/en-us/windows/win32/winprog64/registry-reflection)."
       examples <<~'DOC'
-      **Create a registry key**
+        **Create a registry key**
 
-      ```ruby
-      registry_key 'HKEY_LOCAL_MACHINE\\path-to-key\\Policies\\System' do
-        values [{
-          name: 'EnableLUA',
-          type: :dword,
-          data: 0
-        }]
-        action :create
-      end
-      ```
-
-      **Create a registry key with binary data: "\x01\x02\x03"**:
-
-      ```ruby
-      registry_key 'HKEY_CURRENT_USER\ChefTest' do
-        values [{
-          :name => "test",
-          :type => :binary,
-          :data => [0, 1, 2].map(&:chr).join
-        }]
-
-        action :create
-      end
-      ```
-
-      **Create 32-bit key in redirected wow6432 tree**
-
-      In 64-bit versions of Microsoft Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Example is a re-directed key. In the following examples, because HKEY_LOCAL_MACHINE\SOFTWARE\Example is a 32-bit key, the output will be “Found 32-bit key” if they are run on a version of Microsoft Windows that is 64-bit:
-
-      ```ruby
-      registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\Example' do
-        architecture :i386
-        recursive true
-        action :create
-      end
-      ```
-
-      **Set proxy settings to be the same as those used by #{ChefUtils::Dist::Infra::PRODUCT}**
-
-      ```ruby
-      proxy = URI.parse(Chef::Config[:http_proxy])
-      registry_key 'HKCU\Software\Microsoft\path\to\key\Internet Settings' do
-        values [{name: 'ProxyEnable', type: :reg_dword, data: 1},
-                {name: 'ProxyServer', data: "#{proxy.host}:#{proxy.port}"},
-                {name: 'ProxyOverride', type: :reg_string, data: <local>},
-               ]
-        action :create
-      end
-      ```
-
-      **Set the name of a registry key to "(Default)"**
-
-      ```ruby
-      registry_key 'Set (Default) value' do
-        key 'HKLM\Software\Test\Key\Path'
-        values [
-          {name: '', type: :string, data: 'test'},
-        ]
-        action :create
-      end
-      ```
-
-      **Delete a registry key value**
-
-      ```ruby
-      registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\path\to\key\AU' do
-        values [{
-          name: 'NoAutoRebootWithLoggedOnUsers',
-          type: :dword,
-          data: ''
+        ```ruby
+        registry_key 'HKEY_LOCAL_MACHINE\\path-to-key\\Policies\\System' do
+          values [{
+            name: 'EnableLUA',
+            type: :dword,
+            data: 0
           }]
-        action :delete
-      end
-      ```
+          action :create
+        end
+        ```
 
-      Note: If data: is not specified, you get an error: Missing data key in RegistryKey values hash
+        **Create a registry key with binary data: "\x01\x02\x03"**:
 
-      **Delete a registry key and its subkeys, recursively**
+        ```ruby
+        registry_key 'HKEY_CURRENT_USER\ChefTest' do
+          values [{
+            :name => "test",
+            :type => :binary,
+            :data => [0, 1, 2].map(&:chr).join
+          }]
 
-      ```ruby
-      registry_key 'HKCU\SOFTWARE\Policies\path\to\key\Themes' do
-        recursive true
-        action :delete_key
-      end
-      ```
+          action :create
+        end
+        ```
 
-      Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by #{ChefUtils::Dist::Infra::PRODUCT}.
+        **Create 32-bit key in redirected wow6432 tree**
+
+        In 64-bit versions of Microsoft Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Example is a re-directed key. In the following examples, because HKEY_LOCAL_MACHINE\SOFTWARE\Example is a 32-bit key, the output will be “Found 32-bit key” if they are run on a version of Microsoft Windows that is 64-bit:
+
+        ```ruby
+        registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\Example' do
+          architecture :i386
+          recursive true
+          action :create
+        end
+        ```
+
+        **Set proxy settings to be the same as those used by #{ChefUtils::Dist::Infra::PRODUCT}**
+
+        ```ruby
+        proxy = URI.parse(Chef::Config[:http_proxy])
+        registry_key 'HKCU\Software\Microsoft\path\to\key\Internet Settings' do
+          values [{name: 'ProxyEnable', type: :reg_dword, data: 1},
+                  {name: 'ProxyServer', data: "#{proxy.host}:#{proxy.port}"},
+                  {name: 'ProxyOverride', type: :reg_string, data: <local>},
+                 ]
+          action :create
+        end
+        ```
+
+        **Set the name of a registry key to "(Default)"**
+
+        ```ruby
+        registry_key 'Set (Default) value' do
+          key 'HKLM\Software\Test\Key\Path'
+          values [
+            {name: '', type: :string, data: 'test'},
+          ]
+          action :create
+        end
+        ```
+
+        **Delete a registry key value**
+
+        ```ruby
+        registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\path\to\key\AU' do
+          values [{
+            name: 'NoAutoRebootWithLoggedOnUsers',
+            type: :dword,
+            data: ''
+            }]
+          action :delete
+        end
+        ```
+
+        Note: If data: is not specified, you get an error: Missing data key in RegistryKey values hash
+
+        **Delete a registry key and its subkeys, recursively**
+
+        ```ruby
+        registry_key 'HKCU\SOFTWARE\Policies\path\to\key\Themes' do
+          recursive true
+          action :delete_key
+        end
+        ```
+
+        Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by #{ChefUtils::Dist::Infra::PRODUCT}.
       DOC
 
       default_action :create
@@ -152,10 +152,10 @@ class Chef
       property :recursive, [TrueClass, FalseClass], default: false
       property :architecture, Symbol, default: :machine, equal_to: %i{machine x86_64 i386}
       property :only_record_changes, [TrueClass, FalseClass],
-         default: true,
-         introduced: "18.7.3",
-         description: "(no-op) disabled functionality to only record registry value changes",
-         deprecated: true
+        default: true,
+        introduced: "18.7.3",
+        description: "(no-op) disabled functionality to only record registry value changes",
+        deprecated: true
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):

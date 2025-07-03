@@ -59,9 +59,9 @@ class Chef
       DEFAULTS_EXECUTABLE = "/usr/bin/defaults".freeze
       PLUTIL_EXECUTABLE = "/usr/bin/plutil".freeze
       PLUTIL_FORMAT_MAP = { "us-ascii" => "xml1",
-                             "text/xml" => "xml1",
-                             "utf-8" => "xml1",
-                             "binary" => "binary1" }.freeze
+                            "text/xml" => "xml1",
+                            "utf-8" => "xml1",
+                            "binary" => "binary1" }.freeze
 
       load_current_value do |new_resource|
         current_value_does_not_exist! unless ::File.exist? new_resource.path
@@ -206,7 +206,7 @@ class Chef
               end
         entry_with_arg = ["\"#{entry}\"", arg].join(sep).strip
         subcommand = "#{subcommand.capitalize} :#{entry_with_arg}"
-        [PLISTBUDDY_EXECUTABLE, "-c", "\'#{subcommand}\'", "\"#{path}\""].join(" ")
+        [PLISTBUDDY_EXECUTABLE, "-c", "'#{subcommand}'", "\"#{path}\""].join(" ")
       end
 
       def setting_from_plist(entry, path)

@@ -46,11 +46,9 @@ describe Chef::Provider::Package::Windows::Exe do
     }]
   end
   let(:uninstall_entry) do
-    entries = []
-    uninstall_hash.each do |entry|
-      entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", "key", entry))
+    entries = uninstall_hash.map do |entry|
+      Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", "key", entry)
     end
-    entries
   end
   let(:provider) { Chef::Provider::Package::Windows::Exe.new(new_resource, :nsis, uninstall_entry) }
 

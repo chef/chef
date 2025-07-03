@@ -142,13 +142,13 @@ describe Chef::Resource::ChefClientScheduledTask do
   describe "#splay_sleep_time" do
     it "uses shard_seed attribute if present" do
       node.automatic_attrs[:shard_seed] = "73399073"
-      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
     end
 
     it "uses a hex conversion of a md5 hash of the splay if present" do
       node.automatic_attrs[:shard_seed] = nil
       allow(node).to receive(:name).and_return("test_node")
-      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
     end
   end
 

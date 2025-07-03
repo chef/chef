@@ -64,13 +64,13 @@ describe "chef-client" do
 
   def verify_export_password_exists
     powershell_exec! <<~EOH
-    Try {
-      $response = Get-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
-      if ($response) {return $true}
+      Try {
+        $response = Get-ItemProperty -Path "HKLM:\\Software\\Progress\\Authentication" -Name "PfxPass" -ErrorAction Stop
+        if ($response) {return $true}
+        }
+      Catch {
+          return $false
       }
-    Catch {
-        return $false
-    }
     EOH
   end
 
@@ -108,8 +108,8 @@ describe "chef-client" do
       end
 
       file "config/client.rb", <<~EOM
-       local_mode true
-       cookbook_path "#{path_to("cookbooks")}"
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
     end
 

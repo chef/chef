@@ -25,48 +25,48 @@ class Chef
       provides :apt_package, target_mode: true
       provides :package, platform_family: "debian", target_mode: true
       examples <<~DOC
-      **Install a package using package manager**:
+        **Install a package using package manager**:
 
-      ```ruby
-      apt_package 'name of package' do
-        action :install
-      end
-      ```
+        ```ruby
+        apt_package 'name of package' do
+          action :install
+        end
+        ```
 
-      **Install a package without specifying the default action**:
+        **Install a package without specifying the default action**:
 
-      ```ruby
-      apt_package 'name of package'
-      ```
+        ```ruby
+        apt_package 'name of package'
+        ```
 
-      **Install multiple packages at once**:
+        **Install multiple packages at once**:
 
-      ```ruby
-      apt_package %w(package1 package2 package3)
-      ```
+        ```ruby
+        apt_package %w(package1 package2 package3)
+        ```
 
-      **Install without using recommend packages as a dependency**:
+        **Install without using recommend packages as a dependency**:
 
-      ```ruby
-      package 'apache2' do
-        options '--no-install-recommends'
-      end
-      ```
+        ```ruby
+        package 'apache2' do
+          options '--no-install-recommends'
+        end
+        ```
 
-      **Prevent the apt_package resource from installing packages with pattern matching names**:
+        **Prevent the apt_package resource from installing packages with pattern matching names**:
 
-      By default, the apt_package resource will install the named package.
-      If it can't find a package with the exact same name, it will treat the package name as regular expression string and match with any package that matches that regular expression.
-      This may lead Chef Infra Client to install one or more packages with names that match that regular expression.
+        By default, the apt_package resource will install the named package.
+        If it can't find a package with the exact same name, it will treat the package name as regular expression string and match with any package that matches that regular expression.
+        This may lead Chef Infra Client to install one or more packages with names that match that regular expression.
 
-      In this example, `anchor_package_regex true` prevents the apt_package resource from installing matching packages if it can't find the `lua5.3` package.
+        In this example, `anchor_package_regex true` prevents the apt_package resource from installing matching packages if it can't find the `lua5.3` package.
 
-      ```ruby
-      apt_package 'lua5.3' do
-        version '5.3.3-1.1ubuntu2'
-        anchor_package_regex true
-      end
-      ```
+        ```ruby
+        apt_package 'lua5.3' do
+          version '5.3.3-1.1ubuntu2'
+          anchor_package_regex true
+        end
+        ```
       DOC
 
       description "Use the **apt_package** resource to manage packages on Debian, Ubuntu, and other platforms that use the APT package system."

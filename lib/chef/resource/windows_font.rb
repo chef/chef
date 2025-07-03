@@ -27,13 +27,13 @@ class Chef
       description "Use the **windows_font** resource to install font files on Windows. By default, the font is sourced from the cookbook using the resource, but a URI source can be specified as well."
       introduced "14.0"
       examples <<~DOC
-      **Install a font from a https source**:
+        **Install a font from a https source**:
 
-      ```ruby
-      windows_font 'Custom.otf' do
-        source 'https://example.com/Custom.otf'
-      end
-      ```
+        ```ruby
+        windows_font 'Custom.otf' do
+          source 'https://example.com/Custom.otf'
+        end
+        ```
       DOC
 
       property :font_name, String,
@@ -106,7 +106,7 @@ class Chef
         #
         # @return [Boolean]
         def remote_file_schema?(schema)
-          return true if %w{http https ftp}.include?(schema)
+          true if %w{http https ftp}.include?(schema)
         end
 
         # return new_resource.source if we have a proper URI specified

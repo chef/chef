@@ -38,8 +38,8 @@ class Chef
 
       # this is a poor API please do not re-use this pattern
       property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
-               description: "A list of properties that controls how #{ChefUtils::Dist::Infra::PRODUCT} is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the #{ChefUtils::Dist::Infra::CLIENT} attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the #{ChefUtils::Dist::Infra::CLIENT} attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
-               coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
+        description: "A list of properties that controls how #{ChefUtils::Dist::Infra::PRODUCT} is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the #{ChefUtils::Dist::Infra::CLIENT} attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the #{ChefUtils::Dist::Infra::CLIENT} attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
+        coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :service_name, String,
         description: "An optional property to set the service name if it differs from the resource block's name.",
@@ -117,9 +117,9 @@ class Chef
         description: "Debian platform only. The relative priority of the program for start and shutdown ordering. May be an integer or a Hash. An integer is used to define the start run levels; stop run levels are then 100-integer. A Hash is used to define values for specific run levels. For example, { 2 => [:start, 20], 3 => [:stop, 55] } will set a priority of twenty for run level two and a priority of fifty-five for run level three."
 
       property :timeout, Integer,
-      description: "The amount of time (in seconds) to wait before timing out.",
-      default: 900,
-      desired_state: false
+        description: "The amount of time (in seconds) to wait before timing out.",
+        default: 900,
+        desired_state: false
 
       property :parameters, Hash,
         description: "Upstart only: A hash of parameters to pass to the service command for use in the service definition."

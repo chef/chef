@@ -90,9 +90,9 @@ class Chef
 
           password
         },
-        callbacks: {
-          "Password length must be >= 4" => ->(password) { password.size >= 4 },
-        }
+          callbacks: {
+            "Password length must be >= 4" => ->(password) { password.size >= 4 },
+          }
 
         # Overload home so we set our default.
         property :home, String, description: "The user home directory", default: lazy { "/Users/#{name}" }

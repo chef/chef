@@ -23,26 +23,26 @@ class Chef
       description "Use the **chocolatey_config** resource to add or remove Chocolatey configuration keys. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [Chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list."
       introduced "14.3"
       examples <<~DOC
-      **Set the Chocolatey cacheLocation config**:
+        **Set the Chocolatey cacheLocation config**:
 
-      ```ruby
-      chocolatey_config 'Set cacheLocation config' do
-        config_key 'cacheLocation'
-        value 'C:\\temp\\choco'
-      end
-      ```
+        ```ruby
+        chocolatey_config 'Set cacheLocation config' do
+          config_key 'cacheLocation'
+          value 'C:\\temp\\choco'
+        end
+        ```
 
-      **Unset a Chocolatey config**:
+        **Unset a Chocolatey config**:
 
-      ```ruby
-      chocolatey_config 'BogusConfig' do
-        action :unset
-      end
-      ```
+        ```ruby
+        chocolatey_config 'BogusConfig' do
+          action :unset
+        end
+        ```
       DOC
 
       property :config_key, String, name_property: true,
-               description: "An optional property to set the config key name if it differs from the resource block's name."
+        description: "An optional property to set the config key name if it differs from the resource block's name."
 
       property :value, String,
         description: "The value to set."

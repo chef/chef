@@ -38,9 +38,9 @@ class Chef
         default: {}, desired_state: false
 
       property :allow_downgrade, [ TrueClass, FalseClass ],
-              description: "Allow downgrading a package to satisfy requested version requirements.",
-              default: true,
-              desired_state: false
+        description: "Allow downgrading a package to satisfy requested version requirements.",
+        default: true,
+        desired_state: false
     end
   end
 end

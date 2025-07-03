@@ -19,7 +19,7 @@ class Chef
   class Cookbook
     class Chefignore
 
-      COMMENTS_AND_WHITESPACE = /^\s*(?:#.*)?$/.freeze
+      COMMENTS_AND_WHITESPACE = /^\s*(?:#.*)?$/
 
       attr_reader :ignores
 

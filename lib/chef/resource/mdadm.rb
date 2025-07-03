@@ -31,49 +31,49 @@ class Chef
                   " and then by using the mount provider to create a file systems table (fstab) entry."
 
       examples <<~DOC
-      **Create and assemble a RAID 0 array**
+        **Create and assemble a RAID 0 array**
 
-      The mdadm command can be used to create RAID arrays. For example, a RAID 0 array named /dev/md0 with 10 devices would have a command similar to the following:
+        The mdadm command can be used to create RAID arrays. For example, a RAID 0 array named /dev/md0 with 10 devices would have a command similar to the following:
 
-      ```
-      mdadm --create /dev/md0 --level=0 --raid-devices=10 /dev/s01.../dev/s10
-      ```
+        ```
+        mdadm --create /dev/md0 --level=0 --raid-devices=10 /dev/s01.../dev/s10
+        ```
 
-      where /dev/s01 .. /dev/s10 represents 10 devices (01, 02, 03, and so on). This same command, when expressed as a recipe using the mdadm resource, would be similar to:
+        where /dev/s01 .. /dev/s10 represents 10 devices (01, 02, 03, and so on). This same command, when expressed as a recipe using the mdadm resource, would be similar to:
 
-      ```ruby
-      mdadm '/dev/md0' do
-        devices [ '/dev/s01', ... '/dev/s10' ]
-        level 0
-        action :create
-      end
-      ```
+        ```ruby
+        mdadm '/dev/md0' do
+          devices [ '/dev/s01', ... '/dev/s10' ]
+          level 0
+          action :create
+        end
+        ```
 
-      (again, where /dev/s01 .. /dev/s10 represents devices /dev/s01, /dev/s02, /dev/s03, and so on).
+        (again, where /dev/s01 .. /dev/s10 represents devices /dev/s01, /dev/s02, /dev/s03, and so on).
 
-      **Create and assemble a RAID 1 array**
+        **Create and assemble a RAID 1 array**
 
-      ```ruby
-      mdadm '/dev/md0' do
-        devices [ '/dev/sda', '/dev/sdb' ]
-        level 1
-        action [ :create, :assemble ]
-      end
-      ```
+        ```ruby
+        mdadm '/dev/md0' do
+          devices [ '/dev/sda', '/dev/sdb' ]
+          level 1
+          action [ :create, :assemble ]
+        end
+        ```
 
-      **Create and assemble a RAID 5 array**
+        **Create and assemble a RAID 5 array**
 
-      The mdadm command can be used to create RAID arrays. For example, a RAID 5 array named /dev/sd0 with 4, and a superblock type of 0.90 would be similar to:
+        The mdadm command can be used to create RAID arrays. For example, a RAID 5 array named /dev/sd0 with 4, and a superblock type of 0.90 would be similar to:
 
-      ```ruby
-      mdadm '/dev/sd0' do
-        devices [ '/dev/s1', '/dev/s2', '/dev/s3', '/dev/s4' ]
-        level 5
-        metadata '0.90'
-        chunk 32
-        action :create
-      end
-      ```
+        ```ruby
+        mdadm '/dev/sd0' do
+          devices [ '/dev/s1', '/dev/s2', '/dev/s3', '/dev/s4' ]
+          level 5
+          metadata '0.90'
+          chunk 32
+          action :create
+        end
+        ```
       DOC
 
       default_action :create

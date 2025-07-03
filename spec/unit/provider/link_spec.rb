@@ -70,7 +70,7 @@ describe Chef::Resource::Link do
         expect(provider.current_resource.link_type).to eq(:symbolic)
       end
       it "should update the source of the existing link with the links target" do
-        expect(provider.current_resource.to).to  eq(canonicalize("#{CHEF_SPEC_DATA}/fofile"))
+        expect(provider.current_resource.to).to eq(canonicalize("#{CHEF_SPEC_DATA}/fofile"))
       end
       it "should set the owner" do
         expect(provider.current_resource.owner).to eq(501)
