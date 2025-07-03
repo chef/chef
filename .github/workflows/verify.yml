@@ -1,5 +1,14 @@
 name: Verify
 
+# Copilot Instructions:
+# - When suggesting changes to this workflow, always use Ubuntu 20.04 or newer for any new container images or runners,
+#   unless an older version (such as Ubuntu 18.04) is already present and required for compatibility.
+# - Do not downgrade any existing container or runner versions.
+# - Match the command structure, environment variables, and setup steps as closely as possible to the original Buildkite or legacy CI configuration when porting jobs.
+# - Always preserve any explicit PATH or environment variable manipulations present in the current workflow.
+# - Do not remove or alter jobs for legacy platforms unless specifically instructed.
+# - All new jobs or matrix entries must use Ubuntu 20.04 or later as the base unless otherwise justified.
+
 on:
   push:
     branches: [main, feature/github-actions-migration]  # Add your temp branch here
@@ -110,21 +119,16 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Container prep
-        run: .expeditor/scripts/bk_container_prep.sh
-
-      - name: Set PATH
-        run: |
-          echo "PATH=/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin" >> $GITHUB_ENV
-
       - name: Pre-install dependencies
         if: matrix.gem == 'berkshelf'
         run: |
           apt-get update -y
           apt-get install -y graphviz
 
-      - name: Bundle install
+      - name: Container prep
         run: |
+          .expeditor/scripts/bk_container_prep.sh
+          echo "PATH=/root/.rbenv/shims:/opt/chef/bin:/home/ec2-user/.tfenv/bin:/home/ec2-user/.rbenv/shims:/home/ec2-user/.rbenv/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/bin" >> $GITHUB_ENV
           bundle config set --local without omnibus_package
           bundle config set --local path 'vendor/bundle'
           bundle install --jobs=3 --retry=3
