@@ -67,7 +67,6 @@ PATH
       chef-config (= 18.7.22)
       chef-utils (= 18.7.22)
       chef-vault
-      chef-zero (>= 15.0.17)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
@@ -354,9 +353,9 @@ GEM
       tomlrb
     mixlib-log (3.1.2.1)
       ffi (< 1.17.0)
-    mixlib-shellout (3.3.6)
+    mixlib-shellout (3.3.9)
       chef-utils
-    mixlib-shellout (3.3.6-x64-mingw-ucrt)
+    mixlib-shellout (3.3.9-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
