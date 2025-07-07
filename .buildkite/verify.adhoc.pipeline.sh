@@ -12,4 +12,4 @@ echo ""
 # include build and test omnibus pipeline
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-source "$DIR/build-test-omnibus.sh"
+source "$DIR/validate-adhoc-habitat.sh"
