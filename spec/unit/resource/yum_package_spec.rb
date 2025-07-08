@@ -148,3 +148,12 @@ describe Chef::Resource::YumPackage, "yum_binary" do
     expect(resource.yum_binary).to eql("/usr/bin/yum-something")
   end
 end
+
+describe Chef::Resource::YumPackage, "environment" do
+  let(:resource) { Chef::Resource::YumPackage.new("foo") }
+
+  it "should allow you to specify the environment" do
+    resource.environment({ variables: true })
+    expect(resource.environment).to eql({ variables: true })
+  end
+end
