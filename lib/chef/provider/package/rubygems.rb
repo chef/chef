@@ -515,6 +515,15 @@ class Chef
           current_resource
         end
 
+        def define_resource_requirements
+          super
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !new_resource.environment }
+            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
+          end
+        end
+
         def cleanup_after_converge
           if @cleanup_gem_env
             logger.trace { "#{new_resource} resetting gem environment to default" }
