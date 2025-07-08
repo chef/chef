@@ -27,13 +27,16 @@ arm_targets = [
   "amazon-2023-arm:amazon-2023-arm"
 ]
 
-# append windows target later when images are available.
-# win_targets = [
-#   "windows-2016:windows-2019",
-#   "windows-2022:windows-2019",
-#   "windows-10:windows-2019",
-#   "windows-11:windows-2019"
-# ]
+# because windows queues are very different, the target queue is very explicit.
+win_targets = [
+  "windows-2022:single-use-windows-2022",
+  "windows-10:default-windows-2019",
+  "windows-11:single-use-windows-2022",
+  "windows-2025:single-use-windows-2025"
+]
+
+# Update target list
+targets.concat(win_targets)
 
 if ENV['ARM_ENABLED'] == '1'
   targets.concat(arm_targets)
@@ -55,7 +58,21 @@ if ENV['BUILDKITE_PIPELINE_SLUG'] == 'chef-chef-main-validate-adhoc'
     ],
     "agents" => {
       "queue" => "default-privileged"
-    }
+    },
+    "timeout_in_minutes" => 120
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::windows: Building Habitat package",
+    "commands" => [
+      "./.expeditor/scripts/chef_adhoc_build.ps1",
+    ],
+    "agents" => {
+      "queue" => "default-windows-2019-privileged"
+    },
+    "env" => [
+      "HAB_AUTH_TOKEN"
+    ],
+    "timeout_in_minutes" => 120
   }
 else
   # nightly pipeline, get package from unstable.
@@ -64,7 +81,7 @@ end
 pipeline["steps"] << { "wait" => nil }
 
 targets.each do |target|
-  platform = target.split(":").first
+  platform, queue_platform = target.split(":")
   step = {}
 
   if platform.include?("windows")
@@ -77,7 +94,7 @@ targets.each do |target|
         }
       },
       "agents" => {
-        "queue" => "omnibus-#{platform}-x86_64"
+        "queue" => "#{queue_platform}-privileged"
       },
       "plugins" => {
         "docker#v3.5.0" => {
@@ -85,6 +102,16 @@ targets.each do |target|
           "shell" => [
             "powershell",
             "-Command"
+          ],
+          "volumes" => [
+            "C:\\buildkite-agent:C:\\buildkite-agent"
+          ],
+          "environment" => [
+            'HAB_AUTH_TOKEN',
+            'BUILDKITE_AGENT_ACCESS_TOKEN',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'AWS_SESSION_TOKEN',
           ],
           "propagate-environment" => true
         }
