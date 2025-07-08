@@ -40,7 +40,7 @@ else
 end
 
 override :chef, version: "local_source"
-
+dependency "custom-ruby"
 dependency "chef-local-source"
 dependency "shebang-cleanup"
 
