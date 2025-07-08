@@ -494,7 +494,7 @@ GEM
     uuidtools (2.2.0)
     vault (0.18.2)
       aws-sigv4
-    webmock (3.24.0)
+    webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
