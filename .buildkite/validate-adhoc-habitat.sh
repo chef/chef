@@ -8,9 +8,13 @@ if [ -n "${ARM_ENABLED:-}" ] && [ "${ARM_ENABLED:-}" = "1" ]; then
   targets+=("${arm_targets[@]}")
 fi
 
-# Pull the latest chef/chef-infra-client package identifier from habitat
-# This will ensure that we test and promote the right package version
-# even if we have a new version in the unstable channel.
+# Start generating YAML
+echo "---"
+echo "env:"
+echo "  BUILD_TIMESTAMP: $(date +'%Y-%m-%d_%H-%M-%S')"
+echo "steps:"
+
+# Fetching latest package identifier step
 echo "- label: \":habicat: Fetching latest package identifier.\""
 echo "  commands:"
 echo "    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux"
@@ -23,15 +27,16 @@ echo "      linux:"
 echo "        privileged: true"
 echo "        single-use: true"
 
+# Wait step
 echo "- wait: ~"
 
+# Generate steps for each target
 for target in ${targets[@]}; do
   if [[ "${target%:*}" == *"windows"* ]]; then
     echo "- label: :hammer_and_wrench::windows:${target%:*}"
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    # echo "  key: build-${target%:*}"
     echo "  agents:"
     echo "    queue: default-${target%:*}-privileged"
     echo "  plugins:"
@@ -41,11 +46,6 @@ for target in ${targets[@]}; do
     echo "          - powershell"
     echo "          - \"-Command\""
     echo "        propagate-environment: true"
-    # echo "      environment:"
-    # echo "        - BUILDKITE_AGENT_ACCESS_TOKEN"
-    # echo "        - AWS_ACCESS_KEY_ID"
-    # echo "        - AWS_SECRET_ACCESS_KEY"
-    # echo "        - AWS_SESSION_TOKEN"
     echo "  commands:"
     echo "    - \$env:PKG_IDENT = \$(buildkite-agent meta-data get \"INFRA_HAB_PKG_IDENT\")"
     echo "    - ./.expeditor/scripts/validate_adhoc_build.ps1 \$env:PKG_IDENT"
@@ -55,7 +55,6 @@ for target in ${targets[@]}; do
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    # echo "  key: build-${target%:*}"
     echo "  agents:"
     if [[ "${target%:*}" == *"arm"* ]]; then
       echo "    queue: docker-linux-arm64"
@@ -78,16 +77,3 @@ for target in ${targets[@]}; do
     echo "  timeout_in_minutes: 120"
   fi
 done
-
-# if [[ "$BUILDKITE_BRANCH" == "$BUILDKITE_PIPELINE_DEFAULT_BRANCH" ]]; then
-#   echo "- wait"
-#   echo "- label: \":habicat: Promoting packages to the current channel.\""
-#   echo "  commands:"
-#   echo "    - export PKG_IDENT=$(buildkite-agent meta-data get \"INFRA_HAB_PKG_IDENT\")"
-#   echo "    - hab pkg promote \$PKG_IDENT current x86_64-linux"
-#   echo "    - hab pkg promote \$PKG_IDENT current x86_64-windows"
-#   echo "  expeditor:"
-#   echo "    executor:"
-#   echo "      docker:"
-#   echo "        - HAB_AUTH_TOKEN"
-# fi
