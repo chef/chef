@@ -48,6 +48,7 @@ PATH
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
+      csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
@@ -66,6 +67,7 @@ PATH
       ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
+      syslog
       syslog-logger (~> 1.6)
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
@@ -84,6 +86,7 @@ PATH
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
+      csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
@@ -103,6 +106,7 @@ PATH
       ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
+      syslog
       syslog-logger (~> 1.6)
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
@@ -242,6 +246,7 @@ GEM
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
+    csv (3.3.5)
     date (3.4.0)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
@@ -278,7 +283,8 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.7)
       domain_name (~> 0.5)
-    httpclient (2.8.3)
+    httpclient (2.9.0)
+      mutex_m
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
@@ -351,6 +357,7 @@ GEM
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.4.1)
+    mutex_m (0.3.0)
     net-ftp (0.3.8)
       net-protocol
       time
@@ -439,6 +446,8 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
+    syslog (0.3.0)
+      logger
     syslog-logger (1.6.8)
     thor (1.2.2)
     time (0.4.0)
