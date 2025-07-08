@@ -29,6 +29,14 @@ current_file ||= __FILE__
 version_file = File.expand_path("../../../../VERSION", current_file)
 build_version IO.read(version_file).strip
 
+# Apply overrides directly in the project file
+override :libffi,
+  version: "3.4.2",
+  source: {
+    url: "#{ENV['ARTIFACTORY_BASE_URL'] || 'https://artifactory-internal.ps.chef.co/artifactory'}/omnibus-software-local/libffi/libffi-3.4.2.tar.gz",
+    sha256: "540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620"
+  }
+
 if windows?
   # NOTE: Ruby DevKit fundamentally CANNOT be installed into "Program Files"
   #       Native gems will use gcc which will barf on files with spaces,
