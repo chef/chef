@@ -27,7 +27,7 @@
 # Windows architecture defaults - set to x86 unless otherwise specified.
 # ------------------------------
 # Load the project-specific overrides
-require_relative '../omnibus_overrides' if File.exist?('../omnibus_overrides.rb')
+require_relative 'omnibus_overrides' if File.exist?('omnibus_overrides.rb')
 
 env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
 env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
