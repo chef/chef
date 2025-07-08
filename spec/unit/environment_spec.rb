@@ -454,7 +454,7 @@ describe Chef::Environment do
       it "should raise an error if the configured environment_path is invalid" do
         expect(File).to receive(:directory?).with(Chef::Config[:environment_path]).and_return(false)
 
-        env_path = windows? ? "#{drive}:/var/chef/environments" : "/var/chef/environments"
+        env_path = windows? ? "#{drive}/var/chef/environments" : "/var/chef/environments"
         expect do
           Chef::Environment.load("foo")
         end.to raise_error(
