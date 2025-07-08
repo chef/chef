@@ -55,6 +55,11 @@ class Chef
               a.whyrun "Assuming source file #{new_resource.source} would have been created."
             end
           end
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !new_resource.environment }
+            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
+          end
         end
 
         def load_current_resource
