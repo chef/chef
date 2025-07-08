@@ -32,7 +32,14 @@ end
 class RspecVersionString
   def self.rspec_version_string
     @rspec_version_string ||= begin
-                                stubs = Gem::Specification.send(:installed_stubs, Gem::Specification.dirs, "rspec-core-*.gemspec")
+                                if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
+                                  spec_record = Gem::SpecificationRecord.new(Gem::Specification.dirs)
+                                  stubs = spec_record.send(:installed_stubs, "rspec-core-*.gemspec")
+                                elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
+                                  stubs = Gem::Specification.send(:installed_stubs, Gem::Specification.dirs, "rspec-core-*.gemspec")
+                                else
+                                  stubs = Gem::Specification.find_all_by_name("rspec-core", Gem::Dependency.new("rspec-core").requirement)
+                                end
                                 stubs.select! { |stub| stub.name == "rspec-core" && Gem::Dependency.new("rspec-core", ">= 0").requirement.satisfied_by?(stub.version) }
                                 stubs.max_by(&:version).version.to_s
                               end
@@ -60,7 +67,11 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   it "determines the installed versions of gems from Gem.source_index" do
     gems = [gemspec("rspec-core", Gem::Version.new("1.2.9")), gemspec("rspec-core", Gem::Version.new("1.3.0"))]
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
+      spec_record_instance = instance_double(Gem::SpecificationRecord)
+      expect(spec_record_instance).to receive(:installed_stubs).with("rspec-core-*.gemspec").and_return(gems)
+      allow(@gem_env).to receive(:gem_specification_record).and_return(spec_record_instance)
+    elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
       expect(Gem::Specification).to receive(:dirs).and_return(["/path/to/gems/specifications", "/another/path/to/gems/specifications"])
       expect(Gem::Specification).to receive(:installed_stubs).with(["/path/to/gems/specifications", "/another/path/to/gems/specifications"], "rspec-core-*.gemspec").and_return(gems)
     else # >= Rubygems 1.8 behavior
@@ -255,7 +266,11 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   it "determines the installed versions of gems from the source index" do
     gems = [gemspec("rspec", Gem::Version.new("1.2.9")), gemspec("rspec", Gem::Version.new("1.3.0"))]
     rspec_dep = Gem::Dependency.new("rspec", nil)
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
+      spec_record_instance = instance_double(Gem::SpecificationRecord)
+      expect(spec_record_instance).to receive(:installed_stubs).with("rspec-*.gemspec").and_return(gems)
+      allow(@gem_env).to receive(:gem_specification_record).and_return(spec_record_instance)
+    elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
       allow(@gem_env).to receive(:gem_specification).and_return(Gem::Specification)
       expect(Gem::Specification).to receive(:dirs).and_return(["/path/to/gems/specifications", "/another/path/to/gems/specifications"])
       expect(Gem::Specification).to receive(:installed_stubs).with(["/path/to/gems/specifications", "/another/path/to/gems/specifications"], "rspec-*.gemspec").and_return(gems)
@@ -367,6 +382,16 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     end
     expect(platforms_in_block).to eq(["ruby", Gem::Platform.new("sparc64-java-1.7")])
     expect(Gem.platforms).to eq(original_platforms)
+  end
+
+  it "uses shell command to avoid embedded Ruby version conflicts" do
+    shell_out_result = OpenStruct.new(stdout: "rematch (3.2.0, 3.1.0, 3.0.0)\n")
+    expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list rematch --remote --all ").and_return(shell_out_result)
+
+    gem_dependency = Gem::Dependency.new("rematch", ">= 3.1.0")
+    version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+    expect(version).to eq(Gem::Version.new("3.2.0"))
   end
 
 end

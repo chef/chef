@@ -26,8 +26,8 @@ class Chef
           debianrcd?
         end
 
-        UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i.freeze
-        UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i.freeze
+        UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i
+        UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i
         RUNLEVELS = %w{ 1 2 3 4 5 S }.freeze
 
         def self.supports?(resource, action)
