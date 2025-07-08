@@ -8,11 +8,6 @@ if [ -n "${ARM_ENABLED:-}" ] && [ "${ARM_ENABLED:-}" = "1" ]; then
   targets+=("${arm_targets[@]}")
 fi
 
-echo "---"
-echo "env:"
-echo "  BUILD_TIMESTAMP: $(date +'%Y-%m-%d_%H-%M-%S')"
-echo "steps:"
-
 # Fetching latest package identifier step
 echo "- label: \":habicat: Fetching latest package identifier.\""
 echo "  commands:"
@@ -77,4 +72,3 @@ for target in "${targets[@]}"; do
     echo "  timeout_in_minutes: 120"
   fi
 done
-
