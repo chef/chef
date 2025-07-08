@@ -14,14 +14,15 @@ end
 relative_path "chef-foundation"
 
 build do
-  # Sync everything EXCEPT Ruby components
+  # Sync everything EXCEPT Ruby components and SSL directories
   sync "#{project_dir}", "#{install_dir}", exclude: [
     "embedded/bin/ruby*", 
     "embedded/include/ruby*",
     "embedded/lib/ruby",
     "embedded/share/ri",
-    "embedded/lib/libruby*"
-  ]  
+    "embedded/lib/libruby*",
+    "embedded/ssl" 
+  ]
   # Create placeholder directories that will be replaced by your custom Ruby
   mkdir "#{install_dir}/embedded/bin"
   mkdir "#{install_dir}/embedded/lib/ruby"
