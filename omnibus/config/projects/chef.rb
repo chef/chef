@@ -40,6 +40,10 @@ else
 end
 
 override :chef, version: "local_source"
+# First, include chef-foundation (without Ruby)
+dependency "chef-foundation"
+
+# Then, include your custom Ruby
 dependency "custom-ruby"
 dependency "chef-local-source"
 dependency "shebang-cleanup"
