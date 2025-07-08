@@ -51,5 +51,30 @@ for target in "${targets[@]}"; do
     echo "    - ./.expeditor/scripts/validate_adhoc_build.ps1 \$env:PKG_IDENT"
     echo "  timeout_in_minutes: 120"
   else
-    echo "- label: :hammer_and_wrench::docker
+    echo "- label: :hammer_and_wrench::docker:${build_platform}"
+    echo "  retry:"
+    echo "    automatic:"
+    echo "      limit: 1"
+    echo "  agents:"
+    if [[ "${build_platform}" == *"arm"* ]]; then
+      echo "    queue: docker-linux-arm64"
+    else
+      echo "    queue: default-privileged"
+    fi
+    echo "  plugins:"
+    echo "    - docker#v3.5.0:"
+    echo "        image: chefes/omnibus-toolchain-${build_platform}:\$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "        privileged: true"
+    echo "        propagate-environment: true"
+    echo "  commands:"
+    if [[ "${build_platform}" == *"arm"* ]]; then
+      echo "    - sudo ./.expeditor/scripts/install-hab.sh <arm>"
+    else
+      echo "    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux"
+    fi
+    echo "    - export PKG_IDENT=\$(buildkite-agent meta-data get \"INFRA_HAB_PKG_IDENT\")"
+    echo "    - sudo ./.expeditor/scripts/validate_adhoc_build.sh \$PKG_IDENT"
+    echo "  timeout_in_minutes: 120"
+  fi
+done
 
