@@ -94,6 +94,11 @@ class Chef
         introduced: "18.3",
         description: "A Boolean flag that indicates whether the package name, which can be a regular expression, must match the entire name of the package (true) or if the regular expression is allowed to match a subset of the name (false).",
         default: false
+
+      property :environment, Hash,
+        introduced: "19.0",
+        description: "A Hash of environment variables in the form of {'ENV_VARIABLE' => 'VALUE'} to be set before running the command.",
+        default: {}, desired_state: false
     end
   end
 end
