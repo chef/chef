@@ -1,6 +1,9 @@
 name "chef-foundation"
 license "Apache-2.0"
 license_file "LICENSE"
+
+# Grab accompanying notice file.
+# So that Open4/deep_merge/diff-lcs disclaimers are present in Omnibus LICENSES tree.
 license_file "NOTICE"
 
 skip_transitive_dependency_licensing true
@@ -14,16 +17,5 @@ end
 relative_path "chef-foundation"
 
 build do
-  # Sync everything EXCEPT Ruby components and SSL directories
-  sync "#{project_dir}", "#{install_dir}", exclude: [
-    "embedded/bin/ruby*", 
-    "embedded/include/ruby*",
-    "embedded/lib/ruby",
-    "embedded/share/ri",
-    "embedded/lib/libruby*",
-    "embedded/ssl" 
-  ]
-  # Create placeholder directories that will be replaced by your custom Ruby
-  mkdir "#{install_dir}/embedded/bin"
-  mkdir "#{install_dir}/embedded/lib/ruby"
+  sync "#{project_dir}", "#{install_dir}"
 end
