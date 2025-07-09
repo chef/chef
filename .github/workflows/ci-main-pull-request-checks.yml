@@ -27,7 +27,7 @@ jobs:
       - name: echo version of stub and inputs
         run: |
           echo "[ci-main-pull-request-stub-trufflehog-only.yml] version $STUB_VERSION"
-  call-ci-main-pr-check-pipeline:
+  call-ci-chef-18-pr-check-pipeline:
     uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
     secrets: inherit
     permissions: 
