@@ -157,7 +157,7 @@ class Chef
         description: "The path to the yum binary."
 
       property :environment, Hash,
-        introduced: "19.0",
+        introduced: "18.8",
         description: "A Hash of environment variables in the form of {'ENV_VARIABLE' => 'VALUE'} to be set before running the command.",
         default: {}, desired_state: false
     end
