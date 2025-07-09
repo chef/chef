@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - windows-2019
+          - windows-2025
           - windows-2022
     runs-on: ${{ matrix.os }}
     env:
