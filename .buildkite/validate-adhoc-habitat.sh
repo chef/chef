@@ -14,11 +14,13 @@ fi
 echo "- label: \":habicat: Fetching latest package identifier.\""
 echo "  commands:"
 echo "    - sudo -E ./.expeditor/scripts/buildkite_adhoc_metadata.sh"
-echo "  expeditor:"
-echo "    executor:"
-echo "      linux:"
-echo "        privileged: true"
-echo "        single-use: true"
+echo "  agents:"
+echo "    queue: default-privileged"
+# echo "  expeditor:"
+# echo "    executor:"
+# echo "      linux:"
+# echo "        privileged: true"
+# echo "        single-use: true"
 
 echo "- wait: ~"
 
