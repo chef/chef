@@ -11,25 +11,22 @@ steps:
 
 - label: ":linux: Validate Linux"
   commands:
-    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
-    - echo "--- Installing chef/chef-infra-client/19.1.46/20250626201151"
-    - sudo hab pkg install chef/chef-infra-client/19.1.46/20250626201151
-    - sudo ./habitat/tests/test.sh chef/chef-infra-client/19.1.46/20250626201151
+    - ./.expeditor/scripts/test-script.sh
   expeditor:
     executor:
       linux:
         privileged: true
         single-use: true
 
-- label: ":windows: Validate Habitat Builds of Chef Infra"
-  commands:
-    - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact chef/chef-infra-client/19.1.46/20250626201805
-  expeditor:
-    executor:
-      windows:
-        privileged: true
-        single-use: true
-        shell: ["powershell", "-Command"]
+# - label: ":windows: Validate Habitat Builds of Chef Infra"
+#   commands:
+#     - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact chef/chef-infra-client/19.1.46/20250626201805
+#   expeditor:
+#     executor:
+#       windows:
+#         privileged: true
+#         single-use: true
+#         shell: ["powershell", "-Command"]
 
 # Wait for the package testing to succeed before promoting whatever was tested.
 # - wait

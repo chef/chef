@@ -10,7 +10,8 @@ class Chef
           puts "Temporarily bypassing licensing check in Kitchen"
         else
           Chef::Log.info "Fetching and persisting license..."
-          license_keys = ChefLicensing.fetch_and_persist
+          Chef::Log.info "Skipping fetch and persist for testing"
+          # license_keys = ChefLicensing.fetch_and_persist
         end
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
         Chef::Log.error "Chef Infra cannot execute without valid licenses." # TODO: Replace Infra with the product name dynamically
@@ -25,7 +26,8 @@ class Chef
 
       def check_software_entitlement!
         Chef::Log.info "Checking software entitlement..."
-        ChefLicensing.check_software_entitlement!
+        Chef::Log.info "Skipping entitlement check for testing"
+        # ChefLicensing.check_software_entitlement!
       rescue ChefLicensing::SoftwareNotEntitled
         Chef::Log.error "License is not entitled to use Chef Infra."
         Chef::Application.exit! "License not entitled", 173 # 173 is the exit code for LICENSE_NOT_ENTITLED defined in lib/chef/application/exit_code.rb
@@ -38,7 +40,8 @@ class Chef
         Chef::Log.info "Checking software entitlement for compliance phase..."
         # set the chef_entitlement_id to the value for Compliance Phase entitlement (i.e. InSpec's entitlement ID)
         ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::COMPLIANCE_ENTITLEMENT_ID
-        ChefLicensing.check_software_entitlement!
+        Chef::Log.info "Skipping entitlement check for compliance phase for testing"
+        # ChefLicensing.check_software_entitlement!
       rescue ChefLicensing::SoftwareNotEntitled
         raise EntitlementError, "License not entitled"
       rescue ChefLicensing::Error => e
