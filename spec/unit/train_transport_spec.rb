@@ -51,7 +51,8 @@ describe Chef::TrainTransport do
 
   describe "credentials_file_path" do
     let(:config_cred_file_path) { "/somewhere/credentials" }
-    let(:host_cred_file_path) { Chef::Platform.windows? ? "C:\\chef\\foo.example.org\\credentials" : "/etc/chef/foo.example.org/credentials" }
+    let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
+    let(:host_cred_file_path) { Chef::Platform.windows? ? "#{drive}\\chef\\foo.example.org\\credentials" : "/etc/chef/foo.example.org/credentials" }
 
     context "when a file path is specified by a config" do
       before do
