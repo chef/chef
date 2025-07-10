@@ -27,6 +27,7 @@ autoload :URI, "uri"
 module Net
   autoload :HTTP, "net/http"
   autoload :HTTPClientException, "net/http"
+  autoload :Protocol, "net/protocol"
 end
 require_relative "http/basic_client"
 require_relative "config"
