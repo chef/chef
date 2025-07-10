@@ -447,7 +447,7 @@ class Chef
         # @return [void]
         def install_ppa_key(owner, repo)
           url = "https://launchpad.net/api/1.0/~#{owner}/+archive/#{repo}"
-          key_id = Chef::HTTP::Simple.new(url).get("signing_key_fingerprint").delete('"')
+          key_id = Chef::HTTP::Simple.new(url, {}).get("signing_key_fingerprint").delete('"')
           install_key_from_keyserver(key_id, "keyserver.ubuntu.com")
         rescue Net::HTTPClientException => e
           raise "Could not access Launchpad ppa API: #{e.message}"
