@@ -66,6 +66,11 @@ describe "chef-client with compliance phase" do
       result.error!
 
       inspec_report = JSON.parse(File.read(report_file))
+
+      puts "==========INSPEC REPORT LOG==========="
+      puts inspec_report
+      puts "==========INSPEC REPORT LOG==========="
+
       expect(inspec_report["profiles"].length).to eq(1)
 
       profile = inspec_report["profiles"].first
