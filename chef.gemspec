@@ -53,7 +53,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
   s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
-  s.add_dependency "chef-zero", ">= 15.0.17"
+  s.add_dependency "chef-zero", ">= 15.0.21"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
 
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, osx_profile and plist resources
