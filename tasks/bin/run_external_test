@@ -15,7 +15,7 @@ require "chef/mixin/shell_out"
 include Chef::Mixin::ShellOut
 
 github_repo = ARGV.shift
-git_thing = ARGV.shift || "main"  # Default to 'main' if no branch/tag specified
+git_thing = ARGV.shift || "main" # Default to 'main' if no branch/tag specified
 
 build_dir = Dir.pwd
 
