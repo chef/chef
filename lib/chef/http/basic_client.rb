@@ -23,6 +23,7 @@
 autoload :URI, "uri"
 module Net
   autoload :HTTP, "net/http"
+  autoload :Protocol, "net/protocol"
 end
 require_relative "ssl_policies"
 require_relative "http_request"
