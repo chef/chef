@@ -31,7 +31,7 @@ env["GEMFILE_MOD"] += "; gem 'chef-licensing'" if github_repo == "chef/knife-win
 Dir.mktmpdir("chef-external-test") do |tmpdir|
   git_url = "https://github.com/#{github_repo}"
   clone_dir = File.join(tmpdir, "repo")
-  
+
   # Clone the repository with error handling and timeout
   begin
     shell_out!("git clone --depth=1 \"#{git_url}\" \"#{clone_dir}\"", live_stream: STDOUT, timeout: 600)
@@ -39,7 +39,7 @@ Dir.mktmpdir("chef-external-test") do |tmpdir|
     puts "Failed to clone #{git_url}: #{e.message}"
     exit 1
   end
-  
+
   Dir.chdir(clone_dir) do
     # Checkout the specified branch/tag if different from what was cloned
     if git_thing != "main"
@@ -73,7 +73,7 @@ Dir.mktmpdir("chef-external-test") do |tmpdir|
         puts "Proceeding with current branch"
       end
     end
-    
+
     Bundler.with_unbundled_env do
       shell_out!("bundle install --jobs=3 --retry=3", live_stream: STDOUT, env: env, timeout: 3600)
       shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT, env: env)
