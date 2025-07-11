@@ -1,4 +1,4 @@
-describe directory("C:\\hab\\pkgs\\skylerto\\splunkforwarder") do
+describe directory("C:\\hab\\pkgs\\chef\\splunkforwarder") do
   it { should exist }
 end
 
