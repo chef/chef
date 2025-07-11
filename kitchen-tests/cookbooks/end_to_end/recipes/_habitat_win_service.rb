@@ -32,7 +32,7 @@ habitat_service "chef/splunkforwarder unload" do
   action :unload
 end
 
-habitat_service "ncr_devops_platform/sensu-agent-win" do
+habitat_service "chef/sensu-agent-win" do
   strategy "rolling"
   update_condition "latest"
   channel :stable
@@ -48,11 +48,11 @@ ruby_block "wait-for-sensu-agent-win-start" do
     sleep 5
   end
   action :nothing
-  subscribes :run, "habitat_service[ncr_devops_platform/sensu-agent-win]", :immediately
+  subscribes :run, "habitat_service[chef/sensu-agent-win]", :immediately
 end
 
-habitat_service "ncr_devops_platform/sensu-agent-win stop" do
-  service_name "ncr_devops_platform/sensu-agent-win"
+habitat_service "chef/sensu-agent-win stop" do
+  service_name "chef/sensu-agent-win"
   gateway_auth_token "secret"
   action :stop
 end
