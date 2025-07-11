@@ -4,16 +4,30 @@ habitat_sup "default" do
 end
 
 ruby_block "wait-for-svc-default-startup" do
+ruby_block "wait-for-svc-default-startup" do
   block do
-    # Check if the habitat service is running, regardless of whether services are loaded
-    cmd = Mixlib::ShellOut.new("hab sup status", returns: [0, 1])
+    # Check if the Windows service is actually running instead of checking loaded services
+    cmd = Mixlib::ShellOut.new("powershell -Command \"(Get-Service habitat).Status -eq 'Running'\"")
     cmd.run_command
     
-    # Consider a success if either:
-    # 1. The command succeeds (return code 0), meaning hab supervisor is running and has services
-    # 2. The output contains "No services loaded" which means hab supervisor is running but no services are loaded yet
-    unless cmd.exitstatus == 0 || cmd.stdout =~ /No services loaded/
-      raise "Habitat supervisor is not running properly. Output: #{cmd.stdout}, Error: #{cmd.stderr}"
+    unless cmd.stdout.strip == "True"
+      raise "Habitat service is not running yet"
+    end
+    
+    # Additional check to ensure the supervisor is accepting connections
+    # This checks if the supervisor HTTP endpoint is responding
+    begin
+      require 'net/http'
+      require 'uri'
+      
+      uri = URI.parse("http://localhost:9631/services")
+      response = Net::HTTP.get_response(uri)
+      
+      unless response.code == "200"
+        raise "Habitat supervisor HTTP endpoint is not responding yet"
+      end
+    rescue => e
+      raise "Error connecting to Habitat supervisor: #{e.message}"
     end
   end
   retries 30
