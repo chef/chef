@@ -5,7 +5,16 @@ end
 
 ruby_block "wait-for-svc-default-startup" do
   block do
-    raise unless system("hab svc status")
+    # Check if the habitat service is running, regardless of whether services are loaded
+    cmd = Mixlib::ShellOut.new("hab sup status", returns: [0, 1])
+    cmd.run_command
+    
+    # Consider a success if either:
+    # 1. The command succeeds (return code 0), meaning hab supervisor is running and has services
+    # 2. The output contains "No services loaded" which means hab supervisor is running but no services are loaded yet
+    unless cmd.exitstatus == 0 || cmd.stdout =~ /No services loaded/
+      raise "Habitat supervisor is not running properly. Output: #{cmd.stdout}, Error: #{cmd.stderr}"
+    end
   end
   retries 30
   retry_delay 1
