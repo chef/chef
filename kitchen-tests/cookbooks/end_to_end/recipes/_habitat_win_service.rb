@@ -11,7 +11,7 @@ ruby_block "wait-for-svc-default-startup" do
   retry_delay 1
 end
 
-habitat_service "skylerto/splunkforwarder" do
+habitat_service "chef/splunkforwarder" do
   gateway_auth_token "secret"
 end
 
@@ -23,11 +23,11 @@ ruby_block "wait-for-splunkforwarder-start" do
     sleep 3
   end
   action :nothing
-  subscribes :run, "habitat_service[skylerto/splunkforwarder]", :immediately
+  subscribes :run, "habitat_service[chef/splunkforwarder]", :immediately
 end
 
-habitat_service "skylerto/splunkforwarder unload" do
-  service_name "skylerto/splunkforwarder"
+habitat_service "chef/splunkforwarder unload" do
+  service_name "chef/splunkforwarder"
   gateway_auth_token "secret"
   action :unload
 end
