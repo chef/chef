@@ -95,7 +95,7 @@ module ChefConfig
           elsif File.exist?(config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials"))
             config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials")
           else
-            super
+            PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR, "target_credentials").freeze
           end
 
         raise ArgumentError, "No credentials file found for target '#{profile}'" unless credentials_file
