@@ -20,15 +20,6 @@ powershell_script 'habitat-diagnostics' do
   action :run
 end
 
-# ruby_block 'delay_before_habitat_connection' do
-#   block do
-#     Chef::Log.info('Waiting for Habitat supervisor to be fully initialized...')
-#     sleep 15  # Adjust this value as needed (seconds)
-#     Chef::Log.info('Delay completed, proceeding with habitat connection')
-#   end
-#   action :run
-# end
-
 ruby_block "wait-for-svc-default-startup" do
   block do
     raise unless system("hab svc status")
