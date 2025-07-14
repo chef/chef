@@ -47,6 +47,9 @@ echo "--- :mag_right: Testing ${pkg_ident} functionality"
 rspec_path=$(dirname ${results[1]})
 export PATH="${rspec_path}":$PATH
 export HAB_TEST="true"
+
+hab pkg exec "${pkg_ident}" ruby -e 'require "openssl";puts OpenSSL::OPENSSL_VERSION; puts OpenSSL::VERSION;'
+
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/integration
