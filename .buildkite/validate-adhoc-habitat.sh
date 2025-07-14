@@ -55,11 +55,11 @@ for target in ${targets[@]}; do
     echo "        propagate-environment: true"
     echo "  commands:"
     if [[ "${target%:*}" == *"arm"* ]]; then
-      echo "    - sudo -E ./.expeditor/scripts/install-hab.sh <arm>"
+      echo "    - sudo ./.expeditor/scripts/install-hab.sh <arm>"
     else
-      echo "    - sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux"
+      echo "    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux"
     fi
-    echo "    - sudo -E ./.expeditor/scripts/validate_adhoc_build.sh"
+    echo "    - ./.expeditor/scripts/validate_adhoc_build.sh"
     echo "  timeout_in_minutes: 120"
   fi
 done
