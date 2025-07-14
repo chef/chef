@@ -23,6 +23,7 @@ require "license_acceptance/cli_flags/mixlib_cli"
 require "chef/json_compat" unless defined?(Chef::JSONCompat) # can't be lazy loaded since it's used in options
 require "chef/utils/licensing_config"
 require "chef/utils/licensing_handler"
+require "active_support/core_ext/object/blank"
 
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
