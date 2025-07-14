@@ -16,8 +16,8 @@ ruby_block "wait-for-svc-default-startup" do
     # Additional check to ensure the supervisor is accepting connections
     # This checks if the supervisor HTTP endpoint is responding
     begin
-      require 'net/http'
-      require 'uri'
+      require "net/http"
+      require "uri"
 
       uri = URI.parse("http://localhost:9631/services")
       response = Net::HTTP.get_response(uri)
