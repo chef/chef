@@ -3,14 +3,31 @@ habitat_sup "default" do
   gateway_auth_token "secret"
 end
 
-ruby_block 'delay_before_habitat_connection' do
-  block do
-    Chef::Log.info('Waiting for Habitat supervisor to be fully initialized...')
-    sleep 15  # Adjust this value as needed (seconds)
-    Chef::Log.info('Delay completed, proceeding with habitat connection')
-  end
+powershell_script 'habitat-diagnostics' do
+  code <<-PS1
+    Write-Host "Checking Habitat service status..."
+    Get-Service -Name Habitat -ErrorAction SilentlyContinue | Format-List Status,Name,DisplayName,StartType
+
+    Write-Host "Checking Habitat Supervisor processes..."
+    Get-Process -Name hab-sup -ErrorAction SilentlyContinue | Format-List
+
+    Write-Host "Checking network connectivity..."
+    Test-NetConnection -ComputerName localhost -Port 9631 | Format-List
+
+    Write-Host "Checking Windows firewall status..."
+    Get-NetFirewallRule | Where-Object {$_.DisplayName -like "*Habitat*" -or $_.DisplayName -like "*9631*"} | Format-List
+  PS1
   action :run
 end
+
+# ruby_block 'delay_before_habitat_connection' do
+#   block do
+#     Chef::Log.info('Waiting for Habitat supervisor to be fully initialized...')
+#     sleep 15  # Adjust this value as needed (seconds)
+#     Chef::Log.info('Delay completed, proceeding with habitat connection')
+#   end
+#   action :run
+# end
 
 ruby_block "wait-for-svc-default-startup" do
   block do
