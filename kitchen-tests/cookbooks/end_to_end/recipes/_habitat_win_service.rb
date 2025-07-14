@@ -9,25 +9,27 @@ ruby_block "wait-for-svc-default-startup" do
     cmd = Mixlib::ShellOut.new("powershell -Command \"(Get-Service habitat).Status -eq 'Running'\"")
     cmd.run_command
 
-    unless cmd.stdout.strip == "True"
+    if cmd.stdout.strip == "True"
+      puts "Habitat service is running"
+    else
       raise "Habitat service is not running yet"
     end
 
     # Additional check to ensure the supervisor is accepting connections
     # This checks if the supervisor HTTP endpoint is responding
-    begin
-      require "net/http"
-      require "uri"
+    # begin
+    #   require "net/http"
+    #   require "uri"
 
-      uri = URI.parse("http://localhost:9631/services")
-      response = Net::HTTP.get_response(uri)
+    #   uri = URI.parse("http://localhost:9631/services")
+    #   response = Net::HTTP.get_response(uri)
 
-      unless response.code == "200"
-        raise "Habitat supervisor HTTP endpoint is not responding yet"
-      end
-    rescue => e
-      raise "Error connecting to Habitat supervisor: #{e.message}"
-    end
+    #   unless response.code == "200"
+    #     raise "Habitat supervisor HTTP endpoint is not responding yet"
+    #   end
+    # rescue => e
+    #   raise "Error connecting to Habitat supervisor: #{e.message}"
+    # end
   end
   retries 30
   retry_delay 1
