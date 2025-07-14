@@ -1208,7 +1208,9 @@ class Chef
       end
 
       def warn_license_usage
-        return if config[:license_type].present?
+        # remove the dependency on .present? from activesupport since this is the one usage
+        license_type = config[:license_type]
+        return unless license_type.nil? || (license_type.respond_to(:empty?) && license_type.empty?)
 
         ui.warn(<<~MSG
 
