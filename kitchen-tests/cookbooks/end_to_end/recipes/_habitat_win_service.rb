@@ -3,32 +3,26 @@ habitat_sup "default" do
   gateway_auth_token "secret"
 end
 
-ruby_block "wait-for-svc-default-startup" do
+powershell_script 'habitat-diagnostics' do
+  code <<-PS1
+    Write-Host "Checking Habitat service status..."
+    Get-Service -Name Habitat -ErrorAction SilentlyContinue | Format-List Status,Name,DisplayName,StartType
+
+    Write-Host "Checking Habitat Supervisor processes..."
+    Get-Process -Name hab-sup -ErrorAction SilentlyContinue | Format-List
+    
+    Write-Host "Checking network connectivity..."
+    Test-NetConnection -ComputerName localhost -Port 9631 | Format-List
+    
+    Write-Host "Checking Windows firewall status..."
+    Get-NetFirewallRule | Where-Object {$_.DisplayName -like "*Habitat*" -or $_.DisplayName -like "*9631*"} | Format-List
+  PS1
+  action :run
+end
+
 ruby_block "wait-for-svc-default-startup" do
   block do
-    # Check if the Windows service is actually running instead of checking loaded services
-    cmd = Mixlib::ShellOut.new("powershell -Command \"(Get-Service habitat).Status -eq 'Running'\"")
-    cmd.run_command
-    
-    unless cmd.stdout.strip == "True"
-      raise "Habitat service is not running yet"
-    end
-    
-    # Additional check to ensure the supervisor is accepting connections
-    # This checks if the supervisor HTTP endpoint is responding
-    begin
-      require 'net/http'
-      require 'uri'
-      
-      uri = URI.parse("http://localhost:9631/services")
-      response = Net::HTTP.get_response(uri)
-      
-      unless response.code == "200"
-        raise "Habitat supervisor HTTP endpoint is not responding yet"
-      end
-    rescue => e
-      raise "Error connecting to Habitat supervisor: #{e.message}"
-    end
+    raise unless system("hab svc status")
   end
   retries 30
   retry_delay 1
