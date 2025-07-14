@@ -12,12 +12,12 @@ describe command("C:\\habitat\\hab.exe -V") do
   its("exit_status") { should eq 0 }
 end
 
-describe directory("C:\\hab\\pkgs\\skylerto\\splunkforwarder") do
+describe directory("C:\\hab\\pkgs\\chef\\splunkforwarder") do
   it { should exist }
 end
 
 # TODO: Same issue as above
-describe command("C:\\habitat\\hab.exe pkg path skylerto/splunkforwarder") do
+describe command("C:\\habitat\\hab.exe pkg path chef/splunkforwarder") do
   its("exit_status") { should eq 0 }
-  its("stdout") { should match(/C:\\hab\\pkgs\\skylerto\\splunkforwarder/) }
+  its("stdout") { should match(/C:\\hab\\pkgs\\chef\\splunkforwarder/) }
 end

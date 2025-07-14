@@ -20,4 +20,4 @@ habitat_user_toml "splunkforwarder" do
   )
 end
 
-habitat_service "skylerto/splunkforwarder"
+habitat_service "chef/splunkforwarder"
