@@ -9,7 +9,7 @@ $env:PKG_IDENT = $(buildkite-agent meta-data get "INFRA_HAB_PKG_IDENT")
 
 Write-Host "--- Installing latest version of $env:PKG_IDENT from unstable channel"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-hab pkg install $env:PKG_IDENT --channel unstable
+hab pkg install $env:PKG_IDENT --channel unstable --auth $HAB_AUTH_TOKEN
 if (-not $?) { throw "Unable to install latest package of $env:PKG_IDENT from unstable channel" }
 
 $pkgPath = hab pkg path chef/chef-infra-client

@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+echo "--- Checking HAB_AUTH_TOKEN"
+if [ -z "${HAB_AUTH_TOKEN:-}" ]; then
+  echo "HAB_AUTH_TOKEN is not set"
+else
+  echo "HAB_AUTH_TOKEN is set"
+fi
+
 ./.expeditor/scripts/install-hab.sh x86_64-linux
 
 echo "--- Installing Chef Infra Client from unstable channel via Habitat"
