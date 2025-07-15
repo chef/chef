@@ -1,11 +1,18 @@
 set -e pipefail
 
+echo "--- Checking HAB_AUTH_TOKEN"
+if [ -z "${HAB_AUTH_TOKEN:-}" ]; then
+  echo "HAB_AUTH_TOKEN is not set"
+else
+  echo "HAB_AUTH_TOKEN is set"
+fi
+
 git config --global --add safe.directory /workdir
 
 export PKG_IDENT=$(buildkite-agent meta-data get "INFRA_HAB_PKG_IDENT")
 
 echo "--- Installing $PKG_IDENT from unstable channel"
-sudo hab pkg install $PKG_IDENT --channel unstable --binlink
+sudo hab pkg install $PKG_IDENT --channel unstable --auth $HAB_AUTH_TOKEN --binlink
 
 pkg_ident=$(hab pkg path chef/chef-infra-client | grep -oP 'chef/chef-infra-client/[0-9]+\.[0-9]+\.[0-9]+/[0-9]+')
 

@@ -56,6 +56,8 @@ for target in ${targets[@]}; do
     echo "        image: chefes/omnibus-toolchain-${target%:*}:$OMNIBUS_TOOLCHAIN_VERSION"
     echo "        privileged: true"
     echo "        propagate-environment: true"
+    echo "        environment:"
+    echo "          - HAB_AUTH_TOKEN"
     echo "  commands:"
     if [[ "${target%:*}" == *"arm"* ]]; then
       echo "    - sudo ./.expeditor/scripts/install-hab.sh <arm>"
