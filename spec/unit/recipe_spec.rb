@@ -630,6 +630,57 @@ describe Chef::Recipe do
     end
   end
 
+  describe "from_json_file" do
+    it "raises IOError if the file does not exist" do
+      filename = "/nonexistent"
+      allow(File).to receive(:file?).and_call_original
+      allow(File).to receive(:file?).with(filename).and_return(false)
+      expect { recipe.from_json_file(filename) }.to raise_error(IOError, /Cannot open or read/)
+    end
+  end
+
+  describe "from_json" do
+    it "raises ArgumentError if the JSON is not a top-level hash" do
+      json = <<~JSON
+        [
+          "one",
+          "resources",
+          "three"
+        ]
+      JSON
+      expect { recipe.from_json(json) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+    end
+
+    it "raises ArgumentError if the JSON does not contain a resources hash" do
+      json = <<~JSON
+        {
+          "airplanes": [
+            {
+              "type": "execute",
+              "command": "whoami"
+            }
+          ]
+        }
+      JSON
+      expect { recipe.from_json(json) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+    end
+
+    it "does not raise if the JSON contains a resources hash" do
+      json = <<~JSON
+        {
+          "resources": [
+            {
+              "type": "execute",
+              "command": "whoami"
+            }
+          ]
+        }
+      JSON
+      expect(recipe).to receive(:from_hash).with({ "resources" => [{ "command" => "whoami", "type" => "execute" }] })
+      recipe.from_json(json)
+    end
+  end
+
   describe "from_hash" do
     it "declares resources from a hash" do
       resources = { "resources" => [

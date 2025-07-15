@@ -18,6 +18,7 @@
 #
 
 autoload :YAML, "yaml"
+require_relative "json_compat"
 require_relative "dsl/recipe"
 require_relative "mixin/from_file"
 require_relative "mixin/deprecation"
@@ -96,6 +97,25 @@ class Chef
       res = ::YAML.safe_load(string, permitted_classes: [Date])
       unless res.is_a?(Hash) && res.key?("resources")
         raise ArgumentError, "YAML recipe '#{source_file}' must contain a top-level 'resources' hash (YAML sequence), i.e. 'resources:'"
+      end
+
+      from_hash(res)
+    end
+
+    def from_json_file(filename)
+      self.source_file = filename
+      if File.file?(filename) && File.readable?(filename)
+        json_contents = IO.read(filename)
+        from_json(json_contents)
+      else
+        raise IOError, "Cannot open or read file '#{filename}'!"
+      end
+    end
+
+    def from_json(string)
+      res = JSONCompat.from_json(string)
+      unless res.is_a?(Hash) && res.key?("resources")
+        raise ArgumentError, "JSON recipe '#{source_file}' must contain a top-level 'resources' hash"
       end
 
       from_hash(res)
