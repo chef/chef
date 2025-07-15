@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.25 -->
-## [v18.7.25](https://github.com/chef/chef/tree/v18.7.25) (2025-07-15)
+<!-- latest_release 18.7.26 -->
+## [v18.7.26](https://github.com/chef/chef/tree/v18.7.26) (2025-07-15)
 
 #### Merged Pull Requests
-- Updating Github to use Windows 2025 [#15096](https://github.com/chef/chef/pull/15096) ([johnmccrae](https://github.com/johnmccrae))
+- Bug fix for apt_repository when creating a new keyring (#15008) [#15043](https://github.com/chef/chef/pull/15043) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bug fix for apt_repository when creating a new keyring (#15008) [#15043](https://github.com/chef/chef/pull/15043) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.26 -->
 - Updating Github to use Windows 2025 [#15096](https://github.com/chef/chef/pull/15096) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.25 -->
 - Backport of PR 15098 - Use chef/ vs. removed skylerto/ package in hab for tests [#15099](https://github.com/chef/chef/pull/15099) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.24 -->
 - Adding explicit loads for net/http [#15097](https://github.com/chef/chef/pull/15097) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.23 -->
