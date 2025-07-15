@@ -1,0 +1,19 @@
+name: All checks pass
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+jobs:
+  allchecks:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: read
+      contents: read
+    steps:
+      - uses: wechuli/allcheckspassed@v1
+        with:
+          # This seems to be working lately even for external
+          # contributors, so maybe we don't need to exclude it?
+          checks_exclude: "SonarCloud Code Analysis"
+          # Retry every minute for 30 minutes...
+          retries: 30
