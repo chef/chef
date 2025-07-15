@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.27 -->
-## [v18.7.27](https://github.com/chef/chef/tree/v18.7.27) (2025-07-15)
+<!-- latest_release 18.7.28 -->
+## [v18.7.28](https://github.com/chef/chef/tree/v18.7.28) (2025-07-15)
 
 #### Merged Pull Requests
-- backport #14868 for Chef 18 [#15091](https://github.com/chef/chef/pull/15091) ([fretb](https://github.com/fretb))
+- [Chef 18] Support JSON recipes [#15106](https://github.com/chef/chef/pull/15106) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef 18] Support JSON recipes [#15106](https://github.com/chef/chef/pull/15106) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.7.28 -->
 - backport #14868 for Chef 18 [#15091](https://github.com/chef/chef/pull/15091) ([fretb](https://github.com/fretb)) <!-- 18.7.27 -->
 - Bug fix for apt_repository when creating a new keyring (#15008) [#15043](https://github.com/chef/chef/pull/15043) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.26 -->
 - Updating Github to use Windows 2025 [#15096](https://github.com/chef/chef/pull/15096) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.25 -->
