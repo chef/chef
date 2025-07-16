@@ -25,8 +25,6 @@ if [ -f /etc/debian_version ]; then
   touch /etc/network/interfaces
 fi
 
-gem uninstall -aIx
-
 # remove default bundler config if there is one
 rm -f .bundle/config
 

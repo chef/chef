@@ -63,8 +63,7 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-# gem "chefstyle"
-gem "cookstyle", "= 7.32.8" # for cookstyle linting, matches the inspec 5 version
+gem "chefstyle"
 # group(:chefstyle) do
 #   # for testing new chefstyle rules
 #   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"

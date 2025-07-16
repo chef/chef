@@ -51,7 +51,7 @@ PATH
       chef-config (= 18.7.29)
       chef-utils (= 18.7.29)
       chef-vault
-      chef-zero (>= 15.0.21)
+      chef-zero (>= 15.0.15)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
@@ -86,7 +86,7 @@ PATH
       chef-powershell (~> 18.1.0)
       chef-utils (= 18.7.29)
       chef-vault
-      chef-zero (>= 15.0.21)
+      chef-zero (>= 15.0.15)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
@@ -232,6 +232,8 @@ GEM
       chef-zero (>= 14.0)
       logger (< 1.6.0)
       net-ssh
+    chefstyle (2.2.3)
+      rubocop (= 1.25.1)
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
     cookstyle (7.32.8)
@@ -518,7 +520,7 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (>= 17)
-  cookstyle (= 7.32.8)
+  chefstyle
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng

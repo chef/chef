@@ -7,7 +7,6 @@ AllCops:
     - "pkg/**/*"
     - "chef-config/pkg/**/*"
     - "habitat/**/*"
-    - "chef-utils/**/*"
 Security/Eval:
   Enabled: false
 Lint/UselessAssignment:
