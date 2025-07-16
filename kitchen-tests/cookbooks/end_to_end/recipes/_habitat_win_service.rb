@@ -5,7 +5,15 @@ end
 
 ruby_block "wait-for-svc-default-startup" do
   block do
-    raise unless system("hab svc status")
+    # Check if the Windows service is actually running instead of checking loaded services
+    cmd = Mixlib::ShellOut.new("powershell -Command \"(Get-Service habitat).Status -eq 'Running'\"")
+    cmd.run_command
+
+    if cmd.stdout.strip == "True"
+      puts "Habitat service is running"
+    else
+      raise "Habitat service is not running yet"
+    end
   end
   retries 30
   retry_delay 1
