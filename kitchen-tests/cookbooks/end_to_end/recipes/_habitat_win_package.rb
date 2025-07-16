@@ -3,5 +3,5 @@ habitat_install "default" do
 end
 
 habitat_package "chef/splunkforwarder" do
-  version "7.0.3/20250711082337"
+  version "7.0.3/20250714155325"
 end
