@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.51 -->
-## [v19.1.51](https://github.com/chef/chef/tree/v19.1.51) (2025-07-14)
+<!-- latest_release 19.1.52 -->
+## [v19.1.52](https://github.com/chef/chef/tree/v19.1.52) (2025-07-16)
 
 #### Merged Pull Requests
-- Use chef/ vs. removed skylerto/ package in hab for tests [#15098](https://github.com/chef/chef/pull/15098) ([tpowell-progress](https://github.com/tpowell-progress))
+- Apply new version and stability fix for hab package to main [#15113](https://github.com/chef/chef/pull/15113) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Apply new version and stability fix for hab package to main [#15113](https://github.com/chef/chef/pull/15113) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.52 -->
 - Use chef/ vs. removed skylerto/ package in hab for tests [#15098](https://github.com/chef/chef/pull/15098) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.51 -->
 - adds environment properties to apt_package, dnf_package and yum_package [#14868](https://github.com/chef/chef/pull/14868) ([kristofvandam](https://github.com/kristofvandam)) <!-- 19.1.50 -->
 - [ChefRepositoryFileSystemCookbookEntry#children] Use in-place mutations [#15061](https://github.com/chef/chef/pull/15061) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.49 -->
