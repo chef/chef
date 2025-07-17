@@ -81,5 +81,10 @@ describe Chef::TrainTransport do
       allow(File).to receive(:exist?).with(host_cred_file_path).and_return(true)
       expect(transport.credentials_file_path).to eq(host_cred_file_path)
     end
+
+    it "expects target mode credentials in a file called 'target_credentials'" do
+      allow(File).to receive(:exist?).and_return(false)
+      expect { transport.credentials_file_path }.to raise_error(ArgumentError, /Credentials file .* does not exist: .*target_credentials/)
+    end
   end
 end

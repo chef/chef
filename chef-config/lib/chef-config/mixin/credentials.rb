@@ -194,7 +194,6 @@ module ChefConfig
 
         # Lazy require due to Gem being part of Chef and rarely used functionality
         require "vault" unless defined? Vault
-        logger.debug("Connecting to HashiCorp Vault at #{vault_config[:address]}...")
         @vault ||= Vault::Client.new(vault_config)
 
         secret = secrets_config["secret"]
