@@ -19,7 +19,7 @@ require "spec_helper"
 require "chef-config/config"
 require "chef-config/mixin/credentials"
 
-module Vault;
+module Vault
   class Client; end
 end
 
@@ -85,7 +85,7 @@ RSpec.describe ChefConfig::Mixin::Credentials do
   end
 
   describe "#valid_secrets_provider?" do
-    context "when global, valid configuration was provided" do #!
+    context "when global, valid configuration was provided" do
       let(:global_options) { { "default_secrets_provider" => { "name" => "hashicorp-vault", "endpoint" => "https://198.51.100.5:8200", "token" => "hvs.1234567890" } } }
       let(:secrets_config) { { "secret" => "/chef/sudo_password", "field" => "password" } }
 
@@ -135,12 +135,11 @@ RSpec.describe ChefConfig::Mixin::Credentials do
     end
 
     context "without default secrets provider being set" do
-      let(:global_options) { }
+      let(:global_options) {}
 
       context "for a secret of type string" do
         let(:secrets_result) { "secret" }
         let(:secrets_config) { { "secrets_provider" => { "name" => "hashicorp-vault" }, "secret" => "/chef/sudo_password" } }
-
 
         it "returns the complete value" do
           expect(test_obj.resolve_secret(secrets_config)).to eq("secret")
