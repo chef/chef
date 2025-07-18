@@ -69,15 +69,15 @@ for target in ${targets[@]}; do
   fi
 done
 
-# if [[ "$BUILDKITE_BRANCH" == "$BUILDKITE_PIPELINE_DEFAULT_BRANCH" ]]; then
-#   echo "- wait"
-#   echo "- label: \":habicat: Promoting packages to the current channel.\""
-#   echo "  commands:"
-#   echo "    - export PKG_IDENT=$(buildkite-agent meta-data get \"INFRA_HAB_PKG_IDENT\")"
-#   echo "    - hab pkg promote \$PKG_IDENT current x86_64-linux"
-#   echo "    - hab pkg promote \$PKG_IDENT current x86_64-windows"
-#   echo "  expeditor:"
-#   echo "    executor:"
-#   echo "      docker:"
-#   echo "        - HAB_AUTH_TOKEN"
-# fi
+if [[ "$BUILDKITE_BRANCH" == "$BUILDKITE_PIPELINE_DEFAULT_BRANCH" ]]; then
+  echo "- wait"
+  echo "- label: \":habicat: Promoting packages to the current channel.\""
+  echo "  commands:"
+  echo "    - export PKG_IDENT=$(buildkite-agent meta-data get \"INFRA_HAB_PKG_IDENT\")"
+  echo "    - hab pkg promote \$PKG_IDENT current x86_64-linux"
+  echo "    - hab pkg promote \$PKG_IDENT current x86_64-windows"
+  echo "  expeditor:"
+  echo "    executor:"
+  echo "      docker:"
+  echo "        - HAB_AUTH_TOKEN"
+fi
