@@ -53,7 +53,7 @@ end
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
-    gem "ruby-shadow", platforms: :ruby
+    gem "chef-ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "tp/3.2-and-up", platforms: :ruby
   end
 end
 

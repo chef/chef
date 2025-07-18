@@ -92,7 +92,12 @@ class Chef
           #
           def installed_versions(gem_dep)
             rubygems_version = Gem::Version.new(Gem::VERSION)
-            if rubygems_version >= Gem::Version.new("3.1")
+            if rubygems_version >= Gem::Version.new("3.5.11")
+              # The API changed as of rubygems 3.5.11
+              stubs = gem_specification_record.new(gem_specification.dirs).send(:installed_stubs, "#{gem_dep.name}-*.gemspec")
+              stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
+              stubs
+            elsif rubygems_version >= Gem::Version.new("3.1")
               # In newer Rubygems, bundler is now a "default gem" which means
               # even with AlternateGemEnvironment when you try to get the
               # installed versions, you get the one from Chef's Ruby's default
@@ -272,6 +277,10 @@ class Chef
 
           def gem_specification
             Gem::Specification
+          end
+
+          def gem_specification_record
+            Gem::SpecificationRecord
           end
 
           def rubygems_version
