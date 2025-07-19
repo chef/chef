@@ -53,6 +53,26 @@ describe Chef::TrainTransport do
     let(:config_cred_file_path) { "/somewhere/credentials" }
     let(:host_cred_file_path) { Chef::Platform.windows? ? "C:\\chef\\foo.example.org\\credentials" : "/etc/chef/foo.example.org/credentials" }
 
+    context "when CHEF_CREDENTIALS_FILE environment variable is set" do
+      before(:all) do
+        @original_env = ENV.to_hash
+      end
+
+      after(:all) do
+        ENV.clear
+        ENV.update(@original_env)
+      end
+
+      before do
+        ENV["CHEF_CREDENTIALS_FILE"] = "/etc/myconfig/targetmode_credentials"
+        allow(::File).to receive(:exist?).and_return(true)
+      end
+
+      it "returns the path if it exists" do
+        expect(transport.credentials_file_path).to eq("/etc/myconfig/targetmode_credentials")
+      end
+    end
+
     context "when a file path is specified by a config" do
       before do
         tm_config = double("Config Context", host: "foo.example.org", credentials_file: config_cred_file_path)

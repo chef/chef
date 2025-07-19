@@ -78,9 +78,10 @@ module ChefConfig
       #
       # Credentials file preference:
       #
-      # 1) target_mode.credentials_file
-      # 2) /etc/chef/TARGET_MODE_HOST/credentials
-      # 3) #credentials_file_path from parent ($HOME/.chef/credentials)
+      # 1) environment variable CHEF_CREDENTIALS_FILE
+      # 2) target_mode.credentials_file
+      # 3) /etc/chef/TARGET_MODE_HOST/credentials
+      # 4) user configuration ($HOME/.chef/target_credentials)
       #
       def credentials_file_path
         tm_config = config.target_mode
