@@ -153,7 +153,6 @@ RSpec.configure do |config|
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_freebsd_gte_12_3: true if freebsd_gte_12_3?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
-  # config.filter_run_excluding not_supported_on_gce: true if gce?
   config.filter_run_excluding win2012r2_only: true unless windows_2012r2?
   config.filter_run_excluding windows64_only: true unless windows64?
   config.filter_run_excluding windows32_only: true unless windows32?
