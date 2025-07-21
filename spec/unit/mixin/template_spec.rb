@@ -216,7 +216,7 @@ describe Chef::Mixin::Template, "render_template" do
 
         it "should create a pretty output for the terminal" do
           expect(exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
-          expect(exception.to_s).to match(/undefined method `\[\]' for nil:NilClass/)
+          expect(exception.to_s).to match(/undefined method [`']\[\][`'] for nil:NilClass/)
           expect(exception.to_s).to include("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
           expect(exception.to_s).to include(exception.original_exception.backtrace.first)
         end
