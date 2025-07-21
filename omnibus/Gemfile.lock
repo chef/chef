@@ -1,9 +1,10 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: fec97fbcad50c339d4f538ca5b74cc123f627e61
+  revision: 6e8cf122cedadca0947e2702eb09aad48f4d96e0
   branch: main
   specs:
-    omnibus-software (24.6.323)
+    omnibus-software (24.6.324)
+      ffi (>= 1.17.0)
       omnibus (>= 9.0.0)
 
 GIT
@@ -34,16 +35,17 @@ GEM
     artifactory (3.0.17)
     ast (2.4.2)
     awesome_print (1.9.2)
-    aws-eventstream (1.3.1)
-    aws-partitions (1.1050.0)
-    aws-sdk-core (3.218.1)
+    aws-eventstream (1.4.0)
+    aws-partitions (1.1131.0)
+    aws-sdk-core (3.226.3)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
       base64
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.98.0)
-      aws-sdk-core (~> 3, >= 3.216.0)
+      logger
+    aws-sdk-kms (1.106.0)
+      aws-sdk-core (~> 3, >= 3.225.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
@@ -52,9 +54,9 @@ GEM
     aws-sdk-secretsmanager (1.112.0)
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
-    aws-sigv4 (1.11.0)
+    aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
     berkshelf (8.0.9)
       chef (>= 15.7.32)
@@ -241,11 +243,11 @@ GEM
       train-core (~> 3.10)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    iostruct (0.4.0)
+    iostruct (0.5.0)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.10.1)
+    json (2.13.0)
     kitchen-vagrant (2.0.1)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
@@ -254,7 +256,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.17)
+    license_scout (1.3.18)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -282,14 +284,14 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.3.6)
+    mixlib-shellout (3.3.9)
       chef-utils
-    mixlib-shellout (3.3.6-universal-mingw32)
+    mixlib-shellout (3.3.9-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    mixlib-shellout (3.3.6-x64-mingw-ucrt)
+    mixlib-shellout (3.3.9-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
@@ -318,10 +320,10 @@ GEM
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
-    ohai (18.1.18)
+    ohai (18.2.6)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
-      ffi (~> 1.9)
+      ffi (~> 1.9, <= 1.17.0)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
@@ -349,7 +351,7 @@ GEM
     pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (6.0.1)
+    public_suffix (6.0.2)
     racc (1.8.1)
     rack (2.2.11)
     rainbow (3.1.1)
@@ -440,7 +442,7 @@ GEM
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.12.7)
+    train-core (3.12.13)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
