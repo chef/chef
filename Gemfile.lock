@@ -76,6 +76,7 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (~> 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
     chef (18.7.31-universal-mingw-ucrt)
@@ -112,6 +113,7 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (~> 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
       win32-api (~> 1.10.0)
@@ -536,7 +538,6 @@ DEPENDENCIES
   rest-client!
   rspec
   ruby-shadow!
-  uri (~> 1.0.3)
   webmock
 
 BUNDLED WITH
