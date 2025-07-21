@@ -24,7 +24,7 @@ echo "- wait: ~"
 
 for target in ${targets[@]}; do
   if [[ "${target%:*}" == *"windows"* ]]; then
-    echo "- label: :hammer_and_wrench::windows:${target%:*}"
+    echo "- label: :mag::windows:${target%:*}"
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
@@ -41,7 +41,7 @@ for target in ${targets[@]}; do
     echo "    - ./.expeditor/scripts/validate_adhoc_build.ps1"
     echo "  timeout_in_minutes: 120"
   else
-    echo "- label: :hammer_and_wrench::docker:${target%:*}"
+    echo "- label: :mag::docker:${target%:*}"
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
