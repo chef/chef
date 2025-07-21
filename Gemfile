@@ -50,6 +50,10 @@ group(:ruby_shadow) do
   end
 end
 
+group(:uri) do
+  gem "uri", "~> 1.0.3" # Forcing version 1.0.3 because of a CVE in 1.0.2
+end
+
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
 group(:knife_windows_deps) do
   gem "ed25519", "~> 1.2" # ed25519 ssh key support
