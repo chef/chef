@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.57 -->
-## [v19.1.57](https://github.com/chef/chef/tree/v19.1.57) (2025-07-22)
+<!-- latest_release 19.1.58 -->
+## [v19.1.58](https://github.com/chef/chef/tree/v19.1.58) (2025-07-22)
 
 #### Merged Pull Requests
-- Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae))
+- Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.58 -->
 - Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.57 -->
 - Add support for secrets in credentials file [#15064](https://github.com/chef/chef/pull/15064) ([thheinen](https://github.com/thheinen)) <!-- 19.1.56 -->
 - Use notifies and sleeps to stabilize kitchen-tests for snap [#15118](https://github.com/chef/chef/pull/15118) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.55 -->
