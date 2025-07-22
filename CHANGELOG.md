@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.56 -->
-## [v19.1.56](https://github.com/chef/chef/tree/v19.1.56) (2025-07-21)
+<!-- latest_release 19.1.57 -->
+## [v19.1.57](https://github.com/chef/chef/tree/v19.1.57) (2025-07-22)
 
 #### Merged Pull Requests
-- Add support for secrets in credentials file [#15064](https://github.com/chef/chef/pull/15064) ([thheinen](https://github.com/thheinen))
+- Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.57 -->
 - Add support for secrets in credentials file [#15064](https://github.com/chef/chef/pull/15064) ([thheinen](https://github.com/thheinen)) <!-- 19.1.56 -->
 - Use notifies and sleeps to stabilize kitchen-tests for snap [#15118](https://github.com/chef/chef/pull/15118) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.55 -->
 - Ohai custom plug-ins Chef-11588 [#15090](https://github.com/chef/chef/pull/15090) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.54 -->
