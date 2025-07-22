@@ -13,7 +13,7 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 
 # required for FIPS or bundler will pick up default openssl
 install_if -> { RUBY_PLATFORM !~ /darwin/ } do
-  gem "openssl", "= 3.2.0"
+  gem "openssl", "= 3.3.0"
 end
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
@@ -91,5 +91,10 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
     assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
     FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
+  end
+  
+  # Pin date gem for UCRT compatibility
+  if RUBY_PLATFORM.include?('ucrt')
+    gem "date", "~> 3.3.3"  # Use a version compatible with UCRT
   end
 end

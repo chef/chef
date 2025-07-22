@@ -244,7 +244,7 @@ GEM
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
-    date (3.4.1)
+    date (3.3.4)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
     domain_name (0.6.20240107)
@@ -362,7 +362,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
-    openssl (3.2.0)
+    openssl (3.3.0)
     parallel (1.26.3)
     parser (3.3.7.1)
       ast (~> 2.4.1)
@@ -524,12 +524,13 @@ DEPENDENCIES
   cheffish (>= 17)
   chefstyle
   crack (< 0.4.6)
+  date (~> 3.3.3)
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (>= 5, < 6)
   ohai!
-  openssl (= 3.2.0)
+  openssl (= 3.3.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
