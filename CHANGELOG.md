@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.18.42 -->
-## [v16.18.42](https://github.com/chef/chef/tree/v16.18.42) (2024-02-20)
+<!-- latest_release 16.18.43 -->
+## [v16.18.43](https://github.com/chef/chef/tree/v16.18.43) (2025-07-22)
 
 #### Merged Pull Requests
-- Remove nightly build schedule for chef-16 [#14239](https://github.com/chef/chef/pull/14239) ([tpowell-progress](https://github.com/tpowell-progress))
+- Drop expeditor dependency PRs for `chef-16` [#15141](https://github.com/chef/chef/pull/15141) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.18.30 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Drop expeditor dependency PRs for `chef-16` [#15141](https://github.com/chef/chef/pull/15141) ([jaymzh](https://github.com/jaymzh)) <!-- 16.18.43 -->
 - Remove nightly build schedule for chef-16 [#14239](https://github.com/chef/chef/pull/14239) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 16.18.42 -->
 - Bump pedump from 0.6.5 to 0.6.6 in /omnibus [#13688](https://github.com/chef/chef/pull/13688) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 16.18.41 -->
 - Bump addressable to 2.8.4 [#13675](https://github.com/chef/chef/pull/13675) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.18.40 -->
