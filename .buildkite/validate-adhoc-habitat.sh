@@ -14,7 +14,7 @@ fi
 # Pull the latest chef/chef-infra-client package identifier from habitat
 # This will ensure that we test and promote the right package version
 # even if we have a new version in the unstable channel.
-echo "- label: \":habicat: Fetching latest package identifier.\""
+echo "- label: \":habicat::linux: Building Habitat package\""
 echo "  commands:"
 echo "    - sudo -E ./.expeditor/scripts/buildkite_adhoc_metadata.sh"
 echo "  agents:"
