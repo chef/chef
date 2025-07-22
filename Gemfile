@@ -94,7 +94,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   end
   
   # Pin date gem for UCRT compatibility
-  if RUBY_PLATFORM.include?('ucrt')
+  if RUBY_PLATFORM.include?("ucrt")
     gem "date", "~> 3.3.3"  # Use a version compatible with UCRT
   end
 end
