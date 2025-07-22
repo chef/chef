@@ -92,7 +92,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
     FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end
-  
+
   # Pin date gem for UCRT compatibility
   if RUBY_PLATFORM.include?("ucrt")
     gem "date", "~> 3.3.3"  # Use a version compatible with UCRT
