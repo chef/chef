@@ -64,10 +64,13 @@ class Chef
         description: "The text of the certificate file including the BEGIN/END comment lines."
 
       action :add, description: "Add a local certificate to habitat based #{ChefUtils::Dist::Infra::PRODUCT}'s CA bundle." do
-        open(ca_cert_path, "a") do |f|
-          f.puts "\nCert Bundle - #{new_resource.cert_name}"
-          f.puts "==========================="
-          f.puts new_resource.certificate
+        return if cert_installed? new_resource.certificate
+        converge_by("Add new CA bundle #{new_resource.cert_name} to #{ca_cert_path}") do
+          open(ca_cert_path, "a") do |f|
+            f.puts "\nCert Bundle - #{new_resource.cert_name}"
+            f.puts "==========================="
+            f.puts new_resource.certificate
+          end
         end
       end
 
@@ -88,35 +91,35 @@ class Chef
         # @api private
         #
         def hab_cacerts_pkg_path
-          @hab_cacerts_pkg_path ||= begin
-            # The hab based installer packages `hab` binary inside `/hab/bin` - which can be expected to be available.
-            ca_pkg = shell_out("hab pkg dependencies chef/chef-infra-client")
-            if ca_pkg.error?
-              raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
-            end
+          return @hab_cacerts_pkg_path unless @hab_ca_certs_pkg_path.nil?
 
-            ca_pkg.stdout.readlines.each do |line|
-              if line.index("core/cacerts")
-                @hab_cacerts_pkg = line
-              end
-            end
-
-            if @hab_cacerts_pkg.nil?
-              raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
-            end
-
-            ca_path = shell_out("/hab/bin/hab pkg path #{hab_cacerts_pkg}")
-            if ca_path.error?
-              raise "Unable to find path for the 'core/cacerts' habitat package."
-            end
-
-            path = ca_path.stdout.readline
-
-            @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
+          # The hab based installer packages `hab` binary inside `/hab/bin` - which can be expected to be available.
+          ca_pkg = shell_out("hab pkg dependencies chef/chef-infra-client")
+          if ca_pkg.error?
+            raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
           end
 
-          @hab_cacerts_pkg_path
+          hab_cacerts_pkg = ca_pkg.stdout.scan(%r{core/cacerts.*}$).flatten.first
+
+          if hab_cacerts_pkg.nil?
+            raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
+          end
+
+          ca_path = shell_out("/hab/bin/hab pkg path #{hab_cacerts_pkg}")
+          if ca_path.error?
+            raise "Unable to find path for the 'core/cacerts' habitat package."
+          end
+
+          path = ca_path.stdout.readline
+
+          @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
         end # hab_cacerts_pkg_path
+
+        def cert_installed? certificate
+          chef_cacert_pem = ::File.read(ca_cert_path)
+          chef_cacert_pem.include?(certificate)
+        end
+
       end # action_class
     end
   end
