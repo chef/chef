@@ -65,6 +65,7 @@ class Chef
 
       action :add, description: "Add a local certificate to habitat based #{ChefUtils::Dist::Infra::PRODUCT}'s CA bundle." do
         return if cert_installed? new_resource.certificate
+
         converge_by("Add new CA bundle #{new_resource.cert_name} to #{ca_cert_path}") do
           open(ca_cert_path, "a") do |f|
             f.puts "\nCert Bundle - #{new_resource.cert_name}"
@@ -115,7 +116,7 @@ class Chef
           @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
         end # hab_cacerts_pkg_path
 
-        def cert_installed? certificate
+        def cert_installed?(certificate)
           chef_cacert_pem = ::File.read(ca_cert_path)
           chef_cacert_pem.include?(certificate)
         end
