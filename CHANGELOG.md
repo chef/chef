@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.32 -->
-## [v18.7.32](https://github.com/chef/chef/tree/v18.7.32) (2025-07-22)
+<!-- latest_release 18.7.33 -->
+## [v18.7.33](https://github.com/chef/chef/tree/v18.7.33) (2025-07-23)
 
 #### Merged Pull Requests
-- Updating uri to 1.0.3 [#15131](https://github.com/chef/chef/pull/15131) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18]Bump openssl gem version to 3.3.0 [#15147](https://github.com/chef/chef/pull/15147) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-18]Bump openssl gem version to 3.3.0 [#15147](https://github.com/chef/chef/pull/15147) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.33 -->
 - Updating uri to 1.0.3 [#15131](https://github.com/chef/chef/pull/15131) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.32 -->
 - Updating Chef-Zero [#15117](https://github.com/chef/chef/pull/15117) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.31 -->
 - [Backport Chef-18] Correcting CHEF-11588 - busted custom ohai plugins [#15115](https://github.com/chef/chef/pull/15115) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.30 -->
