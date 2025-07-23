@@ -9,6 +9,5 @@ expeditor:
 
 steps:
   - commands:
-    - .buildkite/validate-adhoc.rb > pipeline.validate.adhoc.yml
-    - buildkite-agent pipeline upload pipeline.validate.adhoc.yml
+    - /home/ec2-user/.rbenv/shims/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
     label: ":pipeline: Upload"
