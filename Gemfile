@@ -13,7 +13,7 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 
 # required for FIPS or bundler will pick up default openssl
 install_if -> { RUBY_PLATFORM !~ /darwin/ } do
-  gem "openssl", "= 3.2.0"
+  gem "openssl", "= 3.3.0"
 end
 
 if File.exist?(File.expand_path("chef-bin", __dir__))

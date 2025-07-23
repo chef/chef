@@ -148,7 +148,8 @@ function Invoke-Build {
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        # Make sure version of openssl gem here is same as the one in Gemfile
+        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         push-location $PLAN_CONTEXT
         bundle install --jobs=3 --retry=3
