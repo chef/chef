@@ -9,6 +9,5 @@ expeditor:
 
 steps:
   - commands:
-    - .buildkite/validate-adhoc.rb > pipeline.validate.adhoc.yml
-    - buildkite-agent pipeline upload pipeline.validate.adhoc.yml
+    - ./.buildkite/validate.adhoc.pipeline.sh
     label: ":pipeline: Upload"
