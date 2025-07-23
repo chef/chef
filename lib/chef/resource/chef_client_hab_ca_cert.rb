@@ -99,7 +99,7 @@ class Chef
             raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
           end
 
-          hab_cacerts_pkg = ca_pkg.stdout.scan(%r{core/cacerts.*}$).flatten.first
+          hab_cacerts_pkg = ca_pkg.stdout.scan(%r{core/cacerts.*$}).flatten.first
 
           if hab_cacerts_pkg.nil?
             raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
