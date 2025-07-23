@@ -61,7 +61,7 @@ else
   # nightly pipeline, get package from unstable.
 end
 
-pipeline["steps"] << { "wait" => nil }
+pipeline["steps"] << "wait: ~"
 
 targets.each do |target|
   platform = target.split(":").first
@@ -107,7 +107,11 @@ targets.each do |target|
     commands << "./.expeditor/scripts/validate_adhoc_build.sh"
 
     step = {
+<<<<<<< HEAD
       "label" => ":mag::docker:#{platform}",
+=======
+      "label" => ":mage::docker:#{platform}",
+>>>>>>> 96b0524480 (convert to ruby from bash)
       "key" => "validate-#{platform}",
       "retry" => {
         "automatic" => {
@@ -133,4 +137,8 @@ targets.each do |target|
   pipeline["steps"] << step
 end
 
+<<<<<<< HEAD
+=======
+puts "---"
+>>>>>>> 96b0524480 (convert to ruby from bash)
 puts pipeline.to_yaml
