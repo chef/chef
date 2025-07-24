@@ -10,7 +10,7 @@ echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-
 echo "steps:"
 echo ""
 
-test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
+test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-20.04")
 
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
