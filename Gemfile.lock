@@ -1,4 +1,11 @@
 GIT
+  remote: https://github.com/chef/chef-win32-api.git
+  revision: 7fd7a1fbae34212dd1b21d43b65e138e66529318
+  branch: main
+  specs:
+    chef-win32-api (1.11.0)
+
+GIT
   remote: https://github.com/chef/mixlib-archive.git
   revision: b731bd6f24f14ae5b0853ab08fdd2bd834564401
   branch: main
@@ -66,6 +73,7 @@ PATH
       iniparse (~> 1.4)
       inspec-core (~> 7.0.38.beta)
       license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
@@ -92,6 +100,7 @@ PATH
       chef-powershell (~> 18.1.0)
       chef-utils (= 19.1.58)
       chef-vault
+      chef-win32-api (~> 1.11.0)
       chef-zero (>= 15.0.17)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
@@ -103,6 +112,7 @@ PATH
       inspec-core (~> 7.0.38.beta)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
@@ -120,7 +130,6 @@ PATH
       uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-      win32-api (~> 1.10.0)
       win32-certstore (~> 0.6.15)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
@@ -500,7 +509,6 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.2)
-    win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.16)
       chef-powershell
       ffi
@@ -537,6 +545,7 @@ DEPENDENCIES
   chef-config!
   chef-utils!
   chef-vault
+  chef-win32-api!
   cheffish (>= 17)
   crack (< 0.4.6)
   ed25519 (~> 1.2)

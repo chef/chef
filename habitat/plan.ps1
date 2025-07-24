@@ -164,8 +164,14 @@ function Invoke-Build {
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
                 }
+                elseif ($git_gem -match "mixlib-archive"){
+                    # mixlib-archive requires special handling for gem build and install
+                    $gemspec_path = $git_gem.ToString() + "\mixlib-archive.gemspec"
+                    gem build $gemspec_path
+                    $gem_path = $git_gem.ToString() + "\mixlib-archive*.gem"
+                    gem install $gem_path
+                }
                 else {
-                    # For all other gems including mixlib-archive, use the standard rake install
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
                 if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
@@ -181,10 +187,6 @@ function Invoke-Build {
             Write-BuildLine "Install attempt $install_attempt"
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
-
-        # After installing gems, regenerate the Gemfile.lock to ensure all dependencies are properly resolved
-        Write-BuildLine " ** Regenerating Gemfile.lock to resolve all dependencies including git gems"
-        bundle lock --update
 
     } finally {
         Pop-Location
