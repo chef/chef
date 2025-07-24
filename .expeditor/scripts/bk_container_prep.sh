@@ -34,7 +34,11 @@ case "$ID" in
     ;;
   rhel|rocky)
     PACKAGE_MANAGER="dnf"
-    PACKAGES="$PACKAGES openssl-devel libarchive-devel"
+    if [ "$ID" = "rocky" ]; then
+      PACKAGE_MANAGER+=" --enablerepo=devel"
+    fi
+    PACKAGES="$PACKAGES openssl-devel libarchive-devel libffi-devel libyaml-devel"
+    echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
     sudo $PACKAGE_MANAGER install $PACKAGES -y
     ;;
 esac
