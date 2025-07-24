@@ -1,14 +1,4 @@
 GIT
-  remote: https://github.com/chef/ffi-libarchive.git
-  revision: c0c3e3914d3c1ad30e7cf8dd93182bf5243ffe81
-  branch: main
-  specs:
-    ffi-libarchive (1.2.0)
-      ffi (~> 1.17)
-    ffi-libarchive (1.2.0-universal-mingw-ucrt)
-      ffi (~> 1.17)
-
-GIT
   remote: https://github.com/chef/mixlib-archive.git
   revision: b731bd6f24f14ae5b0853ab08fdd2bd834564401
   branch: main
@@ -71,6 +61,7 @@ PATH
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       inspec-core (~> 7.0.38.beta)
@@ -106,6 +97,7 @@ PATH
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       inspec-core (~> 7.0.38.beta)
@@ -281,6 +273,8 @@ GEM
     ffi (1.17.2)
     ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x64-mingw-ucrt)
+    ffi-libarchive (1.1.14)
+      ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
     ffi-yajl (2.6.0)
@@ -548,7 +542,6 @@ DEPENDENCIES
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
-  ffi-libarchive!
   inspec-core-bin (~> 7.0.38.beta)
   mixlib-archive!
   ohai!
