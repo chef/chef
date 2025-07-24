@@ -12,7 +12,7 @@ gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch:
 # gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
 
 install_if -> { RUBY_PLATFORM.match?(/mingw.*ucrt/) } do
-  gem "win32-api", git: "https://github.com/chef/chef-win32-api.git", branch: "main"
+  gem "chef-win32-api", git: "https://github.com/chef/chef-win32-api.git", branch: "main"
 end
 
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
