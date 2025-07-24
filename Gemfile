@@ -11,6 +11,10 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "main"
 # gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
 
+install_if -> { RUBY_PLATFORM.match?(/mingw.*ucrt/) } do
+  gem "win32-api", git: "https://github.com/chef/win32-api.git"
+end
+
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
   gem "ffi", ">= 1.15.5"
 else

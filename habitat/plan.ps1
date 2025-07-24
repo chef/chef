@@ -165,6 +165,7 @@ function Invoke-Build {
                     gem install $gem_path
                 }
                 else {
+                    # For all other gems including mixlib-archive, use the standard rake install
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
                 if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
@@ -181,6 +182,10 @@ function Invoke-Build {
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
 
+        # After installing gems, regenerate the Gemfile.lock to ensure all dependencies are properly resolved
+        Write-BuildLine " ** Regenerating Gemfile.lock to resolve all dependencies including git gems"
+        bundle lock --update
+
     } finally {
         Pop-Location
     }
@@ -192,8 +197,12 @@ function Invoke-Install {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
 
+        Write-BuildLine " What is my pkg_prefix? $pkg_prefix"
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
+            Write-BuildLine " What is my cache source path? $HAB_CACHE_SRC_PATH"
+            Write-BuildLine " What is my pkg_dirname? $pkg_dirname"
+
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }
