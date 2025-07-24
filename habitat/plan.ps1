@@ -153,6 +153,11 @@ function Invoke-Build {
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
+            # Skip directories that are not actual git gems (like 'extensions' directory)
+            if ($git_gem.Name -eq "extensions") {
+                Write-BuildLine " -- skipping $git_gem (not a git gem directory)"
+                continue
+            }
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
@@ -162,6 +167,14 @@ function Invoke-Build {
                     $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
+                    gem install $gem_path
+                }
+                elseif ($git_gem -match "chef-win32-api"){
+                    # chef-win32-api has native extensions and requires rake-compiler
+                    # which isn't available in the build environment, so build it directly
+                    $gemspec_path = $git_gem.ToString() + "\chef-win32-api.gemspec"
+                    gem build $gemspec_path
+                    $gem_path = $git_gem.ToString() + "\chef-win32-api*.gem"
                     gem install $gem_path
                 }
                 elseif ($git_gem -match "mixlib-archive"){
