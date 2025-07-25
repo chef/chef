@@ -15,9 +15,3 @@ task "install:force" do
   FileUtils.mv(built_gem_path, "pkg")
   sh "gem install -f pkg/#{built_gem_path}"
 end
-
-# Add install:local task to support being called from main Rakefile
-namespace :install do
-  desc "Install chef-bin gem locally"
-  task :local => "install:force"
-end

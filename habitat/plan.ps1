@@ -153,11 +153,6 @@ function Invoke-Build {
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
-            # Skip directories that are not actual git gems (like 'extensions' directory)
-            if ($git_gem.Name -eq "extensions") {
-                Write-BuildLine " -- skipping $git_gem (not a git gem directory)"
-                continue
-            }
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
@@ -169,22 +164,8 @@ function Invoke-Build {
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
                 }
-                elseif ($git_gem -match "chef-win32-api"){
-                    # chef-win32-api has native extensions and requires rake-compiler
-                    # which isn't available in the build environment, so build it directly
-                    $gemspec_path = $git_gem.ToString() + "\chef-win32-api.gemspec"
-                    gem build $gemspec_path
-                    $gem_path = $git_gem.ToString() + "\chef-win32-api*.gem"
-                    gem install $gem_path
-                }
-                elseif ($git_gem -match "mixlib-archive"){
-                    # mixlib-archive requires special handling for gem build and install
-                    $gemspec_path = $git_gem.ToString() + "\mixlib-archive.gemspec"
-                    gem build $gemspec_path
-                    $gem_path = $git_gem.ToString() + "\mixlib-archive*.gem"
-                    gem install $gem_path
-                }
                 else {
+                    # For all other gems including mixlib-archive, use the standard rake install
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
                 if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
@@ -192,91 +173,18 @@ function Invoke-Build {
                 Pop-Location
             }
         }
-        Write-BuildLine " ** Updating Gemfile to remove git references for gems we've already installed"
-        # Remove git references from Gemfile for gems we've built and installed
-        $gemfile_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
-        $gemfile_content = Get-Content $gemfile_path
-        
-        # Replace git references with regular gem declarations
-        $gemfile_content = $gemfile_content -replace 'gem "mixlib-archive".*git.*', 'gem "mixlib-archive"'
-        $gemfile_content = $gemfile_content -replace 'gem "rest-client".*git.*', 'gem "rest-client"'
-        $gemfile_content = $gemfile_content -replace 'gem "chef-win32-api".*git.*', 'gem "chef-win32-api"'
-        $gemfile_content = $gemfile_content -replace 'gem "ohai".*git.*', 'gem "ohai"'
-        
-        # Write the updated Gemfile
-        $gemfile_content | Set-Content $gemfile_path
-        
-        Write-BuildLine " ** Regenerating Gemfile.lock with updated gem sources"
-        bundle lock --update
-        if (-not $?) { Write-BuildLine "Warning: bundle lock failed, but continuing..." }
-        
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
         $install_attempt = 0
         do {
             Start-Sleep -Seconds 5
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
-            
-            # First, build and install the chef gem itself
-            Write-BuildLine "** Building and installing chef gem directly"
-            Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-            gem build chef-universal-mingw-ucrt.gemspec
-            $chef_gem = Get-ChildItem "chef-${pkg_version}-universal-mingw-ucrt.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
-            if ($chef_gem) {
-                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
-                Copy-Item $chef_gem.FullName "pkg\" -Force
-                gem install "pkg\$($chef_gem.Name)" -f --no-document
-                Write-BuildLine "** Successfully installed chef gem directly"
-            }
-            
-            # Then build and install the chef-utils gem (dependency of chef-config)
-            Write-BuildLine "** Building and installing chef-utils gem"
-            $chef_utils_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-utils"
-            Push-Location $chef_utils_dir
-            gem build chef-utils.gemspec
-            $utils_gem = Get-ChildItem "chef-utils*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
-            if ($utils_gem) {
-                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
-                Copy-Item $utils_gem.FullName "pkg\" -Force
-                gem install "pkg\$($utils_gem.Name)" -f --no-document
-                Write-BuildLine "** Successfully installed chef-utils gem"
-            }
-            Pop-Location
-            
-            # Then build and install chef-config (dependency of chef-bin)
-            Write-BuildLine "** Building and installing chef-config gem"
-            $chef_config_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-config"
-            Push-Location $chef_config_dir
-            gem build chef-config.gemspec
-            $config_gem = Get-ChildItem "chef-config*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
-            if ($config_gem) {
-                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
-                Copy-Item $config_gem.FullName "pkg\" -Force
-                gem install "pkg\$($config_gem.Name)" -f --no-document
-                Write-BuildLine "** Successfully installed chef-config gem"
-            }
-            Pop-Location
-            
-            # Finally, build and install chef-bin
-            Write-BuildLine "** Building and installing chef-bin gem"
-            $chef_bin_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-bin"
-            Push-Location $chef_bin_dir
-            gem build chef-bin.gemspec
-            $chef_bin_gem = Get-ChildItem "chef-bin*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
-            if ($chef_bin_gem) {
-                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
-                Copy-Item $chef_bin_gem.FullName "pkg\" -Force
-                gem install "pkg\$($chef_bin_gem.Name)" -f --no-document
-                Write-BuildLine "** Successfully installed chef-bin gem"
-            }
-            Pop-Location
-            
-            # After manually installing all required gems, try to run rake install:local
-            Write-BuildLine "** Running rake install:local to ensure all dependencies are properly installed"
-            Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
             bundle exec rake install:local --trace=stdout
-            Pop-Location
         } while ((-not $?) -and ($install_attempt -lt 5))
+
+        # After installing gems, regenerate the Gemfile.lock to ensure all dependencies are properly resolved
+        Write-BuildLine " ** Regenerating Gemfile.lock to resolve all dependencies including git gems"
+        bundle lock --update
 
     } finally {
         Pop-Location
