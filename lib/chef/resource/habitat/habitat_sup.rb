@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-require_relative "../../resource"
+require_relative "habitat_base"
 
 class Chef
   class Resource
-    class HabitatSup < Chef::Resource
+    class HabitatSup < Chef::Resource::HabitatBase
 
       provides(:habitat_sup, target_mode: true) do |_node|
         false
@@ -100,9 +100,6 @@ class Chef
       ```
       DOC
 
-      property :bldr_url, String,
-      description: "The Habitat Builder URL for the `habitat_package` resource, if needed."
-
       property :permanent_peer, [true, false], default: false,
       description: "Only valid for `:run` action, passes `--permanent-peer` to the hab command."
 
@@ -124,14 +121,8 @@ class Chef
       property :ring, String,
       description: "Only valid for `:run` action, passes `--ring` with the specified ring key name to the hab command."
 
-      property :hab_channel, String,
-      description: "The channel to install Habitat from. Defaults to stable"
-
       property :auto_update, [true, false], default: false,
       description: "Passes `--auto-update`. This will set the Habitat supervisor to automatically update itself any time a stable version has been released."
-
-      property :auth_token, String,
-      description: "Auth token for accessing a private organization on bldr. This value is templated into the appropriate service file."
 
       property :gateway_auth_token, String,
       description: "Auth token for accessing the supervisor's HTTP gateway. This value is templated into the appropriate service file."

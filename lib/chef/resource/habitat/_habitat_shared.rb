@@ -17,9 +17,9 @@
 def hab(*command)
   # Windows shell_out does not support arrays, so manually cleaning and joining
   hab_cmd = if windows?
-              (["hab"] + command).flatten.compact.join(" ")
+              ([ChefUtils::Dist::Habitat::EXEC] + command).flatten.compact.join(" ")
             else
-              (["hab"] + command)
+              ([ChefUtils::Dist::Habitat::EXEC] + command)
             end
   shell_out!(hab_cmd)
 rescue Errno::ENOENT

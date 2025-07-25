@@ -14,12 +14,11 @@
 # limitations under the License.
 #
 
-require_relative "../resource"
-require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require_relative "habitat/habitat_base"
 
 class Chef
   class Resource
-    class HabitatService < Chef::Resource
+    class HabitatService < Chef::Resource::HabitatBase
       provides :habitat_service, target_mode: true
       target_mode support: :full
 
@@ -87,15 +86,6 @@ class Chef
 
       property :topology, [Symbol, String], equal_to: [:standalone, "standalone", :leader, "leader"], default: :standalone, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
         description: "Passes `--topology` with the specified service topology to the hab command"
-
-      property :bldr_url, String, default: "https://bldr.habitat.sh/",
-        description: "Passes `--url` with the specified Habitat Builder URL to the hab command. Depending on the type of Habitat Builder you are connecting to, this URL will look different, here are the **3** current types:
-        - Public Habitat Builder (default) - `https://bldr.habitat.sh`
-        - On-Prem Habitat Builder installed using the [Source Install Method](https://github.com/habitat-sh/on-prem-builder) - `https://your.bldr.url`
-        - On-Prem Habitat Builder installed using the [Automate Installer](https://automate.chef.io/docs/on-prem-builder/) - `https://your.bldr.url/bldr/v1`"
-
-      property :channel, [Symbol, String], default: :stable, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
-        description: "Passes `--channel` with the specified channel to the hab command"
 
       property :bind, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b }, default: [],
         description: "Passes `--bind` with the specified services to bind to the hab command. If an array of multiple service binds are specified then a `--bind` flag is added for each."
@@ -339,7 +329,7 @@ class Chef
 
         unless current_resource.loaded && !modified
           execute "load service" do
-            command "hab svc load #{new_resource.service_name} #{options.join(" ")}"
+            command "#{ChefUtils::Dist::Habitat::EXEC} svc load #{new_resource.service_name} #{options.join(" ")}"
             retry_delay 10
             retries 5
 
@@ -351,7 +341,7 @@ class Chef
 
       action :unload, description: "runs `hab service unload` to unload and stop the specified application service" do
         if current_resource.loaded
-          execute "hab svc unload #{new_resource.service_name} #{svc_options.join(" ")}"
+          execute "#{ChefUtils::Dist::Habitat::EXEC} svc unload #{new_resource.service_name} #{svc_options.join(" ")}"
           wait_for_service_unloaded
         end
       end
@@ -362,7 +352,7 @@ class Chef
           raise "No service named #{new_resource.service_name} is loaded on the Habitat supervisor"
         end
 
-        execute "hab svc start #{new_resource.service_name} #{svc_options.join(" ")}" unless current_resource.running
+        execute "#{ChefUtils::Dist::Habitat::EXEC} svc start #{new_resource.service_name} #{svc_options.join(" ")}" unless current_resource.running
       end
 
       action :stop, description: "runs `hab service stop` to stop the specified application service" do
@@ -372,7 +362,7 @@ class Chef
         end
 
         if current_resource.running
-          execute "hab svc stop #{new_resource.service_name} #{svc_options.join(" ")}"
+          execute "#{ChefUtils::Dist::Habitat::EXEC} svc stop #{new_resource.service_name} #{svc_options.join(" ")}"
           wait_for_service_stopped
         end
       end
