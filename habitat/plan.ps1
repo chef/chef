@@ -216,6 +216,22 @@ function Invoke-Build {
             Start-Sleep -Seconds 5
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
+            
+            # First, build and install chef-bin directly
+            Write-BuildLine "** Building and installing chef-bin directly before rake install:local"
+            $chef_bin_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-bin"
+            Push-Location $chef_bin_dir
+            gem build chef-bin.gemspec
+            $chef_bin_gem = Get-ChildItem "chef-bin*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($chef_bin_gem) {
+                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
+                Move-Item $chef_bin_gem.FullName "pkg\" -Force
+                gem install "pkg\$($chef_bin_gem.Name)" -f
+                Write-BuildLine "** Successfully installed chef-bin gem directly"
+            }
+            Pop-Location
+            
+            # Now run the main rake install:local
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
 
