@@ -154,7 +154,9 @@ function Invoke-Build {
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         # NOTE: Some gems (like chef-win32-api) have native extensions that are built during bundle install
         # We need special handling for these cases as they don't have a Rakefile in their extensions directory
-        foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
+        # IMPORTANT: Skip the "extensions" directory itself - this is a bundler metadata directory for native extensions
+        # and should not be treated as a gem to install
+        foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems" | Where-Object { $_.Name -notlike "extensions" })) {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
