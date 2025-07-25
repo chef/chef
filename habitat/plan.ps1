@@ -217,22 +217,65 @@ function Invoke-Build {
             $install_attempt++
             Write-BuildLine "Install attempt $install_attempt"
             
-            # First, build and install chef-bin directly
-            Write-BuildLine "** Building and installing chef-bin directly before rake install:local"
+            # First, build and install the chef gem itself
+            Write-BuildLine "** Building and installing chef gem directly"
+            Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
+            gem build chef-universal-mingw-ucrt.gemspec
+            $chef_gem = Get-ChildItem "chef-${pkg_version}-universal-mingw-ucrt.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($chef_gem) {
+                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
+                Copy-Item $chef_gem.FullName "pkg\" -Force
+                gem install "pkg\$($chef_gem.Name)" -f --no-document
+                Write-BuildLine "** Successfully installed chef gem directly"
+            }
+            
+            # Then build and install the chef-utils gem (dependency of chef-config)
+            Write-BuildLine "** Building and installing chef-utils gem"
+            $chef_utils_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-utils"
+            Push-Location $chef_utils_dir
+            gem build chef-utils.gemspec
+            $utils_gem = Get-ChildItem "chef-utils*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($utils_gem) {
+                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
+                Copy-Item $utils_gem.FullName "pkg\" -Force
+                gem install "pkg\$($utils_gem.Name)" -f --no-document
+                Write-BuildLine "** Successfully installed chef-utils gem"
+            }
+            Pop-Location
+            
+            # Then build and install chef-config (dependency of chef-bin)
+            Write-BuildLine "** Building and installing chef-config gem"
+            $chef_config_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-config"
+            Push-Location $chef_config_dir
+            gem build chef-config.gemspec
+            $config_gem = Get-ChildItem "chef-config*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($config_gem) {
+                New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
+                Copy-Item $config_gem.FullName "pkg\" -Force
+                gem install "pkg\$($config_gem.Name)" -f --no-document
+                Write-BuildLine "** Successfully installed chef-config gem"
+            }
+            Pop-Location
+            
+            # Finally, build and install chef-bin
+            Write-BuildLine "** Building and installing chef-bin gem"
             $chef_bin_dir = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-bin"
             Push-Location $chef_bin_dir
             gem build chef-bin.gemspec
             $chef_bin_gem = Get-ChildItem "chef-bin*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
             if ($chef_bin_gem) {
                 New-Item -ItemType Directory -Force "pkg" -ErrorAction SilentlyContinue
-                Move-Item $chef_bin_gem.FullName "pkg\" -Force
-                gem install "pkg\$($chef_bin_gem.Name)" -f
-                Write-BuildLine "** Successfully installed chef-bin gem directly"
+                Copy-Item $chef_bin_gem.FullName "pkg\" -Force
+                gem install "pkg\$($chef_bin_gem.Name)" -f --no-document
+                Write-BuildLine "** Successfully installed chef-bin gem"
             }
             Pop-Location
             
-            # Now run the main rake install:local
+            # After manually installing all required gems, try to run rake install:local
+            Write-BuildLine "** Running rake install:local to ensure all dependencies are properly installed"
+            Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
             bundle exec rake install:local --trace=stdout
+            Pop-Location
         } while ((-not $?) -and ($install_attempt -lt 5))
 
     } finally {
