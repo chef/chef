@@ -192,6 +192,24 @@ function Invoke-Build {
                 Pop-Location
             }
         }
+        Write-BuildLine " ** Updating Gemfile to remove git references for gems we've already installed"
+        # Remove git references from Gemfile for gems we've built and installed
+        $gemfile_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
+        $gemfile_content = Get-Content $gemfile_path
+        
+        # Replace git references with regular gem declarations
+        $gemfile_content = $gemfile_content -replace 'gem "mixlib-archive".*git.*', 'gem "mixlib-archive"'
+        $gemfile_content = $gemfile_content -replace 'gem "rest-client".*git.*', 'gem "rest-client"'
+        $gemfile_content = $gemfile_content -replace 'gem "chef-win32-api".*git.*', 'gem "chef-win32-api"'
+        $gemfile_content = $gemfile_content -replace 'gem "ohai".*git.*', 'gem "ohai"'
+        
+        # Write the updated Gemfile
+        $gemfile_content | Set-Content $gemfile_path
+        
+        Write-BuildLine " ** Regenerating Gemfile.lock with updated gem sources"
+        bundle lock --update
+        if (-not $?) { Write-BuildLine "Warning: bundle lock failed, but continuing..." }
+        
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
         $install_attempt = 0
         do {
