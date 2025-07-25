@@ -94,7 +94,7 @@ class Chef
             rubygems_version = Gem::Version.new(Gem::VERSION)
             if rubygems_version >= Gem::Version.new("3.5.11")
               # The API changed as of rubygems 3.5.11
-              stubs = gem_specification_record.new(gem_specification.dirs).send(:installed_stubs, "#{gem_dep.name}-*.gemspec")
+              stubs = gem_specification_record.send(:installed_stubs, "#{gem_dep.name}-*.gemspec")
               stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
               stubs
             elsif rubygems_version >= Gem::Version.new("3.1")
@@ -341,6 +341,13 @@ class Chef
               @specification = Gem::Specification
             end
             @specification
+          end
+
+          def gem_specification_record
+            unless @specification_record
+              @specification_record = Gem::SpecificationRecord.new(gem_paths)
+            end
+            @specification_record
           end
 
           ##

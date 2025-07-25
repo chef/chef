@@ -61,7 +61,10 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   it "determines the installed versions of gems from Gem.source_index" do
     gems = [gemspec("rspec-core", Gem::Version.new("1.2.9")), gemspec("rspec-core", Gem::Version.new("1.3.0"))]
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
+      expect(Gem::Specification).to receive(:dirs).and_return(["/path/to/gems/specifications", "/another/path/to/gems/specifications"])
+      expect(Gem::SpecificationRecord).to receive(:installed_stubs).with("rspec-core-*.gemspec").and_return(gems)
+    elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
       expect(Gem::Specification).to receive(:dirs).and_return(["/path/to/gems/specifications", "/another/path/to/gems/specifications"])
       expect(Gem::Specification).to receive(:installed_stubs).with(["/path/to/gems/specifications", "/another/path/to/gems/specifications"], "rspec-core-*.gemspec").and_return(gems)
     else # >= Rubygems 1.8 behavior
