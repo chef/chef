@@ -152,7 +152,11 @@ function Invoke-Build {
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
-        foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
+        # NOTE: Some gems (like chef-win32-api) have native extensions that are built during bundle install
+        # We need special handling for these cases as they don't have a Rakefile in their extensions directory
+        # IMPORTANT: Skip the "extensions" directory itself - this is a bundler metadata directory for native extensions
+        # and should not be treated as a gem to install
+        foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems" | Where-Object { $_.Name -notlike "extensions" })) {
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
@@ -164,10 +168,29 @@ function Invoke-Build {
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
                 }
+                elseif ($git_gem -match "mixlib-archive") {
+                    # Special handling for mixlib-archive to ensure it's properly installed as a gem
+                    Write-BuildLine " -- installing mixlib-archive from git"
+                    $gemspec_path = $git_gem.ToString() + "\mixlib-archive.gemspec"
+                    gem build $gemspec_path
+                    $gem_path = $git_gem.ToString() + "\mixlib-archive*.gem"
+                    gem install $gem_path
+                }
+                elseif ($git_gem -match "chef-win32-api") {
+                    # Skip rake install for chef-win32-api as it has native extensions that are already built
+                    Write-BuildLine " -- chef-win32-api has native extensions, skipping rake install"
+                    # The extensions are already built during bundle install
+                }
                 else {
+                    # For all other gems, use the standard rake install
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
-                if (-not $?) { throw "unable to install $($git_gem) as a plain old gem" }
+                # Only throw an error if the command failed AND the gem isn't already installed
+                if (-not $? -and -not (Test-Path "$env:GEM_HOME/gems/$($git_gem.Name)*")) { 
+                    Write-BuildLine " -- Warning: Failed to rake install for $git_gem, checking if it's already functional..."
+                    # Add additional checks here if needed
+                    throw "unable to install $($git_gem) as a plain old gem" 
+                }
             } finally {
                 Pop-Location
             }
@@ -181,6 +204,10 @@ function Invoke-Build {
             bundle exec rake install:local --trace=stdout
         } while ((-not $?) -and ($install_attempt -lt 5))
 
+        # After installing gems, regenerate the Gemfile.lock to ensure all dependencies are properly resolved
+        Write-BuildLine " ** Regenerating Gemfile.lock to resolve all dependencies including git gems"
+        bundle lock --update
+
     } finally {
         Pop-Location
     }
@@ -192,8 +219,12 @@ function Invoke-Install {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
 
+        Write-BuildLine " What is my pkg_prefix? $pkg_prefix"
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
+            Write-BuildLine " What is my cache source path? $HAB_CACHE_SRC_PATH"
+            Write-BuildLine " What is my pkg_dirname? $pkg_dirname"
+
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
             if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
         }

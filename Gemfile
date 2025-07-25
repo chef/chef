@@ -8,6 +8,16 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
+gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "main"
+# gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
+
+# Required for building extensions with chef-win32-api
+gem "rake-compiler"
+
+install_if -> { RUBY_PLATFORM.match?(/mingw.*ucrt/) } do
+  gem "chef-win32-api", git: "https://github.com/chef/chef-win32-api.git", branch: "main"
+end
+
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
   gem "ffi", ">= 1.15.5"
 else

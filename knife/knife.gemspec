@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "train-winrm", ">= 0.2.17"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
-  s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
+  ## s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 19.0"
   s.add_dependency "ffi", ">= 1.15", "< 1.17.0" # 1.14 versions are broken on i386 windows
   s.add_dependency "ffi-yajl", "~> 2.2"
