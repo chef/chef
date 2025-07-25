@@ -168,13 +168,21 @@ function Invoke-Build {
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
                 }
+                elseif ($git_gem -match "mixlib-archive") {
+                    # Special handling for mixlib-archive to ensure it's properly installed as a gem
+                    Write-BuildLine " -- installing mixlib-archive from git"
+                    $gemspec_path = $git_gem.ToString() + "\mixlib-archive.gemspec"
+                    gem build $gemspec_path
+                    $gem_path = $git_gem.ToString() + "\mixlib-archive*.gem"
+                    gem install $gem_path
+                }
                 elseif ($git_gem -match "chef-win32-api") {
                     # Skip rake install for chef-win32-api as it has native extensions that are already built
                     Write-BuildLine " -- chef-win32-api has native extensions, skipping rake install"
                     # The extensions are already built during bundle install
                 }
                 else {
-                    # For all other gems including mixlib-archive, use the standard rake install
+                    # For all other gems, use the standard rake install
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
                 # Only throw an error if the command failed AND the gem isn't already installed
