@@ -10,6 +10,8 @@ gem "pedump"
 
 gem "ffi", "< 1.17"
 
+gem "rake-compiler"
+
 gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "main"
 # gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
 

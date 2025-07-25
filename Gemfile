@@ -11,6 +11,9 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 gem "mixlib-archive", git: "https://github.com/chef/mixlib-archive.git", branch: "main"
 # gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
 
+# Required for building extensions with chef-win32-api
+gem "rake-compiler"
+
 install_if -> { RUBY_PLATFORM.match?(/mingw.*ucrt/) } do
   gem "chef-win32-api", git: "https://github.com/chef/chef-win32-api.git", branch: "main"
 end
