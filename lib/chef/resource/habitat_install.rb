@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 require_relative "../http/simple"
-require_relative "../resource"
+require_relative "habitat/habitat_base"
+
 class Chef
   class Resource
-    class HabitatInstall < Chef::Resource
+    class HabitatInstall < Chef::Resource::HabitatBase
       provides :habitat_install, target_mode: true
       target_mode support: :full
 
@@ -55,9 +56,6 @@ class Chef
       property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh",
         description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh) ."
 
-      property :bldr_url, String,
-        description: "Optional URL to an alternate Habitat Builder."
-
       property :create_user, [true, false], default: true,
         description: "Creates the `hab` system user."
 
@@ -73,7 +71,7 @@ class Chef
       action :install, description: "Installs Habitat. Does nothing if the `hab` binary is found in the default location for the system (`/bin/hab` on Linux, `/usr/local/bin/hab` on macOS, `C:/habitat/hab.exe` on Windows)" do
         if ::TargetIO::File.exist?(hab_path)
           cmd = shell_out!([hab_path, "--version"].flatten.compact.join(" "))
-          version = %r{hab (\d*\.\d*\.\d[^\/]*)}.match(cmd.stdout)[1]
+          version = %r{\w+ (\d*\.\d*\.\d[^\/]*)}.match(cmd.stdout)[1]
           return if version == new_resource.hab_version
         end
 
@@ -143,7 +141,7 @@ class Chef
             )
           end
         end
-        execute "hab license accept" if new_resource.license == "accept"
+        execute "#{ChefUtils::Dist::Habitat::EXEC} license accept" if new_resource.license == "accept"
       end
 
       # TODO: Work out cleanest method to implement upgrade that will support effortless installs as well as standard chef-client
@@ -228,11 +226,11 @@ class Chef
 
         def hab_path
           if macos?
-            "/usr/local/bin/hab"
+            "/usr/local/bin/#{ChefUtils::Dist::Habitat::EXEC}"
           elsif windows?
-            "C:/habitat/hab.exe"
+            "C:/habitat/#{ChefUtils::Dist::Habitat::EXEC}.exe"
           else
-            "/bin/hab"
+            "/bin/#{ChefUtils::Dist::Habitat::EXEC}"
           end
         end
 
