@@ -3,6 +3,7 @@ set -eou pipefail
 
 #set expeditor_version equal to the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
+export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
 arch=$1
 
