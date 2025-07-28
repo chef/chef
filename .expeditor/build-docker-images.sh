@@ -20,6 +20,7 @@ docker build \
   --build-arg "CHANNEL=${channel}" \
   --build-arg "VERSION=${version}" \
   --build-arg "ARCH=${dockerfile_arch}" \
+  --build-arg "HAB_AUTH_TOKEN=${HAB_AUTH_TOKEN}" \
   -t "chef/chef-hab:${version}-${arch}" .
 
 echo "--- Pushing chef/chef-hab:${version} docker image for ${arch} to dockerhub"
