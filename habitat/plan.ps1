@@ -131,6 +131,9 @@ function Invoke-Prepare {
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
+
+        bundle config --local build.ffi "--enable-system-libffi --with-opt-dir=$(Get-HabPackagePath libarchive)"
+
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         Write-BuildLine "OpenSSL Dir $openssl_dir"
         bundle config build.openssl --with-openssl-dir=$openssl_dir
