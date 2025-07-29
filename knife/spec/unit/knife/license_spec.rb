@@ -50,6 +50,11 @@ describe Chef::Knife::License do
         c.output = STDOUT
       end
 
+      # Stubbing the fetch_and_persist method to simulate a failure
+      expect(ChefLicensing).to receive(:fetch_and_persist).and_raise(
+        ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError.new("Unable to obtain a License Key.")
+      )
+
       expect { knife.run }.to raise_error(ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError, "Unable to obtain a License Key.")
     end
   end

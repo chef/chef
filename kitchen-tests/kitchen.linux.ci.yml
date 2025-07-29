@@ -31,6 +31,16 @@ lifecycle:
       includes:
         - freebsd-13
         - freebsd-14
+    # Rocky Linux 9 specific setup to resolve dependency issues
+    - remote: sudo dnf update -y
+      includes:
+        - rockylinux-9
+    - remote: sudo dnf clean all
+      includes:
+        - rockylinux-9
+    - remote: sudo dnf makecache
+      includes:
+        - rockylinux-9
     - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef container's Chef / Ohai release:"

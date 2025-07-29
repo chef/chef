@@ -1,171 +1,493 @@
+#Requires -Version 5.1
+
+# 
+# To enable extra debug messages in the build output, set the environment variable DEBUGSMCTL to true before running the script.
+# on the buildkite pipeline env options: DEBUGSMCTL="true" 
+# 
+
+
+[CmdletBinding()]
+param()
+
+# Global variables and script-wide error handling
+$ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
-# to enable smctl debugging with digicert hsm signing un comment:
-#
-#$env:SM_LOG_LEVEL="TRACE"
-
-if ($env:BUILDKITE_ORGANIZATION_SLUG -eq "chef-oss" )
-{
-  Write-Output "--- Generating self-signed Windows package signing certificate"
-  $thumb = (New-SelfSignedCertificate -Type Custom -Subject "CN=Chef Software, O=Progress, C=US" -KeyUsage DigitalSignature -FriendlyName "Chef Software Inc." -CertStoreLocation "Cert:\LocalMachine\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")).Thumbprint
-}
-else
-{
-  try {
-    Write-Output "--- setting up auth for smctl"
-    $SM_CLIENT_CERT_FILE_JSON = "sm-client-cert-file.json"
-    aws ssm get-parameter --name "sm-client-cert-file" --with-decryption --region "us-west-1" --query Parameter.Value --output text | Set-Content -Path $SM_CLIENT_CERT_FILE_JSON
-    # this just grabs the secret as its a json object, converts it, then selects the cert_content_base64, then creates the file to c:\digicert\certificate_pkcs12.p12 while decoding the base64 #
-    $smClientCertJson = Get-Content $SM_CLIENT_CERT_FILE_JSON | ConvertFrom-Json | Select-Object -ExpandProperty cert_content_base64
-    $decodedFilePath = "c:\digicert\certificate_pkcs12.p12"
-    write-output "decoding CLIENT_CERT_FILE_CONTENT c:\digicert\certificate_pkcs12.p12"
-    [System.IO.File]::WriteAllBytes($decodedFilePath, [System.Convert]::FromBase64String($smClientCertJson))
-  } catch {
-      throw $_
-  }
-  try {
-      $file = Get-ChildItem -Path "c:\digicert\certificate_pkcs12.p12"
-
-      if ($file.Length -eq 2902) {
-          Write-Output "File attribute length is 2902. Which is correct"
-      }
-      else {
-          write-error "File attribute length is not 2902. Which means it likely failed the previous step at [System.IO.File]::WriteAllBytes!" -ErrorAction Stop
-      }
-  } catch {
-      throw $_
-  }
-
-  Write-Output "--- smtcl env settings"
-  try {
-      $SM_API_KEY_VALUE = aws ssm get-parameter --name "sm-api-key" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $SM_CLIENT_CERT_PASSWORD_VALUE = aws ssm get-parameter --name "sm-client-cert-password" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $SM_HOST_VALUE = aws ssm get-parameter --name "sm-host" --with-decryption --region "us-west-1" --query Parameter.Value --output text
-      $env:SM_API_KEY_FILE=${SM_API_KEY_VALUE}
-      $env:SM_HOST=${SM_HOST_VALUE}
-      $env:SM_CLIENT_CERT_FILE="c:\digicert\certificate_pkcs12.p12"
-      $env:SM_CLIENT_CERT_PASSWORD_FILE=${SM_CLIENT_CERT_PASSWORD_VALUE}
-      smctl credentials save ${SM_API_KEY_VALUE} ${SM_CLIENT_CERT_PASSWORD_VALUE}
-  } catch {
-    throw $_
-  }
-
-####################################################################
-write-output "--- smksp_registrar sync certs before chef install"
-smksp_registrar.exe register
-certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
-smksp_cert_sync.exe
-####################################################################
-
-  try {
-    $thumbprint = "7D16AE73AB249D473362E9332D029089DBBB89B2"
-
-    # Get the certificate from the Current User's Personal store by thumbprint, this case its ContainerAdministrator
-    $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
-
-    write-output "--- Display information about the retrieved certificate"
-    if ($certificate) {
-        Write-Output "Certificate Subject: $($certificate.Subject)"
-        Write-Output "Issuer: $($certificate.Issuer)"
-        Write-Output "Valid From: $($certificate.NotBefore)"
-        Write-Output "Valid To: $($certificate.NotAfter)"
-        Write-output "Has Private key: $($certificate.HasPrivateKey)"
-        $thumb = $thumbprint  # Set $thumb variable to $thumbprint
-    } else {
-        Write-Output "Certificate with thumbprint $thumbprint not found. Check SMCTL commands, check to see if the sm_client_cert file is valid, check if the SM_API_KEY hasnt expired, check if SM_CLIENT_CERT_PASSWORD is valid"
+# Function definitions
+function Initialize-Environment {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ThumbprintValue
+    )
+    
+    try {
+        Write-Output "Setting up environment variables"
+        
+        $env:ARTIFACTORY_BASE_PATH = "com/getchef"
+        $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
+        $env:ARTIFACTORY_USERNAME = "buildkite"
+        
+        $env:PROJECT_NAME = "chef"
+        $env:OMNIBUS_PIPELINE_DEFINITION_PATH = "${ScriptDir}/../release.omnibus.yml"
+        $env:OMNIBUS_SIGNING_IDENTITY = "${ThumbprintValue}"
+        $env:HOMEDRIVE = "C:"
+        $env:HOMEPATH = "\Users\ContainerAdministrator"
+        $env:OMNIBUS_TOOLCHAIN_INSTALL_DIR = "C:\opscode\omnibus-toolchain"
+        $env:SSL_CERT_FILE = "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\ssl\certs\cacert.pem"
+        $env:MSYS2_INSTALL_DIR = "C:\msys64"
+        $env:BASH_ENV = "${env:MSYS2_INSTALL_DIR}\etc\bash.bashrc"
+        $env:OMNIBUS_WINDOWS_ARCH = "x64"
+        
+        # Configure MSYSTEM based on Ruby platform
+        $env:MSYSTEM = "MINGW64"
+        $omnibus_toolchain_msystem = & "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin\ruby" -e "puts RUBY_PLATFORM"
+        if ( -not $? ) { throw "Failed to determine Ruby platform" }
+        
+        if ($omnibus_toolchain_msystem -eq "x64-mingw-ucrt") {
+            $env:MSYSTEM = "UCRT64"
+        }
+        
+        # Set PATH
+        $original_path = $env:PATH
+        $env:PATH = "${env:MSYS2_INSTALL_DIR}\$env:MSYSTEM\bin;${env:MSYS2_INSTALL_DIR}\usr\bin;${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin;C:\wix;${original_path}"
+        Write-Output "PATH = $env:PATH"
+        $env:Path -split ';' | ForEach-Object { $_ }
+        
+        Write-Verbose "Environment initialized successfully"
     }
-    } catch {
-      Write-Error $_.Exception.Message
-      exit 1
+    catch {
+        Write-Error "Failed to initialize environment: $_"
+        exit 1
     }
 }
 
-$thumb = ${thumbprint}
-Write-Output "THUMB=$thumb"
-
-$env:ARTIFACTORY_BASE_PATH="com/getchef"
-$env:ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
-$env:ARTIFACTORY_USERNAME="buildkite"
-
-Write-Output "--- Installing Chef Foundation ${env:CHEF_FOUNDATION_VERSION}"
-. { Invoke-WebRequest -useb https://omnitruck.chef.io/chef/install.ps1 } | Invoke-Expression; install -channel "current" -project "chef-foundation" -v $env:CHEF_FOUNDATION_VERSION
-
-$env:PROJECT_NAME="chef"
-$env:OMNIBUS_PIPELINE_DEFINITION_PATH="${ScriptDir}/../release.omnibus.yml"
-$env:OMNIBUS_SIGNING_IDENTITY="${thumb}"
-$env:HOMEDRIVE = "C:"
-$env:HOMEPATH = "\Users\ContainerAdministrator"
-$env:OMNIBUS_TOOLCHAIN_INSTALL_DIR = "C:\opscode\omnibus-toolchain"
-$env:SSL_CERT_FILE = "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\ssl\certs\cacert.pem"
-$env:MSYS2_INSTALL_DIR = "C:\msys64"
-$env:BASH_ENV = "${env:MSYS2_INSTALL_DIR}\etc\bash.bashrc"
-$env:OMNIBUS_WINDOWS_ARCH = "x64"
-$env:MSYSTEM = "MINGW64"
-$omnibus_toolchain_msystem = & "${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin\ruby" -e "puts RUBY_PLATFORM"
-If ($omnibus_toolchain_msystem -eq "x64-mingw-ucrt") {
-  $env:MSYSTEM = "UCRT64"
+function Set-SelfSignedCertificate {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- Generating self-signed Windows package signing certificate"
+        $thumbprint = (New-SelfSignedCertificate -Type Custom -Subject "CN=Chef Software, O=Progress, C=US" -KeyUsage DigitalSignature -FriendlyName "Chef Software Inc." -CertStoreLocation "Cert:\LocalMachine\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")).Thumbprint
+        if ( -not $? ) { throw "Failed to generate self-signed certificate" }
+        
+        return $thumbprint
+    }
+    catch {
+        Write-Error "Failed to set up self-signed certificate: $_"
+        exit 1
+    }
 }
 
-write-output "--- setting critical must have paths for omnibus-toolchain to work"
-$original_path = $env:PATH
-$env:PATH = "${env:MSYS2_INSTALL_DIR}\$env:MSYSTEM\bin;${env:MSYS2_INSTALL_DIR}\usr\bin;${env:OMNIBUS_TOOLCHAIN_INSTALL_DIR}\embedded\bin;C:\wix;${original_path}"
-Write-Output "env:PATH = $env:PATH"
-$env:Path -split ';' | ForEach-Object { $_ }
+function Get-SmctlCertificate {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- setting up auth for smctl"
+        $SM_CLIENT_CERT_FILE_JSON = "sm-client-cert-file.json"
+        aws ssm get-parameter --name "sm-client-cert-file" --with-decryption --region "us-west-1" --query Parameter.Value --output text | Set-Content -Path $SM_CLIENT_CERT_FILE_JSON
+        if ( -not $? ) { throw "Failed to get sm-client-cert-file parameter" }
+        
+        # Process the JSON certificate content
+        $smClientCertJson = Get-Content $SM_CLIENT_CERT_FILE_JSON | ConvertFrom-Json | Select-Object -ExpandProperty cert_content_base64
+        if ( -not $? ) { throw "Failed to parse sm-client-cert-file JSON" }
+        
+        $decodedFilePath = "c:\digicert\certificate_pkcs12.p12"
+        Write-Output "Decoding certificate content to $decodedFilePath"
+        [System.IO.File]::WriteAllBytes($decodedFilePath, [System.Convert]::FromBase64String($smClientCertJson))
+        if ( -not $? ) { throw "Failed to write certificate file" }
+        
+        # Verify the certificate file
+        $file = Get-ChildItem -Path "c:\digicert\certificate_pkcs12.p12"
+        if ( -not $? ) { throw "Failed to get certificate file" }
 
-Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
-gem uninstall -I libyajl2
+        if ($file.Length -eq 2902) {
+            Write-Output "Certificate file verified (length = 2902 bytes)"
+        }
+        else {
+            throw "Certificate file has incorrect length: $($file.Length) bytes"
+        }
+    }
+    catch {
+        Write-Error "Failed to get smctl certificate: $_"
+        exit 1
+    }
+}
 
-Write-Output "--- Running bundle install for Omnibus"
-Set-Location "$($ScriptDir)/../../omnibus"
-bundle config set --local without development
-bundle install
-if ( -not $? ) { throw "Running bundle install failed" }
+function Set-SmctlCredentials {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- smtcl env settings"
+        $SM_API_KEY_VALUE = aws ssm get-parameter --name "sm-api-key" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+        if ( -not $? ) { throw "Failed to get sm-api-key parameter" }
+        
+        $SM_CLIENT_CERT_PASSWORD_VALUE = aws ssm get-parameter --name "sm-client-cert-password" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+        if ( -not $? ) { throw "Failed to get sm-client-cert-password parameter" }
+        
+        $SM_HOST_VALUE = aws ssm get-parameter --name "sm-host" --with-decryption --region "us-west-1" --query Parameter.Value --output text
+        if ( -not $? ) { throw "Failed to get sm-host parameter" }
+        
+        $env:SM_API_KEY_FILE = ${SM_API_KEY_VALUE}
+        $env:SM_HOST = ${SM_HOST_VALUE}
+        $env:SM_CLIENT_CERT_FILE = "c:\digicert\certificate_pkcs12.p12"
+        $env:SM_CLIENT_CERT_PASSWORD_FILE = ${SM_CLIENT_CERT_PASSWORD_VALUE}
+        
+        smctl credentials save ${SM_API_KEY_VALUE} ${SM_CLIENT_CERT_PASSWORD_VALUE}
+        if ( -not $? ) { throw "Failed to save smctl credentials" }
+    }
+    catch {
+        Write-Error "Failed to set smctl credentials: $_"
+        exit 1
+    }
+}
 
-Write-Output "--- Building Chef"
-bundle exec omnibus build chef -l internal --override append_timestamp:false
-if ( -not $? ) { throw "omnibus build chef failed" }
+function Register-SmctlCertificates {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- Debug SMCTLCert registration is enabled, adding some additional testing output"
+            smksp_registrar.exe list
+            smksp_registrar.exe remove
+            if ( -not $? ) { throw "Failed to remove DigiCert Signing Manager and Trust Manager KSP" }
+            smksp_registrar.exe list
 
-#confirm file is signed
+            Write-Output "--- smksp_registrar sync certs before chef install"
+            smksp_registrar.exe register
+            if ( -not $? ) { throw "Failed to register certificates" }
+            smksp_registrar.exe list
+            if ( -not $? ) { throw "Failed to register certificates" }
+        }
+        else {
+            Write-Output "--- smksp_registrar unregister first"
+            smksp_registrar.exe remove
+            if ( -not $? ) { throw "Failed to remove DigiCert Signing Manager and Trust Manager KSP" }
+            
+            Write-Output "--- smksp_registrar sync certs before chef install"
+            smksp_registrar.exe register
+            if ( -not $? ) { throw "Failed to register certificates" }
+    
+            Write-Output "--- Installing Windows package signing certificate using smctl cli"
+            smctl windows certsync --keypair-alias=key_875762014
+            if ( -not $? ) { throw "Failed to sync certificates using smctl" }   
+        }
+    }
+    catch {
+        Write-Error "Failed to register smctl certificates: $_"
+        exit 1
+    }
+}
+
+function Smctl-Debug {
+    [CmdletBinding()]
+    param()
+    try {
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- Setting SM_LOG_LEVEL to TRACE as DEBUGSMCTL is true"        
+            $env:SM_LOG_LEVEL="TRACE"
+            if (-not $?) { throw "Failed to set SM_LOG_LEVEL" }
+        }
+    }
+    catch {
+        Write-Error "--- Failed to set SM_LOG_LEVEL: $_"
+    }    
+}
+
+function Get-Certificate {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        $thumbprint = "7D16AE73AB249D473362E9332D029089DBBB89B2"
+
+        # Get the certificate from the Current User's Personal store by thumbprint
+        $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
+        if ( -not $? ) { throw "Failed to retrieve certificates" }
+
+        Write-Host "--- Display information about the retrieved certificate"
+        
+        if ($certificate) {
+            Write-Host "Certificate Subject: $($certificate.Subject)"
+            Write-Host "Issuer: $($certificate.Issuer)"
+            Write-Host "Valid From: $($certificate.NotBefore)"
+            Write-Host "Valid To: $($certificate.NotAfter)"
+            Write-Host "Has Private key: $($certificate.HasPrivateKey)"
+            
+            # Return only the thumbprint string, not the Write-Output results
+            return $thumbprint.ToString()
+        } else {
+            throw "Certificate with thumbprint $thumbprint not found"
+        }
+    }
+    catch {
+        Write-Error "Failed to get certificate: $_"
+        exit 1
+    }
+}
+
+function Install-ChefFoundation {
+    [CmdletBinding()]
+    param(
+      # this is to pass into the msiURL, for now its static, but if we want to change it in the future for a different version we can.
+        [string]$Version = $env:CHEF_FOUNDATION_VERSION,
+        [string]$WindowsVersion = "2022",
+        [string]$Architecture = "x64"
+    )
+    
+    try {
+        Write-Output "--- Installing Chef Foundation ${Version}"
+        
+        # Create temp directory if it doesn't exist
+        $tempDir = Join-Path $env:TEMP "chef-foundation"
+        if (-not (Test-Path $tempDir)) {
+            New-Item -Path $tempDir -ItemType Directory -Force | Out-Null
+        }
+        
+        # Build MSI file URL and stops using old api and goes direct to packages.
+        $msiUrl = "https://packages.chef.io/files/stable/chef-foundation/${Version}/windows/${WindowsVersion}/chef-foundation-${Version}-1-${Architecture}.msi"
+        $msiFile = Join-Path $tempDir "chef-foundation-$Version.msi"
+        
+        Write-Output "Downloading from $msiUrl to $msiFile"
+        
+        # Download the MSI
+        Invoke-WebRequest -Uri $msiUrl -OutFile $msiFile -UseBasicParsing
+        if (-not $?) { 
+            throw "Failed to download Chef Foundation MSI from $msiUrl" 
+        }
+        
+        # Verify file was downloaded and has content
+        if (-not (Test-Path $msiFile) -or (Get-Item $msiFile).Length -eq 0) {
+            throw "Downloaded MSI file is missing or empty: $msiFile"
+        }
+        
+        Write-Output "Installing MSI: $msiFile"
+        
+        # Install the MSI quietly
+        $p = Start-Process -FilePath "msiexec.exe" -ArgumentList "/qn /i `"$msiFile`"" -Passthru -Wait -NoNewWindow
+        
+        # Check installation result
+        if ($p.ExitCode -eq 1618) {
+            Write-Warning "Another MSI installation is in progress (exit code 1618), installation might be incomplete"
+        } 
+        elseif ($p.ExitCode -ne 0) {
+            throw "MSI installation failed with exit code $($p.ExitCode)"
+        }
+        
+        Write-Output "Chef Foundation $Version installed successfully"
+        
+        # Optional: Clean up the downloaded MSI
+        Remove-Item -Path $msiFile -Force -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Error "Failed to install Chef Foundation: $_"
+        exit 1
+    }
+}
+
+function Install-OmnibusDependencies {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
+        gem uninstall -I libyajl2
+        
+        Write-Output "--- Running bundle install for Omnibus"
+        Set-Location "$($ScriptDir)/../../omnibus"
+        bundle config set --local without development
+        bundle install
+        if ( -not $? ) { throw "Running bundle install failed" }
+    }
+    catch {
+        Write-Error "Failed to install Omnibus dependencies: $_"
+        exit 1
+    }
+}
+
+function Build-ChefPackage {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- Building Chef"
+        
+        # Capture output and errors while running the command
+        $output = bundle exec omnibus build chef -l internal --override append_timestamp:false 2>&1
+        
+        # Display the output
+        $output | ForEach-Object { Write-Output $_ }
+        
+        # Check the exit code
+        if ($LASTEXITCODE -ne 0) {
+            throw "Omnibus build chef failed with exit code $LASTEXITCODE"
+        }
+    }
+    catch {
+        Write-Error "Chef build failed: $_"
+        exit 1
+    }
+}
+
+function Verify-SignedPackage {
+    [CmdletBinding()]
+    param()
+    
+    $verificationFailed = $false
+    $errorMessage = ""
+    
+    try {
+        $directoryPath = "C:\omnibus-ruby\pkg\"
+        $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
+        if ( -not $? ) { throw "Failed to list MSI files" }
+        
+        Write-Output "--- test msi path"
+        
+        # Check if an .msi file was found
+        if ($msiFile -ne $null) {
+            # Display the full path of the found .msi file
+            $fullPath = $msiFile.FullName
+            Write-Output "Found .msi file: $fullPath"
+            # check with signtool for additional verification
+            Write-Output "--- verify signed file using signtool"
+            $signToolOutput = signtool verify /pa $fullPath 2>&1 | Out-String
+            
+            if ($LASTEXITCODE -ne 0) {
+                $verificationFailed = $true
+                $errorMessage = "signtool verification failed: $signToolOutput"
+            }
+            
+            if (-not $verificationFailed) {
+                Write-Output "MSI signing verification passed"
+            }
+        } else {
+            $verificationFailed = $true
+            $errorMessage = "No .msi files found in the directory: $directoryPath"
+        }
+    }
+    catch {
+        $verificationFailed = $true
+        $errorMessage = "Package verification failed: $_"
+    }
+    
+    # Always attempt to display logs regardless of verification result
+    try {
+        if ($env:DEBUGSMCTL -eq $true) {
+            Write-Output "--- grabbing smctl logs"
+            Get-Content $home\.signingmanager\logs\smctl.log -ErrorAction SilentlyContinue
+            Get-Content $home\.signingmanager\logs\smksp.log -ErrorAction SilentlyContinue
+            Get-Content $home\.signingmanager\logs\smksp_cert_sync.log -ErrorAction SilentlyContinue
+            Write-Host "--- list all keys available to the current user"
+            certutil.exe -csp "DigiCert Software Trust Manager KSP" -key -user
+        }
+    }
+    catch {
+        Write-Error "--- All smctl logs not found, please check smctl configuration"
+    }
+    
+    # Now handle the verification failure if it occurred
+    if ($verificationFailed) {
+        Write-Error $errorMessage
+        exit 1
+    }
+}
+
+function Cleanup-SmctlCredentials {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- smctl credentials delete just to clean up"
+        smctl windows certdesync
+        if ( -not $? ) { throw "Failed to clean up smctl credentials" }
+        
+    }
+    catch {
+        Write-Error "Failed to clean up smctl credentials: $_"
+        # Not exiting with code 1 as this is a cleanup step
+        Write-Warning "Continuing despite credential cleanup failure"
+    }
+}
+
+function Upload-BuildkiteArtifact {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        Write-Output "--- Uploading package to BuildKite"
+        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
+        if ( -not $? ) { throw "Failed to upload artifact to BuildKite" }
+    }
+    catch {
+        Write-Error "Failed to upload artifact: $_"
+        exit 1
+    }
+}
+
+function Publish-ToArtifactory {
+    [CmdletBinding()]
+    param()
+    
+    try {
+        if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss") {
+            Write-Output "--- Setting up Gem API Key"
+            $env:GEM_HOST_API_KEY = "Basic ${env:ARTIFACTORY_API_KEY}"
+
+            Write-Output "--- Publishing package to Artifactory"
+            bundle exec ruby "${ScriptDir}/omnibus_chef_publish.rb"
+            if ( -not $? ) { throw "Chef publish failed" }
+        }
+        else {
+            Write-Output "--- Skipping Artifactory publish for chef-oss organization"
+        }
+    }
+    catch {
+        Write-Error "Failed to publish to Artifactory: $_"
+        exit 1
+    }
+}
+
+# Main execution block
 try {
-  $directoryPath = "C:\omnibus-ruby\pkg\"
-  $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
-  write-output "--- test msi path"
-  # Check if an .msi file was found
-  if ($msiFile -ne $null) {
-    # Display the full path of the found .msi file
-    $fullPath = $msiFile.FullName
-    Write-Output "Found .msi file: $fullPath"
-
-    # Assign the full path to a variable ($fullPath) for later use
-    $fullPathVariable = $fullPath
-    write-output "--- verify signed file smctl sign verify --input ${fullPathVariable}"
-    smctl sign verify --input ${fullPathVariable}
-  } else {
-    Write-Output "No .msi files found in the directory: $directoryPath or its not signed"
-  }
-} catch {
-  Write-Output "An error occurred: $_"
-  exit 1
+    # Determine certificate to use based on organization
+    if ($env:BUILDKITE_ORGANIZATION_SLUG -eq "chef-oss") {
+        $thumbprint = Set-SelfSignedCertificate
+    }
+    else {
+        # DigiCert setup
+        Get-SmctlCertificate
+        Set-SmctlCredentials
+        Register-SmctlCertificates
+        $thumbprint = Get-Certificate
+    }
+    
+    # Make sure thumbprint is a clean string
+    $thumbprint = $thumbprint.Trim()
+    
+    Write-Output "THUMB=$thumbprint"
+    
+    # Set up the build environment
+    Initialize-Environment -ThumbprintValue $thumbprint
+    Smctl-Debug
+    Install-ChefFoundation
+    Install-OmnibusDependencies
+    
+    # Build and verify package
+    Build-ChefPackage
+    Verify-SignedPackage
+    
+    # Cleanup and publish
+    Cleanup-SmctlCredentials
+    Upload-BuildkiteArtifact
+    Publish-ToArtifactory
+    
+    Write-Output "Chef build and publish completed successfully"
+    exit 0
 }
-
-write-output "--- smctl credentials delete just to clean up"
-smctl windows certdesync
-
-#uncomment these as well for logs#
-# Write-output "--- grabbing smctl logs"
-# gc $home\.signingmanager\logs\smctl.log
-# gc $home\.signinmanager\logs\smksp.log
-# gc $home\.signingmanager\logs\smksp_cert_sync.log
-
-Write-Output "--- Uploading package to BuildKite"
-C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
-
-if ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss" )
-{
-  Write-Output "--- Setting up Gem API Key"
-  $env:GEM_HOST_API_KEY = "Basic ${env:ARTIFACTORY_API_KEY}"
-
-  Write-Output "--- Publishing package to Artifactory"
-  bundle exec ruby "${ScriptDir}/omnibus_chef_publish.rb"
-  if ( -not $? ) { throw "chef publish failed" }
+catch {
+    Write-Error "Chef build pipeline failed: $_"
+    exit 1
 }

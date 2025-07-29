@@ -75,6 +75,29 @@ describe Chef::Knife::Bootstrap do
         expect(Chef::Config[:chef_license]).to eq("accept-no-persist")
       end
     end
+
+    describe "alias" do
+      before do
+        expect(acceptor).to receive(:license_required?).and_return(false)
+      end
+
+      it "should be aliased to check_license" do
+        expect(knife).to respond_to(:check_license)
+        expect(knife).to respond_to(:check_eula_license)
+
+        knife.check_license
+      end
+
+      it "should logs check_eula_license using check_license" do
+        expect(Chef::Log).to receive(:debug).with("Checking if we need to accept Chef license to bootstrap node")
+        knife.check_license
+      end
+
+      it "should logs the same with check_eula_license" do
+        expect(Chef::Log).to receive(:debug).with("Checking if we need to accept Chef license to bootstrap node")
+        knife.check_eula_license
+      end
+    end
   end
 
   context "#bootstrap_template" do

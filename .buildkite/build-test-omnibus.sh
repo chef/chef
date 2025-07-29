@@ -9,9 +9,11 @@ else
 fi
 
 FILTER="${OMNIBUS_FILTER:=*}"
+# Split the filter into an array by commas
+IFS=',' read -ra FILTER_PATTERNS <<< "$FILTER"
 
 # array of all container platforms in the format test-platform:build-platform
-container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "sles-15:sles-15" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9" "amazon-2023:amazon-2023" "amazon-2023-arm:amazon-2023-arm")
+container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-7:centos-7" "centos-7-arm:centos-7-arm" "centos-8:centos-8" "centos-8-arm:centos-8-arm" "sles-15-arm:sles-15-arm" "sles-15:sles-15" "rhel-9:rhel-9" "rhel-9-arm:rhel-9-arm" "debian-9:debian-9" "debian-10:debian-9" "debian-11:debian-9" "ubuntu-1604:ubuntu-1604" "ubuntu-1804:ubuntu-1604" "ubuntu-2004:ubuntu-1604" "ubuntu-2204:ubuntu-1604" "ubuntu-2404:ubuntu-2404" "ubuntu-1804-arm:ubuntu-1804-arm" "ubuntu-2004-arm:ubuntu-2004-arm" "ubuntu-2204-arm:ubuntu-2204-arm" "ubuntu-2404-arm:ubuntu-2404-arm" "windows-2019:windows-2019" "rocky-8:rocky-8" "rocky-9:rocky-9" "amazon-2023:amazon-2023" "amazon-2023-arm:amazon-2023-arm")
 
 # add rest of windows platforms to tests, if not on chef-oss org
 if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
@@ -20,19 +22,28 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-12-x86_64:mac_os_x-12-x86_64" "mac_os_x-12-arm64:mac_os_x-12-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-12-x86_64:mac_os_x-12-x86_64" "mac_os_x-12-arm64:mac_os_x-12-arm64" "mac_os_x-13-arm64:mac_os_x-12-arm64" "mac_os_x-14-arm64:mac_os_x-12-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
 
 # build build array and test array based on filter
 for platform in ${container_platforms[@]}; do
-    case ${platform%:*} in
-        $FILTER)
-            omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
-            omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
-            ;;
-    esac
+    platform_name=${platform%:*}
+    match_found=false
+    
+    # Check against each filter pattern
+    for pattern in "${FILTER_PATTERNS[@]}"; do
+        if [[ "$platform_name" == $pattern ]]; then
+            match_found=true
+            break
+        fi
+    done
+    
+    if $match_found; then
+        omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
+        omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
+    fi
 done
 
 # remove duplicates from build array
@@ -49,12 +60,21 @@ then
 
   # build build array and test array based on filter
   for platform in ${esoteric_platforms[@]}; do
-    case ${platform%:*} in
-        $FILTER)
-            esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
-            esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
-            ;;
-    esac
+    platform_name=${platform%:*}
+    match_found=false
+    
+    # Check against each filter pattern
+    for pattern in "${FILTER_PATTERNS[@]}"; do
+        if [[ "$platform_name" == $pattern ]]; then
+            match_found=true
+            break
+        fi
+    done
+    
+    if $match_found; then
+        esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
+        esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
+    fi
   done
 
   # remove duplicates from build array
@@ -162,12 +182,12 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.91:"
+    echo "  - chef/omnibus#v0.2.94:"
     echo "      build: chef"
     echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
-    if [ "$build_key" == "mac_os_x-12-x86_64" ] || [ "$build_key" == "mac_os_x-12-arm64" ]; then
+    if [ "$build_key" == "mac_os_x-12-x86_64" ] || [ "$build_key" == "mac_os_x-12-arm64" ] || [ "$build_key" == "mac_os_x-13-arm64" ] || [ "$build_key" == "mac_os_x-14-arm64" ]; then
         echo "      remote-host: buildkite-omnibus-$platform"
     fi        
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
@@ -183,11 +203,11 @@ then
     echo "- key: notarize-macos"
     echo "  label: \":lock_with_ink_pen: Notarize macOS Packages\""
     echo "  agents:"
-    [[ $platform == *"arm"* ]] && echo "    queue: omnibus-mac_os_x-12-arm64" || echo "    queue: omnibus-mac_os_x-12-x86_64"
+    [[ $platform == *"arm"* ]] && echo "    queue: omnibus-mac_os_x-12-arm64" || echo "    queue: omnibus-mac_os_x-12-x86_64" || echo "    queue: omnibus-mac_os_x-13-arm64" || echo "    queue: omnibus-mac_os_x-14-arm64"
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.91:"
+    echo "  - chef/omnibus#v0.2.94:"
     echo "      config: omnibus/omnibus.rb"
-    [[ $platform == *"arm"* ]] && echo "      remote-host: buildkite-omnibus-mac_os_x-12-arm64" || echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64"
+    [[ $platform == *"arm"* ]] && echo "      remote-host: buildkite-omnibus-mac_os_x-12-arm64" || echo "      remote-host: buildkite-omnibus-mac_os_x-12-x86_64" || echo "      remote-host: buildkite-omnibus-mac_os_x-13-arm64" || echo "      remote-host: buildkite-omnibus-mac_os_x-14-arm64"
     echo "      notarize-macos-package: chef"
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     echo "  depends_on:"
@@ -206,7 +226,7 @@ then
   echo "- key: create-build-record"
   echo "  label: \":artifactory: Create Build Record\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.91:"
+  echo "  - chef/omnibus#v0.2.94:"
   echo "      create-build-record: chef"
 fi
 
@@ -295,17 +315,17 @@ then
     fi
     echo "  agents:"
     echo "    queue: omnibus-${platform%:*}"
-    if [ $build_key == "mac_os_x-12-x86_64" ] || [ $build_key == "mac_os_x-12-arm64" ]
+    if [ $build_key == "mac_os_x-12-x86_64" ] || [ $build_key == "mac_os_x-12-arm64" ] || [ $build_key == "mac_os_x-13-arm64" ] || [ $build_key == "mac_os_x-14-arm64" ]
     then
       echo "    omnibus: tester"
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.91:"
+    echo "  - chef/omnibus#v0.2.94:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
-    if [[ ${platform%:*} == mac_os_x*x86_64 ]]
+    if [[ ${platform%:*} == mac_os_x* ]]
     then
       echo "      remote-host: buildkite-omnibus-${platform%:*}"
     fi
@@ -327,6 +347,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.91:"
+  echo "  - chef/omnibus#v0.2.94:"
   echo "      promote: chef"
 fi

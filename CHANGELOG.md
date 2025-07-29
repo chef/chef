@@ -1,21 +1,60 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.4 -->
-## [v18.7.4](https://github.com/chef/chef/tree/v18.7.4) (2025-03-31)
+<!-- latest_release 18.7.34 -->
+## [v18.7.34](https://github.com/chef/chef/tree/v18.7.34) (2025-07-24)
 
 #### Merged Pull Requests
-- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress))
+- [CHEF-23856] knife 18 ruby upgrade and CVE fixes [#15144](https://github.com/chef/chef/pull/15144) ([ashiqueps](https://github.com/ashiqueps))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.7.3 -->
+<!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.4 -->
+- [CHEF-23856] knife 18 ruby upgrade and CVE fixes [#15144](https://github.com/chef/chef/pull/15144) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.7.34 -->
+- [Chef-18]Bump openssl gem version to 3.3.0 [#15147](https://github.com/chef/chef/pull/15147) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.33 -->
+- Updating uri to 1.0.3 [#15131](https://github.com/chef/chef/pull/15131) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.32 -->
+- Updating Chef-Zero [#15117](https://github.com/chef/chef/pull/15117) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.31 -->
+- [Backport Chef-18] Correcting CHEF-11588 - busted custom ohai plugins [#15115](https://github.com/chef/chef/pull/15115) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.30 -->
+- Remove dependency on .present? from activesupport [#15108](https://github.com/chef/chef/pull/15108) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.29 -->
+- [Chef 18] Support JSON recipes [#15106](https://github.com/chef/chef/pull/15106) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.7.28 -->
+- backport #14868 for Chef 18 [#15091](https://github.com/chef/chef/pull/15091) ([fretb](https://github.com/fretb)) <!-- 18.7.27 -->
+- Bug fix for apt_repository when creating a new keyring (#15008) [#15043](https://github.com/chef/chef/pull/15043) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.26 -->
+- Updating Github to use Windows 2025 [#15096](https://github.com/chef/chef/pull/15096) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.25 -->
+- Backport of PR 15098 - Use chef/ vs. removed skylerto/ package in hab for tests [#15099](https://github.com/chef/chef/pull/15099) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.24 -->
+- Adding explicit loads for net/http [#15097](https://github.com/chef/chef/pull/15097) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.23 -->
+- Add Support Ubuntu-2404 [#15062](https://github.com/chef/chef/pull/15062) ([poorndm](https://github.com/poorndm)) <!-- 18.7.22 -->
+- backport #14919 for Chef 18 [#15069](https://github.com/chef/chef/pull/15069) ([fretb](https://github.com/fretb)) <!-- 18.7.21 -->
+- Rocky 9 backport [#15072](https://github.com/chef/chef/pull/15072) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.20 -->
+- Disable pre build tests for ssl hack [#15063](https://github.com/chef/chef/pull/15063) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.19 -->
+- Add test of loading of ssl_env_hack.rb and fix. [#15040](https://github.com/chef/chef/pull/15040) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.18 -->
+- Fix dearmoring idempotency backport [#15056](https://github.com/chef/chef/pull/15056) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.17 -->
+- [chef-18] update chef foundation to 3.2.23 [#15054](https://github.com/chef/chef/pull/15054) ([rishichawda](https://github.com/rishichawda)) <!-- 18.7.16 -->
+- Update Gemfile.lock to 5.22.80 [#15042](https://github.com/chef/chef/pull/15042) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.15 -->
+- Remove broken Resource Reporter spec from CHEF-9126 work that is fill… [#15034](https://github.com/chef/chef/pull/15034) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.7.14 -->
+- Updating builders to switch to the stable channel [#15032](https://github.com/chef/chef/pull/15032) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.13 -->
+- Updating the builders to pull from the stable channel [#15023](https://github.com/chef/chef/pull/15023) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.12 -->
+- [chef-18] Backport temporary bandaid to fix choco spec failures in GHA [#15005](https://github.com/chef/chef/pull/15005) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.11 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.7.10](https://github.com/chef/chef/tree/v18.7.10) (2025-05-19)
+
+#### Merged Pull Requests
+- fix: ensure apt_repository keys are always dearmored (#14944) [#14967](https://github.com/chef/chef/pull/14967) ([tpowell-progress](https://github.com/tpowell-progress))
+- [CHEF-20336][CHEF-19378] Knife 18 bug fixes [#14970](https://github.com/chef/chef/pull/14970) ([ashiqueps](https://github.com/ashiqueps))
+- pick latest version of omnibus-buildkite-plugin [#14992](https://github.com/chef/chef/pull/14992) ([muthuja](https://github.com/muthuja))
+- Updating chef-18 for train-core 3.2.13 [#15003](https://github.com/chef/chef/pull/15003) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
+## [v18.7.6](https://github.com/chef/chef/tree/v18.7.6) (2025-04-23)
+
+#### Merged Pull Requests
+- Trigger keyring code in kitchen-tests and fix accidental inclusion of TargetIO code [#14928](https://github.com/chef/chef/pull/14928) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add unimplemented property back [#14957](https://github.com/chef/chef/pull/14957) ([tpowell-progress](https://github.com/tpowell-progress))
+- Truncate resource reporter :before to empty hash if over 500_000 bytes [#14961](https://github.com/chef/chef/pull/14961) ([tpowell-progress](https://github.com/tpowell-progress))
+
 ## [v18.7.3](https://github.com/chef/chef/tree/v18.7.3) (2025-03-31)
 
 #### Merged Pull Requests
@@ -50,7 +89,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - pick latest version of chef-foundation [#14907](https://github.com/chef/chef/pull/14907) ([muthuja](https://github.com/muthuja))
 - Bump inspec-core, inspec-core-bin to 5.22.72 [#14909](https://github.com/chef/chef/pull/14909) ([neha-p6](https://github.com/neha-p6))
 - fix RUBY_DLL_PATH setting in hab plan [#14914](https://github.com/chef/chef/pull/14914) ([mwrock](https://github.com/mwrock))
-<!-- latest_stable_release -->
 
 ## [v18.6.2](https://github.com/chef/chef/tree/v18.6.2) (2024-12-13)
 

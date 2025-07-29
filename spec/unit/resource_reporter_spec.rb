@@ -73,7 +73,6 @@ describe Chef::ResourceReporter do
   end
 
   context "when first created" do
-
     it "has no updated resources" do
       expect(resource_reporter.updated_resources.count).to eq(0)
     end
@@ -89,7 +88,6 @@ describe Chef::ResourceReporter do
     it "should have no error_descriptions" do
       expect(resource_reporter.error_descriptions).to eq({})
     end
-
   end
 
   context "after the chef run completes" do
@@ -107,7 +105,6 @@ describe Chef::ResourceReporter do
     before do
       allow(rest_client).to receive(:raw_request).and_return({ "result" => "ok" })
       allow(rest_client).to receive(:post).and_return({ "uri" => "https://example.com/reports/nodes/spitfire/runs/#{@run_id}" })
-
     end
 
     context "before converging any resources" do
@@ -511,7 +508,6 @@ describe Chef::ResourceReporter do
     end
 
     context "for an unsuccessful run" do
-
       before do
         @backtrace = ["foo.rb:1 in `foo!'", "bar.rb:2 in `bar!", "'baz.rb:3 in `baz!'"]
         node = Chef::Node.new

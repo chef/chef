@@ -237,15 +237,26 @@ class Chef
           valid
         end
 
-        # validate the key against the a gpg keyring to see if that version is expired
+        # validate the key against the gpg keyring to see if that version is expired or revoked
         # @param [String] key
+        # @param [String] keyring
         #
-        # @return [Boolean] is the key valid or not
+        # @return [Boolean] if the key valid or not
         def keyring_key_is_valid?(keyring, key)
-          valid = shell_out("gpg", "--no-default-keyring", "--keyring", keyring, "--list-public-keys", key).stdout.each_line.none?(/\[(expired|revoked):/)
+          out = shell_out("gpg", "--no-default-keyring", "--keyring", keyring, "--list-public-keys", key)
+          valid = out.exitstatus == 0 && out.stdout.each_line.none?(/\[(expired|revoked):/)
 
           logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
           valid
+        end
+
+        # validate the key against the gpg keyring to see if the key is present
+        # @param [String] key
+        # @param [String] keyring
+        #
+        # @return [Boolean] if the key present
+        def keyring_key_is_present?(keyring, key)
+          shell_out(*%W{gpg --no-default-keyring --keyring #{keyring} --list-public-keys --with-fingerprint --with-colons #{key}}).exitstatus == 0
         end
 
         # return the specified cookbook name or the cookbook containing the
@@ -284,7 +295,7 @@ class Chef
         # @raise [Chef::Exceptions::FileNotFound] Key isn't remote or found in the current run
         #
         # @return [Symbol] :remote_file or :cookbook_file
-        def key_type(uri)
+        def key_resource_type(uri)
           if uri.start_with?("http")
             :remote_file
           elsif has_cookbook_file?(uri)
@@ -307,29 +318,46 @@ class Chef
         # @return [void]
         def install_key_from_uri(key)
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
-          keyfile_path = ::File.join(Chef::Config[:file_cache_path], key_name)
+          keyfile_tmp_path = ::File.join(Chef::Config[:file_cache_path], key_name)
+          keyfile_path = keyring_path
           tmp_dir = Dir.mktmpdir(".gpg")
           at_exit { FileUtils.remove_entry(tmp_dir) }
 
           if new_resource.signed_by
-            keyfile_path = keyring_path
-
             directory "/etc/apt/keyrings" do
               mode "0755"
             end
-          end
 
-          declare_resource(key_type(key), keyfile_path) do
-            source key
-            mode "0644"
-            sensitive new_resource.sensitive
-            action :create
-            verify "gpg --homedir #{tmp_dir} %{path}"
-          end
+            declare_resource(key_resource_type(key), keyfile_tmp_path) do
+              source key
+              mode "0644"
+              sensitive new_resource.sensitive
+              action :create
+              verify "gpg --homedir #{tmp_dir} %{path}"
+              notifies :delete, "file[#{keyfile_path}]", :immediately
+              notifies :run, "execute[dearmor #{keyfile_path}]", :immediately
+            end
 
-          # If signed by is true, then we don't need to
-          # add to the default keyring
-          unless new_resource.signed_by
+            execute "dearmor #{keyfile_path}" do
+              command [ "gpg", "--batch", "--yes", "--dearmor", "-o", keyfile_path, keyfile_tmp_path ]
+              default_env true
+              sensitive new_resource.sensitive
+              action :nothing
+              only_if { !::File.exist?(keyfile_path) || ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
+            end
+
+            file keyfile_path do
+              mode "0644"
+            end
+          else
+            declare_resource(key_resource_type(key), keyfile_path) do
+              source key
+              mode "0644"
+              sensitive new_resource.sensitive
+              action :create
+              verify "gpg --homedir #{tmp_dir} %{path}"
+            end
+
             execute "apt-key add #{keyfile_path}" do
               command [ "apt-key", "add", keyfile_path ]
               default_env true
@@ -403,8 +431,7 @@ class Chef
             default_env true
             sensitive new_resource.sensitive
             not_if do
-              present = shell_out(*%W{gpg --no-default-keyring --keyring #{keyring} --list-public-keys --with-fingerprint --with-colons #{key}}).exitstatus != 0
-              present && keyring_key_is_valid?(keyring, key.upcase)
+              keyring_key_is_present?(keyring, key.upcase) && keyring_key_is_valid?(keyring, key.upcase)
             end
             notifies :run, "execute[apt-cache gencaches]", :immediately
           end
@@ -420,7 +447,7 @@ class Chef
         # @return [void]
         def install_ppa_key(owner, repo)
           url = "https://launchpad.net/api/1.0/~#{owner}/+archive/#{repo}"
-          key_id = Chef::HTTP::Simple.new(url).get("signing_key_fingerprint").delete('"')
+          key_id = Chef::HTTP::Simple.new(url, {}).get("signing_key_fingerprint").delete('"')
           install_key_from_keyserver(key_id, "keyserver.ubuntu.com")
         rescue Net::HTTPClientException => e
           raise "Could not access Launchpad ppa API: #{e.message}"
