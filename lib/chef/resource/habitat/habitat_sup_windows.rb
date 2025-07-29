@@ -56,7 +56,7 @@ class Chef
           version new_resource.service_version if new_resource.service_version
         end
 
-        execute "hab pkg exec core/windows-service install" do
+        execute "#{ChefUtils::Dist::Habitat::EXEC} pkg exec core/windows-service install" do
           not_if { ::Win32::Service.exists?("Habitat") }
         end
 

@@ -15,13 +15,13 @@
 #
 require_relative "../http"
 require_relative "../json_compat"
-require_relative "../resource"
+require_relative "habitat/habitat_base"
 
 require "tmpdir" unless defined?(Dir::Tmpname)
 
 class Chef
   class Resource
-    class HabitatConfig < Chef::Resource
+    class HabitatConfig < Chef::Resource::HabitatBase
 
       provides :habitat_config, target_mode: true
       target_mode support: :full
@@ -110,10 +110,6 @@ class Chef
             TargetIO::File.unlink(tempname)
           end
         end
-      end
-
-      action_class do
-        use "../resource/habitat/habitat_shared"
       end
     end
   end

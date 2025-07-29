@@ -13,6 +13,7 @@
 # See the License for the specific language governing
 
 require_relative "../resource"
+
 class Chef
   class Resource
     class HabitatUserToml < Chef::Resource
