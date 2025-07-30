@@ -1151,6 +1151,7 @@
     "rpmvercmp",
     "rquery",
     "rsakey",
+    "RTLD",
     "rvmrc",
     "RSAT",
     "RUNFULLSCREEN",
