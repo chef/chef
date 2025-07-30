@@ -46,7 +46,7 @@ PATH
       chef-licensing (>= 0.7.5)
       chef-utils (= 19.1.60)
       chef-vault
-      chef-zero (>= 15.0.21)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
@@ -83,7 +83,7 @@ PATH
       chef-powershell (~> 18.1.0)
       chef-utils (= 19.1.60)
       chef-vault
-      chef-zero (>= 15.0.21)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
