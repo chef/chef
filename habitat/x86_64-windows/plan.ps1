@@ -124,6 +124,15 @@ function Invoke-Prepare {
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";c:\\Program Files\\Git\\bin;"
 
+        # Dynamically locate the libarchive.dll directory
+        $mixlib_archive_path = Get-ChildItem -Path "$pkg_prefix/vendor/gems" -Filter "mixlib-archive-*-mingw32" | Select-Object -ExpandProperty FullName
+        if (-not $mixlib_archive_path) {
+            throw "Unable to locate mixlib-archive gem directory"
+        }
+        $libarchive_dir = Join-Path $mixlib_archive_path "distro/ruby_bin_folder"
+        Write-BuildLine "Adding libarchive.dll directory to PATH: $libarchive_dir"
+        $env:Path += ";$libarchive_dir"
+
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
