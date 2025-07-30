@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.60 -->
-## [v19.1.60](https://github.com/chef/chef/tree/v19.1.60) (2025-07-28)
+<!-- latest_release 19.1.61 -->
+## [v19.1.61](https://github.com/chef/chef/tree/v19.1.61) (2025-07-30)
 
 #### Merged Pull Requests
-- Fix docker build pipeline which needs HAB_AUTH_TOKEN [#15157](https://github.com/chef/chef/pull/15157) ([neha-p6](https://github.com/neha-p6))
+- Updating chef-zero [#15167](https://github.com/chef/chef/pull/15167) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating chef-zero [#15167](https://github.com/chef/chef/pull/15167) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.61 -->
 - Fix docker build pipeline which needs HAB_AUTH_TOKEN [#15157](https://github.com/chef/chef/pull/15157) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.60 -->
 - temporarily pin berkshelf in verify [#15158](https://github.com/chef/chef/pull/15158) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.59 -->
 - Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.58 -->
