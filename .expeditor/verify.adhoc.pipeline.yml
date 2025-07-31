@@ -8,5 +8,7 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - command: .buildkite/verify.adhoc.pipeline.sh | buildkite-agent pipeline upload
+  - commands:
+    - ./.buildkite/testing-ruby-installation-for-adhoc.sh
+    # - /home/ec2-user/.rbenv/shims/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
     label: ":pipeline: Upload"
