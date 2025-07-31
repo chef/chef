@@ -49,6 +49,7 @@ class Chef
       private_class_method :method_name_from_marketing_name
 
       WIN_VERSIONS = {
+        "Windows Server 2025" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number >= 25398 } },
         "Windows Server 2022" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number >= 20348 } },
         "Windows Server 2019" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type != VER_NT_WORKSTATION && build_number >= 17763 && build_number < 20348 } },
         "Windows 11" => { major: 10, minor: 0, callable: lambda { |product_type, suite_mask, build_number| product_type == VER_NT_WORKSTATION && build_number >= 22000 } },
