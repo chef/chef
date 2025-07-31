@@ -21,10 +21,27 @@
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
 begin
+  # Testing
+  require "ruby_installer/runtime"
+  require "open3"
+  stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
+  if status.success?
+    habitat_libarchive_path = File.join(stdout.strip, "bin")
+    if Dir.exist?(habitat_libarchive_path)
+      RubyInstaller::Runtime.add_dll_directory(habitat_libarchive_path)
+      STDERR.puts "Added Habitat libarchive path to DLL search paths: #{habitat_libarchive_path}"
+    else
+      STDERR.puts "Habitat libarchive path not found: #{habitat_libarchive_path}"
+    end
+  else
+    STDERR.puts "Failed to determine Habitat libarchive path: #{stderr}"
+  end
+
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
   require "ffi-libarchive" unless defined?(Archive::Reader)
-rescue LoadError
-  STDERR.puts "ffi-libarchive could not be loaded, libarchive is probably not installed on system, archive_file will not be available"
+rescue LoadError => e
+  STDERR.puts "ffi-libarchive could not be loaded: #{e.message}"
+  STDERR.puts "libarchive is probably not installed on system, archive_file will not be available"
 end
 
 class Chef
