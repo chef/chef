@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/omnibus-software.git
-  revision: 28c9c9f8419094cef59ca37802084db716166ace
+  revision: d3688eca9503fcdbd0461dcdb5103fe3b88af3a5
   branch: main
   specs:
-    omnibus-software (24.6.323)
-      ffi (< 1.17.0)
+    omnibus-software (25.7.332)
+      ffi (>= 1.17.0)
       omnibus (>= 9.0.0)
 
 GIT
@@ -48,7 +48,7 @@ GEM
     artifactory (3.0.17)
     awesome_print (1.9.2)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1132.0)
+    aws-partitions (1.1138.0)
     aws-sdk-core (3.227.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -56,7 +56,7 @@ GEM
       base64
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-kms (1.107.0)
+    aws-sdk-kms (1.108.0)
       aws-sdk-core (~> 3, >= 3.227.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-s3 (1.116.0)
@@ -68,7 +68,7 @@ GEM
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
     benchmark (0.4.1)
     berkshelf (8.0.9)
@@ -86,18 +86,18 @@ GEM
       thor (>= 0.20)
     bigdecimal (3.1.8)
     builder (3.3.0)
-    chef (18.7.10)
+    chef (18.5.0)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.7.10)
-      chef-utils (= 18.7.10)
+      chef-config (= 18.5.0)
+      chef-utils (= 18.5.0)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5, <= 1.16.3)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -106,7 +106,7 @@ GEM
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 3.2)
+      mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
@@ -114,25 +114,25 @@ GEM
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.13)
+      train-core (~> 3.10)
       train-rest (>= 0.4.1)
-      train-winrm (~> 0.2.17)
+      train-winrm (>= 0.2.5)
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-    chef (18.7.10-universal-mingw-ucrt)
+    chef (18.5.0-x64-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.7.10)
+      chef-config (= 18.5.0)
       chef-powershell (~> 18.1.0)
-      chef-utils (= 18.7.10)
+      chef-utils (= 18.5.0)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5, <= 1.16.3)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -142,7 +142,7 @@ GEM
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 3.2)
+      mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
@@ -150,9 +150,9 @@ GEM
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.13)
+      train-core (~> 3.10)
       train-rest (>= 0.4.1)
-      train-winrm (~> 0.2.17)
+      train-winrm (>= 0.2.5)
       unf_ext (~> 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
@@ -167,14 +167,14 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.5)
-    chef-config (18.7.10)
+    chef-config (18.5.0)
       addressable
-      chef-utils (= 18.7.10)
+      chef-utils (= 18.5.0)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-gyoku (1.4.5)
+    chef-gyoku (1.5.0)
       builder (>= 2.1.2)
       rexml (~> 3.4)
     chef-powershell (18.1.0)
@@ -183,14 +183,13 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (18.7.10)
+    chef-utils (18.5.0)
       concurrent-ruby
     chef-vault (4.1.11)
-    chef-winrm (2.3.12)
+    chef-winrm (2.4.4)
       builder (>= 2.1.2)
-      chef-gyoku (~> 1.4.0, <= 1.4.5)
+      chef-gyoku (~> 1.5)
       erubi (~> 1.8)
-      ffi (>= 1.15.5, < 1.17.0)
       gssapi (~> 1.2)
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
@@ -201,8 +200,10 @@ GEM
       chef-winrm (>= 2.3.11)
       chef-winrm-fs (>= 1.3.7)
       erubi (~> 1.8)
-    chef-winrm-fs (1.3.7)
-      chef-winrm (>= 2.3.11)
+    chef-winrm-fs (1.4.1)
+      benchmark (~> 0.4.0)
+      chef-winrm (~> 2.4)
+      csv (~> 3.3)
       erubi (>= 1.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
@@ -224,6 +225,7 @@ GEM
     contracts (0.16.1)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
+    csv (3.3.5)
     date (3.3.4)
     diff-lcs (1.5.1)
     domain_name (0.6.20240107)
@@ -238,7 +240,7 @@ GEM
       faraday (>= 1, < 3)
     faraday-net_http (3.1.0)
       net-http
-    ffi (1.16.3)
+    ffi (1.17.2)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -286,7 +288,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.13.0)
+    json (2.13.2)
     kitchen-vagrant (2.0.1)
       test-kitchen (>= 1.4, < 4)
     libyajl2 (2.1.0)
@@ -300,7 +302,7 @@ GEM
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
     little-plugger (1.1.4)
-    logger (1.6.0)
+    logger (1.7.0)
     logging (2.4.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
@@ -322,8 +324,8 @@ GEM
       mixlib-shellout
       mixlib-versioning
       thor
-    mixlib-log (3.1.2.1)
-      ffi (< 1.17.0)
+    mixlib-log (3.2.3)
+      ffi (>= 1.15.5)
     mixlib-shellout (3.3.9)
       chef-utils
     mixlib-shellout (3.3.9-universal-mingw32)
@@ -360,10 +362,10 @@ GEM
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
-    ohai (18.2.6)
+    ohai (18.1.18)
       chef-config (>= 14.12, < 19)
       chef-utils (>= 16.0, < 19)
-      ffi (~> 1.9, <= 1.17.0)
+      ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
       mixlib-cli (>= 1.7.0)
@@ -447,6 +449,8 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
+    syslog (0.3.0)
+      logger
     syslog-logger (1.6.8)
     test-kitchen (3.6.0)
       bcrypt_pbkdf (~> 1.0)
@@ -480,10 +484,11 @@ GEM
       aws-sigv4 (~> 1.5)
       rest-client (~> 2.1)
       train-core (~> 3.0)
-    train-winrm (0.2.19)
-      chef-winrm (~> 2.3.12)
+    train-winrm (0.3.1)
+      chef-winrm (~> 2.4)
       chef-winrm-elevated (~> 1.2.5)
-      chef-winrm-fs (~> 1.3.7)
+      chef-winrm-fs (~> 1.4.0)
+      syslog (~> 0.1)
     tty-box (0.7.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
@@ -555,7 +560,7 @@ GEM
       winrm (~> 2.0)
     wisper (2.0.1)
     wmi-lite (1.0.7)
-    zhexdump (0.2.0)
+    zhexdump (0.3.0)
 
 PLATFORMS
   ruby
@@ -567,7 +572,7 @@ PLATFORMS
 DEPENDENCIES
   artifactory
   berkshelf (>= 8.0)
-  ffi (< 1.17)
+  ffi (< 1.18)
   kitchen-vagrant (>= 1.3.1)
   omnibus!
   omnibus-software!
