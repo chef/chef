@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.36 -->
-## [v18.7.36](https://github.com/chef/chef/tree/v18.7.36) (2025-07-31)
+<!-- latest_release 18.8.0 -->
+## [v18.8.0](https://github.com/chef/chef/tree/v18.8.0) (2025-07-31)
 
 #### Merged Pull Requests
-- updating chef-zero [#15171](https://github.com/chef/chef/pull/15171) ([johnmccrae](https://github.com/johnmccrae))
+- Add myself to codeowners for chef-18 [#15142](https://github.com/chef/chef/pull/15142) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add myself to codeowners for chef-18 [#15142](https://github.com/chef/chef/pull/15142) ([jaymzh](https://github.com/jaymzh)) <!-- 18.8.0 -->
 - updating chef-zero [#15171](https://github.com/chef/chef/pull/15171) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.36 -->
 - Ruby upgrade - 3.1.7 [#15165](https://github.com/chef/chef/pull/15165) ([poorndm](https://github.com/poorndm)) <!-- 18.7.35 -->
 - [CHEF-23856] knife 18 ruby upgrade and CVE fixes [#15144](https://github.com/chef/chef/pull/15144) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.7.34 -->
