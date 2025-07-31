@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.7.34 -->
-## [v18.7.34](https://github.com/chef/chef/tree/v18.7.34) (2025-07-24)
+<!-- latest_release 18.7.35 -->
+## [v18.7.35](https://github.com/chef/chef/tree/v18.7.35) (2025-07-31)
 
 #### Merged Pull Requests
-- [CHEF-23856] knife 18 ruby upgrade and CVE fixes [#15144](https://github.com/chef/chef/pull/15144) ([ashiqueps](https://github.com/ashiqueps))
+- Ruby upgrade - 3.1.7 [#15165](https://github.com/chef/chef/pull/15165) ([poorndm](https://github.com/poorndm))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby upgrade - 3.1.7 [#15165](https://github.com/chef/chef/pull/15165) ([poorndm](https://github.com/poorndm)) <!-- 18.7.35 -->
 - [CHEF-23856] knife 18 ruby upgrade and CVE fixes [#15144](https://github.com/chef/chef/pull/15144) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.7.34 -->
 - [Chef-18]Bump openssl gem version to 3.3.0 [#15147](https://github.com/chef/chef/pull/15147) ([neha-p6](https://github.com/neha-p6)) <!-- 18.7.33 -->
 - Updating uri to 1.0.3 [#15131](https://github.com/chef/chef/pull/15131) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.7.32 -->
