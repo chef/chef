@@ -21,15 +21,23 @@
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
 begin
-  # Testing
-  require "ruby_installer/runtime"
+  # Testing for habitat only
+  # Add Habitat's libarchive path to FFI's search paths dynamically
+  require "ffi"
   require "open3"
+
+  # Dynamically determine the path to the core/libarchive package
   stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
   if status.success?
     habitat_libarchive_path = File.join(stdout.strip, "bin")
     if Dir.exist?(habitat_libarchive_path)
-      RubyInstaller::Runtime.add_dll_directory(habitat_libarchive_path)
-      STDERR.puts "Added Habitat libarchive path to DLL search paths: #{habitat_libarchive_path}"
+      archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
+      if File.exist?(archive_dll_path)
+        FFI::DynamicLibrary.open(archive_dll_path) # Explicitly load the DLL
+        STDERR.puts "Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}"
+      else
+        STDERR.puts "archive.dll not found in Habitat path: #{habitat_libarchive_path}"
+      end
     else
       STDERR.puts "Habitat libarchive path not found: #{habitat_libarchive_path}"
     end
