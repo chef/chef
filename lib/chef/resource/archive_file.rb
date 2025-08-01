@@ -33,7 +33,7 @@ begin
     if Dir.exist?(habitat_libarchive_path)
       archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
       if File.exist?(archive_dll_path)
-        FFI::DynamicLibrary.open(archive_dll_path) # Explicitly load the DLL
+        FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
         STDERR.puts "Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}"
       else
         STDERR.puts "archive.dll not found in Habitat path: #{habitat_libarchive_path}"
