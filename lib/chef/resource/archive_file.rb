@@ -29,7 +29,7 @@ begin
   # Dynamically determine the path to the core/libarchive package
   stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
   if status.success?
-    habitat_libarchive_path = File.join(stdout.strip, "bin")
+    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
     if Dir.exist?(habitat_libarchive_path)
       archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
       if File.exist?(archive_dll_path)
