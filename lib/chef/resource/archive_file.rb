@@ -21,10 +21,35 @@
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
 begin
+  # Testing for habitat only
+  # Add Habitat's libarchive path to FFI's search paths dynamically
+  require "ffi"
+  require "open3"
+
+  # Dynamically determine the path to the core/libarchive package
+  stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
+  if status.success?
+    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
+    if Dir.exist?(habitat_libarchive_path)
+      archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
+      if File.exist?(archive_dll_path)
+        FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
+        STDERR.puts "Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}"
+      else
+        STDERR.puts "archive.dll not found in Habitat path: #{habitat_libarchive_path}"
+      end
+    else
+      STDERR.puts "Habitat libarchive path not found: #{habitat_libarchive_path}"
+    end
+  else
+    STDERR.puts "Failed to determine Habitat libarchive path: #{stderr}"
+  end
+
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
   require "ffi-libarchive" unless defined?(Archive::Reader)
-rescue LoadError
-  STDERR.puts "ffi-libarchive could not be loaded, libarchive is probably not installed on system, archive_file will not be available"
+rescue LoadError => e
+  STDERR.puts "ffi-libarchive could not be loaded: #{e.message}"
+  STDERR.puts "libarchive is probably not installed on system, archive_file will not be available"
 end
 
 class Chef
