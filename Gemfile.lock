@@ -48,6 +48,7 @@ PATH
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
+      csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
@@ -66,6 +67,7 @@ PATH
       ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
+      syslog
       syslog-logger (~> 1.6)
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
@@ -85,6 +87,7 @@ PATH
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
+      csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
@@ -104,6 +107,7 @@ PATH
       ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
+      syslog
       syslog-logger (~> 1.6)
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
@@ -198,6 +202,7 @@ GEM
     chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
+    chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -244,6 +249,7 @@ GEM
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
+    csv (3.3.5)
     date (3.4.0)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
@@ -264,6 +270,8 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.2)
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -278,7 +286,8 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.7)
       domain_name (~> 0.5)
-    httpclient (2.8.3)
+    httpclient (2.9.0)
+      mutex_m
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
@@ -351,6 +360,7 @@ GEM
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.4.1)
+    mutex_m (0.3.0)
     net-ftp (0.3.8)
       net-protocol
       time
@@ -427,7 +437,6 @@ GEM
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     ruby-progressbar (1.13.0)
-    ruby-shadow (2.5.1)
     rubyntlm (0.6.5)
       base64
     rubyzip (2.3.2)
@@ -439,6 +448,8 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
+    syslog (0.3.0)
+      logger
     syslog-logger (1.6.8)
     thor (1.2.2)
     time (0.4.0)
@@ -483,14 +494,13 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf_ext (0.0.8.2)
-    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.3)
     uuidtools (2.2.0)
     vault (0.18.2)
       aws-sigv4
-    webmock (3.24.0)
+    webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -530,6 +540,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-ruby-shadow (~> 3.0.0)
   chef-utils!
   chef-vault
   cheffish (>= 17)
@@ -547,7 +558,6 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow
   webmock
 
 BUNDLED WITH

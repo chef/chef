@@ -53,7 +53,7 @@ end
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
-    gem "ruby-shadow", platforms: :ruby
+    gem "chef-ruby-shadow", "~> 3.0.0", platforms: :ruby
   end
 end
 
