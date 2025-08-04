@@ -19,8 +19,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
-  branch: jfm/ucrt_update1
+  revision: fd0347e44f28e8c976fd2d142138fb31a2a227f1
+  branch: jfm/chef18-http-accept
   specs:
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
@@ -274,7 +274,7 @@ GEM
       ffi (>= 1.0.1)
     hashdiff (1.1.1)
     hashie (4.1.0)
-    http-accept (1.7.0)
+    http-accept (2.1.1)
     http-cookie (1.0.8)
       domain_name (~> 0.5)
     httpclient (2.8.3)
