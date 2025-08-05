@@ -56,11 +56,10 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-zero", "~> 15.0.21"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
 
-  s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, osx_profile and plist resources
+  s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, and plist resources
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
-  s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
   s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
   s.add_dependency "uri", "~> 1.0.3" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
