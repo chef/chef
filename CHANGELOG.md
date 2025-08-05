@@ -1,17 +1,28 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.51 -->
-## [v19.1.51](https://github.com/chef/chef/tree/v19.1.51) (2025-07-14)
+<!-- latest_release 19.1.62 -->
+## [v19.1.62](https://github.com/chef/chef/tree/v19.1.62) (2025-08-05)
 
 #### Merged Pull Requests
-- Use chef/ vs. removed skylerto/ package in hab for tests [#15098](https://github.com/chef/chef/pull/15098) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump berkshelf from 8.0.9 to 8.0.22 in /omnibus [#15123](https://github.com/chef/chef/pull/15123) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump berkshelf from 8.0.9 to 8.0.22 in /omnibus [#15123](https://github.com/chef/chef/pull/15123) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.62 -->
+- Updating chef-zero [#15167](https://github.com/chef/chef/pull/15167) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.61 -->
+- Fix docker build pipeline which needs HAB_AUTH_TOKEN [#15157](https://github.com/chef/chef/pull/15157) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.60 -->
+- temporarily pin berkshelf in verify [#15158](https://github.com/chef/chef/pull/15158) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.59 -->
+- Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.58 -->
+- Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.57 -->
+- Add support for secrets in credentials file [#15064](https://github.com/chef/chef/pull/15064) ([thheinen](https://github.com/thheinen)) <!-- 19.1.56 -->
+- Use notifies and sleeps to stabilize kitchen-tests for snap [#15118](https://github.com/chef/chef/pull/15118) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.55 -->
+- Ohai custom plug-ins Chef-11588 [#15090](https://github.com/chef/chef/pull/15090) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.54 -->
+- Support JSON recipes [#15094](https://github.com/chef/chef/pull/15094) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.53 -->
+- Apply new version and stability fix for hab package to main [#15113](https://github.com/chef/chef/pull/15113) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.52 -->
 - Use chef/ vs. removed skylerto/ package in hab for tests [#15098](https://github.com/chef/chef/pull/15098) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.51 -->
 - adds environment properties to apt_package, dnf_package and yum_package [#14868](https://github.com/chef/chef/pull/14868) ([kristofvandam](https://github.com/kristofvandam)) <!-- 19.1.50 -->
 - [ChefRepositoryFileSystemCookbookEntry#children] Use in-place mutations [#15061](https://github.com/chef/chef/pull/15061) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.49 -->
