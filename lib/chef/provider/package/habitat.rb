@@ -49,7 +49,7 @@ class Chef
 
         def install_package(names, versions)
           # License acceptance needed outside of local Chef Client
-          shell_out!("hab license accept") if Chef::Config.target_mode?
+          shell_out!("#{ChefUtils::Dist::Habitat::EXEC} license accept") if Chef::Config.target_mode?
 
           names.zip(versions).map do |n, v|
             opts = ["pkg", "install", "--channel", new_resource.channel, "--url", new_resource.bldr_url]
