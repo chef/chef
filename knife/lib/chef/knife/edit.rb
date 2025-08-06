@@ -77,7 +77,7 @@ class Chef
               raise "Please set EDITOR environment variable. See https://docs.chef.io/workstation/knife_setup/#setting-your-text-editor for details."
             end
 
-            result_text = IO.read(file.path)
+            result_text = File.read(file.path)
 
             return result_text if result_text != text
           end
