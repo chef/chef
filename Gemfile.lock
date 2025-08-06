@@ -26,7 +26,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 4725014ca42b4a7222453337656193281e58777f
+  revision: 0cf3b81338b08b3761ed92c818200f3226bcb6c5
   branch: rishichawda/cve-updates
   specs:
     rest-client (2.1.0)
