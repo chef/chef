@@ -44,7 +44,7 @@ class Chef
 
         def validation_key
           if File.exist?(File.expand_path(chef_config[:validation_key]))
-            IO.read(File.expand_path(chef_config[:validation_key]))
+            File.read(File.expand_path(chef_config[:validation_key]))
           else
             false
           end
@@ -368,7 +368,7 @@ class Chef
           if chef_config[:trusted_certs_dir]
             Dir.glob(File.join(ChefConfig::PathHelper.escape_glob_dir(chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "> #{bootstrap_directory}/trusted_certs/#{File.basename(cert)} (\n" +
-                escape_and_echo(IO.read(File.expand_path(cert))) + "\n)\n"
+                escape_and_echo(File.read(File.expand_path(cert))) + "\n)\n"
             end
           end
           content
@@ -386,7 +386,7 @@ class Chef
                   content << "mkdir #{file_on_node}\n"
                 else
                   content << "> #{file_on_node} (\n" +
-                    escape_and_echo(IO.read(File.expand_path(f))) + "\n)\n"
+                    escape_and_echo(File.read(File.expand_path(f))) + "\n)\n"
                 end
               end
             end
