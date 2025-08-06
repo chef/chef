@@ -18,22 +18,22 @@ GIT
       wmi-lite (~> 1.0)
 
 GIT
-  remote: https://github.com/chef/ruby-shadow
-  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
-  branch: lcg/ruby-3.0
-  specs:
-    ruby-shadow (2.5.0)
-
-GIT
   remote: https://github.com/chef/rest-client
-  revision: 0cf3b81338b08b3761ed92c818200f3226bcb6c5
-  branch: rishichawda/cve-updates
+  revision: 4f8417a4a4e57f47566fe35841f54f08c0c48bb4
+  branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
+  branch: lcg/ruby-3.0
+  specs:
+    ruby-shadow (2.5.0)
 
 PATH
   remote: .
