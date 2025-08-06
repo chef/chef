@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-export HAB_ORIGIN='ci'
+export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
