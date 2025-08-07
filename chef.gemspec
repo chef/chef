@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
-  if RUBY_PLATFORM =~ /aix/
+  if RUBY_PLATFORM.include?("aix")
     s.add_dependency "inspec-core", ">= 5", "<= 5.22.80"
   else
     s.add_dependency "inspec-core", ">= 5", "< 6"
