@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.2 -->
-## [v18.8.2](https://github.com/chef/chef/tree/v18.8.2) (2025-08-06)
+<!-- latest_release 18.8.4 -->
+## [v18.8.4](https://github.com/chef/chef/tree/v18.8.4) (2025-08-07)
 
 #### Merged Pull Requests
-- Forcing a version constraint for activesupport for CVE-2020-8165 [#15189](https://github.com/chef/chef/pull/15189) ([johnmccrae](https://github.com/johnmccrae))
+- fixing the ruby_shadow installer for the windows plan [#15191](https://github.com/chef/chef/pull/15191) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fixing the ruby_shadow installer for the windows plan [#15191](https://github.com/chef/chef/pull/15191) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.4 -->
+- update rest-client in chef-18 [#15186](https://github.com/chef/chef/pull/15186) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.3 -->
 - Forcing a version constraint for activesupport for CVE-2020-8165 [#15189](https://github.com/chef/chef/pull/15189) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.2 -->
 - [Chef-18]Fix ffi-libarchive load error from habitat package on windows [#15168](https://github.com/chef/chef/pull/15168) ([neha-p6](https://github.com/neha-p6)) <!-- 18.8.1 -->
 - Add myself to codeowners for chef-18 [#15142](https://github.com/chef/chef/pull/15142) ([jaymzh](https://github.com/jaymzh)) <!-- 18.8.0 -->
