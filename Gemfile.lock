@@ -281,7 +281,7 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
-    inspec-core (5.22.95)
+    inspec-core (= 5.22.95)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0, >= 1.0.8)
       cookstyle
@@ -305,7 +305,7 @@ GEM
       train-core (~> 3.12.13)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (5.22.95)
+    inspec-core-bin (= 5.22.95)
       inspec-core (= 5.22.95)
     ipaddress (0.8.3)
     iso8601 (0.13.0)

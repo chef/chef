@@ -30,7 +30,6 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "chef-vault"
-  
   if RUBY_PLATFORM.include?("aix")
     gem "inspec-core-bin", ">= 5", "<= 5.22.80"
   else
