@@ -52,7 +52,7 @@ end
 
 # deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
 group(:knife_windows_deps) do
-  gem "ed25519", "~> 1.2" # ed25519 ssh key support
+  gem "ed25519", "~> 1.3.0" # ed25519 ssh key support - pinned for Ruby 3.1 compatibility
 end
 
 group(:development, :test) do
@@ -87,9 +87,10 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # executed, just in case they have changed.
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   instance_eval do
-    ruby_exe_dir = RbConfig::CONFIG["bindir"]
-    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
-    FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
+    # ruby_exe_dir = RbConfig::CONFIG["bindir"]
+    # assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
+    # FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
+    gem "chef-powershell", "~> 18.1.0"
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end
 end
