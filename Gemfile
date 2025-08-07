@@ -44,7 +44,7 @@ end
 
 # Everything except AIX and Windows
 group(:ruby_shadow) do
-  install_if -> { !(RUBY_PLATFORM == "x64-mingw-ucrt") } do
+  install_if -> { RUBY_PLATFORM.match?(/linux|darwin|freebsd|openbsd|netbsd|solaris|aix/i) } do
     # if ruby-shadow does a release that supports ruby-3.0 this can be removed
     gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
   end
