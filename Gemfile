@@ -30,6 +30,7 @@ group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
   gem "chef-vault"
+
   gem "inspec-core-bin", ">= 5", "< 6"
 end
 
