@@ -44,7 +44,8 @@ end
 
 # Everything except AIX and Windows
 group(:ruby_shadow) do
-  install_if -> { !RUBY_PLATFORM.match?(/mswin|mingw|windows/) } do
+  # install_if -> { !RUBY_PLATFORM.match?(/mswin|mingw|windows/) } do
+  install_if -> { !Gem.windows_platform? } do
     # if ruby-shadow does a release that supports ruby-3.0 this can be removed
     gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
   end
