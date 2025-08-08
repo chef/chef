@@ -551,7 +551,7 @@ class Chef
         require "erubis" unless defined?(Erubis)
         @config[:first_boot_attributes] = first_boot_attributes
         template_file = find_template
-        template = IO.read(template_file).chomp
+        template = File.read(template_file).chomp
         Erubis::Eruby.new(template).evaluate(bootstrap_context)
       end
 
