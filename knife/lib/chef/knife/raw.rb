@@ -86,7 +86,7 @@ class Chef
         path = name_args[0]
         data = false
         if config[:input]
-          data = IO.read(config[:input])
+          data = File.read(config[:input])
         end
         begin
           method = config[:method].to_sym

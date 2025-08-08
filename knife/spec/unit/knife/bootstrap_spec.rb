@@ -368,7 +368,7 @@ describe Chef::Knife::Bootstrap do
       allow(::File).to receive(:read).and_return('{ "foo" : "bar" }')
       knife.parse_options(["--hint", "openstack=hints/openstack.json"])
       knife.merge_configs
-      expect(knife.render_template).to match(/\{\"foo\":\"bar\"\}/)
+      expect(knife.render_template).to match(/\{ \"foo\" : \"bar\"\ }/)
     end
   end
 
