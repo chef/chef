@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Quick alias for bundle operations with dual lock file support
+# Place this in your project root and run: ./bundle install or ./bundle update
+
+exec "./scripts/bundle-with-aix.sh" "$@"

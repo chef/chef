@@ -25,6 +25,7 @@ begin
   require_relative "tasks/dependencies"
   require_relative "tasks/docs"
   require_relative "tasks/spellcheck"
+  require_relative "tasks/bundle"
   require_relative "chef-utils/lib/chef-utils/dist" unless defined?(ChefUtils::Dist)
 rescue LoadError => e
   puts "Skipping missing rake dep: #{e}"
