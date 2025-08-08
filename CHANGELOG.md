@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.6 -->
-## [v18.8.6](https://github.com/chef/chef/tree/v18.8.6) (2025-08-08)
+<!-- latest_release 18.8.7 -->
+## [v18.8.7](https://github.com/chef/chef/tree/v18.8.7) (2025-08-08)
 
 #### Merged Pull Requests
-- Updated chef-foundation to 3.2.32 to pick up typeprof/rbs gem removal  [#15178](https://github.com/chef/chef/pull/15178) ([tpowell-progress](https://github.com/tpowell-progress))
+- bundle update --conservative thor to &lt; 1.5.0 [#15196](https://github.com/chef/chef/pull/15196) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.7.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- bundle update --conservative thor to &lt; 1.5.0 [#15196](https://github.com/chef/chef/pull/15196) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.7 -->
 - Updated chef-foundation to 3.2.32 to pick up typeprof/rbs gem removal  [#15178](https://github.com/chef/chef/pull/15178) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.6 -->
 - [CHEF-23856] Fixed the code scanning alerts from Github [#15185](https://github.com/chef/chef/pull/15185) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.5 -->
 - fixing the ruby_shadow installer for the windows plan [#15191](https://github.com/chef/chef/pull/15191) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.4 -->
