@@ -48,8 +48,7 @@ rescue LoadError
   $stderr.puts "Failed to load ruby_installer. Assuming Ruby Installer is not being used."
 end
 
-
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   load_dlls("libarchive.dll")
-  load_dlls("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell*.dll")
+  load_dlls("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll")
 end
