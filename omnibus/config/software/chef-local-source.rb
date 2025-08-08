@@ -98,6 +98,12 @@ build do
   mkdir "pkg"
   copy "chef*.gem", "pkg"
 
+  # Always deploy the powershell modules in the correct place.
+  if windows?
+    mkdir "#{install_dir}/modules/chef"
+    copy "distro/templates/powershell/chef/*", "#{install_dir}/modules/chef"
+  end
+
   block do
     # cspell:disable-next-line
     appbundle "chef", lockdir: project_dir, gem: "inspec-core-bin", without: excluded_groups, env: env
