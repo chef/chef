@@ -31,6 +31,12 @@ if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]] && [[ $BUILDKITE_OR
 EOF
 fi
 
+echo "--- AIX gemfile.lock"
+if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
+  cd "#{SCRIPT_DIR}/../.."
+  cp -f Gemfile.aix.lock Gemfile.lock
+fi
+
 echo "--- Running bundle install for Omnibus"
 cd "${SCRIPT_DIR}/../../omnibus"
 bundle config set --local without development
