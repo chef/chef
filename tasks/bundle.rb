@@ -36,27 +36,27 @@ namespace :bundle do
   desc "Validate that both Gemfile.lock and Gemfile.aix.lock are in sync with dependencies"
   task :validate do
     puts "🔍 Validating lock files are in sync..."
-    
+
     # Check if both files exist
     unless File.exist?("Gemfile.lock")
       puts "❌ Gemfile.lock not found. Run 'rake bundle:install' first."
       exit 1
     end
-    
+
     unless File.exist?("Gemfile.aix.lock")
       puts "❌ Gemfile.aix.lock not found. Run 'rake bundle:install' first."
       exit 1
     end
-    
+
     # Parse both lock files and compare relevant sections
-    require 'bundler'
-    
+    require "bundler"
+
     puts "📋 Standard lock file:"
     system("head -20 Gemfile.lock")
-    
+
     puts "\n📋 AIX lock file:"
     system("head -20 Gemfile.aix.lock")
-    
+
     puts "\n✅ Both lock files exist. Manual inspection recommended to ensure platform-specific dependencies are correct."
   end
 
@@ -66,14 +66,14 @@ namespace :bundle do
     File.delete("Gemfile.lock") if File.exist?("Gemfile.lock")
     File.delete("Gemfile.aix.lock") if File.exist?("Gemfile.aix.lock")
     File.delete("Gemfile.lock.base") if File.exist?("Gemfile.lock.base")
-    
+
     puts "🔄 Regenerating lock files..."
     Rake::Task["bundle:install"].invoke
   end
 end
 
 desc "Alias for bundle:install - generates both lock files"
-task :bundle_install => "bundle:install"
+task bundle_install: "bundle:install"
 
-desc "Alias for bundle:update - generates both lock files"  
-task :bundle_update => "bundle:update"
+desc "Alias for bundle:update - generates both lock files"
+task bundle_update: "bundle:update"
