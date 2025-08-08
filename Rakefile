@@ -45,7 +45,18 @@ namespace :pre_install do
     end
   end
 
-  task all: ["pre_install:install_gems_from_dirs"]
+  desc "Renders the powershell extensions with distro flavoring"
+  task :render_powershell_extension do
+    require "erb"
+    template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
+    psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
+    FileUtils.mkdir_p psm1_path
+    template = ERB.new(IO.read(template_file))
+    chef_psm1 = template.result
+    File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
+  end
+
+  task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
 end
 
 # hack in all the preinstall tasks to occur before the traditional install task
