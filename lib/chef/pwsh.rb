@@ -63,7 +63,7 @@ class Chef
       # Every merge into that repo triggers a Habitat build and promotion.
       # Also note that the version of pwsh is determined by which assemblies the dll was
       # built with. To update powershell, those dependencies must be bumped.
-      @dll ||= Dir.glob("#{RbConfig::CONFIG["bindir"]}/**/Chef.PowerShell.Wrapper.dll").last
+      @dll ||= Dir.glob("#{RbConfig::CONFIG["bindir"]}/../**/Chef.PowerShell.Wrapper.dll").last
     end
   end
 end
