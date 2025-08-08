@@ -30,6 +30,11 @@ if(-not ($installed_version -match ('^2'))){
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
+# making sure we find the dlls from chef powershell
+$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
+$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
+$env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
+
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
     "Integration"   {[string[]]$RakeTest = "spec:integration"; break}
