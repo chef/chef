@@ -75,7 +75,18 @@ build do
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
-  copy "Gemfile.aix.lock", "Gemfile.lock", remove_destination: true if aix?
+  if aix?
+    log "Copying Gemfile.aix.lock to Gemfile.lock for AIX build"
+    copy "Gemfile.aix.lock", "Gemfile.lock", remove_destination: true
+    block "Verify Gemfile.lock exists after copy" do
+      if File.exist?("Gemfile.lock")
+        log.info("Gemfile.lock successfully copied for AIX build")
+      else
+        log.warn("Gemfile.lock was NOT copied for AIX build!")
+      end
+    end
+  end
+
   bundle "config set --local without docgen chefstyle development test", env: env
   bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
   ruby "post-bundle-install.rb", env: env
