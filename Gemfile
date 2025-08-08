@@ -29,8 +29,12 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", ">= 5", "< 6" # need to provide the binaries for inspec
   gem "chef-vault"
+  if RUBY_PLATFORM.include?("aix")
+    gem "inspec-core-bin", ">= 5", "<= 5.22.80"
+  else
+    gem "inspec-core-bin", ">= 5", "< 6"
+  end
 end
 
 group(:omnibus_package, :pry) do
