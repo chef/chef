@@ -75,22 +75,3 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into Gemfile.local
 eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
-
-# These lines added for Windows development only.
-# For FFI to call into PowerShell we need the binaries and assemblies located
-# in the Ruby bindir.
-# The Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
-# Every merge into that repo triggers a Habitat build and promotion. Running
-# the rake :update_chef_exec_dll task in this (chef/chef) repo will pull down
-# the built packages and copy the binaries to distro/ruby_bin_folder.
-#
-# We copy (and overwrite) these files every time "bundle <exec|install>" is
-# executed, just in case they have changed.
-if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-  instance_eval do
-    ruby_exe_dir = RbConfig::CONFIG["bindir"]
-    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
-    FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
-    ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
-  end
-end
