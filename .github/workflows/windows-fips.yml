@@ -1,5 +1,5 @@
 ---
-name: kitchen-fips
+name: windows-fips
 
 "on":
   pull_request:
@@ -8,7 +8,7 @@ name: kitchen-fips
       - main
 
 concurrency:
-  group: kitchen-fips-${{ github.ref }}
+  group: windows-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
