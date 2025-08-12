@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.64 -->
-## [v19.1.64](https://github.com/chef/chef/tree/v19.1.64) (2025-08-12)
+<!-- latest_release 19.1.65 -->
+## [v19.1.65](https://github.com/chef/chef/tree/v19.1.65) (2025-08-12)
 
 #### Merged Pull Requests
-- Add &#39;check-all-checks&#39; check [#14925](https://github.com/chef/chef/pull/14925) ([jaymzh](https://github.com/jaymzh))
+- Add test for #14369 [#14882](https://github.com/chef/chef/pull/14882) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add test for #14369 [#14882](https://github.com/chef/chef/pull/14882) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.65 -->
 - Add &#39;check-all-checks&#39; check [#14925](https://github.com/chef/chef/pull/14925) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.64 -->
 - Bump openssl gem to 3.3.0 to appease the kitchen-tests for now [#15193](https://github.com/chef/chef/pull/15193) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.63 -->
 - Bump berkshelf from 8.0.9 to 8.0.22 in /omnibus [#15123](https://github.com/chef/chef/pull/15123) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.62 -->
