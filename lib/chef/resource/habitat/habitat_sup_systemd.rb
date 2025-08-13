@@ -33,13 +33,13 @@ class Chef
         service_environment.push("HAB_SUP_GATEWAY_AUTH_TOKEN=#{new_resource.gateway_auth_token}") if new_resource.gateway_auth_token
         systemd_unit "hab-sup.service" do
           content(Unit: {
-                    Description: "The Habitat Supervisor",
+                    Description: "The #{ChefUtils::Dist::Habitat::PRODUCT} Supervisor",
                   },
                   Service: {
                     LimitNOFILE: new_resource.limit_no_files,
                     Environment: service_environment,
-                    ExecStart: "/bin/hab sup run #{exec_start_options}",
-                    ExecStop: "/bin/hab sup term",
+                    ExecStart: "/bin/#{ChefUtils::Dist::Habitat::EXEC} sup run #{exec_start_options}",
+                    ExecStop: "/bin/#{ChefUtils::Dist::Habitat::EXEC} sup term",
                     Restart: "on-failure",
                   }.compact,
                   Install: {
