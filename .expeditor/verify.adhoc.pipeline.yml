@@ -8,15 +8,11 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - commands:
-      - whoami
-      - echo $HOME
-      - env | sort
-      - ls -la $HOME/.rbenv
-      - export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-      - eval "$(rbenv init - bash)"
-      - which ruby
+  - label: ":pipeline: Upload"
+    commands:
       - ruby -v
       - chmod +x .buildkite/validate-adhoc.rb
       - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
-    label: ":pipeline: Upload"
+    plugins:
+      - docker#v5.3.0:
+          image: ruby:3.4
