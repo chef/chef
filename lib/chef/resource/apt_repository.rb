@@ -565,7 +565,12 @@ class Chef
 
         signed_by = new_resource.signed_by
         if signed_by == true
-          signed_by = keyring_path
+          if new_resource.key || ::File.exist?(keyring_path)
+            signed_by = keyring_path
+          else
+            # There isn't a key to use, so don't set the signed-by attribute
+            signed_by = false
+          end
         end
 
         repo = build_repo(
