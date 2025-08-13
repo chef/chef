@@ -1,3 +1,4 @@
+
 ---
 expeditor:
   defaults:
@@ -8,14 +9,9 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - commands:
-      - RBENV_DIR="$(rbenv root 2>/dev/null || echo "$HOME/.rbenv")"
-      - echo "Using rbenv from: $RBENV_DIR"
-      - export PATH="$RBENV_DIR/bin:$RBENV_DIR/shims:$PATH"
-      - eval "$(rbenv init - bash)"
-      - which ruby
-      - ruby -v
-      - which buildkite-agent
+  - label: ":pipeline: Upload"
+    commands:
+      - export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+      - eval "$(rbenv init -)"
       - chmod +x .buildkite/validate-adhoc.rb
-      - ruby .buildkite/validate-adhoc.rb | "$(command -v buildkite-agent)" pipeline upload
-    label: ":pipeline: Upload"
+      - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
