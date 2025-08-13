@@ -161,8 +161,9 @@ do_after() {
   find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
       | while read spec_dir; do rm -r "$spec_dir"; done
 
-  build_line "Removing rbs and typeprof"
-  gem uninstall --force -x --all rbs typeprof
+  build_line "Inspect rbs and typeprof"
+  gem info rbs
+  gem info typeprof
 
   # we need the built gems outside of the studio
   build_line "Copying gems to ${SRC_PATH}"
