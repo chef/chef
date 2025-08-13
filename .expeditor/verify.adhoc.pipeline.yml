@@ -12,11 +12,8 @@ steps:
   - label: ":pipeline: Upload"
     commands:
       - whoami
-      # Use absolute paths and safe rbenv init
-      - export RBENV_ROOT="/home/ec2-user/.rbenv"
-      - export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
-      - eval "$($RBENV_ROOT/bin/rbenv init -)"
       - which ruby
       - ruby --version
+      - chomd +x .buildkite/hooks/environment
       - chmod +x .buildkite/validate-adhoc.rb
       - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload

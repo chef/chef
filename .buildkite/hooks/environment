@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Set up rbenv for Buildkite jobs
+export RBENV_ROOT="/home/ec2-user/.rbenv"
+export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+
+# Initialize rbenv
+if [ -x "$RBENV_ROOT/bin/rbenv" ]; then
+  eval "$($RBENV_ROOT/bin/rbenv init -)"
+fi
