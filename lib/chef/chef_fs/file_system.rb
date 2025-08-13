@@ -446,7 +446,8 @@ class Chef
         def create_cookbook_status_file(src_entry, dest_entry)
           if src_entry.is_a?(Chef::ChefFS::FileSystem::ChefServer::CookbookDir)
             status_file = dest_entry.child("status.json")
-            status_file.write({ "frozen": src_entry.cookbook_frozen? }.to_json)
+            frozen_status = src_entry.cookbook_frozen? || false
+            status_file.write({ "frozen": frozen_status }.to_json)
           end
         end
       end
