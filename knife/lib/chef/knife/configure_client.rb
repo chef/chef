@@ -39,7 +39,7 @@ class Chef
         end
         ui.info("Writing validation.pem")
         File.open(File.join(@config_dir, "validation.pem"), "w") do |validation|
-          validation.puts(IO.read(Chef::Config[:validation_key]))
+          validation.puts(File.read(Chef::Config[:validation_key]))
         end
       end
 
