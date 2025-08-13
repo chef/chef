@@ -312,6 +312,7 @@ class Chef
                     new_dest_parent.create_child_from(src_entry)
                     ui.output "Created #{dest_path}" if ui
                   end
+                  create_cookbook_status_file(src_entry, dest_entry)
                   return
                 end
 
@@ -331,6 +332,7 @@ class Chef
                       error ||= child_error
                     end
                   end
+                  create_cookbook_status_file(src_entry, new_dest_dir)
                 else
                   if options[:dry_run]
                     ui.output "Would create #{dest_path}" if ui
@@ -355,6 +357,7 @@ class Chef
                     ui.output "Updated #{dest_path}" if ui
                   end
                 end
+                create_cookbook_status_file(src_entry, dest_entry)
                 return
               end
 
@@ -368,6 +371,7 @@ class Chef
                       error ||= child_error
                     end
                   end
+                  create_cookbook_status_file(src_entry, dest_entry)
                 else
                   # If they are different types.
                   ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n") if ui
@@ -439,6 +443,12 @@ class Chef
           parent
         end
 
+        def create_cookbook_status_file(src_entry, dest_entry)
+          if src_entry.is_a?(Chef::ChefFS::FileSystem::ChefServer::CookbookDir)
+            status_file = dest_entry.child("status.json")
+            status_file.write({ "frozen": src_entry.cookbook_frozen? }.to_json)
+          end
+        end
       end
     end
   end
