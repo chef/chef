@@ -12,8 +12,10 @@ steps:
   - label: ":pipeline: Upload"
     commands:
       - whoami
-      - export PATH="/home/ec2-user/.rbenv/bin:/home/ec2-user/.rbenv/shims:$PATH"
-      - eval "$(/home/ec2-user/.rbenv/bin/rbenv init -)"
+      # Use absolute paths and safe rbenv init
+      - export RBENV_ROOT="/home/ec2-user/.rbenv"
+      - export PATH="$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH"
+      - eval "$($RBENV_ROOT/bin/rbenv init -)"
       - which ruby
       - ruby --version
       - chmod +x .buildkite/validate-adhoc.rb
