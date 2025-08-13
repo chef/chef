@@ -9,8 +9,14 @@ expeditor:
 
 steps:
   - commands:
-      - chmod +x .buildkite/validate-adhoc.rb
+      - whoami
+      - echo $HOME
+      - env | sort
+      - ls -la $HOME/.rbenv
       - export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
       - eval "$(rbenv init - bash)"
+      - which ruby
+      - ruby -v
+      - chmod +x .buildkite/validate-adhoc.rb
       - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
     label: ":pipeline: Upload"
