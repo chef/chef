@@ -10,5 +10,6 @@ expeditor:
 steps:
   - commands:
       - chmod +x .buildkite/validate-adhoc.rb
+      - export PATH="$HOME/.rbenv/shims:$PATH"
       - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
     label: ":pipeline: Upload"
