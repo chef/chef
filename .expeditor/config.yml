@@ -60,23 +60,6 @@ pipelines:
       trigger: default
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
-  # - omnibus/release:
-  #     env:
-  #       - IGNORE_CACHE: true # caching causes constant build failures
-  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  - omnibus/adhoc:
-      definition: .expeditor/release.omnibus.yml
-      env:
-        - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  # the adhoc-canary pipeline is used to test new omnibus workers
-  - omnibus/adhoc-canary:
-      canary: true
-      definition: .expeditor/adhoc-canary.omnibus.yml
-      env:
-        - ADHOC: true
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
