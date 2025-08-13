@@ -8,11 +8,12 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - label: ":pipeline: Upload"
-    commands:
-      - ruby -v
-      - chmod +x .buildkite/validate-adhoc.rb
-      - ruby .buildkite/validate-adhoc.rb
-    plugins:
-      - docker#v5.3.0:
-          image: ruby:3.4
+  - commands:
+      - sudo -u buildkite-agent -i bash -c '
+          export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+          eval "$(rbenv init - bash)"
+          ruby -v
+          chmod +x .buildkite/validate-adhoc.rb
+          ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
+        '
+    label: ":pipeline: Upload"
