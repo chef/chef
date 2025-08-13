@@ -12,7 +12,7 @@ steps:
     commands:
       - ruby -v
       - chmod +x .buildkite/validate-adhoc.rb
-      - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
+      - ruby .buildkite/validate-adhoc.rb
     plugins:
       - docker#v5.3.0:
           image: ruby:3.4
