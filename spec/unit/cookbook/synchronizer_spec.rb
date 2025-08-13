@@ -217,7 +217,8 @@ describe Chef::CookbookSynchronizer do
       path: "/tmp/cookbook_a_template_default_tempfile")
   end
 
-  let(:root) { windows? ? "C:/file-cache/cookbooks/cookbook_a" : "/file-cache/cookbooks/cookbook_a" }
+  let(:drive) { ENV["CHEF_GITHUB_ACTIONS"] ? "D:" : "C:" }
+  let(:root) { windows? ? "#{drive}/file-cache/cookbooks/cookbook_a" : "/file-cache/cookbooks/cookbook_a" }
 
   def setup_common_files_missing_expectations
     # Files are not in the cache:
@@ -449,7 +450,12 @@ describe Chef::CookbookSynchronizer do
         let(:no_lazy_load) { false }
 
         it "fetches eagerly loaded files" do
-          synchronizer.sync_cookbooks
+          begin
+            synchronizer.sync_cookbooks
+          rescue
+            p server_api
+            p file_cache
+          end
         end
 
         it "does not fetch templates or cookbook files" do
