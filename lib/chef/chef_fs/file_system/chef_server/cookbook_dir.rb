@@ -204,6 +204,10 @@ class Chef
               end
             end
           end
+
+          def cookbook_frozen?
+            @frozen ||= (chef_object&.frozen_version? || false)
+          end
         end
       end
     end
