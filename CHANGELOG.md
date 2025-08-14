@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.10 -->
-## [v18.8.10](https://github.com/chef/chef/tree/v18.8.10) (2025-08-12)
+<!-- latest_release 18.8.11 -->
+## [v18.8.11](https://github.com/chef/chef/tree/v18.8.11) (2025-08-14)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `692cba6` to `a94ba5e` in /omnibus [#15200](https://github.com/chef/chef/pull/15200) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Disable AIX in build to not overwrite gem [#15210](https://github.com/chef/chef/pull/15210) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.9 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable AIX in build to not overwrite gem [#15210](https://github.com/chef/chef/pull/15210) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.11 -->
 - Bump omnibus-software from `692cba6` to `a94ba5e` in /omnibus [#15200](https://github.com/chef/chef/pull/15200) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.8.10 -->
 <!-- release_rollup -->
 
