@@ -13,5 +13,4 @@ steps:
     commands:
       - curl -L https://rvm.io/binaries/amazon/2/x86_64/ruby-3.1.3.tar.bz2 | tar xj -C /tmp
       - /tmp/ruby-3.1.3/bin/ruby -v
-      - chmod +x .buildkite/validate-adhoc.rb
       - /tmp/ruby-3.1.3/bin/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
