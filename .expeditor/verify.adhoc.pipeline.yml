@@ -17,4 +17,5 @@ steps:
       - make -j"$(nproc)"
       - make install
       - /tmp/ruby-3.4.2-install/bin/ruby -v
+      - cd ../..
       - /tmp/ruby-3.4.2-install/bin/ruby /.buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
