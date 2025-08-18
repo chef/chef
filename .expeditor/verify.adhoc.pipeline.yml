@@ -13,8 +13,9 @@ steps:
     commands:
       - curl -sSL https://cache.ruby-lang.org/pub/ruby/3.4/ruby-3.4.2.tar.xz | tar -xJ -C /tmp
       - cd /tmp/ruby-3.4.2
-      - ./configure --prefix=/tmp/ruby-3.4.2
-      - make -j$(nproc) && make install
-      - /tmp/ruby-3.4.2/bin/ruby -v
+      - ./configure --prefix=/tmp/ruby-3.4.2-install
+      - make -j"$(nproc)"
+      - make install
+      - /tmp/ruby-3.4.2-install/bin/ruby -v
       - chmod +x .buildkite/validate-adhoc.rb
-      - /tmp/ruby-3.4.2/bin/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
+      - /tmp/ruby-3.4.2-install/bin/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
