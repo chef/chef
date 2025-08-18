@@ -17,6 +17,7 @@ steps:
       - make -j"$(nproc)"
       - make install
       - /tmp/ruby-3.4.2-install/bin/ruby -v
-      - cd "$BUILDKITE_BUILD_CHECKOUT_PATH"   # go back to repo root
+      - cd ../.. # go back to repo root
+      - pwd # check current directory
       - chmod +x .buildkite/validate-adhoc.rb
       - /tmp/ruby-3.4.2-install/bin/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
