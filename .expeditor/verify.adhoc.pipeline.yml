@@ -9,7 +9,7 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - label: "pipeline: Upload"
+  - label: ":pipeline: Upload"
     commands:
       - curl -sSL https://cache.ruby-lang.org/pub/ruby/3.4/ruby-3.4.2.tar.xz | tar -xJ -C /tmp
       - cd /tmp/ruby-3.4.2
