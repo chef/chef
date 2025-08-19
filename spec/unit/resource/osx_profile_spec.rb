@@ -97,7 +97,7 @@ describe Chef::Resource::OsxProfile do
           "ProfileOrganization" => "Chef",
           "ProfileRemovalDisallowed" => "false",
           "ProfileType" => "Configuration",
-          "ProfileUUID" => "6e95927c-f200-54b4-85c7-52ab99b61c47",
+          "ProfileUUID" => "a5c6e966-635c-5cbd-9e0c-306f4df24f28",
           "ProfileVerificationState" => "unsigned",
           "ProfileVersion" => 1 }],
       }
