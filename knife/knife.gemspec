@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   # disabling this until we get get it to compile on RHEL 7
   # s.add_dependency "x25519", ">= 1.0.9" # ed25519 KEX module. 1.0.9+ required to resolve sigill failures
   s.add_dependency "highline", ">= 1.6.9", "< 3" # Used in UI to present a list, no other usage.
+  s.add_dependency "abbrev"
 
   s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
   s.add_dependency "tty-screen", "~> 0.6" # knife list
