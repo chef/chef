@@ -31,7 +31,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-amazon-2:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-amazon-2:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -46,7 +46,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-centos-7:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-centos-7:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -61,7 +61,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-rhel-9:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-rhel-9:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -76,7 +76,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-debian-9:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-debian-9:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -91,7 +91,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-debian-10:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-debian-10:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -106,7 +106,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-debian-11:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-debian-11:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -121,7 +121,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-ubuntu-2004:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-ubuntu-2004:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -136,7 +136,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-ubuntu-2204:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-ubuntu-2204:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -151,7 +151,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-rocky-8:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-rocky-8:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -166,7 +166,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-rocky-9:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-rocky-9:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -181,7 +181,7 @@ steps:
     agents: { queue: "default-privileged" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-amazon-2023:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-amazon-2023:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -197,7 +197,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-centos-7-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-centos-7-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -213,7 +213,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-amazon-2-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-amazon-2-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -229,7 +229,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-rhel-9-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-rhel-9-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -245,7 +245,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-ubuntu-1804-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-ubuntu-1804-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -261,7 +261,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-ubuntu-2004-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-ubuntu-2004-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -277,7 +277,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-ubuntu-2204-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-ubuntu-2204-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
@@ -293,7 +293,7 @@ steps:
     agents: { queue: "docker-linux-arm64" }
     plugins:
       docker#v3.5.0:
-        image: "chef/omnibus-toolchain-amazon-2023-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        image: "chefes/omnibus-toolchain-amazon-2023-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
         privileged: true
         propagate-environment: true
         environment: [ HAB_AUTH_TOKEN ]
