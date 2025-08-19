@@ -70,8 +70,7 @@ begin
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
   require "ffi-libarchive" unless defined?(Archive::Reader)
 rescue LoadError => e
-  STDERR.puts "ffi-libarchive could not be loaded: #{e.message}"
-  STDERR.puts "libarchive is probably not installed on system, archive_file will not be available"
+  STDERR.puts "ffi-libarchive could not be loaded. libarchive is probably not installed on system, archive_file will not be available"
 end
 
 class Chef
