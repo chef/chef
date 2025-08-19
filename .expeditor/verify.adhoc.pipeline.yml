@@ -8,9 +8,295 @@ expeditor:
           limit: 1
       timeout_in_minutes: 60
 
+env:
+  BUILD_TIMESTAMP: "${BUILDKITE_BUILD_CREATED_AT}"
+
 steps:
-  - label: ":pipeline: Upload"
+  # Habitat build step if pipeline slug matches
+  - label: ":habicat::linux: Building Habitat package"
     commands:
-      - chmod +x install-ruby-installation-for-adhoc.sh
-      - ./install-ruby-installation-for-adhoc.sh
-      - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
+      - sudo -E ./.expeditor/scripts/chef_adhoc_build.sh
+    agents:
+      queue: "default-privileged"
+    if: build.env("BUILDKITE_PIPELINE_SLUG") == "chef-chef-main-validate-adhoc"
+
+  - wait
+
+  # Linux targets
+  - label: ":mage::docker:amazon-2"
+    key: "validate-amazon-2"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-amazon-2:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:centos-7"
+    key: "validate-centos-7"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-centos-7:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:rhel-9"
+    key: "validate-rhel-9"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-rhel-9:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:debian-9"
+    key: "validate-debian-9"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-debian-9:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:debian-10"
+    key: "validate-debian-10"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-debian-10:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:debian-11"
+    key: "validate-debian-11"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-debian-11:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:ubuntu-2004"
+    key: "validate-ubuntu-2004"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-ubuntu-2004:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:ubuntu-2204"
+    key: "validate-ubuntu-2204"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-ubuntu-2204:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:rocky-8"
+    key: "validate-rocky-8"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-rocky-8:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:rocky-9"
+    key: "validate-rocky-9"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-rocky-9:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  - label: ":mage::docker:amazon-2023"
+    key: "validate-amazon-2023"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "default-privileged" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-amazon-2023:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+
+  # ARM targets (conditional on ARM_ENABLED=1)
+  - label: ":mage::docker:centos-7-arm"
+    key: "validate-centos-7-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-centos-7-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
+
+  - label: ":mage::docker:amazon-2-arm"
+    key: "validate-amazon-2-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-amazon-2-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
+
+  - label: ":mage::docker:rhel-9-arm"
+    key: "validate-rhel-9-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-rhel-9-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
+
+  - label: ":mage::docker:ubuntu-1804-arm"
+    key: "validate-ubuntu-1804-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-ubuntu-1804-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
+
+  - label: ":mage::docker:ubuntu-2004-arm"
+    key: "validate-ubuntu-2004-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-ubuntu-2004-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
+
+  - label: ":mage::docker:ubuntu-2204-arm"
+    key: "validate-ubuntu-2204-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-ubuntu-2204-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
+
+  - label: ":mage::docker:amazon-2023-arm"
+    key: "validate-amazon-2023-arm"
+    retry: { automatic: { limit: 1 } }
+    agents: { queue: "docker-linux-arm64" }
+    plugins:
+      docker#v3.5.0:
+        image: "chef/omnibus-toolchain-amazon-2023-arm:${OMNIBUS_TOOLCHAIN_VERSION}"
+        privileged: true
+        propagate-environment: true
+        environment: [ HAB_AUTH_TOKEN ]
+    commands:
+      - sudo ./.expeditor/scripts/install-hab.sh <arm>
+      - ./.expeditor/scripts/validate_adhoc_build.sh
+    timeout_in_minutes: 120
+    if: build.env("ARM_ENABLED") == "1"
