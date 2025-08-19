@@ -10,6 +10,8 @@ expeditor:
 
 env:
   BUILD_TIMESTAMP: "${BUILDKITE_BUILD_CREATED_AT}"
+  OMNIBUS_TOOLCHAIN_VERSION: "latest"
+  ARM_ENABLED: "1"
 
 steps:
   # Habitat build step if pipeline slug matches
