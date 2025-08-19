@@ -1,17 +1,25 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.58 -->
-## [v19.1.58](https://github.com/chef/chef/tree/v19.1.58) (2025-07-22)
+<!-- latest_release 19.1.66 -->
+## [v19.1.66](https://github.com/chef/chef/tree/v19.1.66) (2025-08-19)
 
 #### Merged Pull Requests
-- Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix ffi-libarchive load error from habitat package on windows [#15149](https://github.com/chef/chef/pull/15149) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix ffi-libarchive load error from habitat package on windows [#15149](https://github.com/chef/chef/pull/15149) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.66 -->
+- Add test for #14369 [#14882](https://github.com/chef/chef/pull/14882) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.65 -->
+- Add &#39;check-all-checks&#39; check [#14925](https://github.com/chef/chef/pull/14925) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.64 -->
+- Bump openssl gem to 3.3.0 to appease the kitchen-tests for now [#15193](https://github.com/chef/chef/pull/15193) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.63 -->
+- Bump berkshelf from 8.0.9 to 8.0.22 in /omnibus [#15123](https://github.com/chef/chef/pull/15123) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.62 -->
+- Updating chef-zero [#15167](https://github.com/chef/chef/pull/15167) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.61 -->
+- Fix docker build pipeline which needs HAB_AUTH_TOKEN [#15157](https://github.com/chef/chef/pull/15157) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.60 -->
+- temporarily pin berkshelf in verify [#15158](https://github.com/chef/chef/pull/15158) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.59 -->
 - Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.58 -->
 - Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.57 -->
 - Add support for secrets in credentials file [#15064](https://github.com/chef/chef/pull/15064) ([thheinen](https://github.com/thheinen)) <!-- 19.1.56 -->

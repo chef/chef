@@ -16,6 +16,7 @@ $pkg_bin_dirs=@(
 $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
+  "core/zlib"
   "core/libarchive"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
@@ -45,7 +46,9 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
 }
 
 function Invoke-Download() {
@@ -146,7 +149,7 @@ function Invoke-Build {
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
