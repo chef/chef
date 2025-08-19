@@ -18,6 +18,7 @@ steps:
       - make install
       - /tmp/ruby-3.4.2-install/bin/ruby -v
       - pwd
+      - cd "$BUILDKITE_BUILD_CHECKOUT_PATH"
       - ls -la .buildkite
       - cd "$BUILDKITE_BUILD_CHECKOUT_PATH"
-      - /tmp/ruby-3.4.2-install/bin/ruby /.buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
+      - /tmp/ruby-3.4.2-install/bin/ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
