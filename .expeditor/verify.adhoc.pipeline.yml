@@ -11,16 +11,4 @@ expeditor:
 steps:
   - label: ":pipeline: Upload"
     commands:
-      - sudo cp -r /home/ec2-user/.rbenv /home/buildkite-agent/
-      - sudo chown -R buildkite-agent:buildkite-agent /home/buildkite-agent/.rbenv
-      - sudo chmod -R 755 /home/buildkite-agent/.rbenv
-      - sudo chmod +x /home/buildkite-agent/.rbenv/shims/ruby
-      - sudo ln -s /home/buildkite-agent/.rbenv/shims/ruby /home/ec2-user/.rbenv/shims/ruby
-      - sudo chown -R buildkite-agent:buildkite-agent /home/ec2-user/.rbenv/shims/ruby
-      - sudo chmod +x /home/ec2-user/.rbenv/shims/ruby
-      - sudo chmod +x /home/ec2-user/.rbenv/bin/rbenv
-      - sudo chown -R buildkite-agent:buildkite-agent /home/ec2-user/.rbenv/bin/rbenv
-      - sudo chmod +x /home/ec2-user/.rbenv/bin/rbenv
-      - sudo chmod +x /home/ec2-user/.rbenv/shims/ruby
-      - sudo chown -R buildkite-agent:buildkite-agent /home/ec2-user/.rbenv/shims/ruby
       - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
