@@ -131,6 +131,11 @@ $p = $env:PATH
 $env:PATH = $null
 $env:Path = $p
 
+# making sure we find the dlls from chef powershell in the tests.
+$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
+$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
+$env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
+
 # Running the specs separately fixes an edge case on 2012R2-i386 where the desktop heap's
 # allocated limit is hit and any test's attempt to create a new process is met with
 # exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
