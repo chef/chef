@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.13 -->
-## [v18.8.13](https://github.com/chef/chef/tree/v18.8.13) (2025-08-18)
+<!-- latest_release 18.8.14 -->
+## [v18.8.14](https://github.com/chef/chef/tree/v18.8.14) (2025-08-20)
 
 #### Merged Pull Requests
-- Updated the chef dep of knife [#15211](https://github.com/chef/chef/pull/15211) ([ashiqueps](https://github.com/ashiqueps))
+- remove old dlls  [#15190](https://github.com/chef/chef/pull/15190) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove old dlls  [#15190](https://github.com/chef/chef/pull/15190) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.14 -->
 - Updated the chef dep of knife [#15211](https://github.com/chef/chef/pull/15211) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.13 -->
 - adding workflows for chef-18 [#15093](https://github.com/chef/chef/pull/15093) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.8.12 -->
 <!-- release_rollup -->
