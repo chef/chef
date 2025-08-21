@@ -11,4 +11,6 @@ expeditor:
 steps:
   - label: ":pipeline: Upload"
     commands:
+      - export RBENV_ROOT="/home/ec2-user/.rbenv"
+      - export PATH="/home/ec2-user/.rbenv/bin:/home/ec2-user/.rbenv/shims:$PATH"
       - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
