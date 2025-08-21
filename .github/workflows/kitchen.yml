@@ -16,7 +16,9 @@ defaults:
     working-directory: kitchen-tests
 
 jobs:
-  win_x86_64:
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing windows using community test-kitchen
+  win_x86_64(test-kitchen legacy):
     strategy:
       fail-fast: false
       matrix:
@@ -34,7 +36,9 @@ jobs:
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
-  mac_x86_64:
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing macos using community test-kitchen
+  mac_x86_64(test-kitchen legacy):
     strategy:
       fail-fast: false
       matrix:
@@ -54,7 +58,7 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
-  mac_arm64:
+  mac_arm64(test-kitchen legacy):
     strategy:
       fail-fast: false
       matrix:
@@ -75,7 +79,8 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
-  docr_lnx_x86_64:
+  # end-to-end recipe testing using test-kitchen-enterprise
+  docr_lnx_x86_64(test-kitchen-enterprise):
     strategy:
       fail-fast: false
       matrix:
@@ -103,11 +108,19 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+      - name: Install Habitat CLI
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash
+      - name: Build Habitat Package
+        run: |
+          cd chef/habitat
+          hab pkg build .
+          cp /hab/cache/artifacts/chef-infra-client-*.hart kitchen-tests/chef-infra-client-latest.hart
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing on linux VMs using community test-kitchen
   vm_lnx_x86_64:
     strategy:
       fail-fast: false
