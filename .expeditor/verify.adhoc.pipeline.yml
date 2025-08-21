@@ -9,9 +9,6 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - label: ":pipeline: Upload"
-    commands:
-      - export RBENV_ROOT="/home/ec2-user/.rbenv"
-      - export PATH="/home/ec2-user/.rbenv/bin:/home/ec2-user/.rbenv/shims:$PATH"
-      - eval "$(/home/ec2-user/.rbenv/bin/rbenv init -)"
-      - ruby .buildkite/validate-adhoc.rb | buildkite-agent pipeline upload
+  - commands:
+    - ./.buildkite/validate.adhoc.pipeline.sh
+    label: ":pipeline: Upload"
