@@ -15,7 +15,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "--- Installing $PKG_ARTIFACT"
-sudo hab pkg install $PKG_ARTIFACT
+sudo hab pkg install $PKG_ARTIFACT --auth $HAB_AUTH_TOKEN --binlink
 
 pkg_ident=$(hab pkg path ci/chef-infra-client | grep -oP 'ci/chef-infra-client/[0-9]+\.[0-9]+\.[0-9]+/[0-9]+')
 echo "--- Resolved package identifier: $pkg_ident, attempting to run tests"

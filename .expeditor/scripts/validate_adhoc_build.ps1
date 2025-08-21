@@ -11,7 +11,7 @@ $env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT")
 buildkite-agent artifact download "$env:PKG_ARTIFACT" .
 
 Write-Host "--- Installing $env:PKG_ARTIFACT"
-hab pkg install $env:PKG_ARTIFACT
+hab pkg install $env:PKG_ARTIFACT --auth $HAB_AUTH_TOKEN
 if (-not $?) { throw "Unable to install $env:PKG_ARTIFACT" }
 
 $pkgPath = hab pkg path chef/chef-infra-client
