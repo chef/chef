@@ -61,7 +61,7 @@ else
   # nightly pipeline, get package from unstable.
 end
 
-pipeline["steps"] << "wait: ~"
+pipeline["steps"] << { "wait" => nil }
 
 targets.each do |target|
   platform = target.split(":").first
@@ -133,5 +133,4 @@ targets.each do |target|
   pipeline["steps"] << step
 end
 
-puts "---"
 puts pipeline.to_yaml
