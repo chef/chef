@@ -12,4 +12,5 @@ steps:
   - label: ":pipeline: Upload adhoc"
     commands:
       - chmod +x .buildkite/validate-adhoc.rb
+      - chmod +x .buildkite/validate.adhoc.pipeline.sh
       - ./.buildkite/validate.adhoc.pipeline.sh
