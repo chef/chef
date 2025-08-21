@@ -16,6 +16,7 @@
 
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require_relative "helpers/path_helpers"
 
 class Chef
   class Resource
@@ -48,6 +49,8 @@ class Chef
       end
       ```
       DOC
+
+      extend Chef::ResourceHelpers::PathHelpers
 
       property :job_name, String,
         description: "The name of the system timer to create.",
@@ -87,7 +90,7 @@ class Chef
 
       property :chef_binary_path, String,
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
-        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
+        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path }
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
