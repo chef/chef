@@ -81,7 +81,7 @@ targets.each do |target|
       },
       "plugins" => {
         "docker#v3.5.0" => {
-          "image" => "chef/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "image" => "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
           "shell" => [
             "powershell",
             "-Command"
@@ -117,7 +117,7 @@ targets.each do |target|
       "agents" => agents,
       "plugins" => {
         "docker#v3.5.0" => {
-          "image" => "chef/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "image" => "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
           "privileged" => true,
           "propagate-environment" => true,
           "environment" => [
