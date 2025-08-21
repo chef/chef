@@ -61,7 +61,7 @@ else
   # nightly pipeline, get package from unstable.
 end
 
-#Proper wait step
+#Proper wait step..
 pipeline["steps"] << { "wait" => nil }
 
 targets.each do |target|
