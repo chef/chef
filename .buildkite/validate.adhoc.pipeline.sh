@@ -25,7 +25,4 @@ if [[ ! -f "$workdir/.buildkite/validate-adhoc.rb" ]]; then
 fi
 
 echo "--- Generating pipeline configuration.."
-/tmp/ruby-3.4.2-install/bin/ruby "$workdir/.buildkite/validate-adhoc.rb"
 /tmp/ruby-3.4.2-install/bin/ruby "$workdir/.buildkite/validate-adhoc.rb" | buildkite-agent pipeline upload
-/tmp/ruby-3.4.2-install/bin/ruby "$workdir/.buildkite/validate-adhoc.rb" > /tmp/adhoc-pipeline.yml
-buildkite-agent pipeline upload /tmp/adhoc-pipeline.yml
