@@ -11,4 +11,5 @@ expeditor:
 steps:
   - label: ":pipeline: Upload adhoc"
     commands:
+      - chmod +x .buildkite/validate-adhoc.rb
       - ./.buildkite/validate.adhoc.pipeline.sh
