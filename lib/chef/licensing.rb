@@ -6,8 +6,8 @@ class Chef
   class Licensing
     class << self
       def fetch_and_persist
-        if ENV["TEST_KITCHEN"]
-          puts "Temporarily bypassing licensing check in Kitchen"
+        if ENV["TEST_ENV"]
+          puts "Temporarily bypassing licensing check for tests"
         else
           Chef::Log.info "Fetching and persisting license..."
           license_keys = ChefLicensing.fetch_and_persist
@@ -24,8 +24,12 @@ class Chef
       end
 
       def check_software_entitlement!
-        Chef::Log.info "Checking software entitlement..."
-        ChefLicensing.check_software_entitlement!
+        if ENV["TEST_ENV"]
+          puts "Temporarily bypassing licensing check for tests"
+        else
+          Chef::Log.info "Checking software entitlement..."
+          ChefLicensing.check_software_entitlement!
+        end
       rescue ChefLicensing::SoftwareNotEntitled
         Chef::Log.error "License is not entitled to use Chef Infra."
         Chef::Application.exit! "License not entitled", 173 # 173 is the exit code for LICENSE_NOT_ENTITLED defined in lib/chef/application/exit_code.rb
@@ -35,10 +39,14 @@ class Chef
       end
 
       def check_software_entitlement_compliance_phase!
-        Chef::Log.info "Checking software entitlement for compliance phase..."
-        # set the chef_entitlement_id to the value for Compliance Phase entitlement (i.e. InSpec's entitlement ID)
-        ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::COMPLIANCE_ENTITLEMENT_ID
-        ChefLicensing.check_software_entitlement!
+        if ENV["TEST_ENV"]
+          puts "Temporarily bypassing licensing check for tests"
+        else
+          Chef::Log.info "Checking software entitlement for compliance phase..."
+          # set the chef_entitlement_id to the value for Compliance Phase entitlement (i.e. InSpec's entitlement ID)
+          ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::COMPLIANCE_ENTITLEMENT_ID
+          ChefLicensing.check_software_entitlement!
+        end
       rescue ChefLicensing::SoftwareNotEntitled
         raise EntitlementError, "License not entitled"
       rescue ChefLicensing::Error => e
