@@ -180,7 +180,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     end
 
     it "uses custom chef-client binary if set" do
-      r# Temporarily override the stubbed value for this test
+      # Temporarily override the stubbed value for this test
       allow(resource).to receive(:chef_binary_path).and_return("C:/foo/bar/chef-client")
       expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/foo/bar/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
