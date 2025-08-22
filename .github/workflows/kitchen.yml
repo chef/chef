@@ -19,7 +19,6 @@ jobs:
   # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
   # so we are testing windows using community test-kitchen
   win_x86_64:
-    name: win_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -40,7 +39,6 @@ jobs:
   # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
   # so we are testing macos using community test-kitchen
   mac_x86_64:
-    name: mac_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -61,7 +59,6 @@ jobs:
         run: kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
-    name: mac_arm64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
@@ -82,9 +79,8 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
-  # end-to-end recipe testing using test-kitchen-enterprise
+  # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
-    name: docr_lnx_x86_64(TKE)
     strategy:
       fail-fast: false
       matrix:
@@ -113,8 +109,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Install Habitat CLI
+        env:
+          HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
       - name: Build Habitat Package
         run: |
           cd chef/habitat
@@ -126,7 +126,6 @@ jobs:
   # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
   # so we are testing on linux VMs using community test-kitchen
   vm_lnx_x86_64:
-    name: vm_lnx_x86_64(test-kitchen legacy)
     strategy:
       fail-fast: false
       matrix:
