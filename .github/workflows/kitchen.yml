@@ -116,6 +116,7 @@ jobs:
           sudo hab license accept
           sudo hab --version
       - name: Build Habitat Package
+        working-directory: chef/habitat
         run: |
           cd chef/habitat
           hab pkg build .
