@@ -68,7 +68,11 @@ class Chef
       setup_application
       check_license_acceptance if enforce_license
       Context.switch_to_workstation_entitlement if Context.test_kitchen_context?
-      Chef::Licensing.fetch_and_persist if ChefUtils::Dist::Infra::EXEC == "chef"
+      if ENV["TEST_KITCHEN"]
+        puts "Temporarily bypassing licensing check for tests"
+      else
+        Chef::Licensing.fetch_and_persist if ChefUtils::Dist::Infra::EXEC == "chef"
+      end
       run_application
     end
 

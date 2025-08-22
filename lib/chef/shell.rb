@@ -65,9 +65,13 @@ module Shell
     parse_opts
     Chef::Config[:shell_config] = options.config
 
-    if ChefUtils::Dist::Infra::SHELL == "chef-shell"
-      Chef::Licensing.fetch_and_persist
-      Chef::Licensing.check_software_entitlement!
+    if ENV["TEST_KITCHEN"]
+      puts "Temporarily bypassing licensing check for tests"
+    else
+      if ChefUtils::Dist::Infra::SHELL == "chef-shell"
+        Chef::Licensing.fetch_and_persist
+        Chef::Licensing.check_software_entitlement!
+      end
     end
 
     # HACK: this duplicates the functions of IRB.start, but we have to do it
