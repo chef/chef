@@ -118,9 +118,8 @@ jobs:
       - name: Build Habitat Package
         working-directory: chef/habitat
         run: |
-          cd chef/habitat
           hab pkg build .
-          cp /hab/cache/artifacts/chef-infra-client-*.hart kitchen-tests/chef-infra-client-latest.hart
+          cp /hab/cache/artifacts/chef-infra-client-*.hart ../../kitchen-tests/chef-infra-client-latest.hart
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
