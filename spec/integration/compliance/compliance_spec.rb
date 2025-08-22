@@ -65,6 +65,8 @@ describe "chef-client with compliance phase" do
       result = shell_out!("#{chef_client} --local-mode --json-attributes #{path_to("attributes.json")}", cwd: chef_dir)
       result.error!
 
+      $stdout.puts File.read(report_file)
+
       inspec_report = JSON.parse(File.read(report_file))
       expect(inspec_report["profiles"].length).to eq(1)
 
