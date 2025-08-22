@@ -112,7 +112,7 @@ jobs:
         env:
           HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -c stable
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
           sudo hab license accept
           sudo hab --version
       - name: Build Habitat Package
