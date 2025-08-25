@@ -334,7 +334,6 @@ class Chef
               sensitive new_resource.sensitive
               action :create
               verify "gpg --homedir #{tmp_dir} %{path}"
-              notifies :delete, "file[#{keyfile_path}]", :immediately
               notifies :run, "execute[import #{keyfile_path}]", :immediately
             end
 
@@ -347,6 +346,7 @@ class Chef
 
             file keyfile_path do
               mode "0644"
+              notifies :run, "execute[import #{keyfile_path}]", :before unless ::File.exist?(keyfile_path)
             end
           else
             declare_resource(key_resource_type(key), keyfile_path) do
