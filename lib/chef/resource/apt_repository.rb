@@ -335,15 +335,14 @@ class Chef
               action :create
               verify "gpg --homedir #{tmp_dir} %{path}"
               notifies :delete, "file[#{keyfile_path}]", :immediately
-              notifies :run, "execute[dearmor #{keyfile_path}]", :immediately
+              notifies :run, "execute[import #{keyfile_path}]", :immediately
             end
 
-            execute "dearmor #{keyfile_path}" do
-              command [ "gpg", "--batch", "--yes", "--dearmor", "-o", keyfile_path, keyfile_tmp_path ]
+            execute "import #{keyfile_path}" do
+              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", keyfile_path, keyfile_tmp_path ]
               default_env true
               sensitive new_resource.sensitive
               action :nothing
-              only_if { !::File.exist?(keyfile_path) || ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
             end
 
             file keyfile_path do
