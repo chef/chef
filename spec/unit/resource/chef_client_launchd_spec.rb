@@ -24,6 +24,12 @@ describe Chef::Resource::ChefClientLaunchd do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::ChefClientLaunchd.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:enable) }
+  let(:chef_habitat_binary_path) { "/hab/pkgs/chef/chef-infra-client/19.2.7/20250122151044/bin/chef-client" }
+
+  before do
+    # Stub the chef_binary_path property to return the Habitat path
+    allow(resource).to receive(:chef_binary_path).and_return(chef_habitat_binary_path)
+  end
 
   it "sets the default action as :enable" do
     expect(resource.action).to eql([:enable])
@@ -49,7 +55,7 @@ describe Chef::Resource::ChefClientLaunchd do
   end
 
   it "builds a default value for chef_binary_path dist values" do
-    expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
+    expect(resource.chef_binary_path).to eql(chef_habitat_binary_path)
   end
 
   it "raises an error if interval is not a positive number" do
@@ -96,28 +102,28 @@ describe Chef::Resource::ChefClientLaunchd do
 
     it "creates a valid command if using all default properties" do
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /Library/Logs/Chef/client.log"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} -L /Library/Logs/Chef/client.log"
       )
     end
 
     it "adds custom daemon options from daemon_options property" do
       resource.daemon_options %w{foo bar}
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client foo bar -c #{root_path} -L /Library/Logs/Chef/client.log"
+        "/bin/sleep 123; #{chef_habitat_binary_path} foo bar -c #{root_path} -L /Library/Logs/Chef/client.log"
       )
     end
 
     it "adds license acceptance flags if the property is set" do
       resource.accept_chef_license true
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /Library/Logs/Chef/client.log --chef-license accept"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} -L /Library/Logs/Chef/client.log --chef-license accept"
       )
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb -L /Library/Logs/Chef/client.log"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c /etc/some_other_dir/client.rb -L /Library/Logs/Chef/client.log"
       )
     end
 
@@ -125,7 +131,7 @@ describe Chef::Resource::ChefClientLaunchd do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/my-chef/my-client.log"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} -L /var/log/my-chef/my-client.log"
       )
     end
   end
