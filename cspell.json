@@ -1646,7 +1646,6 @@
     "spec/**",
     "knife/spec/**",
     "docs_site",
-    "distro/ruby_bin_folder/**/*",
     "cspell.json",
     ".mailmap"
   ],
