@@ -16,6 +16,8 @@ defaults:
     working-directory: kitchen-tests
 
 jobs:
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing windows using community test-kitchen
   win_x86_64:
     strategy:
       fail-fast: false
@@ -34,6 +36,8 @@ jobs:
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing macos using community test-kitchen
   mac_x86_64:
     strategy:
       fail-fast: false
@@ -75,6 +79,7 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
+  # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
     strategy:
       fail-fast: false
@@ -103,11 +108,23 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+      - name: Install Habitat CLI
+        env:
+          HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+      - name: Build Habitat Package
+        working-directory: habitat
+        run: |
+          hab pkg build .
+          cp /hab/cache/artifacts/chef-infra-client-*.hart ../../kitchen-tests/chef-infra-client-latest.hart
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing on linux VMs using community test-kitchen
   vm_lnx_x86_64:
     strategy:
       fail-fast: false
