@@ -116,7 +116,7 @@ jobs:
           sudo hab license accept
           sudo hab --version
       - name: Build Habitat Package
-        working-directory: chef/habitat
+        working-directory: habitat
         run: |
           hab pkg build .
           cp /hab/cache/artifacts/chef-infra-client-*.hart ../../kitchen-tests/chef-infra-client-latest.hart
