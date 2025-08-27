@@ -32,10 +32,8 @@ end
 class RspecVersionString
   def self.rspec_version_string
     @rspec_version_string ||= begin
-                                stubs = Gem::SpecificationRecord.new(Gem::Specification.dirs).send(:installed_stubs, "rspec-core-*.gemspec")
-                                # stubs = Gem::Specification.send(:installed_stubs, Gem::Specification.dirs, "rspec-core-*.gemspec")
-                                stubs.select! { |stub| stub.name == "rspec-core" && Gem::Dependency.new("rspec-core", ">= 0").requirement.satisfied_by?(stub.version) }
-                                stubs.max_by(&:version).version.to_s
+                                specs = Gem::Specification.find_all_by_name("rspec-core", Gem::Dependency.new("rspec-core", ">= 0").requirement)
+                                specs.max_by(&:version).version.to_s
                               end
   end
 end
@@ -61,16 +59,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   it "determines the installed versions of gems from Gem.source_index" do
     gems = [gemspec("rspec-core", Gem::Version.new("1.2.9")), gemspec("rspec-core", Gem::Version.new("1.3.0"))]
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
-      spec_record_instance = instance_double(Gem::SpecificationRecord)
-      expect(spec_record_instance).to receive(:installed_stubs).with("rspec-core-*.gemspec").and_return(gems)
-      allow(@gem_env).to receive(:gem_specification_record).and_return(spec_record_instance)
-    elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
-      expect(Gem::Specification).to receive(:dirs).and_return(["/path/to/gems/specifications", "/another/path/to/gems/specifications"])
-      expect(Gem::Specification).to receive(:installed_stubs).with(["/path/to/gems/specifications", "/another/path/to/gems/specifications"], "rspec-core-*.gemspec").and_return(gems)
-    else # >= Rubygems 1.8 behavior
-      expect(Gem::Specification).to receive(:find_all_by_name).with("rspec-core", Gem::Dependency.new("rspec-core").requirement).and_return(gems)
-    end
+    expect(Gem::Specification).to receive(:find_all_by_name).with("rspec-core", Gem::Dependency.new("rspec-core").requirement).and_return(gems)
     expect(@gem_env.installed_versions(Gem::Dependency.new("rspec-core", nil))).to eq(gems)
   end
 
@@ -160,7 +149,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "latest_specs.4.8.gz")))
     end
 
-    it "finds a matching gem candidate version on rubygems 2.0.0+", skip_hab_test: true do
+    it "finds a matching gem candidate version on rubygems 2.0.0+" do
       stub_request(:get, "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
@@ -260,18 +249,8 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
   it "determines the installed versions of gems from the source index" do
     gems = [gemspec("rspec", Gem::Version.new("1.2.9")), gemspec("rspec", Gem::Version.new("1.3.0"))]
     rspec_dep = Gem::Dependency.new("rspec", nil)
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
-      spec_record_instance = instance_double(Gem::SpecificationRecord)
-      expect(spec_record_instance).to receive(:installed_stubs).with("rspec-*.gemspec").and_return(gems)
-      allow(@gem_env).to receive(:gem_specification_record).and_return(spec_record_instance)
-    elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
-      allow(@gem_env).to receive(:gem_specification).and_return(Gem::Specification)
-      expect(Gem::Specification).to receive(:dirs).and_return(["/path/to/gems/specifications", "/another/path/to/gems/specifications"])
-      expect(Gem::Specification).to receive(:installed_stubs).with(["/path/to/gems/specifications", "/another/path/to/gems/specifications"], "rspec-*.gemspec").and_return(gems)
-    else # >= rubygems 1.8 behavior
-      allow(@gem_env).to receive(:gem_specification).and_return(Gem::Specification)
-      expect(@gem_env.gem_specification).to receive(:find_all_by_name).with(rspec_dep.name, rspec_dep.requirement).and_return(gems)
-    end
+    allow(@gem_env).to receive(:gem_specification).and_return(Gem::Specification)
+    expect(@gem_env.gem_specification).to receive(:find_all_by_name).with(rspec_dep.name, rspec_dep.requirement).and_return(gems)
     expect(@gem_env.installed_versions(Gem::Dependency.new("rspec", nil))).to eq(gems)
   end
 

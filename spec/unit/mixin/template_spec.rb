@@ -251,7 +251,7 @@ describe Chef::Mixin::Template, "render_template" do
           def render_template_from_string; end
         end
         %w{node render render_template render_template_from_string}.each do |method_name|
-          expect(Chef::Log).to receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
+          expect(Chef::Log).to receive(:warn).with(/^Core template method '#{method_name}' overridden by extension module/)
         end
         @template_context._extend_modules([mod])
       end
