@@ -167,6 +167,10 @@ function Register-SmctlCertificates {
             Write-Output "--- Get Healthcheck Status"
             smctl healthcheck
             if ( -not $? ) { throw "Failed to get smctl healthcheck status" }
+
+            Write-Output "--- get SMCTL logs"
+            get-content C:\Users\$env:USERNAME\.signingmanager\logs\smctl.log
+            if (-not $?) { throw "Failed to get SMCTL logs" }
         }
         else {
             Write-Output "--- smksp_registrar unregister first"
