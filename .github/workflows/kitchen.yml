@@ -107,6 +107,7 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
       HAB_BLDR_CHANNEL: LTS-2024 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: LTS-2024 # Explicitly set the refresh channel
     steps:
       - name: Check out code
         uses: actions/checkout@v4
