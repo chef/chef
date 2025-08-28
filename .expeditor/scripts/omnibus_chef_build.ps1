@@ -166,6 +166,8 @@ function Register-SmctlCertificates {
             Write-Output "--- smksp_registrar unregister first"
             smksp_registrar.exe remove
             if ( -not $? ) { throw "Failed to remove DigiCert Signing Manager and Trust Manager KSP" }
+
+            smctl healthcheck
             
             Write-Output "--- smksp_registrar sync certs before chef install"
             smksp_registrar.exe register
