@@ -87,7 +87,6 @@ property :time_out, Hash,
     end
   }
 
-
 # Convert weekday input value into crontab format that
 # could be written in the crontab
 # @return [Integer, String] A weekday formed as per the user inputs.
