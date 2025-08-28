@@ -135,7 +135,8 @@ function Set-SmctlCredentials {
         $env:SM_CLIENT_CERT_FILE = "c:\digicert\certificate_pkcs12.p12"
         $env:SM_CLIENT_CERT_PASSWORD_FILE = ${SM_CLIENT_CERT_PASSWORD_VALUE}
         
-        smctl credentials save ${SM_API_KEY_VALUE} ${SM_CLIENT_CERT_PASSWORD_VALUE}
+        # smctl credentials save ${SM_API_KEY_VALUE} ${SM_CLIENT_CERT_PASSWORD_VALUE}
+        $env:SM_CLIENT_CERT_PASSWORD = ${SM_CLIENT_CERT_PASSWORD_VALUE}
         if ( -not $? ) { throw "Failed to save smctl credentials" }
     }
     catch {
