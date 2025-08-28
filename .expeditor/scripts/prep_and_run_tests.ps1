@@ -30,17 +30,17 @@ if(-not ($installed_version -match ('^2'))){
     }
 }
 
-Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
-hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
+Write-Output "--- Installing chef/ruby31-plus-devkit/3.4.2 via Habitat"
+hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
-$ruby_dir = & hab pkg path chef/ruby31-plus-devkit/3.1.6
+$ruby_dir = & hab pkg path core/ruby3_4-plus-devkit
 
 Write-Output "--- Installing OpenSSL via Habitat"
-hab pkg install core/openssl/3.0.9 --channel LTS-2024 --binlink --force
+hab pkg install core/openssl/3.2.4 --channel base-2025-07-07-2025 --binlink --force
 if (-not $?) { throw "Could not install OpenSSL via Habitat." }
 
 # Set $openssl_dir to Habitat OpenSSL package installation path
-$openssl_dir = & hab pkg path core/openssl/3.0.9
+$openssl_dir = & hab pkg path core/openssl/3.2.4
 if (-not $openssl_dir) { throw "Could not determine core/openssl installation directory." }
 
 hab pkg install core/cacerts --channel LTS-2024
