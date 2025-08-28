@@ -102,8 +102,8 @@ function Get-SmctlCertificate {
         $file = Get-ChildItem -Path "c:\digicert\certificate_pkcs12.p12"
         if ( -not $? ) { throw "Failed to get certificate file" }
 
-        if ($file.Length -eq 2902) {
-            Write-Output "Certificate file verified (length = 2902 bytes)"
+        if ($file.Length -eq 3682) {
+            Write-Output "Certificate file verified (length = 3682 bytes)"
         }
         else {
             throw "Certificate file has incorrect length: $($file.Length) bytes"
