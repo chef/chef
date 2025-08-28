@@ -58,7 +58,7 @@ $env:Path = "$openssl_dir\bin;$ruby_dir\bin;" + $env:Path
 
 Write-Output "Configure bundle to build openssl gem with $openssl_dir"
 bundle config build.openssl --with-openssl-dir=$openssl_dir
-gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir\include" --with-openssl-lib="$openssl_dir\lib"
+gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir\include" --with-openssl-lib="$openssl_dir\lib"
 
 Write-Output "OpenSSL directory: $openssl_dir"
 Write-Output "PATH: $env:Path"
