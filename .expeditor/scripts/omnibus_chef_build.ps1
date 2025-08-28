@@ -164,7 +164,7 @@ function Register-SmctlCertificates {
 
             Write-Output "--- Get Healthcheck Status"
             smctl healthcheck
-            if ( -not $? ) { throw "Failed to get smctl healthcheck status"
+            if ( -not $? ) { throw "Failed to get smctl healthcheck status" }
         }
         else {
             Write-Output "--- smksp_registrar unregister first"
