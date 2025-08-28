@@ -123,7 +123,8 @@ jobs:
           hab origin key generate "$HAB_ORIGIN"
       - name: Build Habitat Package
         working-directory: habitat
-        PLAN_CONTEXT: .
+        env:
+          PLAN_CONTEXT: .
         run: |
           hab pkg build .
           cp /hab/cache/artifacts/chef-infra-client-*.hart ../../kitchen-tests/chef-infra-client-latest.hart
