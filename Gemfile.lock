@@ -24,6 +24,12 @@ GIT
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw-ucrt)
+      http-accept (>= 1.7.0, < 2.0)
       ffi (>= 1.15.5, <= 1.16.3)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
