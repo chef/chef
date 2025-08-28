@@ -100,6 +100,8 @@ function Get-SmctlCertificate {
         
         # Verify the certificate file
         $file = Get-ChildItem -Path "c:\digicert\certificate_pkcs12.p12"
+        Write-Output "---- smctl healthcheck"
+        smctl healthcheck
         if ( -not $? ) { throw "Failed to get certificate file" }
 
         if ($file.Length -eq 2902) {
@@ -166,8 +168,6 @@ function Register-SmctlCertificates {
             Write-Output "--- smksp_registrar unregister first"
             smksp_registrar.exe remove
             if ( -not $? ) { throw "Failed to remove DigiCert Signing Manager and Trust Manager KSP" }
-
-            smctl healthcheck
             
             Write-Output "--- smksp_registrar sync certs before chef install"
             smksp_registrar.exe register
