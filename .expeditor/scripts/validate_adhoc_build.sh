@@ -1,5 +1,13 @@
 set -e pipefail
 
+echo "--- Setting CHEF_LICENSE_SERVER environment variable"
+# Get the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Use SCRIPT_DIR to refer to files relative to the script’s location
+export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
+echo "--- Script dir is $SCRIPT_DIR"
+echo "--- License serverl url is $CHEF_LICENSE_SERVER"
+
 git config --global --add safe.directory /workdir
 
 echo "--- Downloading package artifact"
