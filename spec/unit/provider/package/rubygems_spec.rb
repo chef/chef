@@ -32,8 +32,14 @@ end
 class RspecVersionString
   def self.rspec_version_string
     @rspec_version_string ||= begin
-                                # stubs = Gem::SpecificationRecord.new(Gem::Specification.dirs).send(:installed_stubs, "rspec-core-*.gemspec")
-                                stubs = Gem::Specification.send(:installed_stubs, Gem::Specification.dirs, "rspec-core-*.gemspec")
+                                if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("3.5.11")
+                                  spec_record = Gem::SpecificationRecord.new(Gem::Specification.dirs)
+                                  stubs = spec_record.send(:installed_stubs, "rspec-core-*.gemspec")
+                                elsif Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
+                                  stubs = Gem::Specification.send(:installed_stubs, Gem::Specification.dirs, "rspec-core-*.gemspec")
+                                else
+                                  stubs = Gem::Specification.find_all_by_name("rspec-core", Gem::Dependency.new("rspec-core").requirement)
+                                end
                                 stubs.select! { |stub| stub.name == "rspec-core" && Gem::Dependency.new("rspec-core", ">= 0").requirement.satisfied_by?(stub.version) }
                                 stubs.max_by(&:version).version.to_s
                               end
