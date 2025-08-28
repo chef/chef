@@ -149,6 +149,7 @@ PATH
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
+      racc
       tomlrb (~> 1.2)
 
 PATH
