@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Define the path to the license server URL file relative to SCRIPT_DIR
 LICENSE_SERVER_FILE="$SCRIPT_DIR/../.expeditor/scripts/chef_license_server_url.txt"
 # Export the CHEF_LICENSE_SERVER environment variable using the file content
-export CHEF_LICENSE_SERVER=$(cat "$LICENSE_SERVER_FILE")
+export CHEF_LICENSE_SERVER=$($VAULT_HOME/vault kv get -field ciserver secret/inspec/licensing/server)
 
 echo "--- Script dir is $SCRIPT_DIR"
 echo "--- License server URL is $CHEF_LICENSE_SERVER"
