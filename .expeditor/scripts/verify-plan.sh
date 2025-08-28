@@ -10,7 +10,7 @@ export CHEF_LICENSE="accept-no-persist"
 # Buildkite environment, or a vault, allowing for seamless updates without requiring a pull request for changes.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Use SCRIPT_DIR to refer to files relative to the script’s location
-export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
+export CHEF_LICENSE_SERVER=$($VAULT_HOME/vault kv get -field ciserver secret/inspec/licensing/server)
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
 export HAB_BLDR_CHANNEL="LTS-2024"
