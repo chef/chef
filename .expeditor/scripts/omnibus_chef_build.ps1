@@ -100,8 +100,6 @@ function Get-SmctlCertificate {
         
         # Verify the certificate file
         $file = Get-ChildItem -Path "c:\digicert\certificate_pkcs12.p12"
-        Write-Output "---- smctl healthcheck"
-        smctl healthcheck
         if ( -not $? ) { throw "Failed to get certificate file" }
 
         if ($file.Length -eq 2902) {
@@ -163,6 +161,10 @@ function Register-SmctlCertificates {
             if ( -not $? ) { throw "Failed to register certificates" }
             smksp_registrar.exe list
             if ( -not $? ) { throw "Failed to register certificates" }
+
+            Write-Output "--- Get Healthcheck Status"
+            smctl healthcheck
+            if ( -not $? ) { throw "Failed to get smctl healthcheck status"
         }
         else {
             Write-Output "--- smksp_registrar unregister first"
