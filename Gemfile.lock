@@ -35,6 +35,13 @@ GIT
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
 
+GIT
+  remote: https://github.com/chef/ruby-shadow
+  revision: 555e0633875acdb7c8e7849e73aed150de4dbca8
+  branch: tp/3.2-and-up
+  specs:
+    chef-ruby-shadow (3.0.0)
+
 PATH
   remote: .
   specs:
@@ -540,7 +547,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
-  chef-ruby-shadow (~> 3.0.0)
+  chef-ruby-shadow!
   chef-utils!
   chef-vault
   cheffish (>= 17)
