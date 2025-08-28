@@ -31,12 +31,12 @@ if(-not ($installed_version -match ('^2'))){
 }
 
 Write-Output "--- Installing chef/ruby31-plus-devkit/3.4.2 via Habitat"
-hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
+hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force --auth $env:HAB_AUTH_TOKEN
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 $ruby_dir = & hab pkg path core/ruby3_4-plus-devkit
 
 Write-Output "--- Installing OpenSSL via Habitat"
-hab pkg install core/openssl/3.2.4 --channel base-2025-07-07-2025 --binlink --force
+hab pkg install core/openssl/3.2.4 --channel base-2025-07-07-2025 --binlink --force --auth $env:HAB_AUTH_TOKEN
 if (-not $?) { throw "Could not install OpenSSL via Habitat." }
 
 # Set $openssl_dir to Habitat OpenSSL package installation path
