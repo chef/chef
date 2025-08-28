@@ -122,12 +122,9 @@ jobs:
         run: |
           hab origin key generate "$HAB_ORIGIN"
       - name: Build Habitat Package
-        working-directory: habitat
-        env:
-          PLAN_CONTEXT: .
         run: |
-          hab pkg build .
-          cp /hab/cache/artifacts/chef-infra-client-*.hart ../../kitchen-tests/chef-infra-client-latest.hart
+          hab pkg build ./habitat
+          cp ./habitat/results/chef-infra-client-*.hart ./kitchen-tests/chef-infra-client-latest.hart
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
