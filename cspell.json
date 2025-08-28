@@ -1,3 +1,4 @@
+
 // cSpell Settings
 {
   "version": "0.2",
@@ -483,6 +484,7 @@
     "grafanaserviceapi",
     "Graty",
     "Groh",
+    "groupinstall",
     "groupmembership",
     "GROUPNAME",
     "groupname",
@@ -1197,6 +1199,7 @@
     "rpmvercmp",
     "rquery",
     "rsakey",
+    "RTLD",
     "RSAT",
     "RUNFULLSCREEN",
     "runid",
@@ -1596,6 +1599,7 @@
     "WKSTA",
     "WMIGUID",
     "woot",
+    "workdir",
     "WPARAM",
     "WSCHILD",
     "wstring",

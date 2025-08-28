@@ -69,6 +69,19 @@ elif [[ $BUILDKITE_ORGANIZATION_SLUG = 'chef' ]] || [[ $BUILDKITE_ORGANIZATION_S
 fi
 
 export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
+# export chef license acceptance for builds and tests
+echo "--- installing vault"
+export CHEF_LICENSE="accept-no-persist"
+export VAULT_VERSION=1.13.0
+export VAULT_HOME=$HOME/vault
+curl --create-dirs -sSLo $VAULT_HOME/vault.zip https://releases.hashicorp.com/vault/$VAULT_VERSION/vault_${VAULT_VERSION}_linux_amd64.zip
+unzip -o $VAULT_HOME/vault.zip -d $VAULT_HOME
+
+echo "--- fetching License serverl url and keys from vault"
+# Note: Currently, the value for the local license server is a static IP address. Please update this to a DNS name when available.
+export CHEF_LICENSE_SERVER=$($VAULT_HOME/vault kv get -field ciserver secret/inspec/licensing/server)
+# Note: Currently, this returns blank response
+export CHEF_TELEMETRY_URL=$($VAULT_HOME/vault kv get -field ci secret/inspec/telemetry/server)
 
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
