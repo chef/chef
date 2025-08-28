@@ -106,6 +106,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: LTS-2024 # Explicitly set the builder channel
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -116,7 +117,7 @@ jobs:
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
           sudo hab license accept
           sudo hab --version
-      - name: Generate Habitat Origin Key
+      - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
       - name: Build Habitat Package
