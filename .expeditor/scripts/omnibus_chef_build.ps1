@@ -208,8 +208,8 @@ function Get-Certificate {
     try {
         $thumbprint = "33A82DC08CA7C6B370FFD0C958D9EE30187DE9E4"
 
-        # Get the certificate from the Current User's Personal store by thumbprint
-        $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
+        # List all certificate from the Current User's Personal store by thumbprint
+        $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse 
         if ( -not $? ) { throw "Failed to retrieve certificates" }
 
         Write-Host "--- Display information about the retrieved certificate"
