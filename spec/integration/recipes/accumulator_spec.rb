@@ -133,11 +133,11 @@ describe "Accumulators" do
       actual_content = IO.read(aliases_temppath).chomp
       actual_content_hash = JSON.parse(actual_content.gsub("=>", ":")).to_h
       expect(actual_content_hash).to eql({
-        "outer1" => ["out1a", "out1b"],
-        "nested1" => ["nested1a", "nested1b"],
-        "outer2" => ["out2a", "out2b"],
-        "nested2" => ["nested2a", "nested2b"],
-        "outer3" => ["out3a", "out3b"]
+        "outer1" => %w{out1a out1b},
+        "nested1" => %w{nested1a nested1b},
+        "outer2" => %w{out2a out2b},
+        "nested2" => %w{nested2a nested2b},
+        "outer3" => %w{out3a out3b},
       })
     end
   end
@@ -248,11 +248,11 @@ describe "Accumulators" do
       actual_content = IO.read(aliases_temppath).chomp
       actual_content_hash = JSON.parse(actual_content.gsub("=>", ":")).to_h
       expect(actual_content_hash).to eql({
-        "outer1" => ["out1a", "out1b"],
-        "nested1" => ["nested1a", "nested1b"],
-        "outer2" => ["out2a", "out2b"],
-        "nested2" => ["nested2a", "nested2b"],
-        "outer3" => ["out3a", "out3b"]
+        "outer1" => %w{out1a out1b},
+        "nested1" => %w{nested1a nested1b},
+        "outer2" => %w{out2a out2b},
+        "nested2" => %w{nested2a nested2b},
+        "outer3" => %w{out3a out3b},
       })
     end
   end
