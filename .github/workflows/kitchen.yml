@@ -105,6 +105,7 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -115,6 +116,9 @@ jobs:
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
           sudo hab license accept
           sudo hab --version
+      - name: Generate Habitat Origin Key
+        run: |
+          hab origin key generate "$HAB_ORIGIN"
       - name: Build Habitat Package
         working-directory: habitat
         run: |
