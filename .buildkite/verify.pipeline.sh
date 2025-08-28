@@ -10,7 +10,7 @@ echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-
 echo "steps:"
 echo ""
 
-test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
+test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-20.04")
 
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
@@ -25,7 +25,7 @@ for platform in ${test_platforms[@]}; do
   echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      image: rubydistros/${platform#*:}:3.1"
   echo "      privileged: true"
   echo "      propagate-environment: true"
   echo "  commands:"
@@ -48,7 +48,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "    - \"Integration\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      image: rubydistros/windows-2019:3.4"
   echo "      shell:"
   echo "      - powershell"
   echo "      - \"-Command\""
