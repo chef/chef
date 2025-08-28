@@ -161,6 +161,14 @@ function Register-SmctlCertificates {
             if ( -not $? ) { throw "Failed to register certificates" }
             smksp_registrar.exe list
             if ( -not $? ) { throw "Failed to register certificates" }
+
+            Write-Output "--- Get Healthcheck Status"
+            smctl healthcheck
+            if ( -not $? ) { throw "Failed to get smctl healthcheck status" }
+
+            Write-Output "--- get SMCTL logs"
+            get-content C:\Users\$env:USERNAME\.signingmanager\logs\smctl.log
+            if (-not $?) { throw "Failed to get SMCTL logs" }
         }
         else {
             Write-Output "--- smksp_registrar unregister first"
@@ -172,7 +180,7 @@ function Register-SmctlCertificates {
             if ( -not $? ) { throw "Failed to register certificates" }
     
             Write-Output "--- Installing Windows package signing certificate using smctl cli"
-            smctl windows certsync --keypair-alias=key_875762014
+            smctl windows certsync --keypair-alias=key_1340572417
             if ( -not $? ) { throw "Failed to sync certificates using smctl" }   
         }
     }
@@ -202,9 +210,9 @@ function Get-Certificate {
     param()
     
     try {
-        $thumbprint = "7D16AE73AB249D473362E9332D029089DBBB89B2"
+        $thumbprint = "33A82DC08CA7C6B370FFD0C958D9EE30187DE9E4"
 
-        # Get the certificate from the Current User's Personal store by thumbprint
+        # List all certificate from the Current User's Personal store by thumbprint
         $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
         if ( -not $? ) { throw "Failed to retrieve certificates" }
 
