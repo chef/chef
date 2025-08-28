@@ -252,6 +252,8 @@ describe Chef::Resource::OsxProfile do
       resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(all_profiles)
       provider.load_current_resource
+      # Allow the UUID to be regenerated without failing the test
+      allow(provider).to receive(:config_uuid).and_return(test_profile["PayloadUUID"])
       expect(provider).to_not receive(:install_profile)
       expect { provider.action_install }.to_not raise_error
     end
