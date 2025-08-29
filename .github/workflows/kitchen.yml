@@ -137,7 +137,6 @@ jobs:
           hab pkg build .
           source ./results/last_build.env
           cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
-          cp "./$HAB_ORIGIN-key.tar.gz" kitchen-tests/
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
