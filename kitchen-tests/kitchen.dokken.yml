@@ -35,7 +35,8 @@ lifecycle:
         - centos-7
         - oraclelinux-7
     - remote: echo "Installing Habitat CLI"
-    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash
+    - remote: curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    - remote: sudo hab license accept
     - remote: echo "Checking for Habitat package"
     - remote: if [ ! -f /chef-infra-client-latest.hart ]; then echo "Habitat package not found!"; exit 1; fi
     - remote: echo "Installing Habitat package for Chef Infra Client"

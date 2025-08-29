@@ -81,7 +81,7 @@ jobs:
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
-    name: dokr_lnx_x86_64(hab)
+    name: dokr_lnx_x86_64_hab
     strategy:
       fail-fast: false
       matrix:
@@ -119,6 +119,12 @@ jobs:
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
           sudo hab license accept
           sudo hab --version
+      - name: Install Test-Kitchen-Enterprise
+        env:
+          HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+        run: |
+          sudo hab pkg install --binlink --force chef/test-kitchen-enterprise
+          kitchen --version
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
