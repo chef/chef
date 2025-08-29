@@ -39,7 +39,7 @@ lifecycle:
         - oraclelinux-7
     - remote: hab license accept
     - remote: echo "Checking for Habitat package"
-    - remote: if [ ! -f /chef-infra-client-latest.hart ]; then echo "Habitat package not found!"; exit 1; fi
+    - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
     - remote: echo "Installing Habitat package for Chef Infra Client"
     - remote: hab pkg install /chef-infra-client-latest.hart
     - remote: echo "Installed Chef release:"
