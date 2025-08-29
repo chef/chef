@@ -125,6 +125,8 @@ jobs:
         run: |
           sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
           kitchen --version
+          # chef-cli is needed for some kitchen operations
+          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
