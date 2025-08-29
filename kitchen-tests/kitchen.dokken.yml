@@ -4,7 +4,7 @@ driver:
   privileged: true
   chef_version: unstable
   volumes:
-    - ./kitchen-tests/chef-infra-client-latest.hart:/chef-infra-client-latest.hart
+    - ${PWD}/chef-infra-client-latest.hart:/chef-infra-client-latest.hart
 
 transport:
   name: dokken
