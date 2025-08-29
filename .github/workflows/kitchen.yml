@@ -126,7 +126,7 @@ jobs:
           # Move out of default kitchen-tests dir to the repo root
           cd ..
           hab pkg build .
-          cp results/chef-infra-client-*.hart ./chef-infra-client-latest.hart
+          cp /src/results/gha-chef-infra-client-*.hart kitchen-tests/chef-infra-client-latest.hart
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
