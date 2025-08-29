@@ -40,7 +40,7 @@ lifecycle:
         - oraclelinux-7
     - remote: hab license accept
     - remote: echo "****Importing Habitat Origin Key****"
-    - remote: hab origin key import /gha-key.tar.gz
+    - remote: sh -c "cat /gha-key.tar.gz | hab origin key import"
     - remote: echo "****Checking for Habitat package****"
     - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
     - remote: echo "****Installing Habitat package for Chef Infra Client****"
