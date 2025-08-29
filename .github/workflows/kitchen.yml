@@ -128,6 +128,8 @@ jobs:
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
+          # Export the keys for later use in the Docker container
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
       - name: Build Habitat Package (for testing purpose only)
         run: |
           # Move out of default kitchen-tests dir to the repo root
@@ -135,6 +137,7 @@ jobs:
           hab pkg build .
           source ./results/last_build.env
           cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+          cp "./$HAB_ORIGIN-key.tar.gz" kitchen-tests/
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 

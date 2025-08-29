@@ -8,6 +8,7 @@ driver:
     - /bin/hab:/bin/hab
   volumes:
     - /home/runner/work/chef/chef/kitchen-tests/chef-infra-client-latest.hart:/chef-infra-client-latest.hart
+    - /home/runner/work/chef/chef/kitchen-tests/gha-key.tar.gz:/gha-key.tar.gz
 
 transport:
   name: dokken
@@ -38,11 +39,13 @@ lifecycle:
         - centos-7
         - oraclelinux-7
     - remote: hab license accept
-    - remote: echo "Checking for Habitat package"
+    - remote: echo "****Importing Habitat Origin Key****"
+    - remote: hab origin key import /gha-key.tar.gz
+    - remote: echo "****Checking for Habitat package****"
     - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
-    - remote: echo "Installing Habitat package for Chef Infra Client"
+    - remote: echo "****Installing Habitat package for Chef Infra Client****"
     - remote: hab pkg install /chef-infra-client-latest.hart
-    - remote: echo "Installed Chef release:"
+    - remote: echo "****Installed Chef release:****"
     - remote: hab pkg exec chef/chef-infra-client chef-client -v
 
 platforms:
