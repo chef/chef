@@ -48,7 +48,7 @@ class Chef::Knife::YamlConvert < Chef::Knife
       ui.fatal!("Output Ruby file '#{ruby_file}' already exists")
     end
 
-    yaml_contents = IO.read(yaml_file)
+    yaml_contents = File.read(yaml_file)
 
     # YAML can contain multiple documents (--- is the separator), let's not support that.
     if ::YAML.load_stream(yaml_contents).length > 1
