@@ -81,6 +81,7 @@ jobs:
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
+    name: dokr_lnx_x86_64(hab)
     strategy:
       fail-fast: false
       matrix:
@@ -126,7 +127,8 @@ jobs:
           # Move out of default kitchen-tests dir to the repo root
           cd ..
           hab pkg build .
-          cp /src/results/gha-chef-infra-client-*.hart kitchen-tests/chef-infra-client-latest.hart
+          source ./results/last_build.env
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
