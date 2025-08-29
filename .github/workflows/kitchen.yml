@@ -128,7 +128,7 @@ jobs:
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
-      - name: Build Habitat Package
+      - name: Build Habitat Package (for testing purpose only)
         run: |
           # Move out of default kitchen-tests dir to the repo root
           cd ..
