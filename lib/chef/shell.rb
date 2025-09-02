@@ -58,9 +58,11 @@ module Shell
   # Start the irb REPL with chef-shell's customizations
   def self.start
     setup_logger
-    # FUGLY HACK: irb gives us no other choice.
-    irb_help = [:help, :irb_help, IRB::ExtendCommandBundle::NO_OVERRIDE]
-    IRB::ExtendCommandBundle.instance_variable_get(:@ALIASES).delete(irb_help)
+
+    IRB::Command.register(
+      :help,
+      proc { Shell::Options.print_help }
+    )
 
     parse_opts
     Chef::Config[:shell_config] = options.config
