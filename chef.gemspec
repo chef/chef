@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
     s.required_ruby_version = ">= 3.1.0"
   end
 
+  s.add_dependency "activesupport", ">= 4.2.7.1", "<= 7.1.3.2"
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.10", "<= 3.12.13"
@@ -44,7 +45,13 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
-  s.add_dependency "inspec-core", ">= 5", "< 6"
+
+  # AIX Gemfile.aix.lock uses this, but currently a manual process
+  if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
+    s.add_dependency "inspec-core", ">= 5", "<= 5.22.80"
+  else
+    s.add_dependency "inspec-core", ">= 5", "< 6"
+  end
 
   s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
   s.add_dependency "ffi-yajl", "~> 2.2"

@@ -263,7 +263,8 @@ describe Chef::Resource::Git do
 
   context "when dealing with a repo with a degenerate tag named 'HEAD'" do
     before do
-      shell_out!("git", "tag", "-m\"degenerate tag\"", "HEAD", "ed181b3419b6f489bedab282348162a110d6d3a1", cwd: origin_repo)
+      shell_out!("git", "tag", "-m\"degenerate tag\"", "HEAD_TAG", "ed181b3419b6f489bedab282348162a110d6d3a1", cwd: origin_repo)
+      # The original tag name of 'HEAD' caused errors in new git clients since it's a reserved name.
     end
 
     it "checks out the (master) HEAD revision and ignores the tag" do

@@ -18,11 +18,11 @@ container_platforms=("amazon-2:centos-7" "amazon-2-arm:amazon-2-arm" "centos-7:c
 # add rest of windows platforms to tests, if not on chef-oss org
 if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]
 then
-  container_platforms=( "${container_platforms[@]}" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
+  container_platforms=( "${container_platforms[@]}" "windows-2016:windows-2019" "windows-2022:windows-2019" "windows-2025:windows-2019" "windows-10:windows-2019" "windows-11:windows-2019" )
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-12-x86_64:mac_os_x-12-x86_64" "mac_os_x-12-arm64:mac_os_x-12-arm64" "mac_os_x-13-arm64:mac_os_x-12-arm64" "mac_os_x-14-arm64:mac_os_x-12-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=("el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-12-x86_64:mac_os_x-12-x86_64" "mac_os_x-12-arm64:mac_os_x-12-arm64" "mac_os_x-13-arm64:mac_os_x-12-arm64" "mac_os_x-14-arm64:mac_os_x-12-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
@@ -31,7 +31,7 @@ omnibus_test_platforms=()
 for platform in ${container_platforms[@]}; do
     platform_name=${platform%:*}
     match_found=false
-    
+
     # Check against each filter pattern
     for pattern in "${FILTER_PATTERNS[@]}"; do
         if [[ "$platform_name" == $pattern ]]; then
@@ -39,7 +39,7 @@ for platform in ${container_platforms[@]}; do
             break
         fi
     done
-    
+
     if $match_found; then
         omnibus_build_platforms[${#omnibus_build_platforms[@]}]=${platform#*:}
         omnibus_test_platforms[${#omnibus_test_platforms[@]}]=$platform
@@ -62,7 +62,7 @@ then
   for platform in ${esoteric_platforms[@]}; do
     platform_name=${platform%:*}
     match_found=false
-    
+
     # Check against each filter pattern
     for pattern in "${FILTER_PATTERNS[@]}"; do
         if [[ "$platform_name" == $pattern ]]; then
@@ -70,7 +70,7 @@ then
             break
         fi
     done
-    
+
     if $match_found; then
         esoteric_build_platforms[${#esoteric_build_platforms[@]}]=${platform#*:}
         esoteric_test_platforms[${#esoteric_test_platforms[@]}]=$platform
@@ -189,7 +189,7 @@ then
     echo "      install-dir: \"/opt/chef\""
     if [ "$build_key" == "mac_os_x-12-x86_64" ] || [ "$build_key" == "mac_os_x-12-arm64" ] || [ "$build_key" == "mac_os_x-13-arm64" ] || [ "$build_key" == "mac_os_x-14-arm64" ]; then
         echo "      remote-host: buildkite-omnibus-$platform"
-    fi        
+    fi
     echo "      omnibus-pipeline-definition-path: \".expeditor/release.omnibus.yml\""
     # if [ $build_key == "mac_os_x-11-arm64" ]
     # then

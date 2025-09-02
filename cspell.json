@@ -1151,6 +1151,7 @@
     "rpmvercmp",
     "rquery",
     "rsakey",
+    "RTLD",
     "rvmrc",
     "RSAT",
     "RUNFULLSCREEN",
@@ -1609,7 +1610,6 @@
     "spec/**",
     "knife/spec/**",
     "docs_site",
-    "distro/ruby_bin_folder/**/*",
     "cspell.json",
     ".mailmap"
   ],

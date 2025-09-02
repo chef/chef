@@ -15,6 +15,7 @@ $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
   "core/libarchive"
+  "core/zlib"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015/14.0.24215/20240108064521"
@@ -44,7 +45,9 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
 }
 
 function Invoke-Download() {
@@ -154,6 +157,7 @@ function Invoke-Build {
         push-location $PLAN_CONTEXT
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
+         
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
@@ -162,7 +166,7 @@ function Invoke-Build {
                 # The rest client doesn't have an 'Install' task so it bombs out when we call Rake Install for it
                 # Happily, its Rakefile ultimately calls 'gem build' to build itself with. We're doing that here.
                 if ($git_gem -match "rest-client"){
-                    $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
+                    $gemspec_path = $git_gem.ToString() + "\rest-client.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path

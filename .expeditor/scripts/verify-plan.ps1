@@ -7,7 +7,7 @@ param(
     [string]$Plan
 )
 
-$env:HAB_ORIGIN = 'ci'
+$env:HAB_ORIGIN = 'chef'
 $Plan = 'chef-infra-client'
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
