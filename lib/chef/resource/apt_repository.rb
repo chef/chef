@@ -309,6 +309,15 @@ class Chef
           "/etc/apt/keyrings/#{new_resource.repo_name}.gpg"
         end
 
+        # Get the current APT version, this is important for creating keyring files,
+        # on newer APT versions these need to be an _older_ GnuPG format due to "sqv"
+        # being used to verify
+        #
+        # @return [Integer]
+        def apt_version
+          @apt_version ||= shell_out("apt -v").stdout.strip[/([0-9]\.?){3}/, 0].to_i
+        end
+
         # Fetch the key using either cookbook_file or remote_file, validate it,
         # and install it with apt-key add
         # @param [String] key the key to install
@@ -320,6 +329,7 @@ class Chef
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
           keyfile_tmp_path = ::File.join(Chef::Config[:file_cache_path], key_name)
           keyfile_path = keyring_path
+          gpg_keyring_prefix = apt_version > 2 ? "gnupg-ring:" : ""
           tmp_dir = Dir.mktmpdir(".gpg")
           at_exit { FileUtils.remove_entry(tmp_dir) }
 
@@ -338,7 +348,7 @@ class Chef
             end
 
             execute "import #{keyfile_path}" do
-              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", keyfile_path, keyfile_tmp_path ]
+              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", "#{gpg_keyring_prefix}#{keyfile_path}", keyfile_tmp_path ]
               default_env true
               sensitive new_resource.sensitive
               action :nothing
