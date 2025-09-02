@@ -5,6 +5,8 @@ param(
 
 # $env:Path = 'C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\ContainerAdministrator\AppData\Local\Microsoft\WindowsApps;' + $env:Path
 
+$HAB_AUTH_TOKEN = aws ssm get-parameter --name "habitat-prod-auth-token" --with-decryption --query Parameter.Value --output text --region us-west-2
+
 if ($TestType -eq 'Functional') {
     winrm quickconfig -q
 }
@@ -31,12 +33,12 @@ if(-not ($installed_version -match ('^2'))){
 }
 
 Write-Output "--- Installing chef/ruby34-plus-devkit/3.4.2 via Habitat"
-hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force --auth $env:HAB_AUTH_TOKEN
+hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force --auth $HAB_AUTH_TOKEN
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 $ruby_dir = & hab pkg path core/ruby3_4-plus-devkit
 
 Write-Output "--- Installing OpenSSL via Habitat"
-hab pkg install core/openssl/3.2.4 --channel base-2025-07-07-2025 --binlink --force --auth $env:HAB_AUTH_TOKEN
+hab pkg install core/openssl/3.2.4 --channel base-2025-07-07-2025 --binlink --force --auth $HAB_AUTH_TOKEN
 if (-not $?) { throw "Could not install OpenSSL via Habitat." }
 
 # Set $openssl_dir to Habitat OpenSSL package installation path
