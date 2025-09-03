@@ -83,9 +83,8 @@ Gem::Specification.new do |s|
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} +
-    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
-    Dir.glob("*.gemspec") +
-    Dir.glob("tasks/rspec.rb")
+    Dir.glob("{lib}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
+    Dir.glob("*.gemspec")
 
   s.metadata = {
     "bug_tracker_uri" => "https://github.com/chef/chef/issues",
