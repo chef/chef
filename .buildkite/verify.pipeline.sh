@@ -1,17 +1,13 @@
 #!/bin/bash
-
 # exit immediately on failure, or if an undefined variable is used
 set -eu
-
 echo "---"
 echo "env:"
 echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
-
 test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
-
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
@@ -33,9 +29,7 @@ for platform in ${test_platforms[@]}; do
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
   echo "  timeout_in_minutes: 60"
 done
-
 win_test_platforms=("windows-2019:windows-2019")
-
 for platform in ${win_test_platforms[@]}; do
   echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
   echo "  retry:"
@@ -52,12 +46,13 @@ for platform in ${win_test_platforms[@]}; do
   echo "      shell:"
   echo "      - powershell"
   echo "      - \"-Command\""
+  echo "      environment:"
+  echo "        - HAB_AUTH_TOKEN"
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
   echo "  timeout_in_minutes: 120"
 done
-
 for platform in ${win_test_platforms[@]}; do
   echo "- label: \"Functional ${platform#*:} :windows:\""
   echo "  retry:"
@@ -67,13 +62,20 @@ for platform in ${win_test_platforms[@]}; do
   echo "    queue: single-use-windows-2019-privileged"
   echo "  matrix:"
   echo "    - \"Functional\""
+  echo "  plugins:"
+  echo "  - docker#v3.5.0:"
+  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      shell:"
+  echo "      - powershell"
+  echo "      - \"-Command\""
+  echo "      environment:"
+  echo "        - HAB_AUTH_TOKEN"
+  echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
   echo "  timeout_in_minutes: 120"
 done
-
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
-
 for gem in ${external_gems[@]}; do
   echo "- label: \"$gem gem :ruby:\""
   echo "  retry:"
@@ -134,9 +136,7 @@ for gem in ${external_gems[@]}; do
       ;;
   esac
 done
-
 habitat_plans=("linux" "windows")
-
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""
   echo "  retry:"
@@ -146,6 +146,15 @@ for plan in ${habitat_plans[@]}; do
   if [ $plan == "windows" ]
   then
     echo "    queue: single-use-windows-2019-privileged"
+    echo "  plugins:"
+    echo "  - docker#v3.5.0:"
+    echo "      image: chefes/omnibus-toolchain-windows-2019:$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "      shell:"
+    echo "      - powershell"
+    echo "      - \"-Command\""
+    echo "      environment:"
+    echo "        - HAB_AUTH_TOKEN"
+    echo "      propagate-environment: true"
   else
     echo "    queue: single-use-privileged"
   fi
