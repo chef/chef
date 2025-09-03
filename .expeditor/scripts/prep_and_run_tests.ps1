@@ -3,17 +3,25 @@ param(
     [Parameter(Position=0)][String]$TestType
 )
 
-# $env:Path = 'C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\ContainerAdministrator\AppData\Local\Microsoft\WindowsApps;' + $env:Path
-Write-Output "--- Fetching Habitat auth token"
-$HAB_AUTH_TOKEN = aws ssm get-parameter --name "habitat-prod-auth-token" --with-decryption --query Parameter.Value --output text --region us-west-2
+# Check if HAB_AUTH_TOKEN is already available in environment
+Write-Output "--- Checking Habitat auth token"
+if([string]::IsNullOrEmpty($env:HAB_AUTH_TOKEN)) {
+    Write-Output "HAB_AUTH_TOKEN not found in environment, attempting to fetch it"
+    try {
+        $HAB_AUTH_TOKEN = aws ssm get-parameter --name "habitat-prod-auth-token" --with-decryption --query Parameter.Value --output text --region us-west-2
+        $env:HAB_AUTH_TOKEN = $HAB_AUTH_TOKEN
+    }
+    catch {
+        Write-Output "Failed to fetch HAB_AUTH_TOKEN: $_"
+    }
+}
 
-write-Outpt "--- Testing the Hab Auth Token to ensure we retrieved it ok from the vault"
-if([string]::IsNullOrEmpty($HAB_AUTH_TOKEN)) {
+Write-Output "--- Testing the Hab Auth Token to ensure we have it"
+if([string]::IsNullOrEmpty($env:HAB_AUTH_TOKEN)) {
     throw "HAB_AUTH_TOKEN is null or empty, cannot continue"
 }
 
-Write-Output "--- Setting Habitat ENV auth token"
-$env:HAB_AUTH_TOKEN = $HAB_AUTH_TOKEN
+Write-Output "--- Habitat auth token is available"
 
 if ($TestType -eq 'Functional') {
     winrm quickconfig -q
