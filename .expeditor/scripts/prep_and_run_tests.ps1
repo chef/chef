@@ -6,14 +6,8 @@ param(
 # Check if HAB_AUTH_TOKEN is already available in environment
 Write-Output "--- Checking Habitat auth token"
 if([string]::IsNullOrEmpty($env:HAB_AUTH_TOKEN)) {
-    Write-Output "HAB_AUTH_TOKEN not found in environment, attempting to fetch it"
-    try {
-        $HAB_AUTH_TOKEN = aws ssm get-parameter --name "habitat-prod-auth-token" --with-decryption --query Parameter.Value --output text --region us-west-2
-        $env:HAB_AUTH_TOKEN = $HAB_AUTH_TOKEN
-    }
-    catch {
-        Write-Output "Failed to fetch HAB_AUTH_TOKEN: $_"
-    }
+    Write-Output "HAB_AUTH_TOKEN not found in environment"
+    Write-Output "HAB_AUTH_TOKEN must be passed to the container via environment configuration"
 }
 
 Write-Output "--- Testing the Hab Auth Token to ensure we have it"
