@@ -10,6 +10,8 @@ param(
 $env:HAB_ORIGIN = 'chef'
 $env:HAB_BLDR_CHANNEL = "base-2025"
 $Plan = 'chef-infra-client'
+$env:HAB_LICENSE='accept-no-persist'
+$env:CHEF_LICENSE='accept-no-persist'
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 
