@@ -38,3 +38,11 @@ apt_repository "test" do
   signed_by true
   key "https://ftp-master.debian.org/keys/archive-key-12.asc"
 end
+
+apt_repository "test-with-same-key" do
+  uri "http://ftp.be.debian.org/debian/"
+  distribution "bookworm-updates"
+  components %w{main contrib non-free}
+  signed_by true
+  key "https://ftp-master.debian.org/keys/archive-key-12.asc"
+end
