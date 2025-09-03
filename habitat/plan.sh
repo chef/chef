@@ -1,6 +1,6 @@
 export HAB_BLDR_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
-_chef_client_ruby="core/ruby3_4"
+_chef_client_ruby="core/ruby3_4/3.4.2"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"

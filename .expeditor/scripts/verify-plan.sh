@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-export HAB_ORIGIN='ci'
+export HAB_ORIGIN="chef"
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
 # Read the CHEF_LICENSE_SERVER value from chef_license_server_url.txt
