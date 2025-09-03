@@ -1,7 +1,7 @@
-$env:HAB_BLDR_CHANNEL = "LTS-2024"
+$env:HAB_BLDR_CHANNEL = "base-2025"
 $pkg_name="chef-infra-client"
 
-$env:HAB_BLDR_CHANNEL="LTS-2024"
+$env:HAB_BLDR_CHANNEL="base-2025"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
@@ -146,7 +146,7 @@ function Invoke-Build {
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3

@@ -73,6 +73,7 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
     chef (19.1.58-universal-mingw-ucrt)
@@ -112,6 +113,7 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
       win32-api (~> 1.10.0)
@@ -140,6 +142,7 @@ PATH
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
+      racc
       tomlrb (~> 1.2)
 
 PATH
@@ -373,7 +376,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
-    openssl (3.2.0)
+    openssl (3.3.0)
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -547,7 +550,7 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (~> 7.0.38.beta)
   ohai!
-  openssl (= 3.2.0)
+  openssl (= 3.3.0)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -558,4 +561,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.27
+   2.6.9

@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
-export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_BLDR_CHANNEL="base-2025"
 
 # print error message followed by usage and exit
 error () {
@@ -37,7 +37,7 @@ hab origin key generate "$HAB_ORIGIN"
 echo "--- :construction: Building $PLAN (solely for verification testing)"
 (
   cd "$project_root" || error 'cannot change directory to project root'
-  DO_CHECK=true hab pkg build . --refresh-channel LTS-2024 || error 'unable to build'
+  DO_CHECK=true hab pkg build . --refresh-channel base-2025 || error 'unable to build'
 )
 
 source "${project_root}/results/last_build.env" || error 'unable to determine details about this build'
