@@ -36,8 +36,8 @@ $release = Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Frame
 if ($release -ge 528040) {
     Write-Host ".NET Framework 4.8 or later is installed."
 } else {
-    Write-Host ".NET Framework 4.8 or later is NOT detected. Using Choco to install it now."
-    choco install netfx-4.8.1
+    Write-Host "--- .NET Framework 4.8 or later is NOT detected. It MUST be installed by Build Services, it requires a reboot. Exiting here."
+    exit 1
 }
 
 Write-Output "--- Installing chef/ruby34-plus-devkit/3.4.2 via Habitat"
