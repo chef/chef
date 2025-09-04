@@ -16,9 +16,9 @@ $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
   "core/libarchive"
-  "chef/ruby31-plus-devkit"
+  "core/ruby3_4-plus-devkit"
   "chef/chef-powershell-shim"
-  "core/visual-cpp-redist-2015"
+  "core/visual-cpp-redist-2022"
 )
 
 function Invoke-Begin {
@@ -44,7 +44,7 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
-    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
 }
 
 function Invoke-Download() {
