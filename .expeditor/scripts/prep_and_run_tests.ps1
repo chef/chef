@@ -30,6 +30,16 @@ if(-not ($installed_version -match ('^2'))){
     }
 }
 
+Write-Output "--- Checking the .NET Framework version, Installing 4.8.1 as necessary"
+$release = Get-ItemPropertyValue -LiteralPath 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full' -Name Release
+
+if ($release -ge 528040) {
+    Write-Host ".NET Framework 4.8 or later is installed."
+} else {
+    Write-Host ".NET Framework 4.8 or later is NOT detected. Using Choco to install it now."
+    choco install netfx-4.8.1
+}
+
 Write-Output "--- Installing chef/ruby34-plus-devkit/3.4.2 via Habitat"
 hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
