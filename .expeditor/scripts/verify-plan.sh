@@ -15,6 +15,12 @@ export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
 export HAB_BLDR_CHANNEL="base-2025"
 
+#check if HAB_AUTH_TOKEN is present
+if [ -z "${HAB_AUTH_TOKEN:-}" ]; then
+  echo "HAB_AUTH_TOKEN is not set"
+  exit 1
+fi
+
 # print error message followed by usage and exit
 error () {
   local message="$1"
