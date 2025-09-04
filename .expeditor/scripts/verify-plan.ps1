@@ -29,7 +29,14 @@ if (-not ($source.name -match "git.exe")) {
 }
 
 Write-Host "--- :key: Generating fake origin key"
-hab origin key generate $env:HAB_ORIGIN
+# Check if origin key already exists, if not generate one
+try {
+    hab origin key export $env:HAB_ORIGIN | Out-Null
+    Write-Host "Using existing origin key for $env:HAB_ORIGIN"
+} catch {
+    Write-Host "Generating new origin key for $env:HAB_ORIGIN"
+    hab origin key generate $env:HAB_ORIGIN
+}
 
 $project_root = "$(git rev-parse --show-toplevel)"
 Set-Location $project_root
@@ -40,6 +47,26 @@ if (-not $?) { throw "unable to build"}
 
 . results/last_build.ps1
 if (-not $?) { throw "unable to determine details about this build"}
+
+# Ensure the signing key is available for installation
+try {
+    $keyName = (hab origin key export $env:HAB_ORIGIN | Select-String "^$env:HAB_ORIGIN-").ToString().Trim()
+    Write-Host "Found origin key: $keyName"
+
+    # Ensure key is in main cache if we're using a studio
+    $mainKeyPath = "C:\hab\cache\keys\$keyName.pub"
+    $studioKeyPath = "C:\hab\studios\*\hab\cache\keys\$keyName.pub"
+
+    if (Test-Path $studioKeyPath) {
+        $studioKey = Get-ChildItem $studioKeyPath | Select-Object -First 1
+        if (!(Test-Path $mainKeyPath)) {
+            Write-Host "Copying key from studio cache to main cache"
+            Copy-Item $studioKey.FullName "C:\hab\cache\keys\" -Force
+        }
+    }
+} catch {
+    Write-Warning "Could not verify origin key setup: $($_.Exception.Message)"
+}
 
 Write-Host "--- :hammer_and_wrench: Installing $pkg_ident"
 hab pkg install results/$pkg_artifact

@@ -1,3 +1,8 @@
+# Chef Infra Client Habitat Plan
+# This plan builds Chef Infra Client for Windows
+# Key generation: Only generates a new origin key if one doesn't already exist
+# This prevents key mismatch issues during repeated builds
+
 $env:HAB_BLDR_CHANNEL = "base-2025"
 $pkg_name="chef-infra-client"
 
@@ -16,10 +21,20 @@ $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
   "core/libarchive"
-  "chef/ruby31-plus-devkit"
+  "core/ruby3_4-plus-devkit"
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015"
 )
+
+# Check if origin key already exists, if not generate one
+try {
+    hab origin key export $pkg_origin *>$null
+    Write-Host "Using existing origin key for $pkg_origin"
+} catch {
+    Write-Host "Generating new origin key for $pkg_origin"
+    hab origin key generate $pkg_origin
+}
+# hab origin key fetch core
 
 function Invoke-Begin {
     write-output "*** Start Invoke-Begin Function"
@@ -31,10 +46,29 @@ function Invoke-Begin {
     } else {
         Write-BuildLine ":habicat: I think I have the version I need to build."
     }
+
+    # Ensure origin key is available in both studio and main cache
+    try {
+        $keyName = (hab origin key export $pkg_origin | Select-String "^$pkg_origin-").ToString().Trim()
+        Write-Host "Found origin key: $keyName"
+
+        # Ensure key is in main cache if we're in a studio
+        $mainKeyPath = "$env:HAB_CACHE_KEY_PATH\$keyName.pub"
+        $studioKeyPath = "C:\hab\studios\*\hab\cache\keys\$keyName.pub"
+
+        if (Test-Path $studioKeyPath) {
+            $studioKey = Get-ChildItem $studioKeyPath | Select-Object -First 1
+            if (!(Test-Path $mainKeyPath)) {
+                Write-Host "Copying key from studio cache to main cache"
+                Copy-Item $studioKey.FullName "C:\hab\cache\keys\" -Force
+            }
+        }
+    } catch {
+        Write-Warning "Could not verify origin key setup: $($_.Exception.Message)"
+    }
 }
 
 function Invoke-SetupEnvironment {
-    write-output "*** Start Invoke-SetupEnvironment Function"
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
@@ -45,48 +79,35 @@ function Invoke-SetupEnvironment {
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
+
+    # Ensure Ruby 3.4 gem paths are properly set up
+    $ruby_version = "3.4.0"
+    Push-RuntimeEnv -IsPath GEM_PATH "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
 }
 
 function Invoke-Download() {
-    Write-BuildLine "*** Start Invoke-Download - Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
+    Write-BuildLine " ** Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}\${pkg_filename}"
 
     try {
-        # what is my actual path here before push-location
-        Write-Output "Invoke-Download Function: Original path: $(Get-Location)"
-
-        # just doing a test example here, should show my resolved-path, for those not sure what the resolved path does
         $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../").Path
-        Write-Output "Invoke-Download Function: Resolved target path: $resolvedPath"
-
-        # Push-Location to move into the new directory and stack the current directory, neat way to use cd
         Push-Location $resolvedPath
-        Write-Output "Path after Push-Location: $(Get-Location) "
 
         # Generate the archive using git, fixing perms as well
-        write-output "*** Invoke-Download Function: fixing permissions on docker container git config --global --add safe.directory C:/src"
         git config --global --add safe.directory C:/src
-        Write-Output "*** Invoke-Download Function: Creating archive at ${HAB_CACHE_SRC_PATH}\${pkg_filename}... "
         git archive --format=zip --output="${HAB_CACHE_SRC_PATH}\${pkg_filename}" HEAD
 
         # Check if the file exists and has a valid size (non-zero), or fail the build
         $archiveFile = Get-Item "${HAB_CACHE_SRC_PATH}\${pkg_filename}"
         if (-not $archiveFile) {
-            throw "Invoke-Download Function: Archive file not created. "
+            throw "Archive file not created."
         } elseif ($archiveFile.Length -eq 0) {
-            throw "Invoke-Download Function: Archive file is 0 bytes. Archive creation failed. "
+            throw "Archive file is 0 bytes. Archive creation failed."
         }
 
-        Write-Output "*** Invoke-Download Function: Archive created successfully: $($archiveFile.FullName) with size $($archiveFile.Length) bytes"
-
     } catch {
-        # Capture any errors from git archive or other commands
-        Write-Output "Invoke-Download Function: Error occurred: $_ "
         throw $_
     } finally {
-        # Always return to the original path
-        Write-Output "Invoke-Download Function: Path before Pop-Location: $(Get-Location) "
         Pop-Location
-        Write-Output "Invoke-Download Function: Restored path after Pop-Location: $(Get-Location) "
     }
 }
 
@@ -111,12 +132,15 @@ function Invoke-Unpack () {
 }
 
 function Invoke-Prepare {
-    write-output " ** Start Invoke-Prepare Function"
     $env:GEM_HOME = "$pkg_prefix/vendor"
+
+    # Ensure Ruby 3.4 can find its gems
+    $ruby_version = "3.4.0"
+    $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+    $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
 
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
-        Write-BuildLine " ** Where is my gem at?"
         $gem_file = @"
 @ECHO OFF
 @"%~dp0ruby.exe" "%~dpn0" %*
@@ -130,7 +154,6 @@ function Invoke-Prepare {
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        Write-BuildLine "OpenSSL Dir $openssl_dir"
         bundle config build.openssl --with-openssl-dir=$openssl_dir
     } finally {
         Pop-Location
@@ -139,7 +162,6 @@ function Invoke-Prepare {
 
 function Invoke-Build {
     try {
-        write-output "*** invoke-build"
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
@@ -176,9 +198,20 @@ function Invoke-Build {
         do {
             Start-Sleep -Seconds 5
             $install_attempt++
-            Write-BuildLine "Install attempt $install_attempt"
+
+            # Install chef first, then force install chef-bin
             bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+
+            if ($?) {
+                # Force install chef-bin to work around Ruby 3.4 dependency resolution issues
+                try {
+                    Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-bin"
+                    bundle exec rake install:force
+                } finally {
+                    Pop-Location
+                }
+            }
+        } while ((-not $?) -and ($install_attempt -lt 3))
 
     } finally {
         Pop-Location
@@ -186,10 +219,15 @@ function Invoke-Build {
 }
 
 function Invoke-Install {
-    write-output "*** invoke-install"
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
+
+        # Ensure gem environment is set up correctly for appbundler
+        $ruby_version = "3.4.0"
+        $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+        $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+        $env:GEM_HOME = "$pkg_prefix/vendor"
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
@@ -203,7 +241,6 @@ function Invoke-Install {
 }
 
 function Invoke-After {
-    write-output "*** invoke after"
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
@@ -223,7 +260,7 @@ function Invoke-After {
         | Remove-Item -Force
 
     # we need the built gems outside of the studio
-    write-output "Copying gems to ${SRC_PATH}"
+    Write-BuildLine "Copying gems to ${SRC_PATH}"
     New-Item -ItemType Directory -Force "${SRC_PATH}\pkg","${SRC_PATH}\chef-bin\pkg","${SRC_PATH}\chef-config\pkg","${SRC_PATH}\chef-utils\pkg"
     Copy-Item "${CACHE_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem" "${SRC_PATH}\pkg"
     Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg"

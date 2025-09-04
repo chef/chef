@@ -30,7 +30,7 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", ">= 17"
+gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "jfm/chef19-logger-update"
 
 group(:omnibus_package) do
   gem "appbundler"
