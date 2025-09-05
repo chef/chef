@@ -28,6 +28,9 @@ echo "--- :habicat: Patching /etc/nsswitch.conf to ensure 'files' is listed firs
 sed -i 's/hosts:      files dns myhostname/hosts:      files dns/g' /etc/nsswitch.conf
 sed -i 's/networks:   files dns/networks:   files/g' /etc/nsswitch.conf
 
+echo "--- :git: Configuring git safe directory"
+git config --global --add safe.directory /workdir
+
 echo "--- :8ball: :linux: Verifying $PLAN"
 project_root="$(git rev-parse --show-toplevel)"
 
