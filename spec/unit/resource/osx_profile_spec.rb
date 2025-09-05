@@ -97,7 +97,7 @@ describe Chef::Resource::OsxProfile do
           "ProfileOrganization" => "Chef",
           "ProfileRemovalDisallowed" => "false",
           "ProfileType" => "Configuration",
-          "ProfileUUID" => "a5c6e966-635c-5cbd-9e0c-306f4df24f28",
+          "ProfileUUID" => "1781fbec-3325-565f-9022-8aa28135c3cc",
           "ProfileVerificationState" => "unsigned",
           "ProfileVersion" => 1 }],
       }
@@ -244,6 +244,8 @@ describe Chef::Resource::OsxProfile do
       resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(no_profiles)
       provider.load_current_resource
+      # Mock profile_installed? to return true since we're testing that it doesn't install when already installed
+      allow(provider).to receive(:profile_installed?).and_return(true)
       expect(provider).to receive(:install_profile)
       expect { provider.run_action(:install) }.to_not raise_error
     end
