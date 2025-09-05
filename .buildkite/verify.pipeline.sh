@@ -23,6 +23,8 @@ for platform in ${test_platforms[@]}; do
   echo "  - docker#v3.5.0:"
   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      privileged: true"
+  echo "      environment:"
+  echo "        - HAB_AUTH_TOKEN"
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .expeditor/scripts/bk_container_prep.sh"
@@ -88,6 +90,7 @@ for gem in ${external_gems[@]}; do
   echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
+  echo "        - HAB_AUTH_TOKEN"
   if [ $gem == "chef-zero" ]
   then
     echo "        - PEDANT_OPTS=--skip-oc_id"
@@ -157,6 +160,12 @@ for plan in ${habitat_plans[@]}; do
     echo "      propagate-environment: true"
   else
     echo "    queue: single-use-privileged"
+    echo "  plugins:"
+    echo "  - docker#v3.5.0:"
+    echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "      environment:"
+    echo "        - HAB_AUTH_TOKEN"
+    echo "      propagate-environment: true"
   fi
   # echo "  plugins:"
   # echo "  - chef/cache#v1.5.0:"

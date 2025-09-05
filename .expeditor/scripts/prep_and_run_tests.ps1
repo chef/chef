@@ -46,7 +46,7 @@ if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 $ruby_dir = & hab pkg path core/ruby3_4-plus-devkit
 
 Write-Output "--- Installing OpenSSL via Habitat"
-hab pkg install core/openssl/3.2.4 --channel base-2025-07-07-2025 --binlink --force
+hab pkg install core/openssl/3.2.4 --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install OpenSSL via Habitat." }
 
 # Set $openssl_dir to Habitat OpenSSL package installation path
