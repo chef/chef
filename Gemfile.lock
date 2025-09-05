@@ -60,6 +60,7 @@ PATH
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
+      csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
@@ -78,6 +79,7 @@ PATH
       ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
+      syslog
       syslog-logger (~> 1.6)
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
@@ -97,6 +99,7 @@ PATH
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
+      csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5)
@@ -116,6 +119,7 @@ PATH
       ohai (~> 19.0)
       plist (~> 3.2)
       proxifier2 (~> 1.1)
+      syslog
       syslog-logger (~> 1.6)
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
@@ -222,6 +226,7 @@ GEM
     chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
+    chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -456,7 +461,6 @@ GEM
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     ruby-progressbar (1.13.0)
-    ruby-shadow (2.5.1)
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
@@ -517,7 +521,6 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf_ext (0.0.8.2)
-    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.3)
@@ -564,6 +567,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-ruby-shadow (~> 3.0.0)
   chef-utils!
   chef-vault
   cheffish!
@@ -581,7 +585,6 @@ DEPENDENCIES
   rb-readline
   rest-client!
   rspec
-  ruby-shadow
   webmock
 
 BUNDLED WITH
