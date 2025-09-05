@@ -100,10 +100,6 @@ class Chef
             raise
           end
 
-          def children
-            super.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
-          end
-
           def can_have_child?(name, is_dir)
             if is_dir && !%w{ root_files .. . }.include?(name)
               # Only the given directories will be uploaded.
@@ -132,7 +128,7 @@ class Chef
           end
 
           def can_upload?
-            File.exist?(uploaded_cookbook_version_path) || children.size > 0
+            File.exist?(uploaded_cookbook_version_path) || any_children?
           end
 
           protected
