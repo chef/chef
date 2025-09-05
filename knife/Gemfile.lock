@@ -1,9 +1,21 @@
 GIT
-  remote: https://github.com/chef/ohai.git
-  revision: 4b5f02026fb565d3eb8b27ed664443840edacb6c
+  remote: https://github.com/chef/cheffish.git
+  revision: 570d5ab4e71a0a4eea1c732830fbd75b0519772a
   branch: main
   specs:
-    ohai (19.1.2)
+    cheffish (17.2.0)
+      chef-utils (>= 17.0)
+      chef-zero (>= 14.0)
+      logger (~> 1.6)
+      net-ssh
+      syslog
+
+GIT
+  remote: https://github.com/chef/ohai.git
+  revision: c813fad09573d6a5659bce9d65478eab31a2c58a
+  branch: main
+  specs:
+    ohai (19.1.9)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -21,8 +33,8 @@ GIT
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (19.1.24)
-      chef (= 19.1.77)
+    chef-bin (19.1.74)
+      chef (= 19.1.74)
 
 PATH
   remote: ..
@@ -31,19 +43,21 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.24)
+      chef-config (= 19.1.74)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.1.24)
+      chef-powershell (~> 18.1.0)
+      chef-utils (= 19.1.74)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5, < 1.17.0)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
       inspec-core (~> 7.0.38.beta)
+      iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -60,13 +74,24 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
+      win32-api (~> 1.10.0)
+      win32-certstore (~> 0.6.15)
+      win32-event (~> 0.6.1)
+      win32-eventlog (= 0.6.3)
+      win32-mmap (~> 0.4.1)
+      win32-mutex (~> 0.4.2)
+      win32-process (~> 0.9)
+      win32-service (>= 2.1.5, < 3.0)
+      win32-taskscheduler (~> 2.0)
+      wmi-lite (~> 1.0)
 
 PATH
   remote: .
   specs:
-    knife (19.1.24)
+    knife (19.1.74)
       bcrypt_pbkdf (~> 1.1)
       chef (>= 19)
       chef-config (>= 19)
@@ -91,82 +116,93 @@ PATH
       tty-table (~> 0.11)
 
 PATH
-  remote: /home/phil/src/git/chef/chef-config
+  remote: C:/localrepo/chef4/chef-config
   specs:
-    chef-config (19.1.24)
+    chef-config (19.1.74)
       addressable
-      chef-utils (= 19.1.24)
+      chef-utils (= 19.1.74)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
 
 PATH
-  remote: /home/phil/src/git/chef/chef-utils
+  remote: C:/localrepo/chef4/chef-utils
   specs:
-    chef-utils (19.1.24)
+    chef-utils (19.1.74)
       concurrent-ruby
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.8.7)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
+    activesupport (7.2.2.2)
+      base64
+      benchmark (>= 0.3)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.3.1)
+      connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
+      logger (>= 1.4.2)
       minitest (>= 5.1)
-      tzinfo (~> 2.0)
+      securerandom (>= 0.3)
+      tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.3)
-    aws-eventstream (1.3.2)
-    aws-partitions (1.1107.0)
-    aws-sdk-core (3.224.0)
+    aws-eventstream (1.4.0)
+    aws-partitions (1.1155.0)
+    aws-sdk-core (3.232.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
       base64
+      bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-kms (1.101.0)
-      aws-sdk-core (~> 3, >= 3.216.0)
+    aws-sdk-kms (1.112.0)
+      aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.186.1)
-      aws-sdk-core (~> 3, >= 3.216.0)
+    aws-sdk-s3 (1.198.0)
+      aws-sdk-core (~> 3, >= 3.231.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-secretsmanager (1.115.0)
-      aws-sdk-core (~> 3, >= 3.216.0)
+    aws-sdk-secretsmanager (1.120.0)
+      aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sigv4 (1.11.0)
+    aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
-    bcrypt_pbkdf (1.1.1-arm64-darwin)
-    bcrypt_pbkdf (1.1.1-x86_64-darwin)
-    bigdecimal (3.1.9)
+    benchmark (0.4.1)
+    bigdecimal (3.2.3)
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
     builder (3.3.0)
     byebug (12.0.0)
-    chef-gyoku (1.4.5)
+    chef-gyoku (1.5.0)
       builder (>= 2.1.2)
       rexml (~> 3.4)
-    chef-licensing (1.0.4)
-      activesupport (~> 7.0, < 7.1)
+    chef-licensing (1.1.0)
+      activesupport (~> 7.2, >= 7.2.2.1)
       chef-config (>= 15)
       faraday (>= 1, < 3)
       faraday-http-cache
+      ostruct (~> 0.1.0)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
+    chef-powershell (18.1.0)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
     chef-vault (4.1.23)
-    chef-winrm (2.3.12)
+    chef-winrm (2.4.4)
       builder (>= 2.1.2)
-      chef-gyoku (~> 1.4.0, <= 1.4.5)
+      chef-gyoku (~> 1.5)
       erubi (~> 1.8)
-      ffi (>= 1.15.5, < 1.17.0)
+
       gssapi (~> 1.2)
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
@@ -177,40 +213,41 @@ GEM
       chef-winrm (>= 2.3.11)
       chef-winrm-fs (>= 1.3.7)
       erubi (~> 1.8)
-    chef-winrm-fs (1.3.7)
-      chef-winrm (>= 2.3.11)
+    chef-winrm-fs (1.4.1)
+      benchmark (~> 0.4.0)
+      chef-winrm (~> 2.4)
+      csv (~> 3.3)
       erubi (>= 1.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
-    chef-zero (15.0.17)
-      activesupport (~> 7.0, < 7.1)
-      ffi-yajl (~> 2.2)
-      hashie (>= 2.0, < 5.0)
+    chef-zero (15.0.21)
+      activesupport (>= 7, < 8.1)
+      ffi-yajl (>= 2.2, < 4.0)
+      hashie (>= 2.0, < 6.0)
       mixlib-log (>= 2.0, < 4.0)
-      rack (~> 3.1, >= 3.1.10)
+      rack (~> 3.1, >= 3.1.16)
       rackup (~> 2.2, >= 2.2.1)
+      unf_ext (~> 0.0.8)
       uuidtools (~> 2.1)
       webrick
-    cheffish (17.1.8)
-      chef-utils (>= 17.0)
-      chef-zero (>= 14.0)
-      logger (< 1.6.0)
-      net-ssh
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
-    cookstyle (8.1.3)
-      rubocop (= 1.75.6)
+    connection_pool (2.5.4)
+    cookstyle (8.4.0)
+      rubocop (= 1.79.2)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
+    csv (3.3.5)
     date (3.4.1)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
     domain_name (0.6.20240107)
+    drb (2.2.3)
     erubi (1.13.1)
     erubis (2.7.0)
-    faraday (2.13.1)
+    faraday (2.13.4)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -218,18 +255,20 @@ GEM
       faraday (>= 1, < 3)
     faraday-http-cache (2.5.1)
       faraday (>= 0.8)
-    faraday-net_http (3.4.0)
+    faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
     ffi (1.16.3)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
+    ffi-win32-extensions (1.0.4)
+      ffi
     ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
     hashdiff (1.2.0)
-    hashie (4.1.0)
+    hashie (5.0.0)
     highline (2.1.0)
     http-accept (1.7.0)
     http-cookie (1.0.8)
@@ -265,8 +304,9 @@ GEM
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
     ipaddress (0.8.3)
+    iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.12.2)
+    json (2.13.2)
     language_server-protocol (3.17.0.5)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
@@ -276,7 +316,7 @@ GEM
       tty-prompt (~> 0.20)
     lint_roller (1.1.0)
     little-plugger (1.1.4)
-    logger (1.5.3)
+    logger (1.7.0)
     logging (2.4.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
@@ -284,9 +324,9 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0520)
+    mime-types-data (3.2025.0902)
     minitest (5.25.5)
-    mixlib-archive (1.1.7)
+    mixlib-archive (1.1.7-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
@@ -294,9 +334,12 @@ GEM
       tomlrb
     mixlib-log (3.2.3)
       ffi (>= 1.15.5)
-    mixlib-shellout (3.3.9)
+    mixlib-shellout (3.3.9-x64-mingw-ucrt)
       chef-utils
-    multi_json (1.15.0)
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.9)
+      wmi-lite (~> 1.0)
+    multi_json (1.17.0)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
     net-ftp (0.3.8)
@@ -319,8 +362,9 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
+    ostruct (0.1.0)
     parallel (1.27.0)
-    parser (3.3.8.0)
+    parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
     parslet (1.8.2)
@@ -340,35 +384,35 @@ GEM
       pry (~> 0.13)
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.1.15)
+    rack (3.2.1)
     rackup (2.2.1)
       rack (>= 3)
     rainbow (3.1.1)
-    rake (13.2.1)
-    regexp_parser (2.10.0)
+    rake (13.3.0)
+    regexp_parser (2.11.2)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.4.1)
-    rspec (3.13.0)
+    rexml (3.4.2)
+    rspec (3.13.1)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.3)
+    rspec-core (3.13.5)
       rspec-support (~> 3.13.0)
-    rspec-expectations (3.13.4)
+    rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-its (1.3.1)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
-    rspec-mocks (3.13.4)
+    rspec-mocks (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-support (3.13.3)
-    rubocop (1.75.6)
+    rspec-support (3.13.5)
+    rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -376,23 +420,28 @@ GEM
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
+      rubocop-ast (>= 1.46.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.44.1)
+    rubocop-ast (1.46.0)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     ruby-progressbar (1.13.0)
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
+    securerandom (0.4.1)
     semverse (3.0.2)
+    socksify (1.8.1)
     sslshake (1.3.1)
     strings (0.2.1)
       strings-ansi (~> 0.2)
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    structured_warnings (0.5.0)
+    syslog (0.3.0)
+      logger
     syslog-logger (1.6.8)
     thor (1.2.2)
     time (0.4.1)
@@ -410,10 +459,11 @@ GEM
       aws-sigv4 (~> 1.5)
       rest-client (~> 2.1)
       train-core (~> 3.0)
-    train-winrm (0.2.19)
-      chef-winrm (~> 2.3.12)
+    train-winrm (0.4.0)
+      chef-winrm (~> 2.4.4)
       chef-winrm-elevated (~> 1.2.5)
-      chef-winrm-fs (~> 1.3.7)
+      chef-winrm-fs (~> 1.4.1)
+      socksify (~> 1.8)
     tty-box (0.7.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
@@ -448,6 +498,28 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
+    win32-api (1.10.1-universal-mingw32)
+    win32-certstore (0.6.16)
+      chef-powershell
+      ffi
+    win32-event (0.6.3)
+      win32-ipc (>= 0.6.0)
+    win32-eventlog (0.6.3)
+      ffi
+    win32-ipc (0.7.0)
+      ffi
+    win32-mmap (0.4.2)
+      ffi
+    win32-mutex (0.4.3)
+      win32-ipc (>= 0.6.0)
+    win32-process (0.10.0)
+      ffi (>= 1.0.0)
+    win32-service (2.3.2)
+      ffi
+      ffi-win32-extensions
+    win32-taskscheduler (2.0.4)
+      ffi
+      structured_warnings
     wisper (2.0.1)
     wmi-lite (1.0.7)
 
@@ -462,7 +534,7 @@ DEPENDENCIES
   chef-bin!
   chef-config!
   chef-utils!
-  cheffish (>= 14)
+  cheffish!
   crack (< 0.4.6)
   knife!
   ohai!
@@ -474,4 +546,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.3.27
+   2.6.9
