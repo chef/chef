@@ -5,7 +5,7 @@ $env:HAB_ORIGIN = "chef"
 $env:CHEF_LICENSE = "accept-no-persist"
 $env:HAB_LICENSE = "accept-no-persist"
 $env:HAB_NONINTERACTIVE = "true"
-$env:HAB_BLDR_CHANNEL = "LTS-2024"
+$env:HAB_BLDR_CHANNEL = "base-2025"
 $env:PROJECT_NAME = "chef"
 $env:ARTIFACTORY_ENDPOINT = "https://artifactory-internal.ps.chef.co/artifactory"
 $env:ARTIFACTORY_USERNAME = "buildkite"
@@ -15,8 +15,8 @@ if (-not $?) { throw "Could not ensure the minimum hab version required is insta
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $env:Path = "C:\hab\bin;" + $env:Path # add hab bin path for binlinking so 'gem' command is found.
 
-Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
-hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
+Write-Output "--- Installing chef/ruby3_4-plus-devkit via Habitat"
+hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 
 Write-Output "--- Building and pushing gems to Artifactory"
@@ -45,7 +45,7 @@ try {
 
     # Build gems via habitat
     Write-Host "Building gems via habitat"
-    hab pkg build . --refresh-channel LTS-2024
+    hab pkg build . --refresh-channel base-2025
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Failed to build package" -ForegroundColor Yellow
