@@ -4,6 +4,8 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
+
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
@@ -29,8 +31,6 @@ else
   # bundling in omnibus
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
-
-gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
   gem "appbundler"
