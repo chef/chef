@@ -310,7 +310,7 @@ describe Chef::Recipe do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        eend.to raise_error(NameError, /undefined local variable or method [`']no_such_resource[`']/)
+        end.to raise_error(NameError, /undefined local variable or method [`']no_such_resource[`']/)
       end
 
       it "gives a sane error message when using build_resource" do

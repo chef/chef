@@ -114,7 +114,7 @@ class Chef
 
         CHEF_SERVER_REPORTERS = %w{chef-server chef-server-compliance chef-server-visibility chef-server-automate}.freeze
         def self.chef_server_reporter?
-          (Array(Chef.node.attributes["audit"]["reporter"]) & CHEF_SERVER_REPORTERS).any?
+          Array(Chef.node.attributes["audit"]["reporter"]).intersect?(CHEF_SERVER_REPORTERS)
         end
 
         CHEF_SERVER_FETCHERS = %w{chef-server chef-server-compliance chef-server-visibility chef-server-automate}.freeze
