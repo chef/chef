@@ -36,13 +36,8 @@ GIT
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw-ucrt)
-      ffi (~> 1.15)
-      http-accept (>= 1.7.0, < 2.0)
+      ffi (>= 1.15.5, <= 1.16.3)
+      http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
@@ -227,7 +222,6 @@ GEM
     chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
-    chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -293,9 +287,7 @@ GEM
       net-http (>= 0.5.0)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.17.2)
-    ffi (1.17.2-arm64-darwin)
-    ffi (1.17.2-x64-mingw-ucrt)
+    ffi (1.16.3)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -559,8 +551,6 @@ GEM
     wmi-lite (1.0.7)
 
 PLATFORMS
-  arm64-darwin-21
-  ruby
   x64-mingw-ucrt
 
 DEPENDENCIES

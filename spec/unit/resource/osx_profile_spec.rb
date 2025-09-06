@@ -244,8 +244,10 @@ describe Chef::Resource::OsxProfile do
       resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(no_profiles)
       provider.load_current_resource
-      # Mock profile_installed? to return true since we're testing that it doesn't install when already installed
-      allow(provider).to receive(:profile_installed?).and_return(true)
+      # Mock profile_installed? to return false since we're testing that it installs when not installed
+      allow(provider).to receive(:profile_installed?).and_return(false)
+      # Mock write_profile_to_disk to avoid plist conversion issues
+      allow(provider).to receive(:write_profile_to_disk).and_return("/tmp/test.mobileconfig")
       expect(provider).to receive(:install_profile)
       expect { provider.run_action(:install) }.to_not raise_error
     end
@@ -254,6 +256,8 @@ describe Chef::Resource::OsxProfile do
       resource.profile test_profile
       allow(provider).to receive(:get_installed_profiles).and_return(all_profiles)
       provider.load_current_resource
+      # Mock profile_installed? to return true since the profile is already installed
+      allow(provider).to receive(:profile_installed?).and_return(true)
       expect(provider).to_not receive(:install_profile)
       expect { provider.action_install }.to_not raise_error
     end
