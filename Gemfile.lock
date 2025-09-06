@@ -36,7 +36,13 @@ GIT
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
-      http-accept (~> 2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw-ucrt)
+      ffi (~> 1.15)
+      http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
@@ -44,15 +50,15 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.1.58)
+    chef (19.1.74)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.58)
+      chef-config (= 19.1.74)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.1.58)
+      chef-utils (= 19.1.74)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
@@ -82,16 +88,16 @@ PATH
       uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
-    chef (19.1.58-universal-mingw-ucrt)
+    chef (19.1.74-universal-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.58)
+      chef-config (= 19.1.74)
       chef-licensing (>= 0.7.5)
       chef-powershell (~> 18.1.0)
-      chef-utils (= 19.1.58)
+      chef-utils (= 19.1.74)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
@@ -136,15 +142,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.1.58)
-      chef (= 19.1.58)
+    chef-bin (19.1.74)
+      chef (= 19.1.74)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.1.58)
+    chef-config (19.1.74)
       addressable
-      chef-utils (= 19.1.58)
+      chef-utils (= 19.1.74)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -154,7 +160,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.1.58)
+    chef-utils (19.1.74)
       concurrent-ruby
 
 GEM
