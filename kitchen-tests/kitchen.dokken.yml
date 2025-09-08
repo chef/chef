@@ -12,6 +12,8 @@ driver:
   volumes:
     - /home/runner/work/chef/chef/kitchen-tests/chef-infra-client-latest.hart:/chef-infra-client-latest.hart
     - /home/runner/work/chef/chef/kitchen-tests/gha-key.tar.gz:/gha-key.tar.gz
+  environment:
+    - HAB_AUTH_TOKEN
 
 transport:
   name: dokken
