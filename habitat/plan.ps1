@@ -169,7 +169,7 @@ function Invoke-Build {
                 # The rest client doesn't have an 'Install' task so it bombs out when we call Rake Install for it
                 # Happily, its Rakefile ultimately calls 'gem build' to build itself with. We're doing that here.
                 if ($git_gem -match "rest-client"){
-                    $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
+                    $gemspec_path = $git_gem.ToString() + "\rest-client.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
