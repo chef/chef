@@ -17,9 +17,9 @@ $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
   "core/libarchive"
-  "chef/ruby3_4-plus-devkit"
+  "core/ruby3_4-plus-devkit"
   "chef/chef-powershell-shim"
-  "core/visual-cpp-redist-2015"
+  "core/visual-cpp-redist-2022"
 )
 
 function Invoke-Begin {
@@ -45,7 +45,7 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
-    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
@@ -169,7 +169,7 @@ function Invoke-Build {
                 # The rest client doesn't have an 'Install' task so it bombs out when we call Rake Install for it
                 # Happily, its Rakefile ultimately calls 'gem build' to build itself with. We're doing that here.
                 if ($git_gem -match "rest-client"){
-                    $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
+                    $gemspec_path = $git_gem.ToString() + "\rest-client.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
