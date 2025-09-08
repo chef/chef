@@ -41,7 +41,6 @@ class Chef
           count
           cycle
           deconstruct_keys
-          deep_merge?
           default
           default_proc
           deep_merge?
