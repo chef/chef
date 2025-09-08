@@ -18,7 +18,7 @@ $pkg_deps=@(
   "core/openssl"
   "core/zlib"
   "core/libarchive"
-  "chef/ruby3_4-plus-devkit"
+  "core/ruby3_4-plus-devkit"
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015"
 )

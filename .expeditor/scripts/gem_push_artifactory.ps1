@@ -15,7 +15,7 @@ if (-not $?) { throw "Could not ensure the minimum hab version required is insta
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $env:Path = "C:\hab\bin;" + $env:Path # add hab bin path for binlinking so 'gem' command is found.
 
-Write-Output "--- Installing chef/ruby3_4-plus-devkit via Habitat"
+Write-Output "--- Installing core/ruby3_4-plus-devkit via Habitat"
 hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 
