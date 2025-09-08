@@ -30,7 +30,7 @@ if(-not ($installed_version -match ('^2'))){
     }
 }
 
-Write-Output "--- Installing chef/ruby3_4-plus-devkit via Habitat"
+Write-Output "--- Installing core/ruby3_4-plus-devkit via Habitat"
 hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 $ruby_dir = & hab pkg path core/ruby3_4-plus-devkit
