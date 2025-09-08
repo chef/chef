@@ -5,7 +5,7 @@ class Chef
   module ChefFS
     module DataHandler
       class DataBagItemDataHandler < DataHandlerBase
-        RESERVED_NAMES = /^(node|role|environment|client)$/.freeze
+        RESERVED_NAMES = /^(node|role|environment|client)$/
 
         def normalize(data_bag_item, entry)
           # If it's wrapped with raw_data, unwrap it.
