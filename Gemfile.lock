@@ -32,11 +32,17 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 3e962d5611a35aeb8e589729fcb2e610cc477963
+  revision: badd0bea3c31a2ed1f49590760d2e4b665ecbce3
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
-      http-accept (~> 2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw-ucrt)
+      ffi (~> 1.15)
+      http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
@@ -134,13 +140,13 @@ PATH
       wmi-lite (~> 1.0)
 
 PATH
-  remote: chef-bin
+  remote: ../chef-bin
   specs:
     chef-bin (19.1.74)
       chef (= 19.1.74)
 
 PATH
-  remote: chef-config
+  remote: ../chef-config
   specs:
     chef-config (19.1.74)
       addressable
@@ -152,7 +158,7 @@ PATH
       tomlrb (~> 1.2)
 
 PATH
-  remote: chef-utils
+  remote: ../chef-utils
   specs:
     chef-utils (19.1.74)
       concurrent-ruby
