@@ -44,6 +44,7 @@ class Chef
           deep_merge?
           default
           default_proc
+          deep_merge?
           detect
           dig
           drop
