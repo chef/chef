@@ -52,7 +52,7 @@ detect_os() {
 # Check if running on Debian 9
 is_debian_9() {
     detect_os
-    if [[ "$OS" =~ "Debian" ]] && [[ "$VER" =~ ^9\. ]]; then
+    if [[ "$OS" =~ Debian ]] && [[ "$VER" == "9" ]]; then
         return 0  # true
     else
         return 1  # false
