@@ -483,6 +483,7 @@
     "grafanaserviceapi",
     "Graty",
     "Groh",
+    "groupinstall",
     "groupmembership",
     "GROUPNAME",
     "groupname",
@@ -1597,6 +1598,7 @@
     "WKSTA",
     "WMIGUID",
     "woot",
+    "workdir",
     "WPARAM",
     "WSCHILD",
     "wstring",
@@ -1646,7 +1648,6 @@
     "spec/**",
     "knife/spec/**",
     "docs_site",
-    "distro/ruby_bin_folder/**/*",
     "cspell.json",
     ".mailmap"
   ],

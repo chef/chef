@@ -309,6 +309,15 @@ class Chef
           "/etc/apt/keyrings/#{new_resource.repo_name}.gpg"
         end
 
+        # Get the current APT version, this is important for creating keyring files,
+        # on newer APT versions these need to be an _older_ GnuPG format due to "sqv"
+        # being used to verify
+        #
+        # @return [Integer]
+        def apt_version
+          @apt_version ||= shell_out("apt -v").stdout.strip[/([0-9]\.?){3}/, 0].to_i
+        end
+
         # Fetch the key using either cookbook_file or remote_file, validate it,
         # and install it with apt-key add
         # @param [String] key the key to install
@@ -320,6 +329,7 @@ class Chef
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
           keyfile_tmp_path = ::File.join(Chef::Config[:file_cache_path], key_name)
           keyfile_path = keyring_path
+          gpg_keyring_prefix = apt_version > 2 ? "gnupg-ring:" : ""
           tmp_dir = TargetIO::Dir.mktmpdir(".gpg")
           at_exit { TargetIO::FileUtils.remove_entry(tmp_dir) }
 
@@ -334,20 +344,19 @@ class Chef
               sensitive new_resource.sensitive
               action :create
               verify "gpg --homedir #{tmp_dir} %{path}"
-              notifies :delete, "file[#{keyfile_path}]", :immediately
-              notifies :run, "execute[dearmor #{keyfile_path}]", :immediately
+              notifies :run, "execute[import #{keyfile_path}]", :immediately
             end
 
-            execute "dearmor #{keyfile_path}" do
-              command [ "gpg", "--batch", "--yes", "--dearmor", "-o", keyfile_path, keyfile_tmp_path ]
+            execute "import #{keyfile_path}" do
+              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", "#{gpg_keyring_prefix}#{keyfile_path}", keyfile_tmp_path ]
               default_env true
               sensitive new_resource.sensitive
               action :nothing
-              only_if { !::File.exist?(keyfile_path) || ::File.read(keyfile_path).include?("-----BEGIN PGP PUBLIC KEY BLOCK-----") }
             end
 
             file keyfile_path do
               mode "0644"
+              notifies :run, "execute[import #{keyfile_path}]", :before unless ::File.exist?(keyfile_path)
             end
           else
             declare_resource(key_resource_type(key), keyfile_path) do
@@ -565,7 +574,12 @@ class Chef
 
         signed_by = new_resource.signed_by
         if signed_by == true
-          signed_by = keyring_path
+          if new_resource.key || ::File.exist?(keyring_path)
+            signed_by = keyring_path
+          else
+            # There isn't a key to use, so don't set the signed-by attribute
+            signed_by = false
+          end
         end
 
         repo = build_repo(
