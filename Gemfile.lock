@@ -393,10 +393,7 @@ GEM
     nori (2.7.0)
       bigdecimal
     openssl (3.3.0)
-<<<<<<< HEAD
-=======
     ostruct (0.1.0)
->>>>>>> bc70118fe8 (Updating Hab channels (#15242))
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
@@ -418,11 +415,7 @@ GEM
       pry (~> 0.13)
     public_suffix (6.0.2)
     racc (1.8.1)
-<<<<<<< HEAD
-    rack (3.1.16)
-=======
     rack (3.2.1)
->>>>>>> bc70118fe8 (Updating Hab channels (#15242))
     rackup (2.2.1)
       rack (>= 3)
     rainbow (3.1.1)
