@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "atlassian-mcp-server": {
+      "url": "https://mcp.atlassian.com/v1/sse",
+      "type": "http"
+    }
+  },
+  "inputs": []
+}
