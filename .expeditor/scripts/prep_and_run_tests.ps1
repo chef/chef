@@ -82,6 +82,48 @@ $powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
 $powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
 $env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
 
+# The Server Service is required for Windows testing and for some reason, testers are not starting it. We're forcing it on here.
+Write-Host "--- :gear: Verifying Server Service Status"
+$ServiceName = "Server"  # Replace with actual service name
+$Service = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+
+if ($null -eq $Service) {
+    Write-Error "Service '$ServiceName' not found on this system"
+    Exit 1
+}
+
+if ($Service.Status -ne "Running") {
+    Write-Host "Service '$ServiceName' is not running. Attempting to start..."
+    try {
+        Start-Service -Name $ServiceName -ErrorAction Stop
+        Write-Host "Service '$ServiceName' start command issued."
+
+        # Wait for service to reach Running status (max 30 seconds)
+        $timeout = 30
+        $timer = 0
+        do {
+            Start-Sleep -Seconds 1
+            $timer++
+            $Service = Get-Service -Name $ServiceName
+            Write-Host "Waiting for service to start... ($timer/$timeout seconds)"
+        } while ($Service.Status -ne "Running" -and $timer -lt $timeout)
+
+        if ($Service.Status -ne "Running") {
+            Write-Error "Service '$ServiceName' failed to start within $timeout seconds. Current status: $($Service.Status)"
+            Exit 1
+        }
+
+        Write-Host "Service '$ServiceName' is now running successfully."
+    }
+    catch {
+        Write-Error "Failed to start service '$ServiceName': $($_.Exception.Message)"
+        Exit 1
+    }
+}
+else {
+    Write-Host "Service '$ServiceName' is already running."
+}
+
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
     "Integration"   {[string[]]$RakeTest = "spec:integration"; break}
