@@ -116,14 +116,16 @@ if is_debian_9; then
         NEW_COMPARISON=$(version_compare "$NEW_VERSION" "$MIN_VERSION")
 
         if [ "$NEW_COMPARISON" = "older" ]; then
-            echo "Standard repository didn't provide newer version. Trying backports..."
+            echo "Standard repository didn't provide newer version. Trying archived backports..."
 
-            # Add stretch-backports for newer git
-            echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
-            apt-get update
+            # Add stretch-backports from archive for newer git (Debian 9 is EOL)
+            echo "deb http://archive.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
 
-            # Install git from backports
-            apt-get install -y -t stretch-backports git
+            # Need to allow unauthenticated packages for archived repos
+            apt-get update -o Acquire::Check-Valid-Until=false
+
+            # Install git from backports with special options for archived repo
+            apt-get install -y -t stretch-backports --allow-unauthenticated git
 
             # Final version check
             FINAL_VERSION=$(git --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
