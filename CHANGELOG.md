@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.72 -->
-## [v19.1.72](https://github.com/chef/chef/tree/v19.1.72) (2025-08-29)
+<!-- latest_release 19.1.74 -->
+## [v19.1.74](https://github.com/chef/chef/tree/v19.1.74) (2025-09-02)
 
 #### Merged Pull Requests
-- forward port of dll removal change from #15190 [#15215](https://github.com/chef/chef/pull/15215) ([rishichawda](https://github.com/rishichawda))
+- fix: apt_repository gpg key import for newer APT versions [#15220](https://github.com/chef/chef/pull/15220) ([fretb](https://github.com/fretb))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix: apt_repository gpg key import for newer APT versions [#15220](https://github.com/chef/chef/pull/15220) ([fretb](https://github.com/fretb)) <!-- 19.1.74 -->
+- don&#39;t ship specs with the gem [#15231](https://github.com/chef/chef/pull/15231) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.73 -->
 - forward port of dll removal change from #15190 [#15215](https://github.com/chef/chef/pull/15215) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.72 -->
 - [CHEF-18482] change adhoc pipeline to be hab based builds [#15120](https://github.com/chef/chef/pull/15120) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.71 -->
 - fix: multiple apt_repos with same key url should be signed-by [#15218](https://github.com/chef/chef/pull/15218) ([fretb](https://github.com/fretb)) <!-- 19.1.70 -->
