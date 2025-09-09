@@ -15,6 +15,7 @@ then
 fi
 
 echo "--- Update PATH and activate ruby and bundle"
+echo "+++ MY NAME IS RUBY. I AM HERE IN THIS SCRIPT JUST BEFORE IT DIESS "
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
