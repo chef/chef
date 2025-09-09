@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.15 -->
-## [v18.8.15](https://github.com/chef/chef/tree/v18.8.15) (2025-09-02)
+<!-- latest_release 18.8.16 -->
+## [v18.8.16](https://github.com/chef/chef/tree/v18.8.16) (2025-09-09)
 
 #### Merged Pull Requests
-- backport of #15231 - remove specs from final build [#15232](https://github.com/chef/chef/pull/15232) ([rishichawda](https://github.com/rishichawda))
+- Sean sype simmons/chef 25473 update cert [#15223](https://github.com/chef/chef/pull/15223) ([sean-sype-simmons](https://github.com/sean-sype-simmons))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Sean sype simmons/chef 25473 update cert [#15223](https://github.com/chef/chef/pull/15223) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.8.16 -->
 - backport of #15231 - remove specs from final build [#15232](https://github.com/chef/chef/pull/15232) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.15 -->
 - remove old dlls  [#15190](https://github.com/chef/chef/pull/15190) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.14 -->
 - Updated the chef dep of knife [#15211](https://github.com/chef/chef/pull/15211) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.13 -->
