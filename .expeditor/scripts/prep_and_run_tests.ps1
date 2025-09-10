@@ -89,6 +89,56 @@ switch ($TestType) {
     default         {throw "TestType $TestType not valid"}
 }
 
+if ( $RakeTest -match 'functional' ) {
+  # Check and manage LanmanServer service
+  try {
+      Write-Host "Checking LanmanServer service status..." -ForegroundColor Yellow
+
+      # Get the service object
+      $service = Get-Service -Name "LanmanServer" -ErrorAction Stop
+      $serviceWMI = Get-WmiObject -Class Win32_Service -Filter "Name='LanmanServer'" -ErrorAction Stop
+
+      Write-Host "Current service status: $($service.Status)" -ForegroundColor Cyan
+      Write-Host "Current startup type: $($serviceWMI.StartMode)" -ForegroundColor Cyan
+
+      # Check if service is disabled and enable it
+      if ($serviceWMI.StartMode -eq "Disabled") {
+          Write-Host "Service is disabled. Attempting to enable..." -ForegroundColor Yellow
+          $result = Set-Service -Name "LanmanServer" -StartupType Automatic -ErrorAction Stop
+          Write-Host "Service has been enabled (Automatic startup)" -ForegroundColor Green
+      }
+
+      # Check if service is stopped and start it
+      if ($service.Status -ne "Running") {
+          Write-Host "Service is not running. Attempting to start..." -ForegroundColor Yellow
+          Start-Service -Name "LanmanServer" -ErrorAction Stop
+
+          # Wait for service to start and verify
+          $timeout = 30 # seconds
+          $timer = 0
+          do {
+              Start-Sleep -Seconds 1
+              $timer++
+              $service = Get-Service -Name "LanmanServer"
+          } while ($service.Status -ne "Running" -and $timer -lt $timeout)
+
+          if ($service.Status -eq "Running") {
+              Write-Host "LanmanServer service started successfully!" -ForegroundColor Green
+          } else {
+              throw "Service failed to start within $timeout seconds. Current status: $($service.Status)"
+          }
+      } else {
+          Write-Host "LanmanServer service is already running!" -ForegroundColor Green
+      }
+  }
+  catch {
+      Write-Error "CRITICAL FAILURE: Unable to manage LanmanServer service. Error: $($_.Exception.Message)" -ErrorAction Stop
+      exit 1
+  }
+
+  Write-Host "LanmanServer service is now running and properly configured." -ForegroundColor Green
+}
+
 foreach($test in $RakeTest) {
     Write-Output "--- Chef $test run"
     bundle exec rake $test
