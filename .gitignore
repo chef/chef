@@ -105,3 +105,4 @@ chef_dictionary.txt
 
 # ignore any gems we build locally
 *.gem
+.aider*
