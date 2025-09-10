@@ -210,6 +210,9 @@ if ( $RakeTest -match 'functional' ) {
       Write-Host "Current service status: $($service.Status)" -ForegroundColor Cyan
       Write-Host "Current startup type: $($serviceWMI.StartMode)" -ForegroundColor Cyan
 
+      Write-Host "Getting current Service logs for diagnostics..." -ForegroundColor Yellow
+      Get-ServiceLogs
+
       # Check if service is disabled and enable it
       if ($serviceWMI.StartMode -eq "Disabled") {
           Write-Host "Service is disabled. Attempting to enable..." -ForegroundColor Yellow
