@@ -89,6 +89,115 @@ switch ($TestType) {
     default         {throw "TestType $TestType not valid"}
 }
 
+function Get-ServiceLogs{
+    # Script to analyze LanmanServer (Server) service events from System log
+  Write-Host "Scanning System Event Log for LanmanServer Service Events..." -ForegroundColor Yellow
+  Write-Host ("=" * 60) -ForegroundColor Yellow
+
+  try {
+      # Get events related to LanmanServer service from System log
+      $ServerEvents = Get-WinEvent -FilterHashtable @{
+          LogName = 'System'
+          ProviderName = 'Service Control Manager'
+      } -MaxEvents 1000 -ErrorAction Stop | Where-Object {
+          $_.Message -like "*LanmanServer*" -or
+          $_.Message -like "*Server*" -and $_.Message -like "*service*"
+      }
+
+      # Also check for any events with LanmanServer in the message from other providers
+      $AdditionalEvents = Get-WinEvent -FilterHashtable @{
+          LogName = 'System'
+      } -MaxEvents 2000 -ErrorAction Stop | Where-Object {
+          $_.Message -like "*LanmanServer*"
+      }
+
+      # Combine and sort events
+      $AllEvents = @($ServerEvents) + @($AdditionalEvents) |
+                  Sort-Object TimeCreated -Descending |
+                  Select-Object -First 20
+
+      if ($AllEvents.Count -eq 0) {
+          Write-Host "No LanmanServer service events found in recent System log entries." -ForegroundColor Green
+
+          # Check current service status
+          Write-Host "`nCurrent Server Service Status:" -ForegroundColor Cyan
+          Get-Service -Name "LanmanServer" | Format-Table Name, Status, StartType -AutoSize
+      }
+      else {
+          Write-Host "Found $($AllEvents.Count) relevant events (showing most recent):" -ForegroundColor Green
+          Write-Host ""
+
+          foreach ($Event in $AllEvents) {
+              # Color code based on event level
+              $Color = switch ($Event.LevelDisplayName) {
+                  "Error" { "Red" }
+                  "Warning" { "Yellow" }
+                  "Information" { "Green" }
+                  default { "White" }
+              }
+
+              Write-Host "Time: $($Event.TimeCreated)" -ForegroundColor White
+              Write-Host "Level: $($Event.LevelDisplayName)" -ForegroundColor $Color
+              Write-Host "Event ID: $($Event.Id)" -ForegroundColor White
+              Write-Host "Provider: $($Event.ProviderName)" -ForegroundColor White
+              Write-Host "Message: $($Event.Message)" -ForegroundColor $Color
+              Write-Host ("-" * 80) -ForegroundColor Gray
+          }
+
+          # Summary of event types
+          Write-Host "`nEvent Summary:" -ForegroundColor Cyan
+          $AllEvents | Group-Object LevelDisplayName |
+              Select-Object Name, Count |
+              Format-Table -AutoSize
+
+          # Show most recent error if any
+          $RecentError = $AllEvents | Where-Object { $_.LevelDisplayName -eq "Error" } | Select-Object -First 1
+          if ($RecentError) {
+              Write-Host "`nMost Recent Error Details:" -ForegroundColor Red
+              Write-Host "Time: $($RecentError.TimeCreated)" -ForegroundColor White
+              Write-Host "Event ID: $($RecentError.Id)" -ForegroundColor White
+              Write-Host "Message: $($RecentError.Message)" -ForegroundColor Red
+          }
+      }
+
+      # Additional diagnostic information
+      Write-Host ("`n" + ("=" * 60)) -ForegroundColor Yellow
+      Write-Host "Additional Diagnostic Information:" -ForegroundColor Yellow
+
+      # Current service status
+      Write-Host "`nServer Service Current Status:" -ForegroundColor Cyan
+      $ServerService = Get-Service -Name "LanmanServer"
+      Write-Host "Name: $($ServerService.Name)" -ForegroundColor White
+      Write-Host "Display Name: $($ServerService.DisplayName)" -ForegroundColor White
+      Write-Host "Status: $($ServerService.Status)" -ForegroundColor $(if($ServerService.Status -eq "Running"){"Green"}else{"Red"})
+      Write-Host "Start Type: $($ServerService.StartType)" -ForegroundColor White
+
+      # Check for dependent services
+      Write-Host "`nDependent Services:" -ForegroundColor Cyan
+      $DependentServices = Get-Service -Name "LanmanServer" | Select-Object -ExpandProperty DependentServices
+      if ($DependentServices) {
+          $DependentServices | Format-Table Name, Status, StartType -AutoSize
+      } else {
+          Write-Host "No dependent services found." -ForegroundColor White
+      }
+
+      # Check services that LanmanServer depends on
+      Write-Host "Services that LanmanServer depends on:" -ForegroundColor Cyan
+      $ServiceDependencies = Get-Service -Name "LanmanServer" | Select-Object -ExpandProperty ServicesDependedOn
+      if ($ServiceDependencies) {
+          $ServiceDependencies | Format-Table Name, Status, StartType -AutoSize
+      } else {
+          Write-Host "No service dependencies found." -ForegroundColor White
+      }
+
+  }
+  catch {
+      Write-Host "Error accessing System Event Log: $($_.Exception.Message)" -ForegroundColor Red
+      Write-Host "You may need to run this script as Administrator." -ForegroundColor Yellow
+  }
+
+}
+
 if ( $RakeTest -match 'functional' ) {
   # Check and manage LanmanServer service
   try {
