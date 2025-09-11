@@ -131,7 +131,7 @@ for gem in ${external_gems[@]}; do
       echo "    - bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec"
       ;;
     "berkshelf")
-      echo "    - bundle exec tasks/bin/run_external_test chef/berkshelf main rake"
+      echo "    - bundle exec tasks/bin/run_external_test chef/berkshelf daeb9e7cce63495fed55ee786e20a3cc10584133 rake"
       ;;
     *)
       echo -e "\n Gem $gem is not valid\n" >&2

@@ -16,7 +16,7 @@ gem "ffi", "< 1.17"
 # by running `bundle config set --local without development && bundle install` to speed up build times.
 group :development do
   # Use Berkshelf for resolving cookbook dependencies
-  gem "berkshelf", ">= 8.0"
+  gem "berkshelf", github: "https://github.com/chef/berkshelf", ref: "daeb9e7cce63495fed55ee786e20a3cc10584133"
 
   # Use Test Kitchen with Vagrant for converging the build environment
   gem "test-kitchen", ">= 1.23"
