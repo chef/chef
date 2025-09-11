@@ -8,10 +8,10 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
-gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
+gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/chef19-ruby34-update"
 
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
-  gem "ffi", ">= 1.15.5"
+  gem "ffi", ">= 1.15.5", "< 1.18.0"
 else
   gem "ffi", ">= 1.15.5", force_ruby_platform: true
 end

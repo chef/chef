@@ -185,6 +185,13 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
+
+        # Set up gem environment for installing to vendor directory
+        $ruby_version = "3.4.0"
+        $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+        $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+        $env:GEM_HOME = "$pkg_prefix/vendor"
+
         $install_attempt = 0
         do {
             Start-Sleep -Seconds 5
