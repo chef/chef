@@ -159,10 +159,11 @@ for plan in ${habitat_plans[@]}; do
     echo "        - HAB_AUTH_TOKEN"
     echo "      propagate-environment: true"
   else
-    echo "    queue: single-use-privileged"
+    echo "    queue: default-privileged"
     echo "  plugins:"
     echo "  - docker#v3.5.0:"
     echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
+    echo "      privileged: true"
     echo "      environment:"
     echo "        - HAB_AUTH_TOKEN"
     echo "      propagate-environment: true"
@@ -178,7 +179,7 @@ for plan in ${habitat_plans[@]}; do
   then
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
-    echo "    - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
-    echo "    - sudo ./.expeditor/scripts/verify-plan.sh"
+    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
+    echo "    - sudo -E ./.expeditor/scripts/verify-plan.sh"
   fi
 done
