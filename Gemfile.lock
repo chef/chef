@@ -68,7 +68,7 @@ PATH
       csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5)
+      ffi (>= 1.15.5, < 1.18.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -107,7 +107,7 @@ PATH
       csv (~> 3.3.5)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5)
+      ffi (>= 1.15.5, < 1.18.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -581,7 +581,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
+  ffi (>= 1.15.5, < 1.18.0)
   inspec-core-bin (~> 7.0.38.beta)
   ohai!
   openssl (= 3.3.0)

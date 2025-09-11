@@ -192,13 +192,39 @@ function Invoke-Build {
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
 
-        $install_attempt = 0
-        do {
-            Start-Sleep -Seconds 5
-            $install_attempt++
-            Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+        Write-BuildLine " ** Running 'rake install' for the dependencies first (chef-utils, chef-config)"
+        bundle exec rake pre_install:all --trace=stdout
+
+        Write-BuildLine " ** Building and installing the main chef gem first"
+        # Build the chef gem without chef-bin dependency
+        $gemspec_name = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+            "chef-universal-mingw-ucrt.gemspec"
+        } else {
+            "chef.gemspec"
+        }
+        gem build $gemspec_name
+        $chef_gem = Get-ChildItem -Name "chef*.gem" | Where-Object { $_ -notlike "chef-bin*" } | Sort-Object LastWriteTime | Select-Object -Last 1
+        if ($chef_gem) {
+            gem install $chef_gem --no-document
+            Write-BuildLine " -- chef gem installed: $chef_gem"
+        } else {
+            throw "Failed to build chef gem"
+        }
+
+        Write-BuildLine " ** Now building and installing chef-bin gem"
+        Push-Location "$HAB_CACHE_SRC_PATH/$pkg_dirname/chef-bin"
+        try {
+            gem build chef-bin.gemspec
+            $chef_bin_gem = Get-ChildItem -Name "chef-bin-*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($chef_bin_gem) {
+                gem install $chef_bin_gem --no-document
+                Write-BuildLine " -- chef-bin gem installed: $chef_bin_gem"
+            } else {
+                throw "Failed to build chef-bin gem"
+            }
+        } finally {
+            Pop-Location
+        }
 
     } finally {
         Pop-Location
@@ -216,6 +242,18 @@ function Invoke-Install {
         $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
+
+        # Debug: Show what gems are available
+        Write-BuildLine "** Debug: Available gems in vendor directory:"
+        if (Test-Path "$pkg_prefix/vendor/gems") {
+            Get-ChildItem "$pkg_prefix/vendor/gems" -Directory | ForEach-Object { Write-BuildLine " -- $($_.Name)" }
+        } else {
+            Write-BuildLine " -- vendor/gems directory does not exist"
+        }
+
+        Write-BuildLine "** Debug: Gem environment:"
+        Write-BuildLine " -- GEM_PATH: $env:GEM_PATH"
+        Write-BuildLine " -- GEM_HOME: $env:GEM_HOME"
 
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
