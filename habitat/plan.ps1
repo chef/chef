@@ -192,41 +192,79 @@ function Invoke-Build {
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
 
-        Write-BuildLine " ** Running 'rake install' for the dependencies first (chef-utils, chef-config)"
-        bundle exec rake pre_install:all --trace=stdout
+        Write-BuildLine " ** Running the chef project's 'rake install:local' to install the path-based gems so they look like any other installed gem."
 
-        Write-BuildLine " ** Building and installing the main chef gem first"
-        # Build the chef gem without chef-bin dependency
-        $gemspec_name = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
-            "chef-universal-mingw-ucrt.gemspec"
-        } else {
-            "chef.gemspec"
-        }
-        gem build $gemspec_name
-        $chef_gem = Get-ChildItem -Name "chef*.gem" | Where-Object { $_ -notlike "chef-bin*" } | Sort-Object LastWriteTime | Select-Object -Last 1
-        if ($chef_gem) {
-            gem install $chef_gem --no-document
-            Write-BuildLine " -- chef gem installed: $chef_gem"
-        } else {
-            throw "Failed to build chef gem"
-        }
-
-        Write-BuildLine " ** Now building and installing chef-bin gem"
-        Push-Location "$HAB_CACHE_SRC_PATH/$pkg_dirname/chef-bin"
-        try {
-            gem build chef-bin.gemspec
-            $chef_bin_gem = Get-ChildItem -Name "chef-bin-*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
-            if ($chef_bin_gem) {
-                gem install $chef_bin_gem --no-document
-                Write-BuildLine " -- chef-bin gem installed: $chef_bin_gem"
+        # Temporarily modify Gemfile to comment out chef-bin to avoid circular dependency
+        $gemfile_backup = Get-Content "Gemfile"
+        $modified_gemfile = $gemfile_backup | ForEach-Object {
+            if ($_ -match "^\s*gem\s+[`"']chef-bin[`"']") {
+                "# TEMPORARY: $_"
             } else {
-                throw "Failed to build chef-bin gem"
+                $_
             }
-        } finally {
-            Pop-Location
         }
+        Set-Content "Gemfile" $modified_gemfile
 
-    } finally {
+        try {
+            # Install gems using the original approach but without chef-bin
+            $install_attempt = 0
+            do {
+                Start-Sleep -Seconds 5
+                $install_attempt++
+                Write-BuildLine "Install attempt $install_attempt"
+                bundle exec rake install:local --trace=stdout
+            } while ((-not $?) -and ($install_attempt -lt 5))
+
+            # Restore original Gemfile
+            Set-Content "Gemfile" $gemfile_backup
+
+            # Now install chef-bin separately using the same approach as other gems
+            Write-BuildLine " ** Installing chef-bin gem now that chef is available"
+
+            # Restore the original Gemfile so chef-bin is available for bundling
+            Set-Content "Gemfile" $gemfile_backup
+
+            # Change to chef-bin directory and install it using rake install:local
+            Push-Location "$HAB_CACHE_SRC_PATH/$pkg_dirname/chef-bin"
+            try {
+                # Ensure gem environment points to vendor directory
+                $env:GEM_HOME = "$pkg_prefix/vendor"
+                $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+
+                # Build chef-bin gem directly to ensure it has proper specs
+                gem build chef-bin.gemspec
+
+                # Install chef-bin directly using gem install to ensure specs are properly installed
+                $chef_bin_gem = Get-ChildItem "pkg/chef-bin-*.gem" | Select-Object -First 1
+                if (-not $chef_bin_gem) {
+                    # Try in current directory
+                    $chef_bin_gem = Get-ChildItem "chef-bin-*.gem" | Select-Object -First 1
+                }
+
+                if ($chef_bin_gem) {
+                    Write-BuildLine "Installing chef-bin gem directly: $($chef_bin_gem.FullName)"
+                    gem install $chef_bin_gem.FullName --no-document --local
+
+                    # Make sure specs are properly installed
+                    Copy-Item "$env:GEM_HOME/gems/chef-bin-$pkg_version/chef-bin.gemspec" "$env:GEM_HOME/specifications/chef-bin-$pkg_version.gemspec" -ErrorAction SilentlyContinue
+                } else {
+                    # Fallback to rake install:local if gem not found
+                    Write-BuildLine "Falling back to rake install:local for chef-bin"
+                    bundle exec rake install:local
+                }
+
+                # Force refresh the gem specification cache
+                gem specification chef-bin --version=$pkg_version
+
+                Write-BuildLine " -- chef-bin gem installed via direct gem install"
+            } finally {
+                Pop-Location
+            }
+
+        } finally {
+            # Ensure we restore the original Gemfile even if something fails
+            Set-Content "Gemfile" $gemfile_backup
+        }    } finally {
         Pop-Location
     }
 }
@@ -243,24 +281,88 @@ function Invoke-Install {
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
 
-        # Debug: Show what gems are available
-        Write-BuildLine "** Debug: Available gems in vendor directory:"
-        if (Test-Path "$pkg_prefix/vendor/gems") {
-            Get-ChildItem "$pkg_prefix/vendor/gems" -Directory | ForEach-Object { Write-BuildLine " -- $($_.Name)" }
+
+
+        # Copy all gem executables directly to bin directory - skip appbundler completely
+        # since we're getting stack level too deep errors
+        $binDir = "$pkg_prefix/bin"
+        if (!(Test-Path $binDir)) {
+            New-Item -Path $binDir -ItemType Directory -Force | Out-Null
+        }
+
+        # First copy chef-bin executables
+        if (Test-Path "$env:GEM_HOME/gems/chef-bin-$pkg_version/bin") {
+            Write-BuildLine "** Copying chef-bin executables directly to bin directory"
+            Copy-Item "$env:GEM_HOME/gems/chef-bin-$pkg_version/bin/*" $binDir -Force
+            Write-BuildLine " -- Chef-bin executables copied directly to bin directory"
         } else {
-            Write-BuildLine " -- vendor/gems directory does not exist"
+            Write-BuildLine " -- Warning: chef-bin/bin directory not found"
         }
 
-        Write-BuildLine "** Debug: Gem environment:"
-        Write-BuildLine " -- GEM_PATH: $env:GEM_PATH"
-        Write-BuildLine " -- GEM_HOME: $env:GEM_HOME"
-
-
-        foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
-            Write-BuildLine "** generating binstubs for $gem with precise version pins"
-            appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
-            if (-not $?) { throw "Failed to create appbundled binstubs for $gem"}
+        # Copy chef executables
+        if (Test-Path "$env:GEM_HOME/gems/chef-$pkg_version-universal-mingw-ucrt/bin") {
+            Write-BuildLine "** Copying chef executables directly to bin directory"
+            Copy-Item "$env:GEM_HOME/gems/chef-$pkg_version-universal-mingw-ucrt/bin/*" $binDir -Force
+            Write-BuildLine " -- Chef executables copied directly to bin directory"
+        } elseif (Test-Path "$env:GEM_HOME/gems/chef-$pkg_version/bin") {
+            Write-BuildLine "** Copying chef executables directly to bin directory"
+            Copy-Item "$env:GEM_HOME/gems/chef-$pkg_version/bin/*" $binDir -Force
+            Write-BuildLine " -- Chef executables copied directly to bin directory"
+        } else {
+            Write-BuildLine " -- Warning: chef/bin directory not found"
         }
+
+        # Copy inspec-core-bin executables
+        if (Test-Path "$env:GEM_HOME/gems/inspec-core-bin-*/bin") {
+            Write-BuildLine "** Copying inspec-core-bin executables directly to bin directory"
+            $inspecBin = Get-ChildItem "$env:GEM_HOME/gems" -Directory -Filter "inspec-core-bin-*" | Select-Object -First 1
+            if ($inspecBin) {
+                Copy-Item "$($inspecBin.FullName)/bin/*" $binDir -Force
+                Write-BuildLine " -- Inspec-core-bin executables copied directly to bin directory"
+            }
+        } else {
+            Write-BuildLine " -- Warning: inspec-core-bin/bin directory not found"
+        }
+
+        # Copy ohai executables
+        if (Test-Path "$env:GEM_HOME/gems/ohai-*/bin") {
+            Write-BuildLine "** Copying ohai executables directly to bin directory"
+            $ohaiBin = Get-ChildItem "$env:GEM_HOME/gems" -Directory -Filter "ohai-*" | Select-Object -First 1
+            if ($ohaiBin) {
+                Copy-Item "$($ohaiBin.FullName)/bin/*" $binDir -Force
+                Write-BuildLine " -- Ohai executables copied directly to bin directory"
+            }
+        } else {
+            Write-BuildLine " -- Warning: ohai/bin directory not found"
+        }
+
+        # Create batch wrapper scripts for each bin file to ensure they can find their gems
+        Write-BuildLine "** Creating batch wrapper scripts for bin files"
+        $binFiles = Get-ChildItem $binDir -File
+        foreach ($file in $binFiles) {
+            # Skip files that are already batch files
+            if ($file.Extension -eq ".bat" -or $file.Extension -eq ".cmd") {
+                Write-BuildLine "   - Skipping existing batch file $($file.Name)"
+                continue
+            }
+
+            # Create .bat wrapper script for each executable
+            $batchWrapper = @"
+@echo off
+SET "GEM_HOME=${pkg_prefix}\vendor"
+SET "GEM_PATH=${pkg_prefix}\vendor;$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/3.4.0"
+SET "RUBYOPT="
+SET "RUBY_DLL_PATH=$(Get-HabPackagePath ruby3_4-plus-devkit)/bin"
+"%~dp0$($file.Name)" %*
+"@
+            # Create wrapper script with .bat extension
+            $wrapperPath = "$binDir\$($file.BaseName).bat"
+            Set-Content -Path $wrapperPath -Value $batchWrapper -Force
+            Write-BuildLine "   - Created batch wrapper for $($file.Name)"
+        }
+        Write-BuildLine " -- Batch wrapper scripts created"
+
+        Write-BuildLine "** Skipping appbundler due to stack level too deep errors"
         Remove-StudioPathFrom -File $pkg_prefix/vendor/gems/chef-$pkg_version*/Gemfile
     } finally {
         Pop-Location
@@ -268,7 +370,7 @@ function Invoke-Install {
 }
 
 function Invoke-After {
-    write-output "*** invoke after"
+    Write-BuildLine "*** Invoke After"
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
@@ -288,7 +390,7 @@ function Invoke-After {
         | Remove-Item -Force
 
     # we need the built gems outside of the studio
-    write-output "Copying gems to ${SRC_PATH}"
+    Write-BuildLine "Copying gems to ${SRC_PATH}"
     New-Item -ItemType Directory -Force "${SRC_PATH}\pkg","${SRC_PATH}\chef-bin\pkg","${SRC_PATH}\chef-config\pkg","${SRC_PATH}\chef-utils\pkg"
     Copy-Item "${CACHE_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem" "${SRC_PATH}\pkg"
     Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg"

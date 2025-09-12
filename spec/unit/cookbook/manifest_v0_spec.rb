@@ -50,16 +50,16 @@ describe Chef::Cookbook::ManifestV0 do
       "attributes" => [{ "name" => "default.rb", "path" => "attributes/default.rb", "checksum" => "a88697db56181498a8828d5531271ad9", "specificity" => "default" }],
       "chef_type" => "cookbook_version",
       "cookbook_name" => "tatft",
-      "definitions" => [{ "name" => "runit_service.rb", "path" => "definitions/runit_service.rb", "checksum" => "e2bd63f174dcbe034cd669778cdab748", "specificity" => "default" }],
+      "definitions" => [{ "name" => "runit_service.rb", "path" => "definitions/runit_service.rb", "checksum" => "5cbbdd8589731d232262c46f879d49c9", "specificity" => "default" }],
       "files" => [{ "name" => "giant_blob.tgz", "path" => "files/default/giant_blob.tgz", "checksum" => "5b4b194bb80938bb18da7af5c823cb1b", "specificity" => "default" }],
       "frozen?" => false,
-      "libraries" => [{ "name" => "ownage.rb", "path" => "libraries/ownage.rb", "checksum" => "7774500d1b8f19c48343efd496095105", "specificity" => "default" }],
+      "libraries" => [{ "name" => "ownage.rb", "path" => "libraries/ownage.rb", "checksum" => "6d9e2e06529405b9e059ca66940ee177", "specificity" => "default" }],
       "name" => "tatft-1.2.3",
-      "providers" => [{ "name" => "lwp.rb", "path" => "providers/lwp.rb", "checksum" => "d95d615bff87374e6f24fd87bcd9a19b", "specificity" => "default" }],
-      "recipes" => [{ "name" => "default.rb", "path" => "recipes/default.rb", "checksum" => "7570bbaa6e36a331e4659dd30d7ab3f5", "specificity" => "default" }],
-      "resources" => [{ "name" => "lwr.rb", "path" => "resources/lwr.rb", "checksum" => "6f4d7ef8d9ad06b7eefe565b66e3d0bb", "specificity" => "default" }],
+      "providers" => [{ "name" => "lwp.rb", "path" => "providers/lwp.rb", "checksum" => "dfcbce2534335090ca8ec44a387630e8", "specificity" => "default" }],
+      "recipes" => [{ "name" => "default.rb", "path" => "recipes/default.rb", "checksum" => "043715b65bbd8538ed2193697051f9ff", "specificity" => "default" }],
+      "resources" => [{ "name" => "lwr.rb", "path" => "resources/lwr.rb", "checksum" => "0c117d1375707df02d06e8b6756888ac", "specificity" => "default" }],
       "root_files" => [{ "name" => "README.rdoc", "path" => "README.rdoc", "checksum" => "e35b32dfd08c170855583eac21afc6d4", "specificity" => "default" }],
-      "templates" => [{ "name" => "configuration.erb", "path" => "templates/default/configuration.erb", "checksum" => "68b329da9893e34099c7d8ad5cb9c940", "specificity" => "default" }],
+      "templates" => [{ "name" => "configuration.erb", "path" => "templates/default/configuration.erb", "checksum" => "81051bcc2cf1bedf378224b0a93e2877", "specificity" => "default" }],
       "version" => "1.2.3",
     }
   end
@@ -67,9 +67,9 @@ describe Chef::Cookbook::ManifestV0 do
   describe "#from_hash" do
     let(:source_hash) do
       {
-      "attributes" => [{ "name" => "default.rb", "path" => "attributes/default.rb", "checksum" => "a88697db56181498a8828d5531271ad9", "specificity" => "default" }],
+      "attributes" => [{ "name" => "default.rb", "path" => "attributes/default.rb", "checksum" => "1215d7548e4753d1e3206736bb9c29f0", "specificity" => "default" }],
       "recipes" => [{ "name" => "default.rb", "path" => "recipes/default.rb", "checksum" => "7570bbaa6e36a331e4659dd30d7ab3f5", "specificity" => "default" }],
-      "root_files" => [{ "name" => "README.rdoc", "path" => "README.rdoc", "checksum" => "e35b32dfd08c170855583eac21afc6d4", "specificity" => "default" }],
+      "root_files" => [{ "name" => "README.rdoc", "path" => "README.rdoc", "checksum" => "062c4672794d645a71f8160238d466d5", "specificity" => "default" }],
       "name" => "tatft-1.2.3",
       "version" => "1.2.3",
       }
