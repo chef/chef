@@ -11,7 +11,7 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
-  gem "ffi", ">= 1.15.5"
+  gem "ffi", ">= 1.15.5", "< 1.18.0"
 else
   gem "ffi", ">= 1.15.5", force_ruby_platform: true
 end
