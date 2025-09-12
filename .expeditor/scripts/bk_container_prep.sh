@@ -17,10 +17,16 @@ if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
 deb http://cdn-aws.deb.debian.org/debian-archive/debian stretch main
 deb http://archive.debian.org/debian-security stretch/updates main
 deb http://cdn-aws.deb.debian.org/debian-archive/debian-security stretch/updates main
+deb http://archive.debian.org/debian stretch-backports main
 EOF
 
   echo "sources.list after:"
   sudo cat /etc/apt/sources.list
+
+  # explicitly install git from the backports repo here
+  echo "updating git on debian 9"
+  sudo apt-get update -y
+  sudo apt-get install -y -t stretch-backports git
 fi
 
 case "$ID" in
