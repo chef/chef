@@ -5,7 +5,15 @@ gem "chef", path: "."
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
+
+# Use platform-specific settings for ffi-libarchive
 gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
+
+# Ensure libarchive is properly linked on non-Windows platforms
+if !RUBY_PLATFORM.include?("mingw")
+  ENV["LDFLAGS"] ||= ""
+  ENV["LDFLAGS"] += " -L/hab/pkgs/core/libarchive/3.6.1/lib -Wl,-rpath,/hab/pkgs/core/libarchive/3.6.1/lib" if ENV["HAB_PLAN_CONTEXT"]
+end
 
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.

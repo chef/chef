@@ -24,11 +24,24 @@ def install_platform_specific_gem(gempath, gem_name)
       # On Unix/Linux, use the standard version with ruby platform
       puts "re-installing #{gem_name} for Unix/Linux platform..."
       begin
+        # For Linux, explicitly set the platform to ruby and ensure we're creating a vendored gem
         system("gem build #{gem_name}.gemspec") or raise "gem build failed"
-        system("gem install #{gem_name}-*.gem --conservative --minimal-deps --no-document --platform=ruby") or raise "gem install failed"
+        # Add --force to ensure it installs correctly
+        system("gem install #{gem_name}-*.gem --conservative --minimal-deps --no-document --platform=ruby --force") or raise "gem install failed"
         puts "Successfully installed #{gem_name} for Unix/Linux"
+        
+        # Ensure the gem is properly linked in the vendor directory
+        installed_gem_path = `gem which #{gem_name} 2>/dev/null`.strip.split('/lib/')[0]
+        if installed_gem_path && !installed_gem_path.empty?
+          puts "Installed gem found at: #{installed_gem_path}"
+        else
+          puts "Warning: Could not locate installed #{gem_name} gem path"
+        end
       rescue => e
         puts "Error installing Unix/Linux version: #{e.message}"
+        # Try one more time with default options
+        puts "Attempting fallback installation for #{gem_name}..."
+        system("gem install #{gem_name} --conservative --minimal-deps --no-document") or puts "Fallback gem install failed too"
       end
     end
   end
@@ -127,10 +140,43 @@ end
 platform_specific_gems = ["ffi-libarchive", "rest-client"]
 
 platform_specific_gems.each do |gem_base_name|
+  puts "Processing platform-specific gem: #{gem_base_name}"
+  gem_found = false
+  
   Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
-    next unless File.basename(gempath).start_with?("#{gem_base_name}-")
+    if File.basename(gempath).start_with?("#{gem_base_name}-")
+      gem_found = true
+      puts "Found #{gem_base_name} at path: #{gempath}"
+      install_platform_specific_gem(gempath, gem_base_name)
+      break # Only process the first matching directory for each gem
+    end
+  end
+  
+  unless gem_found
+    puts "Warning: Could not find #{gem_base_name} in bundler gems directory"
+    # Attempt to find the gem elsewhere
+    puts "Searching for #{gem_base_name} in bundler cache..."
+    cache_paths = Dir["#{gem_home}/cache/#{gem_base_name}-*.gem"]
+    if !cache_paths.empty?
+      puts "Found #{gem_base_name} in cache: #{cache_paths.first}"
+      # Install directly from cache
+      system("gem install #{cache_paths.first} --conservative --minimal-deps --no-document --force") or 
+        puts "Failed to install #{gem_base_name} from cache"
+    else
+      puts "Attempting to install #{gem_base_name} directly from rubygems..."
+      system("gem install #{gem_base_name} --conservative --minimal-deps --no-document") or 
+        puts "Failed to install #{gem_base_name} from rubygems"
+    end
+  end
+end
 
-    install_platform_specific_gem(gempath, gem_base_name)
-    break # Only process the first matching directory for each gem
+# Final verification step
+platform_specific_gems.each do |gem_name|
+  puts "Verifying #{gem_name} installation..."
+  installed = system("gem list -i #{gem_name} > /dev/null 2>&1")
+  if installed
+    puts "✓ #{gem_name} is properly installed"
+  else
+    puts "⚠ #{gem_name} appears to be missing or improperly installed"
   end
 end
