@@ -100,7 +100,7 @@ do_prepare() {
     bundle config --local build.ffi "-Wl,-rpath,'${LD_RUN_PATH}'"
     
     # Explicitly set config for ffi-libarchive to ensure proper compilation with system libarchive
-    bundle config --local build.ffi-libarchive "--with-opt-dir=$(pkg_path_for libarchive) -Wl,-rpath,'${LD_RUN_PATH}'""
+    bundle config --local build.ffi-libarchive "--with-opt-dir=$(pkg_path_for libarchive) -Wl,-rpath,'${LD_RUN_PATH}'"
     bundle config --local jobs "$(nproc)"
     bundle config --local without server docgen maintenance pry travis integration ci
     bundle config --local shebang "$(pkg_path_for "$_chef_client_ruby")/bin/ruby"
@@ -127,9 +127,6 @@ do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
-    
-    build_line "Ensuring ffi-libarchive is properly installed before proceeding..."
-    bundle info ffi-libarchive || build_line "Warning: ffi-libarchive not found in bundle"
 
     build_line "Copying post-bundle-install.rb to cache path..."
     cp "${SRC_PATH}/post-bundle-install.rb" "${CACHE_PATH}/"
@@ -141,7 +138,6 @@ do_build() {
     build_line "Verifying ffi-libarchive installation after post-bundle script..."
     if ! gem list | grep -q ffi-libarchive; then
       build_line "ffi-libarchive not found in gem list, attempting direct installation..."
-      # Try to install directly from the git source
       git clone https://github.com/chef/ffi-libarchive.git
       cd ffi-libarchive
       gem build ffi-libarchive.gemspec
