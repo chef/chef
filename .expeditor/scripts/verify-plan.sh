@@ -33,6 +33,7 @@ git config --global --add safe.directory /workdir
 
 echo "--- :8ball: :linux: Verifying $PLAN"
 project_root="$(git rev-parse --show-toplevel)"
+echo "Project root is $project_root"
 
 echo "--- :key: Generating fake origin key"
 hab origin key generate "$HAB_ORIGIN"
