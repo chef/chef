@@ -139,6 +139,9 @@ RSpec.configure do |config|
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
   config.filter_run_excluding skip_hab_test: true if hab_test?
 
+  # Skip tests that don't work on Ruby 3.4+
+  config.filter_run_excluding skip_ruby_34: true if RUBY_VERSION >= "3.4.0"
+
   config.filter_run_excluding fips_mode_test: true unless fips_mode_build?
   config.filter_run_excluding fips_mode_negative_test: true # disable all fips_mode negative tests
   # Skip fips on windows

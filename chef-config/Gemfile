@@ -7,4 +7,5 @@ gemspec
 group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
+  gem "racc"
 end

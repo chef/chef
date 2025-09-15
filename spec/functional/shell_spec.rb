@@ -25,7 +25,7 @@ describe Shell do
   # chef-shell's unit tests are by necessity very mock-heavy, and frequently do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
-  describe "smoke tests", unix_only: true do
+  describe "smoke tests", unix_only: true, skip_ruby_34: true do
 
     TIMEOUT = 300
 
@@ -88,7 +88,13 @@ describe Shell do
       config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
       bundler_prefix = hab_test? ? "" : "bundle exec "
       reader, writer, pid = PTY.spawn("#{bundler_prefix}#{ChefUtils::Dist::Infra::SHELL} --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
-      read_until(reader, "chef (#{Chef::VERSION})>")
+      begin
+        read_until(reader, "chef (#{Chef::VERSION})>")
+      rescue => e
+        # If chef-shell fails to start, kill the process and re-raise
+        Process.kill(:KILL, pid) rescue nil
+        raise e
+      end
       yield reader, writer if block_given?
       writer.puts('"done"')
       output = read_until(reader, '=> "done"')

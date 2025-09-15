@@ -59,8 +59,15 @@ module Shell
   def self.start
     setup_logger
     # FUGLY HACK: irb gives us no other choice.
-    irb_help = [:help, :irb_help, IRB::ExtendCommandBundle::NO_OVERRIDE]
-    IRB::ExtendCommandBundle.instance_variable_get(:@ALIASES).delete(irb_help)
+    # Initialize IRB first to ensure ExtendCommandBundle is available
+    ::IRB.setup(nil)
+    begin
+      irb_help = [:help, :irb_help, IRB::ExtendCommandBundle::NO_OVERRIDE]
+      aliases = IRB::ExtendCommandBundle.instance_variable_get(:@ALIASES)
+      aliases.delete(irb_help) if aliases
+    rescue
+      # Skip IRB alias manipulation if it fails
+    end
 
     parse_opts
     Chef::Config[:shell_config] = options.config
@@ -72,7 +79,7 @@ module Shell
 
     # HACK: this duplicates the functions of IRB.start, but we have to do it
     # to get access to the main object before irb starts.
-    ::IRB.setup(nil)
+    # IRB.setup already called above
 
     irb_conf[:USE_COLORIZE] = options.config[:use_colorize]
     irb_conf[:USE_SINGLELINE] = options.config[:use_singleline]

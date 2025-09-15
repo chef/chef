@@ -60,7 +60,7 @@ begin
     desc "Print Specdoc for all specs"
     RSpec::Core::RakeTask.new(:doc) do |t|
       t.verbose = false
-      t.rspec_opts = %w{--format specdoc --dry-run --profile}
+      t.rspec_opts = %w{--format documentation --dry-run --profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
