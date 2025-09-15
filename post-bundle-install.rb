@@ -19,7 +19,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   # Also exclude ffi-libarchive which will be handled separately with platform-specific installation
-  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive}.include?(gem_name)
+  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive-universal-mingw-ucrt}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
@@ -95,7 +95,7 @@ end
 # Handle ffi-libarchive separately with platform-specific installation
 Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next unless File.basename(gempath).start_with?("ffi-libarchive-")
-  
+
   puts "Found ffi-libarchive at: #{gempath}"
   Dir.chdir(gempath) do
     if RUBY_PLATFORM.include?("mingw")
