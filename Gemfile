@@ -5,6 +5,7 @@ gem "chef", path: "."
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
+gem "ffi-libarchive", git: "https://github.com/chef/ffi-libarchive.git", branch: "main"
 
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
