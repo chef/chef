@@ -4,6 +4,36 @@ gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"
 
+# Helper method to install gems with platform-specific handling
+def install_platform_specific_gem(gempath, gem_name)
+  puts "Found #{gem_name} at: #{gempath}"
+  Dir.chdir(gempath) do
+    if RUBY_PLATFORM.include?("mingw")
+      # On Windows, we need the universal-mingw-ucrt version
+      puts "re-installing #{gem_name} for Windows platform..."
+      begin
+        system("gem build #{gem_name}.gemspec --platform=universal-mingw-ucrt") or raise "gem build failed"
+        system("gem install #{gem_name}-*-universal-mingw-ucrt.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+        puts "Successfully installed #{gem_name} for Windows"
+      rescue => e
+        puts "Error installing Windows version: #{e.message}. Trying default build..."
+        system("gem build #{gem_name}.gemspec") or puts "Default gem build failed too"
+        system("gem install #{gem_name}-*.gem --conservative --minimal-deps --no-document") or puts "Default gem install failed too"
+      end
+    else
+      # On Unix/Linux, use the standard version with ruby platform
+      puts "re-installing #{gem_name} for Unix/Linux platform..."
+      begin
+        system("gem build #{gem_name}.gemspec") or raise "gem build failed"
+        system("gem install #{gem_name}-*.gem --conservative --minimal-deps --no-document --platform=ruby") or raise "gem install failed"
+        puts "Successfully installed #{gem_name} for Unix/Linux"
+      rescue => e
+        puts "Error installing Unix/Linux version: #{e.message}"
+      end
+    end
+  end
+end
+
 # Install gems from git repos.  This makes the assumption that there is a <gem_name>.gemspec and
 # you can simply gem build + gem install the resulting gem, so nothing fancy.  This does not use
 # rake install since we need --conservative --minimal-deps in order to not install duplicate gems.
@@ -18,8 +48,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next unless gem_name
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
-  # Also exclude ffi-libarchive which will be handled separately with platform-specific installation
-  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive-universal-mingw-ucrt}.include?(gem_name)
+  # Also exclude gems that will be handled separately with platform-specific installation
+  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive ffi-libarchive-universal-mingw-ucrt rest-client rest-client-universal-mingw-ucrt}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
@@ -92,35 +122,15 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   system("gem dependency ffi")
 end
 
-# Handle ffi-libarchive separately with platform-specific installation
-Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
-  next unless File.basename(gempath).start_with?("ffi-libarchive-")
+# Handle platform-specific gems separately
+# List of gems that need platform-specific handling
+platform_specific_gems = ["ffi-libarchive", "rest-client"]
 
-  puts "Found ffi-libarchive at: #{gempath}"
-  Dir.chdir(gempath) do
-    if RUBY_PLATFORM.include?("mingw")
-      # On Windows, we need the universal-mingw-ucrt version
-      puts "re-installing ffi-libarchive for Windows platform..."
-      begin
-        system("gem build ffi-libarchive.gemspec --platform=universal-mingw-ucrt") or raise "gem build failed"
-        system("gem install ffi-libarchive-*-universal-mingw-ucrt.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
-        puts "Successfully installed ffi-libarchive for Windows"
-      rescue => e
-        puts "Error installing Windows version: #{e.message}. Trying default build..."
-        system("gem build ffi-libarchive.gemspec") or puts "Default gem build failed too"
-        system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document") or puts "Default gem install failed too"
-      end
-    else
-      # On Unix/Linux, use the standard version with ruby platform
-      puts "re-installing ffi-libarchive for Unix/Linux platform..."
-      begin
-        system("gem build ffi-libarchive.gemspec") or raise "gem build failed"
-        system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document --platform=ruby") or raise "gem install failed"
-        puts "Successfully installed ffi-libarchive for Unix/Linux"
-      rescue => e
-        puts "Error installing Unix/Linux version: #{e.message}"
-      end
-    end
+platform_specific_gems.each do |gem_base_name|
+  Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
+    next unless File.basename(gempath).start_with?("#{gem_base_name}-")
+    
+    install_platform_specific_gem(gempath, gem_base_name)
+    break # Only process the first matching directory for each gem
   end
-  break # Only process the first ffi-libarchive directory we find
 end
