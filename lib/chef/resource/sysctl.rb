@@ -140,11 +140,11 @@ class Chef
           directory new_resource.conf_dir
 
           file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
-            content contruct_sysctl_content
+            content construct_sysctl_content
           end
 
           execute "Load sysctl values" do
-            command "sysctl #{"-e " if new_resource.ignore_error}-p"
+            command "#{load_sysctl_command(ignore_error: new_resource.ignore_error)}"
             default_env true
             action :run
           end
@@ -161,7 +161,7 @@ class Chef
 
             execute "Load sysctl values" do
               default_env true
-              command "sysctl -p"
+              command "#{load_sysctl_command(ignore_error: new_resource.ignore_error)}"
               action :run
             end
           end
@@ -169,6 +169,20 @@ class Chef
       end
 
       action_class do
+        #
+        # Get the command to load sysctl values, handling Debian 13+ which uses systemd-sysctl
+        #
+        # @param [Boolean] ignore_error Whether to ignore errors in sysctl command
+        # @return [String] The command string
+        #
+        def load_sysctl_command(ignore_error: false)
+          if node["platform"] == "debian" && node["platform_version"].to_f >= 13.0
+            "systemctl restart systemd-sysctl.service"
+          else
+            "sysctl #{"-e " if ignore_error}-p"
+          end
+        end
+
         #
         # Shell out to set the sysctl value
         #
@@ -184,7 +198,7 @@ class Chef
         #
         # @return [String] The text file content
         #
-        def contruct_sysctl_content
+        def construct_sysctl_content
           sysctl_lines = Array(new_resource.comment).map { |c| "# #{c.strip}" }
 
           sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
