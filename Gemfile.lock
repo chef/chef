@@ -22,22 +22,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: ef0bce664bd9b3a95f9e06581eeb9a74fb1c364d
+  revision: c31c86976e5e92a3933f4d97b09f9ed6d3664ec9
   branch: main
   specs:
-    cheffish (17.2.0)
-      chef-utils (>= 17.0)
-      chef-zero (>= 14.0)
-      logger (~> 1.6)
-      net-ssh
-      syslog
-
-GIT
-  remote: https://github.com/chef/ohai.git
-  revision: c813fad09573d6a5659bce9d65478eab31a2c58a
-  branch: main
-  specs:
-    ohai (19.1.9)
+    ohai (19.1.10)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -59,7 +47,6 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
-      ffi (>= 1.15.5, < 1.18.0)
       fiddle
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -96,6 +83,7 @@ PATH
       iniparse (~> 1.4)
       inspec-core (~> 7.0.38.beta)
       license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
@@ -135,6 +123,7 @@ PATH
       inspec-core (~> 7.0.38.beta)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
       mixlib-log (>= 2.0.3, < 4.0)
@@ -163,7 +152,7 @@ PATH
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
-
+      
 PATH
   remote: chef-bin
   specs:
@@ -210,7 +199,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1155.0)
+    aws-partitions (1.1159.0)
     aws-sdk-core (3.232.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -222,7 +211,7 @@ GEM
     aws-sdk-kms (1.112.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.198.0)
+    aws-sdk-s3 (1.199.0)
       aws-sdk-core (~> 3, >= 3.231.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
@@ -249,9 +238,6 @@ GEM
       ostruct (~> 0.1.0)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.1.0)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
@@ -319,15 +305,15 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.2)
-    ffi-win32-extensions (1.0.4)
-      ffi
+    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x64-mingw-ucrt)
     ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
     fiddle (1.1.8)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
-    hashdiff (1.2.0)
+    hashdiff (1.2.1)
     hashie (5.0.0)
     http-accept (2.1.1)
     http-cookie (1.0.8)
@@ -365,7 +351,6 @@ GEM
     inspec-core-bin (7.0.38.beta)
       inspec-core (= 7.0.38.beta)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.13.2)
     language_server-protocol (3.17.0.5)
@@ -385,21 +370,20 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0902)
-    minitest (5.25.1)
+    mime-types-data (3.2025.0909)
+    minitest (5.25.5)
+    mixlib-archive (1.1.7)
+      mixlib-log
+    mixlib-archive (1.1.7-universal-mingw32)
+      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
     mixlib-log (3.2.3)
       ffi (>= 1.15.5)
-    mixlib-shellout (3.3.8)
+    mixlib-shellout (3.3.9)
       chef-utils
-    mixlib-shellout (3.3.8-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     multi_json (1.17.0)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
@@ -428,7 +412,7 @@ GEM
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.7.2)
-    prism (1.4.0)
+    prism (1.5.1)
     proxifier2 (1.1.0)
     pry (0.13.0)
       coderay (~> 1.1)
@@ -447,8 +431,8 @@ GEM
     rainbow (3.1.1)
     rake (13.3.0)
     rb-readline (0.5.5)
-    regexp_parser (2.11.2)
-    rexml (3.4.2)
+    regexp_parser (2.11.3)
+    rexml (3.4.4)
     rspec (3.13.1)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -492,7 +476,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.5.0)
     syslog (0.3.0)
       logger
     syslog-logger (1.6.8)
@@ -551,35 +534,21 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
-    win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.16)
-      chef-powershell
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
-    win32-process (0.10.0)
-      ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     wisper (2.0.1)
     wmi-lite (1.0.7)
 
 PLATFORMS
-  arm64-darwin-21
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
   ruby
-  x64-mingw-ucrt
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   appbundler
@@ -593,7 +562,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5, < 1.18.0)
+  ffi (>= 1.15.5)
   ffi-libarchive!
   inspec-core-bin (~> 7.0.38.beta)
   ohai!
@@ -608,4 +577,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.6.9
+   2.7.2
