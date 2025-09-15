@@ -90,3 +90,16 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   puts "Leftover ffi dependency tree..."
   system("gem dependency ffi")
 end
+
+# Re-install platform-specific ffi-libarchive gems
+if RUBY_PLATFORM.include?("mingw")
+  puts "re-installing ffi-libarchive-universal-mingw-ucrt..."
+  # Windows-specific gem installation
+  system("gem build ffi-libarchive.gemspec --platform=universal-mingw-ucrt") or raise "gem build failed" 
+  system("gem install ffi-libarchive-*-universal-mingw-ucrt.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+else
+  puts "re-installing ffi-libarchive..."
+  # Unix/Linux gem installation
+  system("gem build ffi-libarchive.gemspec") or raise "gem build failed"
+  system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document --ignore-dependencies --platform=ruby") or raise "gem install failed"
+end
