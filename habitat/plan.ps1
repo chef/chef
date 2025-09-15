@@ -155,6 +155,12 @@ function Invoke-Build {
         write-output "*** invoke-build"
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
+        # Ensure gem environment is set up correctly for appbundler
+        $ruby_version = "3.4.0"
+        $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+        $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+        $env:GEM_HOME = "$pkg_prefix/vendor"
+
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
@@ -209,7 +215,6 @@ function Invoke-Install {
         $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
-
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
