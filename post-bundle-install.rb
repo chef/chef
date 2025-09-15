@@ -49,7 +49,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   # Also exclude gems that will be handled separately with platform-specific installation
-  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive ffi-libarchive-universal-mingw-ucrt rest-client rest-client-universal-mingw-ucrt}.include?(gem_name)
+  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive-universal-mingw-ucrt rest-client rest-client-universal-mingw-ucrt}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
@@ -129,7 +129,7 @@ platform_specific_gems = ["ffi-libarchive", "rest-client"]
 platform_specific_gems.each do |gem_base_name|
   Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     next unless File.basename(gempath).start_with?("#{gem_base_name}-")
-    
+
     install_platform_specific_gem(gempath, gem_base_name)
     break # Only process the first matching directory for each gem
   end
