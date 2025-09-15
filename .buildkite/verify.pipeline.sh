@@ -7,7 +7,7 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
-test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-9" "ubuntu-2004")
+test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-11" "ubuntu-2204")
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
