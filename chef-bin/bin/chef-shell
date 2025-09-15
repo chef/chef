@@ -22,7 +22,15 @@ Encoding.default_external = Encoding::UTF_8
 
 require "irb"
 require "irb/completion"
-require "irb/ext/save-history"
+begin
+  require "irb/ext/save-history"
+rescue LoadError
+  begin
+    require "irb/ext/eval_history"
+  rescue LoadError, NameError
+    # IRB history extension not available or broken in this Ruby version
+  end
+end
 
 $:.unshift(File.expand_path(File.join(__dir__, "..", "lib")))
 

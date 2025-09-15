@@ -53,7 +53,7 @@ end
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
-    gem "ruby-shadow", platforms: :ruby
+    gem "gitlab-ruby-shadow", platforms: :ruby
   end
 end
 
@@ -65,7 +65,11 @@ end
 group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
-  gem "webmock"
+  gem "webmock", "~> 3.25"
+  gem "httpclient", "~> 2.9"
+  gem "syslog" # formerly stdlib
+  gem "csv" # formerly stdlib
+  gem "racc" # formerly stdlib
   gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end

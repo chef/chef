@@ -21,7 +21,7 @@ GIT
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (19.1.24)
+    chef-bin (19.1.75)
       chef (= 19.1.75)
 
 PATH
@@ -31,15 +31,15 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.24)
+      chef-config (= 19.1.75)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.1.24)
+      chef-utils (= 19.1.75)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5, < 1.17.0)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
@@ -60,13 +60,14 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
 
 PATH
   remote: .
   specs:
-    knife (19.1.24)
+    knife (19.1.75)
       bcrypt_pbkdf (~> 1.1)
       chef (>= 19)
       chef-config (>= 19)
@@ -91,30 +92,38 @@ PATH
       tty-table (~> 0.11)
 
 PATH
-  remote: /home/phil/src/git/chef/chef-config
+  remote: /Users/rmoriz/Sync/Projekte/chef/chef-config
   specs:
-    chef-config (19.1.24)
+    chef-config (19.1.75)
       addressable
-      chef-utils (= 19.1.24)
+      chef-utils (= 19.1.75)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
 
 PATH
-  remote: /home/phil/src/git/chef/chef-utils
+  remote: /Users/rmoriz/Sync/Projekte/chef/chef-utils
   specs:
-    chef-utils (19.1.24)
+    chef-utils (19.1.75)
       concurrent-ruby
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.8.7)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
+    abbrev (0.1.2)
+    activesupport (7.2.2.2)
+      base64
+      benchmark (>= 0.3)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.3.1)
+      connection_pool (>= 2.2.5)
+      drb
       i18n (>= 1.6, < 2)
+      logger (>= 1.4.2)
       minitest (>= 5.1)
-      tzinfo (~> 2.0)
+      securerandom (>= 0.3)
+      tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.3)
@@ -139,10 +148,9 @@ GEM
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.11.0)
       aws-eventstream (~> 1, >= 1.0.2)
-    base64 (0.2.0)
+    base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
-    bcrypt_pbkdf (1.1.1-arm64-darwin)
-    bcrypt_pbkdf (1.1.1-x86_64-darwin)
+    benchmark (0.4.1)
     bigdecimal (3.1.9)
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
@@ -151,11 +159,12 @@ GEM
     chef-gyoku (1.4.5)
       builder (>= 2.1.2)
       rexml (~> 3.4)
-    chef-licensing (1.0.4)
-      activesupport (~> 7.0, < 7.1)
+    chef-licensing (1.1.0)
+      activesupport (~> 7.2, >= 7.2.2.1)
       chef-config (>= 15)
       faraday (>= 1, < 3)
       faraday-http-cache
+      ostruct (~> 0.1.0)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
     chef-telemetry (1.1.1)
@@ -182,13 +191,14 @@ GEM
       erubi (>= 1.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
-    chef-zero (15.0.17)
-      activesupport (~> 7.0, < 7.1)
-      ffi-yajl (~> 2.2)
-      hashie (>= 2.0, < 5.0)
+    chef-zero (15.0.21)
+      activesupport (>= 7, < 8.1)
+      ffi-yajl (>= 2.2, < 4.0)
+      hashie (>= 2.0, < 6.0)
       mixlib-log (>= 2.0, < 4.0)
-      rack (~> 3.1, >= 3.1.10)
+      rack (~> 3.1, >= 3.1.16)
       rackup (~> 2.2, >= 2.2.1)
+      unf_ext (~> 0.0.8)
       uuidtools (~> 2.1)
       webrick
     cheffish (17.1.8)
@@ -198,16 +208,19 @@ GEM
       net-ssh
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
+    connection_pool (2.5.4)
     cookstyle (8.1.3)
       rubocop (= 1.75.6)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
+    csv (3.3.5)
     date (3.4.1)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
     domain_name (0.6.20240107)
+    drb (2.2.3)
     erubi (1.13.1)
     erubis (2.7.0)
     faraday (2.13.1)
@@ -319,6 +332,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
+    ostruct (0.1.0)
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -340,25 +354,25 @@ GEM
       pry (~> 0.13)
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.1.15)
+    rack (3.2.1)
     rackup (2.2.1)
       rack (>= 3)
     rainbow (3.1.1)
-    rake (13.2.1)
+    rake (13.3.0)
     regexp_parser (2.10.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.4.1)
-    rspec (3.13.0)
+    rexml (3.4.4)
+    rspec (3.13.1)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
     rspec-core (3.13.3)
       rspec-support (~> 3.13.0)
-    rspec-expectations (3.13.4)
+    rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-its (1.3.1)
@@ -386,6 +400,7 @@ GEM
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
+    securerandom (0.4.1)
     semverse (3.0.2)
     sslshake (1.3.1)
     strings (0.2.1)
@@ -393,6 +408,8 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    syslog (0.3.0)
+      logger
     syslog-logger (1.6.8)
     thor (1.2.2)
     time (0.4.1)
@@ -458,12 +475,14 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  abbrev
   chef!
   chef-bin!
   chef-config!
   chef-utils!
   cheffish (>= 14)
   crack (< 0.4.6)
+  csv
   knife!
   ohai!
   pry
@@ -471,6 +490,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake (>= 12.3.3)
   rspec
+  syslog
   webmock
 
 BUNDLED WITH
