@@ -18,7 +18,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next unless gem_name
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
-  next if %w{chef chef-universal-mingw-ucrt proxifier}.include?(gem_name)
+  # Also exclude ffi-libarchive which will be handled separately with platform-specific installation
+  next if %w{chef chef-universal-mingw-ucrt proxifier ffi-libarchive}.include?(gem_name)
 
   puts "re-installing #{gem_name}..."
 
@@ -91,7 +92,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   system("gem dependency ffi")
 end
 
-# Re-install ffi-libarchive gem specifically - handle platform differences
+# Handle ffi-libarchive separately with platform-specific installation
 Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   next unless File.basename(gempath).start_with?("ffi-libarchive-")
   
@@ -100,13 +101,26 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     if RUBY_PLATFORM.include?("mingw")
       # On Windows, we need the universal-mingw-ucrt version
       puts "re-installing ffi-libarchive for Windows platform..."
-      system("gem build ffi-libarchive.gemspec --platform=universal-mingw-ucrt") or puts "gem build with platform failed, trying default"
-      system("gem install ffi-libarchive-*-universal-mingw-ucrt.gem --conservative --minimal-deps --no-document") or puts "gem install failed for universal-mingw-ucrt, will try default"
+      begin
+        system("gem build ffi-libarchive.gemspec --platform=universal-mingw-ucrt") or raise "gem build failed"
+        system("gem install ffi-libarchive-*-universal-mingw-ucrt.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+        puts "Successfully installed ffi-libarchive for Windows"
+      rescue => e
+        puts "Error installing Windows version: #{e.message}. Trying default build..."
+        system("gem build ffi-libarchive.gemspec") or puts "Default gem build failed too"
+        system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document") or puts "Default gem install failed too"
+      end
     else
-      # On Unix/Linux, use the standard version
+      # On Unix/Linux, use the standard version with ruby platform
       puts "re-installing ffi-libarchive for Unix/Linux platform..."
-      system("gem build ffi-libarchive.gemspec") or puts "gem build failed"
-      system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document --ignore-dependencies --platform=ruby") or puts "gem install failed"
+      begin
+        system("gem build ffi-libarchive.gemspec") or raise "gem build failed"
+        system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document --platform=ruby") or raise "gem install failed"
+        puts "Successfully installed ffi-libarchive for Unix/Linux"
+      rescue => e
+        puts "Error installing Unix/Linux version: #{e.message}"
+      end
     end
   end
+  break # Only process the first ffi-libarchive directory we find
 end
