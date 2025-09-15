@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-log", ">= 2.0.3", "< 4.0"
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", "~> 3.3.8"
-  s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
+  # s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 19.0"
   s.add_dependency "inspec-core", "~> 7.0.38.beta"
 
@@ -52,7 +52,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
   s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
-  s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
+  s.add_dependency "ffi-libarchive", "~> 1.2"
   s.add_dependency "chef-zero", "~> 15.0.21"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
 
