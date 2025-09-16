@@ -191,13 +191,87 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        $install_attempt = 0
-        do {
-            Start-Sleep -Seconds 5
-            $install_attempt++
-            Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+        
+        # Ensure GEM_PATH includes the vendor directory during gem installation
+        $original_gem_path = $env:GEM_PATH
+        $ruby_version = "3.4.0"
+        $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+        $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+        $env:GEM_HOME = "$pkg_prefix/vendor"
+        
+        # Install gems in dependency order: chef-utils -> chef-config -> chef -> chef-bin
+        Write-BuildLine " ** Installing gems in dependency order"
+        
+        # Explicitly install chef-utils and chef-config with correct gem environment
+        Write-BuildLine " ** Installing chef-utils gem"
+        $chef_utils_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-utils"
+        Push-Location $chef_utils_path
+        try {
+            bundle exec rake build
+            if (-not $?) { throw "unable to build chef-utils gem" }
+            
+            $chef_utils_gem_path = Get-ChildItem "pkg/chef-utils-*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($chef_utils_gem_path) {
+                Write-BuildLine " ** Installing chef-utils gem: $($chef_utils_gem_path.Name)"
+                gem install --local $chef_utils_gem_path.FullName
+                if (-not $?) { throw "unable to install chef-utils gem" }
+            }
+        } finally {
+            Pop-Location
+        }
+        
+        Write-BuildLine " ** Installing chef-config gem"
+        $chef_config_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-config"
+        Push-Location $chef_config_path
+        try {
+            bundle exec rake build
+            if (-not $?) { throw "unable to build chef-config gem" }
+            
+            $chef_config_gem_path = Get-ChildItem "pkg/chef-config-*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($chef_config_gem_path) {
+                Write-BuildLine " ** Installing chef-config gem: $($chef_config_gem_path.Name)"
+                gem install --local $chef_config_gem_path.FullName
+                if (-not $?) { throw "unable to install chef-config gem" }
+            }
+        } finally {
+            Pop-Location
+        }
+        
+        # Build and install the main chef gem (depends on chef-utils, chef-config)
+        Write-BuildLine " ** Building and installing main chef gem"
+        bundle exec rake build
+        if (-not $?) { throw "unable to build chef gem" }
+        
+        # Install the built chef gem to make it available for chef-bin dependency
+        $chef_gem_path = Get-ChildItem "pkg/chef-*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+        if ($chef_gem_path) {
+            Write-BuildLine " ** Installing chef gem: $($chef_gem_path.Name)"
+            Write-BuildLine " ** Current GEM_PATH: $env:GEM_PATH"
+            Write-BuildLine " ** Current GEM_HOME: $env:GEM_HOME"
+            gem install --local $chef_gem_path.FullName
+            if (-not $?) { throw "unable to install chef gem" }
+        }
+        
+        # Now install chef-bin specifically (depends on chef)
+        Write-BuildLine " ** Installing chef-bin gem"
+        $chef_bin_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/chef-bin"
+        Push-Location $chef_bin_path
+        try {
+            bundle exec rake build
+            if (-not $?) { throw "unable to build chef-bin gem" }
+            
+            $chef_bin_gem_path = Get-ChildItem "pkg/chef-bin-*.gem" | Sort-Object LastWriteTime | Select-Object -Last 1
+            if ($chef_bin_gem_path) {
+                Write-BuildLine " ** Installing chef-bin gem: $($chef_bin_gem_path.Name)"
+                gem install --local $chef_bin_gem_path.FullName
+                if (-not $?) { throw "unable to install chef-bin gem" }
+            }
+        } finally {
+            Pop-Location
+        }
+        
+        # Restore original GEM_PATH
+        $env:GEM_PATH = $original_gem_path
 
     } finally {
         Pop-Location
@@ -215,6 +289,16 @@ function Invoke-Install {
         $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
+
+        # Ensure all local gems are properly installed before creating binstubs
+        Write-BuildLine "** Verifying local gems are installed and gem environment is correct"
+        
+        # List installed gems for debugging
+        Write-BuildLine "** Currently installed gems:"
+        gem list --local | Select-String -Pattern "chef"
+        
+        Write-BuildLine "** Current GEM_PATH: $env:GEM_PATH"
+        Write-BuildLine "** Current GEM_HOME: $env:GEM_HOME"
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
