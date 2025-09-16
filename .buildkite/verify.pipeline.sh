@@ -148,7 +148,7 @@ for plan in ${habitat_plans[@]}; do
   echo "  agents:"
   if [ $plan == "windows" ]
   then
-    echo "    queue: single-use-windows-2019-privileged"
+    echo "    queue: default-windows-2019-privileged"
     echo "  plugins:"
     echo "  - docker#v3.5.0:"
     echo "      image: chefes/omnibus-toolchain-windows-2019:$OMNIBUS_TOOLCHAIN_VERSION"
