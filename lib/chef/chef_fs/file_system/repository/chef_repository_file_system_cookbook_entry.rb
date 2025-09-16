@@ -90,6 +90,18 @@ class Chef
             true
           end
 
+          # This is a lighter (than `#children.size == 0`) existence check.
+          # return earlier where we only care if 1 or more children exist
+          def any_children?
+            Dir.entries(file_path).any? { |child_name|
+              (child = make_child_entry(child_name)) &&
+                can_have_child?(child.name, child.dir?) &&
+                !(child.dir? && !child.any_children? )
+            }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+          end
+
           def write_pretty_json
             false
           end
