@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.75 -->
-## [v19.1.75](https://github.com/chef/chef/tree/v19.1.75) (2025-09-10)
+<!-- latest_release 19.1.76 -->
+## [v19.1.76](https://github.com/chef/chef/tree/v19.1.76) (2025-09-16)
 
 #### Merged Pull Requests
-- set up ai assisted development workflow [#15257](https://github.com/chef/chef/pull/15257) ([rishichawda](https://github.com/rishichawda))
+- [ChefRepositoryFileSystemCookbookEntry] Add `any_children?` method [#15244](https://github.com/chef/chef/pull/15244) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [ChefRepositoryFileSystemCookbookEntry] Add `any_children?` method [#15244](https://github.com/chef/chef/pull/15244) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.76 -->
 - set up ai assisted development workflow [#15257](https://github.com/chef/chef/pull/15257) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.75 -->
 - fix: apt_repository gpg key import for newer APT versions [#15220](https://github.com/chef/chef/pull/15220) ([fretb](https://github.com/fretb)) <!-- 19.1.74 -->
 - don&#39;t ship specs with the gem [#15231](https://github.com/chef/chef/pull/15231) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.73 -->
