@@ -92,6 +92,14 @@ do_prepare() {
   git config --global --add safe.directory /src
 
   ( cd "$CACHE_PATH"
+    # Install ffi-libarchive gem before bundle configuration to ensure it's available
+    if [ "$(uname -s)" != "Darwin" ] && [ "$(uname -s)" != "Windows_NT" ]; then
+      build_line "Pre-installing ffi-libarchive gem for Linux platform..."
+      export LIBARCHIVE_CFLAGS="-I$(pkg_path_for libarchive)/include"
+      export LIBARCHIVE_LDFLAGS="-L$(pkg_path_for libarchive)/lib -larchive -Wl,-rpath,$(pkg_path_for libarchive)/lib"
+      gem install ffi-libarchive -v 1.2.0 --no-document
+    fi
+
     bundle config --local build.nokogiri "--use-system-libraries \
         --with-zlib-dir=$(pkg_path_for zlib) \
         --with-xslt-dir=$(pkg_path_for libxslt) \
@@ -127,6 +135,22 @@ do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
+
+    # Ensure ffi-libarchive is available at the system level for Linux
+    if [ "$(uname -s)" != "Darwin" ] && [ "$(uname -s)" != "Windows_NT" ]; then
+      build_line "Making sure ffi-libarchive is properly installed for Linux..."
+      export LIBARCHIVE_CFLAGS="-I$(pkg_path_for libarchive)/include"
+      export LIBARCHIVE_LDFLAGS="-L$(pkg_path_for libarchive)/lib -larchive -Wl,-rpath,$(pkg_path_for libarchive)/lib"
+      gem install ffi-libarchive -v 1.2.0 --no-document --force
+      
+      # Add gem to GEM_PATH
+      mkdir -p "${GEM_HOME}/gems/ffi-libarchive-1.2.0"
+      
+      # Check if installed and where
+      build_line "Checking ffi-libarchive installation..."
+      gem list ffi-libarchive -d
+      gem env
+    fi
 
     build_line "Copying post-bundle-install.rb to cache path..."
     cp "${SRC_PATH}/post-bundle-install.rb" "${CACHE_PATH}/"

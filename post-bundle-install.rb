@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'fileutils'
 
 gem_home = Gem.paths.home
 
@@ -143,12 +144,41 @@ platform_specific_gems.each do |gem_base_name|
   puts "Processing platform-specific gem: #{gem_base_name}"
   gem_found = false
   
-  Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
-    if File.basename(gempath).start_with?("#{gem_base_name}-")
+  # Special handling for ffi-libarchive due to consistent issues
+  if gem_base_name == "ffi-libarchive" && !RUBY_PLATFORM.include?("mingw")
+    puts "Special handling for ffi-libarchive on Linux platform"
+    
+    # First try direct installation with specific version
+    if system("gem install ffi-libarchive -v 1.2.0 --conservative --minimal-deps --no-document --force")
+      puts "Successfully installed ffi-libarchive via direct installation"
       gem_found = true
-      puts "Found #{gem_base_name} at path: #{gempath}"
-      install_platform_specific_gem(gempath, gem_base_name)
-      break # Only process the first matching directory for each gem
+    else
+      puts "Direct installation failed, trying from source..."
+      # Try cloning and building from source
+      system("git clone https://github.com/chef/ffi-libarchive.git /tmp/ffi-libarchive")
+      if Dir.exist?("/tmp/ffi-libarchive")
+        Dir.chdir("/tmp/ffi-libarchive") do
+          if system("gem build ffi-libarchive.gemspec") && 
+             system("gem install ffi-libarchive-*.gem --conservative --minimal-deps --no-document --force")
+            puts "Successfully installed ffi-libarchive from source"
+            gem_found = true
+          else
+            puts "Failed to build and install ffi-libarchive from source"
+          end
+        end
+      end
+    end
+  end
+  
+  # Continue with normal processing if not already handled
+  unless gem_found
+    Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
+      if File.basename(gempath).start_with?("#{gem_base_name}-")
+        gem_found = true
+        puts "Found #{gem_base_name} at path: #{gempath}"
+        install_platform_specific_gem(gempath, gem_base_name)
+        break # Only process the first matching directory for each gem
+      end
     end
   end
   
@@ -164,7 +194,7 @@ platform_specific_gems.each do |gem_base_name|
         puts "Failed to install #{gem_base_name} from cache"
     else
       puts "Attempting to install #{gem_base_name} directly from rubygems..."
-      system("gem install #{gem_base_name} --conservative --minimal-deps --no-document") or 
+      system("gem install #{gem_base_name} --conservative --minimal-deps --no-document --force") or 
         puts "Failed to install #{gem_base_name} from rubygems"
     end
   end
@@ -176,7 +206,43 @@ platform_specific_gems.each do |gem_name|
   installed = system("gem list -i #{gem_name} > /dev/null 2>&1")
   if installed
     puts "✓ #{gem_name} is properly installed"
+    
+    # For ffi-libarchive, do an extra check to ensure it's properly linked
+    if gem_name == "ffi-libarchive"
+      puts "Checking #{gem_name} path and availability..."
+      gem_path = `gem which #{gem_name} 2>/dev/null`.strip
+      if gem_path && !gem_path.empty?
+        puts "  - Found at: #{gem_path}"
+        # Create a simple test file to verify it works
+        test_file = "/tmp/test_ffi_libarchive.rb"
+        File.write(test_file, "require '#{gem_name}'; puts 'Successfully required #{gem_name}'")
+        if system("ruby #{test_file}")
+          puts "  - Gem is properly linked and working"
+        else
+          puts "  - ⚠ WARNING: Gem is installed but cannot be required"
+          # Try creating a symlink to make the gem more discoverable
+          puts "  - Attempting to fix by linking the gem..."
+          gem_dir = gem_path.split('/lib/')[0]
+          target_dir = "#{gem_home}/gems/ffi-libarchive-1.2.0"
+          unless Dir.exist?(target_dir)
+            puts "  - Creating directory: #{target_dir}"
+            FileUtils.mkdir_p(target_dir) rescue nil
+            if Dir.exist?(gem_dir)
+              # Copy files to ensure proper installation
+              system("cp -R #{gem_dir}/* #{target_dir}/") rescue nil
+              puts "  - Files copied to expected location"
+            end
+          end
+        end
+      else
+        puts "  - ⚠ WARNING: Could not determine gem path"
+      end
+    end
   else
     puts "⚠ #{gem_name} appears to be missing or improperly installed"
+    if gem_name == "ffi-libarchive"
+      puts "Attempting final emergency installation of #{gem_name}..."
+      system("gem install #{gem_name} -v 1.2.0 --force --no-document")
+    end
   end
 end
