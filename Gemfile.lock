@@ -32,8 +32,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 56c90ef0a50143ec043ec9fc1fa797f6af71d7ce
-  branch: jfm/ucrt_update1
+  revision: a2191348a1f5e3741f22c9b4b426e9d791af8ab3
+  branch: rishichawda/fix-ucrt-build
   specs:
     rest-client (2.1.0)
       base64
