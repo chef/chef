@@ -32,12 +32,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 56c90ef0a50143ec043ec9fc1fa797f6af71d7ce
-  branch: jfm/ucrt_update1
+  revision: ceb2c9f62a938597fa8b210500a06ca555893879
+  branch: rishichawda/fix-ucrt-build
   specs:
     rest-client (2.1.0)
       base64
-      ffi (>= 1.15.5, < 1.18.0)
       fiddle
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
