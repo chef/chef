@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 56c90ef0a50143ec043ec9fc1fa797f6af71d7ce
+  revision: 5b3bb34ea536e5207388b84c5dd6360ea3fc2799
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)

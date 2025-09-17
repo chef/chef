@@ -191,13 +191,32 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        $install_attempt = 0
-        do {
-            Start-Sleep -Seconds 5
-            $install_attempt++
-            Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+        foreach($path_gem in @("chef-utils", "chef-config", "chef", "chef-bin")) {
+            Write-BuildLine " -- installing $path_gem gem"
+
+            if ($path_gem -ne "chef") {
+                $path_gem_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/$path_gem"
+                Push-Location $path_gem_path
+            }
+
+            try {
+                bundle exec rake build --trace=stdout
+                if (-not $?) { throw "unable to build $path_gem gem" }
+
+                $built_gem = Get-ChildItem "pkg/$path_gem-*.gem" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                if ($built_gem) {
+                    Write-BuildLine "Installing $path_gem gem from $($built_gem.Name)"
+                    gem install --local $built_gem.FullName
+                    if (-not $?) { throw "unable to install built $path_gem gem from $($built_gem.FullName)" }
+                } else {
+                    throw "unable to locate built $path_gem gem"
+                }
+            } finally {
+                if ($path_gem -ne "chef") {
+                    Pop-Location
+                }
+            }
+        }
 
     } finally {
         Pop-Location
