@@ -45,6 +45,10 @@ jobs:
       run: |
         $env:CHEF_LICENSE = "accept-no-persist"
         $env:HAB_LICENSE = "accept-no-persist"
+        $env:HAB_BLDR_CHANNEL = 'BASE-2025'
+        $env:HAB_ORIGIN = 'chef'
+        $env:HAB_REFRESH_CHANNEL = 'BASE-2025'
+
         # Build the Chef-19 package from the habitat directory
         hab pkg build habitat
 
