@@ -17,6 +17,12 @@ jobs:
       matrix:
         os: [windows-2022, windows-2025]
         ruby: ['3.4']
+    env:
+      CHEF_LICENSE: accept-no-persist
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
