@@ -39,7 +39,7 @@ PATH
 PATH
   remote: ..
   specs:
-    chef (19.1.77)
+    chef (19.1.74)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
