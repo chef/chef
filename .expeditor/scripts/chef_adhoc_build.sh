@@ -4,18 +4,18 @@ set -euo pipefail
 
 ./.expeditor/scripts/install-hab.sh x86_64-linux
 
-export HAB_ORIGIN='ci'
+export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
-export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_BLDR_CHANNEL="base-2025"
 
 echo "--- :key: Generating fake origin key"
 hab origin key generate "$HAB_ORIGIN"
 
 echo "--- Building Chef Infra Client package"
-hab pkg build . --refresh-channel LTS-2024 || error 'unable to build'
+hab pkg build . --refresh-channel base-2025 || error 'unable to build'
 
 project_root="$(git rev-parse --show-toplevel)"
 source "${project_root}/results/last_build.env" || error 'unable to determine details about this build'
