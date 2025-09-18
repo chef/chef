@@ -49,6 +49,9 @@ jobs:
         $env:HAB_ORIGIN = 'chef'
         $env:HAB_REFRESH_CHANNEL = 'BASE-2025'
 
+        Write-Host "Generating origin key"
+        hab origin key generate $env:HAB_ORIGIN
+
         # Build the Chef-19 package from the habitat directory
         hab pkg build habitat
 
