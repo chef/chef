@@ -27,7 +27,6 @@ arm_targets = [
   "amazon-2023-arm:amazon-2023-arm"
 ]
 
-append windows target later when images are available.
 win_targets = [
   "windows-2022:windows-2022",
   "windows-10:windows-2022",
