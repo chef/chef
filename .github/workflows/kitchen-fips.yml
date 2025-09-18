@@ -55,6 +55,11 @@ jobs:
         # libyajl2 build if already present. gem install seems to build anyway.
         gem uninstall -I libyajl2
 
+        # appbundler is not finding the correct branch for rest-client. Here we clean the bundle to force it
+        Write-Host "Forcing a bundle clean to ensure we get the correct rest-client version"
+        bundle clean --force
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
