@@ -45,9 +45,9 @@ jobs:
       run: |
         $env:CHEF_LICENSE = "accept-no-persist"
         $env:HAB_LICENSE = "accept-no-persist"
-        $env:HAB_BLDR_CHANNEL = 'BASE-2025'
+        $env:HAB_BLDR_CHANNEL = 'base-2025'
         $env:HAB_ORIGIN = 'chef'
-        $env:HAB_REFRESH_CHANNEL = 'BASE-2025'
+        $env:HAB_REFRESH_CHANNEL = 'base-2025'
 
         Write-Host "Generating origin key"
         hab origin key generate $env:HAB_ORIGIN
