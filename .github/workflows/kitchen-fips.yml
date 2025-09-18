@@ -89,7 +89,6 @@ jobs:
 
         # Verify installation
         chef-client -v
-        ohai -v
         rake --version
         bundle -v
 
@@ -98,33 +97,8 @@ jobs:
       run: |
         $chef_pkg = hab pkg path chef/chef-infra-client
         $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
-        $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
 
-        # # Check if ansidecl.h needs to be relocated in the Habitat package
-        # $output = gci -path $chef_pkg -file ansidecl.h -Recurse
-
-        # # If ansidecl.h is found and needs to be relocated
-        # if ($output) {
-        #     if ($output -is [Array]) { $output = $output[0] }
-
-        #     $target_path = Join-Path -Path $chef_pkg -ChildPath "embedded\x86_64-w64-mingw32\include"
-
-        #     # Create the target directory if it doesn't exist
-        #     if (-not (Test-Path -Path $target_path)) {
-        #         New-Item -Path $target_path -ItemType Directory -Force
-        #     }
-
-        #     Copy-Item -Path $output.FullName -Destination $target_path -Force
-        # }
-
-        # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
-        # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
-        # libyajl2 build if already present. gem install seems to build anyway.
-        # gem uninstall -I libyajl2
-
-        Write-Output "Installed Chef / Ohai release:"
-        ohai -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        Write-Output "Installed Chef:"
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Enable FIPS via windows registry' #FIPS needs to be enabled after installation of Chef, otherwise it fails due to Cryptography error
@@ -161,8 +135,6 @@ jobs:
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-        Write-Output "Verifying Ohai installation:"
-        ohai -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
         # Verify FIPS mode is enabled through PowerShell
