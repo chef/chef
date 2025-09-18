@@ -49,6 +49,13 @@ jobs:
         $env:HAB_ORIGIN = 'chef'
         $env:HAB_REFRESH_CHANNEL = 'base-2025'
 
+        Write-Output "Environment variables set for Habitat and Chef build:"
+        Write-Output "CHEF_LICENSE=$env:CHEF_LICENSE"
+        Write-Output "HAB_LICENSE=$env:HAB_LICENSE"
+        Write-Output "HAB_BLDR_CHANNEL=$env:HAB_BLDR_CHANNEL"
+        Write-Output "HAB_ORIGIN=$env:HAB_ORIGIN"
+        Write-Output "HAB_REFRESH_CHANNEL=$env:HAB_REFRESH_CHANNEL"
+
         Write-Host "Generating origin key"
         hab origin key generate $env:HAB_ORIGIN
 
