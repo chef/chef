@@ -20,30 +20,44 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+    - name: 'Testing out Chocolatey'
+      id: test_choco
+      run: |
+            # Chocolatey profile
+            $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+            if (Test-Path($ChocolateyProfile)) {
+                Import-Module "$ChocolateyProfile"
+            }
+            If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Install and Setup Habitat'
       id: install_habitat
       run: |
           Write-Output "*** Checking for Habitat installation and installing it if not present***"
-          $ErrorActionPreference = "Stop"
-          try {
-              Get-Command -Name "hab" | Out-Null
-          } catch {
-              Write-Host  "Hab is NOT installed, attempting to install it now"
-              Set-ExecutionPolicy Bypass -Scope Process -Force;
-              iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-              if ($lastexitcode -ne 0) { throw "unable to build or install Habitat: required minimum version of Habitat not installed" }
-          } finally {
-              $ErrorActionPreference = "Continue"
-              Write-Host "Hab is installed after all, but do we have the right version?"
-              [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
-              if ($hab_version -lt [Version]"0.85.0" ) {
-                  Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
-                  Write-Warning ":habicat: I'm being built with $hab_version. I need at least Hab 0.85.0, because I use the -IsPath option for setting/pushing paths in SetupEnvironment."
-                  throw "unable to build: required minimum version of Habitat not installed"
-              } else {
-                  Write-Output ":habicat: I think I have the version I need to build."
-              }
-          }
+          # $ErrorActionPreference = "Stop"
+          # try {
+          #     Get-Command -Name "hab" | Out-Null
+          # } catch {
+          #     Write-Host  "Hab is NOT installed, attempting to install it now"
+          #     Set-ExecutionPolicy Bypass -Scope Process -Force;
+          #     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+          #     if ($lastexitcode -ne 0) { throw "unable to build or install Habitat: required minimum version of Habitat not installed" }
+          # } finally {
+          #     $ErrorActionPreference = "Continue"
+          #     Write-Host "Hab is installed after all, but do we have the right version?"
+          #     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
+          #     if ($hab_version -lt [Version]"0.85.0" ) {
+          #         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
+          #         Write-Warning ":habicat: I'm being built with $hab_version. I need at least Hab 0.85.0, because I use the -IsPath option for setting/pushing paths in SetupEnvironment."
+          #         throw "unable to build: required minimum version of Habitat not installed"
+          #     } else {
+          #         Write-Output ":habicat: I think I have the version I need to build."
+          #     }
+          # }
+
+          choco install -y habitat
+          if ($lastexitcode -ne 0) { throw "unable to build or install Habitat: required minimum version of Habitat not installed" }
+          refreshenv
+
 
           # Verify hab is installed
           hab --version
