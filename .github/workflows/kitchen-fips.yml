@@ -40,6 +40,17 @@ jobs:
         # Verify hab is installed
         hab --version
 
+    - name: 'Am I in the correct folder to build Habitat from?'
+      id: check_folder
+      run: |
+        $currentDir = Get-Location
+        Write-Output "Current Directory: $currentDir"
+        if (-not (Test-Path -Path ".\habitat")) {
+            throw "habitat directory not found in the current working directory. Please ensure you are in the correct directory."
+        } else {
+            Write-Output "habitat directory found. Proceeding with the build."
+        }
+
     - name: 'Build and Install Chef-19 from Habitat'
       id: install_chef
       run: |
