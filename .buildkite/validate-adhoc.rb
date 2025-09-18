@@ -30,7 +30,7 @@ arm_targets = [
 win_targets = [
   "windows-2022:windows-2022",
   "windows-10:windows-2022",
-  "windows-11:windows-2022"
+  "windows-11:windows-2022",
   "windows-2025:windows-2025"
 ]
 
