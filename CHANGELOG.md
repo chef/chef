@@ -1,17 +1,31 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.63 -->
-## [v19.1.63](https://github.com/chef/chef/tree/v19.1.63) (2025-08-08)
+<!-- latest_release 19.1.77 -->
+## [v19.1.77](https://github.com/chef/chef/tree/v19.1.77) (2025-09-16)
 
 #### Merged Pull Requests
-- Bump openssl gem to 3.3.0 to appease the kitchen-tests for now [#15193](https://github.com/chef/chef/pull/15193) ([tpowell-progress](https://github.com/tpowell-progress))
+- [CHEF-23856] knife code scan fixes [#15195](https://github.com/chef/chef/pull/15195) ([ashiqueps](https://github.com/ashiqueps))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [CHEF-23856] knife code scan fixes [#15195](https://github.com/chef/chef/pull/15195) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.77 -->
+- [ChefRepositoryFileSystemCookbookEntry] Add `any_children?` method [#15244](https://github.com/chef/chef/pull/15244) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.76 -->
+- set up ai assisted development workflow [#15257](https://github.com/chef/chef/pull/15257) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.75 -->
+- fix: apt_repository gpg key import for newer APT versions [#15220](https://github.com/chef/chef/pull/15220) ([fretb](https://github.com/fretb)) <!-- 19.1.74 -->
+- don&#39;t ship specs with the gem [#15231](https://github.com/chef/chef/pull/15231) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.73 -->
+- forward port of dll removal change from #15190 [#15215](https://github.com/chef/chef/pull/15215) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.72 -->
+- [CHEF-18482] change adhoc pipeline to be hab based builds [#15120](https://github.com/chef/chef/pull/15120) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.71 -->
+- fix: multiple apt_repos with same key url should be signed-by [#15218](https://github.com/chef/chef/pull/15218) ([fretb](https://github.com/fretb)) <!-- 19.1.70 -->
+- fix(apt_repository): Use import instead of dearmor to import key from url [#15209](https://github.com/chef/chef/pull/15209) ([tmccombs](https://github.com/tmccombs)) <!-- 19.1.69 -->
+- fix(apt_repository): Don&#39;t set signed-by if there is no key to use [#15207](https://github.com/chef/chef/pull/15207) ([tmccombs](https://github.com/tmccombs)) <!-- 19.1.68 -->
+- [CHEF-21785] Updated the knife ec backup to preserve the frozen cookbook status [#15204](https://github.com/chef/chef/pull/15204) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.67 -->
+- Fix ffi-libarchive load error from habitat package on windows [#15149](https://github.com/chef/chef/pull/15149) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.66 -->
+- Add test for #14369 [#14882](https://github.com/chef/chef/pull/14882) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.65 -->
+- Add &#39;check-all-checks&#39; check [#14925](https://github.com/chef/chef/pull/14925) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.64 -->
 - Bump openssl gem to 3.3.0 to appease the kitchen-tests for now [#15193](https://github.com/chef/chef/pull/15193) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.63 -->
 - Bump berkshelf from 8.0.9 to 8.0.22 in /omnibus [#15123](https://github.com/chef/chef/pull/15123) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.62 -->
 - Updating chef-zero [#15167](https://github.com/chef/chef/pull/15167) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.61 -->
