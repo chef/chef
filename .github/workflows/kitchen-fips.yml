@@ -23,7 +23,7 @@ jobs:
     - name: 'Install and Setup Habitat'
       id: install_habitat
       run: |
-          write-output "*** Checking for Habitat installation and installing it if not present***"
+          Write-Output "*** Checking for Habitat installation and installing it if not present***"
           $ErrorActionPreference = "Stop"
           try {
               Get-Command -Name "hab" | Out-Null
