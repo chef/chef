@@ -95,6 +95,8 @@ jobs:
     - name: 'Setup Chef Environment'
       id: setup_chef
       run: |
+        $env:CHEF_LICENSE = "accept-no-persist"
+        $env:HAB_LICENSE = "accept-no-persist"
         $chef_pkg = hab pkg path chef/chef-infra-client
         $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
 
