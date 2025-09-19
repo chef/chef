@@ -34,6 +34,9 @@ win_targets = [
   "windows-2025:windows-2025"
 ]
 
+# Update target list
+targets.concat(win_targets)
+
 if ENV['ARM_ENABLED'] == '1'
   targets.concat(arm_targets)
 end
