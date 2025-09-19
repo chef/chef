@@ -75,19 +75,6 @@ jobs:
         $chef_pkg = hab pkg path chef/chef-infra-client
         $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
 
-        # Verify installation
-        chef-client -v
-        rake --version
-        bundle -v
-
-    - name: 'Setup Chef Environment'
-      id: setup_chef
-      run: |
-        bundle clean --force
-        bundle install
-        $chef_pkg = hab pkg path chef/chef-infra-client
-        $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
-
         Write-Output "Installed Chef:"
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
