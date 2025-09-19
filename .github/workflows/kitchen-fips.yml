@@ -76,7 +76,7 @@ jobs:
         $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
 
         Write-Output "Installed Chef:"
-        chef-client -v
+        hab pkg exec chef/chef-infra-client chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Enable FIPS via windows registry' #FIPS needs to be enabled after installation of Chef, otherwise it fails due to Cryptography error
       run: |
