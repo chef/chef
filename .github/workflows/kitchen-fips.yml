@@ -18,10 +18,11 @@ jobs:
         os: [windows-2022, windows-2025]
         ruby: ['3.4']
     env:
-      CHEF_LICENSE: accept-no-persist
-      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_ORIGIN: chef
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      CHEF_LICENSE: accept-no-persist
+      HAB_LICENSE: accept-no-persist
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -60,19 +61,6 @@ jobs:
     - name: 'Build and Install Chef-19 from Habitat'
       id: install_chef
       run: |
-        $env:CHEF_LICENSE = "accept-no-persist"
-        $env:HAB_LICENSE = "accept-no-persist"
-        $env:HAB_BLDR_CHANNEL = 'base-2025'
-        $env:HAB_ORIGIN = 'chef'
-        $env:HAB_REFRESH_CHANNEL = 'base-2025'
-
-        Write-Output "Environment variables set for Habitat and Chef build:"
-        Write-Output "CHEF_LICENSE=$env:CHEF_LICENSE"
-        Write-Output "HAB_LICENSE=$env:HAB_LICENSE"
-        Write-Output "HAB_BLDR_CHANNEL=$env:HAB_BLDR_CHANNEL"
-        Write-Output "HAB_ORIGIN=$env:HAB_ORIGIN"
-        Write-Output "HAB_REFRESH_CHANNEL=$env:HAB_REFRESH_CHANNEL"
-
         Write-Host "Generating origin key"
         hab origin key generate $env:HAB_ORIGIN
 
@@ -95,8 +83,8 @@ jobs:
     - name: 'Setup Chef Environment'
       id: setup_chef
       run: |
-        $env:CHEF_LICENSE = "accept-no-persist"
-        $env:HAB_LICENSE = "accept-no-persist"
+        bundle clean --force
+        bundle install
         $chef_pkg = hab pkg path chef/chef-infra-client
         $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
 
@@ -135,8 +123,6 @@ jobs:
         # Verify Chef-19 installation
         Write-Output "Verifying Chef-19 installation:"
         chef-client -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
         # Verify FIPS mode is enabled through PowerShell
