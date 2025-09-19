@@ -1,5 +1,4 @@
----
-name: windows-fips
+name: kitchen-fips
 
 "on":
   pull_request:
@@ -8,7 +7,7 @@ name: windows-fips
       - main
 
 concurrency:
-  group: windows-fips-${{ github.ref }}
+  group: kitchen-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -17,51 +16,91 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
-        ruby: ['3.1']
+        ruby: ['3.4']
+    env:
+      CHEF_LICENSE: accept-no-persist
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
-    - name: 'Install Chef/Ohai from Omnitruck'
+    - name: 'Testing out Chocolatey'
+      id: test_choco
+      run: |
+        # Chocolatey profile
+        $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+        if (Test-Path($ChocolateyProfile)) {
+            Import-Module "$ChocolateyProfile"
+        }
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - name: 'Install and Setup Habitat'
+      id: install_habitat
+      run: |
+        Write-Output "*** Checking for Habitat installation and installing it if not present***"
+        choco install -y habitat
+        if ($lastexitcode -ne 0) { throw "unable to build or install Habitat: required minimum version of Habitat not installed" }
+        refreshenv
+
+        # Verify hab is installed
+        hab --version
+
+    - name: 'Am I in the correct folder to build Habitat from?'
+      id: check_folder
+      run: |
+        $currentDir = Get-Location
+        Write-Output "Current Directory: $currentDir"
+        if (-not (Test-Path -Path ".\habitat")) {
+            throw "habitat directory not found in the current working directory. Please ensure you are in the correct directory."
+        } else {
+            Write-Output "habitat directory found. Proceeding with the build."
+        }
+
+    - name: 'Build and Install Chef-19 from Habitat'
       id: install_chef
       run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $env:CHEF_LICENSE = "accept-no-persist"
+        $env:HAB_LICENSE = "accept-no-persist"
+        $env:HAB_BLDR_CHANNEL = 'base-2025'
+        $env:HAB_ORIGIN = 'chef'
+        $env:HAB_REFRESH_CHANNEL = 'base-2025'
+
+        Write-Output "Environment variables set for Habitat and Chef build:"
+        Write-Output "CHEF_LICENSE=$env:CHEF_LICENSE"
+        Write-Output "HAB_LICENSE=$env:HAB_LICENSE"
+        Write-Output "HAB_BLDR_CHANNEL=$env:HAB_BLDR_CHANNEL"
+        Write-Output "HAB_ORIGIN=$env:HAB_ORIGIN"
+        Write-Output "HAB_REFRESH_CHANNEL=$env:HAB_REFRESH_CHANNEL"
+
+        Write-Host "Generating origin key"
+        hab origin key generate $env:HAB_ORIGIN
+
+        # Build the Chef-19 package from the habitat directory
+        hab pkg build habitat
+
+        # Install the built package
+        $pkg_path = Get-ChildItem -Path "results" -Filter "chef-chef-infra-client-*.hart" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        hab pkg install $pkg_path.FullName
+
+        # Set up environment path
+        $chef_pkg = hab pkg path chef/chef-infra-client
+        $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
+
+        # Verify installation
         chef-client -v
-        ohai -v
         rake --version
         bundle -v
-    - name: 'Upgrade Chef/Ohai via Appbundler'
-      id: upgrade
+
+    - name: 'Setup Chef Environment'
+      id: setup_chef
       run: |
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
+        $env:CHEF_LICENSE = "accept-no-persist"
+        $env:HAB_LICENSE = "accept-no-persist"
+        $chef_pkg = hab pkg path chef/chef-infra-client
+        $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
 
-        # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
-        # This leads to failures during testing. Moving that file to its correct position here.
-        # Another example of 'bad' that needs to be corrected
-        $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
-
-        # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
-        # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
-        # making the leap that ansidecl.h isn't going to vary in a way that will fail
-        # subtly.
-        if ($output -is [Array]) { $output = $output[0] }
-
-        $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
-        Move-Item -Path $output.FullName -Destination $target_path
-
-        # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
-        # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
-        # libyajl2 build if already present. gem install seems to build anyway.
-        gem uninstall -I libyajl2
-
-        gem install appbundler appbundle-updater --no-doc
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
-        Write-Output "Installed Chef / Ohai release:"
-        ohai -v
-        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        Write-Output "Installed Chef:"
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - name: 'Enable FIPS via windows registry' #FIPS needs to be enabled after installation of Chef, otherwise it fails due to Cryptography error
@@ -90,6 +129,62 @@ jobs:
         if (-not $?) { throw "Failed to enable FIPS mode." }
     - name: 'Run chef-client'
       run: |
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $chef_pkg = hab pkg path chef/chef-infra-client
+        $env:PATH = "$chef_pkg\bin;$chef_pkg\embedded\bin;" + $env:PATH
+
+        # Verify Chef-19 installation
+        Write-Output "Verifying Chef-19 installation:"
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
+
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+
+        # Verify FIPS mode is enabled through PowerShell
+        Write-Output "Verifying FIPS mode is enabled through PowerShell:"
+        $fipsEnabled = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy" -Name "Enabled" | Select-Object -ExpandProperty Enabled
+        if ($fipsEnabled -eq 1) {
+            Write-Output "FIPS mode is confirmed enabled in Windows Registry"
+        } else {
+            Write-Output "FIPS mode is NOT enabled in Windows Registry"
+            Exit 1
+        }
+
+        # Verify FIPS mode is working with OpenSSL
+        Write-Output "Verifying FIPS mode is working with OpenSSL:"
+        $openssl_path = Join-Path -Path $chef_pkg -ChildPath "embedded\bin\openssl.exe"
+
+        # Test if OpenSSL is built with FIPS support
+        & $openssl_path version
+        Write-Output "Testing OpenSSL FIPS mode:"
+
+        # Run OpenSSL in FIPS mode and check if it works
+        $result = & $openssl_path list -providers
+        if ($result -match "fips") {
+            Write-Output "OpenSSL FIPS provider is available"
+        } else {
+            Write-Output "OpenSSL FIPS provider check:"
+            & $openssl_path list -providers
+
+            # Alternative test: try to use a non-FIPS algorithm which should fail in FIPS mode
+            Write-Output "Testing FIPS compliance by attempting to use MD5 (should fail in FIPS mode):"
+            & $openssl_path dgst -md5 $openssl_path 2>&1
+            if ($lastexitcode -ne 0) {
+                Write-Output "FIPS mode verification successful: MD5 algorithm was rejected as expected"
+            } else {
+                Write-Output "WARNING: MD5 was allowed which may indicate FIPS mode is not active"
+                # We don't exit here as the OpenSSL behavior might vary
+            }
+        }
+
+        # Final verification using Chef itself with Ruby one-liner
+        Write-Output "Verifying FIPS mode through Chef Ruby environment:"
+        $chef_fips_check = chef-client -e "require 'openssl'; puts 'FIPS Mode: ' + OpenSSL.fips_mode.to_s"
+        if ($chef_fips_check -match "FIPS Mode: true") {
+            Write-Output "Chef confirms FIPS mode is enabled"
+        } else {
+            Write-Output "Chef FIPS check output:"
+            Write-Output $chef_fips_check
+            Write-Output "WARNING: Chef does not report FIPS mode as enabled"
+            # This is a serious issue if Chef doesn't recognize FIPS mode
+            Exit 1
+        }
