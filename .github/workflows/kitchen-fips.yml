@@ -109,7 +109,7 @@ jobs:
 
         # Verify Chef-19 installation
         Write-Output "Verifying Chef-19 installation:"
-        chef-client -v
+        hab pkg exec chef/chef-infra-client chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
         # Verify FIPS mode is enabled through PowerShell
