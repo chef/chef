@@ -376,7 +376,7 @@ action_class do
     arr = path.split(".")
     ret = {}
 
-    if arr.count == 1
+    if arr.one?
       ret[arr.first] = value
 
       ret

@@ -485,7 +485,7 @@ describe "chef-client" do
     it "should have a cookbook attribute" do
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
       result.error!
-      expect(result.stdout).to include('COOKBOOKS: {"x"=>{"version"=>"0.0.1"}}')
+      expect(result.stdout).to match(/COOKBOOKS: \{"x"\s*=>\s*\{"version"\s*=>\s*"0\.0\.1"\}\}/)
     end
   end
 

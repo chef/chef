@@ -39,7 +39,7 @@ class Chef
 
       LC_VARIABLES ||= %w{LC_ADDRESS LC_COLLATE LC_CTYPE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME}.freeze
       LOCALE_CONF ||= "/etc/locale.conf".freeze
-      LOCALE_REGEX ||= /\A\S+/.freeze
+      LOCALE_REGEX ||= /\A\S+/
       LOCALE_PLATFORM_FAMILIES ||= %w{debian windows}.freeze
 
       property :lang, String,

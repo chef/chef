@@ -2,29 +2,39 @@
 driver:
   name: dokken
   privileged: true
-  chef_image: chef/chef
-  chef_version: current
+  # Even if we are using custom habitat package, this is still needed by dokken driver.
+  chef_version: unstable
+  # map habitat installation on host to the /bin/hab path for easy access
+  binds:
+    - /bin/hab:/bin/hab
+  # Map the Habitat package for use in the container
+  # Map the Habitat origin key for use in the container
+  volumes:
+    - /home/runner/work/chef/chef/kitchen-tests/chef-infra-client-latest.hart:/chef-infra-client-latest.hart
+    - /home/runner/work/chef/chef/kitchen-tests/gha-key.tar.gz:/gha-key.tar.gz
+    - /home/runner/work/chef/chef/kitchen-tests/hab_token:/hab_token
 
 transport:
   name: dokken
 
 provisioner:
   name: dokken
+  # Use the custom habitat package we have built to run recipes
+  # NOTE: This attribute is getting ignored by TKE, a bug so we have resorted to creating a symlink
+  # chef_binary: hab pkg exec gha/chef-infra-client chef-client
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
   chef_license: "accept-no-persist"
+  chef_license_key: free-79df705d-b685-419a-8b68-88401f74ff72-3999
+  #chef_license_server:
+    #- http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
   deprecations_as_errors: true
   slow_resource_report: true
   clean_dokken_sandbox: false
 
 lifecycle:
   pre_converge:
-    - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
-    - remote: echo "Installing appbundler and appbundle-updater gems:"
-    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
@@ -33,18 +43,35 @@ lifecycle:
     - remote: sudo yum install centos-release-scl
       includes:
         - centos-7
-    - remote: scl enable devtoolset-7 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>'
+    - remote: scl enable devtoolset-7
       includes:
         - centos-7
         - oraclelinux-7
-    - remote: echo "Updating Chef using appbundler-updater:"
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-      excludes:
-        - centos-7
-        - oraclelinux-7
-    - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/bin/chef-client -v
-    - remote: /opt/chef/bin/ohai -v
+    - remote: hab license accept
+    - remote: echo "****Importing Habitat Origin Key****"
+    - remote: sh -c "cat /gha-key.tar.gz | hab origin key import"
+
+    - remote: echo "****Checking for Habitat package****"
+    - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
+
+    - remote: echo "****Installing Habitat package for Chef Infra Client****"
+    - remote: sh -c "hab pkg install /chef-infra-client-latest.hart --auth \"$(cat /hab_token)\""
+    - remote: echo "****Installed chef-infra-client version:****"
+    - remote: hab pkg exec gha/chef-infra-client chef-client -v
+
+    # Create a symlink from chef/chef-infra-client package to custom built gha/chef-infra-client
+    - remote: echo "****Creating symlink to use our custom package in test kitchen runs****"
+    - remote: |
+        sh -c "
+        CUSTOM_PKG=$(hab pkg path gha/chef-infra-client)
+        DEFAULT_PKG=$(hab pkg path chef/chef-infra-client)
+        echo 'Custom pkg: '$CUSTOM_PKG
+        echo 'Default pkg: '$DEFAULT_PKG
+
+        mv $DEFAULT_PKG ${DEFAULT_PKG}.original
+        ln -sf $CUSTOM_PKG $DEFAULT_PKG
+        ls -la $DEFAULT_PKG
+        "
 
 platforms:
   - name: amazonlinux-2

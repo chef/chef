@@ -92,7 +92,7 @@ class Chef
 
           def current_installed_version
             @current_installed_version ||=
-              if uninstall_entries.count != 0
+              if uninstall_entries.any?
                 uninstall_entries.map(&:display_version).uniq
               end
           end

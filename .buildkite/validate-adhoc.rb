@@ -27,13 +27,15 @@ arm_targets = [
   "amazon-2023-arm:amazon-2023-arm"
 ]
 
-# append windows target later when images are available.
-# win_targets = [
-#   "windows-2016:windows-2019",
-#   "windows-2022:windows-2019",
-#   "windows-10:windows-2019",
-#   "windows-11:windows-2019"
-# ]
+win_targets = [
+  "windows-2022:windows-2022",
+  "windows-10:windows-2022",
+  "windows-11:windows-2022",
+  "windows-2025:windows-2025"
+]
+
+# Update target list
+targets.concat(win_targets)
 
 if ENV['ARM_ENABLED'] == '1'
   targets.concat(arm_targets)

@@ -26,14 +26,14 @@ class Chef
 
       # Matches a multiple resource lookup specification,
       # e.g., "service[nginx,unicorn]"
-      MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/.freeze
+      MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/
 
       # Matches a single resource lookup specification,
       # e.g., "service[nginx]"
-      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/.freeze
+      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/
 
       # Matches e.g. "apt_update" with no name
-      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/.freeze
+      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/
 
       def initialize
         @resources_by_key = {}

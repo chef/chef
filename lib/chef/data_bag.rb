@@ -32,8 +32,8 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_NAME = /^[\.\-[:alnum:]_]+$/.freeze
-    RESERVED_NAMES = /^(node|role|environment|client)$/.freeze
+    VALID_NAME = /^[\.\-[:alnum:]_]+$/
+    RESERVED_NAMES = /^(node|role|environment|client)$/
 
     def self.validate_name!(name)
       unless VALID_NAME.match?(name)
