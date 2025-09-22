@@ -64,8 +64,6 @@ for platform in ${win_test_platforms[@]}; do
   echo "    queue: default-windows-2019-privileged"
   echo "  matrix:"
   echo "    - \"Functional\""
-  echo "  environment:"
-  echo "    - HAB_AUTH_TOKEN"
   echo "  propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
