@@ -88,6 +88,9 @@ targets.each do |target|
             "powershell",
             "-Command"
           ],
+          "volumes" => [
+            "c:\\buildkite-agent:c:\\buildkite-agent"
+          ],
           "propagate-environment" => true
         }
       },
