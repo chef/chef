@@ -31,7 +31,7 @@ win_targets = [
   "windows-2022:windows-2022",
   "windows-10:windows-2022",
   "windows-11:windows-2022",
-  "windows-2025:windows-2025"
+  "windows-2025:windows-2022"
 ]
 
 # Update target list
@@ -66,7 +66,7 @@ end
 pipeline["steps"] << { "wait" => nil }
 
 targets.each do |target|
-  platform = target.split(":").first
+  platform, queue_platform = target.split(":")
   step = {}
 
   if platform.include?("windows")
@@ -79,7 +79,7 @@ targets.each do |target|
         }
       },
       "agents" => {
-        "queue" => "omnibus-#{platform}-x86_64"
+        "queue" => "default-#{queue_platform}-privileged"
       },
       "plugins" => {
         "docker#v3.5.0" => {
