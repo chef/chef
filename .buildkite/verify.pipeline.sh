@@ -64,9 +64,10 @@ for platform in ${win_test_platforms[@]}; do
   echo "    queue: default-windows-2019-privileged"
   echo "  matrix:"
   echo "    - \"Functional\""
-  echo "  propagate-environment: true"
+  echo "  env:"
+  echo "    HAB_AUTH_TOKEN: \"${HAB_AUTH_TOKEN}\""
   echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
+  echo "    - .\\.expeditor\\scripts\\prep_and_run_tests.ps1 Functional"
   echo "  timeout_in_minutes: 120"
 done
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
