@@ -27,11 +27,12 @@ arm_targets = [
   "amazon-2023-arm:amazon-2023-arm"
 ]
 
+# because windows queues are very different, the target queue is very explicit.
 win_targets = [
-  "windows-2022:windows-2022",
-  "windows-10:windows-2022",
-  "windows-11:windows-2022",
-  "windows-2025:windows-2022"
+  "windows-2022:single-use-windows-2022",
+  "windows-10:default-windows-2019",
+  "windows-11:single-use-windows-2022",
+  "windows-2025:single-use-windows-2025"
 ]
 
 # Update target list
@@ -79,7 +80,7 @@ targets.each do |target|
         }
       },
       "agents" => {
-        "queue" => "single-use-#{queue_platform}-privileged"
+        "queue" => "#{queue_platform}-privileged"
       },
       "plugins" => {
         "docker#v3.5.0" => {
