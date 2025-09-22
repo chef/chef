@@ -61,7 +61,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
-  echo "    queue: docker-windows-2019"
+  echo "    queue: default-windows-2019-privileged"
   echo "  matrix:"
   echo "    - \"Functional\""
   echo "  plugins:"
