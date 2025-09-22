@@ -79,7 +79,7 @@ targets.each do |target|
         }
       },
       "agents" => {
-        "queue" => "default-#{queue_platform}-privileged"
+        "queue" => "single-use-#{queue_platform}-privileged"
       },
       "plugins" => {
         "docker#v3.5.0" => {
