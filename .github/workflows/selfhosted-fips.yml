@@ -13,9 +13,9 @@ concurrency:
 
 jobs:
   linux:
-    runs-on:
-      group: fips-runners
-      labels: ubuntu-2204-pro-fips-tester
+    strategy:
+      fail-fast: false
+    runs-on: [self-hosted, ubuntu-2204-pro-fips-tester]
     steps:
       - name: 'If Ruby 3.1 not installed, then install it'
         id: ruby
