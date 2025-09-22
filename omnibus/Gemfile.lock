@@ -12,7 +12,7 @@ GIT
   revision: 63c0cfe96c9c9c4ad0feb893a583b49cde8e22c8
   branch: sean-sype-simmons/CHEF-24775-OmnibusConfigurationPipelineConfigurations3CacheCconfiguration
   specs:
-    omnibus (9.1.0)
+    omnibus (9.1.1)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
