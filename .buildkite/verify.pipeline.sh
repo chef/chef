@@ -64,6 +64,8 @@ for platform in ${win_test_platforms[@]}; do
   echo "    queue: default-windows-2019-privileged"
   echo "  matrix:"
   echo "    - \"Functional\""
+  # The following plugins section is intentionally omitted for this job.
+  # If you wish to enable plugins for this section, uncomment and verify indentation:
   # echo "  plugins:"
   # echo "  - docker#v3.5.0:"
   # echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
@@ -97,6 +99,7 @@ for gem in ${external_gems[@]}; do
     echo "        - CHEF_FS=true"
   fi
   echo "      propagate-environment: true"
+  # The following plugin block is intentionally omitted. Uncomment and verify indentation if needed:
   # echo "  - chef/cache#v1.5.0:"
   # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
   # echo "      cached_folders:"
@@ -168,6 +171,7 @@ for plan in ${habitat_plans[@]}; do
     echo "        - HAB_AUTH_TOKEN"
     echo "      propagate-environment: true"
   fi
+  # The following plugin block is intentionally omitted. Uncomment and verify indentation if needed:
   # echo "  plugins:"
   # echo "  - chef/cache#v1.5.0:"
   # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
