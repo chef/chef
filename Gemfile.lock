@@ -369,7 +369,7 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0902)
+    mime-types-data (3.2025.0916)
     minitest (5.25.1)
     mixlib-archive (1.1.7)
       mixlib-log

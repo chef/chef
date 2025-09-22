@@ -124,23 +124,21 @@ jobs:
 
         # Verify FIPS mode is working with OpenSSL
         Write-Output "Verifying FIPS mode is working with OpenSSL:"
-        $openssl_path = Join-Path -Path $chef_pkg -ChildPath "embedded\bin\openssl.exe"
+        hab pkg exec core/openssl openssl.exe version
 
-        # Test if OpenSSL is built with FIPS support
-        & $openssl_path version
         Write-Output "Testing OpenSSL FIPS mode:"
 
         # Run OpenSSL in FIPS mode and check if it works
-        $result = & $openssl_path list -providers
+        $result = & hab pkg exec core/openssl openssl.exe list -providers
         if ($result -match "fips") {
             Write-Output "OpenSSL FIPS provider is available"
         } else {
             Write-Output "OpenSSL FIPS provider check:"
-            & $openssl_path list -providers
+            & hab pkg exec core/openssl openssl.exe list -providers
 
             # Alternative test: try to use a non-FIPS algorithm which should fail in FIPS mode
             Write-Output "Testing FIPS compliance by attempting to use MD5 (should fail in FIPS mode):"
-            & $openssl_path dgst -md5 $openssl_path 2>&1
+            & hab pkg exec core/openssl dgst -md5 $(hab pkg path core/openssl)\bin\openssl.exe
             if ($lastexitcode -ne 0) {
                 Write-Output "FIPS mode verification successful: MD5 algorithm was rejected as expected"
             } else {
