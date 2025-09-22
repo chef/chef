@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-2204-pro-fips-tester]
         ruby: ['3.1']
-    runs-on: [self-hosted, ubuntu-2204-pro-fips-tester]
+    runs-on: [self-hosted, Ubuntu-2204-pro-fips-tester]
     steps:
       - name: 'If Ruby 3.1 not installed, then install it'
         id: ruby
