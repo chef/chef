@@ -30,7 +30,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Chef
-      uses: actionshub/chef-install@3.0.0
+      uses: actionshub/
+    - name: Correcting busted gems
+      id: fix_gems
+      run: |
+        bundle clean --force
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
