@@ -17,11 +17,16 @@ if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
 deb http://cdn-aws.deb.debian.org/debian-archive/debian stretch main
 deb http://archive.debian.org/debian-security stretch/updates main
 deb http://cdn-aws.deb.debian.org/debian-archive/debian-security stretch/updates main
+deb http://archive.debian.org/debian stretch-backports main
 EOF
 
   echo "sources.list after:"
   sudo cat /etc/apt/sources.list
 fi
+
+echo "updating git on debian 9"
+sudo apt-get update -y
+sudo apt-get install -y -t stretch-backports git
 
 case "$ID" in
   ubuntu|debian)
@@ -34,7 +39,11 @@ case "$ID" in
     ;;
   rhel|rocky)
     PACKAGE_MANAGER="dnf"
-    PACKAGES="$PACKAGES openssl-devel libarchive-devel"
+    if [ "$ID" = "rocky" ]; then
+      PACKAGE_MANAGER+=" --enablerepo=devel"
+    fi
+    PACKAGES="$PACKAGES openssl-devel libarchive-devel libffi-devel libyaml-devel"
+    echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
     sudo $PACKAGE_MANAGER install $PACKAGES -y
     ;;
 esac

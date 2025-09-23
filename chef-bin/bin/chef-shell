@@ -22,7 +22,6 @@ Encoding.default_external = Encoding::UTF_8
 
 require "irb"
 require "irb/completion"
-require "irb/ext/save-history"
 
 $:.unshift(File.expand_path(File.join(__dir__, "..", "lib")))
 

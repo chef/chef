@@ -7,6 +7,18 @@ param (
 winrm quickconfig -quiet
 
 $chef_gem_root = (hab pkg exec $PackageIdentifier gem.cmd which chef | Split-Path | Split-Path)
+
+# Check if we're in the installed gem directory and need to find the source directory
+if ($chef_gem_root -match "vendor\\gems\\chef-") {
+    # Try common source locations
+    $Root = (Get-Location).Drive.Root
+    $sources = @($pwd, $env:HAB_CACHE_SRC_PATH, $Root + "workdir")
+    foreach ($src in $sources | Where-Object { $_ -and (Test-Path "$_\spec") }) {
+        $chef_gem_root = $src
+        break
+    }
+}
+
 try {
     Push-Location $chef_gem_root
     $env:PATH = "C:\hab\bin;$env:PATH"

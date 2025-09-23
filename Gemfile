@@ -4,12 +4,14 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
+gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
+
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
-  gem "ffi", ">= 1.15.5"
+  gem "ffi", ">= 1.15.5", "< 1.18.0"
 else
   gem "ffi", ">= 1.15.5", force_ruby_platform: true
 end
@@ -29,8 +31,6 @@ else
   # bundling in omnibus
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
-
-gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
   gem "appbundler"
@@ -53,7 +53,7 @@ end
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
-    gem "ruby-shadow", platforms: :ruby
+    gem "chef-ruby-shadow", "~> 3.0.0", platforms: :ruby
   end
 end
 

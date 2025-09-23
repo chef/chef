@@ -136,7 +136,7 @@ class Chef
       def parse_source_args(args)
         if args.empty?
           nil
-        elsif args[0].is_a?(Chef::DelayedEvaluator) && args.count == 1
+        elsif args[0].is_a?(Chef::DelayedEvaluator) && args.one?
           args[0]
         elsif args.any?(Chef::DelayedEvaluator) && args.count > 1
           raise Exceptions::InvalidRemoteFileURI, "Only 1 source argument allowed when using a lazy evaluator"
