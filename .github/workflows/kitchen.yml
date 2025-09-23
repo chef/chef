@@ -34,7 +34,7 @@ jobs:
     - name: Correcting busted gems
       id: fix_gems
       run: |
-        bundle clean --force
+        gem uninstall -aIx
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
