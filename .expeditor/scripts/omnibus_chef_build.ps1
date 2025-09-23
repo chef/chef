@@ -323,20 +323,36 @@ function Build-ChefPackage {
     try {
         Write-Output "--- Building Chef"
         
-        # Capture output and errors while running the command
-        $output = bundle exec omnibus build chef -l internal --override append_timestamp:false 2>&1
+        # Change directory to ensure we're in the right place
+        Set-Location "$($ScriptDir)/../../omnibus"
         
-        # Display the output
-        $output | ForEach-Object { Write-Output $_ }
+        # Run the command directly without capturing output
+        # This ensures real-time streaming of output to Buildkite
+        $env:BUNDLE_GEMFILE = (Get-Location).Path + "/Gemfile"
+        Write-Output "Using Gemfile: $env:BUNDLE_GEMFILE"
         
-        # Check the exit code
+        Write-Output "Starting omnibus build with verbose logging..."
+        bundle exec omnibus build chef -l internal --override append_timestamp:false --log-level debug
+        
         if ($LASTEXITCODE -ne 0) {
             throw "Omnibus build chef failed with exit code $LASTEXITCODE"
         }
+        
+        Write-Output "Omnibus build completed successfully"
     }
     catch {
         Write-Error "Chef build failed: $_"
-        exit 1
+        
+        # Try to get more detailed logs
+        Write-Output "--- Attempting to collect detailed build logs"
+        Get-ChildItem "C:\omnibus-ruby\log\" -ErrorAction SilentlyContinue | 
+            Where-Object { $_.Name -like "*build*.log" } | 
+            ForEach-Object {
+                Write-Output "=== Log file: $($_.FullName) ==="
+                Get-Content $_.FullName -Tail 200
+            }
+            
+        throw "Chef build failed. See logs for details."
     }
 }
 
