@@ -113,7 +113,7 @@ describe Chef::Resource::Group, "members" do
     end
 
     it "(#{method}) does not allow a Hash" do
-      expect { resource.send(method, { some_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
+      expect { resource.send(method, { some_user: "is freakin awesome" }) }.to raise_error(NoMethodError)
     end
   end
 end
