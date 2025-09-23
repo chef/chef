@@ -17,6 +17,8 @@ steps:
       linux:
         privileged: true
         single-use: true
+        environment:
+          - HAB_AUTH_TOKEN
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
@@ -27,3 +29,5 @@ steps:
         privileged: true
         single-use: true
         shell: ["powershell", "-Command"]
+        environment:
+          - HAB_AUTH_TOKEN
