@@ -18,10 +18,43 @@ GIT
       train-core
       wmi-lite (~> 1.0)
 
+GIT
+  remote: https://github.com/inspec/inspec.git
+  revision: e96f3a578586b86da6ec1f39779af211bbbf4c2b
+  branch: CHEF-23547-use-offc-distrib-in-hab-plan
+  specs:
+    inspec-core (7.0.62)
+      addressable (~> 2.4)
+      chef-telemetry (~> 1.0, >= 1.0.8)
+      cookstyle
+      csv (~> 3.0)
+      faraday (>= 1, < 3)
+      faraday-follow_redirects (~> 0.3)
+      hashie (>= 3.4, < 6.0)
+      license-acceptance (>= 0.2.13, < 3.0)
+      method_source (>= 0.8, < 2.0)
+      mixlib-log (~> 3.0)
+      multipart-post (~> 2.0)
+      ostruct (~> 0.1.0)
+      parallel (~> 1.9)
+      parslet (>= 1.5, < 2.0)
+      pry (~> 0.13)
+      rspec (>= 3.9, <= 3.14)
+      rspec-its (~> 1.2)
+      rubyzip (>= 1.2.2, < 3.0)
+      semverse (~> 3.0)
+      sslshake (~> 1.2)
+      syslog (~> 0.1)
+      thor (>= 0.20, < 1.3.0)
+      tomlrb (>= 1.3, < 2.1)
+      train-core (~> 3.13, >= 3.13.2)
+      tty-prompt (~> 0.17)
+      tty-table (~> 0.10)
+
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (19.1.24)
+    chef-bin (19.1.75)
       chef (= 19.1.75)
 
 PATH
@@ -31,19 +64,17 @@ PATH
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.24)
-      chef-licensing (>= 0.7.5)
-      chef-utils (= 19.1.24)
+      chef-config (= 19.1.75)
+      chef-utils (= 19.1.75)
       chef-vault
-      chef-zero (>= 15.0.17)
+      chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5, < 1.17.0)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 7.0.38.beta)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -56,17 +87,18 @@ PATH
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.7)
+      train-core (~> 3.13, >= 3.13.2)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
 
 PATH
   remote: .
   specs:
-    knife (19.1.24)
+    knife (19.1.75)
       bcrypt_pbkdf (~> 1.1)
       chef (>= 19)
       chef-config (>= 19)
@@ -84,27 +116,27 @@ PATH
       ohai (~> 19.0)
       pastel
       proxifier2 (~> 1.1)
-      train-core (~> 3.10)
+      train-core (~> 3.13, >= 3.13.2)
       train-winrm (>= 0.2.17)
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
 
 PATH
-  remote: /home/phil/src/git/chef/chef-config
+  remote: /Users/nmathur/chef/chef/chef-config
   specs:
-    chef-config (19.1.24)
+    chef-config (19.1.75)
       addressable
-      chef-utils (= 19.1.24)
+      chef-utils (= 19.1.75)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
 
 PATH
-  remote: /home/phil/src/git/chef/chef-utils
+  remote: /Users/nmathur/chef/chef/chef-utils
   specs:
-    chef-utils (19.1.24)
+    chef-utils (19.1.75)
       concurrent-ruby
 
 GEM
@@ -151,13 +183,6 @@ GEM
     chef-gyoku (1.4.5)
       builder (>= 2.1.2)
       rexml (~> 3.4)
-    chef-licensing (1.0.4)
-      activesupport (~> 7.0, < 7.1)
-      chef-config (>= 15)
-      faraday (>= 1, < 3)
-      faraday-http-cache
-      tty-prompt (~> 0.23)
-      tty-spinner (~> 0.9.3)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -182,13 +207,14 @@ GEM
       erubi (>= 1.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
-    chef-zero (15.0.17)
-      activesupport (~> 7.0, < 7.1)
-      ffi-yajl (~> 2.2)
-      hashie (>= 2.0, < 5.0)
+    chef-zero (15.0.21)
+      activesupport (>= 7, < 8.1)
+      ffi-yajl (>= 2.2, < 4.0)
+      hashie (>= 2.0, < 6.0)
       mixlib-log (>= 2.0, < 4.0)
-      rack (~> 3.1, >= 3.1.10)
+      rack (~> 3.1, >= 3.1.16)
       rackup (~> 2.2, >= 2.2.1)
+      unf_ext (~> 0.0.8)
       uuidtools (~> 2.1)
       webrick
     cheffish (17.1.8)
@@ -198,27 +224,26 @@ GEM
       net-ssh
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
-    cookstyle (8.1.3)
-      rubocop (= 1.75.6)
+    cookstyle (8.4.0)
+      rubocop (= 1.79.2)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (0.4.5)
       rexml
+    csv (3.3.5)
     date (3.4.1)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
     domain_name (0.6.20240107)
     erubi (1.13.1)
     erubis (2.7.0)
-    faraday (2.13.1)
+    faraday (2.13.4)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
-    faraday-http-cache (2.5.1)
-      faraday (>= 0.8)
-    faraday-net_http (3.4.0)
+    faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
     ffi (1.16.3)
     ffi-libarchive (1.1.14)
@@ -239,31 +264,6 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
-    inspec-core (7.0.38.beta)
-      addressable (~> 2.4)
-      chef-licensing (>= 1.0.2)
-      chef-telemetry (~> 1.0, >= 1.0.8)
-      cookstyle
-      faraday (>= 1, < 3)
-      faraday-follow_redirects (~> 0.3)
-      hashie (>= 3.4, < 6.0)
-      license-acceptance (>= 0.2.13, < 3.0)
-      method_source (>= 0.8, < 2.0)
-      mixlib-log (~> 3.0)
-      multipart-post (~> 2.0)
-      parallel (~> 1.9)
-      parslet (>= 1.5, < 2.0)
-      pry (~> 0.13)
-      rspec (>= 3.9, <= 3.14)
-      rspec-its (~> 1.2)
-      rubyzip (>= 1.2.2, < 3.0)
-      semverse (~> 3.0)
-      sslshake (~> 1.2)
-      thor (>= 0.20, < 1.3.0)
-      tomlrb (>= 1.2, < 2.1)
-      train-core (>= 3.11.0)
-      tty-prompt (~> 0.17)
-      tty-table (~> 0.10)
     ipaddress (0.8.3)
     jmespath (1.6.2)
     json (2.12.2)
@@ -319,15 +319,16 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
+    ostruct (0.1.0)
     parallel (1.27.0)
-    parser (3.3.8.0)
+    parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.7.2)
-    prism (1.4.0)
+    prism (1.5.1)
     proxifier2 (1.1.0)
     pry (0.15.2)
       coderay (~> 1.1)
@@ -340,12 +341,12 @@ GEM
       pry (~> 0.13)
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.1.15)
+    rack (3.2.1)
     rackup (2.2.1)
       rack (>= 3)
     rainbow (3.1.1)
     rake (13.2.1)
-    regexp_parser (2.10.0)
+    regexp_parser (2.11.3)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -368,7 +369,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.3)
-    rubocop (1.75.6)
+    rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -376,10 +377,10 @@ GEM
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
+      rubocop-ast (>= 1.46.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.44.1)
+    rubocop-ast (1.47.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     ruby-progressbar (1.13.0)
@@ -393,15 +394,17 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    syslog (0.3.0)
+      logger
     syslog-logger (1.6.8)
     thor (1.2.2)
     time (0.4.1)
       date
     timeout (0.4.3)
     tomlrb (1.3.0)
-    train-core (3.12.7)
+    train-core (3.13.4)
       addressable (~> 2.5)
-      ffi (!= 1.13.0)
+      ffi (~> 1.16.0)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 5.0)
@@ -428,8 +431,6 @@ GEM
       tty-screen (~> 0.8)
       wisper (~> 2.0)
     tty-screen (0.8.2)
-    tty-spinner (0.9.3)
-      tty-cursor (~> 0.7)
     tty-table (0.12.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
@@ -464,6 +465,7 @@ DEPENDENCIES
   chef-utils!
   cheffish (>= 14)
   crack (< 0.4.6)
+  inspec-core!
   knife!
   ohai!
   pry

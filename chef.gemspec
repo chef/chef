@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.10", "<= 3.12.7" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
+  s.add_dependency "train-core", "~> 3.13", ">= 3.13.2" # Updated to be compatible with InSpec custom branch
   s.add_dependency "train-winrm", ">= 0.2.17"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", "~> 3.3.8"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 19.0"
-  s.add_dependency "inspec-core", "~> 7.0.38.beta"
+  # s.add_dependency "inspec-core", "~> 7.0.38.beta" # commented out to use custom branch in habitat build
 
   s.add_dependency "ffi", ">= 1.15.5"
   s.add_dependency "ffi-yajl", "~> 2.2"
@@ -70,7 +70,7 @@ Gem::Specification.new do |s|
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", "~> 0.18.2" # hashi vault official client gem
-  s.add_dependency "chef-licensing", ">= 0.7.5"
+  # s.add_dependency "chef-licensing", ">= 0.7.5" # commented out to use custom branch in habitat build
 
   s.bindir = "bin"
   s.executables = %w{ }

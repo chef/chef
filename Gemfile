@@ -35,9 +35,12 @@ gem "cheffish", ">= 17"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 7.0.38.beta" # need to provide the binaries for inspec
+  # gem "inspec-core-bin", "~> 7.0.38.beta" # need to provide the binaries for inspec
   gem "chef-vault"
 end
+
+gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "CHEF-23547-use-offc-distrib-in-hab-plan"
+gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "CHEF-23547-use-offc-distrib-in-hab-plan"
 
 group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
