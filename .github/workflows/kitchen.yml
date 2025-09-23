@@ -35,6 +35,7 @@ jobs:
       id: fix_gems
       run: |
         gem uninstall -aIx
+        bundle config set --local path 'vendor/bundle'
         bundle install --jobs=3 --retry=3
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
