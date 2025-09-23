@@ -30,7 +30,10 @@ lifecycle:
     # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
     # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
     # libyajl2 build if already present. gem install seems to build anyway.
-    - remote: gem uninstall -I libyajl2
+    # - remote: gem uninstall -I libyajl2
+    - remote: Write-Output "*** Uninstalling all the things ***"
+    - remote: bundle clean --force
+    - remote: Write-Output "*** Uninstalled all the things ***"
     - remote: gem install appbundler --no-doc
     - remote: gem install appbundle-updater -v "~> 1.0.36" --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
