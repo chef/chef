@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Chef
-      uses: actionshub/
+      uses: actionshub/chef-install@3.0.0
     - name: Correcting busted gems
       id: fix_gems
       run: |
