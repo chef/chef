@@ -17,14 +17,14 @@ jobs:
       fail-fast: false
     runs-on: [self-hosted, ubuntu-2204-pro-fips-tester]
     steps:
-      - name: 'If Ruby 3.4 not installed, then install it'
+      - name: 'If Ruby 3.1 not installed, then install it'
         id: ruby
         run: |
           set +e
           if ! command -v ruby &> /dev/null
           then
             # sudo apt-get update
-            # sudo apt-get install -y ruby-full=3.1.6
+            # sudo apt-get install -y ruby-full=3.1.2
             git clone https://github.com/rbenv/rbenv.git ~/.rbenv
             echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
             echo 'eval "$(rbenv init -)"' >> ~/.bashrc
@@ -32,8 +32,8 @@ jobs:
             git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
             echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
             exec $SHELL
-            rbenv install 3.1.6
-            rbenv global 3.1.6
+            rbenv install 3.1.2
+            rbenv global 3.1.2
           fi
           set -e
       - name: 'Clean up any previous installs'
