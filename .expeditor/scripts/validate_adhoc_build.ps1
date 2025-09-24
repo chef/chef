@@ -1,5 +1,8 @@
 $ErrorActionPreference = 'Stop'
 
+# Add buildkite-agent directory to PATH so buildkite-agent.exe can be found
+$env:PATH = "C:\buildkite-agent;" + $env:PATH
+
 git config --global --add safe.directory /workdir
 
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
