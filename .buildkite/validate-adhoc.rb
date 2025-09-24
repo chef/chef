@@ -90,7 +90,7 @@ targets.each do |target|
             "-Command"
           ],
           "volumes" => [
-            "c:\\buildkite-agent:c:\\buildkite-agent"
+            "C:\\buildkite-agent:C:\\buildkite-agent"
           ],
           "propagate-environment" => true
         }

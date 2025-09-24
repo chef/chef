@@ -5,6 +5,7 @@ git config --global --add safe.directory /workdir
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+$env:Path += ";C:\buildkite-agent\bin"
 
 Write-Host "--- Downloading package artifact"
 $env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT")
