@@ -1,5 +1,8 @@
 $ErrorActionPreference = 'Stop'
 
+# Ensure Chef and Habitat licenses are accepted
+$env:CHEF_LICENSE = "accept-no-persist"
+$env:HAB_LICENSE = "accept-no-persist"
 # Add buildkite-agent's bin directory to PATH so the agent can be found directly
 $env:PATH = "C:\buildkite-agent\bin;" + $env:PATH
 # Debug output

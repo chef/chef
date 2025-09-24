@@ -98,8 +98,8 @@ targets.each do |target|
             'AWS_ACCESS_KEY_ID',
             'AWS_SECRET_ACCESS_KEY',
             'AWS_SESSION_TOKEN',
-            'CHEF_LICENSE=accept-no-persist',
-            'HAB_LICENSE="accept-no-persist'
+            'CHEF_LICENSE',
+            'HAB_LICENSE'
           ],
           "propagate-environment" => true
         }
