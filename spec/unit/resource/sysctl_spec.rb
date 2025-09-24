@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::Resource::Sysctl do
   let(:resource) { Chef::Resource::Sysctl.new("fakey_fakerton") }
-  let(:provider) { resource.provider_for_action(:create) }
+  let(:provider) { resource.provider_for_action(:apply) }
 
   it "sets resource name as :sysctl" do
     expect(resource.resource_name).to eql(:sysctl)
@@ -53,7 +53,7 @@ describe Chef::Resource::Sysctl do
     expect(resource.value).to eql("1.1")
   end
 
-  context "#contruct_sysctl_content" do
+  context "#construct_sysctl_content" do
     before do
       resource.key("foo")
       resource.value("bar")
@@ -62,14 +62,114 @@ describe Chef::Resource::Sysctl do
     context "when comment is a String" do
       it "Returns content for use with a file resource" do
         resource.comment("This sets foo / bar on our system")
-        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar\n")
+        expect(provider.construct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar\n")
       end
     end
 
     context "when comment is an Array" do
       it "Returns content for use with a file resource" do
         resource.comment(["This sets foo / bar on our system", "We need for baz"])
-        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar\n")
+        expect(provider.construct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar\n")
+      end
+    end
+  end
+
+  context "#load_sysctl_command" do
+    let(:node) { double("node") }
+
+    before do
+      allow(resource).to receive(:node).and_return(node)
+      allow(provider).to receive(:node).and_return(node)
+    end
+
+    context "on Debian 13+" do
+      before do
+        allow(node).to receive(:[]).with("platform").and_return("debian")
+        allow(node).to receive(:[]).with("platform_version").and_return("13.0")
+      end
+
+      it "returns systemctl command" do
+        expect(provider.load_sysctl_command).to eql("systemctl restart systemd-sysctl.service")
+      end
+
+      it "returns systemctl command with ignore_error" do
+        expect(provider.load_sysctl_command(ignore_error: true)).to eql("systemctl restart systemd-sysctl.service")
+      end
+    end
+
+    context "on other platforms" do
+      before do
+        allow(node).to receive(:[]).with("platform").and_return("ubuntu")
+        allow(node).to receive(:[]).with("platform_version").and_return("20.04")
+      end
+
+      it "returns sysctl -p command" do
+        expect(provider.load_sysctl_command).to eql("sysctl -p")
+      end
+
+      it "returns sysctl -e -p command when ignore_error is true" do
+        expect(provider.load_sysctl_command(ignore_error: true)).to eql("sysctl -e -p")
+      end
+    end
+
+    context "on Debian 12" do
+      before do
+        allow(node).to receive(:[]).with("platform").and_return("debian")
+        allow(node).to receive(:[]).with("platform_version").and_return("12.5")
+      end
+
+      it "returns sysctl -p command" do
+        expect(provider.load_sysctl_command).to eql("sysctl -p")
+      end
+    end
+  end
+
+  context "#load_sysctl_command" do
+    let(:node) { double("node") }
+
+    before do
+      allow(resource).to receive(:node).and_return(node)
+      allow(provider).to receive(:node).and_return(node)
+    end
+
+    context "on Debian 13+" do
+      before do
+        allow(node).to receive(:[]).with("platform").and_return("debian")
+        allow(node).to receive(:[]).with("platform_version").and_return("13.0")
+      end
+
+      it "returns systemctl command" do
+        expect(provider.load_sysctl_command).to eql("systemctl restart systemd-sysctl.service")
+      end
+
+      it "returns systemctl command with ignore_error" do
+        expect(provider.load_sysctl_command(ignore_error: true)).to eql("systemctl restart systemd-sysctl.service")
+      end
+    end
+
+    context "on other platforms" do
+      before do
+        allow(node).to receive(:[]).with("platform").and_return("ubuntu")
+        allow(node).to receive(:[]).with("platform_version").and_return("20.04")
+      end
+
+      it "returns sysctl -p command" do
+        expect(provider.load_sysctl_command).to eql("sysctl -p")
+      end
+
+      it "returns sysctl -e -p command when ignore_error is true" do
+        expect(provider.load_sysctl_command(ignore_error: true)).to eql("sysctl -e -p")
+      end
+    end
+
+    context "on Debian 12" do
+      before do
+        allow(node).to receive(:[]).with("platform").and_return("debian")
+        allow(node).to receive(:[]).with("platform_version").and_return("12.5")
+      end
+
+      it "returns sysctl -p command" do
+        expect(provider.load_sysctl_command).to eql("sysctl -p")
       end
     end
   end
