@@ -39,7 +39,7 @@ PATH
   remote: .
   specs:
     chef (18.8.19)
-      activesupport (>= 4.2.7.1, <= 7.1.3.2)
+      activesupport (>= 4.2.7.1, <= 7.1.5.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -75,7 +75,7 @@ PATH
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
     chef (18.8.19-universal-mingw-ucrt)
-      activesupport (>= 4.2.7.1, <= 7.1.3.2)
+      activesupport (>= 4.2.7.1, <= 7.1.5.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -149,15 +149,18 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.1.3.2)
+    activesupport (7.1.5.2)
       base64
+      benchmark (>= 0.3)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       connection_pool (>= 2.2.5)
       drb
       i18n (>= 1.6, < 2)
+      logger (>= 1.4.2)
       minitest (>= 5.1)
       mutex_m
+      securerandom (>= 0.3)
       tzinfo (~> 2.0)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
@@ -186,6 +189,7 @@ GEM
     aws-sigv4 (1.11.0)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.2.0)
+    benchmark (0.4.1)
     bigdecimal (3.1.9)
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
@@ -426,6 +430,7 @@ GEM
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
+    securerandom (0.4.1)
     semverse (3.0.2)
     sslshake (1.3.1)
     strings (0.2.1)
