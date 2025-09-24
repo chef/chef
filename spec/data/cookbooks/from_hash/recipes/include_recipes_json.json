@@ -1,0 +1,5 @@
+{
+  "include_recipes": [
+    "from_hash::gigantor"
+  ]
+}
