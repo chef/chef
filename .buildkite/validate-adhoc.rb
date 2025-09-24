@@ -127,7 +127,11 @@ targets.each do |target|
           "privileged" => true,
           "propagate-environment" => true,
           "environment" => [
-            'HAB_AUTH_TOKEN'
+            'HAB_AUTH_TOKEN',
+            'BUILDKITE_AGENT_ACCESS_TOKEN',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'AWS_SESSION_TOKEN'
           ]
         }
       },
