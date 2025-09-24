@@ -97,8 +97,8 @@ targets.each do |target|
             'BUILDKITE_AGENT_ACCESS_TOKEN',
             'AWS_ACCESS_KEY_ID',
             'AWS_SECRET_ACCESS_KEY',
-            'AWS_SESSION_TOKEN'
-            'CHEF_LICENSE=accept-no-persist'
+            'AWS_SESSION_TOKEN',
+            'CHEF_LICENSE=accept-no-persist',
             'HAB_LICENSE="accept-no-persist'
           ],
           "propagate-environment" => true
