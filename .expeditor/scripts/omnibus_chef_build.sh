@@ -12,6 +12,9 @@ export PATH="/opt/omnibus-toolchain/bin:${PATH}"
 export OMNIBUS_FIPS_MODE="true"
 export OMNIBUS_PIPELINE_DEFINITION_PATH="${SCRIPT_DIR}/../release.omnibus.yml"
 
+# Set default AWS Region
+export AWS_REGION="${AWS_REGION:-us-west-2}"
+
 echo "--- Installing Chef Foundation"
 curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "stable" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
 
@@ -33,7 +36,7 @@ fi
 
 echo "--- AIX gemfile.lock"
 if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
-  cd "#{SCRIPT_DIR}/../.."
+  cd "${SCRIPT_DIR}/../.."
   cp -f Gemfile.aix.lock Gemfile.lock
 fi
 
@@ -42,8 +45,39 @@ cd "${SCRIPT_DIR}/../../omnibus"
 bundle config set --local without development
 bundle install
 
+# Set up S3 credentials and build options
+echo "--- Setting up S3 credentials and build options"
+
+# Get AWS S3 credentials from SSM Parameter Store
+export AWS_S3_ACCESS_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-access-key-id-private" --with-decryption --region "us-west-1" --query Parameter.Value --output text)
+if [ $? -ne 0 ]; then
+  echo "Failed to retrieve S3 access key from SSM"
+  exit 1
+fi
+
+export AWS_S3_SECRET_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-secret-access-key-id-private" --with-decryption --region "us-west-1" --query Parameter.Value --output text)
+if [ $? -ne 0 ]; then
+  echo "Failed to retrieve S3 secret key from SSM"
+  exit 1
+fi
+
+echo "AWS S3 credentials retrieved successfully"
+
+# Set up build options similar to omnibus-buildkite-plugin
+BUILD_OPTIONS="-l internal --populate-s3-cache"
+
+# Add override options
+BUILD_OPTIONS+=" --override"
+BUILD_OPTIONS+=" s3_region:$AWS_REGION"
+BUILD_OPTIONS+=" s3_access_key:$AWS_S3_ACCESS_KEY"
+BUILD_OPTIONS+=" s3_secret_key:$AWS_S3_SECRET_KEY"
+BUILD_OPTIONS+=" cache_suffix:$PROJECT_NAME"
+BUILD_OPTIONS+=" append_timestamp:false"
+BUILD_OPTIONS+=" use_git_caching:true"
+
 echo "--- Building Chef"
-bundle exec omnibus build chef -l internal --override append_timestamp:false
+echo "Build options: $BUILD_OPTIONS"
+bundle exec omnibus build "$PROJECT_NAME" $BUILD_OPTIONS
 
 echo "--- Uploading package to BuildKite"
 extensions=( bff deb dmg msi p5p rpm solaris amd64.sh i386.sh )
