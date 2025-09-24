@@ -2,14 +2,6 @@ $ErrorActionPreference = 'Stop'
 
 # Add buildkite-agent's bin directory to PATH so the agent can be found directly
 $env:PATH = "C:\buildkite-agent\bin;" + $env:PATH
-
-# Optionally, ensure a 'buildkite-agent.exe' exists for compatibility
-$bkStable = "C:\buildkite-agent\bin\buildkite-agent-stable.exe"
-$bkExe = "C:\buildkite-agent\bin\buildkite-agent.exe"
-if (!(Test-Path $bkExe) -and (Test-Path $bkStable)) {
-    Copy-Item $bkStable $bkExe
-}
-
 # Debug output
 Write-Host "PATH is: $env:PATH"
 Write-Host "Contents of C:\buildkite-agent\bin:"
