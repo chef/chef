@@ -3,6 +3,13 @@ $ErrorActionPreference = 'Stop'
 # Add buildkite-agent directory to PATH so buildkite-agent.exe can be found
 $env:PATH = "C:\buildkite-agent;" + $env:PATH
 
+# debug output
+Write-Host "PATH is: $env:PATH"
+Write-Host "Contents of C:\buildkite-agent:"
+Get-ChildItem C:\buildkite-agent
+Write-Host "Trying to get buildkite-agent version:"
+C:\buildkite-agent\buildkite-agent.exe --version
+
 git config --global --add safe.directory /workdir
 
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
