@@ -325,11 +325,16 @@ function Build-ChefPackage {
         
         # Change directory to ensure we're in the right place
         Set-Location "$($ScriptDir)/../../omnibus"
-    
+        
+        # Set up AWS Region
+        $AWS_REGION = if ($env:AWS_REGION) { $env:AWS_REGION } else { "us-west-2" }
+        
         # Set up build options similar to omnibus-buildkite-plugin
         $BUILD_OPTIONS = "-l internal --populate-s3-cache"
         $BUILD_OPTIONS += " --override"
-        $BUILD_OPTIONS += " s3_iam_role_arn:arn:aws:iam::530800929008:role/opscode-omnibus-cache-private-s3-access"
+        $BUILD_OPTIONS += " s3_region:$AWS_REGION"
+        $BUILD_OPTIONS += " s3_access_key:$($env:AWS_S3_ACCESS_KEY)"
+        $BUILD_OPTIONS += " s3_secret_key:$($env:AWS_S3_SECRET_KEY)"
         $BUILD_OPTIONS += " cache_suffix:$($env:PROJECT_NAME)"
         $BUILD_OPTIONS += " append_timestamp:false"
         $BUILD_OPTIONS += " use_git_caching:true"
