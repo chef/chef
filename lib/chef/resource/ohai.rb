@@ -89,7 +89,7 @@ class Chef
           # This ensures that cookbook-provided Ohai plugins are available
           # when the resource reloads Ohai data
           ohai_plugin_path = Chef::Config[:ohai_segment_plugin_path]
-          if ohai_plugin_path && Dir.exist?(ohai_plugin_path) && !Dir.empty?(ohai_plugin_path)
+          if ohai_plugin_path && Dir.exist?(ohai_plugin_path) && !Dir.empty?(ohai_plugin_path) && ohai.config[:plugin_path]
             # Configure Ohai to load plugins from the cookbook segment path
             ohai.config[:plugin_path] << ohai_plugin_path
             logger.trace("Added cookbook plugin path to ohai: #{ohai_plugin_path}")
