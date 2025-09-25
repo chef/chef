@@ -8,6 +8,11 @@ $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScript
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $env:Path += ";C:\buildkite-agent\bin"
 
+# Ensure Chef and Habitat licenses are accepted
+$env:CHEF_LICENSE = "accept-no-persist"
+$env:HAB_LICENSE = "accept-no-persist"
+$env:HAB_NONINTERACTIVE = "true"
+
 Write-Host "Verifying we have access to buildkite-agent"
 buildkite-agent --version
 
@@ -18,10 +23,6 @@ buildkite-agent artifact download "$env:PKG_ARTIFACT" .
 Write-Host "Downloading and importing origin key"
 buildkite-agent artifact download "ci-windows-key.pub" .
 Get-Content "ci-windows-key.pub" | hab origin key import
-
-# Ensure Chef and Habitat licenses are accepted
-$env:CHEF_LICENSE = "accept-no-persist"
-$env:HAB_LICENSE = "accept-no-persist"
 
 Write-Host "--- Installing $env:PKG_ARTIFACT"
 hab pkg install $env:PKG_ARTIFACT --auth $HAB_AUTH_TOKEN
