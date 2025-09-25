@@ -50,7 +50,7 @@ if (-not $?) { throw "Unable to set buildkite metadata" }
 
 # Export origin key and upload
 $key_file = Join-Path $results_dir "$($env:HAB_ORIGIN)-windows-key.pub"
-hab origin key export $env:HAB_ORIGIN | Out-File -FilePath $key_file -Encoding ascii
+hab origin key export $env:HAB_ORIGIN | Out-File -FilePath $key_file
 if (-not $?) { throw "Unable to export origin key" }
 
 buildkite-agent artifact upload "$($env:HAB_ORIGIN)-windows-key.pub"
