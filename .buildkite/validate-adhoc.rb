@@ -58,7 +58,38 @@ if ENV['BUILDKITE_PIPELINE_SLUG'] == 'chef-chef-main-validate-adhoc'
     ],
     "agents" => {
       "queue" => "default-privileged"
-    }
+    },
+    "timeout_in_minutes" => 120
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::windows: Building Habitat package",
+    "commands" => [
+      "./.expeditor/scripts/chef_adhoc_build.ps1",
+    ],
+    "agents" => {
+      "queue" => "default-windows-2019-privileged"
+    },
+    "plugins" => {
+        "docker#v3.5.0" => {
+          "image" => "chefes/omnibus-toolchain-windows-2019:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "shell" => [
+            "powershell",
+            "-Command"
+          ],
+          "volumes" => [
+            "C:\\buildkite-agent:C:\\buildkite-agent"
+          ],
+          "environment" => [
+            'HAB_AUTH_TOKEN',
+            'BUILDKITE_AGENT_ACCESS_TOKEN',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'AWS_SESSION_TOKEN',
+          ],
+          "propagate-environment" => true
+        }
+      },
+      "timeout_in_minutes" => 120
   }
 else
   # nightly pipeline, get package from unstable.

@@ -12,8 +12,12 @@ Write-Host "Verifying we have access to buildkite-agent"
 buildkite-agent --version
 
 Write-Host "--- Downloading package artifact"
-$env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT")
+$env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_WINDOWS")
 buildkite-agent artifact download "$env:PKG_ARTIFACT" .
+
+Write-Host "Downloading and importing origin key"
+buildkite-agent artifact download "ci-windows-key.pub" .
+Get-Content "ci-windows-key.pub" | hab origin key import
 
 # Ensure Chef and Habitat licenses are accepted
 $env:CHEF_LICENSE = "accept-no-persist"

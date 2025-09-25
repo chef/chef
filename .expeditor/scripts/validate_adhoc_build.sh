@@ -11,7 +11,7 @@ echo "--- License serverl url is $CHEF_LICENSE_SERVER"
 git config --global --add safe.directory /workdir
 
 echo "--- Downloading package artifact"
-export PKG_ARTIFACT=$(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT")
+export PKG_ARTIFACT=$(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_LINUX")
 buildkite-agent artifact download "$PKG_ARTIFACT" .
 
 echo ":key: Setting up origin key"
