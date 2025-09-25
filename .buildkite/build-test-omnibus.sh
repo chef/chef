@@ -121,8 +121,8 @@ then
       echo "        - CHEF_FOUNDATION_VERSION"
       echo "        - AWS_REGION"
       echo "  commands:"
-      echo "    - export AWS_ACCESS_KEY_ID=\$(aws ssm get-parameter --name \"omnibus-cache-aws-access-key-id-private\" --with-decryption --region \${AWS_REGION:-us-west-2} --query Parameter.Value --output text)"
-      echo "    - export AWS_SECRET_ACCESS_KEY=\$(aws ssm get-parameter --name \"omnibus-cache-aws-secret-access-key-id-private\" --with-decryption --region \${AWS_REGION:-us-west-2} --query Parameter.Value --output text)"
+      echo "    - export AWS_S3_ACCESS_KEY=\$(aws ssm get-parameter --name \"omnibus-cache-aws-access-key-id-private\" --with-decryption --region \${AWS_REGION:-us-west-2} --query Parameter.Value --output text)"
+      echo "    - export AWS_S3_SECRET_KEY=\$(aws ssm get-parameter --name \"omnibus-cache-aws-secret-access-key-id-private\" --with-decryption --region \${AWS_REGION:-us-west-2} --query Parameter.Value --output text)"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.sh"
       echo "  timeout_in_minutes: 60"
     else
@@ -149,8 +149,8 @@ then
       echo "      volumes:"
       echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
       echo "  commands:"
-      echo "    - \\\$env:AWS_ACCESS_KEY_ID = (aws ssm get-parameter --name \\\"omnibus-cache-aws-access-key-id-private\\\" --with-decryption --region \\\${env:AWS_REGION} --query Parameter.Value --output text)"
-      echo "    - \\\$env:AWS_SECRET_ACCESS_KEY = (aws ssm get-parameter --name \\\"omnibus-cache-aws-secret-access-key-id-private\\\" --with-decryption --region \\\${env:AWS_REGION} --query Parameter.Value --output text)"
+      echo "    - \\\$env:AWS_S3_ACCESS_KEY = (aws ssm get-parameter --name \\\"omnibus-cache-aws-access-key-id-private\\\" --with-decryption --region \\\${env:AWS_REGION} --query Parameter.Value --output text)"
+      echo "    - \\\$env:AWS_S3_SECRET_KEY = (aws ssm get-parameter --name \\\"omnibus-cache-aws-secret-access-key-id-private\\\" --with-decryption --region \\\${env:AWS_REGION} --query Parameter.Value --output text)"
       echo "    - ./.expeditor/scripts/omnibus_chef_build.ps1"
       echo "  timeout_in_minutes: 120"
     fi
