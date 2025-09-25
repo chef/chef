@@ -79,3 +79,15 @@ if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
     export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
   fi
 fi
+
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
+then
+    # Set AWS S3 credentials for omnibus cache operations
+    AWS_S3_ACCESS_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
+    export AWS_S3_ACCESS_KEY
+    
+    AWS_S3_SECRET_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-secret-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
+    export AWS_S3_SECRET_KEY
+    
+    echo "AWS S3 credentials set for omnibus cache operations"
+fi
