@@ -1,10 +1,21 @@
 $ErrorActionPreference = 'Stop'
 
+# Ensure Chef and Habitat licenses are accepted
+$env:CHEF_LICENSE = "accept-no-persist"
+$env:HAB_LICENSE = "accept-no-persist"
+# Add buildkite-agent's bin directory to PATH so the agent can be found directly
+$env:PATH = "C:\buildkite-agent\bin;" + $env:PATH
+# Debug output
+Write-Host "PATH is: $env:PATH"
+Write-Host "Contents of C:\buildkite-agent\bin:"
+Get-ChildItem C:\buildkite-agent\bin
+Write-Host "Trying to get buildkite-agent version:"
+buildkite-agent --version
+
 git config --global --add safe.directory /workdir
 
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 Write-Host "--- Downloading package artifact"
 $env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT")
