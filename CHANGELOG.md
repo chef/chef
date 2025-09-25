@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.20 -->
-## [v18.8.20](https://github.com/chef/chef/tree/v18.8.20) (2025-09-24)
+<!-- latest_release 18.8.21 -->
+## [v18.8.21](https://github.com/chef/chef/tree/v18.8.21) (2025-09-25)
 
 #### Merged Pull Requests
-- [Chef-18] Updating for CVE-2023-22796 [#15298](https://github.com/chef/chef/pull/15298) ([johnmccrae](https://github.com/johnmccrae))
+- [CHEF-21785] PR to chef-18: Updated the knife ec backup to preserve the frozen cookbook status -  [#15217](https://github.com/chef/chef/pull/15217) ([ashiqueps](https://github.com/ashiqueps))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [CHEF-21785] PR to chef-18: Updated the knife ec backup to preserve the frozen cookbook status -  [#15217](https://github.com/chef/chef/pull/15217) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.21 -->
 - [Chef-18] Updating for CVE-2023-22796 [#15298](https://github.com/chef/chef/pull/15298) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.20 -->
 - had to add a new ubuntu fips tester [#15290](https://github.com/chef/chef/pull/15290) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.19 -->
 - [Chef 18 backport] apt_repository patches #15209, #15218, #15220 [#15235](https://github.com/chef/chef/pull/15235) ([fretb](https://github.com/fretb)) <!-- 18.8.18 -->
