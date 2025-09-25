@@ -92,6 +92,15 @@ targets.each do |target|
           "volumes" => [
             "C:\\buildkite-agent:C:\\buildkite-agent"
           ],
+          "environment" => [
+            'HAB_AUTH_TOKEN',
+            'BUILDKITE_AGENT_ACCESS_TOKEN',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'AWS_SESSION_TOKEN',
+            'CHEF_LICENSE',
+            'HAB_LICENSE'
+          ],
           "propagate-environment" => true
         }
       },
