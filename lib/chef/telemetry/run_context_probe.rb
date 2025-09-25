@@ -1,0 +1,68 @@
+class Chef
+  class Telemetry
+    # Guesses the run context of Chef - how were we invoked?
+    # All stack values here are determined experimentally
+
+    class RunContextProbe
+      # Guess, using stack introspection, if we were called under
+      # test-kitchen, chef-client, chef-zero, chef-apply, chef-solo or otherwise.
+      ##### WIP: Implementation of run context probe class
+
+      class << self
+        attr_accessor :chef_zero
+      end
+
+      def self.guess_run_context(stack = nil)
+        stack ||= caller_locations
+        return "chef-apply" if chef_apply?(stack)
+        return "chef-solo" if chef_solo?(stack)
+        return "chef-zero" if chef_zero?
+        return "chef-client" if chef_client?(stack)
+        return "test-kitchen" if kitchen?(stack)
+
+        "unknown"
+      end
+
+      def self.kitchen?(stack)
+        # TO TEST
+        stack_match(stack: stack, path: "kitchen/instance", label: "verify_action") &&
+          stack_match(stack: stack, path: "kitchen/instance", label: "verify")
+      end
+
+      def self.chef_apply?(stack)
+        stack_match(stack: stack, path: "application/apply", label: "run_application") &&
+          stack_match(stack: stack, path: "application/apply", label: "run")
+      end
+
+      def self.chef_client?(stack)
+        stack_match(stack: stack, path: "application/base", label: "run_application") &&
+          stack_match(stack: stack, path: "bin/chef-client", label: "load")
+      end
+
+      def self.chef_solo?(stack)
+        stack_match(stack: stack, path: "application/solo", label: "run") &&
+          stack_match(stack: stack, path: "bin/chef-solo", label: "load")
+      end
+
+      def self.chef_zero?
+        chef_zero
+      end
+
+      def self.stack_match(stack: [], label: nil, path: nil)
+        return false if stack.nil?
+
+        stack.any? do |frame|
+          if label && path
+            frame.label == label && frame.absolute_path.include?(path)
+          elsif label
+            frame.label == label
+          elsif path
+            frame.absolute_path.include?(path)
+          else
+            false
+          end
+        end
+      end
+    end
+  end
+end
