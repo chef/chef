@@ -12,6 +12,10 @@ try {
 } catch {
     throw "Unable to install Habitat"
 }
+$env:Path += ";C:\buildkite-agent\bin"
+
+Write-Host "Verifying we have access to buildkite-agent"
+buildkite-agent --version
 
 # Set environment variables - equivalent to bash export commands
 $env:HAB_ORIGIN = 'ci'
