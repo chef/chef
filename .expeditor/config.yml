@@ -54,7 +54,7 @@ pipelines:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
   - habitat/build
-  - habitat/test:
+  - habitat/verify:
       public: true
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
@@ -142,7 +142,7 @@ subscriptions:
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
-      - trigger_pipeline:habitat/test
+      - trigger_pipeline:habitat/verify
       - trigger_pipeline:gem_push_artifactory
       - trigger_pipeline:docker/build
 
