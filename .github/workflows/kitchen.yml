@@ -21,14 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          # - windows-2025 - no kitchen support yet
+          - windows-2025
           - windows-2022
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Install Chef
       uses: actionshub/chef-install@3.0.0
     - name: Kitchen Test
@@ -39,14 +39,14 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-13
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
             clean: true
       - name: Install Chef
@@ -59,7 +59,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14 # currently macos-latest
+          - macos-14
           - macos-15
     runs-on: ${{ matrix.os }}
     env:
@@ -67,7 +67,7 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           clean: true
       - name: Install Chef
@@ -83,18 +83,22 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
+          - almalinux-10
           - debian-11
           - debian-12
-          - fedora-40
-          # fedora-latest
+          - debian-13
+          - fedora-41
+          - fedora-latest
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
+          - oraclelinux-10
           - rockylinux-8
           - rockylinux-9
+          - rockylinux-10
           - ubuntu-2004
           - ubuntu-2204
-          # - ubuntu-2404
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -102,7 +106,7 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
@@ -117,25 +121,27 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
+          - almalinux-10
           - debian-11
           - debian-12
-          - fedora-40
-          # - fedora-latest
+          - debian-13
+          - fedora-42
+          - fedora-latest
           - opensuse-leap-15
-          - oracle-7
           - oracle-8
           - oracle-9
+          - oracle-10
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-2004
+          - rockylinux-10
           - ubuntu-2204
-          # - ubuntu-2404
-    runs-on: ubuntu-22.04
+          - ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Vagrant and VirtualBox
         run: |
           wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -143,7 +149,7 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox-7.1
+          sudo apt-get install -y vagrant virtualbox-7.2
           sudo vagrant --version
           sudo VBoxManage --version
       - name: Install Chef
