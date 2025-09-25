@@ -200,7 +200,8 @@ do_install() {
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
 
-    for gem in chef-bin chef inspec-core-bin ohai; do
+    for gem in chef-bin chef ohai; do
+    # for gem in chef-bin chef inspec-core-bin ohai; do - REMOVING INSPEC DEP FOR TESTING CHEF CLIENT
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
