@@ -87,7 +87,7 @@ jobs:
           - debian-11
           - debian-12
           - debian-13
-          - fedora-41
+          - fedora-42
           - fedora-latest
           - opensuse-leap-15
           - oraclelinux-8
@@ -96,7 +96,6 @@ jobs:
           - rockylinux-8
           - rockylinux-9
           - rockylinux-10
-          - ubuntu-2004
           - ubuntu-2204
           - ubuntu-2404
     runs-on: ubuntu-latest
@@ -117,7 +116,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - amazonlinux-2
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9

@@ -1,6 +1,8 @@
 ---
 driver:
   name: vagrant
+  boot_timeout: 180
+  linked_clone: false
   box_auto_update: true
   box_auto_prune: true
 
@@ -55,7 +57,6 @@ platforms:
   - name: almalinux-8
   - name: almalinux-9
   - name: almalinux-10
-  - name: amazonlinux-2
   - name: amazonlinux-2023
   - name: debian-11
   - name: debian-12
