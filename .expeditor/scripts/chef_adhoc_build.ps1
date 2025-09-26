@@ -23,7 +23,7 @@ $env:HAB_LICENSE = "accept-no-persist"
 $env:HAB_NONINTERACTIVE = "true"
 $env:HAB_BLDR_CHANNEL = "base-2025"
 
-Write-Host "--- :key: Generating origin key (if not already exists)"
+Write-Host "--- :key: Generating origin key (if not exists)"
 hab origin key generate $env:HAB_ORIGIN
 if (-not $?) { throw "Unable to generate origin key" }
 
@@ -37,27 +37,24 @@ $results_dir = Join-Path $project_root "results"
 $build_script_path = Join-Path $results_dir "last_build.ps1"
 . $build_script_path
 
-# Upload package artifact
 Set-Location $results_dir
+
+# Upload package artifact
 buildkite-agent artifact upload $pkg_artifact
 if (-not $?) { throw "Unable to upload package" }
 
+# Set metadata for downstream builds
 Write-Host "--- Setting INFRA_HAB_ARTIFACT_WINDOWS metadata for buildkite agent"
-Write-Host "setting INFRA_HAB_ARTIFACT_WINDOWS to $pkg_artifact"
 buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_WINDOWS" $pkg_artifact
 if (-not $?) { throw "Unable to set buildkite metadata" }
 
-# Export PUBLIC origin key only (safe to share)
-$key_file_name = "$($env:HAB_ORIGIN)-windows-key.pub"
-$key_file = Join-Path $results_dir $key_file_name
+# Export PUBLIC origin key and upload with fixed name
+$key_file = Join-Path $results_dir "ci-windows-key.pub"
 hab origin key export --type=public $env:HAB_ORIGIN | Out-File -Encoding ascii -NoNewline -FilePath $key_file
 if (-not $?) { throw "Unable to export origin public key" }
 
-Write-Host "--- Uploading public origin key artifact"
-# Change directory to results to flatten artifact path
-Push-Location $results_dir
-buildkite-agent artifact upload $key_file_name
-Pop-Location
+Write-Host "--- Uploading public key artifact"
+buildkite-agent artifact upload $key_file
 if (-not $?) { throw "Unable to upload origin public key" }
 
-Write-Host "--- Build completed successfully!"
+Write-Host "--- Build script completed successfully"
