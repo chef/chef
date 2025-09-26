@@ -53,7 +53,7 @@ class Chef
       allowed_actions :install, :uninstall, :upgrade
 
       property :download_url, String,
-        description: "The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, Chocolatey installs fall back to the official Chocolatey community repository to download Chocolatey from. It can also be used for offline installation by providing a path to a Chocolatey.nupkg."
+        description: "The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, Chocolatey installs fall back to the official Chocolatey community repository to download Chocolatey from. It can also be used for offline installation by providing a path to a Chocolatey.nupkg. If the provided URL is a PowerShell script (ending in .ps1), that script will be downloaded and executed directly. If it is any other file type, it will be downloaded to the Chef client directory. ChefConfig::Config.etc_chef_dir(windows: true) is used to find that location."
 
       property :chocolatey_version, String,
         description: "Specifies a target version of Chocolatey to install. By default, the latest stable version is installed. This will use the value in $env:ChocolateyVersion by default, if that environment variable is present. This parameter is ignored if download_url is set."
@@ -128,12 +128,22 @@ class Chef
           powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
         end
 
-        # note that Invoke-Expression is being called on the downloaded script (outer parens),
-        # not triggering the script download (inner parens)
+        # Handle custom download URLs appropriately based on file type
         converge_if_changed do
           if new_resource.download_url
-            Chef::Log.info("Using a custom download URL for Chocolatey installation.")
-            powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
+            Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}") 
+            # If it's a PowerShell script, execute it directly (original behavior)
+            if new_resource.download_url.downcase.end_with?('.ps1')
+              powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
+            else
+              # Assume it's a direct link to a nupkg or other file and handle accordingly
+              chef_dir = ChefConfig::Config.etc_chef_dir(windows: true)
+              
+              # Let PowerShell handle the filename - it will use the server's suggested filename
+              # from Content-Disposition header, or fall back to the URL path
+              powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{chef_dir}'").error!
+              Chef::Log.info("Downloaded file from #{new_resource.download_url} to #{chef_dir}")
+            end
           else
             powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
           end
