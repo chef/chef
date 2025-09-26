@@ -6,9 +6,7 @@ param (
 # some of the functional tests require that winrm be configured
 winrm quickconfig -quiet
 
-$chef_gem_root = (hab pkg exec $PackageIdentifier gem.cmd which chef | Split-Path | Split-Path)
 try {
-    Push-Location $chef_gem_root
     $env:PATH = "C:\hab\bin;$env:PATH"
 
     # Put chef's GEM_PATH in the machine environment so that the windows service
