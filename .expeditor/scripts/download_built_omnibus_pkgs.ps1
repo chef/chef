@@ -1,8 +1,8 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "--- Installing package from BuildKite"
-buildkite-agent artifact download "pkg\*.msi" . --step "${Env:OMNIBUS_BUILDER_KEY}"
-$package_file = (Get-ChildItem pkg -Filter "*.msi").FullName 
+buildkite-agent artifact download "omnibus\pkg\*.msi" . --step "${Env:OMNIBUS_BUILDER_KEY}"
+$package_file = (Get-ChildItem "omnibus\pkg" -Filter "*.msi").FullName 
 
 Write-Output "--- Installing $package_file"
 Start-Process "$package_file" /quiet -Wait
