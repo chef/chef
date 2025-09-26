@@ -126,9 +126,9 @@ jobs:
           - fedora-42
           - fedora-latest
           - opensuse-leap-15
-          - oracle-8
-          - oracle-9
-          - oracle-10
+          - oraclelinux-8
+          - oraclelinux-9
+          - oraclelinux-10
           - rockylinux-8
           - rockylinux-9
           - rockylinux-10

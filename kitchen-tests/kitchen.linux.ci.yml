@@ -64,9 +64,9 @@ platforms:
   - name: fedora-42
   - name: fedora-latest
   - name: opensuse-leap-15
-  - name: oracle-8
-  - name: oracle-9
-  - name: oracle-10
+  - name: oraclelinux-8
+  - name: oraclelinux-9
+  - name: oraclelinux-10
   - name: rockylinux-8
   - name: rockylinux-9
   - name: rockylinux-10
