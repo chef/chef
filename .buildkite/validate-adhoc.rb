@@ -3,29 +3,29 @@
 require 'yaml'
 require 'time'
 
-targets = [
-  "amazon-2:centos-7",
-  "centos-7:centos-7",
-  "rhel-9:rhel-9",
-  "debian-9:debian-9",
-  "debian-10:debian-9",
-  "debian-11:debian-9",
-  "ubuntu-2004:ubuntu-2004",
-  "ubuntu-2204:ubuntu-2204",
-  "rocky-8:rocky-8",
-  "rocky-9:rocky-9",
-  "amazon-2023:amazon-2023"
-]
+# targets = [
+#   "amazon-2:centos-7",
+#   "centos-7:centos-7",
+#   "rhel-9:rhel-9",
+#   "debian-9:debian-9",
+#   "debian-10:debian-9",
+#   "debian-11:debian-9",
+#   "ubuntu-2004:ubuntu-2004",
+#   "ubuntu-2204:ubuntu-2204",
+#   "rocky-8:rocky-8",
+#   "rocky-9:rocky-9",
+#   "amazon-2023:amazon-2023"
+# ]
 
-arm_targets = [
-  "centos-7-arm:centos-7-arm",
-  "amazon-2-arm:amazon-2-arm",
-  "rhel-9-arm:rhel-9-arm",
-  "ubuntu-1804-arm:ubuntu-1804-arm",
-  "ubuntu-2004-arm:ubuntu-2004-arm",
-  "ubuntu-2204-arm:ubuntu-2204-arm",
-  "amazon-2023-arm:amazon-2023-arm"
-]
+# arm_targets = [
+#   "centos-7-arm:centos-7-arm",
+#   "amazon-2-arm:amazon-2-arm",
+#   "rhel-9-arm:rhel-9-arm",
+#   "ubuntu-1804-arm:ubuntu-1804-arm",
+#   "ubuntu-2004-arm:ubuntu-2004-arm",
+#   "ubuntu-2204-arm:ubuntu-2204-arm",
+#   "amazon-2023-arm:amazon-2023-arm"
+# ]
 
 # because windows queues are very different, the target queue is very explicit.
 win_targets = [
@@ -49,51 +49,51 @@ pipeline = {
   "steps" => []
 }
 
-# if pipeline slug is chef-chef-main-validate-adhoc, then run buildkite_adhoc_metadata.sh
-if ENV['BUILDKITE_PIPELINE_SLUG'] == 'chef-chef-main-validate-adhoc'
-  pipeline["steps"] << {
-    "label" => ":habicat::linux: Building Habitat package",
-    "commands" => [
-      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh",
-    ],
-    "agents" => {
-      "queue" => "default-privileged"
-    },
-    "timeout_in_minutes" => 120
-  }
-  pipeline["steps"] << {
-    "label" => ":habicat::windows: Building Habitat package",
-    "commands" => [
-      "./.expeditor/scripts/chef_adhoc_build.ps1",
-    ],
-    "agents" => {
-      "queue" => "default-windows-2019-privileged"
-    },
-    "plugins" => {
-        "docker#v3.5.0" => {
-          "image" => "chefes/omnibus-toolchain-windows-2019:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
-          "shell" => [
-            "powershell",
-            "-Command"
-          ],
-          "volumes" => [
-            "C:\\buildkite-agent:C:\\buildkite-agent"
-          ],
-          "environment" => [
-            'HAB_AUTH_TOKEN',
-            'BUILDKITE_AGENT_ACCESS_TOKEN',
-            'AWS_ACCESS_KEY_ID',
-            'AWS_SECRET_ACCESS_KEY',
-            'AWS_SESSION_TOKEN',
-          ],
-          "propagate-environment" => true
-        }
-      },
-      "timeout_in_minutes" => 120
-  }
-else
-  # nightly pipeline, get package from unstable.
-end
+# # if pipeline slug is chef-chef-main-validate-adhoc, then run buildkite_adhoc_metadata.sh
+# if ENV['BUILDKITE_PIPELINE_SLUG'] == 'chef-chef-main-validate-adhoc'
+#   pipeline["steps"] << {
+#     "label" => ":habicat::linux: Building Habitat package",
+#     "commands" => [
+#       "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh",
+#     ],
+#     "agents" => {
+#       "queue" => "default-privileged"
+#     },
+#     "timeout_in_minutes" => 120
+#   }
+#   pipeline["steps"] << {
+#     "label" => ":habicat::windows: Building Habitat package",
+#     "commands" => [
+#       "./.expeditor/scripts/chef_adhoc_build.ps1",
+#     ],
+#     "agents" => {
+#       "queue" => "default-windows-2019-privileged"
+#     },
+#     "plugins" => {
+#         "docker#v3.5.0" => {
+#           "image" => "chefes/omnibus-toolchain-windows-2019:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+#           "shell" => [
+#             "powershell",
+#             "-Command"
+#           ],
+#           "volumes" => [
+#             "C:\\buildkite-agent:C:\\buildkite-agent"
+#           ],
+#           "environment" => [
+#             'HAB_AUTH_TOKEN',
+#             'BUILDKITE_AGENT_ACCESS_TOKEN',
+#             'AWS_ACCESS_KEY_ID',
+#             'AWS_SECRET_ACCESS_KEY',
+#             'AWS_SESSION_TOKEN',
+#           ],
+#           "propagate-environment" => true
+#         }
+#       },
+#       "timeout_in_minutes" => 120
+#   }
+# else
+#   # nightly pipeline, get package from unstable.
+# end
 
 pipeline["steps"] << { "wait" => nil }
 
