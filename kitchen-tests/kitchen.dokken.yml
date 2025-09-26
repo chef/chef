@@ -47,7 +47,7 @@ platforms:
   - name: debian-13
     driver:
       image: dokken/debian-13
-      pid_one_command: /bin/systemd
+      pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource

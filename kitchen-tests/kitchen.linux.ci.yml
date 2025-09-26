@@ -1,7 +1,7 @@
 ---
 driver:
   name: vagrant
-  boot_timeout: 180
+  boot_timeout: 600
   linked_clone: false
   box_auto_update: true
   box_auto_prune: true
