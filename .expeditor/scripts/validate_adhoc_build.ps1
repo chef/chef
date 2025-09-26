@@ -1,14 +1,28 @@
 $ErrorActionPreference = 'Stop'
 
+
 git config --global --add safe.directory /workdir
 
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+$env:Path += ";C:\buildkite-agent\bin"
+
+# Ensure Chef and Habitat licenses are accepted
+$env:CHEF_LICENSE = "accept-no-persist"
+$env:HAB_LICENSE = "accept-no-persist"
+$env:HAB_NONINTERACTIVE = "true"
+
+Write-Host "Verifying we have access to buildkite-agent"
+buildkite-agent --version
 
 Write-Host "--- Downloading package artifact"
-$env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT")
+$env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_WINDOWS")
 buildkite-agent artifact download "$env:PKG_ARTIFACT" .
+
+Write-Host "Downloading and importing origin key"
+buildkite-agent artifact download "ci-windows-key.pub" .
+hab origin key import < ci-windows-key.pub
 
 Write-Host "--- Installing $env:PKG_ARTIFACT"
 hab pkg install $env:PKG_ARTIFACT --auth $HAB_AUTH_TOKEN
