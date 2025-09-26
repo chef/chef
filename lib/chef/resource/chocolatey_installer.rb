@@ -131,7 +131,12 @@ class Chef
         # note that Invoke-Expression is being called on the downloaded script (outer parens),
         # not triggering the script download (inner parens)
         converge_if_changed do
-          powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
+          if new_resource.download_url
+            Chef::Log.info("Using a custom download URL for Chocolatey installation.")
+            powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
+          else
+            powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
+          end
         end
       end
 
