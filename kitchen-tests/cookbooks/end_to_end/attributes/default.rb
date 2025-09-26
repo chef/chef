@@ -66,11 +66,5 @@ default["chef_client"]["config"]["verbose_logging"] = false
 
 default["chef_client"]["chef_license"] = "accept-no-persist"
 
-#
-# nscd cookbook overrides
-#
-
-default["nscd"]["server_user"] = "nobody" unless platform_family?("suse") # this breaks SLES 15
-
 # enable CLI output for the compliance phase
 default["audit"]["reporter"] = "cli"

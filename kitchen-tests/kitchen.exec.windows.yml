@@ -46,5 +46,5 @@ lifecycle:
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
 platforms:
-  - name: windows-2019
   - name: windows-2022
+  - name: windows-2025

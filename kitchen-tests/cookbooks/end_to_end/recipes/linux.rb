@@ -103,8 +103,6 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd" unless fedora? # fedora 34+ doesn't have nscd
-
 logrotate_package "logrotate"
 
 include_recipe "git"
