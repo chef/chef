@@ -461,8 +461,8 @@ function Upload-BuildkiteArtifact {
     
     try {
         Write-Output "--- Uploading package to BuildKite"
-        # Fix: Update the path to include the chef subdirectory
-        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "omnibus/pkg/*.msi*"
+        # Fix: Use the correct path where omnibus actually creates the MSI
+        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "omnibus\pkg\*.msi*"
         if ( -not $? ) { throw "Failed to upload artifact to BuildKite" }
     }
     catch {
