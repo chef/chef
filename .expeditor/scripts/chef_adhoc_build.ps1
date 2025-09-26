@@ -49,7 +49,7 @@ if (-not $?) { throw "Unable to set buildkite metadata" }
 # Export PUBLIC origin key only (safe to share)
 $key_file = Join-Path $results_dir "$($env:HAB_ORIGIN)-windows-key.pub"
 hab origin key export --type=public $env:HAB_ORIGIN | Out-File -Encoding ascii -NoNewline -FilePath $key_file
-if (-not $?) { throw "Unable to export origin public key"
+if (-not $?) { throw "Unable to export origin public key" }
 
 Write-Host "--- Uploading public key artifact"
 buildkite-agent artifact upload $key_file
