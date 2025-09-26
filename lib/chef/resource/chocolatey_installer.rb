@@ -131,14 +131,14 @@ class Chef
         # Handle custom download URLs appropriately based on file type
         converge_if_changed do
           if new_resource.download_url
-            Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}") 
+            Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
             # If it's a PowerShell script, execute it directly (original behavior)
-            if new_resource.download_url.downcase.end_with?('.ps1')
+            if new_resource.download_url.downcase.end_with?(".ps1")
               powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
             else
               # Assume it's a direct link to a nupkg or other file and handle accordingly
               chef_dir = ChefConfig::Config.etc_chef_dir(windows: true)
-              
+
               # Let PowerShell handle the filename - it will use the server's suggested filename
               # from Content-Disposition header, or fall back to the URL path
               powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{chef_dir}'").error!
