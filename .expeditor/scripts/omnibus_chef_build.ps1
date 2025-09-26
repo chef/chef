@@ -382,7 +382,8 @@ function Verify-SignedPackage {
     $errorMessage = ""
     
     try {
-        $directoryPath = "C:\omnibus-ruby\pkg\"
+        # Fix: Add the missing 'chef' subdirectory to the path
+        $directoryPath = "C:\omnibus-ruby\chef\pkg\"
         $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
         if ( -not $? ) { throw "Failed to list MSI files" }
         
@@ -460,7 +461,8 @@ function Upload-BuildkiteArtifact {
     
     try {
         Write-Output "--- Uploading package to BuildKite"
-        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
+        # Fix: Update the path to include the chef subdirectory
+        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "omnibus/pkg/*.msi*"
         if ( -not $? ) { throw "Failed to upload artifact to BuildKite" }
     }
     catch {
