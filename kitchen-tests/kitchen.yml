@@ -30,6 +30,7 @@ platforms:
   - name: debian-13
   - name: debian-12
   - name: debian-11
+  - name: fedora-42
   - name: fedora-latest
   - name: opensuse-leap-15
   - name: oraclelinux-8

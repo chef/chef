@@ -32,7 +32,7 @@ jobs:
     - name: Install Chef
       uses: actionshub/chef-install@3.0.0
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: kitchen test ${{ matrix.os }}
 
   mac_x86_64:
     strategy:
@@ -52,7 +52,7 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen test ${{ matrix.os }}
 
   mac_arm64:
     strategy:
@@ -73,7 +73,7 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen test ${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -109,7 +109,7 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen test ${{ matrix.os }}
 
   vm_lnx_x86_64:
     strategy:
@@ -160,4 +160,4 @@ jobs:
           #export VBOX_LOG_DEST=stdout
           #export K_DEBUG_OPTS="--log-level=debug"
           export LOGNAME=$USER
-          kitchen test end-to-end-${{ matrix.os }} $K_DEBUG_OPTS
+          kitchen test ${{ matrix.os }} $K_DEBUG_OPTS

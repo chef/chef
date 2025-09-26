@@ -5,20 +5,12 @@ driver:
   linked_clone: false
   box_auto_update: true
   box_auto_prune: true
-
-provisioner:
-  name: chef_infra
-  product_name: chef
-  product_version: latest
-  channel: current
-  retry_on_exit_code:
-    - 35 # 35 is the exit code signaling that the node is rebooting
-  client_rb:
-    diff_disabled: true
-    always_dump_stacktrace: true
-  deprecations_as_errors: true
-  chef_license: accept-no-persist
-  slow_resource_report: true
+  customize:
+    accelerate-3d: "off"
+    paravirtprovider: "None"
+  linked_clone: false
+  ssh:
+    insert_key: true
 
 lifecycle:
   pre_converge:
@@ -48,32 +40,3 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-
-verifier:
-  name: inspec
-  format: progress
-
-platforms:
-  - name: almalinux-8
-  - name: almalinux-9
-  - name: almalinux-10
-  - name: amazonlinux-2023
-  - name: debian-11
-  - name: debian-12
-  - name: debian-13
-  - name: fedora-42
-  - name: fedora-latest
-  - name: opensuse-leap-15
-  - name: oraclelinux-8
-  - name: oraclelinux-9
-  - name: oraclelinux-10
-  - name: rockylinux-8
-  - name: rockylinux-9
-  - name: rockylinux-10
-  - name: ubuntu-22.04
-  - name: ubuntu-24.04
-
-suites:
-  - name: end-to-end
-    run_list:
-      - recipe[end_to_end::default]
