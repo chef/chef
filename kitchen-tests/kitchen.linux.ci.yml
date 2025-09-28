@@ -35,65 +35,71 @@ lifecycle:
 
 platforms:
   - name: almalinux-8
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: almalinux-9
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: almalinux-10
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
+  - name: amazonlinux-2
   - name: amazonlinux-2023
   - name: debian-11
   - name: debian-12
   - name: debian-13
+  - name: fedora-40
+  - name: fedora-41
   - name: fedora-42
   - name: fedora-latest
+  - name: freebsd-13
+  - name: freebsd-14
   - name: opensuse-leap-15
   - name: oraclelinux-8
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: oraclelinux-9
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: oraclelinux-10
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: rockylinux-8
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: rockylinux-9
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
   - name: rockylinux-10
-    driver:
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
-      linked_clone: false
+#     driver:
+#       customize:
+#         accelerate-3d: "off"
+#         paravirtprovider: "None"
+#       linked_clone: false
+  - name: ubuntu-20.04
   - name: ubuntu-22.04
   - name: ubuntu-24.04
