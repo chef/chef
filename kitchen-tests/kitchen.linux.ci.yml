@@ -5,18 +5,13 @@ driver:
   box_auto_update: true
   box_auto_prune: true
   linked_clone: false
-#   customize:
-#     accelerate-3d: "off"
-#     paravirtprovider: "None"
-#   ssh:
-#     insert_key: true
 
 lifecycle:
   pre_converge:
-    - remote: sudo dnf install -y openssl cronie
-      includes:
-        - fedora-42
-        - fedora-latest
+#     - remote: sudo dnf install -y openssl cronie
+#       includes:
+#         - fedora-42
+#         - fedora-latest
     # Rocky Linux 9 specific setup to resolve dependency issues
     - remote: sudo dnf update -y
       includes:
@@ -40,144 +35,34 @@ lifecycle:
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
 
-# platforms:
-#   - name: almalinux-8
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: almalinux-9
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: almalinux-10
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: amazonlinux-2023
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: debian-11
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: debian-12
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: debian-13
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: fedora-42
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: fedora-latest
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: opensuse-leap-15
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: oraclelinux-8
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: oraclelinux-9
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: oraclelinux-10
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: rockylinux-8
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: rockylinux-9
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: rockylinux-10
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#       ssh:
-#         insert_key: true
-#   - name: ubuntu-22.04
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
-#   - name: ubuntu-24.04
-#     driver_config:
-#       linked_clone: false
-#       wait_for_ready_timeout: 180
-#       customize:
-#         accelerate-3d: "off"
-#         paravirtprovider: "None"
+platforms:
+  - name: almalinux-8
+  - name: almalinux-9
+  - name: almalinux-10
+    driver:
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
+  - name: amazonlinux-2023
+  - name: debian-11
+  - name: debian-12
+  - name: debian-13
+  - name: fedora-42
+  - name: fedora-latest
+  - name: opensuse-leap-15
+  - name: oraclelinux-8
+  - name: oraclelinux-9
+  - name: oraclelinux-10
+    driver:
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
+  - name: rockylinux-8
+  - name: rockylinux-9
+  - name: rockylinux-10
+    driver:
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
+  - name: ubuntu-22.04
+  - name: ubuntu-24.04
