@@ -3,6 +3,9 @@ driver:
   name: vagrant
   box_auto_update: true
   box_auto_prune: true
+  customize:
+    accelerate-3d: "off"
+  linked_clone: false
 
 lifecycle:
   pre_converge:
