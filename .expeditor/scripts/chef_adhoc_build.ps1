@@ -50,10 +50,10 @@ Write-Host "setting INFRA_HAB_ARTIFACT_WINDOWS to $pkg_artifact"
 buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_WINDOWS" $pkg_artifact
 if (-not $?) { throw "Unable to set buildkite metadata" }
 
-# --- FIXED KEY EXPORT SECTION ---
+# Export origin key, collapse all lines, and write as pure ASCII with no newline
 $key_file = "$($env:HAB_ORIGIN)-windows-key.pub"
-hab origin key export --type=public $env:HAB_ORIGIN | Out-String | % { $_ -replace "(`r`n|`n|`r)", "" } | Set-Content -NoNewline -Encoding ascii $key_file
-if (-not $?) { throw "Unable to export origin key" }
+$singleLineKey = (hab origin key export --type=public $env:HAB_ORIGIN | Out-String).Replace("`r","").Replace("`n","")
+Set-Content -Path $key_file -Value $singleLineKey -Encoding ascii -NoNewline
 
 # Verification
 Write-Host "--- Verifying exported key file content"
