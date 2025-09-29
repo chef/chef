@@ -1,16 +1,12 @@
 ---
 driver:
   name: vagrant
-  # boot_timeout: 600
   box_auto_update: true
   box_auto_prune: true
-  # customize:
-  #   accelerate-3d: "off"
-  linked_clone: false
 
 lifecycle:
   pre_converge:
-    - remote: sudo yum install -y openssl cronie
+    - remote: yum install -y openssl cronie
       includes:
         - fedora-41
         - fedora-42
@@ -44,6 +40,7 @@ platforms:
       customize:
         accelerate-3d: "off"
         paravirtprovider: "None"
+      linked_clone: false
   - name: almalinux-9
   - name: almalinux-10
   - name: amazonlinux-2
@@ -51,8 +48,11 @@ platforms:
       customize:
         accelerate-3d: "off"
         paravirtprovider: "None"
+      linked_clone: false
   - name: amazonlinux-2023
   - name: debian-11
+    driver:
+      linked_clone: false
   - name: debian-12
   - name: debian-13
   - name: fedora-41
@@ -67,6 +67,7 @@ platforms:
       customize:
         accelerate-3d: "off"
         paravirtprovider: "None"
+      linked_clone: false
   - name: oraclelinux-9
     driver:
       box: bento/oraclelinux-9
@@ -78,6 +79,7 @@ platforms:
       customize:
         accelerate-3d: "off"
         paravirtprovider: "None"
+      linked_clone: false
   - name: rockylinux-9
   - name: rockylinux-10
   - name: ubuntu-20.04
