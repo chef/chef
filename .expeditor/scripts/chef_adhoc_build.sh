@@ -24,8 +24,8 @@ echo "--- :package: Uploading package"
 cd "${project_root}/results"
 buildkite-agent artifact upload "$pkg_artifact" || error 'unable to upload package'
 
-echo "--- Setting INFRA_HAB_ARTIFACT metadata for buildkite agent"
-echo "setting INFRA_HAB_ARTIFACT to $pkg_artifact"
-buildkite-agent meta-data set "INFRA_HAB_ARTIFACT" "$pkg_artifact"
+echo "--- Setting INFRA_HAB_ARTIFACT_LINUX metadata for buildkite agent"
+echo "setting INFRA_HAB_ARTIFACT_LINUX to $pkg_artifact"
+buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_LINUX" "$pkg_artifact"
 hab origin key export "$HAB_ORIGIN" > "${project_root}/results/${HAB_ORIGIN}-key.pub"
 buildkite-agent artifact upload "${HAB_ORIGIN}-key.pub"
