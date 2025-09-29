@@ -22,8 +22,8 @@ $env:HAB_TEST="true"
 
 # TODO need to merge this branch before these will pass, so don't throw errors just yet.
 hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/unit
-if (-not $?) { Write-Host "--- :fire: Unit tests failed" }
+if (-not $?) { throw "--- :fire: Unit tests failed" }
 hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/functional
-if (-not $?) { Write-Host "--- :fire: Functional tests failed" }
+if (-not $?) { throw "--- :fire: Functional tests failed" }
 hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/integration
-if (-not $?) { Write-Host "--- :fire: Integration tests failed" }
+if (-not $?) { throw "--- :fire: Integration tests failed" }

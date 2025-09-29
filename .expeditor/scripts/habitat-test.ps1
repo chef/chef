@@ -8,10 +8,9 @@ try {
   $licenseFile = Join-Path -Path $PSScriptRoot -ChildPath 'chef_license_server_url.txt'
   $licenseServerUrl = Get-Content -Path $licenseFile -ErrorAction Stop | Select-Object -First 1
   $env:CHEF_LICENSE_SERVER = $licenseServerUrl.Trim()
-  Write-Host "--- Set CHEF_LICENSE_SERVER to '$($env:CHEF_LICENSE_SERVER)' from $licenseFile"
 }
 catch {
-	Write-Warning "Failed to read chef_license_server_url.txt: $($_.Exception.Message)"
+	Write-Host "Failed to read chef_license_server_url.txt: $($_.Exception.Message)"
 }
 
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
