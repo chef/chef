@@ -52,7 +52,7 @@ if (-not $?) { throw "Unable to set buildkite metadata" }
 
 # --- FIXED KEY EXPORT SECTION ---
 $key_file = "$($env:HAB_ORIGIN)-windows-key.pub"
-hab origin key export --type=public $env:HAB_ORIGIN | Set-Content -Encoding ascii $key_file
+hab origin key export --type=public $env:HAB_ORIGIN | Out-String | % { $_ -replace "(`r`n|`n|`r)", "" } | Set-Content -NoNewline -Encoding ascii $key_file
 if (-not $?) { throw "Unable to export origin key" }
 
 # Verification
