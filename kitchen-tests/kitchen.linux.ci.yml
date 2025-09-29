@@ -6,21 +6,19 @@ driver:
 
 lifecycle:
   pre_converge:
-    - remote: yum install -y openssl cronie
+    - remote: sudo yum install -y openssl cronie
       includes:
         - fedora-41
-        - fedora-42
-        - fedora-latest
-    # Rocky Linux 9 specific setup to resolve dependency issues
-    - remote: sudo dnf update -y
-      includes:
-        - rockylinux-9
-    - remote: sudo dnf clean all
-      includes:
-        - rockylinux-9
-    - remote: sudo dnf makecache
-      includes:
-        - rockylinux-9
+#     # Rocky Linux 9 specific setup to resolve dependency issues
+#     - remote: sudo dnf update -y
+#       includes:
+#         - rockylinux-9
+#     - remote: sudo dnf clean all
+#       includes:
+#         - rockylinux-9
+#     - remote: sudo dnf makecache
+#       includes:
+#         - rockylinux-9
     - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef container's Chef / Ohai release:"
@@ -42,7 +40,11 @@ platforms:
         paravirtprovider: "None"
       linked_clone: false
   - name: almalinux-9
+    driver:
+      linked_clone: false
   - name: almalinux-10
+    driver:
+      linked_clone: false
   - name: amazonlinux-2
     driver:
       customize:
@@ -57,10 +59,14 @@ platforms:
   - name: debian-13
   - name: fedora-41
   - name: fedora-42
+    driver:
+      linked_clone: false
   - name: fedora-latest
-  - name: freebsd-13
-  - name: freebsd-14
+    driver:
+      linked_clone: false
   - name: opensuse-leap-15
+    driver:
+      linked_clone: false
   - name: oraclelinux-8
     driver:
       box: bento/oraclelinux-8
@@ -71,9 +77,11 @@ platforms:
   - name: oraclelinux-9
     driver:
       box: bento/oraclelinux-9
+      linked_clone: false
   - name: oraclelinux-10
     driver:
       box: bento/oraclelinux-10
+      linked_clone: false
   - name: rockylinux-8
     driver:
       customize:
@@ -81,7 +89,11 @@ platforms:
         paravirtprovider: "None"
       linked_clone: false
   - name: rockylinux-9
+    driver:
+      linked_clone: false
   - name: rockylinux-10
+    driver:
+      linked_clone: false
   - name: ubuntu-20.04
   - name: ubuntu-22.04
   - name: ubuntu-24.04

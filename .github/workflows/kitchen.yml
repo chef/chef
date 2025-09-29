@@ -129,8 +129,6 @@ jobs:
           - fedora-41
           - fedora-42
           - fedora-latest
-          - freebsd-13
-          - freebsd-14
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
