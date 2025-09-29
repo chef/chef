@@ -67,11 +67,11 @@ if ENV['BUILDKITE_PIPELINE_SLUG'] == 'chef-chef-main-validate-adhoc'
       "./.expeditor/scripts/chef_adhoc_build.ps1",
     ],
     "agents" => {
-      "queue" => "default-windows-2019-privileged"
+      "queue" => "single-use-windows-2022-privileged"
     },
     "plugins" => {
         "docker#v3.5.0" => {
-          "image" => "chefes/omnibus-toolchain-windows-2019:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "image" => "chefes/omnibus-toolchain-windows-2022:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
           "shell" => [
             "powershell",
             "-Command"
