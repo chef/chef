@@ -462,7 +462,7 @@ function Upload-BuildkiteArtifact {
     try {
         Write-Output "--- Uploading package to BuildKite"
         # Fix: Use the correct path where omnibus actually creates the MSI
-        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "omnibus\pkg\*.msi*"
+        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "C:\omnibus-ruby\chef\pkg\*.msi*" 
         if ( -not $? ) { throw "Failed to upload artifact to BuildKite" }
     }
     catch {
