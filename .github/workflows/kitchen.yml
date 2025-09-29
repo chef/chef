@@ -88,7 +88,6 @@ jobs:
           - debian-11
           - debian-12
           - debian-13
-          - fedora-40
           - fedora-41
           - fedora-42
           - fedora-latest
@@ -127,7 +126,6 @@ jobs:
           - debian-11
           - debian-12
           - debian-13
-          - fedora-40
           - fedora-41
           - fedora-42
           - fedora-latest
