@@ -20,9 +20,6 @@ provisioner:
 
 lifecycle:
   pre_converge:
-    - remote: yum install -y openssl cronie
-      includes:
-        - fedora-41
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
@@ -161,14 +158,6 @@ platforms:
         - RUN dnf -y reinstall systemd
         - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-  - name: fedora-41
-    driver:
-      image: dokken/fedora-41
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN dnf -y install python3-libdnf python3-dnf
 
   - name: fedora-42
     driver:

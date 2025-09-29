@@ -31,7 +31,6 @@ platforms:
   - name: debian-11
   - name: debian-12
   - name: debian-13
-  - name: fedora-41
   - name: fedora-42
   - name: fedora-latest
   - name: freebsd-13
