@@ -50,10 +50,9 @@ Write-Host "setting INFRA_HAB_ARTIFACT_WINDOWS to $pkg_artifact"
 buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_WINDOWS" $pkg_artifact
 if (-not $?) { throw "Unable to set buildkite metadata" }
 
-# Export origin key, collapse all lines, and write as pure ASCII with no newline
+# Export origin key in multi-line format (as Habitat expects)
 $key_file = "$($env:HAB_ORIGIN)-windows-key.pub"
-$singleLineKey = (hab origin key export --type=public $env:HAB_ORIGIN | Out-String).Replace("`r","").Replace("`n","")
-Set-Content -Path $key_file -Value $singleLineKey -Encoding ascii -NoNewline
+hab origin key export --type=public $env:HAB_ORIGIN | Set-Content -Encoding ascii $key_file
 
 # Verification
 Write-Host "--- Verifying exported key file content"
