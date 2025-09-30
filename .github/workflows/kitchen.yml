@@ -17,24 +17,97 @@ defaults:
 
 jobs:
   # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
-  # so we are testing windows using community test-kitchen
+  # so we are testing on windows by running chef-client in local mode using habitat package of Infra Client
   win_x86_64:
+    name: win_x86_64_hab
     strategy:
       fail-fast: false
       matrix:
         os:
-          # - windows-2025 - no kitchen support yet
           - windows-2022
+          - windows-2025
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
+      CHEF_LICENSE_KEY: free-79df705d-b685-419a-8b68-88401f74ff72-3999
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
     - uses: actions/checkout@v4
-    - name: Install Chef
-      uses: actionshub/chef-install@3.0.0
-    - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+
+    - name: Install Habitat CLI
+      run: |
+        # Install Habitat using Chocolatey
+        choco install -y habitat
+        refreshenv
+        # Ensure hab is in PATH
+        $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
+        echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        hab license accept
+        hab --version
+
+    - name: Generate Habitat Origin Key
+      run: |
+        hab origin key generate "$env:HAB_ORIGIN"
+
+    - name: Build Habitat Package
+      run: |
+        # Move to repo root
+        cd ..
+        hab pkg build .
+
+        # Find the built package
+        $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
+                    Sort-Object LastWriteTime -Descending |
+                    Select-Object -First 1
+
+        if ($pkg_path) {
+            Write-Host "Built package: $($pkg_path.Name)"
+            Copy-Item $pkg_path.FullName -Destination "kitchen-tests\chef-infra-client-latest.hart"
+        } else {
+            Write-Error "No package built"
+            Exit 1
+        }
+
+    - name: Install Chef Infra Client Habitat Package
+      run: |
+        hab pkg install chef-infra-client-latest.hart
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client --version
+
+    - name: Run End-to-End Tests in Local Mode
+      run: |
+        Write-Host "Processing policy file..."
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef install
+
+        # Verify policy.lock.json was created
+        if (Test-Path "Policyfile.lock.json") {
+          Write-Host "✅ Policy lock file created successfully"
+        } else {
+          Write-Error "Policy lock file was not created"
+          Exit 1
+        }
+
+        # Create a minimal client.rb that uses the policy
+        @"
+        use_policyfile true
+        policy_document_native_api true
+        policy_name 'end_to_end'
+        policy_group 'local'
+        log_level :info
+        chef_license 'accept-no-persist'
+        "@ | Out-File -FilePath "client.rb" -Encoding utf8
+
+        # Run chef-client with the policy
+        Write-Host "Running chef-client with policy..."
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z -c client.rb
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Chef run failed"
+            Exit $LASTEXITCODE
+        }
+
+        Write-Host "✅ All tests passed successfully"
 
   # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
   # so we are testing macos using community test-kitchen

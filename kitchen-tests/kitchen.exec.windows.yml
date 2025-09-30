@@ -1,3 +1,4 @@
+# Not in use until chef-test-kitchen-enterprise supports windows platforms
 ---
 driver:
   name: exec
