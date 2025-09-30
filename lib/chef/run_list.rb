@@ -1,10 +1,5 @@
 #
-# Author:: Adam Jacob (<adam@chef.io>)
-# Author:: Nuo Yan (<nuoyan@chef.io>)
-# Author:: Tim Hinderliter (<tim@chef.io>)
-# Author:: Christopher Walters (<cw@chef.io>)
-# Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

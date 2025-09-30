@@ -3,8 +3,8 @@
 #
 # The MIT License (MIT)
 #
-# Copyright:: 2016-2018, Shopify Inc.
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 
 require_relative "../resource"
 
