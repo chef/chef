@@ -1,5 +1,12 @@
 set -e pipefail
 
+export HAB_ORIGIN='ci'
+export PLAN='chef-infra-client'
+export CHEF_LICENSE="accept-no-persist"
+export HAB_LICENSE="accept-no-persist"
+export HAB_NONINTERACTIVE="true"
+export HAB_BLDR_CHANNEL="base-2025"
+
 echo "--- Setting CHEF_LICENSE_SERVER environment variable"
 # Get the directory of the script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

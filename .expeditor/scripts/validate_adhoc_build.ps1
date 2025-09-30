@@ -9,9 +9,12 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 $env:Path += ";C:\buildkite-agent\bin"
 
 # Ensure Chef and Habitat licenses are accepted
+$env:HAB_ORIGIN = 'ci'
+$env:PLAN = 'chef-infra-client'
 $env:CHEF_LICENSE = "accept-no-persist"
 $env:HAB_LICENSE = "accept-no-persist"
 $env:HAB_NONINTERACTIVE = "true"
+$env:HAB_BLDR_CHANNEL = "base-2025"
 
 Write-Host "Verifying we have access to buildkite-agent"
 buildkite-agent --version
