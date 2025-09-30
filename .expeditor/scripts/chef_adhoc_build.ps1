@@ -18,16 +18,16 @@ Write-Host "Verifying we have access to buildkite-agent"
 buildkite-agent --version
 
 # Set environment variables - equivalent to bash export commands
-$env:HAB_ORIGIN = 'ci'
+$env:HAB_ORIGIN = 'chef'
 $env:PLAN = 'chef-infra-client'
 $env:CHEF_LICENSE = "accept-no-persist"
 $env:HAB_LICENSE = "accept-no-persist"
 $env:HAB_NONINTERACTIVE = "true"
 $env:HAB_BLDR_CHANNEL = "base-2025"
 
-Write-Host "--- :key: Generating fake origin key"
-hab origin key generate $env:HAB_ORIGIN
-if (-not $?) { throw "Unable to generate origin key" }
+Write-Host "--- :key: Downloading origin key"
+hab origin key download $env:HAB_ORIGIN
+if (-not $?) { throw "Unable to download origin key" }
 
 Write-Host "--- Building Chef Infra Client package"
 hab pkg build . --refresh-channel base-2025
@@ -47,16 +47,3 @@ Write-Host "--- Setting INFRA_HAB_ARTIFACT_WINDOWS metadata for buildkite agent"
 Write-Host "setting INFRA_HAB_ARTIFACT_WINDOWS to $pkg_artifact"
 buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_WINDOWS" $pkg_artifact
 if (-not $?) { throw "Unable to set buildkite metadata" }
-
-# Export origin key and upload
-$key_file = Join-Path $results_dir "$($env:HAB_ORIGIN)-windows-key.pub"
-hab origin key export $env:HAB_ORIGIN | Out-File -FilePath $key_file
-if (-not $?) { throw "Unable to export origin key" }
-
-Write-Host "--- Checking contents of $key_file"
-Get-Content $key_file
-Write-Host "--- Hex dump of $key_file"
-Format-Hex $key_file
-
-buildkite-agent artifact upload "$($env:HAB_ORIGIN)-windows-key.pub"
-if (-not $?) { throw "Unable to upload origin key" }

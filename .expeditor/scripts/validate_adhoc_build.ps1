@@ -9,8 +9,7 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 $env:Path += ";C:\buildkite-agent\bin"
 
 # Ensure Chef and Habitat licenses are accepted
-$env:HAB_ORIGIN = 'ci'
-$env:PLAN = 'chef-infra-client'
+$env:HAB_ORIGIN = 'chef'
 $env:CHEF_LICENSE = "accept-no-persist"
 $env:HAB_LICENSE = "accept-no-persist"
 $env:HAB_NONINTERACTIVE = "true"
@@ -23,15 +22,9 @@ Write-Host "--- Downloading package artifact"
 $env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_WINDOWS")
 buildkite-agent artifact download "$env:PKG_ARTIFACT" .
 
-Write-Host "Downloading and importing origin key"
-buildkite-agent artifact download "ci-windows-key.pub" .
-
-Write-Host "--- Checking contents of ci-windows-key.pub"
-Get-Content ci-windows-key.pub
-Write-Host "--- Hex dump of ci-windows-key.pub"
-Format-Hex ci-windows-key.pub
-
-Get-Content "ci-windows-key.pub" | hab origin key import
+Write-Host ":key: Downloading origin key"
+hab origin key download $env:HAB_ORIGIN
+if (-not $?) { throw "Unable to download origin key" }
 
 Write-Host "--- Installing $env:PKG_ARTIFACT"
 hab pkg install $env:PKG_ARTIFACT --auth $HAB_AUTH_TOKEN
