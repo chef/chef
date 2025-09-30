@@ -21,16 +21,18 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          # - windows-2025 - no kitchen support yet
+          - windows-2025
           - windows-2022
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Install Chef
-      uses: actionshub/chef-install@3.0.0
+      uses: actionshub/chef-install@main
+      with:
+        version: "25.5.1084"
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -39,18 +41,20 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-13
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
             clean: true
       - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+        uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -61,17 +65,20 @@ jobs:
         os:
           - macos-14
           - macos-15
+          - macos-26
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           clean: true
       - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+        uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -102,9 +109,11 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+        uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -138,7 +147,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Vagrant and VirtualBox
         run: |
           wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -150,6 +159,8 @@ jobs:
           sudo vagrant --version
           sudo VBoxManage --version
       - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+        uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Kitchen Test
         run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
