@@ -33,6 +33,10 @@ platforms:
         paravirtprovider: "None"
   - name: almalinux-9
   - name: almalinux-10
+    driver:
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
   - name: amazonlinux-2
     driver:
       customize:
@@ -57,13 +61,24 @@ platforms:
   - name: oraclelinux-10
     driver:
       box: bento/oraclelinux-10
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
   - name: rockylinux-8
     driver:
       customize:
         accelerate-3d: "off"
         paravirtprovider: "None"
   - name: rockylinux-9
+    driver:
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
   - name: rockylinux-10
+    driver:
+      customize:
+        accelerate-3d: "off"
+        paravirtprovider: "None"
   - name: ubuntu-20.04
   - name: ubuntu-22.04
   - name: ubuntu-24.04

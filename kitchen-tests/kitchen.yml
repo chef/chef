@@ -22,6 +22,14 @@ verifier:
   name: inspec
   format: progress
 
+lifecycle:
+  pre_converge:
+    - remote: sudo yum install -y openssl cronie
+      includes:
+        - fedora-41
+        - fedora-42
+        - fedora-latest
+
 platforms:
   - name: almalinux-8
   - name: almalinux-9
