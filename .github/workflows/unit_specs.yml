@@ -15,7 +15,7 @@ jobs:
   unit:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         clean: true
     - uses: ruby/setup-ruby@v1
