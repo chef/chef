@@ -3,6 +3,12 @@
 # Recipe:: sysctl
 #
 
+# Fix for debian-13 not having sysctl.conf file out of the box
+file "/etc/sysctl.conf" do
+  mode 0644
+  action :create_if_missing
+end
+
 sysctl "vm.swappiness" do
   value 19
 end

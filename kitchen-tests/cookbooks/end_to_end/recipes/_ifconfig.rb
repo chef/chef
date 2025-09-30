@@ -2,6 +2,7 @@ return if fedora? && node["platform_version"] >= "33" # ifconfig does not suppor
 return if ubuntu? && node["platform_version"] >= "20.04"
 return if suse?
 return if amazon? && node["platform_version"] >= "2023"
+return if platform_family?("rhel") && node["platform_version"] >= "10" # ifconfig is deprecated and removed in RHEL 10+
 
 pkg = value_for_platform_family(
   debian: %w{net-tools ifupdown},
