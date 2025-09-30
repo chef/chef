@@ -53,5 +53,10 @@ $key_file = Join-Path $results_dir "$($env:HAB_ORIGIN)-windows-key.pub"
 hab origin key export $env:HAB_ORIGIN | Out-File -FilePath $key_file
 if (-not $?) { throw "Unable to export origin key" }
 
+Write-Host "--- Checking contents of $key_file"
+Get-Content $key_file
+Write-Host "--- Hex dump of $key_file"
+Format-Hex $key_file
+
 buildkite-agent artifact upload "$($env:HAB_ORIGIN)-windows-key.pub"
 if (-not $?) { throw "Unable to upload origin key" }

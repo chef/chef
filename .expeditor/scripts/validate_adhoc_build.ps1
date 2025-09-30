@@ -22,6 +22,12 @@ buildkite-agent artifact download "$env:PKG_ARTIFACT" .
 
 Write-Host "Downloading and importing origin key"
 buildkite-agent artifact download "ci-windows-key.pub" .
+
+Write-Host "--- Checking contents of ci-windows-key.pub"
+Get-Content ci-windows-key.pub
+Write-Host "--- Hex dump of ci-windows-key.pub"
+Format-Hex ci-windows-key.pub
+
 Get-Content "ci-windows-key.pub" | hab origin key import
 
 Write-Host "--- Installing $env:PKG_ARTIFACT"
