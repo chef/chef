@@ -98,13 +98,22 @@ If ($lastexitcode -ne 0) { Throw $lastexitcode }
 # Omnibus puts C:\Program Files\Git\mingw64\bin which has git.exe but not bash.exe
 $Env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;C:\Program Files\Git\bin;$Env:PATH"
 
-# Test against the vendored chef gem (cd into the output of "gem which chef")
+$original_location = Get-Location
 $chefdir = gem which chef
 If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 $chefdir = Split-Path -Path "$chefdir" -Parent
 $chefdir = Split-Path -Path "$chefdir" -Parent
-Set-Location -Path $chefdir
+
+# Check if spec directories exist in the gem location
+if (Test-Path "$chefdir\spec\unit") {
+    Set-Location -Path $chefdir
+    Write-Output "Running tests from gem directory: $chefdir"
+} else {
+    # Stay in original location if specs aren't in gem directory
+    Write-Output "Spec directories not found in gem location, staying in original directory"
+    Write-Output "Current location: $(Get-Location)"
+}
 
 Get-Location
 
