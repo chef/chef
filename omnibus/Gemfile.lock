@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: b4f4ad0819691071d376d01b44d0c313d72d1b4c
+  revision: ff0f4acee77a15faf5f94b81cb95c10ca717857a
   branch: sean-sype-simmons/CHEF-24775-OmnibusConfigurationPipelineConfigurations3CacheCconfiguration
   specs:
     omnibus (9.1.1)
