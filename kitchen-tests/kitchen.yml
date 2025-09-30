@@ -44,8 +44,14 @@ platforms:
   - name: freebsd-14
   - name: opensuse-leap-15
   - name: oraclelinux-8
+    driver:
+      box: bento/oraclelinux-8 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
   - name: oraclelinux-9
+    driver:
+      box: oraclelinux-9 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
   - name: oraclelinux-10
+    driver:
+      box: oraclelinux-10 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
   - name: rockylinux-8
   - name: rockylinux-9
   - name: rockylinux-10

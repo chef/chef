@@ -37,13 +37,6 @@ lifecycle:
     - remote: /opt/chef/bin/ohai -v
 
 platforms:
-  - name: amazonlinux-2
-    driver:
-      image: dokken/amazonlinux-2
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
   - name: amazonlinux-2023
     driver:
       image: dokken/amazonlinux-2023
@@ -158,14 +151,6 @@ platforms:
         - RUN dnf -y reinstall systemd
         - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-  - name: fedora-41
-    driver:
-      image: dokken/fedora-41
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN dnf -y install python3-libdnf python3-dnf
 
   - name: fedora-42
     driver:
