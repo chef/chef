@@ -159,6 +159,14 @@ platforms:
         - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
+  - name: fedora-41
+    driver:
+      image: dokken/fedora-41
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN dnf -y install python3-libdnf python3-dnf
+
   - name: fedora-42
     driver:
       image: dokken/fedora-42
@@ -166,22 +174,6 @@ platforms:
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
         - RUN dnf -y install python3-libdnf python3-dnf
-
-  - name: fedora-latest
-    driver:
-      image: dokken/fedora-latest
-      pid_one_command: /usr/lib/systemd/systemd
-      intermediate_instructions:
-        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN dnf -y install python3-libdnf python3-dnf
-
-  - name: ubuntu-20.04
-    driver:
-      image: dokken/ubuntu-20.04
-      pid_one_command: /bin/systemd
-      intermediate_instructions:
-        - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
   - name: ubuntu-22.04
     driver:

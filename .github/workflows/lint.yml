@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  chefstyle:
+  cookstyle:
     runs-on: ubuntu-latest
     env:
       BUNDLE_WITHOUT: ruby_shadow:omnibus_package
