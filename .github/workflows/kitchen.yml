@@ -21,59 +21,60 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          # - windows-2025 - no kitchen support yet
+          - windows-2025
           - windows-2022
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Install Chef
       uses: actionshub/chef-install@3.0.0
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: kitchen verify ${{ matrix.os }}
 
   mac_x86_64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - macos-13
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
             clean: true
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen verify ${{ matrix.os }}
 
   mac_arm64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - macos-14 # currently macos-latest
+          - macos-14
           - macos-15
+          - macos-26
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           clean: true
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen verify ${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -83,18 +84,20 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
+          - almalinux-10
           - debian-11
           - debian-12
-          - fedora-40
-          # fedora-latest
+          - debian-13
+          - fedora-42
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
+          - oraclelinux-10
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-2004
+          - rockylinux-10
           - ubuntu-2204
-          # - ubuntu-2404
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
@@ -102,11 +105,11 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@3.0.0
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen verify ${{ matrix.os }}
 
   vm_lnx_x86_64:
     strategy:
@@ -117,25 +120,27 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
+          - almalinux-10
           - debian-11
           - debian-12
-          - fedora-40
-          # - fedora-latest
+          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
+          - fedora-41
+          - fedora-42
           - opensuse-leap-15
-          - oracle-7
-          - oracle-8
-          - oracle-9
+          - oraclelinux-8
+          - oraclelinux-9
+          - oraclelinux-10
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-2004
+          - rockylinux-10
           - ubuntu-2204
-          # - ubuntu-2404
+          - ubuntu-2404
     runs-on: ubuntu-22.04
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Vagrant and VirtualBox
         run: |
           wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -151,9 +156,9 @@ jobs:
       - name: Kitchen Test
         run: |
           # To debug, uncomment these
-          #export VAGRANT_LOG=debug
-          #export VBOX_LOG=all.e.l.f
-          #export VBOX_LOG_DEST=stdout
-          #export K_DEBUG_OPTS="--log-level=debug"
+          # export VAGRANT_LOG=debug
+          # export VBOX_LOG=all.e.l.f
+          # export VBOX_LOG_DEST=stdout
+          # export K_DEBUG_OPTS="--log-level=debug"
           export LOGNAME=$USER
-          kitchen test end-to-end-${{ matrix.os }} $K_DEBUG_OPTS
+          kitchen verify ${{ matrix.os }} $K_DEBUG_OPTS

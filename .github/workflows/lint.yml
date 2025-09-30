@@ -12,15 +12,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  chefstyle:
+  cookstyle:
     runs-on: ubuntu-latest
     env:
       BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1
+          ruby-version: 3.4
           bundler-cache: false
       - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
       - run: |
@@ -30,7 +30,7 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: |
           curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
       - uses: streetsidesoftware/cspell-action@v2.12.0
@@ -40,7 +40,7 @@ jobs:
     name: Check if all files end in newline
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Linelint
         uses: fernandrone/linelint@master
         id: linelint
