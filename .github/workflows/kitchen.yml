@@ -112,8 +112,6 @@ jobs:
         uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -160,7 +158,5 @@ jobs:
           sudo VBoxManage --version
       - name: Install Chef
         uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
       - name: Kitchen Test
         run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
