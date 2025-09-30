@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: _windows_printer
 #
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 #
 
 windows_printer_port "10.4.64.39" do

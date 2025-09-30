@@ -1,6 +1,5 @@
 #
-# Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
-# Copyright:: Copyright 2011-2016, Thomas Bishop
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
