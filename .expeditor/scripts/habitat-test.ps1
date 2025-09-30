@@ -7,7 +7,7 @@ $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScript
 Write-Host "--- Installing $WindowsArtifact"
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
-hab pkg install $WindowsArtifact
+hab pkg install $WindowsArtifact --auth $env:HAB_AUTH_TOKEN
 if (-not $?) { throw "Unable to install $WindowsArtifact" }
 
 . ./habitat/tests/test.ps1 -PackageIdentifier $WindowsArtifact
