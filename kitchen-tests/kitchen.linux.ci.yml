@@ -79,6 +79,5 @@ platforms:
       customize:
         accelerate-3d: "off"
         paravirtprovider: "None"
-  - name: ubuntu-20.04
   - name: ubuntu-22.04
   - name: ubuntu-24.04

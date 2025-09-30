@@ -3,7 +3,7 @@
 # Recipe:: sysctl
 #
 
-# Fix for debain-13 not having sysctl.conf file out of the box
+# Fix for debian-13 not having sysctl.conf file out of the box
 file "/etc/sysctl.conf" do
   mode 0644
   action :create_if_missing
