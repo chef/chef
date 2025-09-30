@@ -1,8 +1,5 @@
 #
-# Author:: Ryan Davis (<ryand-ruby@zenspider.com>)
-# Author:: Daniel DeLeo (<dan@chef.io>)
-# Author:: Nuo Yan (<nuo@chef.io>)
-# Copyright:: Copyright 2011-2016, Ryan Davis and Opscode, Inc.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
