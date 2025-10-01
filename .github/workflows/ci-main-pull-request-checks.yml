@@ -3,7 +3,7 @@
 # inputs are described in the <org>/common-github-actions/<GA.yml> with same name as this stub
 #
 
-name: CI Pull Request on Main Branch
+name: CI Pull Request on Chef 18 Branch
 
 on: 
   pull_request:

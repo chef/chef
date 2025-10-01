@@ -1,9 +1,9 @@
-# stub to call common GitHub Action (GA) as part of Continuous Integration (CI) Pull Request process checks for main branch
+# stub to call common GitHub Action (GA) as part of Continuous Integration (CI) Pull Request process checks for Chef 18 Branch
 # inputs are described in the chef/common-github-actions/<GA.yml> with same name as this stub
 #
 # secrets are inherited from the calling workflow, typically SONAR_TOKEN, SONAR_HOST_URL, GH_TOKEN, AKEYLESS_JWT_ID, POLARIS_SERVER_URL and POLARIS_ACCESS_TOKEN
 
-name: CI Pull Request on Main Branch
+name: CI Pull Request on Chef 18 Branch
 
 on: 
   pull_request:
