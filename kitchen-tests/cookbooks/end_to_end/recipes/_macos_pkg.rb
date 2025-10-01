@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: _macos_pkg
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 
 macos_pkg "osquery" do
