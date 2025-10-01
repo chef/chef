@@ -9,7 +9,12 @@ fi
 
 LINUX_ARTIFACT="$1"
 
+# Read the CHEF_LICENSE_SERVER value from chef_license_server_url.txt
+# Ideally, this value would have been read from a centralized environment such as a GitHub environment,
+# Buildkite environment, or a vault, allowing for seamless updates without requiring a pull request for changes.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Use SCRIPT_DIR to refer to files relative to the script’s location
+export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
 
 echo "--- Installing habitat using ${SCRIPT_DIR}/install-hab.sh"
 "${SCRIPT_DIR}/install-hab.sh" "x86_64-linux"
