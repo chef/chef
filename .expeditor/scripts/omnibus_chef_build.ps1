@@ -323,20 +323,54 @@ function Build-ChefPackage {
     try {
         Write-Output "--- Building Chef"
         
-        # Capture output and errors while running the command
-        $output = bundle exec omnibus build chef -l internal --override append_timestamp:false 2>&1
+        # Change directory to ensure we're in the right place
+        Set-Location "$($ScriptDir)/../../omnibus"
         
-        # Display the output
-        $output | ForEach-Object { Write-Output $_ }
+        # Set up AWS Region
+        $AWS_REGION = if ($env:AWS_REGION) { $env:AWS_REGION } else { "us-west-2" }
         
-        # Check the exit code
+        # Set up build options similar to omnibus-buildkite-plugin
+        $BUILD_OPTIONS = "-l internal --populate-s3-cache"
+        $BUILD_OPTIONS += " --override"
+        $BUILD_OPTIONS += " s3_region:$AWS_REGION"
+        $BUILD_OPTIONS += " s3_access_key:$($env:AWS_S3_ACCESS_KEY)"
+        $BUILD_OPTIONS += " s3_secret_key:$($env:AWS_S3_SECRET_KEY)"
+        $BUILD_OPTIONS += " cache_suffix:$($env:PROJECT_NAME)"
+        $BUILD_OPTIONS += " append_timestamp:false"
+        $BUILD_OPTIONS += " use_git_caching:true"
+        $BUILD_OPTIONS += " --log-level debug"
+        
+        # Set bundle gemfile
+        $env:BUNDLE_GEMFILE = (Get-Location).Path + "/Gemfile"
+        Write-Output "Using Gemfile: $env:BUNDLE_GEMFILE"
+        
+        Write-Output "Starting omnibus build with options: $BUILD_OPTIONS"
+        
+        # Split BUILD_OPTIONS into an array for proper argument passing
+        $buildArgs = $BUILD_OPTIONS -split ' ' | Where-Object { $_ -ne '' }
+        
+        # Execute the build command
+        & bundle exec omnibus build $env:PROJECT_NAME @buildArgs
+        
         if ($LASTEXITCODE -ne 0) {
-            throw "Omnibus build chef failed with exit code $LASTEXITCODE"
+            throw "Omnibus build failed with exit code $LASTEXITCODE"
         }
+        
+        Write-Output "Omnibus build completed successfully"
     }
     catch {
         Write-Error "Chef build failed: $_"
-        exit 1
+        
+        # Try to get more detailed logs
+        Write-Output "--- Attempting to collect detailed build logs"
+        Get-ChildItem "C:\omnibus-ruby\log\" -ErrorAction SilentlyContinue | 
+            Where-Object { $_.Name -like "*build*.log" } | 
+            ForEach-Object {
+                Write-Output "=== Log file: $($_.FullName) ==="
+                Get-Content $_.FullName -Tail 200
+            }
+            
+        throw "Chef build failed. See logs for details."
     }
 }
 
@@ -348,7 +382,8 @@ function Verify-SignedPackage {
     $errorMessage = ""
     
     try {
-        $directoryPath = "C:\omnibus-ruby\pkg\"
+        # Fix: Add the missing 'chef' subdirectory to the path
+        $directoryPath = "C:\omnibus-ruby\chef\pkg\"
         $msiFile = Get-ChildItem -Path $directoryPath -Filter *.msi | Select-Object -First 1
         if ( -not $? ) { throw "Failed to list MSI files" }
         
@@ -426,7 +461,8 @@ function Upload-BuildkiteArtifact {
     
     try {
         Write-Output "--- Uploading package to BuildKite"
-        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "pkg/*.msi*"
+        # Fix: Use the correct path where omnibus actually creates the MSI
+        C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "C:\omnibus-ruby\chef\pkg\*.msi*" 
         if ( -not $? ) { throw "Failed to upload artifact to BuildKite" }
     }
     catch {
