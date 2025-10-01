@@ -49,7 +49,7 @@ jobs:
       # BlackDuck SAST (Polaris) and SCA scans
       # requires secrets POLARIS_SERVER_URL and POLARIS_ACCESS_TOKEN
       perform-blackduck-polaris: false
-      polaris-application-name: 'Chef-Chef360'  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services
+      polaris-application-name: 'Chef-Agents'  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services
       polaris-project-name: ${{ github.event.repository.name }}  # typically the application name, followed by - and the repository name, for example Chef-Chef360-chef-vault'
       perform-blackduck-sca-scan: false
 
