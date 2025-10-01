@@ -1,17 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.18 -->
-## [v18.8.18](https://github.com/chef/chef/tree/v18.8.18) (2025-09-11)
+<!-- latest_release 18.8.25 -->
+## [v18.8.25](https://github.com/chef/chef/tree/v18.8.25) (2025-09-30)
 
 #### Merged Pull Requests
-- [Chef 18 backport] apt_repository patches #15209, #15218, #15220 [#15235](https://github.com/chef/chef/pull/15235) ([fretb](https://github.com/fretb))
+- [chef-18] Backport: GHA runner updates and fix for chef-workstation install [#15313](https://github.com/chef/chef/pull/15313) ([Stromweld](https://github.com/Stromweld))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] Backport: GHA runner updates and fix for chef-workstation install [#15313](https://github.com/chef/chef/pull/15313) ([Stromweld](https://github.com/Stromweld)) <!-- 18.8.25 -->
+- Updating the copyright in the first 400 files [#15311](https://github.com/chef/chef/pull/15311) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.24 -->
+- [Chef18][ChefRepositoryFileSystemCookbookEntry] Add children existence method [#15274](https://github.com/chef/chef/pull/15274) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.8.23 -->
+- Chocolatey custom url bug [#15306](https://github.com/chef/chef/pull/15306) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.22 -->
+- [CHEF-21785] PR to chef-18: Updated the knife ec backup to preserve the frozen cookbook status -  [#15217](https://github.com/chef/chef/pull/15217) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.21 -->
+- [Chef-18] Updating for CVE-2023-22796 [#15298](https://github.com/chef/chef/pull/15298) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.20 -->
+- had to add a new ubuntu fips tester [#15290](https://github.com/chef/chef/pull/15290) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.19 -->
 - [Chef 18 backport] apt_repository patches #15209, #15218, #15220 [#15235](https://github.com/chef/chef/pull/15235) ([fretb](https://github.com/fretb)) <!-- 18.8.18 -->
 - Correcting an issue with nils causing havoc [#15229](https://github.com/chef/chef/pull/15229) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.17 -->
 - Sean sype simmons/chef 25473 update cert [#15223](https://github.com/chef/chef/pull/15223) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.8.16 -->
