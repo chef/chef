@@ -9,10 +9,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: ff0f4acee77a15faf5f94b81cb95c10ca717857a
-  branch: sean-sype-simmons/CHEF-24775-OmnibusConfigurationPipelineConfigurations3CacheCconfiguration
+  revision: 35a00dadbf393d31d936f446c697357e2e729d73
+  branch: main
   specs:
-    omnibus (9.1.1)
+    omnibus (9.1.2)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
