@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.83 -->
-## [v19.1.83](https://github.com/chef/chef/tree/v19.1.83) (2025-09-30)
+<!-- latest_release 19.1.84 -->
+## [v19.1.84](https://github.com/chef/chef/tree/v19.1.84) (2025-10-01)
 
 #### Merged Pull Requests
-- fix chef-workstation install [#15314](https://github.com/chef/chef/pull/15314) ([Stromweld](https://github.com/Stromweld))
+- fix errors on habitat/verify [#15303](https://github.com/chef/chef/pull/15303) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix errors on habitat/verify [#15303](https://github.com/chef/chef/pull/15303) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.84 -->
 - fix chef-workstation install [#15314](https://github.com/chef/chef/pull/15314) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.83 -->
 - update GHA testing [#15302](https://github.com/chef/chef/pull/15302) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.82 -->
 - fixing the broken habitat test pipeline [#15301](https://github.com/chef/chef/pull/15301) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.81 -->
