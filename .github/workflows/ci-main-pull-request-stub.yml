@@ -17,7 +17,7 @@ permissions:
   contents: read
   
 env:
-  STUB_VERSION: "1.0.4" 
+  STUB_VERSION: "1.0.5" 
 
 jobs: 
   echo_version:
@@ -40,9 +40,10 @@ jobs:
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '18.8.26' # ${{ github.event.repository.version }}
+      version: '18.8.27' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
+      language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
 
       # complexity-checks
       perform-complexity-checks: true
@@ -57,11 +58,11 @@ jobs:
       
       # BlackDuck SAST (Polaris) and SCA scans (requires a build or download to do SAST)
       # requires these secrets: POLARIS_SERVER_URL, POLARIS_ACCESS_TOKEN
-      perform-blackduck-polaris: false
+      perform-blackduck-polaris: true
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-18'
-      # polaris-blackduck-executable: 'path/to/blackduck/binary'
-      # polaris-executable-detect-path: 'path/to/detect'
+      polaris-blackduck-executable: 'path/to/blackduck/binary'
+      polaris-executable-detect-path: 'path/to/detect'
  
       # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
       build: false
