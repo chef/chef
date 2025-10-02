@@ -7,9 +7,9 @@ name: CI Pull Request on Chef 18 Branch
 
 on: 
   pull_request:
-    branches: [ main, release/** ]
+    branches: [ chef-18, release/** ]
   push:
-    branches: [ main, release/** ]
+    branches: [ chef-18, release/** ]
 
   workflow_dispatch:
 
