@@ -1,8 +1,8 @@
 #
-# Author:: Ross Moles (<rmoles@chef.io>)
-# Author:: Rachel Rice (<rrice@chef.io>)
-# Author:: Davin Taddeo (<davin@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Contributed by: Ross Moles (<rmoles@chef.io>)
+# Contributed by: Rachel Rice (<rrice@chef.io>)
+# Contributed by: Davin Taddeo (<davin@chef.io>)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

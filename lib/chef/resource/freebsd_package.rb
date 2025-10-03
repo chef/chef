@@ -1,8 +1,8 @@
 #
-# Authors:: AJ Christensen (<aj@chef.io>)
+# Contributed by: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
-# Copyright:: Copyright 2014-2016, Richard Manyanza.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

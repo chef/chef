@@ -1,8 +1,8 @@
 #
-# Author:: Adam Jacob (<adam@chef.io>)
-# Author:: Christopher Walters (<cw@chef.io>)
-# Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright 2008-2016, Chef, Inc.
+# Contributed by: Adam Jacob (<adam@chef.io>)
+# Contributed by: Christopher Walters (<cw@chef.io>)
+# Contributed by: John Keiser (<jkeiser@chef.io)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
