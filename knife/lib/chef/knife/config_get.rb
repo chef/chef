@@ -1,7 +1,7 @@
 #
-# Author:: Joshua Timberman <opensource@housepub.org>
-# Copyright:: Copyright (c) 2012, Joshua Timberman
-# Copyright:: Copyright (c) 2018, Noah Kantrowitz
+# Contributed by: Joshua Timberman <opensource@housepub.org>
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

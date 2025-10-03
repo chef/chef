@@ -1,6 +1,6 @@
 #
-# Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Contributed by: Matt Wrock (<matt@mattwrock.com>)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
