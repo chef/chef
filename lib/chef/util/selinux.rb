@@ -1,10 +1,10 @@
 #
-# Author:: Sean O'Meara
-# Author:: Kevin Keane
-# Author:: Lamont Granquist (<lamont@chef.io>)
+# Contributed by: Sean O'Meara
+# Contributed by: Kevin Keane
+# Contributed by: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright (c) Chef Software Inc.
-# Copyright:: Copyright 2013-2016, North County Tech Center, LLC
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 #
 # License:: Apache License, Version 2.0
 #
