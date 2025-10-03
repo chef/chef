@@ -1,6 +1,6 @@
 #
-# Author:: Marc Paradise <marc@chef.io>
-# Copyright:: Copyright (c) Chef Software Inc.
+# Contributed by: Marc Paradise <marc@chef.io>
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 #
 
 require_relative "../../spec_helper"
