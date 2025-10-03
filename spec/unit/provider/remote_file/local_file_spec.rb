@@ -1,6 +1,6 @@
 #
-# Author:: Jesse Campbell (<hikeit@gmail.com>)
-# Copyright:: Copyright 2013-2016, Jesse Campbell
+# Contributed by: Jesse Campbell (<hikeit@gmail.com>)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

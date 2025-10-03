@@ -1,6 +1,6 @@
 #
-# Author:: Kapil Chouhan (<kapil.chouhan@msystechnologies.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Contributed by: Kapil Chouhan (<kapil.chouhan@msystechnologies.com>)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,8 +1,8 @@
 #
-# Author:: Matthew Kent (<mkent@magoazul.com>)
-# Author:: Steve Midgley (http://www.misuse.org/science)
-# Copyright:: Copyright 2010-2016, Matthew Kent
-# Copyright:: Copyright 2008-2016, Steve Midgley
+# Contributed by: Matthew Kent (<mkent@magoazul.com>)
+# Contributed by: Steve Midgley (http://www.misuse.org/science)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
