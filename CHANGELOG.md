@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.27 -->
-## [v18.8.27](https://github.com/chef/chef/tree/v18.8.27) (2025-10-02)
+<!-- latest_release 18.8.28 -->
+## [v18.8.28](https://github.com/chef/chef/tree/v18.8.28) (2025-10-03)
 
 #### Merged Pull Requests
-- Jfm/chef18 SBOM update [#15317](https://github.com/chef/chef/pull/15317) ([johnmccrae](https://github.com/johnmccrae))
+- Tweaking SBOM settings [#15319](https://github.com/chef/chef/pull/15319) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Tweaking SBOM settings [#15319](https://github.com/chef/chef/pull/15319) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.28 -->
 - Jfm/chef18 SBOM update [#15317](https://github.com/chef/chef/pull/15317) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.27 -->
 - Revert &quot;Updating the copyright in the first 400 files&quot; [#15316](https://github.com/chef/chef/pull/15316) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.26 -->
 - [chef-18] Backport: GHA runner updates and fix for chef-workstation install [#15313](https://github.com/chef/chef/pull/15313) ([Stromweld](https://github.com/Stromweld)) <!-- 18.8.25 -->
