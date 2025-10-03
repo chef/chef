@@ -1,7 +1,7 @@
 #
-# Author:: Tim Smith (<tsmith@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
-# Copyright:: 2017-2020, Microsoft Corporation
+# Contributed by: Tim Smith (<tsmith@chef.io>)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

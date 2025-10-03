@@ -1,7 +1,7 @@
 #
-# Author:: Jan Zimmek (<jan.zimmek@web.de>)
-# Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Contributed by: Jan Zimmek (<jan.zimmek@web.de>)
+# Contributed by: AJ Christensen (<aj@hjksolutions.com>)
+# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
