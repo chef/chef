@@ -100,13 +100,45 @@ jobs:
     - name: 'Run chef-client with FIPS'
       run: |
         # Verify FIPS mode is active
-        hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client --version
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
 
-        #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-        # $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client -l debug --no-color 2>&1 | Select-String "FIPS"
-        # if ($output -match "OpenSSL FIPS 140 mode enabled") {
-        #   Write-Host "✅ Chef Infra Client is running in FIPS mode"
-        # } else {
-        #   Write-Host "❌ FIPS mode not detected"
-        #   Exit 1
-        # }
+        $testScript = @'
+        begin
+          require 'openssl'
+          puts "OpenSSL version: #{OpenSSL::OPENSSL_VERSION}"
+
+          # Try MD5 hash (should fail in FIPS mode)
+          hash = OpenSSL::Digest::MD5.hexdigest('test')
+          puts 'FIPS mode is NOT working - MD5 hash succeeded'
+          exit 1
+        rescue OpenSSL::OpenSSLError => e
+          puts 'FIPS mode confirmed - MD5 hash correctly blocked'
+          puts "Error message: #{e.message}"
+          exit 0
+        rescue => e
+          puts "Error during test: #{e.class} - #{e.message}"
+          puts e.backtrace.join("\n") if e.respond_to?(:backtrace)
+          exit 2
+        end
+        '@
+
+        # Save to a file
+        Set-Content -Path "fips_test.rb" -Value $testScript
+
+        Write-Host "=== Running FIPS verification test ==="
+
+        # Execute and ensure output is displayed
+        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- ruby fips_test.rb 2>&1
+        $exitCode = $LASTEXITCODE
+
+        # Always display the output
+        Write-Host "Test output:"
+        Write-Host $output
+
+        # Check exit code
+        if ($exitCode -eq 0) {
+          Write-Host "✅ FIPS mode is confirmed - MD5 was blocked as expected"
+        } else {
+          Write-Host "❌ FIPS mode verification failed with exit code: $exitCode"
+        # Clean up
+        Remove-Item -Path "fips_test.rb" -Force
