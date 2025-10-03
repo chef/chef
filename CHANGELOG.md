@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.31 -->
-## [v18.8.31](https://github.com/chef/chef/tree/v18.8.31) (2025-10-03)
+<!-- latest_release 18.8.32 -->
+## [v18.8.32](https://github.com/chef/chef/tree/v18.8.32) (2025-10-03)
 
 #### Merged Pull Requests
-- Updating Copyrights and Attribution [#15324](https://github.com/chef/chef/pull/15324) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Copyrights and Attribution [#15325](https://github.com/chef/chef/pull/15325) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating Copyrights and Attribution [#15325](https://github.com/chef/chef/pull/15325) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.32 -->
 - Updating Copyrights and Attribution [#15324](https://github.com/chef/chef/pull/15324) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.31 -->
 - Updating Copyrights and Attribution [#15323](https://github.com/chef/chef/pull/15323) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.30 -->
 - Updating Copyrights and Attribution [#15322](https://github.com/chef/chef/pull/15322) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.29 -->
