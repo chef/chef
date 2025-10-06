@@ -78,4 +78,5 @@ end
 ## Reasons for not using YARD
 
 The goal of introducing minimal DSL changes is to extend the existing data already contained within each resource to include the necessary information to fully document resources. Documenting resources in YARD would require significant duplication of documentation, which most users probably won't do. Out of the box, even without these new DSL extensions, we can already document resources fairly well. These new extensions incentivize users to provide us with a small amount of additional information that would fully fill out the resource documentation. Within our own configuration management industry, other projects have gone different routes to document their equivalence of resources. One project uses a hybrid comment / code method, which feels bolted on and overly complex. The other project fully documents code in comments, which results in near 100% duplication of effort. Simple DSL extensions seem like they are more likely to be utilized and provide a better user experience.
+
 [Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

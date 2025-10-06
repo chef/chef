@@ -11,5 +11,3 @@ You can still utilize custom bootstrap templates on your system if your installa
 needs are unique. Additional information can be found on the [docs site](https://docs.chef.io/knife_bootstrap/#custom-templates).
 
 [Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

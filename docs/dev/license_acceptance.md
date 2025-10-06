@@ -13,5 +13,3 @@ overall view of how the license-acceptance gem works, its specification, how mar
 the [repo README](https://github.com/chef/license-acceptance).
 
 [Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

@@ -148,5 +148,3 @@ rm -f Gemfile.lock Gemfile.aix.lock Gemfile.lock.base
 ```
 
 [Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

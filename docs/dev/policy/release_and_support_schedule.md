@@ -77,5 +77,3 @@ April 2020: Chef 15 becomes Deprecated when Chef 16 ships
 April 2021: Chef 15 becomes End of Life when Chef 17 ships
 
 [Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

@@ -33,5 +33,3 @@ A good first start is our [How Chef Infra Is Built](./design_documents/how_chef_
 - [Bootstrap with Train](./design_documents/bootstrap_with_train.md)
 
 [Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
