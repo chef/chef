@@ -127,3 +127,5 @@ Returns:
 Recipe: (chef-apply cookbook)::(chef-apply recipe)
   * package[vim] action install (up to date)
 ```
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

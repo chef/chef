@@ -51,3 +51,4 @@ by the common cases, but is not exhaustive. `attributes.rb` and `recipe.rb` are
 chosen to match their usage grammatically. An additional alias of `recipes.rb`
 could be provided to match the folder name, but this is left for a future
 improvement based on usage feedback.
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

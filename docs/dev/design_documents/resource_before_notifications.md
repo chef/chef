@@ -75,3 +75,5 @@ The execution of the package upgrade looks like this:
    e. Turn off `why-run`.
 2. Run the action (for real!).
 3. Send `:immediate` or `:delayed` notifications if `updated_by_last_action?` is true.
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

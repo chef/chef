@@ -41,3 +41,5 @@ The debug output (chef-client -l debug) may be useful, but please link to a gist
 
 ## Stacktrace
 <!--- Please include the stacktrace.out output or link to a gist of it, if there is one. -->
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

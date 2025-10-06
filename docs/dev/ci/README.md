@@ -203,3 +203,6 @@ They are kept around for historical purposes. Once this pipeline is backported t
 <br>
 </details>
 <br>
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

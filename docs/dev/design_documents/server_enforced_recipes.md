@@ -99,3 +99,4 @@ One possible implementation is to add the recipe to the list of
 `specific_recipes` which is currently populated only via CLI arguments to
 `chef-client --local-mode`. In this case, enforced recipes would be evaluated
 and converged after the primary run list.
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

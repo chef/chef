@@ -113,3 +113,5 @@ notifications.
 
 https://tickets.opscode.com/browse/CHEF-4416
 https://tickets.opscode.com/browse/CHEF-3634
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

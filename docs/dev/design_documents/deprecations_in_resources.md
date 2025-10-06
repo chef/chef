@@ -66,3 +66,5 @@ in resources/example.rb
 ```ruby
 deprecated_property_alias :set, :set_impact, 'The set property has been renamed to set_impact. Set will be removed from this cookbook in the next release in April 2018.'
 ```
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

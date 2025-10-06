@@ -11,3 +11,5 @@ In order to update everything, run `rake dependencies`.  Note that the [Gemfile.
 ```bash
 bundle lock --update --add-platform ruby x64-mingw32 x86-mingw32
 ```
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

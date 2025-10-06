@@ -11,3 +11,7 @@ For an explanation of how this is achieved please see the [Ruby
 README](https://github.com/chef/license-acceptance/tree/main/components/ruby) in the license-acceptance repo. For an
 overall view of how the license-acceptance gem works, its specification, how marker files are stored, etc. please see
 the [repo README](https://github.com/chef/license-acceptance).
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

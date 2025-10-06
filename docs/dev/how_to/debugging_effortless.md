@@ -75,3 +75,5 @@ the stacktrace will be output to the `sup` window, such as `C:/hab/svc/<service>
 If you want to make changes to the service, `hab svc unload <origin>/<service>` and make changes to the files in the `c:\hab\pkgs\<origin>\<service>` directory,
 
 Then, `hab svc load <origin>/<service>` to start the service again.
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
