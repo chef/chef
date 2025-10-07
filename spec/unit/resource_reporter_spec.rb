@@ -817,7 +817,7 @@ describe Chef::ResourceReporter do
         binary_str * (target_size / binary_str.bytesize + 1)
       end
 
-      let(:binary_file_path)
+      let(:binary_file_path) { "/tmp/binary-file.png" }
       let(:binary_file_resource) { Chef::Resource::File.new(binary_file_path) }
       let(:current_binary_resource) { Chef::Resource::File.new(binary_file_path) }
       let(:action_record) { double("ActionRecord") }
