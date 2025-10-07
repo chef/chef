@@ -807,10 +807,12 @@ describe Chef::ResourceReporter do
         # Create a large binary file (1 MB) with problematic encoding
         # This will trigger the size check and JSON conversion in for_json method line 38
         binary_str = "\x89PNG\r\n\x1a\n" # PNG header
-        binary_str += "\xFF\xFE\xFD\xFC\xFB\xFA\xF9\xF8" # Invalid UTF-8 bytes
-        binary_str += "\x80\x81\x82\x83\x84\x85\x86\x87" # More invalid bytes
-        binary_str += "\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7" # Invalid UTF-8 start bytes
-        binary_str += "\x00\x01\x02\x03" # Some control chars
+        # the comments inside of the string because Sonarqube apparently can't tell the difference between
+        # non-ASCII strings
+        binary_str += "\xFF\xFE\xFD\xFC\xFB\xFA\xF9\xF8 Invalid UTF-8 bytes"
+        binary_str += "\x80\x81\x82\x83\x84\x85\x86\x87 More invalid bytes"
+        binary_str += "\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7 Invalid UTF-8 start bytes"
+        binary_str += "\x00\x01\x02\x03 Some control chars"
         target_size = 1_000_000
         binary_str * (target_size / binary_str.bytesize + 1)
       end
