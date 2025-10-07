@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.86 -->
-## [v19.1.86](https://github.com/chef/chef/tree/v19.1.86) (2025-10-02)
+<!-- latest_release 19.1.87 -->
+## [v19.1.87](https://github.com/chef/chef/tree/v19.1.87) (2025-10-07)
 
 #### Merged Pull Requests
-- ohai.config is an empty hash the first time a reload is called [#15295](https://github.com/chef/chef/pull/15295) ([dschlenk](https://github.com/dschlenk))
+- [Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15328](https://github.com/chef/chef/pull/15328) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15328](https://github.com/chef/chef/pull/15328) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.87 -->
 - ohai.config is an empty hash the first time a reload is called [#15295](https://github.com/chef/chef/pull/15295) ([dschlenk](https://github.com/dschlenk)) <!-- 19.1.86 -->
 - [recipe#from_hash] Add include_recipes key [#15299](https://github.com/chef/chef/pull/15299) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.85 -->
 - fix errors on habitat/verify [#15303](https://github.com/chef/chef/pull/15303) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.84 -->
