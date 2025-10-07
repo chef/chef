@@ -36,7 +36,7 @@ class Chef
 
       # if the "before" hash is too large, we need to truncate it to avoid 413 errors
       # 640K ought be enough for every Windows registry entry
-      as_hash["before"]   = {} if as_hash["before"].to_json.length > 657920
+      as_hash["before"]   = {} if as_hash["before"].to_s.bytesize > 657920
       as_hash["duration"] = ( action_record.elapsed_time * 1000 ).to_i.to_s
       as_hash["delta"]    = new_resource.diff if new_resource.respond_to?(:diff)
       as_hash["delta"]    = "" if as_hash["delta"].nil?
