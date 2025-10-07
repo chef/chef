@@ -817,8 +817,9 @@ describe Chef::ResourceReporter do
         binary_str * (target_size / binary_str.bytesize + 1)
       end
 
-      let(:binary_file_resource) { Chef::Resource::File.new("/tmp/binary-file.png") }
-      let(:current_binary_resource) { Chef::Resource::File.new("/tmp/binary-file.png") }
+      let(:binary_file_path)
+      let(:binary_file_resource) { Chef::Resource::File.new(binary_file_path) }
+      let(:current_binary_resource) { Chef::Resource::File.new(binary_file_path) }
       let(:action_record) { double("ActionRecord") }
 
       before do
@@ -844,7 +845,7 @@ describe Chef::ResourceReporter do
           # Create a large problematic state that will trigger the size check AND JSON encoding error
           problematic_state = {
             "content" => binary_content,
-            "path" => "/tmp/binary-file.png",
+            "path" => binary_file_path,
             "mode" => "0644",
             "owner" => "root",
           }
