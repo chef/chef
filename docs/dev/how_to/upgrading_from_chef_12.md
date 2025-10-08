@@ -237,5 +237,3 @@ to retroactively change behavior or add any warnings. It is not a common issue. 
 preferable since it asserts that the once the configuration for the service is updated that the service is restarted
 by the delayed action which occurs at the end of the custom resource's action and then future recipes can rely on
 the service being in a correctly running state.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

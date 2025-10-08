@@ -43,5 +43,3 @@ Successful ad hoc builds are promoted to the unstable channel and can be downloa
 `mixlib-install download chef -c unstable`
 
 Keep in mind this just downloads the last build so you may end up the wrong build if the ad hoc isn't the last build to promote to unstable.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
