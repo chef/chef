@@ -1,11 +1,11 @@
 #--
-# Contributed by: Adam Jacob (<adam@chef.io>)
-# Contributed by: Thom May (<thom@clearairturbulence.org>)
-# Contributed by: Nuo Yan (<nuo@chef.io>)
-# Contributed by: Christopher Brown (<cb@chef.io>)
-# Contributed by: Christopher Walters (<cw@chef.io>)
-# Contributed by: Daniel DeLeo (<dan@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Thom May (<thom@clearairturbulence.org>)
+# Author:: Nuo Yan (<nuo@chef.io>)
+# Author:: Christopher Brown (<cb@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

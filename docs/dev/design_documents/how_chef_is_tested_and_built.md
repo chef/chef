@@ -37,5 +37,3 @@ Once the builds complete, Buildkite will move to the test phase where each of th
 ## Releasing Chef
 
 Once a build has been blessed by our Buildkite gauntlet and everyone has agreed that we are ready to release, an artifact can be promoted from current to stable channels. For the complete release process see [Releasing Chef Infra Client](../how_to/releasing_chef_infra.md).
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

@@ -137,5 +137,3 @@ executed actions and built their own sub-resource collections.
 This was a design requirement of the Data Collector.
 
 To implement this in a more sane manner the runner that evaluates the resource collection now tracks the resources that it visits.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

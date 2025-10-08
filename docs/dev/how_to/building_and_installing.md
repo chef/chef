@@ -44,5 +44,3 @@ bundle exec omnibus build chef
 ```
 
 The prerequisites necessary to run omnibus itself are not documented in this repository. See the [Omnibus project repository](https://github.com/chef/omnibus) for additional details.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
