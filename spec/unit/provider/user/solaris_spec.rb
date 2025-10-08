@@ -1,9 +1,9 @@
 #
-# Contributed by: Adam Jacob (<adam@chef.io>)
-# Contributed by: Daniel DeLeo (<dan@chef.io>)
-# Contributed by: Dave Eddy (<dave@daveeddy.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Dave Eddy (<dave@daveeddy.com>)
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2015-2016, Dave Eddy
 #
 # License:: Apache License, Version 2.0
 #

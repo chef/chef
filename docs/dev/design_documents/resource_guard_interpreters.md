@@ -532,5 +532,3 @@ Boolean return values also happens when a string of code is passed to a guard
 in a `powershell_script` resource, a scenario that builds on top of the
 previously described switch to the PowerShell language as the script interpreter of
 strings passed to guards in the `powershell_script` resource.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

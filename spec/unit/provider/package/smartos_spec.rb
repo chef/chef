@@ -1,7 +1,7 @@
 #
-# Contributed by: Trevor O (trevoro@joyent.com)
-# Contributed by: Yukihiko Sawanobori (sawanoboriyu@higanworks.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Trevor O (trevoro@joyent.com)
+# Author:: Yukihiko Sawanobori (sawanoboriyu@higanworks.com)
+# Copyright:: Copyright 2012-2016, Opscode
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

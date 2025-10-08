@@ -5197,5 +5197,3 @@ as well.
 1. Marc Arndt  2016-10-03
 1. Nenad P  2016-10-03
 1. Andrew Heller  2016-10-03
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

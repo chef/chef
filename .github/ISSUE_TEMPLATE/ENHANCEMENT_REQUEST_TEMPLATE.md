@@ -15,5 +15,3 @@ labels: "Status: Untriaged"
 
 ### Can We Help You Implement This?:
 <!---  The best way to ensure your enhancement is built is to help implement the enhancement yourself. If you're interested in helping out we'd love to give you a hand to make this possible. Let us know if there's something you need. -->
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

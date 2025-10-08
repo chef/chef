@@ -38,5 +38,3 @@ A design proposal should be opened any time a change meets one of the following 
 ## Downstream Impact
 
 <!---  Which other tools will be impacted by this work?  -->
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

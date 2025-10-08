@@ -19,5 +19,3 @@ If there is a critical fix that you believe should be backported from main to a 
 5. Open a PR for your backport
     1. The PR title should be `Backport: ORIGINAL_PR_TEXT`
     2. The description should link to the original PR and include a description of why it needs to be backported
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

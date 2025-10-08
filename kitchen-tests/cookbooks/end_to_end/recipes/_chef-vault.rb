@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: chef-vault
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 
 chef_data_bag "creds"

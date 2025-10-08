@@ -1,6 +1,6 @@
 #
-# Contributed by: Jason K. Jackson (jasonjackson@gmail.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Jason K. Jackson (jasonjackson@gmail.com)
+# Copyright:: Copyright 2009-2016, Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

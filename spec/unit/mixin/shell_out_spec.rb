@@ -1,10 +1,10 @@
 #
-# Contributed by: Ho-Sheng Hsiao (hosh@chef.io)
+# Author:: Ho-Sheng Hsiao (hosh@chef.io)
 # Code derived from spec/unit/mixin/command_spec.rb
 #
 # Original header:
-# Contributed by: Hongli Lai (hongli@phusion.nl)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Hongli Lai (hongli@phusion.nl)
+# Copyright:: Copyright 2009-2016, Phusion
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

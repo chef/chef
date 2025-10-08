@@ -1,6 +1,6 @@
 #
-# Contributed by: Michael Leinartas (<mleinartas@gmail.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Michael Leinartas (<mleinartas@gmail.com>)
+# Copyright:: Copyright 2010-2016, Michael Leinartas
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
