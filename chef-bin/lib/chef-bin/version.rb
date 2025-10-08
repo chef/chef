@@ -21,7 +21,7 @@
 
 module ChefBin
   CHEFBIN_ROOT = File.expand_path("..", __dir__)
-  VERSION = "18.8.39".freeze
+  VERSION = "18.8.40".freeze
 end
 
 #
