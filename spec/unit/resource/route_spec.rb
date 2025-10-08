@@ -1,7 +1,7 @@
 #
-# Contributed by: Bryan McLellan (btm@loftninjas.org)
-# Contributed by: Tyler Cloke (<tyler@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Bryan McLellan (btm@loftninjas.org)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2008-2016, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

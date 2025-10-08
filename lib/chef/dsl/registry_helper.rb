@@ -1,6 +1,6 @@
 #
-# Contributed by: Lamont Granquist (<lamont@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@
 # in the chef/win32/registry class which are reasonably side-effect-free.
 # The actual modification of the registry should be done via the registry_key
 # resource in a more idempotent way.
+#
 #
 class Chef
   module DSL
