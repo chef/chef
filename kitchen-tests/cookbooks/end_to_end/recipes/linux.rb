@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: linux
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 
 hostname "chef-bk-ci.chef.io"
