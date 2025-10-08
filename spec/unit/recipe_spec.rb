@@ -605,7 +605,7 @@ describe Chef::Recipe do
         - resources
         - three
       YAML
-      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level .* hash/)
     end
 
     it "raises ArgumentError if the YAML does not contain a resources hash" do
@@ -615,7 +615,7 @@ describe Chef::Recipe do
           - type: "execute"
             command: "whoami"
       YAML
-      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level .* hash/)
     end
 
     it "does not raise if the YAML contains a resources hash" do
@@ -626,6 +626,16 @@ describe Chef::Recipe do
           command: "whoami"
       YAML
       expect(recipe).to receive(:from_hash).with({ "resources" => [{ "command" => "whoami", "type" => "execute" }] })
+      recipe.from_yaml(yaml)
+    end
+    it "does not raise if the YAML contains an include_recipes hash" do
+      yaml = <<~YAML
+        ---
+        include_recipes:
+        - foo::bar
+        - baz::bat
+      YAML
+      expect(recipe).to receive(:from_hash).with({ "include_recipes" => [ "foo::bar", "baz::bat" ] })
       recipe.from_yaml(yaml)
     end
   end
@@ -648,7 +658,7 @@ describe Chef::Recipe do
           "three"
         ]
       JSON
-      expect { recipe.from_json(json) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+      expect { recipe.from_json(json) }.to raise_error(ArgumentError, /must contain a top-level .* hash/)
     end
 
     it "raises ArgumentError if the JSON does not contain a resources hash" do
@@ -662,7 +672,7 @@ describe Chef::Recipe do
           ]
         }
       JSON
-      expect { recipe.from_json(json) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+      expect { recipe.from_json(json) }.to raise_error(ArgumentError, /must contain a top-level .* hash/)
     end
 
     it "does not raise if the JSON contains a resources hash" do
@@ -678,6 +688,49 @@ describe Chef::Recipe do
       JSON
       expect(recipe).to receive(:from_hash).with({ "resources" => [{ "command" => "whoami", "type" => "execute" }] })
       recipe.from_json(json)
+    end
+    it "does not raise if the JSON contains a include_recipes hash" do
+      json = <<~JSON
+        {
+          "include_recipes": [
+            "foo::bar",
+            "baz::bat"
+          ]
+        }
+      JSON
+      expect(recipe).to receive(:from_hash).with({ "include_recipes" => [ "foo::bar", "baz::bat" ] })
+      recipe.from_json(json)
+    end
+    it "does not raise if the JSON contains both a resources and include_recipes hash" do
+      json = <<~JSON
+        {
+          "resources": [
+            {
+              "type": "execute",
+              "command": "whoami"
+            }
+          ],
+          "include_recipes": [
+            "foo::bar",
+            "baz::bat"
+          ]
+        }
+      JSON
+      expect(recipe).to receive(:from_hash).with(
+        {
+          "resources" => [{ "command" => "whoami", "type" => "execute" }],
+          "include_recipes" => [ "foo::bar", "baz::bat" ],
+        }
+      )
+      recipe.from_json(json)
+    end
+    it "should evaluate another recipe with include_recipes" do
+      expect(node).to receive(:loaded_recipe).with(:from_hash, "include_recipes_json")
+      expect(node).to receive(:loaded_recipe).with(:from_hash, "gigantor")
+      allow(run_context).to receive(:unreachable_cookbook?).with(:from_hash).and_return(false)
+      run_context.include_recipe "from_hash::include_recipes_json"
+      res = run_context.resource_collection.resources(cat: "blanket")
+      expect(res.name).to eql("blanket")
     end
   end
 
