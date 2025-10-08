@@ -71,7 +71,7 @@ PATH
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
-      unf_ext (~> 0.0.8.2)
+      unf_ext (~> 0.0.9.1)
       uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
@@ -111,7 +111,7 @@ PATH
       train-core (~> 3.10, <= 3.12.7)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
-      unf_ext (~> 0.0.8.2)
+      unf_ext (~> 0.0.9.1)
       uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
       vault (~> 0.18.2)
@@ -356,7 +356,7 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2025.0924)
-    minitest (5.25.1)
+    minitest (5.26.0)
     mixlib-archive (1.1.7)
       mixlib-log
     mixlib-archive (1.1.7-universal-mingw32)
@@ -467,6 +467,7 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
+    structured_warnings (0.5.0)
     syslog (0.3.0)
       logger
     syslog-logger (1.6.8)
@@ -525,7 +526,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webrick (1.8.2)
+    webrick (1.9.1)
     win32-api (1.10.1-universal-mingw32)
     win32-certstore (0.6.16)
       chef-powershell
