@@ -34,5 +34,3 @@ that removal of a plugin from a cookbook or removal of the cookbook from `run_li
 The plugins directory will work similarly to libraries and other directions, in that there will be no control over the inclusion of plugins below the level of the inclusion of the cookbook itself in the `run_list`.
 
 When plugins override other plugins on loading, and in particular when cookbook plugins override core plugins, they should WARN the user. This will address the case where a user has included a custom plugin and Ohai is later extended with similar functionality in the same namespace. The custom plugin should take precedence for backwards compatibility. There should be a way to silence the warning with a DSL method added to the custom plugin.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

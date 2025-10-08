@@ -180,5 +180,3 @@ Also here are some additional pointers to some awesome Chef content:
 - [Learn Chef](https://learn.chef.io/)
 - [Chef Software Inc. Website](https://www.chef.io/)
 - [Chef Project Website](https://www.chef.sh/)
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

@@ -14,5 +14,3 @@ Chef's Expeditor tool includes functionality to bump the minor or major version 
 
 - Expeditor: Bump Version Minor
 - Expeditor: Bump Version Major
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
