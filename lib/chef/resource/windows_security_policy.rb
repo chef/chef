@@ -1,8 +1,8 @@
 #
-# Contributed by: Ashwini Nehate (<anehate@chef.io>)
-# Contributed by: Davin Taddeo (<davin@chef.io>)
-# Contributed by: Jeff Brimager (<jbrimager@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Ashwini Nehate (<anehate@chef.io>)
+# Author:: Davin Taddeo (<davin@chef.io>)
+# Author:: Jeff Brimager (<jbrimager@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

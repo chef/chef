@@ -1,9 +1,9 @@
 #
-# Contributed by: Joshua Timberman (<jtimberman@chef.io>)
-# Contributed by: Dan Webb (<dan@webb-agile-solutions.ltd>)
+# Author:: Joshua Timberman (<jtimberman@chef.io>)
+# Author:: Dan Webb (<dan@webb-agile-solutions.ltd>)
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) Webb Agile Solutions Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

@@ -1,8 +1,8 @@
 #
-# Contributed by: Seth Vargo (<sethvargo@gmail.com>)
+# Author:: Seth Vargo (<sethvargo@gmail.com>)
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: 2013-2018, Seth Vargo
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

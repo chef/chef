@@ -1,7 +1,7 @@
 #
-# Contributed by: Jason K. Jackson (jasonjackson@gmail.com)
-# Contributed by: Tyler Cloke (<tyler@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Jason K. Jackson (jasonjackson@gmail.com)
+# Author:: Tyler Cloke (<tyler@chef.io>)
+# Copyright:: Copyright 2009-2016, Jason K. Jackson
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

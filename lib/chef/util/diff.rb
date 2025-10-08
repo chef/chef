@@ -1,5 +1,5 @@
-# Contributed by: Lamont Granquist (<lamont@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Lamont Granquist (<lamont@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # Some portions of this file are derived from material in the diff-lcs
 # project licensed under the terms of the MIT license, provided below.
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright 2004-2016, Austin Ziegler
 # License:: MIT
 #
 # Permission is hereby granted, free of charge, to any person

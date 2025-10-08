@@ -1,9 +1,9 @@
 #
-# Contributed by: Sander Botman <sbotman@schubergphilis.com>
-# Contributed by: Tim Smith <tsmith@chef.io>
+# Author:: Sander Botman <sbotman@schubergphilis.com>
+# Author:: Tim Smith <tsmith@chef.io>
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: 2014-2018, Sander Botman
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

@@ -1,9 +1,9 @@
 #
-# Contributed by: Daniel DeLeo (<dan@chef.io>)
-# Contributed by: Prajakta Purohit (prajakta@chef.io>)
-# Contributed by: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Daniel DeLeo (<dan@chef.io>)
+# Author:: Prajakta Purohit (prajakta@chef.io>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
