@@ -1,9 +1,9 @@
 #
-# Contributed by: Adam Jacob (<adam@chef.io>)
-# Contributed by: Christopher Walters (<cw@chef.io>)
-# Contributed by: Tim Hinderliter (<tim@chef.io>)
-# Contributed by: Seth Chisamore (<schisamo@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Tim Hinderliter (<tim@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
