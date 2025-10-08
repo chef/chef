@@ -56,9 +56,14 @@ module Shell
   # Start the irb REPL with chef-shell's customizations
   def self.start
     setup_logger
-    # FUGLY HACK: irb gives us no other choice.
-    irb_help = [:help, :irb_help, IRB::ExtendCommandBundle::NO_OVERRIDE]
-    IRB::ExtendCommandBundle.instance_variable_get(:@ALIASES).delete(irb_help)
+
+    # @ALIASES was removed from irb in v1.13.0, but chef-shell can still be run in contexts that
+    # use the Ruby 3.1.x default of irb v1.4.1
+    if IRB::ExtendCommandBundle.instance_variables.include? :@ALIASES
+      # FUGLY HACK: irb gives us no other choice.
+      irb_help = [:help, :irb_help, IRB::ExtendCommandBundle::NO_OVERRIDE]
+      IRB::ExtendCommandBundle.instance_variable_get(:@ALIASES).delete(irb_help)
+    end
 
     parse_opts
     Chef::Config[:shell_config] = options.config
