@@ -1,6 +1,6 @@
 #
-# Contributed by: Mike Dodge (<mikedodge04@gmail.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Mike Dodge (<mikedodge04@gmail.com>)
+# Copyright:: Copyright (c) 2015 Facebook, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

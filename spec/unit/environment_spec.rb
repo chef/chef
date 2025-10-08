@@ -1,9 +1,9 @@
 #
-# Contributed by: Stephen Delano (<stephen@ospcode.com>)
-# Contributed by: Seth Falcon (<seth@ospcode.com>)
-# Contributed by: John Keiser (<jkeiser@ospcode.com>)
-# Contributed by: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Stephen Delano (<stephen@ospcode.com>)
+# Author:: Seth Falcon (<seth@ospcode.com>)
+# Author:: John Keiser (<jkeiser@ospcode.com>)
+# Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

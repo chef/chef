@@ -1,7 +1,7 @@
 #
-# Contributed by: AJ Christensen (<aj@junglist.gen.nz>)
-# Contributed by: Mark Mzyk (mmzyk@chef.io)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: AJ Christensen (<aj@junglist.gen.nz>)
+# Author:: Mark Mzyk (mmzyk@chef.io)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
