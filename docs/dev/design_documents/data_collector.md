@@ -566,5 +566,3 @@ As it happens in the actual chef-client run:
 13. `run_status.stop_clock`
 14. `run_status.exception = exception` if it failed
 15. `events.run_completed(node, run_status)` or `events.run_failed(exception, run_status)`
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

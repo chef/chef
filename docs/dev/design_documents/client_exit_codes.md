@@ -60,5 +60,3 @@ Exit Code        | Reason             | Details
 ## Extend
 
 If there is a need for additional exit codes, please open a Design Proposal PR to discuss the change, and then a PR to update this document.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

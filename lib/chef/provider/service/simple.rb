@@ -1,6 +1,6 @@
 #
-# Contributed by: Mathieu Sauve-Frankel <msf@kisoku.net>
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Mathieu Sauve-Frankel <msf@kisoku.net>
+# Copyright:: Copyright 2009-2016, Mathieu Sauve-Frankel
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

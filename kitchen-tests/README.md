@@ -71,5 +71,3 @@ These end-to-end tests are also configured to run on Buildkite with Docker conta
 ## Contributing
 
 We would love to fill out our end-to-end testing coverage! If you have cookbooks and tests that you would like to see become a part of client testing, we encourage you to submit a pull request with your additions. We request that you do not add platforms to `kitchen.yml`. Please file a request to add a platform under [Issues](https://github.com/chef/chef/issues).
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

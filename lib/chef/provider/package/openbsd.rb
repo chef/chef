@@ -1,10 +1,10 @@
 #
-# Contributed by: Bryan McLellan (btm@loftninjas.org)
+# Authors:: Bryan McLellan (btm@loftninjas.org)
 #           Matthew Landauer (matthew@openaustralia.org)
 #           Richard Manyanza (liseki@nyikacraftsmen.com)
 #           Scott Bonds (scott@ggr.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright 2009-2016, Bryan McLellan, Matthew Landauer
+# Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -146,5 +146,3 @@ rake bundle:validate
 rm -f Gemfile.lock Gemfile.aix.lock Gemfile.lock.base
 ./bundle install
 ```
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

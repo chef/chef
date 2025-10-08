@@ -1,7 +1,7 @@
 #
-# Contributed by: Bryan McLellan (btm@loftninjas.org), Jesse Nelson (spheromak@gmail.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Bryan McLellan (btm@loftninjas.org), Jesse Nelson (spheromak@gmail.com)
+# Copyright:: Copyright 2009-2016, Bryan McLellan
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,7 +1,7 @@
 #
-# Contributed by: Deepali Jagtap (deepali.jagtap@clogeny.com)
-# Contributed by: Prabhu Das (prabhu.das@clogeny.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Deepali Jagtap (deepali.jagtap@clogeny.com)
+# Author:: Prabhu Das (prabhu.das@clogeny.com)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

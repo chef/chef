@@ -10,5 +10,3 @@ We use GitHub issues to track bugs and feature requests. If you need help please
 
 
  Support issues opened here will be closed and redirected to Slack or Discourse.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

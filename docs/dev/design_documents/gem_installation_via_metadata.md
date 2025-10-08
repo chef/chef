@@ -28,5 +28,3 @@ at the same time.  The syntax of the 'gem' statement will support the bundler ge
 The resulting gemset bundle will be installed into the LIBPATH of the running chef-client.  This may either be directly into the base ruby libraries (per current `chef_gem` behavior), or into a custom location with the LIBPATH of the chef-client extended to use that location--as an open implementation question.
 
 The normal Gemfile `requires` tag may be used by users to autoload files out of gems.
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

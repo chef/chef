@@ -148,5 +148,3 @@ If we want to support additional protocols, it will become unwieldy to continue 
 checks, and would be advisable to separate out protocol-specific behaviors
 into classes determined at runtime based on protocol.
 
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

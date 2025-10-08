@@ -1,6 +1,6 @@
 #
-# Contributed by: Xabier de Zuazo (xabier@onddo.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Xabier de Zuazo (xabier@onddo.com)
+# Copyright:: Copyright 2014-2016, Onddo Labs, SL.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
