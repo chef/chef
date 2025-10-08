@@ -9,3 +9,5 @@ Omnibus package for this system from the [Omnitruck](https://docs.chef.io/api_om
 
 You can still utilize custom bootstrap templates on your system if your installation
 needs are unique. Additional information can be found on the [docs site](https://docs.chef.io/knife_bootstrap/#custom-templates).
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

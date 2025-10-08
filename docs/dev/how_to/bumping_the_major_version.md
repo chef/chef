@@ -72,3 +72,5 @@ Create a PR that performs the following:
 
 - In the ohai repo checkout the stable branch
 - Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

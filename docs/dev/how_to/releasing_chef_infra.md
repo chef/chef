@@ -129,3 +129,5 @@ Create and merge a PR after running the following commands:
 ### Relax
 
 You're done. You have a month to relax.
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

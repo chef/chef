@@ -13,3 +13,5 @@ The Chef release in April of each year is a major version release, which will co
 Monthly releases help ensure we get new features and minor bug fixes out to Chef Infra users in a timely fashion while not overloading the maintainer teams. Similarly, offsetting the Chef Infra Client and Chef Workstation releases allows Workstation to ship with current Chef Infra Client releases.
 
 Major releases in April avoids releasing during winter holidays, summer vacations, ChefConf, and Chef Summits.
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

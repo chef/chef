@@ -27,3 +27,5 @@ Run server locally and verify the changes in your browser at http://localhost:13
 `make serve`
 
 Once changes are verified, create a PR at [chef-web-docs](https://github.com/chef/chef-web-docs/) repository.
+
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)

@@ -27,3 +27,4 @@ property :version,
           regex: [/^(?:(\d+)\.)?(?:(\d+)\.)?(\*|\d+)$/]
           validation_message: 'Version must be a X.Y.Z format String type'
 ```
+[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
