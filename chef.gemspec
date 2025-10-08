@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport", ">= 4.2.7.1", "<= 7.1.5.2"
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.10", "<= 3.12.13"
+  s.add_dependency "train-core", "~> 3.13", ">= 3.13.4"
   s.add_dependency "train-winrm", "~> 0.2.17"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
