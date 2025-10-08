@@ -1,7 +1,7 @@
 #
-# Contributed by: Jason J. W. Williams (<williamsjj@digitar.com>)
-# Contributed by: Stephen Nelson-Smith (<sns@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Jason J. W. Williams (<williamsjj@digitar.com>)
+# Author:: Stephen Nelson-Smith (<sns@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

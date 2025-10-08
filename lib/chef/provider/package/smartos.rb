@@ -1,9 +1,9 @@
 #
-# Contributed by: Trevor O (trevoro@joyent.com)
+# Authors:: Trevor O (trevoro@joyent.com)
 #           Bryan McLellan (btm@loftninjas.org)
 #           Matthew Landauer (matthew@openaustralia.org)
 #           Ben Rockwood (benr@joyent.com)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright 2009-2018, Bryan McLellan, Matthew Landauer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
