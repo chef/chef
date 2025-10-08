@@ -55,5 +55,3 @@ Enter the hab studio to build the package and then load the service to run it. S
     `hab svc status`
   * Stop a service
     `hab svc unload {your_origin}/{package_name}`
-
-[Product Documentation Copyright Notice & Trademarks | Progress](https://www.progress.com/legal/documentation-copyright)
