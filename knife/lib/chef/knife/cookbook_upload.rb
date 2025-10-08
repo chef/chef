@@ -1,8 +1,8 @@
 #
-# Contributed by: Adam Jacob (<adam@chef.io>)
-# Contributed by: Christopher Walters (<cw@chef.io>)
-# Contributed by: Nuo Yan (<yan.nuo@gmail.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Adam Jacob (<adam@chef.io>)
+# Author:: Christopher Walters (<cw@chef.io>)
+# Author:: Nuo Yan (<yan.nuo@gmail.com>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -1,7 +1,7 @@
 #
-# Contributed by: Christopher Maier (<cm@chef.io>)
-# Contributed by: Jeremiah Snapp (<jeremiah@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Christopher Maier (<cm@chef.io>)
+# Author:: Jeremiah Snapp (<jeremiah@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
