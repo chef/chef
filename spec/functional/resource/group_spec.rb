@@ -1,7 +1,7 @@
 #
-# Contributed by: Chirag Jog (<chirag@clogeny.com>)
-# Contributed by: Siddheshwar More (<siddheshwar.more@clogeny.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Chirag Jog (<chirag@clogeny.com>)
+# Author:: Siddheshwar More (<siddheshwar.more@clogeny.com>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

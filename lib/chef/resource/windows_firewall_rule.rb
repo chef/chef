@@ -1,10 +1,10 @@
-# Contributed by: Matt Clifton (spartacus003@hotmail.com)
-# Contributed by: Matt Stratton (matt.stratton@gmail.com)
-# Contributed by: Tor Magnus Rakvåg (tor.magnus@outlook.com)
-# Contributed by: Tim Smith (tsmith@chef.io)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Matt Clifton (spartacus003@hotmail.com)
+# Author:: Matt Stratton (matt.stratton@gmail.com)
+# Author:: Tor Magnus Rakvåg (tor.magnus@outlook.com)
+# Author:: Tim Smith (tsmith@chef.io)
+# Copyright:: 2013-2015 Matt Clifton
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: 2018, Intility AS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

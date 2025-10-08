@@ -1,10 +1,10 @@
 #
-# Contributed by: Sölvi Páll Ásgeirsson (<solvip@gmail.com>)
-# Contributed by: Richard Lavey (richard.lavey@calastone.com)
-# Contributed by: Tim Smith (tsmith@chef.io)
+# Author:: Sölvi Páll Ásgeirsson (<solvip@gmail.com>)
+# Author:: Richard Lavey (richard.lavey@calastone.com)
+# Author:: Tim Smith (tsmith@chef.io)
 #
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: 2014-2017, Sölvi Páll Ásgeirsson.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

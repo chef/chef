@@ -1,9 +1,9 @@
 #
-# Contributed by: Stephen Nelson-Smith (<sns@chef.io>)
-# Contributed by: Jon Ramsey (<jonathon.ramsey@gmail.com>)
-# Contributed by: Dave Eddy (<dave@daveeddy.com>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: Stephen Nelson-Smith (<sns@chef.io>)
+# Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
+# Author:: Dave Eddy (<dave@daveeddy.com>)
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2015-2016, Dave Eddy
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

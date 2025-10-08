@@ -1,7 +1,7 @@
 #
-# Contributed by: John Keiser (<jkeiser@chef.io>)
-# Contributed by: Seth Chisamore (<schisamo@chef.io>)
-# Copyright © 2008-2025 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Author:: John Keiser (<jkeiser@chef.io>)
+# Author:: Seth Chisamore (<schisamo@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
