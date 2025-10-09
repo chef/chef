@@ -10,6 +10,7 @@ try {
     Set-ExecutionPolicy Bypass -Scope Process -Force
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
 } catch {
+    Write-Host "$($_ | Format-List * -Force | Out-String)"
     throw "Unable to install Habitat"
 }
 $env:Path += ";C:\buildkite-agent\bin"
