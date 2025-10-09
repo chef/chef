@@ -29,6 +29,10 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
     - uses: actions/checkout@v5
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
     - name: Install Chef
       uses: actionshub/chef-install@main
       with:
