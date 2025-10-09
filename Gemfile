@@ -25,7 +25,7 @@ end
 
 # Windows-only dependencies needed at test/runtime when using the non-universal gemspec
 # These are intentionally duplicated from chef-universal-mingw-ucrt.gemspec because of the fiddle
-# issue above. We want to avoid having to build multiple versions of the native gems 
+# issue above. We want to avoid having to build multiple versions of the native gems
 install_if -> { Gem.win_platform? } do
   gem "chef-powershell", "~> 18.1.0"
   gem "win32-api", "~> 1.10.0"
