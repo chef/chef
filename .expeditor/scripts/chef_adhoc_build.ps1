@@ -27,6 +27,7 @@ $env:HAB_BLDR_CHANNEL = "base-2025"
 
 Write-Host "--- :key: Downloading origin key"
 hab origin key download $env:HAB_ORIGIN
+hab origin key download $env:HAB_ORIGIN --secret
 if (-not $?) { throw "Unable to download origin key" }
 
 Write-Host "--- Building Chef Infra Client package"
