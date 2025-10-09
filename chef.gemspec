@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.13", ">= 3.13.4"
-  s.add_dependency "train-winrm", "~> 0.2.17"
+  s.add_dependency "train-winrm", "~> 0.4.0"
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
@@ -46,12 +46,10 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
 
-  # AIX Gemfile.aix.lock uses this, but currently a manual process
-  if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
-    s.add_dependency "inspec-core", ">= 5", "<= 5.22.80"
-  else
-    s.add_dependency "inspec-core", ">= 5", "< 6"
-  end
+  # Historically AIX used a stricter pinned upper bound via Gemfile.aix.lock.
+  # Relax that here so all platforms can use the same compatible inspec-core
+  # range (allow any 5.x release < 6). This lets bundler update to 5.23.x.
+  s.add_dependency "inspec-core", ">= 5", "< 6"
 
   s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
   s.add_dependency "ffi-yajl", "~> 2.2"

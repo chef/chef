@@ -28,13 +28,17 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
-    - uses: actions/checkout@v5
-    - name: Install Chef
-      uses: actionshub/chef-install@main
-      with:
-        version: "25.5.1084"
-    - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      - uses: actions/checkout@v5
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.7'
+      - name: Install Chef
+        uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
+      - name: Kitchen Test
+        run: kitchen verify ${{ matrix.os }}
 
   mac_x86_64:
     strategy:
