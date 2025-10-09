@@ -16,6 +16,31 @@ install_if -> { RUBY_PLATFORM !~ /darwin/ } do
   gem "openssl", "= 3.3.0"
 end
 
+# Bundler can try to install a newer fiddle than the Ruby default gem on 3.1,
+# which causes activation conflicts (Ruby 3.1 ships fiddle 1.1.0). Force
+# Bundler to use the Ruby-provided version on 3.1 to avoid conflicts.
+install_if -> { RUBY_VERSION.start_with?("3.1") } do
+  gem "fiddle", "= 1.1.0"
+end
+
+# Windows-only dependencies needed at test/runtime when using the non-universal gemspec
+# These are intentionally duplicated from chef-universal-mingw-ucrt.gemspec because of the fiddle
+# issue above. We want to avoid having to build multiple versions of the native gems 
+install_if -> { Gem.win_platform? } do
+  gem "chef-powershell", "~> 18.1.0"
+  gem "win32-api", "~> 1.10.0"
+  gem "win32-event", "~> 0.6.1"
+  gem "win32-eventlog", "= 0.6.3"
+  gem "win32-mmap", "~> 0.4.1"
+  gem "win32-mutex", "~> 0.4.2"
+  gem "win32-process", ">= 0.9", "< 0.11"
+  gem "win32-service", ">= 2.1.5", "< 3.0"
+  gem "wmi-lite", "~> 1.0"
+  gem "win32-taskscheduler", "~> 2.0"
+  gem "iso8601", ">= 0.12.1", "< 0.14"
+  gem "win32-certstore", "~> 0.6.15"
+end
+
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
