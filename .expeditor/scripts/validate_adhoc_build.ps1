@@ -30,8 +30,7 @@ Write-Host "--- Installing $env:PKG_ARTIFACT"
 hab pkg install $env:PKG_ARTIFACT --auth $HAB_AUTH_TOKEN
 if (-not $?) { throw "Unable to install $env:PKG_ARTIFACT" }
 
-$pkgPath = hab pkg path chef/chef-infra-client
-$pkgIdent = $pkgPath -match 'chef/chef-infra-client/\d+\.\d+\.\d+/\d+' | Out-Null; $Matches[0]
+$pkgIdent = hab pkg list chef/chef-infra-client
 
 echo "--- Resolved package identifier: \"$pkgIdent\", attempting to run tests"
 . ./habitat/tests/test.ps1 -PackageIdentifier $pkgIdent
