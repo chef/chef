@@ -30,6 +30,32 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   end
 end
 
+# Workarounds for Solaris NFS/flock issues during bundle install
+# On Solaris, NFS-mounted home directories often don't support Ruby's File.flock
+# reliably which results in Errno::EBADF during Bundler parallel installs.
+if RUBY_PLATFORM =~ /solaris|sunos|sparc|sunos/ || RbConfig::CONFIG['host_os'] =~ /solaris|sunos|sparc|sunos/
+  puts "Detected Solaris-like platform (#{RUBY_PLATFORM}). Applying Solaris-specific bundler workarounds."
+
+  # Prefer a local temporary bundle path if /var/tmp is writable; falls back to vendor/bundle
+  local_bundle = '/var/tmp/chef_bundle'
+  begin
+    if File.writable?('/var/tmp')
+      Dir.mkdir(local_bundle) unless Dir.exist?(local_bundle)
+      File.chmod(0o700, local_bundle) rescue nil
+      ENV['BUNDLE_PATH'] = local_bundle
+      puts "Setting BUNDLE_PATH=#{ENV['BUNDLE_PATH']} (local path to avoid NFS locking issues)"
+    else
+      puts "/var/tmp not writable; will use vendor/bundle but force single-threaded bundler installs"
+    end
+  rescue => e
+    puts "Could not create or set local bundle path: #{e.class}: #{e}", "Falling back to vendor/bundle"
+  end
+
+  # Force Bundler to use a single job to avoid parallel flock contention
+  ENV['BUNDLE_JOBS'] = '1'
+  puts "Setting BUNDLE_JOBS=#{ENV['BUNDLE_JOBS']} to avoid parallel bundler file locks on Solaris/NFS"
+end
+
 def patch_ssl_env_hack(ssl_env_hack)
   # the constant SSL_ENV_CACERT_PATCH is a proxy for whether the SSL_CERT_FILE environment variable
   # will be set by the ssl_env_hack.rb file.  This is used to ensure that the CA bundle
