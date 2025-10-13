@@ -138,5 +138,6 @@ jobs:
           Write-Host "✅ FIPS mode is confirmed - MD5 was blocked as expected"
         } else {
           Write-Host "❌ FIPS mode verification failed with exit code: $exitCode"
+        }
         # Clean up
         Remove-Item -Path "fips_test.rb" -Force
