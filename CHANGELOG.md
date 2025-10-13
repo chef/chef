@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.88 -->
-## [v19.1.88](https://github.com/chef/chef/tree/v19.1.88) (2025-10-13)
+<!-- latest_release 19.1.89 -->
+## [v19.1.89](https://github.com/chef/chef/tree/v19.1.89) (2025-10-13)
 
 #### Merged Pull Requests
-- Remove macos-15-intel due to corefoundation gem issue [#15352](https://github.com/chef/chef/pull/15352) ([tpowell-progress](https://github.com/tpowell-progress))
+- remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.89 -->
 - Remove macos-15-intel due to corefoundation gem issue [#15352](https://github.com/chef/chef/pull/15352) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.88 -->
 - [Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15328](https://github.com/chef/chef/pull/15328) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.87 -->
 - ohai.config is an empty hash the first time a reload is called [#15295](https://github.com/chef/chef/pull/15295) ([dschlenk](https://github.com/dschlenk)) <!-- 19.1.86 -->
