@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/chef/license_scout
-  revision: 136de321c4f1f3dbc56f4a2c403a653fcc1fa445
-  branch: 1-stable
+  revision: 35bfcb481c62d1478ab7fc89cccf3f684bfd5e12
+  branch: jfm/chef18-license-scout-update-mime-types
   specs:
     license_scout (1.4.0)
       ffi-yajl (~> 2.2)
