@@ -102,6 +102,15 @@ do_build() {
 }
 
 do_install() {
+
+  # Copy NOTICE to the package directory
+  if [[ -f "$PLAN_CONTEXT/../NOTICE" ]]; then
+    build_line "Copying NOTICE to package directory"
+    cp "$PLAN_CONTEXT/../NOTICE" "$pkg_prefix/"
+  else
+    build_line "Warning: NOTICE not found at $PLAN_CONTEXT/../NOTICE"
+  fi
+
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     build_line "** fixing binstub shebangs"
