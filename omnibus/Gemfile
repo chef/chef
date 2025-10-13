@@ -4,7 +4,7 @@ gem "omnibus", github: ENV.fetch("OMNIBUS_GITHUB_REPO", "chef/omnibus"), branch:
 
 gem "omnibus-software", github: ENV.fetch("OMNIBUS_SOFTWARE_GITHUB_REPO", "chef/omnibus-software"), branch: ENV.fetch("OMNIBUS_SOFTWARE_GITHUB_BRANCH", "main")
 
-gem "license_scout", git: "https://github.com/chef/license_scout", branch: "1-stable"
+gem "license_scout", git: "https://github.com/chef/license_scout", branch: "jfm/chef18-license-scout-update-mime-types"
 
 gem "artifactory"
 
