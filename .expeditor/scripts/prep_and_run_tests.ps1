@@ -28,15 +28,6 @@ if(-not ($installed_version -match ('^2'))){
 }
 
 Write-Output "--- Running Chef bundle install"
-# Ruby 3.1 ships with Fiddle 1.1.0, we need Fiddle 1.1.8 or later. The bundle update below ensures we get a compatible version.
-# Ensure we are not mixing system gems with a custom vendor path
-bundle config set --local disable_shared_gems true
-bundle config set --local path 'vendor/bundle'
-bundle config set --local without omnibus_package
-# Prevent cleaning from removing default gems that bundler needs in the vendor path
-bundle config set --local clean false
-# Ensure the lockfile resolves to the Ruby 3.1 default fiddle
-bundle update --conservative fiddle
 bundle install --jobs=3 --retry=3
 
 # making sure we find the dlls from chef powershell
