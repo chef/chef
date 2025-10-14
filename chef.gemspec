@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
     s.required_ruby_version = ">= 3.1.0"
   end
 
+  s.add_dependency "activesupport", ">= 7.2.2.1", "< 8.0"
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.10", "<= 3.12.7" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
@@ -60,7 +61,7 @@ Gem::Specification.new do |s|
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
-  s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
+  s.add_dependency "unf_ext", "~> 0.0.9.1"
   s.add_dependency "uri", "~> 1.0.3" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
