@@ -72,7 +72,7 @@ jobs:
  
       # perform SonarQube scan, with or wihout unit test coverage data
       # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
-      perform-sonarqube-scan: true
+      perform-sonarqube-scan: false
       # perform-sonar-build: true
       # build-profile: 'default' 
       # report-unit-test-coverage: true
@@ -92,7 +92,7 @@ jobs:
       publish-packages: false     # Publish packages (e.g., container from Dockerfile to ECR, go-releaser binary to releases page, omnibus to artifactory, gems, choco, homebrew, other app stores)
 
       # generate and export Software Bill of Materials (SBOM) in various formats
-      generate-sbom: true
+      generate-sbom: false
       export-github-sbom: true      # SPDX JSON artifact on job instance  
       perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
@@ -104,4 +104,4 @@ jobs:
 
       # udf1: 'default' # user defined flag 1
       # udf2: 'default' # user defined flag 2 
-      # udf3: 'default' # user defined flag 3  
+      # udf3: 'default' # user defined flag 3
