@@ -9,19 +9,19 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus.git
-  revision: c885825f1886cfe3d7a2e139e40de1f5b4b91374
+  revision: 6fe70d792a9ebcc8d4c2191300b2ea0d9b7576f2
   branch: main
   specs:
-    omnibus (9.1.0)
+    omnibus (9.1.4)
       aws-sdk-s3 (~> 1.116.0)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
       contracts (>= 0.16.0, < 0.17.0)
       ffi-yajl (~> 2.2)
-      license_scout (~> 1.3.17)
+      license_scout (~> 1.4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
-      ohai (>= 16, < 19)
+      ohai (>= 18.2.6, < 19)
       pedump
       rexml (~> 3.4)
       ruby-progressbar (~> 1.7)
@@ -49,16 +49,17 @@ GEM
     ast (2.4.3)
     awesome_print (1.9.2)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1133.0)
-    aws-sdk-core (3.227.0)
+    aws-partitions (1.1172.0)
+    aws-sdk-core (3.233.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
       base64
+      bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-kms (1.107.0)
-      aws-sdk-core (~> 3, >= 3.227.0)
+    aws-sdk-kms (1.113.0)
+      aws-sdk-core (~> 3, >= 3.231.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-s3 (1.116.0)
       aws-sdk-core (~> 3, >= 3.127.0)
@@ -292,7 +293,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.13.0)
+    json (2.15.1)
     kitchen-vagrant (2.0.1)
       test-kitchen (>= 1.4, < 4)
     language_server-protocol (3.17.0.5)
@@ -302,7 +303,7 @@ GEM
       tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.3.18)
+    license_scout (1.4.0)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -427,7 +428,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retryable (3.0.5)
-    rexml (3.4.1)
+    rexml (3.4.4)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -585,7 +586,7 @@ GEM
       winrm (~> 2.0)
     wisper (2.0.1)
     wmi-lite (1.0.7)
-    zhexdump (0.2.0)
+    zhexdump (0.3.0)
 
 PLATFORMS
   ruby
