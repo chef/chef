@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.45 -->
-## [v18.8.45](https://github.com/chef/chef/tree/v18.8.45) (2025-10-13)
+<!-- latest_release 18.8.46 -->
+## [v18.8.46](https://github.com/chef/chef/tree/v18.8.46) (2025-10-14)
 
 #### Merged Pull Requests
-- Revert &quot;Jfm/chef18 inspec update&quot; [#15350](https://github.com/chef/chef/pull/15350) ([johnmccrae](https://github.com/johnmccrae))
+- Updating NOTICE and updating hab builders to use it [#15353](https://github.com/chef/chef/pull/15353) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating NOTICE and updating hab builders to use it [#15353](https://github.com/chef/chef/pull/15353) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.46 -->
 - Revert &quot;Jfm/chef18 inspec update&quot; [#15350](https://github.com/chef/chef/pull/15350) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.45 -->
 - Jfm/chef18 inspec update [#15335](https://github.com/chef/chef/pull/15335) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.44 -->
 - Updating train-core to match new inspec [#15343](https://github.com/chef/chef/pull/15343) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.43 -->
