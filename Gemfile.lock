@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: c31c86976e5e92a3933f4d97b09f9ed6d3664ec9
+  revision: d197e83ee0749f5d283d05a8a7e8b648e5436262
   branch: main
   specs:
-    ohai (19.1.10)
+    ohai (19.1.11)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -35,7 +35,6 @@ PATH
   remote: .
   specs:
     chef (19.1.89)
-      activesupport (>= 7.2.2.1, < 8.0)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -71,7 +70,6 @@ PATH
       uri (~> 1.0.3)
       vault (~> 0.18.2)
     chef (19.1.89-universal-mingw-ucrt)
-      activesupport (>= 7.2.2.1, < 8.0)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
