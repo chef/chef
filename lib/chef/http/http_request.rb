@@ -48,23 +48,23 @@ class Chef
       UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +#{ChefUtils::Dist::Org::WEBSITE})".freeze
       DEFAULT_UA = "Chef Client" + UA_COMMON
 
-      USER_AGENT = "User-Agent".freeze
+      USER_AGENT = "User-Agent"
 
-      ACCEPT_ENCODING = "Accept-Encoding".freeze
-      ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3".freeze
+      ACCEPT_ENCODING = "Accept-Encoding"
+      ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
 
-      GET     = "get".freeze
-      PATCH   = "patch".freeze
-      PUT     = "put".freeze
-      POST    = "post".freeze
-      DELETE  = "delete".freeze
-      HEAD    = "head".freeze
+      GET     = "get"
+      PATCH   = "patch"
+      PUT     = "put"
+      POST    = "post"
+      DELETE  = "delete"
+      HEAD    = "head"
 
-      HTTPS = "https".freeze
+      HTTPS = "https"
 
-      SLASH = "/".freeze
+      SLASH = "/"
 
-      HOST_LOWER = "host".freeze
+      HOST_LOWER = "host"
 
       URI_SCHEME_DEFAULT_PORT = { "http" => 80, "https" => 443 }.freeze
 
