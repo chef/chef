@@ -130,7 +130,7 @@ describe "Accumulators" do
       result.error!
       # runs only a single template resource (in the outer run context, as a delayed resource)
       expect(result.stdout.scan(/template\S+ action create/).size).to eql(1)
-      actual_content = IO.read(aliases_temppath).chomp
+      actual_content = File.read(aliases_temppath).chomp
       actual_content_hash = JSON.parse(actual_content.gsub("=>", ":")).to_h
       expect(actual_content_hash).to eql({
         "outer1" => %w{out1a out1b},
@@ -245,7 +245,7 @@ describe "Accumulators" do
       result.error!
       # runs only a single template resource (in the outer run context, as a delayed resource)
       expect(result.stdout.scan(/template\S+ action create/).size).to eql(1)
-      actual_content = IO.read(aliases_temppath).chomp
+      actual_content = File.read(aliases_temppath).chomp
       actual_content_hash = JSON.parse(actual_content.gsub("=>", ":")).to_h
       expect(actual_content_hash).to eql({
         "outer1" => %w{out1a out1b},
