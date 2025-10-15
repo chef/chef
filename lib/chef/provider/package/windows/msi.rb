@@ -52,7 +52,7 @@ class Chef
               logger.trace("#{new_resource} checking package status and version for #{product_code}")
               get_installed_version(product_code)
             else
-              if uninstall_entries.count != 0
+              if uninstall_entries.any?
                 uninstall_entries.map(&:display_version).uniq
               end
             end
