@@ -1,61 +1,58 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.46 -->
-## [v18.8.46](https://github.com/chef/chef/tree/v18.8.46) (2025-10-14)
-
-#### Merged Pull Requests
-- Updating NOTICE and updating hab builders to use it [#15353](https://github.com/chef/chef/pull/15353) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.8.11 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Updating NOTICE and updating hab builders to use it [#15353](https://github.com/chef/chef/pull/15353) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.46 -->
-- Revert &quot;Jfm/chef18 inspec update&quot; [#15350](https://github.com/chef/chef/pull/15350) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.45 -->
-- Jfm/chef18 inspec update [#15335](https://github.com/chef/chef/pull/15335) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.44 -->
-- Updating train-core to match new inspec [#15343](https://github.com/chef/chef/pull/15343) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.43 -->
-- Remove manipulation of the removed @ALIASES instance var [#15336](https://github.com/chef/chef/pull/15336) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.42 -->
-- Revert &quot;Updating Copyrights and Attribution&quot; [#15341](https://github.com/chef/chef/pull/15341) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.41 -->
-- Revert &quot;Updating Copyrights and Attribution&quot; [#15342](https://github.com/chef/chef/pull/15342) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.40 -->
-- Revert &quot;Updating Copyrights and Attribution&quot; [#15339](https://github.com/chef/chef/pull/15339) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.39 -->
-- Revert &quot;Updating Copyrights and Attribution&quot; [#15340](https://github.com/chef/chef/pull/15340) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.38 -->
-- Revert &quot;Updating text documents with the new legal notice&quot; [#15337](https://github.com/chef/chef/pull/15337) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.37 -->
-- Revert &quot;Updating Copyrights and Attribution&quot; [#15338](https://github.com/chef/chef/pull/15338) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.36 -->
-- Updating text documents with the new legal notice [#15327](https://github.com/chef/chef/pull/15327) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.35 -->
-- Fix JSON::GeneratorError if a large binary file fed to ResourceReporter [#15331](https://github.com/chef/chef/pull/15331) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.34 -->
-- Updating Copyrights and Attribution [#15326](https://github.com/chef/chef/pull/15326) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.33 -->
-- Updating Copyrights and Attribution [#15325](https://github.com/chef/chef/pull/15325) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.32 -->
-- Updating Copyrights and Attribution [#15324](https://github.com/chef/chef/pull/15324) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.31 -->
-- Updating Copyrights and Attribution [#15323](https://github.com/chef/chef/pull/15323) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.30 -->
-- Updating Copyrights and Attribution [#15322](https://github.com/chef/chef/pull/15322) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.29 -->
-- Tweaking SBOM settings [#15319](https://github.com/chef/chef/pull/15319) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.28 -->
-- Jfm/chef18 SBOM update [#15317](https://github.com/chef/chef/pull/15317) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.27 -->
-- Revert &quot;Updating the copyright in the first 400 files&quot; [#15316](https://github.com/chef/chef/pull/15316) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.26 -->
-- [chef-18] Backport: GHA runner updates and fix for chef-workstation install [#15313](https://github.com/chef/chef/pull/15313) ([Stromweld](https://github.com/Stromweld)) <!-- 18.8.25 -->
-- Updating the copyright in the first 400 files [#15311](https://github.com/chef/chef/pull/15311) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.24 -->
-- [Chef18][ChefRepositoryFileSystemCookbookEntry] Add children existence method [#15274](https://github.com/chef/chef/pull/15274) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.8.23 -->
-- Chocolatey custom url bug [#15306](https://github.com/chef/chef/pull/15306) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.22 -->
-- [CHEF-21785] PR to chef-18: Updated the knife ec backup to preserve the frozen cookbook status -  [#15217](https://github.com/chef/chef/pull/15217) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.21 -->
-- [Chef-18] Updating for CVE-2023-22796 [#15298](https://github.com/chef/chef/pull/15298) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.20 -->
-- had to add a new ubuntu fips tester [#15290](https://github.com/chef/chef/pull/15290) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.19 -->
-- [Chef 18 backport] apt_repository patches #15209, #15218, #15220 [#15235](https://github.com/chef/chef/pull/15235) ([fretb](https://github.com/fretb)) <!-- 18.8.18 -->
-- Correcting an issue with nils causing havoc [#15229](https://github.com/chef/chef/pull/15229) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.17 -->
-- Sean sype simmons/chef 25473 update cert [#15223](https://github.com/chef/chef/pull/15223) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.8.16 -->
-- backport of #15231 - remove specs from final build [#15232](https://github.com/chef/chef/pull/15232) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.15 -->
-- remove old dlls  [#15190](https://github.com/chef/chef/pull/15190) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.14 -->
-- Updated the chef dep of knife [#15211](https://github.com/chef/chef/pull/15211) ([ashiqueps](https://github.com/ashiqueps)) <!-- 18.8.13 -->
-- adding workflows for chef-18 [#15093](https://github.com/chef/chef/pull/15093) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.8.12 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.8.46](https://github.com/chef/chef/tree/v18.8.46) (2025-10-15)
+
+#### Merged Pull Requests
+- adding workflows for chef-18 [#15093](https://github.com/chef/chef/pull/15093) ([sean-sype-simmons](https://github.com/sean-sype-simmons))
+- Updated the chef dep of knife [#15211](https://github.com/chef/chef/pull/15211) ([ashiqueps](https://github.com/ashiqueps))
+- remove old dlls  [#15190](https://github.com/chef/chef/pull/15190) ([rishichawda](https://github.com/rishichawda))
+- backport of #15231 - remove specs from final build [#15232](https://github.com/chef/chef/pull/15232) ([rishichawda](https://github.com/rishichawda))
+- Sean sype simmons/chef 25473 update cert [#15223](https://github.com/chef/chef/pull/15223) ([sean-sype-simmons](https://github.com/sean-sype-simmons))
+- Correcting an issue with nils causing havoc [#15229](https://github.com/chef/chef/pull/15229) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef 18 backport] apt_repository patches #15209, #15218, #15220 [#15235](https://github.com/chef/chef/pull/15235) ([fretb](https://github.com/fretb))
+- had to add a new ubuntu fips tester [#15290](https://github.com/chef/chef/pull/15290) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-18] Updating for CVE-2023-22796 [#15298](https://github.com/chef/chef/pull/15298) ([johnmccrae](https://github.com/johnmccrae))
+- [CHEF-21785] PR to chef-18: Updated the knife ec backup to preserve the frozen cookbook status -  [#15217](https://github.com/chef/chef/pull/15217) ([ashiqueps](https://github.com/ashiqueps))
+- Chocolatey custom url bug [#15306](https://github.com/chef/chef/pull/15306) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef18][ChefRepositoryFileSystemCookbookEntry] Add children existence method [#15274](https://github.com/chef/chef/pull/15274) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Updating the copyright in the first 400 files [#15311](https://github.com/chef/chef/pull/15311) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-18] Backport: GHA runner updates and fix for chef-workstation install [#15313](https://github.com/chef/chef/pull/15313) ([Stromweld](https://github.com/Stromweld))
+- Revert &quot;Updating the copyright in the first 400 files&quot; [#15316](https://github.com/chef/chef/pull/15316) ([johnmccrae](https://github.com/johnmccrae))
+- Jfm/chef18 SBOM update [#15317](https://github.com/chef/chef/pull/15317) ([johnmccrae](https://github.com/johnmccrae))
+- Tweaking SBOM settings [#15319](https://github.com/chef/chef/pull/15319) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Copyrights and Attribution [#15322](https://github.com/chef/chef/pull/15322) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Copyrights and Attribution [#15323](https://github.com/chef/chef/pull/15323) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Copyrights and Attribution [#15324](https://github.com/chef/chef/pull/15324) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Copyrights and Attribution [#15325](https://github.com/chef/chef/pull/15325) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Copyrights and Attribution [#15326](https://github.com/chef/chef/pull/15326) ([johnmccrae](https://github.com/johnmccrae))
+- Fix JSON::GeneratorError if a large binary file fed to ResourceReporter [#15331](https://github.com/chef/chef/pull/15331) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating text documents with the new legal notice [#15327](https://github.com/chef/chef/pull/15327) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Updating Copyrights and Attribution&quot; [#15338](https://github.com/chef/chef/pull/15338) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Updating text documents with the new legal notice&quot; [#15337](https://github.com/chef/chef/pull/15337) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Updating Copyrights and Attribution&quot; [#15340](https://github.com/chef/chef/pull/15340) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Updating Copyrights and Attribution&quot; [#15339](https://github.com/chef/chef/pull/15339) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Updating Copyrights and Attribution&quot; [#15342](https://github.com/chef/chef/pull/15342) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Updating Copyrights and Attribution&quot; [#15341](https://github.com/chef/chef/pull/15341) ([johnmccrae](https://github.com/johnmccrae))
+- Remove manipulation of the removed @ALIASES instance var [#15336](https://github.com/chef/chef/pull/15336) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating train-core to match new inspec [#15343](https://github.com/chef/chef/pull/15343) ([johnmccrae](https://github.com/johnmccrae))
+- Jfm/chef18 inspec update [#15335](https://github.com/chef/chef/pull/15335) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Jfm/chef18 inspec update&quot; [#15350](https://github.com/chef/chef/pull/15350) ([johnmccrae](https://github.com/johnmccrae))
+- Updating NOTICE and updating hab builders to use it [#15353](https://github.com/chef/chef/pull/15353) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v18.8.11](https://github.com/chef/chef/tree/v18.8.11) (2025-08-14)
 
 #### Merged Pull Requests
 - Bump omnibus-software from `692cba6` to `a94ba5e` in /omnibus [#15200](https://github.com/chef/chef/pull/15200) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Disable AIX in build to not overwrite gem [#15210](https://github.com/chef/chef/pull/15210) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v18.8.9](https://github.com/chef/chef/tree/v18.8.9) (2025-08-13)
 
