@@ -1,17 +1,26 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.81 -->
-## [v19.1.81](https://github.com/chef/chef/tree/v19.1.81) (2025-09-25)
+<!-- latest_release 19.1.90 -->
+## [v19.1.90](https://github.com/chef/chef/tree/v19.1.90) (2025-10-16)
 
 #### Merged Pull Requests
-- fixing the broken habitat test pipeline [#15301](https://github.com/chef/chef/pull/15301) ([rishichawda](https://github.com/rishichawda))
+- fix: use correct Ruby in gem_package resource dependency resolution [#15349](https://github.com/chef/chef/pull/15349) ([fretb](https://github.com/fretb))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix: use correct Ruby in gem_package resource dependency resolution [#15349](https://github.com/chef/chef/pull/15349) ([fretb](https://github.com/fretb)) <!-- 19.1.90 -->
+- remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.89 -->
+- Remove macos-15-intel due to corefoundation gem issue [#15352](https://github.com/chef/chef/pull/15352) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.88 -->
+- [Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15328](https://github.com/chef/chef/pull/15328) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.87 -->
+- ohai.config is an empty hash the first time a reload is called [#15295](https://github.com/chef/chef/pull/15295) ([dschlenk](https://github.com/dschlenk)) <!-- 19.1.86 -->
+- [recipe#from_hash] Add include_recipes key [#15299](https://github.com/chef/chef/pull/15299) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.85 -->
+- fix errors on habitat/verify [#15303](https://github.com/chef/chef/pull/15303) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.84 -->
+- fix chef-workstation install [#15314](https://github.com/chef/chef/pull/15314) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.83 -->
+- update GHA testing [#15302](https://github.com/chef/chef/pull/15302) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.82 -->
 - fixing the broken habitat test pipeline [#15301](https://github.com/chef/chef/pull/15301) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.81 -->
 - Updating self-hosted fips [#15296](https://github.com/chef/chef/pull/15296) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.80 -->
 - Delete osx_profile resource. [#15184](https://github.com/chef/chef/pull/15184) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.79 -->

@@ -17,10 +17,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
-        ruby: ['3.1']
+        ruby: ['3.4']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |

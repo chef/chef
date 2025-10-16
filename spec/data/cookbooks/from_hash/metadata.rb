@@ -1,0 +1,6 @@
+name              "from_hash"
+maintainer        "Chef Software, Inc."
+maintainer_email  "cookbooks@chef.io"
+license           "Apache 2.0"
+description       "Fixture cookbook to test from_hash (JSON and YAML) recipes"
+version           "1.2.3"
