@@ -37,7 +37,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.1.90)
-      chef-licensing (>= 0.7.5)
+      chef-licensing (>= 1.2.0)
       chef-utils (= 19.1.90)
       chef-vault
       chef-zero (~> 15.0.21)
@@ -72,7 +72,7 @@ PATH
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.1.90)
-      chef-licensing (>= 0.7.5)
+      chef-licensing (>= 1.2.0)
       chef-powershell (~> 18.1.0)
       chef-utils (= 19.1.90)
       chef-vault
