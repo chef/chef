@@ -371,6 +371,27 @@ class Chef
           end
 
           def candidate_version_from_remote(gem_dependency, *sources)
+            source_args = sources.compact.map { |s| "--source=#{s}" }.join(" ")
+            cmd = "#{@gem_binary_location} list #{gem_dependency.name} --remote --all #{source_args}"
+            result = shell_out!(cmd)
+
+            versions = []
+            result.stdout.each_line do |line|
+              next unless line.start_with?("#{gem_dependency.name} (")
+
+              version_string = line[/\((.*)\)/, 1]
+              next unless version_string
+
+              version_string.split(/,\s*/).each do |v|
+                version = Gem::Version.new(v.strip)
+                versions << version if gem_dependency.requirement.satisfied_by?(version)
+              rescue ArgumentError
+                # Skip invalid versions
+              end
+            end
+
+            versions.max
+          rescue Mixlib::ShellOut::ShellCommandFailed
             with_gem_sources(*sources) do
               with_gem_platforms(*gem_platforms) do
                 find_newest_remote_version(gem_dependency, *sources)
