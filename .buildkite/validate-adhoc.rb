@@ -29,9 +29,8 @@ arm_targets = [
 
 # because windows queues are very different, the target queue is very explicit.
 win_targets = [
+  "windows-2019:default-windows-2019",
   "windows-2022:single-use-windows-2022",
-  "windows-10:default-windows-2019",
-  "windows-11:single-use-windows-2022",
   "windows-2025:single-use-windows-2025"
 ]
 
