@@ -1,6 +1,6 @@
 {
     "chef_foundation": "3.2.16",
-    "omnibus_toolchain": "3.0.36",
-    "ruby_version": "3.1.6",
-    "bundle_version": "2.3.7"
+    "omnibus_toolchain": "3.0.39",
+    "ruby_version": "3.4.2",
+    "bundle_version": "2.6.9"
 }
