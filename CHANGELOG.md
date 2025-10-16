@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.89 -->
-## [v19.1.89](https://github.com/chef/chef/tree/v19.1.89) (2025-10-13)
+<!-- latest_release 19.1.90 -->
+## [v19.1.90](https://github.com/chef/chef/tree/v19.1.90) (2025-10-16)
 
 #### Merged Pull Requests
-- remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda))
+- fix: use correct Ruby in gem_package resource dependency resolution [#15349](https://github.com/chef/chef/pull/15349) ([fretb](https://github.com/fretb))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix: use correct Ruby in gem_package resource dependency resolution [#15349](https://github.com/chef/chef/pull/15349) ([fretb](https://github.com/fretb)) <!-- 19.1.90 -->
 - remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.89 -->
 - Remove macos-15-intel due to corefoundation gem issue [#15352](https://github.com/chef/chef/pull/15352) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.88 -->
 - [Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15328](https://github.com/chef/chef/pull/15328) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.87 -->
