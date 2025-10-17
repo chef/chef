@@ -23,6 +23,7 @@ jobs:
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+
     steps:
       - name: 'Clean up any previous installs'
         id: cleanup
@@ -87,11 +88,20 @@ jobs:
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
 
-          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-          # output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
-          # if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
-          #   echo "✅ Chef Infra Client is running in FIPS mode"
-          # else
-          #   echo "❌ FIPS mode not detected"
-          #   exit 1
-          # fi
+          # Verify cryptographic operations work as expected in FIPS mode
+          echo "Verifying cryptographic operations in FIPS mode:"
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e "
+          begin
+            require 'openssl'
+            # Try MD5 hash (should fail in FIPS mode)
+            hash = OpenSSL::Digest::MD5.hexdigest('test')
+            puts 'FAIL: FIPS mode is NOT working - MD5 hash succeeded'
+            exit 1
+          rescue OpenSSL::OpenSSLError => e
+            puts 'PASS: FIPS mode confirmed - MD5 hash correctly blocked'
+            exit 0
+          rescue => e
+            puts 'ERROR: ' + e.message
+            exit 2
+          end"
+          echo "✅ FIPS mode is confirmed - MD5 was blocked as expected"
