@@ -129,6 +129,7 @@ class Chef
           values_at
           zip
           deep_merge
+          deep_merge?
           symbolize_keys
           stringify_keys
           compact_blank
