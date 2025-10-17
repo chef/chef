@@ -803,4 +803,61 @@ describe Chef::ResourceReporter do
       end
     end
   end
+
+  describe "#for_json with binary data" do
+    # a fix for large resource dumps resulted in to_json being called on a binary data value
+    # in the before hash of the file resource. Test here that a >640KB binary file does not
+    # trigger the JSON::GeneratorError or any other encoding error, for that matter.
+    let(:binary_content) do
+      # Create a large binary file (1 MB) with problematic encoding
+      # This will trigger the size check and JSON conversion in for_json method line 38
+      binary_str = "\x89PNG\r\n\x1a\n" # PNG header
+      binary_str += "\xFF\xFE\xFD\xFC\xFB\xFA\xF9\xF8" # Invalid UTF-8 bytes
+      binary_str += "\x80\x81\x82\x83\x84\x85\x86\x87" # More invalid bytes
+      binary_str += "\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7" # Invalid UTF-8 start bytes
+      binary_str += "\x00\x01\x02\x03" # Some control chars
+      target_size = 1_000_000
+      binary_str * (target_size / binary_str.bytesize + 1)
+    end
+
+    let(:binary_file_resource) { Chef::Resource::File.new("/tmp/binary-file.png") }
+    let(:current_binary_resource) { Chef::Resource::File.new("/tmp/binary-file.png") }
+    let(:action_record) { double("ActionRecord") }
+
+    before do
+      # Set up the binary content in the resource
+      binary_file_resource.content(binary_content)
+      current_binary_resource.content(binary_content)
+
+      # Mock the action record
+      allow(action_record).to receive(:new_resource).and_return(binary_file_resource)
+      allow(action_record).to receive(:current_resource).and_return(current_binary_resource)
+      allow(action_record).to receive(:elapsed_time).and_return(0.5)
+      allow(action_record).to receive(:action).and_return(:create)
+
+      # Set up cookbook info
+      binary_file_resource.cookbook_name = "test_cookbook"
+      allow(binary_file_resource).to receive(:cookbook_version).and_return(cookbook_version)
+    end
+
+    context "when attempting to serialize binary content state" do
+      it "fails during JSON serialization of the state data" do
+        # This test specifically targets the line where to_json is called
+        # on the state_for_resource_reporter data in the for_json method (line 38)
+        # Create a large problematic state that will trigger the size check AND JSON encoding error
+        problematic_state = {
+          "content" => binary_content,
+          "path" => "/tmp/binary-file.png",
+          "mode" => "0644",
+          "owner" => "root",
+        }
+
+        # Mock the state_for_resource_reporter to return our problematic content
+        allow(binary_file_resource).to receive(:state_for_resource_reporter).and_return(problematic_state)
+        allow(current_binary_resource).to receive(:state_for_resource_reporter).and_return(problematic_state)
+
+        expect { resource_reporter.for_json(action_record) }.not_to raise_error
+      end
+    end
+  end
 end
