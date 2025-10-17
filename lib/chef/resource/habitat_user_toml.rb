@@ -73,7 +73,7 @@ class Chef
         def wmi_property_from_query(wmi_property, wmi_query)
           @wmi = ::WIN32OLE.connect("winmgmts://")
           result = @wmi.ExecQuery(wmi_query)
-          return unless result.each.count > 0
+          return unless result.each.any?
 
           result.each.next.send(wmi_property)
         end
