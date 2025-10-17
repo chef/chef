@@ -369,6 +369,16 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     expect(Gem.platforms).to eq(original_platforms)
   end
 
+  it "uses shell command to avoid embedded Ruby version conflicts" do
+    shell_out_result = OpenStruct.new(stdout: "rematch (3.2.0, 3.1.0, 3.0.0)\n")
+    expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list rematch --remote --all ").and_return(shell_out_result)
+
+    gem_dependency = Gem::Dependency.new("rematch", ">= 3.1.0")
+    version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+    expect(version).to eq(Gem::Version.new("3.2.0"))
+  end
+
 end
 
 describe Chef::Provider::Package::Rubygems do
