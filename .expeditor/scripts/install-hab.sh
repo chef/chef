@@ -17,6 +17,23 @@ error () {
 }
 
 [[ -n "$hab_target" ]] || error 'no hab target provided'
+echo "****************DEBUG STATEMENT **********"
+export VAULT_ADDR="https://vault.ps.chef.co"
+# Fetch ARTIFACTORY_TOKEN with retry logic
+export ARTIFACTORY_TOKEN=""
+for i in {1..5}; do
+  ARTIFACTORY_TOKEN=$(vault kv get -field token account/static/artifactory/buildkite) && break
+  echo "Retrying Vault token fetch... ($i/5)"
+  sleep 5
+done
+
+if [[ -z "$ARTIFACTORY_TOKEN" ]]; then
+  echo "Failed to fetch ARTIFACTORY_TOKEN from Vault after 5 attempts."
+  exit 1
+else
+  echo "ARTIFACTORY_TOKEN is set successfully."
+fi
+export ARTIFACTORY_REPO_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
 
 echo "--- :habicat: Installing latest version of Habitat"
 rm -rf /hab

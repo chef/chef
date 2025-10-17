@@ -10,3 +10,6 @@ expeditor:
 steps:
   - command: .buildkite/verify.pipeline.sh | buildkite-agent pipeline upload
     label: ":pipeline: Upload"
+    env:
+      ARTIFACTORY_TOKEN: ""    # Blank value ensures it's available for environment propagation
+      ARTIFACTORY_REPO_URL: ""
