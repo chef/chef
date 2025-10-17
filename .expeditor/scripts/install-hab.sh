@@ -17,6 +17,9 @@ error () {
 }
 
 [[ -n "$hab_target" ]] || error 'no hab target provided'
+export VAULT_ADDR="https://vault.ps.chef.co"
+export ARTIFACTORY_TOKEN=$(vault kv get -field token account/static/artifactory/buildkite)
+export ARTIFACTORY_REPO_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
 
 echo "--- :habicat: Installing latest version of Habitat"
 rm -rf /hab
