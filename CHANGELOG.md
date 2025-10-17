@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.91 -->
-## [v19.1.91](https://github.com/chef/chef/tree/v19.1.91) (2025-10-17)
+<!-- latest_release 19.1.92 -->
+## [v19.1.92](https://github.com/chef/chef/tree/v19.1.92) (2025-10-17)
 
 #### Merged Pull Requests
-- Pin to beta version of InSpec 7 against main [#15374](https://github.com/chef/chef/pull/15374) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix handling of frozen_string_literals [#15363](https://github.com/chef/chef/pull/15363) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix handling of frozen_string_literals [#15363](https://github.com/chef/chef/pull/15363) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.92 -->
 - Pin to beta version of InSpec 7 against main [#15374](https://github.com/chef/chef/pull/15374) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.91 -->
 - fix: use correct Ruby in gem_package resource dependency resolution [#15349](https://github.com/chef/chef/pull/15349) ([fretb](https://github.com/fretb)) <!-- 19.1.90 -->
 - remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.89 -->
