@@ -156,12 +156,10 @@ for plan in ${habitat_plans[@]}; do
   # echo "      - vendor"
   echo "  env:"
   echo "    ARTIFACTORY_URL: ${ARTIFACTORY_URL:-https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local}"
-  # echo "    ARTIFACTORY_TOKEN: ${ARTIFACTORY_TOKEN:-}"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   if [ $plan == "windows" ]
   then
-    echo "    - \$env:HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN=\$env:ARTIFACTORY_TOKEN"
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
     echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
