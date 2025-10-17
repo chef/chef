@@ -156,7 +156,7 @@ for plan in ${habitat_plans[@]}; do
   # echo "      - vendor"
   echo "  env:"
   echo "    ARTIFACTORY_URL: ${ARTIFACTORY_URL:-https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local}"
-  echo "    ARTIFACTORY_TOKEN: ${ARTIFACTORY_TOKEN:-}"
+  # echo "    ARTIFACTORY_TOKEN: ${ARTIFACTORY_TOKEN:-}"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   if [ $plan == "windows" ]
