@@ -8,6 +8,9 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
+  - env:
+      ARTIFACTORY_TOKEN: ""    # Blank value ensures it's available for environment propagation
+      ARTIFACTORY_REPO_URL: ""
   - commands:
     - ./.buildkite/validate.adhoc.pipeline.sh
     label: ":pipeline: Upload"
