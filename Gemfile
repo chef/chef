@@ -8,9 +8,9 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
-# gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
-# something about that branch ref fails on bundler 2.6.9
-gem "rest-client", git: "https://github.com/chef/rest-client", ref: "5b3bb34ea536e5207388b84c5dd6360ea3fc2799"
+# bundler 2.6.x breaks on one or both of these forms... downgrading to 2.5.23 fixes it
+gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
+# gem "rest-client", git: "https://github.com/chef/rest-client", ref: "5b3bb34ea536e5207388b84c5dd6360ea3fc2799"
 
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
   gem "ffi", ">= 1.15.5", "< 1.18.0"
@@ -37,7 +37,7 @@ end
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 7.0.38" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "= 7.0.38.beta" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
