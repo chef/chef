@@ -25,7 +25,7 @@ class Chef
         class VersionedCookbookDir < CookbookDir
           # See Erchef code
           # https://github.com/chef/chef_objects/blob/968a63344d38fd507f6ace05f73d53e9cd7fb043/src/chef_regex.erl#L94
-          VALID_VERSIONED_COOKBOOK_NAME = /^([.a-zA-Z0-9_-]+)-(\d+\.\d+\.\d+)$/.freeze
+          VALID_VERSIONED_COOKBOOK_NAME = /^([.a-zA-Z0-9_-]+)-(\d+\.\d+\.\d+)$/
 
           def initialize(name, parent, options = {})
             super(name, parent)

@@ -21,7 +21,7 @@ class Chef
     DEFAULT_CONSTRAINT = ">= 0.0.0".freeze
     STANDARD_OPS = %w{< > <= >=}.freeze
     OPS = %w{< > = <= >= ~>}.freeze
-    PATTERN = /^(#{OPS.join("|")}) *([0-9].*)$/.freeze
+    PATTERN = /^(#{OPS.join("|")}) *([0-9].*)$/
     VERSION_CLASS = Chef::Version
 
     attr_reader :op, :version
