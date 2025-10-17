@@ -54,7 +54,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 7.0.38.beta)
+      inspec-core (= 7.0.38.beta)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -90,7 +90,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (~> 7.0.38.beta)
+      inspec-core (= 7.0.38.beta)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -537,7 +537,7 @@ DEPENDENCIES
   ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
-  inspec-core-bin (~> 7.0.38.beta)
+  inspec-core-bin (= 7.0.38.beta)
   ohai!
   openssl (= 3.3.0)
   pry (= 0.13.0)
