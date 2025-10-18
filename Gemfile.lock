@@ -196,6 +196,7 @@ GEM
     chef-powershell (18.1.0)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
+    chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -530,6 +531,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-ruby-shadow (~> 3.0.0)
   chef-utils!
   chef-vault
   cheffish (>= 17)
