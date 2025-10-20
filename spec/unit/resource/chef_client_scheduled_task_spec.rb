@@ -160,12 +160,12 @@ describe Chef::Resource::ChefClientScheduledTask do
 
   describe "#client_cmd" do
     it "creates a valid command if using all default properties" do
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/chef/log/client.log -c C:/foo/bar/client.rb") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/chef/log/client.log -c C:/foo/bar/client.rb --foo 1 --bar 2") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb--foo 1 --bar 2") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
     end
 
     it "uses custom config dir if set" do
@@ -176,7 +176,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "C:/foo/bar"
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c C:/foo/bar/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c C:/foo/bar/client.rb")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c /etc/chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c c:\\chef/client.rb")
     end
 
     it "uses custom chef-client binary if set" do
@@ -187,7 +187,7 @@ describe Chef::Resource::ChefClientScheduledTask do
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("#{chef_habitat_binary_path} -L C:/chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
     end
   end
 end
