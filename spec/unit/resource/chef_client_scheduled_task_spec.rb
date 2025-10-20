@@ -187,7 +187,7 @@ describe Chef::Resource::ChefClientScheduledTask do
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
     end
   end
 end
