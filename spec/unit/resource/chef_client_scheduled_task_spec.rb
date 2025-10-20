@@ -122,7 +122,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     end
 
     it "sleeps the same amount each time based on splay before running the task" do
-      expect(provider.full_command).to eql("C:\\Windows\\System32\\cmd.exe /c \"C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s 272 && C:/opscode/chef/bin/chef-client -L C:/chef/log/client.log -c C:/chef/client.rb\"")
+      expect(provider.full_command).to eql("C:\\Windows\\System32\\cmd.exe /c \"C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s 272 && #{chef_habitat_binary_path} -L C:/chef/log/client.log -c C:/chef/client.rb\"")
     end
   end
 
