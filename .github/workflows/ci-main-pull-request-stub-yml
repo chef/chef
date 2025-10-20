@@ -70,7 +70,7 @@ jobs:
       # language: $chef-ga-build-language   # this will be removed from stub as autodetected in central GA
       unit-tests: false
 
-      # perform SonarQube scan, with or wihout unit test coverage data
+      # perform SonarQube scan, with or without unit test coverage data
       # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
       perform-sonarqube-scan: true
       # perform-sonar-build: true
