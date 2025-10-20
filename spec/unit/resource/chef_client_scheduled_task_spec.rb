@@ -176,7 +176,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "C:/foo/bar"
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c C:\\chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c c:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c /etc/chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c c:\\chef/client.rb")
     end
 
     it "uses custom chef-client binary if set" do
