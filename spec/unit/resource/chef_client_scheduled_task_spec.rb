@@ -176,13 +176,13 @@ describe Chef::Resource::ChefClientScheduledTask do
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "C:/foo/bar"
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c /etc/chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c c:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c C:\\chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c c:\\chef/client.rb")
     end
 
     it "uses custom chef-client binary if set" do
       # Temporarily override the stubbed value for this test
       allow(resource).to receive(:chef_binary_path).and_return("C:/foo/bar/chef-client")
-      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/foo/bar/chef-client -L C:/chef/log/client.log -c C:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/foo/bar/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "sets the license acceptance flag if set" do
