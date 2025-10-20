@@ -165,7 +165,7 @@ describe Chef::Resource::ChefClientScheduledTask do
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb--foo 1 --bar 2") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
+      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb --foo 1 --bar 2") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
     end
 
     it "uses custom config dir if set" do
@@ -182,7 +182,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     it "uses custom chef-client binary if set" do
       # Temporarily override the stubbed value for this test
       allow(resource).to receive(:chef_binary_path).and_return("C:/foo/bar/chef-client")
-      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L C:/chef/log/client.log -c C:/foo/bar/client.rb") | eql("C:/foo/bar/chef-client -L C:/chef/log/client.log -c C:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/foo/bar/chef-client -L C:/chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "sets the license acceptance flag if set" do
