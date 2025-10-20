@@ -40,10 +40,10 @@ jobs:
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '19.1.86' # ${{ github.event.repository.version }}
-      detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
+      version: "latest" # ${{ github.event.repository.version }}
+      detect-version-source-type: "github-tag" # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
-      language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
+      language: "ruby"  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
 
       # complexity-checks
       perform-complexity-checks: true
