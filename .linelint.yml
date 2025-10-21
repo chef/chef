@@ -3,6 +3,8 @@ rules:
     enable: true
     single-new-line: true
     ignore:
+      # leaving security stuff alone
+      - .github/workflows/ci-main-pull-request-stub.yml
       # these are not text files, leave them as-is
       - knife/spec/data/cb_version_cookbooks/tatft
       - spec/data/cb_version_cookbooks/tatft
