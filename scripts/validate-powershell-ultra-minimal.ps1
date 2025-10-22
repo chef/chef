@@ -14,18 +14,18 @@ try {
     Write-Host "`nStep 2: Download Chef installer to file" -ForegroundColor Yellow
     # Download to file instead of executing directly
     Invoke-WebRequest -Uri "https://omnitruck.chef.io/install.ps1" -OutFile "chef-installer.ps1" -UseBasicParsing
-    Write-Host "✅ Downloaded installer to file"
+    Write-Host "[ok] Downloaded installer to file"
     
     Write-Host "`nStep 3: Execute installer from file" -ForegroundColor Yellow
     # Execute from file with explicit bypass
     powershell -ExecutionPolicy Bypass -File "chef-installer.ps1" -project chef -channel current
-    Write-Host "✅ Installer executed"
+    Write-Host "[ok] Installer executed"
     
     Write-Host "`nStep 4: Check if Chef was installed" -ForegroundColor Yellow
     if (Test-Path "C:\opscode\chef\bin\chef-client.bat") {
-        Write-Host "✅ Chef client executable found"
+        Write-Host "[ok] Chef client executable found"
     } else {
-        Write-Host "❌ Chef client executable not found" -ForegroundColor Red
+        Write-Host "[fail] Chef client executable not found" -ForegroundColor Red
         Get-ChildItem C:\opscode\ -Recurse -Name "*chef*" | Select-Object -First 10
     }
     
@@ -35,15 +35,15 @@ try {
     # Try to get version without stopping on errors
     try {
         $chefVersion = & "C:\opscode\chef\bin\chef-client.bat" -v 2>&1
-        Write-Host "✅ Chef version output: $chefVersion"
+        Write-Host "[ok] Chef version output: $chefVersion"
     } catch {
-        Write-Host "⚠️ Chef version check failed: $_" -ForegroundColor Yellow
+        Write-Host "[attention] Chef version check failed: $_" -ForegroundColor Yellow
     }
     
-    Write-Host "`n✅ Ultra-minimal validation completed!" -ForegroundColor Green
+    Write-Host "`n[ok] Ultra-minimal validation completed!" -ForegroundColor Green
     
 } catch {
-    Write-Host "`n❌ Error occurred: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "`n[fail] Error occurred: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host "Error details: $_" -ForegroundColor Red
     exit 1
 } finally {

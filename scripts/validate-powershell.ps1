@@ -29,7 +29,7 @@ try {
         # Download the installer script first
         Write-Output "Downloading Chef installer..."
         $installerScript = Invoke-WebRequest -Uri https://omnitruck.chef.io/install.ps1 -UseBasicParsing
-        Write-Output "✅ Downloaded installer script"
+        Write-Output "[ok] Downloaded installer script"
         
         # Execute the installer script content
         # We need to handle the OutputEncoding issue that occurs in containers
@@ -42,14 +42,14 @@ try {
         
         # Execute the modified script
         Invoke-Expression $scriptContent
-        Write-Output "✅ Installer functions loaded"
+        Write-Output "[ok] Installer functions loaded"
         
         # Now call Install-Project
         Write-Output "Installing Chef..."
         Install-Project -project chef -channel current
-        Write-Output "✅ Chef installation completed"
+        Write-Output "[ok] Chef installation completed"
     } catch {
-        Write-Error "❌ Chef installation failed: $_"
+        Write-Error "[fail] Chef installation failed: $_"
         throw
     }
     
@@ -57,43 +57,43 @@ try {
     Write-Output "==> Setting PATH environment..."
     $originalPath = $env:PATH
     $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-    Write-Output "✅ PATH updated"
+    Write-Output "[ok] PATH updated"
     
     # Verify initial installation
     Write-Output "==> Verifying Chef installation..."
     try {
         $chefVersion = chef-client -v 2>&1
         if ($LASTEXITCODE -ne 0) { throw "chef-client version check failed with exit code $LASTEXITCODE" }
-        Write-Output "✅ Chef client: $chefVersion"
+        Write-Output "[ok] Chef client: $chefVersion"
     } catch {
-        Write-Error "❌ Chef client verification failed: $_"
+        Write-Error "[fail] Chef client verification failed: $_"
         throw
     }
     
     try {
         $ohaiVersion = ohai -v 2>&1
         if ($LASTEXITCODE -ne 0) { throw "ohai version check failed with exit code $LASTEXITCODE" }
-        Write-Output "✅ Ohai: $ohaiVersion"
+        Write-Output "[ok] Ohai: $ohaiVersion"
     } catch {
-        Write-Error "❌ Ohai verification failed: $_"
+        Write-Error "[fail] Ohai verification failed: $_"
         throw
     }
     
     try {
         $rakeVersion = rake --version 2>&1
         if ($LASTEXITCODE -ne 0) { throw "rake version check failed with exit code $LASTEXITCODE" }
-        Write-Output "✅ Rake: $rakeVersion"
+        Write-Output "[ok] Rake: $rakeVersion"
     } catch {
-        Write-Error "❌ Rake verification failed: $_"
+        Write-Error "[fail] Rake verification failed: $_"
         throw
     }
     
     try {
         $bundleVersion = bundle -v 2>&1
         if ($LASTEXITCODE -ne 0) { throw "bundle version check failed with exit code $LASTEXITCODE" }
-        Write-Output "✅ Bundle: $bundleVersion"
+        Write-Output "[ok] Bundle: $bundleVersion"
     } catch {
-        Write-Error "❌ Bundle verification failed: $_"
+        Write-Error "[fail] Bundle verification failed: $_"
         throw
     }
     
@@ -217,23 +217,23 @@ try {
     chef-client --local-mode --runlist "recipe[validate_powershell]" --file-cache-path C:\temp\chef-cache --cookbook-path . --log-level info
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Output "✅ PowerShell recipe executed successfully!"
+        Write-Output "[ok] PowerShell recipe executed successfully!"
         
         # Verify the test file was created
         if (Test-Path "C:\temp\chef_test.txt") {
             $content = Get-Content "C:\temp\chef_test.txt"
-            Write-Output "✅ Test file content: $content"
+            Write-Output "[ok] Test file content: $content"
         } else {
-            Write-Warning "⚠️  Test file was not found"
+            Write-Warning "[attention]  Test file was not found"
         }
         
-        Write-Output "✅ Chef PowerShell validation completed successfully!"
+        Write-Output "[ok] Chef PowerShell validation completed successfully!"
         exit 0
     } else {
         throw "PowerShell recipe execution failed"
     }
     
 } catch {
-    Write-Error "❌ Validation failed: $_"
+    Write-Error "[fail] Validation failed: $_"
     exit 1
 }
