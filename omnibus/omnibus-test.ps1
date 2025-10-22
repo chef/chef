@@ -145,6 +145,38 @@ $powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
 $powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
 $env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
 
+# Test PowerShell integration with a simple hello world recipe
+Write-Output "Testing PowerShell integration..."
+$testRecipe = @'
+powershell_script 'test_hello_world' do
+  code 'Write-Output "Hello World from PowerShell!"'
+  action :run
+end
+'@
+
+try {
+    # Create a temporary recipe file
+    $recipeFile = Join-Path $Env:TEMP "test_powershell.rb"
+    Set-Content -Path $recipeFile -Value $testRecipe
+    
+    Write-Output "Running chef-apply with PowerShell test recipe..."
+    chef-apply $recipeFile -l info
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Output "[OK] PowerShell integration test passed!"
+    } else {
+        Write-Error "[FAIL] PowerShell integration test failed with exit code: $LASTEXITCODE"
+        $exit = 1
+    }
+    
+    # Clean up
+    Remove-Item $recipeFile -Force -ErrorAction SilentlyContinue
+} catch {
+    Write-Error "[FAIL] PowerShell integration test failed with error: $_"
+    Write-Error $_.ScriptStackTrace
+    $exit = 1
+}
+
 # Running the specs separately fixes an edge case on 2012R2-i386 where the desktop heap's
 # allocated limit is hit and any test's attempt to create a new process is met with
 # exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
