@@ -48,6 +48,10 @@ try {
         Write-Output "Installing Chef..."
         Install-Project -project chef -channel current
         Write-Output "✅ Chef installation completed"
+    } catch {
+        Write-Error "❌ Chef installation failed: $_"
+        throw
+    }
     
     # Set PATH
     Write-Output "==> Setting PATH environment..."
