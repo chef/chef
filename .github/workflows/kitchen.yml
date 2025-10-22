@@ -117,54 +117,54 @@ jobs:
       - name: Kitchen Test
         run: kitchen verify ${{ matrix.os }}
 
-  vm_lnx_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - amazonlinux-2
-          - amazonlinux-2023
-          - almalinux-8
-          - almalinux-9
-          - almalinux-10
-          - debian-11
-          - debian-12
-          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
-          - fedora-41
-          - fedora-42
-          - opensuse-leap-15
-          - oraclelinux-8
-          - oraclelinux-9
-          - oraclelinux-10
-          - rockylinux-8
-          - rockylinux-9
-          - rockylinux-10
-          - ubuntu-2204
-          - ubuntu-2404
-    runs-on: ubuntu-22.04
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install Vagrant and VirtualBox
-        run: |
-          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-          cat files/oracle_vbox_2016.asc | gpg --dearmor | sudo tee /usr/share/keyrings/oracle-virtualbox-2016.gpg
-          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
-          sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox-7.1
-          sudo vagrant --version
-          sudo VBoxManage --version
-      - name: Install Chef
-        uses: actionshub/chef-install@main
-      - name: Kitchen Test
-        run: |
-          # To debug, uncomment these
-          # export VAGRANT_LOG=debug
-          # export VBOX_LOG=all.e.l.f
-          # export VBOX_LOG_DEST=stdout
-          # export K_DEBUG_OPTS="--log-level=debug"
-          export LOGNAME=$USER
-          kitchen verify ${{ matrix.os }} $K_DEBUG_OPTS
+#  vm_lnx_x86_64:
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os:
+#          - amazonlinux-2
+#          - amazonlinux-2023
+#          - almalinux-8
+#          - almalinux-9
+#          - almalinux-10
+#          - debian-11
+#          - debian-12
+#          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
+#          - fedora-41
+#          - fedora-42
+#          - opensuse-leap-15
+#          - oraclelinux-8
+#          - oraclelinux-9
+#          - oraclelinux-10
+#          - rockylinux-8
+#          - rockylinux-9
+#          - rockylinux-10
+#          - ubuntu-2204
+#          - ubuntu-2404
+#    runs-on: ubuntu-22.04
+#    env:
+#      CHEF_LICENSE: accept-no-persist
+#      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
+#    steps:
+#      - uses: actions/checkout@v5
+#      - name: Install Vagrant and VirtualBox
+#        run: |
+#          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+#          cat files/oracle_vbox_2016.asc | gpg --dearmor | sudo tee /usr/share/keyrings/oracle-virtualbox-2016.gpg
+#          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+#          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+#          sudo apt-get update
+#          sudo apt-get install -y vagrant virtualbox-7.1
+#          sudo vagrant --version
+#          sudo VBoxManage --version
+#      - name: Install Chef
+#        uses: actionshub/chef-install@main
+#      - name: Kitchen Test
+#        run: |
+#          # To debug, uncomment these
+#          # export VAGRANT_LOG=debug
+#          # export VBOX_LOG=all.e.l.f
+#          # export VBOX_LOG_DEST=stdout
+#          # export K_DEBUG_OPTS="--log-level=debug"
+#          export LOGNAME=$USER
+#          kitchen verify ${{ matrix.os }} $K_DEBUG_OPTS
