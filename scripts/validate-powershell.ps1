@@ -272,7 +272,9 @@ try {
     
     # Run the PowerShell recipe with Chef
     Write-Output "==> Running PowerShell validation recipe..."
-    chef-client --local-mode --runlist "recipe[validate_powershell]" --file-cache-path C:\temp\chef-cache --cookbook-path . --log-level info
+    # Note: Using -z for local mode, -o for override runlist, -l for log level
+    # The file_cache_path is configured via client.rb or defaults to a temp location
+    chef-client -z -o "recipe[validate_powershell]" -l info --cookbook-path .
     
     if ($LASTEXITCODE -eq 0) {
         Write-Output "[ok] PowerShell recipe executed successfully!"
