@@ -3,7 +3,7 @@ driver:
   name: vagrant
   box_auto_update: true
   box_auto_prune: true
-  linked_clone: true
+  # linked_clone: true
   customize:
     cableconnected1: "on"  # helps with vagrant up taking too long to connect to system and timing out
 
