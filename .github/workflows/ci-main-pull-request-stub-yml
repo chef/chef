@@ -96,7 +96,7 @@ jobs:
       export-github-sbom: true      # SPDX JSON artifact on job instance
       perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
-      blackduck-project-name: ${{ github.event.repository.name }} # BlackDuck project name, typically the repository name
+      blackduck-project-name: ${{ github.ref_name }} # BlackDuck project name, typically the repository name
       generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
 
       generate-msft-sbom: false
