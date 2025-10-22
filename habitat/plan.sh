@@ -134,8 +134,19 @@ do_build() {
 }
 
 do_install() {
-  ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
+  (
+    cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+
+    export ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
+
+    if [ -z "$HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN" ]; then
+      exit_with "ARTIFACTORY_TOKEN is not set; cannot auth to Artifactory." 1
+    fi
+
+    gem sources --add "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
+    gem install chef-official-distribution --no-document
+    gem sources --remove "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
@@ -146,6 +157,7 @@ do_install() {
     done
   )
 }
+
 
 do_after() {
   build_line "Trimming the fat ..."
