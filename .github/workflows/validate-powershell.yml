@@ -25,9 +25,9 @@ jobs:
           Write-Output "Ultra-minimal test passed, trying regular minimal..."
           docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell-minimal.ps1"
           
-          # If both work, run the full validation
+          # If both work, run the full validation with environment variables
           Write-Output "All tests passed, running full validation..."
-          docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell.ps1"
+          docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace -e "GITHUB_SHA=${{ github.sha }}" -e "GITHUB_REPOSITORY=${{ github.repository }}" mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell.ps1"
         
       - name: Cleanup
         if: always()

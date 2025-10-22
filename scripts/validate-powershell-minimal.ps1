@@ -14,35 +14,35 @@ try {
     
     Write-Host "`nStep 2: Testing Chef installer download" -ForegroundColor Yellow
     $installScript = Invoke-WebRequest -Uri https://omnitruck.chef.io/install.ps1 -UseBasicParsing
-    Write-Host "✅ Downloaded installer script ($($installScript.Content.Length) bytes)"
+    Write-Host "[ok] Downloaded installer script ($($installScript.Content.Length) bytes)"
     
     Write-Host "`nStep 3: Executing installer (with container compatibility fix)" -ForegroundColor Yellow
     # Remove OutputEncoding setting that fails in containers
     $scriptContent = $installScript.Content -replace '\[Console\]::OutputEncoding\s*=.*', '# OutputEncoding setting removed for container compatibility'
     Invoke-Expression $scriptContent
-    Write-Host "✅ Installer functions loaded"
+    Write-Host "[ok] Installer functions loaded"
     
     Write-Host "`nStep 4: Installing Chef" -ForegroundColor Yellow
     Install-Project -project chef -channel current
-    Write-Host "✅ Chef installation completed"
+    Write-Host "[ok] Chef installation completed"
     
     Write-Host "`nStep 5: Updating PATH" -ForegroundColor Yellow
     $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-    Write-Host "✅ PATH updated"
+    Write-Host "[ok] PATH updated"
     Write-Host "New PATH: $($env:PATH)"
     
     Write-Host "`nStep 6: Testing chef-client" -ForegroundColor Yellow
     $chefOutput = chef-client -v
-    Write-Host "✅ Chef version: $chefOutput"
+    Write-Host "[ok] Chef version: $chefOutput"
     
     Write-Host "`nStep 7: Testing ohai" -ForegroundColor Yellow
     $ohaiOutput = ohai -v
-    Write-Host "✅ Ohai version: $ohaiOutput"
+    Write-Host "[ok] Ohai version: $ohaiOutput"
     
-    Write-Host "`n✅ Minimal validation completed successfully!" -ForegroundColor Green
+    Write-Host "`n[ok] Minimal validation completed successfully!" -ForegroundColor Green
     
 } catch {
-    Write-Host "`n❌ Error occurred: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "`n[fail] Error occurred: $($_.Exception.Message)" -ForegroundColor Red
     Write-Host "Error details: $_" -ForegroundColor Red
     Write-Host "Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
     exit 1

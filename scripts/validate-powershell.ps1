@@ -123,6 +123,40 @@ try {
     Write-Output "==> Reinstalling libyajl2..."
     gem uninstall -I libyajl2 2>$null
     
+    # Install git (required by appbundle-updater)
+    Write-Output "==> Installing Git..."
+    try {
+        # Download Git for Windows minimal installer
+        $gitVersion = "2.47.0"
+        $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v$gitVersion.windows.1/MinGit-$gitVersion-64-bit.zip"
+        $gitZip = "C:\temp\mingit.zip"
+        $gitPath = "C:\git"
+        
+        # Create temp directory
+        New-Item -Path "C:\temp" -ItemType Directory -Force | Out-Null
+        
+        # Download MinGit
+        Write-Output "Downloading Git from $gitInstallerUrl..."
+        Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $gitZip -UseBasicParsing
+        
+        # Extract Git
+        Write-Output "Extracting Git to $gitPath..."
+        Expand-Archive -Path $gitZip -DestinationPath $gitPath -Force
+        
+        # Add Git to PATH
+        $env:PATH = "$gitPath\cmd;$gitPath\mingw64\bin;" + $env:PATH
+        
+        # Verify Git is available
+        $gitVersionOutput = git --version 2>&1
+        Write-Output "[OK] Git installed: $gitVersionOutput"
+        
+        # Clean up
+        Remove-Item $gitZip -Force -ErrorAction SilentlyContinue
+    } catch {
+        Write-Warning "Git installation failed: $_"
+        Write-Output "Continuing without git - will need GITHUB_SHA environment variable"
+    }
+    
     # Install appbundler and appbundle-updater
     Write-Output "==> Installing appbundler..."
     gem install appbundler --no-doc
@@ -134,9 +168,33 @@ try {
     
     # Update chef using appbundle-updater with current SHA
     Write-Output "==> Updating Chef with appbundle-updater..."
-    $github_sha = if ($GitHubSHA) { $GitHubSHA } else { (git rev-parse HEAD).Trim() }
+    
+    # Determine GitHub SHA
+    if ($GitHubSHA) {
+        $github_sha = $GitHubSHA
+        Write-Output "Using provided GitHub SHA: $github_sha"
+    } else {
+        # Try to get SHA from git
+        try {
+            $gitCommand = Get-Command git -ErrorAction SilentlyContinue
+            if ($gitCommand) {
+                $github_sha = (git rev-parse HEAD 2>&1)
+                if ($LASTEXITCODE -eq 0) {
+                    $github_sha = $github_sha.Trim()
+                    Write-Output "Using SHA from git: $github_sha"
+                } else {
+                    throw "git rev-parse failed"
+                }
+            } else {
+                throw "git command not found"
+            }
+        } catch {
+            Write-Error "Cannot determine GitHub SHA: git is not available and GITHUB_SHA environment variable is not set"
+            throw "GitHub SHA is required for appbundle-updater"
+        }
+    }
+    
     $github_repo = if ($GitHubRepository) { $GitHubRepository } else { "chef/chef" }
-    Write-Output "Using SHA: $github_sha"
     Write-Output "Using Repository: $github_repo"
     
     appbundle-updater chef chef $github_sha --tarball --github $github_repo
