@@ -17,12 +17,16 @@ jobs:
         
       - name: Run Chef installation and validation in Windows Core container
         run: |
-          # Run the minimal validation first for debugging
-          Write-Output "Testing with minimal script first..."
+          # Run the ultra-minimal validation first to isolate encoding issues
+          Write-Output "Testing with ultra-minimal script first..."
+          docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell-ultra-minimal.ps1"
+          
+          # If ultra-minimal works, try the regular minimal
+          Write-Output "Ultra-minimal test passed, trying regular minimal..."
           docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell-minimal.ps1"
           
-          # If minimal works, run the full validation
-          Write-Output "Minimal test passed, running full validation..."
+          # If both work, run the full validation
+          Write-Output "All tests passed, running full validation..."
           docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell.ps1"
         
       - name: Cleanup

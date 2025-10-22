@@ -13,12 +13,14 @@ try {
     Write-Host "Current PATH: $($env:PATH)"
     
     Write-Host "`nStep 2: Testing Chef installer download" -ForegroundColor Yellow
-    $installScript = Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 -UseBasicParsing
+    $installScript = Invoke-WebRequest -Uri https://omnitruck.chef.io/install.ps1 -UseBasicParsing
     Write-Host "✅ Downloaded installer script ($($installScript.Content.Length) bytes)"
     
-    Write-Host "`nStep 3: Executing installer" -ForegroundColor Yellow
-    . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression
-    Write-Host "✅ Installer script executed"
+    Write-Host "`nStep 3: Executing installer (with container compatibility fix)" -ForegroundColor Yellow
+    # Remove OutputEncoding setting that fails in containers
+    $scriptContent = $installScript.Content -replace '\[Console\]::OutputEncoding\s*=.*', '# OutputEncoding setting removed for container compatibility'
+    Invoke-Expression $scriptContent
+    Write-Host "✅ Installer functions loaded"
     
     Write-Host "`nStep 4: Installing Chef" -ForegroundColor Yellow
     Install-Project -project chef -channel current

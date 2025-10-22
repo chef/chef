@@ -10,6 +10,9 @@ param(
 # Set error action preference
 $ErrorActionPreference = 'Stop'
 
+# Disable any automatic encoding changes that might cause issues in containers
+$env:POWERSHELL_TELEMETRY_OPTOUT = 1
+
 # Add some environment debugging
 Write-Output "==> Environment Information:"
 Write-Output "PowerShell Version: $($PSVersionTable.PSVersion)"
@@ -20,14 +23,31 @@ try {
     Write-Output "==> Installing Chef..."
     
     # Download and execute the Chef installer
+    # Note: The installer tries to set OutputEncoding which fails in containers
+    # We'll work around this by pre-emptively handling the error
     try {
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression
+        # Download the installer script first
+        Write-Output "Downloading Chef installer..."
+        $installerScript = Invoke-WebRequest -Uri https://omnitruck.chef.io/install.ps1 -UseBasicParsing
+        Write-Output "✅ Downloaded installer script"
+        
+        # Execute the installer script content
+        # We need to handle the OutputEncoding issue that occurs in containers
+        Write-Output "Executing installer..."
+        $scriptContent = $installerScript.Content
+        
+        # Create a modified version that doesn't set OutputEncoding
+        # The installer tries to set [Console]::OutputEncoding which fails in containers
+        $scriptContent = $scriptContent -replace '\[Console\]::OutputEncoding\s*=.*', '# OutputEncoding setting removed for container compatibility'
+        
+        # Execute the modified script
+        Invoke-Expression $scriptContent
+        Write-Output "✅ Installer functions loaded"
+        
+        # Now call Install-Project
+        Write-Output "Installing Chef..."
         Install-Project -project chef -channel current
         Write-Output "✅ Chef installation completed"
-    } catch {
-        Write-Error "❌ Chef installation failed: $_"
-        throw
-    }
     
     # Set PATH
     Write-Output "==> Setting PATH environment..."
