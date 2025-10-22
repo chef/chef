@@ -3,51 +3,51 @@ name: Validate PowerShell
 
 on:
   push:
-    branches: [ main ]
+    branches: [ chef-18 ]
   pull_request:
-    branches: [ main ]
+    branches: [ chef-18 ]
 
 jobs:
   validate-powershell:
     runs-on: windows-2022
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Run Chef installation and validation in Windows Core container
         run: |
           # Run the validation in a Windows Server Core container
           docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -Command "
             # Set error action preference
             `$ErrorActionPreference = 'Stop'
-            
+
             try {
               Write-Output 'Installing Chef...'
               . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression
               Install-Project -project chef -channel current
-              
+
               # Set PATH
               `$env:PATH = 'C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;' + `$env:PATH
-              
+
               # Verify initial installation
               Write-Output 'Verifying Chef installation...'
               chef-client -v
               if (`$LASTEXITCODE -ne 0) { throw 'chef-client version check failed' }
-              
-              ohai -v  
+
+              ohai -v
               if (`$LASTEXITCODE -ne 0) { throw 'ohai version check failed' }
-              
+
               rake --version
               if (`$LASTEXITCODE -ne 0) { throw 'rake version check failed' }
-              
+
               bundle -v
               if (`$LASTEXITCODE -ne 0) { throw 'bundle version check failed' }
-              
+
               # Get Ohai version from Gemfile.lock
               `$env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { `$_.Matches[0].Value } )
               Write-Output \"Ohai version from Gemfile.lock: `$env:OHAI_VERSION\"
-              
+
               # Fix ansidecl.h file location (same as kitchen config)
               Write-Output 'Fixing ansidecl.h file location...'
               `$output = Get-ChildItem -Path C:\opscode\ -File ansidecl.h -Recurse -ErrorAction SilentlyContinue
@@ -59,54 +59,54 @@ jobs:
                   Write-Output 'Moved ansidecl.h to correct location'
                 }
               }
-              
+
               # Reinstall libyajl2 (same as kitchen config)
               Write-Output 'Reinstalling libyajl2...'
               gem uninstall -I libyajl2 2>null
-              
+
               # Install appbundler and appbundle-updater
               Write-Output 'Installing appbundler...'
               gem install appbundler --no-doc
               if (`$LASTEXITCODE -ne 0) { throw 'appbundler installation failed' }
-              
+
               Write-Output 'Installing appbundle-updater...'
               gem install appbundle-updater -v '~> 1.0.36' --no-doc
               if (`$LASTEXITCODE -ne 0) { throw 'appbundle-updater installation failed' }
-              
+
               # Update chef using appbundle-updater with current SHA
               Write-Output 'Updating Chef with appbundle-updater...'
               `$github_sha = if (`$env:GITHUB_SHA) { `$env:GITHUB_SHA } else { (git rev-parse HEAD).Trim() }
               `$github_repo = if (`$env:GITHUB_REPOSITORY) { `$env:GITHUB_REPOSITORY } else { 'chef/chef' }
               Write-Output \"Using SHA: `$github_sha\"
               Write-Output \"Using Repository: `$github_repo\"
-              
+
               appbundle-updater chef chef `$github_sha --tarball --github `$github_repo
               if (`$LASTEXITCODE -ne 0) { throw 'appbundle-updater failed' }
-              
+
               # Verify updated installation
               Write-Output 'Verifying updated Chef installation:'
               chef-client -v
               if (`$LASTEXITCODE -ne 0) { throw 'Updated chef-client version check failed' }
-              
+
               ohai -v
               if (`$LASTEXITCODE -ne 0) { throw 'Updated ohai version check failed' }
-              
+
               # Remove conflicting binaries (same as kitchen config)
               Write-Output 'Removing conflicting binaries...'
-              if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { 
+              if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) {
                 Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff -Force
                 Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff -Force
                 Write-Output 'Removed htmldiff and ldiff'
               }
-              
+
               # Install bundle dependencies
               Write-Output 'Installing bundle dependencies...'
               bundle install --jobs=3 --retry=3
               if (`$LASTEXITCODE -ne 0) { throw 'Bundle install failed' }
-              
+
               # Create a test PowerShell recipe
               Write-Output 'Creating test PowerShell recipe...'
-              
+
               # Create recipe content using here-string
               `$recipe_lines = @(
                 '# Test PowerShell recipe to validate Chef functionality',
@@ -149,17 +149,17 @@ jobs:
                 '  level :info',
                 'end'
               )
-              
+
               # Write the recipe to a file
               `$recipe_lines | Out-File -FilePath 'validate_powershell.rb' -Encoding utf8
-              
+
               # Run the PowerShell recipe with Chef
               Write-Output 'Running PowerShell validation recipe...'
               chef-client --local-mode --runlist 'recipe[validate_powershell]' --file-cache-path C:\temp\chef-cache --cookbook-path . --log-level info
-              
+
               if (`$LASTEXITCODE -eq 0) {
                 Write-Output '✅ PowerShell recipe executed successfully!'
-                
+
                 # Verify the test file was created
                 if (Test-Path 'C:\temp\chef_test.txt') {
                   `$content = Get-Content 'C:\temp\chef_test.txt'
@@ -167,18 +167,18 @@ jobs:
                 } else {
                   Write-Warning '⚠️  Test file was not found'
                 }
-                
+
                 Write-Output '✅ Chef PowerShell validation completed successfully!'
               } else {
                 throw 'PowerShell recipe execution failed'
               }
-              
+
             } catch {
               Write-Error \"❌ Validation failed: `$_\"
               exit 1
             }
           "
-        
+
       - name: Cleanup
         if: always()
         run: |
@@ -187,5 +187,5 @@ jobs:
             Remove-Item C:\temp\chef_test.txt -Force
           }
           if (Test-Path validate_powershell.rb) {
-            Remove-Item validate_powershell.rb -Force  
+            Remove-Item validate_powershell.rb -Force
           }
