@@ -3,9 +3,6 @@ driver:
   name: vagrant
   box_auto_update: true
   box_auto_prune: true
-  linked_clone: false
-  customize:
-    cableconnected1: "on"  # helps with vagrant up taking too long to connect to system and timing out
 
 provisioner:
   name: chef_infra

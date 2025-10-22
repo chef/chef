@@ -141,6 +141,9 @@ jobs:
           version: "25.5.1084"
       - name: Kitchen Test
         run: |
+          lsblk
+          df -h
+          ls -alh /dev
           # To debug, uncomment these
           # export VAGRANT_LOG=debug
           # export VBOX_LOG=all.e.l.f
