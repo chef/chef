@@ -270,6 +270,15 @@ then
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
       echo "    - omnibus/omnibus-test.sh"
       echo "  timeout_in_minutes: 60"
+      echo "  plugins:"
+      echo "  - docker#v3.5.0:"
+      echo "      image: chefes/omnibus-toolchain-${platform%:*}:$OMNIBUS_TOOLCHAIN_VERSION" | sed 's/-arm//'
+      echo "      privileged: true"
+      echo "      propagate-environment: true"
+      echo "  commands:"
+      echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.sh"
+      echo "    - omnibus/powershell-test.sh"
+      echo "  timeout_in_minutes: 60"
     else
       echo "- env:"
       echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
