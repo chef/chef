@@ -7,9 +7,9 @@ driver:
   linked_clone: true
   customize:
     memory: 4096
-    accelerate-3d: "off"
-    paravirtprovider: "kvm"
-    cableconnected1: "on"  # helps with vagrant up taking too long to connect to system and timing out
+#     accelerate-3d: "off"
+#     paravirtprovider: "kvm"
+#     cableconnected1: "on"  # helps with vagrant up taking too long to connect to system and timing out
 
 lifecycle:
   pre_converge:

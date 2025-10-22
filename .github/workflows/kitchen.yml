@@ -137,6 +137,8 @@ jobs:
           sudo VBoxManage --version
       - name: Install Chef
         uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Kitchen Test
         run: |
           # To debug, uncomment these
