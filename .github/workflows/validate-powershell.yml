@@ -10,14 +10,19 @@ on:
 jobs:
   validate-powershell:
     runs-on: windows-2022
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+        
       - name: Run Chef installation and validation in Windows Core container
         run: |
-          # Run the validation in a Windows Server Core container using the PowerShell script
+          # Run the minimal validation first for debugging
+          Write-Output "Testing with minimal script first..."
+          docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell-minimal.ps1"
+          
+          # If minimal works, run the full validation
+          Write-Output "Minimal test passed, running full validation..."
           docker run --rm -v "${PWD}:C:\workspace" -w C:\workspace mcr.microsoft.com/windows/servercore:ltsc2022 powershell -ExecutionPolicy Bypass -File "scripts\validate-powershell.ps1"
         
       - name: Cleanup
@@ -28,5 +33,5 @@ jobs:
             Remove-Item C:\temp\chef_test.txt -Force
           }
           if (Test-Path validate_powershell.rb) {
-            Remove-Item validate_powershell.rb -Force
+            Remove-Item validate_powershell.rb -Force  
           }

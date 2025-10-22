@@ -10,27 +10,68 @@ param(
 # Set error action preference
 $ErrorActionPreference = 'Stop'
 
+# Add some environment debugging
+Write-Output "==> Environment Information:"
+Write-Output "PowerShell Version: $($PSVersionTable.PSVersion)"
+Write-Output "OS Version: $([Environment]::OSVersion.VersionString)"
+Write-Output "Working Directory: $(Get-Location)"
+
 try {
     Write-Output "==> Installing Chef..."
-    . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression
-    Install-Project -project chef -channel current
+    
+    # Download and execute the Chef installer
+    try {
+        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression
+        Install-Project -project chef -channel current
+        Write-Output "✅ Chef installation completed"
+    } catch {
+        Write-Error "❌ Chef installation failed: $_"
+        throw
+    }
     
     # Set PATH
+    Write-Output "==> Setting PATH environment..."
+    $originalPath = $env:PATH
     $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+    Write-Output "✅ PATH updated"
     
     # Verify initial installation
     Write-Output "==> Verifying Chef installation..."
-    chef-client -v
-    if ($LASTEXITCODE -ne 0) { throw "chef-client version check failed" }
+    try {
+        $chefVersion = chef-client -v 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "chef-client version check failed with exit code $LASTEXITCODE" }
+        Write-Output "✅ Chef client: $chefVersion"
+    } catch {
+        Write-Error "❌ Chef client verification failed: $_"
+        throw
+    }
     
-    ohai -v  
-    if ($LASTEXITCODE -ne 0) { throw "ohai version check failed" }
+    try {
+        $ohaiVersion = ohai -v 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "ohai version check failed with exit code $LASTEXITCODE" }
+        Write-Output "✅ Ohai: $ohaiVersion"
+    } catch {
+        Write-Error "❌ Ohai verification failed: $_"
+        throw
+    }
     
-    rake --version
-    if ($LASTEXITCODE -ne 0) { throw "rake version check failed" }
+    try {
+        $rakeVersion = rake --version 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "rake version check failed with exit code $LASTEXITCODE" }
+        Write-Output "✅ Rake: $rakeVersion"
+    } catch {
+        Write-Error "❌ Rake verification failed: $_"
+        throw
+    }
     
-    bundle -v
-    if ($LASTEXITCODE -ne 0) { throw "bundle version check failed" }
+    try {
+        $bundleVersion = bundle -v 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "bundle version check failed with exit code $LASTEXITCODE" }
+        Write-Output "✅ Bundle: $bundleVersion"
+    } catch {
+        Write-Error "❌ Bundle verification failed: $_"
+        throw
+    }
     
     # Get Ohai version from Gemfile.lock
     $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
@@ -145,7 +186,7 @@ try {
     )
     
     # Write the recipe to a file
-    $recipe_lines | Out-File -FilePath 'validate_powershell.rb' -Encoding utf8
+    $recipe_lines | Set-Content -Path 'validate_powershell.rb'
     
     # Run the PowerShell recipe with Chef
     Write-Output "==> Running PowerShell validation recipe..."
