@@ -36,28 +36,6 @@ jobs:
     - name: Kitchen Test
       run: kitchen verify ${{ matrix.os }}
 
-#  mac_x86_64:
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os:
-#          - macos-15-intel
-#    runs-on: ${{ matrix.os }}
-#    env:
-#      CHEF_LICENSE: accept-no-persist
-#      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-#    steps:
-#      - name: Check out code
-#        uses: actions/checkout@v5
-#        with:
-#            clean: true
-#      - name: Install Chef
-#        uses: actionshub/chef-install@main
-#        with:
-#          version: "25.5.1084"
-#      - name: Kitchen Test
-#        run: kitchen verify ${{ matrix.os }}
-#
   mac_arm64:
     strategy:
       fail-fast: false
@@ -129,7 +107,7 @@ jobs:
           - almalinux-10
           - debian-11
           - debian-12
-          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
+          - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
           - fedora-41
           - fedora-42
           - opensuse-leap-15
@@ -141,7 +119,7 @@ jobs:
           - rockylinux-10
           - ubuntu-2204
           - ubuntu-2404
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
@@ -154,7 +132,7 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
           sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox-7.1
+          sudo apt-get install -y vagrant virtualbox  # -7.2
           sudo vagrant --version
           sudo VBoxManage --version
       - name: Install Chef
