@@ -119,7 +119,7 @@ jobs:
           - rockylinux-10
           - ubuntu-2204
           - ubuntu-2404
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
