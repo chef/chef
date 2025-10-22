@@ -141,9 +141,9 @@ $env:PATH = $null
 $env:Path = $p
 
 # making sure we find the dlls from chef powershell in the tests.
-$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
-$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
-$env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
+# $powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
+# $powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
+# $env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
 
 # Test PowerShell integration with a simple hello world recipe
 Write-Output "Testing PowerShell integration..."
@@ -158,17 +158,17 @@ try {
     # Create a temporary recipe file
     $recipeFile = Join-Path $Env:TEMP "test_powershell.rb"
     Set-Content -Path $recipeFile -Value $testRecipe
-    
+
     Write-Output "Running chef-apply with PowerShell test recipe..."
     chef-apply $recipeFile -l info
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Output "[OK] PowerShell integration test passed!"
     } else {
         Write-Error "[FAIL] PowerShell integration test failed with exit code: $LASTEXITCODE"
         $exit = 1
     }
-    
+
     # Clean up
     Remove-Item $recipeFile -Force -ErrorAction SilentlyContinue
 } catch {
