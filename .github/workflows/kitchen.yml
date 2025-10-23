@@ -16,6 +16,8 @@ defaults:
     working-directory: kitchen-tests
 
 jobs:
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing windows using community test-kitchen
   win_x86_64:
     strategy:
       fail-fast: false
@@ -82,7 +84,9 @@ jobs:
       - name: Kitchen Test
         run: kitchen verify ${{ matrix.os }}
 
+  # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
+    name: dokr_lnx_x86_64_hab
     strategy:
       fail-fast: false
       matrix:
@@ -109,13 +113,45 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
       - name: Check out code
-        uses: actions/checkout@v5
-      - name: Install Chef
-        uses: actionshub/chef-install@main
+        uses: actions/checkout@v4
+      - name: Install Habitat CLI
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+      - name: Install Test-Kitchen-Enterprise
+        run: |
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          kitchen --version
+          # chef-cli is needed for some kitchen operations
+          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+      - name: Generate fake Habitat Origin Key
+        run: |
+          hab origin key generate "$HAB_ORIGIN"
+          # Export the keys for later use in the Docker container
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+      - name: Build Habitat Package (for testing purpose only)
+        run: |
+          # Move out of default kitchen-tests dir to the repo root
+          cd ..
+          hab pkg build .
+          source ./results/last_build.env
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+      - name: Set up HAB token file # Set up a token file to be mounted inside the dokken container
+        run: |
+          # Create a token file that can be mounted into containers
+          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+          chmod 600 hab_token
       - name: Kitchen Test
-        run: kitchen verify ${{ matrix.os }}
+        run: |
+          # Use this when turning on Inspec integration tests
+          #kitchen test end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:

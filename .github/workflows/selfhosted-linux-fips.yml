@@ -1,0 +1,97 @@
+---
+name: linux-fips
+permissions:
+  contents: read
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: selfhosted-fips-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    strategy:
+      fail-fast: false
+    runs-on: [self-hosted, ubuntu-2204-pro-fips-tester]
+    env:
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+    steps:
+      - name: 'Clean up any previous installs'
+        id: cleanup
+        run: |
+          set +e
+          if [ -d "/home/azureuser/actions-runner/_work/chef/chef" ]; then
+            sudo rm -r /home/azureuser/actions-runner/_work/chef/chef/*
+          fi
+          set -e
+
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+            clean: false
+
+      - name: Install Habitat CLI
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+
+      - name: Generate fake Habitat Origin Key
+        run: |
+          hab origin key generate "$HAB_ORIGIN"
+          # Export the keys for later use
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+
+      - name: Build Habitat Package
+        run: |
+          # Build the Habitat package
+          hab pkg build .
+          source ./results/last_build.env
+          cp "./results/$pkg_artifact" chef-infra-client-latest.hart
+
+      - name: Set up HAB token file
+        run: |
+          # Create a token file for habitat operations
+          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+          chmod 600 hab_token
+
+      - name: Install Chef Infra Client Habitat Package
+        run: |
+          # Import the previously exported key
+          cat "$HAB_ORIGIN-key.tar.gz" | sudo hab origin key import
+          sudo hab pkg install ./chef-infra-client-latest.hart --auth "$(cat hab_token)"
+          # Verify installation
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+
+      - name: 'Verify FIPS is enabled on the system'
+        run: |
+          # Check if FIPS mode is enabled on the system
+          OUTPUT=$(cat /proc/sys/crypto/fips_enabled)
+          if [ "$OUTPUT" = "1" ]
+          then
+            echo "FIPS is enabled"
+          else
+            echo "FIPS is not enabled"
+            exit 1
+          fi
+
+      - name: Run chef-client with FIPS
+        run: |
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+
+          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
+          # output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
+          # if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
+          #   echo "✅ Chef Infra Client is running in FIPS mode"
+          # else
+          #   echo "❌ FIPS mode not detected"
+          #   exit 1
+          # fi

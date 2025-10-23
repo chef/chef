@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 19.0"
   s.add_dependency "inspec-core", "= 7.0.38.beta"
 
-  s.add_dependency "ffi", ">= 1.15.5"
+  s.add_dependency "ffi", ">= 1.15.5", "< 1.18.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
@@ -59,6 +59,8 @@ Gem::Specification.new do |s|
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, and plist resources
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
   s.add_dependency "addressable"
+  s.add_dependency "syslog"
+  s.add_dependency "csv", "~> 3.3.5" # really needs to come from inspec?
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
   s.add_dependency "uri", "~> 1.0.3" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
