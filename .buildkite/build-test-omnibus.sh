@@ -289,6 +289,25 @@ then
       echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
       echo "    - ./omnibus/omnibus-test.ps1"
       echo "  timeout_in_minutes: 120"
+      echo "- env:"
+      echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
+      echo "  label: \":mag::windows: pwsh ${platform%:*}\""
+      echo "  key: test-pwsh-${platform%:*}"
+      echo "  retry:"
+      echo "    automatic:"
+      echo "      limit: 1"
+      echo "  agents:"
+      if [[ $BUILDKITE_ORGANIZATION_SLUG == "chef-oss" ]]
+      then
+        echo "    queue: default-${platform%:*}-privileged"
+      else
+        echo "    queue: omnibus-${platform%:*}-x86_64"
+      fi
+      echo "  commands:"
+      echo "    - ./.expeditor/scripts/download_built_omnibus_pkgs.ps1"
+      echo "    - ./omnibus/powershell-test.ps1"
+      echo "  timeout_in_minutes: 120"
+        
     fi
   done
 fi

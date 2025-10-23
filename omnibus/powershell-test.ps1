@@ -1,32 +1,6 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install chocolatey
-function installChoco {
-
-  if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
-      Write-Output "Chocolatey is not installed, proceeding to install"
-          try {
-              write-output "installing in 3..2..1.."
-              Set-ExecutionPolicy Bypass -Scope Process -Force
-              [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-              iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-          }
-
-          catch {
-                Write-Error $_.Exception.Message
-          }
-  }
-
-  else {
-      Write-Output "Chocolatey is already installed, upgrading"
-      choco feature enable -n=allowGlobalConfirmation
-      choco upgrade chocolatey
-  }
-}
-
-installChoco
-
 # install powershell core
 if ($PSVersionTable.PSVersion.Major -lt 7) {
   $TLS12Protocol = [System.Net.SecurityProtocolType] 'Ssl3 , Tls12'
@@ -60,22 +34,6 @@ Remove-Item Env:RUBY_ROOT -ErrorAction SilentlyContinue
 Remove-Item Env:RUBY_VERSION -ErrorAction SilentlyContinue
 Remove-Item Env:BUNDLER_VERSION -ErrorAction SilentlyContinue
 
-ForEach ($b in
-  "chef-client",
-  "chef-solo",
-  "ohai"
-) {
-  Write-Output "Checking for existence of binfile $b..."
-
-  If (Test-Path -PathType Leaf -Path "C:\opscode\chef\bin\$b") {
-    Write-Output "Found $b!"
-  }
-  Else {
-    Write-Output "Error: Could not find $b"
-    Throw 1
-  }
-}
-
 $Env:PATH = "C:\opscode\chef\bin;$Env:PATH"
 
 chef-client --version
@@ -105,33 +63,14 @@ If ($lastexitcode -ne 0) { Throw $lastexitcode }
 $chefdir = Split-Path -Path "$chefdir" -Parent
 $chefdir = Split-Path -Path "$chefdir" -Parent
 
-# Check if spec directories exist in the gem location
-if (Test-Path "$chefdir\spec\unit") {
-    Set-Location -Path $chefdir
-    Write-Output "Running tests from gem directory: $chefdir"
-} else {
-    # Stay in original location if specs aren't in gem directory
-    Write-Output "Spec directories not found in gem location, staying in original directory"
-    Write-Output "Current location: $(Get-Location)"
-}
-
-Get-Location
-
 # ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 $Env:FORCE_FFI_YAJL = "ext"
 
 # accept license
 $Env:CHEF_LICENSE = "accept-no-persist"
 
-# some tests need winrm configured
-winrm quickconfig -quiet
-If ($lastexitcode -ne 0) { Throw $lastexitcode }
-
 # temp fix until we figure out whats going on in our specific environment as it pertains to unf_ext#
 gem install unf_ext -v 0.0.8.2 --source https://rubygems.org/gems/unf_ext
-
-bundle
-If ($lastexitcode -ne 0) { Throw $lastexitcode }
 
 # buildkite changes the casing of the Path variable to PATH
 # It is not clear how or where that happens, but it breaks the choco
@@ -174,47 +113,6 @@ try {
 } catch {
     Write-Error "[FAIL] PowerShell integration test failed with error: $_"
     Write-Error $_.ScriptStackTrace
-    $exit = 1
-}
-
-# Running the specs separately fixes an edge case on 2012R2-i386 where the desktop heap's
-# allocated limit is hit and any test's attempt to create a new process is met with
-# exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
-# desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
-$exit = 0
-
-bundle exec rspec -f progress --profile -- ./spec/unit
-If ($lastexitcode -ne 0) { $exit = 1 }
-Write-Output "Last exit code: $lastexitcode"
-Write-Output ""
-
-bundle exec rspec -f progress --profile -- ./spec/functional
-If ($lastexitcode -ne 0) { $exit = 1 }
-Write-Output "Last exit code: $lastexitcode"
-Write-Output ""
-
-bundle exec rspec -f progress --profile -- ./spec/integration
-If ($lastexitcode -ne 0) { $exit = 1 }
-Write-Output "Last exit code: $lastexitcode"
-Write-Output ""
-
-Write-Output "Verifying REXML gem version..."
-$rexml_versions = & $embedded_bin_dir\gem.bat list rexml
-If ($rexml_versions -match "rexml \(([\d., ]+)\)") {
-    $versions = $matches[1].Split(",").Trim()
-    $min_version = [System.Version]"3.3.6"
-    $old_versions = $versions | Where-Object {
-        $v = [System.Version]($_ -replace '^(\d+\.\d+\.\d+).*$', '$1')
-        $v -lt $min_version
-    }
-
-    if ($old_versions) {
-        Write-Error "Found old REXML versions: $($old_versions -join ', '). Minimum required version is 3.3.6"
-        $exit = 1
-    }
-    Write-Output "REXML version check passed"
-} else {
-    Write-Error "Could not determine REXML gem version"
     $exit = 1
 }
 
