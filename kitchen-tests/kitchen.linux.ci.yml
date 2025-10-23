@@ -3,8 +3,8 @@ driver:
   name: vagrant
   box_auto_update: true
   box_auto_prune: true
-#   cache_directory: false
-#   linked_clone: true
+  cache_directory: false
+  linked_clone: true
 #   customize:
 #     memory: 4096
 #     accelerate-3d: "off"
