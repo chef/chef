@@ -130,6 +130,10 @@
                 <Permission User="[WIX_ACCOUNT_USERS]" GenericRead="yes" GenericExecute="yes"/>
               </CreateFolder>
             </Component>
+            <Component Id="ChefTopLevelPath" Guid="{BDA57DF3-9826-49AC-8011-17AF2296477B}" >
+              <Environment Id="ChefTopLevelPathEnvironment"
+                            Name="PATH" Action="set" Part="last" System="yes" Value="[PROJECTLOCATION]" />
+            </Component>
             <Directory Id="PROJECTLOCATIONBIN" Name="bin" >
               <Component Id="ChefClientPath" Guid="{7F663F88-55A2-4E20-82BF-8BD2E60BB83A}" >
                 <Environment Id="ClientPathEnvironment"
@@ -172,6 +176,7 @@
       <ComponentGroupRef Id="ProjectDir" />
       <ComponentRef Id="ProjectLocationPermissions" />
       <ComponentRef Id="ChefClientPath" />
+      <ComponentRef Id="ChefTopLevelPath" />
       <ComponentRef Id="CONFIGLOCATIONDIR" />
       <ComponentRef Id="ChefClientLog" />
     </Feature>
