@@ -154,16 +154,13 @@ for plan in ${habitat_plans[@]}; do
   # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
   # echo "      cached_folders:"
   # echo "      - vendor"
-  echo "  env:"
-  echo "    ARTIFACTORY_URL: ${ARTIFACTORY_URL:-https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local}"
   echo "  timeout_in_minutes: 60"
   echo "  commands:"
   if [ $plan == "windows" ]
   then
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
-    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
-    echo "    - sudo --preserve-env=HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN,ARTIFACTORY_TOKEN env HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN=\$ARTIFACTORY_TOKEN
-    echo "./.expeditor/scripts/verify-plan.sh"
+    echo "    - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
+    echo "    - sudo ./.expeditor/scripts/verify-plan.sh"
   fi
 done

@@ -40,7 +40,7 @@ for plan in ${habitat_plans[@]}; do
     echo "    - ./.expeditor/scripts/verify-plan.ps1" >> $pipeline_config
   else
     echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'" >> $pipeline_config
-    echo "    - sudo --preserve-env=HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN,ARTIFACTORY_TOKEN env HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN=\$ARTIFACTORY_TOKEN ./.expeditor/scripts/verify-plan.sh" >> $pipeline_config
+    echo "    - sudo ./.expeditor/scripts/verify-plan.sh" >> $pipeline_config
   fi
 done
 

@@ -70,15 +70,11 @@ fi
 
 export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
- export VAULT_ADDR="https://vault.ps.chef.co"
- export ARTIFACTORY_TOKEN=$(vault kv get -field token account/static/artifactory/buildkite)
- if [[ $? -eq 0 ]]; then
-  echo "ARTIFACTORY_TOKEN is set successfully."
- else
-  echo "Failed to set ARTIFACTORY_TOKEN."
-  exit 1
- fi
- export ARTIFACTORY_REPO_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+  export VAULT_ADDR="https://vault.ps.chef.co"
+  export ARTIFACTORY_TOKEN=$(vault kv get -field token account/static/artifactory/buildkite)
+  export ARTIFACTORY_REPO_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
+fi
 
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
 
