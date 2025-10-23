@@ -4,7 +4,7 @@ expeditor:
       timeout_in_minutes: 45
 
 steps:
-  - label: ":habitat: linux plan"
+  - label: "habitat: linux plan"
     expeditor:
       executor:
         docker:
@@ -16,7 +16,7 @@ steps:
       - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-linux'
       - sudo ./.expeditor/scripts/verify-plan.sh
 
-  - label: ":habitat: windows plan"
+  - label: "habitat: windows plan"
     agents:
       queue: default-windows-2019-privileged
     env:
