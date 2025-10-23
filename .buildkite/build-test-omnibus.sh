@@ -290,7 +290,7 @@ then
       echo "    - ./omnibus/omnibus-test.ps1"
       echo "  timeout_in_minutes: 120"
       echo "- env:"
-      echo "    OMNIBUS_BUILDER_KEY: build-pwsh-${platform#*:}"
+      echo "    OMNIBUS_BUILDER_KEY: build-${platform#*:}"
       echo "  label: \":mag::windows: pwsh ${platform%:*}\""
       echo "  key: test-pwsh-${platform%:*}"
       echo "  retry:"
