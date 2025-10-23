@@ -18,4 +18,31 @@ cd $workdir
 echo "--- Generating pipeline configuration.."
 /tmp/ruby-3.4.2-install/bin/ruby .buildkite/validate-adhoc.rb > pipeline-config.yaml
 
+# Habitat plans
+habitat_plans=("linux" "windows")
+
+for plan in ${habitat_plans[@]}; do
+  echo "- label: \":habicat: $plan plan\"" >> $pipeline_config
+  echo "  retry:" >> $pipeline_config
+  echo "    automatic:" >> $pipeline_config
+  echo "      limit: 1" >> $pipeline_config
+  echo "  agents:" >> $pipeline_config
+  if [ $plan == "windows" ]; then
+    echo "    queue: single-use-windows-2019-privileged" >> $pipeline_config
+  else
+    echo "    queue: single-use-privileged" >> $pipeline_config
+  fi
+  echo "  env:" >> $pipeline_config
+  echo "    ARTIFACTORY_URL: ${ARTIFACTORY_URL:-https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local}" >> $pipeline_config
+  echo "  timeout_in_minutes: 60" >> $pipeline_config
+  echo "  commands:" >> $pipeline_config
+  if [ $plan == "windows" ]; then
+    echo "    - ./.expeditor/scripts/verify-plan.ps1" >> $pipeline_config
+  else
+    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'" >> $pipeline_config
+    echo "    - sudo --preserve-env=HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN,ARTIFACTORY_TOKEN env HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN=\$ARTIFACTORY_TOKEN ./.expeditor/scripts/verify-plan.sh" >> $pipeline_config
+  fi
+done
+
+echo "--- Uploading pipeline configuration.."
 buildkite-agent pipeline upload pipeline-config.yaml
