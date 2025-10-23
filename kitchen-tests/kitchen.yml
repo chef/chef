@@ -31,35 +31,10 @@ lifecycle:
 
 platforms:
   - name: almalinux-8
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: almalinux-9
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: almalinux-10
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: amazonlinux-2
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: amazonlinux-2023
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: debian-11
   - name: debian-12
   - name: debian-13
@@ -70,43 +45,16 @@ platforms:
   - name: opensuse-leap-15
   - name: oraclelinux-8
     driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
       box: bento/oraclelinux-8 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
   - name: oraclelinux-9
     driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
       box: bento/oraclelinux-9 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
   - name: oraclelinux-10
     driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
       box: bento/oraclelinux-10 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
   - name: rockylinux-8
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: rockylinux-9
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: rockylinux-10
-    driver:
-      linked_clone: false
-      customize:
-        accelerate-3d: "off"
-        paravirtprovider: "None"
   - name: ubuntu-22.04
   - name: ubuntu-24.04
   - name: windows-11
