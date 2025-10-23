@@ -20,6 +20,9 @@ steps:
         environment:
           - HAB_AUTH_TOKEN
   command: .expeditor/build-docker-images.sh amd64
+  expeditor:
+    accounts:
+      - aws/chef-private-cd
 
 - label: ":docker: build chef-hab arm64"
   agents:
