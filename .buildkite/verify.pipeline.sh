@@ -163,7 +163,7 @@ for plan in ${habitat_plans[@]}; do
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
     echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
-    # echo "    - sudo --preserve-env=HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN,ARTIFACTORY_TOKEN env HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN=\$ARTIFACTORY_TOKEN
+    echo "    - sudo --preserve-env=HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN,ARTIFACTORY_TOKEN env HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN=\$ARTIFACTORY_TOKEN
     echo "./.expeditor/scripts/verify-plan.sh"
   fi
 done
