@@ -144,7 +144,7 @@ jobs:
           lsblk -f
           df -Th
           lsblk -o NAME,ROTA,MODEL,FSTYPE,MOUNTPOINT
-          VBoxManage setproperty machinefolder /mnt
+          # VBoxManage setproperty machinefolder /mnt
           # To debug, uncomment these
           # export VAGRANT_LOG=debug
           # export VBOX_LOG=all.e.l.f
