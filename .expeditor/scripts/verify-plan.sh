@@ -47,3 +47,6 @@ hab pkg install "${project_root}/results/$pkg_artifact" || error 'unable to inst
 
 echo "--- :mag_right: Testing $PLAN"
 ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during test of executables'
+
+echo "--- :arrow_up: Uploading built artifact to Buildkite UI"
+buildkite-agent artifact upload "${project_root}/results/$pkg_artifact"
