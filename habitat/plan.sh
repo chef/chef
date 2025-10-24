@@ -145,7 +145,7 @@ do_install() {
       if [ -z "$HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN" ]; then
         exit_with "ARTIFACTORY_TOKEN is not set; cannot auth to Artifactory." 1
       fi
-
+      echo "***************** INSTALLING  chef-official-distribution *****************"
       gem sources --add "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
       gem install chef-official-distribution --no-document
       gem sources --remove "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
@@ -185,8 +185,7 @@ do_after() {
   cp "${CACHE_PATH}/chef-bin/pkg/chef-bin-${pkg_version}.gem" "${SRC_PATH}/chef-bin/pkg"
   cp "${CACHE_PATH}/chef-config/pkg/chef-config-${pkg_version}.gem" "${SRC_PATH}/chef-config/pkg"
   cp "${CACHE_PATH}/chef-utils/pkg/chef-utils-${pkg_version}.gem" "${SRC_PATH}/chef-utils/pkg"
-  echo "--- :arrow_up: Uploading built artifact to Buildkite UI"
-  buildkite-agent artifact upload "${SRC_PATH}/pkg/chef-${pkg_version}.gem"
+
 }
 
 do_end() {
