@@ -21,4 +21,3 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 gem "chef", path: ".."
 gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist?(File.expand_path("../chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("../chef-config", __dir__) if File.exist?(File.expand_path("../chef-config", __dir__))
-# gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "CHEF-23547-use-offc-distrib-in-hab-plan"

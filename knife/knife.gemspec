@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "train-core", "~> 3.13", ">= 3.13.2" # Updated to be compatible with InSpec custom branch
+  s.add_dependency "train-core", "~> 3.13", ">= 3.13.4" # Updated to be compatible with InSpec 7
   s.add_dependency "train-winrm", ">= 0.2.17"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
