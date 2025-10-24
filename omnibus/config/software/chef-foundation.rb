@@ -14,8 +14,6 @@ else
   source path: "/opt/chef"
 end
 
-relative_path "chef-foundation"
-
 build do
   sync "#{project_dir}", "#{install_dir}"
 end
