@@ -185,6 +185,8 @@ do_after() {
   cp "${CACHE_PATH}/chef-bin/pkg/chef-bin-${pkg_version}.gem" "${SRC_PATH}/chef-bin/pkg"
   cp "${CACHE_PATH}/chef-config/pkg/chef-config-${pkg_version}.gem" "${SRC_PATH}/chef-config/pkg"
   cp "${CACHE_PATH}/chef-utils/pkg/chef-utils-${pkg_version}.gem" "${SRC_PATH}/chef-utils/pkg"
+  echo "--- :arrow_up: Uploading built artifact to Buildkite UI"
+  buildkite-agent artifact upload "${SRC_PATH}/pkg/chef-${pkg_version}.gem"
 }
 
 do_end() {

@@ -245,6 +245,10 @@ function Invoke-After {
     Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg"
     Copy-Item "${CACHE_PATH}\chef-config\pkg\chef-config-${pkg_version}.gem" "${SRC_PATH}\chef-config\pkg"
     Copy-Item "${CACHE_PATH}\chef-utils\pkg\chef-utils-${pkg_version}.gem" "${SRC_PATH}\chef-utils\pkg"
+    Write-Host "--- :arrow_up: Uploading built artifact to Buildkite UI"
+    C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "${SRC_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem"
+    write-output "upload complete"
+
 }
 
 function Remove-StudioPathFrom {
