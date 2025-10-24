@@ -195,6 +195,18 @@ function Invoke-Install {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
 
+        # Install chef-official-distribution gem from artifactory
+        Write-BuildLine "** ****Installing chef-official-distribution gem from artifactory"
+        $ArtifactoryUrl = "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+        gem sources --add $ArtifactoryUrl
+        gem install chef-official-distribution
+        gem sources --remove $ArtifactoryUrl
+
+        # Verify chef-official-distribution installation
+        Write-BuildLine "** Verifying chef-official-distribution installation"
+        gem list chef-official-distribution
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
@@ -233,6 +245,10 @@ function Invoke-After {
     Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg"
     Copy-Item "${CACHE_PATH}\chef-config\pkg\chef-config-${pkg_version}.gem" "${SRC_PATH}\chef-config\pkg"
     Copy-Item "${CACHE_PATH}\chef-utils\pkg\chef-utils-${pkg_version}.gem" "${SRC_PATH}\chef-utils\pkg"
+    # Write-Host "--- :arrow_up: Uploading built artifact to Buildkite UI"
+    # C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "${SRC_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem"
+    # write-output "upload complete"
+
 }
 
 function Remove-StudioPathFrom {

@@ -134,8 +134,24 @@ do_build() {
 }
 
 do_install() {
-  ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
+  (
+    cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+
+    export ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
+
+    # Add condition to check if running under chef-oss organization
+    if [[ "${BUILDKITE_ORGANIZATION_SLUG:-}" == "chef-oss" ]]; then
+      if [ -z "$HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN" ]; then
+        exit_with "ARTIFACTORY_TOKEN is not set; cannot auth to Artifactory." 1
+      fi
+      echo "***************** INSTALLING  chef-official-distribution *****************"
+      gem sources --add "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
+      gem install chef-official-distribution --no-document
+      gem sources --remove "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
+    else
+      build_line "Skipping Artifactory authentication and gem installation for non-chef-oss organizations."
+    fi
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
@@ -146,6 +162,7 @@ do_install() {
     done
   )
 }
+
 
 do_after() {
   build_line "Trimming the fat ..."
@@ -168,6 +185,7 @@ do_after() {
   cp "${CACHE_PATH}/chef-bin/pkg/chef-bin-${pkg_version}.gem" "${SRC_PATH}/chef-bin/pkg"
   cp "${CACHE_PATH}/chef-config/pkg/chef-config-${pkg_version}.gem" "${SRC_PATH}/chef-config/pkg"
   cp "${CACHE_PATH}/chef-utils/pkg/chef-utils-${pkg_version}.gem" "${SRC_PATH}/chef-utils/pkg"
+
 }
 
 do_end() {
