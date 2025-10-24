@@ -70,12 +70,6 @@ fi
 
 export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
-if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
-  export VAULT_ADDR="https://vault.ps.chef.co"
-  export ARTIFACTORY_TOKEN=$(vault kv get -field token account/static/artifactory/buildkite)
-  export ARTIFACTORY_REPO_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
-fi
-
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
 
   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
