@@ -122,6 +122,8 @@ class Chef
       # === Raises
       # * Chef::Exceptions::InvalidResourceSpecification for all invalid input.
       def validate_lookup_spec!(query_object)
+        # expect query_object to be from a controlled source
+        # codeql[ruby/polynomial-redos]
         case query_object
           when Chef::Resource, SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH, Hash
             true
@@ -162,12 +164,16 @@ class Chef
 
       def find_resource_by_string(arg)
         begin
+          # expect arg to be from a controlled source
+          # codeql[ruby/polynomial-redos]
           if arg =~ SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
             return [ lookup(create_key(resource_type, name)) ]
           end
         rescue Chef::Exceptions::ResourceNotFound => e
+          # expect arg to be from a controlled source
+          # codeql[ruby/polynomial-redos]
           if arg =~ MULTIPLE_RESOURCE_MATCH
             begin
               resource_type = $1
