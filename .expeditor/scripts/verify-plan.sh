@@ -42,11 +42,11 @@ echo "--- :construction: Building $PLAN (solely for verification testing)"
 
 source "${project_root}/results/last_build.env" || error 'unable to determine details about this build'
 
+echo "--- :arrow_up: Uploading built artifact to Buildkite UI"
+buildkite-agent artifact upload "${project_root}/results/$pkg_artifact" || error 'unable to upload package'
+
 echo "--- :hammer_and_wrench: Installing $pkg_ident"
 hab pkg install "${project_root}/results/$pkg_artifact" || error 'unable to install this build'
 
 echo "--- :mag_right: Testing $PLAN"
 ${project_root}/habitat/tests/test.sh "$pkg_ident" || error 'failures during test of executables'
-
-echo "--- :arrow_up: Uploading built artifact to Buildkite UI"
-buildkite-agent artifact upload "$pkg_artifact" || error 'unable to upload package'
