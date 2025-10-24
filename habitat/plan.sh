@@ -123,42 +123,6 @@ do_prepare() {
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
 
-    build_line "=== DEBUGGING GEMFILE LOCATION AND CONTENT ==="
-    build_line "Current working directory: $(pwd)"
-    build_line "CACHE_PATH: $CACHE_PATH"
-    build_line "Contents of current directory:"
-    ls -la
-
-    build_line "Checking if Gemfile exists and showing path:"
-    if [ -f Gemfile ]; then
-      build_line "Gemfile found at: $(pwd)/Gemfile"
-    else
-      build_line "Gemfile NOT found in current directory!"
-      exit_with "Gemfile not found in CACHE_PATH" 1
-    fi
-
-    build_line "=== GEMFILE CONTENT VERIFICATION ==="
-    build_line "Searching for InSpec in Gemfile..."
-    grep -n "inspec" Gemfile || build_line "No InSpec references found in Gemfile!"
-
-    build_line "Full InSpec-related lines in Gemfile:"
-    grep -n -A1 -B1 "inspec" Gemfile || build_line "No InSpec context found!"
-
-    build_line "Verifying custom InSpec branch specifically..."
-    if grep -q "inspec.*git.*CHEF-23547" Gemfile; then
-      build_line "Custom InSpec branch found in Gemfile!"
-    else
-      build_line "WARNING: Custom InSpec branch NOT found in Gemfile!"
-      build_line "Let's check what InSpec entries exist:"
-      grep "inspec" Gemfile || build_line "No InSpec entries found at all!"
-    fi
-
-    build_line "=== BUNDLE ENVIRONMENT ==="
-    build_line "Bundle version: $(bundle --version)"
-    build_line "Ruby version: $(ruby --version)"
-    build_line "Gem environment:"
-    gem env | grep -E "RUBY EXECUTABLE|INSTALLATION DIRECTORY|GEM PATH"
-
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
 
@@ -168,24 +132,16 @@ do_build() {
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
 
-    build_line "Final verification of InSpec installation..."
+    build_line "Verifying InSpec installation..."
     gem list inspec
   )
 }
 
 do_install() {
-  # workaround to load custom chef-licensing branch
-  git clone --depth 1 --branch nm/introducing-optional-mode https://github.com/chef/chef-licensing.git /tmp/chef-licensing
-  pushd /tmp/chef-licensing/components/ruby
-  gem build chef-licensing.gemspec
-  gem install chef-licensing-*.gem --no-document
-  popd
-  rm -rf /tmp/chef-licensing
-
-  gem source --add "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+  export ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+  gem sources --add "$ARTIFACTORY_URL"
   gem install chef-official-distribution
-  gem sources -r "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
-
+  gem sources --remove "$ARTIFACTORY_URL"
   # Verify chef-licensing and chef-official-distribution installation
   build_line "** Verifying custom gem installations"
   gem list chef-licensing
@@ -194,21 +150,14 @@ do_install() {
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
 
-    build_line "** Verifying InSpec versions before binstub generation"
-    cd "${CACHE_PATH}" && bundle list | grep inspec
-
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
 
-    for gem in chef-bin chef ohai; do
+    for gem in chef-bin chef inspec-core-bin ohai; do
     # for gem in chef-bin chef inspec-core-bin ohai; do - REMOVING INSPEC DEP FOR TESTING CHEF CLIENT
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
-
-    # Final verification of installed gems in the package
-    build_line "** Final verification of packaged gems"
-    ls -la "${pkg_prefix}/vendor/gems/" | grep inspec || build_line "WARNING: InSpec gems not found in vendor/gems!"
   )
 }
 
