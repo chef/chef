@@ -39,9 +39,6 @@ group(:omnibus_package) do
   gem "chef-vault"
 end
 
-# gem "inspec-core-bin", git: "https://github.com/inspec/inspec.git", branch: "CHEF-23547-use-offc-distrib-in-hab-plan"
-# gem "inspec-core", git: "https://github.com/inspec/inspec.git", branch: "CHEF-23547-use-offc-distrib-in-hab-plan"
-
 group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
