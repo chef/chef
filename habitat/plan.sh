@@ -140,18 +140,13 @@ do_install() {
 
     export ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
 
-    # Add condition to check if running under chef-oss organization
-    if [[ "${BUILDKITE_ORGANIZATION_SLUG:-}" == "chef-oss" ]]; then
-      if [ -z "$HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN" ]; then
+    if [ -z "$HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN" ]; then
         exit_with "ARTIFACTORY_TOKEN is not set; cannot auth to Artifactory." 1
-      fi
-      echo "***************** INSTALLING  chef-official-distribution *****************"
-      gem sources --add "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
-      gem install chef-official-distribution --no-document
-      gem sources --remove "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
-    else
-      build_line "Skipping Artifactory authentication and gem installation for non-chef-oss organizations."
     fi
+    echo "***************** INSTALLING  chef-official-distribution *****************"
+    gem sources --add "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
+    gem install chef-official-distribution --no-document
+    gem sources --remove "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
