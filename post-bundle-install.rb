@@ -108,8 +108,7 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   gemfile_lock = File.read("Gemfile.lock")
   powershell_version = nil
   gemfile_lock.each_line do |line|
-    next if line.include?("remote:")
-    if line.match(/chef-powershell \((.+?)\)/)
+    if line.match(/chef-powershell \(\d+.\d+.\d+\)/)
       powershell_version = $1
       break
     end
