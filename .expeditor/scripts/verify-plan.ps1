@@ -36,11 +36,7 @@ Write-Host "--- :construction: Building $Plan"
 $env:DO_CHECK=$true; $env:HAB_REFRESH_CHANNEL="LTS-2024"; hab pkg build .
 if (-not $?) { throw "unable to build"}
 
-
 . results/last_build.ps1
-# Write-Host "--- :arrow_up: Uploading built artifact to Buildkite UI"
-# C:\buildkite-agent\bin\buildkite-agent.exe artifact upload "$project_root\results\$pkg_artifact"
-
 if (-not $?) { throw "unable to determine details about this build"}
 
 Write-Host "--- :hammer_and_wrench: Installing $pkg_ident"
