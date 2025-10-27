@@ -137,7 +137,6 @@ do_install() {
   (
     cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
-    export AWS_REGION="us-west-2"
 
     echo "***************** INSTALLING  chef-official-distribution *****************"
     artifactory_url="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
