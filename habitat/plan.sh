@@ -1,5 +1,4 @@
 export HAB_BLDR_CHANNEL="LTS-2024"
-export HAB_AUTH_TOKEN
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
 _chef_client_ruby="core/ruby3_1"
 pkg_name="chef-infra-client"
@@ -157,7 +156,6 @@ do_install() {
   )
 }
 
-
 do_after() {
   build_line "Trimming the fat ..."
 
@@ -181,7 +179,6 @@ do_after() {
   cp "${CACHE_PATH}/chef-utils/pkg/chef-utils-${pkg_version}.gem" "${SRC_PATH}/chef-utils/pkg"
 
 }
-
 do_end() {
   if [ "$(readlink /usr/bin/env)" = "$(pkg_interpreter_for core/coreutils bin/env)" ]; then
     build_line "Removing the symlink we created for '/usr/bin/env'"
