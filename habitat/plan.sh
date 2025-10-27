@@ -142,9 +142,11 @@ do_install() {
 
     echo "***************** INSTALLING  chef-official-distribution *****************"
     ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
-    gem sources --add ${ARTIFACTORY_URL}
-    gem install chef-official-distribution --no-document
-    gem sources --remove ${ARTIFACTORY_URL}
+    artifactory_url="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+    gem sources --add "$artifactory_url"
+    gem install chef-official-distribution
+    gem sources --remove "$artifactory_url"
+
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
