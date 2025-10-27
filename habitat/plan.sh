@@ -145,6 +145,12 @@ do_install() {
     gem install chef-official-distribution
     gem sources --remove "$artifactory_url"
 
+    # verify installation
+    echo "***************** VERIFYING  chef-official-distribution *****************"
+    gem list chef-official-distribution
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
