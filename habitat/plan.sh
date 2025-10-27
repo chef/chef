@@ -140,12 +140,8 @@ do_install() {
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
     export AWS_REGION="us-west-2"
 
-    if [ -z "$HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN" ]; then
-        exit_with "ARTIFACTORY_TOKEN is not set; cannot auth to Artifactory." 1
-    fi
     echo "***************** INSTALLING  chef-official-distribution *****************"
-    ARTIFACTORY_URL= "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
-   # gem sources --add "https://_:${HAB_STUDIO_SECRET_ARTIFACTORY_TOKEN}@${ARTIFACTORY_URL}"
+    ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
     gem sources --add ${ARTIFACTORY_URL}
     gem install chef-official-distribution --no-document
     gem sources --remove ${ARTIFACTORY_URL}
