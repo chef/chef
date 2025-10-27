@@ -139,9 +139,20 @@ do_build() {
 
 do_install() {
   export ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+
+  build_line "** Adding Artifactory gem source: $ARTIFACTORY_URL"
   gem sources --add "$ARTIFACTORY_URL"
-  gem install chef-official-distribution
+
+  build_line "** Installing chef-official-distribution gem..."
+  if gem install chef-official-distribution --verbose; then
+    build_line "** chef-official-distribution installed successfully"
+  else
+    build_line "** ERROR: Failed to install chef-official-distribution (exit code: $?)"
+  fi
+
+  build_line "** Removing Artifactory gem source"
   gem sources --remove "$ARTIFACTORY_URL"
+
   # Verify chef-licensing and chef-official-distribution installation
   build_line "** Verifying custom gem installations"
   gem list chef-licensing
