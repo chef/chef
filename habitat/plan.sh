@@ -1,4 +1,8 @@
 export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION}) || {
+  echo "ERROR: Failed to retrieve HAB_AUTH_TOKEN from AWS SSM Parameter Store." >&2
+  exit 1
+}
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
 _chef_client_ruby="core/ruby3_1"
 pkg_name="chef-infra-client"
