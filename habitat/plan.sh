@@ -141,7 +141,6 @@ do_install() {
     export AWS_REGION="us-west-2"
 
     echo "***************** INSTALLING  chef-official-distribution *****************"
-    ARTIFACTORY_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
     artifactory_url="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
     gem sources --add "$artifactory_url"
     gem install chef-official-distribution
