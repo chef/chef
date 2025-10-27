@@ -137,7 +137,8 @@ do_install() {
   (
     cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
-
+    echo "*********BUILDKITE_ORGANIZATION_SLUG: $BUILDKITE_ORGANIZATION_SLUG"
+    echo "*************CI_PROJECT_NAMESPACE: $CI_PROJECT_NAMESPACE"
     echo "***************** INSTALLING  chef-official-distribution *****************"
     artifactory_url="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
     gem sources --add "$artifactory_url"
