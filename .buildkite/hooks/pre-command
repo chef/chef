@@ -33,6 +33,16 @@ then
   export AWS_SESSION_TOKEN
 fi
 
+# export artifactory credentials
+# Only set secrets for non-OSS orgs
+if [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+  export VAULT_ADDR="https://vault.ps.chef.co"
+  export VAULT_TOKEN=$(vault login -method=aws -path=aws/private-cd -token-only header_value=vault.ps.chef.co role=ci)
+  export ARTIFACTORY_PASSWORD=$(vault kv get -field token account/static/artifactory/buildkite)
+  export ARTIFACTORY_TOKEN=$ARTIFACTORY_PASSWORD
+  export ARTIFACTORY_REPO_URL="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local"
+fi
+
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
 # Fetching it here hopefully will prevent this situation.
