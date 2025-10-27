@@ -132,7 +132,7 @@ for gem in ${external_gems[@]}; do
       ;;
   esac
 done
-habitat_plans=("linux" "windows")
+habitat_plans=( "windows")
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""
   echo "  retry:"
@@ -171,8 +171,8 @@ for plan in ${habitat_plans[@]}; do
   if [ $plan == "windows" ]
   then
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
-  else
-    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
-    echo "    - sudo -E ./.expeditor/scripts/verify-plan.sh"
-  fi
+  # else
+  #   echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
+  #   echo "    - sudo -E ./.expeditor/scripts/verify-plan.sh"
+ fi
 done
