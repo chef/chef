@@ -1,7 +1,6 @@
 $env:HAB_BLDR_CHANNEL = "base-2025"
 $pkg_name="chef-infra-client"
 
-$env:HAB_BLDR_CHANNEL="base-2025"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
@@ -274,6 +273,57 @@ function Invoke-Install {
     } finally {
         Pop-Location
     }
+
+    # Temporary code for testing Openssl FIPS
+#     $confDir = "$pkg_prefix\openssl"
+#     New-Item -ItemType Directory -Force -Path $confDir | Out-Null
+
+# @"
+# openssl_conf = openssl_init
+
+# [openssl_init]
+# providers = provider_sect
+
+# [provider_sect]
+# default = default_sect
+# fips = fips_sect
+
+# [default_sect]
+# activate = 1
+
+# [fips_sect]
+# activate = 1
+# "@ | Set-Content "$confDir\openssl.cnf"
+
+# @"
+# openssl_conf = openssl_init
+
+# [openssl_init]
+# providers   = provider_sect
+# alg_section = algorithm_sect
+
+# [provider_sect]
+# default = default_sect
+# fips   = fips_sect
+
+# [default_sect]
+# activate = 1
+
+# [fips_sect]
+# activate = 1
+
+# [algorithm_sect]
+# default_properties = fips=yes
+# "@ | Set-Content "$confDir\fipsmodule.cnf"
+
+# Write-Host "openssl.cnf:"
+# Get-Content "$confDir\openssl.cnf"
+# Write-Host "fipsmodule.cnf:"
+# Get-Content "$confDir\fipsmodule.cnf"
+#Set-RuntimeEnv -Force OPENSSL_CONF "$confDir\openssl.cnf"
+
+$openssl_path = "$(Get-HabPackagePath core/openssl)"
+Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl.cnf"
 }
 
 function Invoke-After {
