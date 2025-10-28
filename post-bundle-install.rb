@@ -103,22 +103,15 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   require "openssl"
   puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
 
+  chef_powershell_path = `bundle show chef-powershell`.strip
 
-  # Extract chef-powershell version from Gemfile.lock
-  gemfile_lock = File.read("Gemfile.lock")
-  powershell_version = nil
-  gemfile_lock.each_line do |line|
-    if line.match(/chef-powershell \(\d+.\d+.\d+\)/)
-      powershell_version = $1
-      break
+  if chef_powershell_path && !chef_powershell_path.empty?
+    source_bin = File.join(chef_powershell_path, "bin", "ruby_bin_folder")
+    if Dir.exist?(source_bin)
+      require "fileutils"
+      FileUtils.mkdir_p("distro/ruby_bin_folder")
+      FileUtils.cp_r(source_bin, "distro/ruby_bin_folder/")
+      puts "Copied #{source_bin} to distro/ruby_bin_folder/"
     end
-  end
-
-  if powershell_version
-    puts "Reinstalling chef-powershell version #{powershell_version}"
-    system("gem uninstall chef-powershell --force")
-    system("gem install chef-powershell --version #{powershell_version}")
-  else
-    puts "Warning: Could not find chef-powershell version in Gemfile.lock"
   end
 end
