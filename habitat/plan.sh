@@ -145,6 +145,50 @@ do_install() {
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
   )
+
+  # Temporary code for testing Openssl FIPS
+  openssl_pkg_path="$(pkg_path_for core/openssl)"
+  openssl_ssl_path="${openssl_pkg_path}/ssl"
+
+  echo "Writing OpenSSL config files to: $openssl_ssl_path"
+
+  # Write openssl.cnf (basic config, no FIPS enforcement)
+  cat > "${openssl_ssl_path}/openssl.cnf" <<'EOF'
+[openssl_conf]
+providers = provider_sect
+
+[provider_sect]
+fips = fips_sect
+default = default_sect
+
+[default_sect]
+activate = 1
+
+[fips_sect]
+activate = 1
+EOF
+
+  echo "openssl.cnf contents:"
+  cat "${openssl_ssl_path}/openssl.cnf"
+
+  # Write fipsmodule.cnf (includes openssl.cnf and enforces FIPS)
+  cat > "${openssl_ssl_path}/fipsmodule.cnf" <<EOF
+# Include the base configuration first
+.include ${openssl_ssl_path}/openssl.cnf
+
+# Add FIPS enforcement
+[algorithm_sect]
+default_properties = fips=yes
+EOF
+
+  echo "fipsmodule.cnf contents:"
+  cat "${openssl_ssl_path}/fipsmodule.cnf"
+
+  # Set default OPENSSL_CONF to openssl.cnf for all processes
+  pkg_env=(
+    OPENSSL_CONF="${openssl_ssl_path}/fipsmodule.cnf"
+  )
+
 }
 
 do_after() {

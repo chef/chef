@@ -244,6 +244,50 @@ function Invoke-Install {
     } finally {
         Pop-Location
     }
+
+    # Temporary code for testing Openssl FIPS
+    $openssl_pkg_path = "$(Get-HabPackagePath core/openssl)"
+    $openssl_ssl_path = "$openssl_pkg_path\ssl"
+
+    Write-Host "Writing OpenSSL config files to: $openssl_ssl_path"
+
+    # Write openssl.cnf (basic config, no FIPS enforcement)
+    @"
+[openssl_conf]
+providers = provider_sect
+
+[provider_sect]
+fips = fips_sect
+default = default_sect
+
+[default_sect]
+activate = 1
+
+[fips_sect]
+activate = 1
+"@ | Set-Content "$openssl_ssl_path\openssl.cnf"
+
+    Write-Host "openssl.cnf contents:"
+    Get-Content "$openssl_ssl_path\openssl.cnf"
+
+    # Write fipsmodule.cnf (includes openssl.cnf and enforces FIPS)
+    @"
+# Include the base configuration first
+.include $openssl_ssl_path\openssl.cnf
+
+# Add FIPS enforcement
+[algorithm_sect]
+default_properties = fips=yes
+"@ | Set-Content "$openssl_ssl_path\fipsmodule.cnf"
+
+    Write-Host "fipsmodule.cnf contents:"
+    Get-Content "$openssl_ssl_path\fipsmodule.cnf"
+
+    # Set default OPENSSL_CONF to openssl.cnf for all processes
+    $pkg_env = @{
+      OPENSSL_CONF = "$openssl_ssl_path\fipsmodule.cnf"
+    }
+
 }
 
 function Invoke-After {
