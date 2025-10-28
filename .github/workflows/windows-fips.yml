@@ -34,9 +34,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: base-2025
-      HAB_REFRESH_CHANNEL: base-2025
+      # HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      # HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_BLDR_CHANNEL: fips-testing
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: fips-testing
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
+      HAB_STUDIO_SECRET_HAB_PREFER_LOCAL_CHEF_DEPS: true
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v6
@@ -63,7 +68,7 @@ jobs:
           # Generate the origin key for signing packages
           hab origin key generate "$env:HAB_ORIGIN"
 
-      - name: 'Build Habitat Package'
+      - name: 'Build Habitat Package of Chef Infra Client'
         run: |
           # Build the package for current checkout
           hab pkg build .
@@ -114,16 +119,149 @@ jobs:
             Exit 1
           }
 
-      - name: 'Run chef-client with FIPS'
+      - name: 'Run Chef Infra Client and verify FIPS enforcement'
         run: |
-          # Verify FIPS mode is active
-          hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client --version
+          Write-Host "========================================"
+          Write-Host "Starting FIPS Verification Tests"
+          Write-Host "========================================"
+          Write-Host ""
 
-          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-          # $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client -l debug --no-color 2>&1 | Select-String "FIPS"
-          # if ($output -match "OpenSSL FIPS 140 mode enabled") {
-          #   Write-Host "✅ Chef Infra Client is running in FIPS mode"
-          # } else {
-          #   Write-Host "❌ FIPS mode not detected"
-          #   Exit 1
-          # }
+          hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z --chef-license accept
+
+          # ============================================
+          # Test 1: MD5 (should FAIL in FIPS mode)
+          # ============================================
+          Write-Host "--- Test 1: MD5 Digest (should FAIL in FIPS mode) ---"
+          New-Item -ItemType Directory -Force -Path "C:\temp" | Out-Null
+          New-Item -ItemType Directory -Force -Path "$env:TEMP\test_cookbook_md5\recipes" | Out-Null
+          @"
+          file 'C:\temp\test_md5' do
+            content lazy { OpenSSL::Digest::MD5.hexdigest('test') }
+          end
+          "@ | Set-Content -Path "$env:TEMP\test_cookbook_md5\recipes\default.rb"
+
+          $logPathMD5 = "$env:TEMP\chef-client-md5.log"
+          $exitCodeMD5 = 0
+          try {
+            hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z `
+              --config-option "cookbook_path=$env:TEMP" `
+              -o test_cookbook_md5 2>&1 | Tee-Object -FilePath $logPathMD5
+            $exitCodeMD5 = $LASTEXITCODE
+          } catch {
+            $exitCodeMD5 = 1
+            $_ | Out-File -Append -FilePath $logPathMD5
+          }
+          Write-Host ""
+
+          # ============================================
+          # Test 2: SHA256 (should SUCCEED in FIPS mode)
+          # ============================================
+          Write-Host "--- Test 2: SHA256 Digest (should SUCCEED in FIPS mode) ---"
+          New-Item -ItemType Directory -Force -Path "$env:TEMP\test_cookbook_sha256\recipes" | Out-Null
+          @"
+          file 'C:\temp\test_sha256' do
+            content lazy { OpenSSL::Digest::SHA256.hexdigest('test') }
+          end
+          "@ | Set-Content -Path "$env:TEMP\test_cookbook_sha256\recipes\default.rb"
+
+          $logPathSHA256 = "$env:TEMP\chef-client-sha256.log"
+          $exitCodeSHA256 = 0
+          try {
+            hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z `
+              --config-option "cookbook_path=$env:TEMP" `
+              -o test_cookbook_sha256 2>&1 | Tee-Object -FilePath $logPathSHA256
+            $exitCodeSHA256 = $LASTEXITCODE
+          } catch {
+            $exitCodeSHA256 = 1
+            $_ | Out-File -Append -FilePath $logPathSHA256
+          }
+          Write-Host ""
+
+          # ============================================
+          # Evaluate Results
+          # ============================================
+          Write-Host "========================================"
+          Write-Host "FIPS Verification Test Results"
+          Write-Host "========================================"
+          Write-Host ""
+
+          # Check Test 1: MD5 should fail
+          Write-Host "Test 1 - MD5 Result:"
+          $MD5TestPassed = $false
+          if ($exitCodeMD5 -ne 0) {
+            # MD5 failed, now check if it's due to FIPS
+            $logContentMD5 = Get-Content $logPathMD5 -Raw
+            if ($logContentMD5 -match "(?i)Digest" -and $logContentMD5 -match "(?i)initialization") {
+              Write-Host "*** PASS: MD5 blocked by FIPS (exit code: $exitCodeMD5) ***"
+              $MD5TestPassed = $true
+            } else {
+              Write-Host "*** FAIL: MD5 failed (exit code: $exitCodeMD5) but not due to FIPS/Digest error ***"
+              Write-Host ""
+              Write-Host "--- MD5 Log excerpt ---"
+              Get-Content $logPathMD5 -Tail 50
+              Write-Host "--- End MD5 log ---"
+              exit 1
+            }
+          } else {
+            Write-Host "*** FAIL: MD5 succeeded (exit code: 0) - FIPS not enforced ***"
+            Write-Host ""
+            Write-Host "--- MD5 Log excerpt ---"
+            Get-Content $logPathMD5 -Tail 50
+            Write-Host "--- End MD5 log ---"
+            exit 1
+          }
+          Write-Host ""
+
+          # Check Test 2: SHA256 should succeed
+          Write-Host "Test 2 - SHA256 Result:"
+          $SHA256TestPassed = $false
+          if ($exitCodeSHA256 -eq 0) {
+            Write-Host "*** PASS: SHA256 allowed by FIPS (exit code: $exitCodeSHA256) ***"
+            $SHA256TestPassed = $true
+          } else {
+            Write-Host "*** FAIL: SHA256 failed (exit code: $exitCodeSHA256) - FIPS blocking approved algorithm ***"
+            Write-Host ""
+            Write-Host "--- SHA256 Log excerpt ---"
+            Get-Content $logPathSHA256 -Tail 50
+            Write-Host "--- End SHA256 log ---"
+            exit 1
+          }
+          Write-Host ""
+
+          # Final summary
+          if ($MD5TestPassed -and $SHA256TestPassed) {
+            Write-Host "========================================"
+            Write-Host "*** ALL TESTS PASSED: FIPS mode is correctly enforced ***"
+            Write-Host "   - MD5 blocked ✓"
+            Write-Host "   - SHA256 allowed ✓"
+            Write-Host "========================================"
+            exit 0
+          } else {
+            Write-Host "========================================"
+            Write-Host "*** TESTS FAILED ***"
+            Write-Host "========================================"
+            exit 1
+          }
+
+      - name: 'Cleanup artifacts on runner'
+        if: always()
+        run: |
+          Write-Host "=== Cleaning up test artifacts ==="
+
+          # Remove the entire C:\temp directory (includes test_md5, test_sha256, etc.)
+          Remove-Item -Path "C:\temp" -Recurse -Force -ErrorAction SilentlyContinue
+
+          # Remove test cookbooks from TEMP
+          Remove-Item -Path "$env:TEMP\test_cookbook_md5" -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "$env:TEMP\test_cookbook_sha256" -Recurse -Force -ErrorAction SilentlyContinue
+
+          # Remove log files
+          Remove-Item -Path "$env:TEMP\chef-client-md5.log" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "$env:TEMP\chef-client-sha256.log" -Force -ErrorAction SilentlyContinue
+
+          # Clean up Habitat artifacts
+          Remove-Item -Path "hab_token" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "$env:HAB_ORIGIN-key.tar.gz" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "chef-infra-client-latest.hart" -Force -ErrorAction SilentlyContinue
+
+          Write-Host "=== Cleanup complete ==="
