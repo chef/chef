@@ -75,3 +75,15 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into Gemfile.local
 eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
+
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+  instance_eval do
+    chef_powershell_path = `bundle show chef-powershell`.strip
+
+    ruby_exe_dir = RbConfig::CONFIG["bindir"]
+    assemblies = Dir.glob(File.join(chef_powershell_path, "distro", "ruby_bin_folder", ENV["PROCESSOR_ARCHITECTURE"], "**", "*"))
+
+    FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
+    ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
+  end
+end
