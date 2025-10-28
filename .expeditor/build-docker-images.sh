@@ -3,7 +3,6 @@ set -eou pipefail
 
 #set expeditor_version equal to the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
-export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
 arch=$1
 
@@ -21,7 +20,6 @@ docker build \
   --build-arg "CHANNEL=${channel}" \
   --build-arg "VERSION=${version}" \
   --build-arg "ARCH=${dockerfile_arch}" \
-  --build-arg "HAB_AUTH_TOKEN=${HAB_AUTH_TOKEN}" \
   -t "chef/chef-hab:${version}-${arch}" .
 
 echo "--- Pushing chef/chef-hab:${version} docker image for ${arch} to dockerhub"
