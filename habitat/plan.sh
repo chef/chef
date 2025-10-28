@@ -1,4 +1,7 @@
-export HAB_BLDR_CHANNEL="base-2025"
+#export HAB_BLDR_CHANNEL="base-2025"
+export HAB_BLDR_CHANNEL="fips-testing"
+export HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL="fips-testing"
+export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
@@ -187,6 +190,9 @@ do_install() {
       head -n 20 "$binstub"
     done
   )
+  # Export default (non-FIPS) OPENSSL_CONF (runtime)
+  openssl_path="$(pkg_path_for core/openssl)"
+  set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl.cnf"
 }
 
 do_after() {

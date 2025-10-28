@@ -298,6 +298,9 @@ function Invoke-Install {
     } finally {
         Pop-Location
     }
+    # Export default (non-FIPS) OPENSSL_CONF (runtime)
+    $openssl_path = "$(Get-HabPackagePath core/openssl)"
+    Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl.cnf"
 }
 
 function Invoke-After {

@@ -416,6 +416,7 @@
     "filterm",
     "finalizer",
     "findfs",
+    "fipsmodule",
     "Fixnums",
     "flushcache",
     "fmri",

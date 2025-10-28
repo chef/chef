@@ -21,9 +21,13 @@ jobs:
     runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
-      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      # HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      # HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_BLDR_CHANNEL: fips-testing
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: fips-testing
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      CHEF_LICENSE_KEY: free-79df705d-b685-419a-8b68-88401f74ff72-3999
     steps:
       - name: 'Clean up any previous installs'
         id: cleanup
@@ -51,24 +55,18 @@ jobs:
           # Export the keys for later use
           hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
 
-      - name: Build Habitat Package
+      - name: Build Habitat Package for Chef Infra Client
         run: |
           # Build the Habitat package
           hab pkg build .
           source ./results/last_build.env
           cp "./results/$pkg_artifact" chef-infra-client-latest.hart
 
-      - name: Set up HAB token file
-        run: |
-          # Create a token file for habitat operations
-          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
-          chmod 600 hab_token
-
       - name: Install Chef Infra Client Habitat Package
         run: |
           # Import the previously exported key
           cat "$HAB_ORIGIN-key.tar.gz" | sudo hab origin key import
-          sudo hab pkg install ./chef-infra-client-latest.hart --auth "$(cat hab_token)"
+          sudo hab pkg install ./chef-infra-client-latest.hart --auth "${{ secrets.HAB_AUTH_TOKEN }}"
           # Verify installation
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
 
@@ -84,15 +82,71 @@ jobs:
             exit 1
           fi
 
-      - name: Run chef-client with FIPS
+      - name: Test chef-client with FIPS
         run: |
-          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z --chef-license accept
 
-          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-          # output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
-          # if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
-          #   echo "✅ Chef Infra Client is running in FIPS mode"
-          # else
-          #   echo "❌ FIPS mode not detected"
-          #   exit 1
-          # fi
+          # Create a minimal cookbook structure
+          mkdir -p /tmp/test_cookbook/recipes
+          echo 'file "/tmp/test" do; content Digest::MD5.hexdigest("test"); end' > /tmp/test_cookbook/recipes/default.rb
+
+          # Run chef-client in local mode, specifying cookbook_path via config option, expect recipe run to fail due to FIPS and md5 usage
+          sudo bash -c "
+            set -o pipefail
+            hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z \
+              --config-option cookbook_path=/tmp \
+              -o test_cookbook 2>&1 | tee /tmp/chef-client.log
+            echo \$? > /tmp/chef-exit-code.txt
+          " || true
+
+          # Read the exit code from the file
+          EXIT_CODE=$(cat /tmp/chef-exit-code.txt)
+
+          # Check if the command failed AND the error is related to MD5/Digest
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "=== Chef-client failed as expected in FIPS mode ==="
+            if grep -qi "Digest" /tmp/chef-client.log && \
+               grep -qi "initialization" /tmp/chef-client.log; then
+              echo "=== PASS: FIPS mode detected and enforced - MD5 blocked with Digest error ==="
+              exit 0
+            else
+              echo "=== FAIL: Command failed but not due to FIPS/MD5 enforcement ==="
+              echo "=== Log excerpt ==="
+              tail -50 /tmp/chef-client.log
+              echo "=== End log excerpt ==="
+              exit 1
+            fi
+          else
+            echo "=== FAIL: FIPS mode not working - chef-client succeeded when it should have failed ==="
+            echo "=== Log excerpt ==="
+            tail -50 /tmp/chef-client.log
+            echo "=== End log excerpt ==="
+            exit 1
+          fi
+
+      # This is self-hosted runner, so we need to clean up after ourselves
+      - name: 'Cleanup self-hosted runner'
+        if: always()  # Run even if previous steps fail
+        run: |
+          echo "=== Cleaning up test artifacts ==="
+
+          # Remove test cookbook and files
+          sudo rm -rf /tmp/test_cookbook
+          sudo rm -f /tmp/test
+          sudo rm -f /tmp/chef-client.log
+          sudo rm -f /tmp/client.rb
+
+          # Remove the installed Chef Infra Client package(s) from /hab/pkgs
+          sudo rm -rf /hab/pkgs/$HAB_ORIGIN/chef-infra-client || true
+
+          # Clean up Habitat build artifacts
+          sudo rm -rf /hab/cache/artifacts/$HAB_ORIGIN-chef-infra-client-*.hart || true
+
+          # Remove origin keys
+          sudo rm -f /hab/cache/keys/$HAB_ORIGIN-*.* || true
+
+          # Clean up any Chef local-mode cache
+          sudo rm -rf /root/.chef/local-mode-cache || true
+          sudo rm -rf /var/chef || true
+
+          echo "=== Cleanup complete ==="
