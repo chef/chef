@@ -747,6 +747,13 @@ module ChefConfig
     # Initialize openssl
     def self.init_openssl
       if fips
+        # Set OPENSSL_CONF to fipsmodule.cnf before requiring OpenSSL
+        if ENV["OPENSSL_CONF"] =~ %r{hab[\/\\]pkgs/}
+          ENV["OPENSSL_CONF"] = ENV["OPENSSL_CONF"].sub("openssl.cnf", "fipsmodule.cnf")
+          puts ">>> OPENSSL_CONF switched to #{ENV["OPENSSL_CONF"]} for FIPS"
+          ChefConfig.logger.debug ">>> OPENSSL_CONF switched to #{ENV["OPENSSL_CONF"]} for FIPS"
+        end
+        require "openssl"
         enable_fips_mode
       end
     end
@@ -1306,7 +1313,9 @@ module ChefConfig
     # sure Chef runs do not crash.
     # @api private
     def self.enable_fips_mode
+      # Enable FIPS mode
       OpenSSL.fips_mode = true
+
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
       require "digest/md5" unless defined?(Digest::MD5)
