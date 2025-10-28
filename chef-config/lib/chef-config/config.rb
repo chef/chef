@@ -746,7 +746,18 @@ module ChefConfig
 
     # Initialize openssl
     def self.init_openssl
+      puts "***** Inside init_openssl fips=#{fips}"
       if fips
+        # Set OPENSSL_CONF to fipsmodule.cnf before requiring OpenSSL
+        if ENV["OPENSSL_CONF"] =~ /hab[\/\\]pkgs/
+          puts "Inside HAB environment block for FIPS"
+          ENV["OPENSSL_CONF"] = ENV["OPENSSL_CONF"].sub("openssl.cnf", "fipsmodule.cnf")
+          puts ">>> OPENSSL_CONF switched to #{ENV['OPENSSL_CONF']} for FIPS"
+        end
+
+        # Require OpenSSL after setting OPENSSL_CONF
+        # require "openssl" unless defined?(::OpenSSL)
+
         enable_fips_mode
       end
     end
@@ -1302,7 +1313,12 @@ module ChefConfig
     # sure Chef runs do not crash.
     # @api private
     def self.enable_fips_mode
+      puts "********* Inside def enable_fips_mode  *********"
+      # Reinitialize OpenSSL to apply the new configuration
+      #OpenSSL::Config.load
+      # Enable FIPS mode
       OpenSSL.fips_mode = true
+
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
       require "digest/md5" unless defined?(Digest::MD5)
