@@ -102,4 +102,11 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   puts "Including openssl"
   require "openssl"
   puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
+
+  chef_powershell_path = Gem::Specification.find_by_name("chef-powershell")
+
+  ruby_exe_dir = RbConfig::CONFIG["bindir"]
+  assemblies = Dir.glob(File.join(chef_powershell_path, "bin", "ruby_bin_folder", ENV["PROCESSOR_ARCHITECTURE"], "**", "*"))
+
+  FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
 end
