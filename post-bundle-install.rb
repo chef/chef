@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require "fileutils"
+
 gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"
