@@ -98,7 +98,7 @@ PATH
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.1.99)
       chef-licensing (>= 0.7.5)
-      chef-powershell (~> 18.1.0)
+      chef-powershell (~> 18.6.0)
       chef-utils (= 19.1.99)
       chef-vault
       chef-zero (~> 15.0.21)
@@ -227,7 +227,7 @@ GEM
       ostruct (~> 0.1.0)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.1.0)
+    chef-powershell (18.6.5)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-ruby-shadow (3.0.0)
@@ -579,7 +579,7 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
+  ffi (>= 1.15.5, < 1.18.0)
   inspec-core-bin (= 7.0.38.beta)
   ohai!
   openssl (= 3.3.0)
@@ -593,4 +593,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.6.9
+   2.5.23
