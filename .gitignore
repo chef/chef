@@ -58,7 +58,7 @@ spec/data/chef_guid
 /config/
 
 
-vendor/
+# vendor/
 kitchen-tests/vendor
 
 # Visual Studio Code files
@@ -106,4 +106,4 @@ mkmf.log
 chef_dictionary.txt
 
 # ignore any gems we build locally
-# *.gem
+*.gem

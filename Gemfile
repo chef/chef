@@ -16,6 +16,10 @@ install_if -> { RUBY_PLATFORM !~ /darwin/ } do
   gem "openssl", "= 3.3.0"
 end
 
+install_if -> { RUBY_PLATFORM =~ /mswin|mingw|windows/ } do
+  gem 'chef-powershell', path: 'vendor/gems/chef-powershell-18.6.5'
+end
+
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)

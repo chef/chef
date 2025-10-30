@@ -1,0 +1,51 @@
+#
+# Author:: John McCrae (<john.mccrae@progress.com>)
+# Copyright:: Copyright, Chef Software Inc.
+# Copyright:: Copyright, Progress Software Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+begin
+  require_relative "tasks/rspec"
+  require_relative "tasks/dependencies"
+  require_relative "tasks/spellcheck"
+  require "rubocop/rake_task"
+  require "rspec/core/rake_task"
+  require "rubygems"
+  require "rake"
+  require "cookstyle"
+rescue LoadError => e
+  puts "Skipping missing rake dep: #{e}"
+end
+
+desc "Check Linting and code style."
+task :style do
+  require "rubocop/rake_task"
+  require "cookstyle/chefstyle"
+
+  if RbConfig::CONFIG["host_os"] =~ /mswin|mingw|cygwin/
+    # Windows-specific command, rubocop erroneously reports the CRLF in each file which is removed when your PR is uploaeded to GitHub.
+    # This is a workaround to ignore the CRLF from the files before running cookstyle.
+    sh "cookstyle --chefstyle -c .rubocop.yml --except Layout/EndOfLine"
+  else
+    sh "cookstyle --chefstyle -c .rubocop.yml"
+  end
+rescue LoadError
+  puts "Rubocop or Cookstyle gems are not installed. bundle install first to make sure all dependencies are installed."
+end
+
+task all: %w{style spellcheck spec update_chef_powershell_dlls gem_build}.freeze
+task gem: %w{style spellcheck spec:doc gem_build}.freeze
+task gem_check: %w{style spellcheck spec}.freeze
