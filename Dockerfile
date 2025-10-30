@@ -22,7 +22,6 @@ ARG CHANNEL=unstable
 ARG VERSION=19.0.49
 ARG ARCH=x86_64
 
-
 ENV HAB_LICENSE="accept-no-persist"
 # Download and extract hab binary and install infra-client habitat package
 RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
