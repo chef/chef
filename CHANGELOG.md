@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.98 -->
-## [v19.1.98](https://github.com/chef/chef/tree/v19.1.98) (2025-10-24)
+<!-- latest_release 19.1.99 -->
+## [v19.1.99](https://github.com/chef/chef/tree/v19.1.99) (2025-10-30)
 
 #### Merged Pull Requests
-- Rebased and squashed Ruby 3.4 Upgrade (from 15148) with unrelated/separable changes extracted to main [#15379](https://github.com/chef/chef/pull/15379) ([tpowell-progress](https://github.com/tpowell-progress))
+- Test recipes using test-kitchen-enterprise on docker containers [#15401](https://github.com/chef/chef/pull/15401) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Test recipes using test-kitchen-enterprise on docker containers [#15401](https://github.com/chef/chef/pull/15401) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.99 -->
 - Rebased and squashed Ruby 3.4 Upgrade (from 15148) with unrelated/separable changes extracted to main [#15379](https://github.com/chef/chef/pull/15379) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->
 - Disable vm_lnx_x86_64 due to GA instability [#15391](https://github.com/chef/chef/pull/15391) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->
 - Updating the blackduck project name so it doesn&#39;t conflict with other… [#15385](https://github.com/chef/chef/pull/15385) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.97 -->
