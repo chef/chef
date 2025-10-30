@@ -87,6 +87,9 @@ jobs:
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
 
+          echo "****OPENSSL_CONF=$OPENSSL_CONF"
+          cat $OPENSSL_CONF
+
           # Verify cryptographic operations work as expected in FIPS mode
           echo "Verifying cryptographic operations in FIPS mode:"
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e "
