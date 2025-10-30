@@ -106,4 +106,4 @@ mkmf.log
 chef_dictionary.txt
 
 # ignore any gems we build locally
-*.gem
+# *.gem
