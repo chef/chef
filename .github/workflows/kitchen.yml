@@ -127,7 +127,7 @@ jobs:
           sudo hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/1.1.4 --channel unstable
           kitchen --version
           # chef-cli is needed for some kitchen operations
           sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
@@ -150,8 +150,13 @@ jobs:
           chmod 600 hab_token
       - name: Kitchen Test
         run: |
+          # Inspec integration tests are currently unstable within kitchen-test context due to hab and package changes between the projects... these will be turned back on as things finalize for a GA release
           # Use this when turning on Inspec integration tests
-          #kitchen test end-to-end-${{ matrix.os }}
+          # kitchen test end-to-end-${{ matrix.os }}
+
+          # Run recipe convergence only
+          kitchen converge end-to-end-${{ matrix.os }}
+          kitchen destroy end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:
