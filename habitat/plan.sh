@@ -147,13 +147,10 @@ do_install() {
   )
 
   # Temporary code for testing Openssl FIPS
-  openssl_pkg_path="$(pkg_path_for core/openssl)"
-  openssl_ssl_path="${openssl_pkg_path}/ssl"
+  conf_dir="${pkg_prefix}/openssl"
+  mkdir -p "$conf_dir"
 
-  echo "Writing OpenSSL config files to: $openssl_ssl_path"
-
-  # Write openssl.cnf (basic config, no FIPS enforcement)
-  cat > "${openssl_ssl_path}/openssl.cnf" <<'EOF'
+  cat > "${conf_dir}/openssl.cnf" <<'EOF'
 [openssl_conf]
 providers = provider_sect
 
@@ -168,26 +165,21 @@ activate = 1
 activate = 1
 EOF
 
-  echo "openssl.cnf contents:"
-  cat "${openssl_ssl_path}/openssl.cnf"
+  cat > "${conf_dir}/fipsmodule.cnf" <<EOF
+# Include base config
+.include ${conf_dir}/openssl.cnf
 
-  # Write fipsmodule.cnf (includes openssl.cnf and enforces FIPS)
-  cat > "${openssl_ssl_path}/fipsmodule.cnf" <<EOF
-# Include the base configuration first
-.include ${openssl_ssl_path}/openssl.cnf
-
-# Add FIPS enforcement
 [algorithm_sect]
 default_properties = fips=yes
 EOF
 
-  echo "fipsmodule.cnf contents:"
-  cat "${openssl_ssl_path}/fipsmodule.cnf"
+  build_line "Base OpenSSL config:"
+  sed 's/^/  /' "${conf_dir}/openssl.cnf"
+  build_line "FIPS OpenSSL config:"
+  sed 's/^/  /' "${conf_dir}/fipsmodule.cnf"
 
-  # Set default OPENSSL_CONF to openssl.cnf for all processes
-  pkg_env=(
-    OPENSSL_CONF="${openssl_ssl_path}/fipsmodule.cnf"
-  )
+  # Export default (non-FIPS) OPENSSL_CONF (runtime)
+  set_runtime_env OPENSSL_CONF "${conf_dir}/openssl.cnf"
 
 }
 

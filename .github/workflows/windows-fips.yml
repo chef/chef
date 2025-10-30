@@ -101,6 +101,7 @@ jobs:
       run: |
         # Verify FIPS mode is active
         hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- env | findstr OPENSSL_CONF
 
         $testScript = @'
         begin

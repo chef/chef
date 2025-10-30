@@ -246,13 +246,10 @@ function Invoke-Install {
     }
 
     # Temporary code for testing Openssl FIPS
-    $openssl_pkg_path = "$(Get-HabPackagePath core/openssl)"
-    $openssl_ssl_path = "$openssl_pkg_path\ssl"
+    $confDir = "$pkg_prefix\openssl"
+    New-Item -ItemType Directory -Force -Path $confDir | Out-Null
 
-    Write-Host "Writing OpenSSL config files to: $openssl_ssl_path"
-
-    # Write openssl.cnf (basic config, no FIPS enforcement)
-    @"
+@"
 [openssl_conf]
 providers = provider_sect
 
@@ -265,28 +262,24 @@ activate = 1
 
 [fips_sect]
 activate = 1
-"@ | Set-Content "$openssl_ssl_path\openssl.cnf"
+"@ | Set-Content "$confDir\openssl.cnf"
 
-    Write-Host "openssl.cnf contents:"
-    Get-Content "$openssl_ssl_path\openssl.cnf"
+@"
+# Include base config
+.include $confDir\openssl.cnf
 
-    # Write fipsmodule.cnf (includes openssl.cnf and enforces FIPS)
-    @"
-# Include the base configuration first
-.include $openssl_ssl_path\openssl.cnf
-
-# Add FIPS enforcement
 [algorithm_sect]
 default_properties = fips=yes
-"@ | Set-Content "$openssl_ssl_path\fipsmodule.cnf"
+"@ | Set-Content "$confDir\fipsmodule.cnf"
 
-    Write-Host "fipsmodule.cnf contents:"
-    Get-Content "$openssl_ssl_path\fipsmodule.cnf"
+Write-Host "openssl.cnf:"
+Get-Content "$confDir\openssl.cnf"
+Write-Host "fipsmodule.cnf:"
+Get-Content "$confDir\fipsmodule.cnf"
 
-    # Set default OPENSSL_CONF to openssl.cnf for all processes
-    $pkg_env = @{
-      OPENSSL_CONF = "$openssl_ssl_path\fipsmodule.cnf"
-    }
+Set-RuntimeEnv OPENSSL_CONF "$confDir\openssl.cnf"
+    
+    
 
 }
 

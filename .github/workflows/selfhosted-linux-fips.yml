@@ -86,6 +86,7 @@ jobs:
       - name: Run chef-client with FIPS
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client env | grep OPENSSL_CONF || echo "OPENSSL_CONF not in env"
 
           # Verify cryptographic operations work as expected in FIPS mode
           echo "Verifying cryptographic operations in FIPS mode:"
