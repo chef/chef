@@ -179,7 +179,7 @@ EOF
   sed 's/^/  /' "${conf_dir}/fipsmodule.cnf"
 
   # Export default (non-FIPS) OPENSSL_CONF (runtime)
-  set_runtime_env OPENSSL_CONF "${conf_dir}/openssl.cnf"
+  set_runtime_env OPENSSL_CONF "${conf_dir}/fipsmodule.cnf"
 
 }
 

@@ -277,7 +277,7 @@ Get-Content "$confDir\openssl.cnf"
 Write-Host "fipsmodule.cnf:"
 Get-Content "$confDir\fipsmodule.cnf"
 
-Set-RuntimeEnv OPENSSL_CONF "$confDir\openssl.cnf"
+Set-RuntimeEnv OPENSSL_CONF "$confDir\fipsmodule.cnf"
     
     
 
