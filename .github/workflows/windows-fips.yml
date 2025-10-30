@@ -102,11 +102,9 @@ jobs:
         # Verify FIPS mode is active
         hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
 
-        Write-Host "******OPENSSL_CONF=$env:OPENSSL_CONF"
-        Get-Content $env:OPENSSL_CONF
-
         $testScript = @'
         begin
+          puts "*****ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}"
           require 'openssl'
           puts "OpenSSL version: #{OpenSSL::OPENSSL_VERSION}"
 
