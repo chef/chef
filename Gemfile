@@ -17,7 +17,7 @@ install_if -> { RUBY_PLATFORM !~ /darwin/ } do
 end
 
 install_if -> { RUBY_PLATFORM =~ /mswin|mingw|windows/ } do
-  gem 'chef-powershell', path: 'vendor/gems/chef-powershell-18.6.5'
+#  gem 'chef-powershell', path: 'vendor/gems/chef-powershell-18.6.5'
 end
 
 if File.exist?(File.expand_path("chef-bin", __dir__))

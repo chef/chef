@@ -145,13 +145,6 @@ PATH
     chef-utils (18.8.50)
       concurrent-ruby
 
-PATH
-  remote: vendor/gems/chef-powershell-18.6.5
-  specs:
-    chef-powershell (18.6.5)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -204,6 +197,9 @@ GEM
     chef-gyoku (1.4.1)
       builder (>= 2.1.2)
       rexml (~> 3.3)
+    chef-powershell (18.6.5)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -534,7 +530,6 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
-  chef-powershell!
   chef-utils!
   chef-vault
   cheffish (>= 17)
