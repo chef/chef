@@ -12,7 +12,10 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
-  gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
+  gemspec_files = Dir["#{gempath}/*.gemspec"]
+  next if gemspec_files.empty?
+
+  gem_name = File.basename(gemspec_files.first, ".gemspec")
   # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
   next unless gem_name
