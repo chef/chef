@@ -10,6 +10,8 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
+gem "chef-licensing", git: "https://github.com/chef/chef-licensing.git", branch: "tp/remove-activesupport", glob: "components/ruby/*.gemspec"
+
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
   gem "ffi", ">= 1.15.5", "< 1.18.0"
 else
