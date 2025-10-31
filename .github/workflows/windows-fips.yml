@@ -105,6 +105,7 @@ jobs:
 
         $testScript = @'
         begin
+          ENV['CHEF_FIPS'] = '1'
           require "chef-config/config"
           ChefConfig::Config.init_openssl
           puts "*****ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}"
