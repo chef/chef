@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.51 -->
-## [v18.8.51](https://github.com/chef/chef/tree/v18.8.51) (2025-10-30)
+<!-- latest_release 18.8.52 -->
+## [v18.8.52](https://github.com/chef/chef/tree/v18.8.52) (2025-10-31)
 
 #### Merged Pull Requests
-- Upgrade to chef-powershell 18.6.5 and mixlib-archive 1.3.3 [#15410](https://github.com/chef/chef/pull/15410) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump ohai [#15407](https://github.com/chef/chef/pull/15407) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai [#15407](https://github.com/chef/chef/pull/15407) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.52 -->
 - Upgrade to chef-powershell 18.6.5 and mixlib-archive 1.3.3 [#15410](https://github.com/chef/chef/pull/15410) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.51 -->
 - Disable vm_lnx_x86_64 due to GA instability [#15392](https://github.com/chef/chef/pull/15392) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.50 -->
 - [Chef 18 backport] #15349 [#15373](https://github.com/chef/chef/pull/15373) ([fretb](https://github.com/fretb)) <!-- 18.8.49 -->
