@@ -1,0 +1,30 @@
+name: "PR Size Labeler"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  size-label:
+    runs-on: ubuntu-latest
+    name: Label PR by size
+    steps:
+      - name: Label PR by size
+        uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/XS'
+          xs_max_size: 10
+          s_label: 'size/S'
+          s_max_size: 30
+          m_label: 'size/M'
+          m_max_size: 100
+          l_label: 'size/L'
+          l_max_size: 500
+          xl_label: 'size/XL'
+          message_if_xl: >
+            This PR is extra large! 🚨
+
+            PRs of this size require 2 approvals from code owners before they can be merged.
+            Please consider breaking this PR into smaller, more focused changes when possible.
+          fail_if_xl: false

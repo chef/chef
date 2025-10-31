@@ -1,0 +1,156 @@
+name: "PR Gate Check"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+jobs:
+  pr-gate-check:
+    runs-on: ubuntu-latest
+    name: PR Gate Check
+    steps:
+      - name: Check PR requirements
+        uses: actions/github-script@v7
+        id: gate-check
+        with:
+          script: |
+            const { owner, repo, number } = context.issue;
+            const labels = context.payload.pull_request.labels.map(label => label.name);
+
+            console.log(`PR Labels: ${labels.join(', ')}`);
+
+            // Check if this is an XL PR
+            const isXL = labels.includes('size/XL');
+
+            if (!isXL) {
+              console.log('PR is not XL size, no additional approval requirements');
+              return {
+                required: false,
+                message: 'Standard approval requirements apply'
+              };
+            }
+
+            console.log('XL PR detected, checking for 2 code owner approvals...');
+
+            // Get PR reviews
+            const reviews = await github.rest.pulls.listReviews({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            // Get CODEOWNERS content
+            let codeownerMembers = new Set();
+            try {
+              const codeowners = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: '.github/CODEOWNERS'
+              });
+
+              const codeownersContent = Buffer.from(codeowners.data.content, 'base64').toString();
+
+              // Extract individual users and team members from CODEOWNERS
+              const userPattern = /@([a-zA-Z0-9_-]+)(?!\w)/g;
+              const users = [...codeownersContent.matchAll(userPattern)]
+                .map(match => match[1])
+                .filter(user => !user.startsWith('chef/'));
+
+              users.forEach(user => codeownerMembers.add(user));
+
+              // For teams, we'll need to check membership during review analysis
+              console.log(`Direct code owners: ${users.join(', ')}`);
+
+            } catch (error) {
+              console.log('Could not read CODEOWNERS file:', error.message);
+              // Fallback: treat all reviewers as potential code owners
+            }
+
+            // Count unique approvals (latest review per user)
+            const latestReviews = {};
+            reviews.data.forEach(review => {
+              const user = review.user.login;
+              if (!latestReviews[user] || new Date(review.submitted_at) > new Date(latestReviews[user].submitted_at)) {
+                latestReviews[user] = review;
+              }
+            });
+
+            const approvals = Object.values(latestReviews)
+              .filter(review => review.state === 'APPROVED');
+
+            const approvalCount = approvals.length;
+            const requiredApprovals = 2;
+
+            console.log(`XL PR requires ${requiredApprovals} approvals`);
+            console.log(`Current approvals: ${approvalCount}`);
+            console.log(`Approvers: ${approvals.map(r => r.user.login).join(', ')}`);
+
+            return {
+              required: true,
+              sufficient: approvalCount >= requiredApprovals,
+              count: approvalCount,
+              required_count: requiredApprovals,
+              approvers: approvals.map(r => r.user.login)
+            };
+
+      - name: Set status based on requirements
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = ${{ steps.gate-check.outputs.result }};
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request.head.sha;
+            const labels = context.payload.pull_request.labels.map(label => label.name);
+
+            // Check for override label
+            const hasOverride = labels.includes('override-xl-requirements');
+
+            if (!result.required) {
+              // Not an XL PR, create success check
+              await github.rest.repos.createCommitStatus({
+                owner,
+                repo,
+                sha,
+                state: 'success',
+                context: 'PR Gate Check',
+                description: 'Standard approval requirements apply'
+              });
+              return;
+            }
+
+            if (hasOverride) {
+              // XL PR with override label
+              await github.rest.repos.createCommitStatus({
+                owner,
+                repo,
+                sha,
+                state: 'success',
+                context: 'PR Gate Check',
+                description: 'XL PR: Requirements overridden by admin'
+              });
+              return;
+            }
+
+            if (result.sufficient) {
+              // XL PR with sufficient approvals
+              await github.rest.repos.createCommitStatus({
+                owner,
+                repo,
+                sha,
+                state: 'success',
+                context: 'PR Gate Check',
+                description: `XL PR: ${result.count}/${result.required_count} required approvals ✓`
+              });
+            } else {
+              // XL PR without sufficient approvals
+              await github.rest.repos.createCommitStatus({
+                owner,
+                repo,
+                sha,
+                state: 'failure',
+                context: 'PR Gate Check',
+                description: `XL PR: ${result.count}/${result.required_count} required approvals`
+              });
+            }

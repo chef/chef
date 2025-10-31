@@ -3,3 +3,11 @@ documentation:
   - 'CODE_OF_CONDUCT.md'
   - 'CONTRIBUTING.md'
   - 'lib/chef/resource/**/*'
+
+# Size labels are automatically applied by pr-size-labeler workflow
+# Configuration:
+# size/XS: <= 10 lines changed
+# size/S:  <= 30 lines changed
+# size/M:  <= 100 lines changed
+# size/L:  <= 500 lines changed
+# size/XL: > 500 lines changed (requires 2 approvals)

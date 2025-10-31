@@ -1,0 +1,116 @@
+name: "PR Approval Enforcement"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+jobs:
+  check-xl-approvals:
+    runs-on: ubuntu-latest
+    name: Check XL PR Approvals
+    if: contains(github.event.pull_request.labels.*.name, 'size/XL')
+    steps:
+      - name: Check for required approvals
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo, number } = context.issue;
+
+            // Get PR reviews
+            const reviews = await github.rest.pulls.listReviews({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            // Get CODEOWNERS for approval validation
+            const codeowners = await github.rest.repos.getContent({
+              owner,
+              repo,
+              path: '.github/CODEOWNERS'
+            });
+
+            const codeownersContent = Buffer.from(codeowners.data.content, 'base64').toString();
+
+            // Extract team names from CODEOWNERS
+            const teamPattern = /@chef\/([\w-]+)/g;
+            const teams = [...codeownersContent.matchAll(teamPattern)].map(match => match[1]);
+
+            // Get team members for each team
+            const codeownerMembers = new Set();
+            for (const team of teams) {
+              try {
+                const members = await github.rest.teams.listMembersInOrg({
+                  org: 'chef',
+                  team_slug: team,
+                });
+                members.data.forEach(member => codeownerMembers.add(member.login));
+              } catch (error) {
+                console.log(`Could not fetch members for team ${team}:`, error.message);
+              }
+            }
+
+            // Count approvals from code owners
+            const approvals = reviews.data
+              .filter(review => review.state === 'APPROVED')
+              .filter(review => codeownerMembers.has(review.user.login))
+              .reduce((acc, review) => {
+                // Only count the latest review from each user
+                acc[review.user.login] = review;
+                return acc;
+              }, {});
+
+            const approvalCount = Object.keys(approvals).length;
+            const requiredApprovals = 2;
+
+            console.log(`XL PR requires ${requiredApprovals} approvals from code owners`);
+            console.log(`Current approvals: ${approvalCount}`);
+            console.log(`Approvers: ${Object.keys(approvals).join(', ')}`);
+
+            if (approvalCount < requiredApprovals) {
+              // Create a check run that fails
+              await github.rest.checks.create({
+                owner,
+                repo,
+                name: 'XL PR Approval Check',
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: 'failure',
+                output: {
+                  title: 'Insufficient approvals for XL PR',
+                  summary: `This XL PR requires ${requiredApprovals} approvals from code owners, but only has ${approvalCount}.`,
+                  text: `
+            **Required:** ${requiredApprovals} approvals from code owners
+            **Current:** ${approvalCount} approvals
+            **Approvers:** ${Object.keys(approvals).join(', ') || 'None'}
+
+            Please request reviews from code owners to get the required approvals.
+                  `
+                }
+              });
+
+              core.setFailed(`XL PR requires ${requiredApprovals} approvals from code owners, but only has ${approvalCount}`);
+            } else {
+              // Create a successful check run
+              await github.rest.checks.create({
+                owner,
+                repo,
+                name: 'XL PR Approval Check',
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: 'success',
+                output: {
+                  title: 'XL PR approval requirements met',
+                  summary: `This XL PR has the required ${requiredApprovals} approvals from code owners.`,
+                  text: `
+            **Required:** ${requiredApprovals} approvals from code owners
+            **Current:** ${approvalCount} approvals
+            **Approvers:** ${Object.keys(approvals).join(', ')}
+                  `
+                }
+              });
+
+              console.log('XL PR has sufficient approvals');
+            }
