@@ -83,7 +83,7 @@ jobs:
             exit 1
           fi
 
-      - name: Run chef-client with FIPS
+      - name: Test chef-client with FIPS
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client env | grep OPENSSL_CONF || echo "OPENSSL_CONF not in env"
@@ -91,6 +91,8 @@ jobs:
           # Verify cryptographic operations work as expected in FIPS mode
           echo "Verifying cryptographic operations in FIPS mode:"
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e "
+          require 'chef-config/config'
+          ChefConfig::Config.init_openssl  # <-- This triggers enable_fips_mode if OS FIPS is on
           puts \"**** ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}\"
           begin
             require 'openssl'

@@ -97,7 +97,7 @@ jobs:
           Exit 1
         }
 
-    - name: 'Run chef-client with FIPS'
+    - name: 'Test chef-client with FIPS'
       run: |
         # Verify FIPS mode is active
         hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
@@ -105,6 +105,8 @@ jobs:
 
         $testScript = @'
         begin
+          require "chef-config/config"
+          ChefConfig::Config.init_openssl
           puts "*****ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}"
           require 'openssl'
           puts "OpenSSL version: #{OpenSSL::OPENSSL_VERSION}"
