@@ -171,13 +171,21 @@ EOF
 openssl_conf = openssl_init
 
 [openssl_init]
-providers = provider_sect
+providers   = provider_sect
+alg_section = algorithm_sect
 
 [provider_sect]
-fips = fips_sect
+default = default_sect
+fips   = fips_sect
+
+[default_sect]
+activate = 1
 
 [fips_sect]
 activate = 1
+
+[algorithm_sect]
+default_properties = fips=yes
 EOF
 
   build_line "Base OpenSSL config:"
