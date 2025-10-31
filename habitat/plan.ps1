@@ -250,12 +250,14 @@ function Invoke-Install {
     New-Item -ItemType Directory -Force -Path $confDir | Out-Null
 
 @"
-[openssl_conf]
+openssl_conf = openssl_init
+
+[openssl_init]
 providers = provider_sect
 
 [provider_sect]
-fips = fips_sect
 default = default_sect
+fips = fips_sect
 
 [default_sect]
 activate = 1
@@ -265,11 +267,16 @@ activate = 1
 "@ | Set-Content "$confDir\openssl.cnf"
 
 @"
-# Include base config
-.include $confDir\openssl.cnf
+openssl_conf = openssl_init
 
-[algorithm_sect]
-default_properties = fips=yes
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+fips = fips_sect
+
+[fips_sect]
+activate = 1
 "@ | Set-Content "$confDir\fipsmodule.cnf"
 
 Write-Host "openssl.cnf:"
@@ -277,7 +284,7 @@ Get-Content "$confDir\openssl.cnf"
 Write-Host "fipsmodule.cnf:"
 Get-Content "$confDir\fipsmodule.cnf"
 
-Set-RuntimeEnv OPENSSL_CONF "$confDir\fipsmodule.cnf"
+Set-RuntimeEnv -Force OPENSSL_CONF "$confDir\fipsmodule.cnf"
     
     
 

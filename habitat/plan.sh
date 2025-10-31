@@ -151,12 +151,14 @@ do_install() {
   mkdir -p "$conf_dir"
 
   cat > "${conf_dir}/openssl.cnf" <<'EOF'
-[openssl_conf]
+openssl_conf = openssl_init
+
+[openssl_init]
 providers = provider_sect
 
 [provider_sect]
-fips = fips_sect
 default = default_sect
+fips = fips_sect
 
 [default_sect]
 activate = 1
@@ -166,11 +168,16 @@ activate = 1
 EOF
 
   cat > "${conf_dir}/fipsmodule.cnf" <<EOF
-# Include base config
-.include ${conf_dir}/openssl.cnf
+openssl_conf = openssl_init
 
-[algorithm_sect]
-default_properties = fips=yes
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+fips = fips_sect
+
+[fips_sect]
+activate = 1
 EOF
 
   build_line "Base OpenSSL config:"

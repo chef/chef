@@ -1306,16 +1306,26 @@ module ChefConfig
       puts "Value of HAB_PKG_PATH=#{ENV['HAB_PKG_PATH']}"
       # If running as a Habitat package, set OPENSSL_CONF to fipsmodule.cnf for FIPS mode
       if ENV["HAB_PKG_PATH"]
-        deps_file = File.join(ENV["HAB_PKG_PATH"], "DEPS")
-        if File.exist?(deps_file)
-          openssl_dep = File.readlines(deps_file).find { |l| l.include?("core/openssl/") }
-          puts "Found openssl dep in DEPS: #{openssl_dep}"
-          if openssl_dep
-            openssl_ssl_path = "/hab/pkgs/#{openssl_dep.strip}/ssl"
-            puts "Setting OPENSSL_CONF to #{openssl_ssl_path}/fipsmodule.cnf for FIPS mode"
-            ENV["OPENSSL_CONF"] = "#{openssl_ssl_path}/fipsmodule.cnf"
-            ChefConfig.logger.info("Set OPENSSL_CONF to #{ENV['OPENSSL_CONF']} for FIPS mode")
-          end
+        # This is required when actual core/openssl cnf files have the required content
+        # deps_file = File.join(ENV["HAB_PKG_PATH"], "DEPS")
+        # if File.exist?(deps_file)
+        #   openssl_dep = File.readlines(deps_file).find { |l| l.include?("core/openssl/") }
+        #   puts "Found openssl dep in DEPS: #{openssl_dep}"
+        #   if openssl_dep
+        #     openssl_ssl_path = "/hab/pkgs/#{openssl_dep.strip}/ssl"
+        #     puts "Setting OPENSSL_CONF to #{openssl_ssl_path}/fipsmodule.cnf for FIPS mode"
+        #     ENV["OPENSSL_CONF"] = "#{openssl_ssl_path}/fipsmodule.cnf"
+        #     ChefConfig.logger.info("Set OPENSSL_CONF to #{ENV['OPENSSL_CONF']} for FIPS mode")
+        #   end
+        # end
+
+        # For testing since we cannot update the actual core/openssl cnf files, we have created them at {this_pkg}/openssl/ path
+        fips_conf = File.join(ENV["HAB_PKG_PATH"], "openssl", "fipsmodule.cnf")
+        if File.exist?(fips_conf)
+          ENV["OPENSSL_CONF"] = fips_conf
+          ChefConfig.logger.info("OPENSSL_CONF switched to #{fips_conf} for FIPS")
+        else
+          ChefConfig.logger.warn("FIPS config missing: #{fips_conf}")
         end
       end
 
