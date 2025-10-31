@@ -201,7 +201,11 @@ module ChefConfig
     end
 
     def self.relative_path_from(from, to, windows: ChefUtils.windows?)
-      Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
+      if windows
+        Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
+      else
+        Pathname.new(cleanpath(Pathname.new(to).relative_path_from(Pathname.new(from))))
+      end
     end
 
     # Set the project-specific home directory environment variable.
