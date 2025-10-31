@@ -83,15 +83,29 @@ jobs:
             exit 1
           fi
 
-      - name: Run chef-client with FIPS
+      - name: Test chef-client with FIPS
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client env | grep OPENSSL_CONF || echo "OPENSSL_CONF not in env"
 
-          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-          # output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
-          # if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
-          #   echo "✅ Chef Infra Client is running in FIPS mode"
-          # else
-          #   echo "❌ FIPS mode not detected"
-          #   exit 1
-          # fi
+          # Verify cryptographic operations work as expected in FIPS mode
+          echo "Verifying cryptographic operations in FIPS mode:"
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e "
+          ENV['CHEF_FIPS'] = '1'
+          require 'chef-config/config'
+          ChefConfig::Config.init_openssl  # <-- This triggers enable_fips_mode if OS FIPS is on
+          puts \"**** ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}\"
+          begin
+            require 'openssl'
+            # Try MD5 hash (should fail in FIPS mode)
+            hash = OpenSSL::Digest::MD5.hexdigest('test')
+            puts 'FAIL: FIPS mode is NOT working - MD5 hash succeeded'
+            exit 1
+          rescue OpenSSL::OpenSSLError => e
+            puts 'PASS: FIPS mode confirmed - MD5 hash correctly blocked'
+            exit 0
+          rescue => e
+            puts 'ERROR: ' + e.message
+            exit 2
+          end"
+          echo "✅ FIPS mode is confirmed - MD5 was blocked as expected"
