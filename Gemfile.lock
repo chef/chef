@@ -198,7 +198,7 @@ GEM
     chef-gyoku (1.4.1)
       builder (>= 2.1.2)
       rexml (~> 3.3)
-    chef-powershell (18.6.5)
+    chef-powershell (18.6.6)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
