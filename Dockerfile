@@ -21,10 +21,8 @@ LABEL maintainer="Progress Chef <docker@chef.io>"
 ARG CHANNEL=unstable
 ARG VERSION=19.0.49
 ARG ARCH=x86_64
-ARG HAB_AUTH_TOKEN
 
 ENV HAB_LICENSE="accept-no-persist"
-ENV HAB_AUTH_TOKEN=${HAB_AUTH_TOKEN}
 # Download and extract hab binary and install infra-client habitat package
 RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
     mkdir /tmp/hab && \
