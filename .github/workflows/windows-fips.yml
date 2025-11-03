@@ -103,48 +103,21 @@ jobs:
         hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
         hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- env | findstr OPENSSL_CONF
 
-        $testScript = @'
-        begin
-          ENV['CHEF_FIPS'] = '1'
-          require "chef-config/config"
-          ChefConfig::Config.init_openssl
-          puts "*****ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}"
-          require 'openssl'
-          puts "OpenSSL version: #{OpenSSL::OPENSSL_VERSION}"
-
-          # Try MD5 hash (should fail in FIPS mode)
-          hash = OpenSSL::Digest::MD5.hexdigest('test')
-          puts 'FIPS mode is NOT working - MD5 hash succeeded'
-          exit 1
-        rescue OpenSSL::OpenSSLError => e
-          puts 'FIPS mode confirmed - MD5 hash correctly blocked'
-          puts "Error message: #{e.message}"
-          exit 0
-        rescue => e
-          puts "Error during test: #{e.class} - #{e.message}"
-          puts e.backtrace.join("\n") if e.respond_to?(:backtrace)
-          exit 2
+        # Run a real chef-client command that uses crypto
+        @"
+        file 'C:/tmp/test' do
+          content Digest::MD5.hexdigest('test')
         end
-        '@
+        "@ | Set-Content -Path "C:/tmp/test_recipe.rb"
 
-        # Save to a file
-        Set-Content -Path "fips_test.rb" -Value $testScript
+        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z -c C:/tmp/test_recipe.rb 2>&1
+        $output | Out-File -FilePath "C:/tmp/chef-client.log"
 
-        Write-Host "=== Running FIPS verification test ==="
-
-        # Execute and ensure output is displayed
-        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- ruby fips_test.rb 2>&1
-        $exitCode = $LASTEXITCODE
-
-        # Always display the output
-        Write-Host "Test output:"
-        Write-Host $output
-
-        # Check exit code
-        if ($exitCode -eq 0) {
-          Write-Host "✅ FIPS mode is confirmed - MD5 was blocked as expected"
+        # Check logs for FIPS enforcement
+        if ($output -match "MD5" -and $output -match "not allowed") {
+          Write-Host "PASS: FIPS mode detected and enforced - MD5 blocked"
+          exit 0
         } else {
-          Write-Host "❌ FIPS mode verification failed with exit code: $exitCode"
+          Write-Host "FAIL: FIPS mode not working - MD5 allowed or not detected"
+          exit 1
         }
-        # Clean up
-        Remove-Item -Path "fips_test.rb" -Force

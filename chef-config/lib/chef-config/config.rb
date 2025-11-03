@@ -746,6 +746,7 @@ module ChefConfig
 
     # Initialize openssl
     def self.init_openssl
+      puts "***** Inside init_openssl fips=#{fips}"
       if fips
         enable_fips_mode
       end

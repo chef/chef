@@ -88,24 +88,15 @@ jobs:
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client env | grep OPENSSL_CONF || echo "OPENSSL_CONF not in env"
 
-          # Verify cryptographic operations work as expected in FIPS mode
-          echo "Verifying cryptographic operations in FIPS mode:"
-          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e "
-          ENV['CHEF_FIPS'] = '1'
-          require 'chef-config/config'
-          ChefConfig::Config.init_openssl  # <-- This triggers enable_fips_mode if OS FIPS is on
-          puts \"**** ENV['OPENSSL_CONF'] = #{ENV['OPENSSL_CONF']}\"
-          begin
-            require 'openssl'
-            # Try MD5 hash (should fail in FIPS mode)
-            hash = OpenSSL::Digest::MD5.hexdigest('test')
-            puts 'FAIL: FIPS mode is NOT working - MD5 hash succeeded'
-            exit 1
-          rescue OpenSSL::OpenSSLError => e
-            puts 'PASS: FIPS mode confirmed - MD5 hash correctly blocked'
+          # Run a real chef-client command that uses crypto (e.g., with a simple recipe)
+          echo 'file "/tmp/test" do; content Digest::MD5.hexdigest("test"); end' > /tmp/test_recipe.rb
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z -c /tmp/test_recipe.rb 2>&1 || true  # Expect failure if FIPS blocks MD5
+
+          # Check logs for FIPS enforcement (e.g., MD5 error)
+          if grep -q "MD5" /tmp/chef-client.log && grep -q "not allowed" /tmp/chef-client.log; then
+            echo "PASS: FIPS mode detected and enforced - MD5 blocked"
             exit 0
-          rescue => e
-            puts 'ERROR: ' + e.message
-            exit 2
-          end"
-          echo "✅ FIPS mode is confirmed - MD5 was blocked as expected"
+          else
+            echo "FAIL: FIPS mode not working - MD5 allowed or not detected"
+            exit 1
+          fi
