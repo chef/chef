@@ -32,20 +32,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 5b3bb34ea536e5207388b84c5dd6360ea3fc2799
+  revision: 4725c8b5ae09b3f6b968831beae27503f1261ea9
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
       base64
-      fiddle
-      http-accept (~> 2.1.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw-ucrt)
-      base64
-      ffi (>= 1.15.5, < 1.18.0)
-      fiddle
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -218,13 +209,14 @@ GEM
     chef-gyoku (1.5.0)
       builder (>= 2.1.2)
       rexml (~> 3.4)
-    chef-licensing (1.2.0)
-      activesupport (~> 7.2, >= 7.2.2.1)
+    chef-licensing (1.3.0)
       chef-config (>= 15)
       faraday (>= 1, < 2)
       faraday-http-cache
+      faraday_middleware (~> 1.0)
       mixlib-log (~> 3.0)
       ostruct (~> 0.1.0)
+      pstore (~> 0.1.1)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
     chef-powershell (18.1.0)
@@ -291,6 +283,8 @@ GEM
       faraday (>= 1, < 3)
     faraday-http-cache (2.5.1)
       faraday (>= 0.8)
+    faraday_middleware (1.2.1)
+      faraday (~> 1.0)
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.16.3)
@@ -301,7 +295,6 @@ GEM
       ffi
     ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
-    fiddle (1.1.8)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
@@ -422,6 +415,7 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
+    pstore (0.1.4)
     public_suffix (6.0.2)
     racc (1.8.1)
     rack (3.2.1)
