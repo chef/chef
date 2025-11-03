@@ -334,8 +334,8 @@ chef-winrm-elevated 1.2.5, chef-winrm-fs 1.4.1, chef-zero 15.0.21, cheffish
 ffi-win32-extensions 1.0.4, inspec-ruby 5.23.6, inspec/inspec 5.23.6, jmespath
 rubygems 1.6.2, knife 18.8.13, libyajl2 2.1.0, license-acceptance 2.1.13,
 mixlib-archive 1.1.7, mixlib-authentication 3.0.10, mixlib-cli 2.1.8,
-mixlib-config 3.0.27, mixlib-log 3.1.2.1, mixlib-shellout 3.3.9, opscode-ohai
-18.1.3, semverse 3.0.2, sporkmonger's uuidtools 2.2.0, train-core 3.13.4,
+mixlib-config 3.0.27, mixlib-log 3.1.2.1, mixlib-shellout 3.3.9, ohai
+18.2.8, semverse 3.0.2, sporkmonger's uuidtools 2.2.0, train-core 3.13.4,
 train-rest 0.5.0, train-winrm 0.4.0, win32-certstore 0.6.16, win32-ipc 0.7.0,
 and wmi-lite 1.0.7.
 
