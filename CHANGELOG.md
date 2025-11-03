@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.53 -->
-## [v18.8.53](https://github.com/chef/chef/tree/v18.8.53) (2025-10-31)
+<!-- latest_release 18.8.54 -->
+## [v18.8.54](https://github.com/chef/chef/tree/v18.8.54) (2025-11-03)
 
 #### Merged Pull Requests
-- Bump to chef-powershell 18.6.6 [#15414](https://github.com/chef/chef/pull/15414) ([tpowell-progress](https://github.com/tpowell-progress))
+- updating notice.txt [#15416](https://github.com/chef/chef/pull/15416) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- updating notice.txt [#15416](https://github.com/chef/chef/pull/15416) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.54 -->
 - Bump to chef-powershell 18.6.6 [#15414](https://github.com/chef/chef/pull/15414) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.53 -->
 - Bump ohai [#15407](https://github.com/chef/chef/pull/15407) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.52 -->
 - Upgrade to chef-powershell 18.6.5 and mixlib-archive 1.3.3 [#15410](https://github.com/chef/chef/pull/15410) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.51 -->
