@@ -1,28 +1,26 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.54 -->
-## [v18.8.54](https://github.com/chef/chef/tree/v18.8.54) (2025-11-03)
-
-#### Merged Pull Requests
-- updating notice.txt [#15416](https://github.com/chef/chef/pull/15416) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.8.46 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- updating notice.txt [#15416](https://github.com/chef/chef/pull/15416) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.54 -->
-- Bump to chef-powershell 18.6.6 [#15414](https://github.com/chef/chef/pull/15414) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.53 -->
-- Bump ohai [#15407](https://github.com/chef/chef/pull/15407) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.52 -->
-- Upgrade to chef-powershell 18.6.5 and mixlib-archive 1.3.3 [#15410](https://github.com/chef/chef/pull/15410) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.51 -->
-- Disable vm_lnx_x86_64 due to GA instability [#15392](https://github.com/chef/chef/pull/15392) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.50 -->
-- [Chef 18 backport] #15349 [#15373](https://github.com/chef/chef/pull/15373) ([fretb](https://github.com/fretb)) <!-- 18.8.49 -->
-- [Chef18][Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15329](https://github.com/chef/chef/pull/15329) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.8.48 -->
-- [Chef18][recipe#from_hash] Add include_recipes key [#15315](https://github.com/chef/chef/pull/15315) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.8.47 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.8.54](https://github.com/chef/chef/tree/v18.8.54) (2025-11-04)
+
+#### Merged Pull Requests
+- [Chef18][recipe#from_hash] Add include_recipes key [#15315](https://github.com/chef/chef/pull/15315) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Chef18][Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15329](https://github.com/chef/chef/pull/15329) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Chef 18 backport] #15349 [#15373](https://github.com/chef/chef/pull/15373) ([fretb](https://github.com/fretb))
+- Disable vm_lnx_x86_64 due to GA instability [#15392](https://github.com/chef/chef/pull/15392) ([tpowell-progress](https://github.com/tpowell-progress))
+- Upgrade to chef-powershell 18.6.5 and mixlib-archive 1.3.3 [#15410](https://github.com/chef/chef/pull/15410) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump ohai [#15407](https://github.com/chef/chef/pull/15407) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump to chef-powershell 18.6.6 [#15414](https://github.com/chef/chef/pull/15414) ([tpowell-progress](https://github.com/tpowell-progress))
+- updating notice.txt [#15416](https://github.com/chef/chef/pull/15416) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v18.8.46](https://github.com/chef/chef/tree/v18.8.46) (2025-10-15)
 
 #### Merged Pull Requests
@@ -61,7 +59,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Jfm/chef18 inspec update [#15335](https://github.com/chef/chef/pull/15335) ([johnmccrae](https://github.com/johnmccrae))
 - Revert &quot;Jfm/chef18 inspec update&quot; [#15350](https://github.com/chef/chef/pull/15350) ([johnmccrae](https://github.com/johnmccrae))
 - Updating NOTICE and updating hab builders to use it [#15353](https://github.com/chef/chef/pull/15353) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v18.8.11](https://github.com/chef/chef/tree/v18.8.11) (2025-08-14)
 
