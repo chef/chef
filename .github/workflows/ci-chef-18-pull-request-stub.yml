@@ -85,8 +85,8 @@ jobs:
       perform-blackduck-polaris: true
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-18'
-      polaris-blackduck-executable: 'path/to/blackduck/binary'
-      polaris-executable-detect-path: 'path/to/detect'
+      # polaris-blackduck-executable: # Let common actions auto-detect executable path
+      # polaris-executable-detect-path: # Let common actions auto-detect detect path
       # blackduck-break-build: false  # Uncomment to prevent build failures from Black Duck policy violations
  
       # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
