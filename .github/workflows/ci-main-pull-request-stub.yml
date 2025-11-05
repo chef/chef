@@ -63,8 +63,9 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
-      # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      # version: "" # ${{ github.event.repository.version }}
+      # Version is explicitly passed from extract-version job to ensure Black Duck SCA gets the correct version
+      # Without this, Black Duck defaults to 1.0.0 which is incorrect
+      version: ${{ needs.extract-version.outputs.full-version }}
       detect-version-source-type: "file" # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: "VERSION" # use for file name
       language: "ruby"  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
