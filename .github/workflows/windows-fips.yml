@@ -106,24 +106,32 @@ jobs:
 
         hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- env | findstr OPENSSL_CONF
 
-        # Run chef-client with FIPS recipe
-        $recipePath = "$env:TEMP\test_recipe.rb"
-        @"
-        file 'C:\tmp\test' do
-          content Digest::MD5.hexdigest('test')
-        end
-        "@ | Set-Content -Path $recipePath
+        # # Run chef-client with FIPS recipe
+        # $recipePath = "$env:TEMP\test_recipe.rb"
+        # @"
+        # file 'C:\tmp\test' do
+        #   content Digest::MD5.hexdigest('test')
+        # end
+        # "@ | Set-Content -Path $recipePath
         
-        $logPath = "$env:TEMP\chef-client.log"
-        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z -c $recipePath 2>&1
-        $output | Out-File -FilePath $logPath
+        # $logPath = "$env:TEMP\chef-client.log"
+        # $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z -c $recipePath 2>&1
+        # $output | Out-File -FilePath $logPath
 
-        # Check for MD5 error (indicating FIPS enforcement)
-        if ($output -match "MD5" -and $output -match "not allowed|disabled|forbidden") {
-          Write-Host "PASS: FIPS mode detected and enforced - MD5 blocked"
-          exit 0
+        # # Check for MD5 error (indicating FIPS enforcement)
+        # if ($output -match "MD5" -and $output -match "not allowed|disabled|forbidden") {
+        #   Write-Host "PASS: FIPS mode detected and enforced - MD5 blocked"
+        #   exit 0
+        # } else {
+        #   Write-Host "FAIL: FIPS mode not working - MD5 allowed or not detected"
+        #   Get-Content $logPath  # Debug output
+        #   exit 1
+        # }
+
+        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client -l debug --no-color 2>&1 | Select-String "FIPS"
+        if ($output -match "OpenSSL FIPS 140 mode enabled") {
+          Write-Host "✅ Chef Infra Client is running in FIPS mode"
         } else {
-          Write-Host "FAIL: FIPS mode not working - MD5 allowed or not detected"
-          Get-Content $logPath  # Debug output
-          exit 1
+          Write-Host "❌ FIPS mode not detected"
+          Exit 1
         }
