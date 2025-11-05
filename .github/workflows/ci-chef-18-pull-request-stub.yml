@@ -68,7 +68,7 @@ jobs:
       build: false
       # ga-build-profile: $chef-ga-build-profile   
       # language: $chef-ga-build-language   # this will be removed from stub as autodetected in central GA
-      unit-tests: false
+      unit-tests: true
  
       # perform SonarQube scan, with or wihout unit test coverage data
       # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
@@ -79,8 +79,8 @@ jobs:
 
       # report to central developer dashboard
       report-to-atlassian-dashboard: false
-      # quality-product-name: 'Chef-client'   # product name for quality reporting, like Chef360, Courier, Inspec
-      quality-product-name: ${{ github.event.repository.name }}   # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
+      quality-product-name: 'Chef-Infra-Client'   # product name for quality reporting, like Chef360, Courier, Inspec
+      #  ${{ github.event.repository.name }}   # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
       # quality-sonar-app-name: 'YourSonarAppName'
       # quality-testing-type: 'Integration' like Unit, Integration, e2e, api, Performance, Security
       # quality-service-name: 'YourServiceOrRepoName'
