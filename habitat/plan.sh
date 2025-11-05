@@ -186,6 +186,7 @@ activate = 1
 
 [algorithm_sect]
 default_properties = fips=yes
+fips_mode = yes
 EOF
 
   build_line "Base OpenSSL config:"

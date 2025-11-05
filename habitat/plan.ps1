@@ -285,6 +285,7 @@ activate = 1
 
 [algorithm_sect]
 default_properties = fips=yes
+fips_mode = yes
 "@ | Set-Content "$confDir\fipsmodule.cnf"
 
 Write-Host "openssl.cnf:"
