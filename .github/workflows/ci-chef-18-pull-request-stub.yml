@@ -40,7 +40,7 @@ jobs:
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '18.8.27' # ${{ github.event.repository.version }}
+      version: '18.8.54' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
@@ -72,7 +72,7 @@ jobs:
  
       # perform SonarQube scan, with or wihout unit test coverage data
       # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
-      perform-sonarqube-scan: false
+      perform-sonarqube-scan: true
       # perform-sonar-build: true
       # build-profile: 'default' 
       # report-unit-test-coverage: true
@@ -92,12 +92,12 @@ jobs:
       publish-packages: false     # Publish packages (e.g., container from Dockerfile to ECR, go-releaser binary to releases page, omnibus to artifactory, gems, choco, homebrew, other app stores)
 
       # generate and export Software Bill of Materials (SBOM) in various formats
-      generate-sbom: false
+      generate-sbom: true
       export-github-sbom: true      # SPDX JSON artifact on job instance  
       perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
       blackduck-project-name: ${{ github.event.repository.name }} # BlackDuck project name, typically the repository name
-      generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
+      generate-blackduck-sbom: false # obsolete, use perform-blackduck-sca-scan instead
         
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
