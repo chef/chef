@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.100 -->
-## [v19.1.100](https://github.com/chef/chef/tree/v19.1.100) (2025-11-05)
+<!-- latest_release 19.1.101 -->
+## [v19.1.101](https://github.com/chef/chef/tree/v19.1.101) (2025-11-05)
 
 #### Merged Pull Requests
-- updating blackduck [#15423](https://github.com/chef/chef/pull/15423) ([johnmccrae](https://github.com/johnmccrae))
+- Updating chef versioning in Blackduck [#15425](https://github.com/chef/chef/pull/15425) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating chef versioning in Blackduck [#15425](https://github.com/chef/chef/pull/15425) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.101 -->
 - updating blackduck [#15423](https://github.com/chef/chef/pull/15423) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.100 -->
 - Test recipes using test-kitchen-enterprise on docker containers [#15401](https://github.com/chef/chef/pull/15401) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.99 -->
 - Rebased and squashed Ruby 3.4 Upgrade (from 15148) with unrelated/separable changes extracted to main [#15379](https://github.com/chef/chef/pull/15379) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->
