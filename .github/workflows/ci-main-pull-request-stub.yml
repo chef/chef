@@ -62,7 +62,7 @@ jobs:
     with:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
-
+      
       # Version is explicitly passed from extract-version job to ensure Black Duck SCA gets the correct version
       # Without this, Black Duck defaults to 1.0.0 which is incorrect
       version: ${{ needs.extract-version.outputs.full-version }}
