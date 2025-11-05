@@ -748,6 +748,16 @@ module ChefConfig
     def self.init_openssl
       puts "***** Inside init_openssl fips=#{fips}"
       if fips
+        # Set OPENSSL_CONF to fipsmodule.cnf before requiring OpenSSL
+        if ENV["OPENSSL_CONF"] =~ /hab[\/\\]pkgs/
+          puts "Inside HAB environment block for FIPS"
+          ENV["OPENSSL_CONF"] = ENV["OPENSSL_CONF"].sub("openssl.cnf", "fipsmodule.cnf")
+          puts ">>> OPENSSL_CONF switched to #{ENV['OPENSSL_CONF']} for FIPS"
+        end
+
+        # Require OpenSSL after setting OPENSSL_CONF
+        require "openssl" unless defined?(::OpenSSL)
+
         enable_fips_mode
       end
     end
@@ -1304,29 +1314,6 @@ module ChefConfig
     # @api private
     def self.enable_fips_mode
       puts "********* Inside def enable_fips_mode  *********"
-      puts "Value of HAB_CACHE_SRC_PATH=#{ENV['HAB_CACHE_SRC_PATH']},  HAB_PKG_PATH=#{ENV['HAB_PKG_PATH']}, OPENSSL_CONF=#{ENV['OPENSSL_CONF']}"
-      # If running in Habitat (detected by OPENSSL_CONF path), switch to FIPS config BEFORE loading OpenSSL
-      if ENV["OPENSSL_CONF"] =~ /hab[\/\\]pkgs/
-        puts "Inside HAB environment block for FIPS"
-        # This is required when actual core/openssl cnf files have the required content
-        # deps_file = File.join(ENV["HAB_PKG_PATH"], "DEPS")
-        # if File.exist?(deps_file)
-        #   openssl_dep = File.readlines(deps_file).find { |l| l.include?("core/openssl/") }
-        #   puts "Found openssl dep in DEPS: #{openssl_dep}"
-        #   if openssl_dep
-        #     openssl_ssl_path = "/hab/pkgs/#{openssl_dep.strip}/ssl"
-        #     puts "Setting OPENSSL_CONF to #{openssl_ssl_path}/fipsmodule.cnf for FIPS mode"
-        #     ENV["OPENSSL_CONF"] = "#{openssl_ssl_path}/fipsmodule.cnf"
-        #     ChefConfig.logger.info("Set OPENSSL_CONF to #{ENV['OPENSSL_CONF']} for FIPS mode")
-        #   end
-        # end
-
-        # For testing since we cannot update the actual core/openssl cnf files, we have created them at {this_pkg}/openssl/ path
-        ENV["OPENSSL_CONF"] = ENV["OPENSSL_CONF"].sub("openssl.cnf", "fipsmodule.cnf")
-        puts ">>> OPENSSL_CONF switched to #{ENV['OPENSSL_CONF']} for FIPS"
-        ChefConfig.logger.info("OPENSSL_CONF switched to FIPS config: #{ENV['OPENSSL_CONF']}")
-      end
-
       # Reinitialize OpenSSL to apply the new configuration
       OpenSSL::Config.load
       # Enable FIPS mode
