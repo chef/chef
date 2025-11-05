@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: echo version of stub and inputs
         run: |
-          echo "CI main pull request stub version $STUB_VERSION"
+          echo "CI chef-18 pull request stub version $STUB_VERSION"
 
   call-ci-chef-18-pr-check-pipeline:
     uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
