@@ -1330,7 +1330,14 @@ module ChefConfig
       # Load OpenSSL with the new config
       require "openssl" unless defined?(::OpenSSL)
 
-      OpenSSL.fips_mode = true
+      # First try to enable FIPS mode using OpenSSL's own method
+      if OpenSSL.respond_to?(:fips_mode=)
+        OpenSSL.fips_mode = true
+      else
+        # For OpenSSL 3.x, try using FIPS provider directly
+        OpenSSL::Provider.load('fips')
+      end
+
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
       require "digest/md5" unless defined?(Digest::MD5)
