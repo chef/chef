@@ -1327,6 +1327,9 @@ module ChefConfig
         ChefConfig.logger.info("OPENSSL_CONF switched to FIPS config: #{ENV['OPENSSL_CONF']}")
       end
 
+      # Load OpenSSL with the new config
+      require "openssl" unless defined?(::OpenSSL)
+
       OpenSSL.fips_mode = true
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
