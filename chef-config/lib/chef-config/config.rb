@@ -1303,10 +1303,11 @@ module ChefConfig
     # sure Chef runs do not crash.
     # @api private
     def self.enable_fips_mode
-      puts "********* Enabling FIPS mode in OpenSSL *********"
-      puts "Value of HAB_CACHE_SRC_PATH=#{ENV['HAB_CACHE_SRC_PATH']},  HAB_PKG_PATH=#{ENV['HAB_PKG_PATH']}"
-      # If running as a Habitat package, set OPENSSL_CONF to fipsmodule.cnf for FIPS mode
-      if  (ENV["HAB_CACHE_SRC_PATH"] || ENV["HAB_PKG_PATH"])
+      puts "********* Inside def enable_fips_mode  *********"
+      puts "Value of HAB_CACHE_SRC_PATH=#{ENV['HAB_CACHE_SRC_PATH']},  HAB_PKG_PATH=#{ENV['HAB_PKG_PATH']}, OPENSSL_CONF=#{ENV['OPENSSL_CONF']}"
+      # If running in Habitat (detected by OPENSSL_CONF path), switch to FIPS config BEFORE loading OpenSSL
+      if ENV["OPENSSL_CONF"] =~ /hab[\/\\]pkgs/
+        puts "Inside HAB environment block for FIPS"
         # This is required when actual core/openssl cnf files have the required content
         # deps_file = File.join(ENV["HAB_PKG_PATH"], "DEPS")
         # if File.exist?(deps_file)
@@ -1321,13 +1322,9 @@ module ChefConfig
         # end
 
         # For testing since we cannot update the actual core/openssl cnf files, we have created them at {this_pkg}/openssl/ path
-        fips_conf = File.join(ENV["HAB_CACHE_SRC_PATH"], "openssl", "fipsmodule.cnf")
-        if File.exist?(fips_conf)
-          ENV["OPENSSL_CONF"] = fips_conf
-          ChefConfig.logger.info("OPENSSL_CONF switched to #{fips_conf} for FIPS")
-        else
-          ChefConfig.logger.warn("FIPS config missing: #{fips_conf}")
-        end
+        ENV["OPENSSL_CONF"] = ENV["OPENSSL_CONF"].sub("openssl.cnf", "fipsmodule.cnf")
+        puts ">>> OPENSSL_CONF switched to #{ENV['OPENSSL_CONF']} for FIPS"
+        ChefConfig.logger.info("OPENSSL_CONF switched to FIPS config: #{ENV['OPENSSL_CONF']}")
       end
 
       OpenSSL.fips_mode = true
