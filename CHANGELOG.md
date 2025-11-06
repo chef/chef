@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.102 -->
-## [v19.1.102](https://github.com/chef/chef/tree/v19.1.102) (2025-11-06)
+<!-- latest_release 19.1.103 -->
+## [v19.1.103](https://github.com/chef/chef/tree/v19.1.103) (2025-11-06)
 
 #### Merged Pull Requests
-- Updating chef-zero, and rest-client [#15419](https://github.com/chef/chef/pull/15419) ([johnmccrae](https://github.com/johnmccrae))
+- Bump to latest ohai [#15406](https://github.com/chef/chef/pull/15406) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump to latest ohai [#15406](https://github.com/chef/chef/pull/15406) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.103 -->
 - Updating chef-zero, and rest-client [#15419](https://github.com/chef/chef/pull/15419) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.102 -->
 - Updating chef versioning in Blackduck [#15425](https://github.com/chef/chef/pull/15425) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.101 -->
 - updating blackduck [#15423](https://github.com/chef/chef/pull/15423) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.100 -->
