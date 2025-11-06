@@ -282,11 +282,9 @@ activate = 1
 
 [fips_sect]
 activate = 1
-module = $(Get-HabPackagePath core/openssl)\bin\fips.dll
 
 [algorithm_sect]
 default_properties = fips=yes
-fips_mode = yes
 "@ | Set-Content "$confDir\fipsmodule.cnf"
 
 Write-Host "openssl.cnf:"

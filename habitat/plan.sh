@@ -183,11 +183,9 @@ activate = 1
 
 [fips_sect]
 activate = 1
-module = $(pkg_path_for core/openssl)/lib64/ossl-modules/fips.so
 
 [algorithm_sect]
 default_properties = fips=yes
-fips_mode = yes
 EOF
 
   build_line "Base OpenSSL config:"
