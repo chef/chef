@@ -756,7 +756,7 @@ module ChefConfig
         end
 
         # Require OpenSSL after setting OPENSSL_CONF
-        require "openssl" unless defined?(::OpenSSL)
+        # require "openssl" unless defined?(::OpenSSL)
 
         enable_fips_mode
       end
