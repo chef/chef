@@ -1315,7 +1315,7 @@ module ChefConfig
     def self.enable_fips_mode
       puts "********* Inside def enable_fips_mode  *********"
       # Reinitialize OpenSSL to apply the new configuration
-      OpenSSL::Config.load
+      #OpenSSL::Config.load
       # Enable FIPS mode
       OpenSSL.fips_mode = true
 
