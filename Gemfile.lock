@@ -90,7 +90,7 @@ PATH
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 19.1.106)
       chef-licensing (>= 0.7.5)
-      chef-powershell (~> 18.1.0)
+      chef-powershell (~> 18.6.6)
       chef-utils (= 19.1.106)
       chef-vault
       chef-zero (~> 15.0.21)
@@ -221,7 +221,7 @@ GEM
       pstore (~> 0.1.1)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.1.0)
+    chef-powershell (18.6.6)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-ruby-shadow (3.0.0)
