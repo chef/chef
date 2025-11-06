@@ -18,7 +18,8 @@ class Chef
           Chef::Log.info "****Skipping license validation..."
           return
         end
-        license_keys = ChefLicensing.fetch_and_persist
+        return
+        #license_keys = ChefLicensing.fetch_and_persist
       rescue ChefLicensing::LicenseKeyFetcher::LicenseKeyNotFetchedError
         Chef::Log.error "Chef Infra cannot execute without valid licenses." # TODO: Replace Infra with the product name dynamically
         Chef::Application.exit! "License not set", 174 # 174 is the exit code for LICENSE_NOT_SET defined in lib/chef/application/exit_code.rb
