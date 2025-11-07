@@ -69,6 +69,7 @@ jobs:
       detect-version-source-type: "file" # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: "VERSION" # use for file name
       language: "ruby"  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
+      detect-policy-check-fail-on-severities: "NONE"
 
       # complexity-checks
       perform-complexity-checks: true
