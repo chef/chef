@@ -87,26 +87,23 @@ jobs:
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client --chef-license accept
-          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client env | grep OPENSSL_CONF || echo "OPENSSL_CONF not in env"
 
-          # Run a real chef-client command that uses crypto (e.g., with a simple recipe)
-          # echo 'file "/tmp/test" do; content Digest::MD5.hexdigest("test"); end' > /tmp/test_recipe.rb
-          # sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z -c /tmp/test_recipe.rb 2>&1 | tee /tmp/chef-client.log
+          # Create a simple recipe that uses MD5 (should fail in FIPS mode)
+          cat > /tmp/test_recipe.rb << 'EOF'
+          file "/tmp/test" do
+            content Digest::MD5.hexdigest("test")
+          end
+          EOF
 
-          # # Check for MD5 error (indicating FIPS enforcement)
-          # if grep -q "MD5" /tmp/chef-client.log && grep -q "not allowed\|disabled\|forbidden" /tmp/chef-client.log; then
-          #   echo "PASS: FIPS mode detected and enforced - MD5 blocked"
-          #   exit 0
-          # else
-          #   echo "FAIL: FIPS mode not working - MD5 allowed or not detected"
-          #   cat /tmp/chef-client.log  # Debug output
-          #   exit 1
-          # fi
+          # Run chef-client in local mode with the recipe
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z -r /tmp/test_recipe.rb 2>&1 | tee /tmp/chef-client.log
 
-          output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z -l debug 2>&1 | grep "FIPS")
-          if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
-            echo "✅ Chef Infra Client is running in FIPS mode"
+          # Check for MD5 error (indicating FIPS enforcement)
+          if grep -q "MD5" /tmp/chef-client.log && grep -q "not allowed\|disabled\|forbidden\|Digest initialization failed" /tmp/chef-client.log; then
+            echo "PASS: FIPS mode detected and enforced - MD5 blocked"
+            exit 0
           else
-            echo "❌ FIPS mode not detected"
+            echo "FAIL: FIPS mode not working - MD5 allowed or not detected"
+            cat /tmp/chef-client.log  # Debug output
             exit 1
           fi
