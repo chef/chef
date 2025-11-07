@@ -72,7 +72,7 @@ jobs:
 
       detect-policy-check-fail-on-severities: blocker  # Only block SBOM upload on blocker-level prior step failures
       blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
-      blackduck-bridge-break: false # Prevents build failure on Bridge violations
+      bridge-break: false # Prevents build failure on Bridge violations
 
       # complexity-checks
       perform-complexity-checks: true
