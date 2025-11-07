@@ -70,9 +70,9 @@ jobs:
       detect-version-source-parameter: "VERSION" # use for file name
       language: "ruby"  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
 
-      detect-policy-check-fail-on-severities: none  # options: all, blocker, critical, major, minor, ok, trivial, none, unspcecified. Default: all
-      blackduck-break-build: false  # whether to fail the build on policy violations. Default: true
-      # blackduck-bridge-break: false # whether to fail the build on Bridge violations. Default: true
+      detect-policy-check-fail-on-severities: blocker  # Only block SBOM upload on blocker-level prior step failures
+      blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
+      blackduck-bridge-break: false # Prevents build failure on Bridge violations
 
       # complexity-checks
       perform-complexity-checks: true
