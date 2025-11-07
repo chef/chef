@@ -103,7 +103,7 @@ jobs:
           #   exit 1
           # fi
 
-          output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
+          output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z -l debug 2>&1 | grep "FIPS")
           if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
             echo "✅ Chef Infra Client is running in FIPS mode"
           else
