@@ -128,7 +128,7 @@ jobs:
         #   exit 1
         # }
 
-        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client -z -l debug --no-color 2>&1 | Select-String "FIPS"
+        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z -l debug --no-color 2>&1 | Select-String "FIPS"
         if ($output -match "OpenSSL FIPS 140 mode enabled") {
           Write-Host "✅ Chef Infra Client is running in FIPS mode"
         } else {
