@@ -53,7 +53,7 @@ jobs:
 
   call-ci-main-pr-check-pipeline:
     needs: extract-version
-    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@chef-19
     secrets: inherit
     permissions:
       id-token: write
@@ -69,6 +69,9 @@ jobs:
       detect-version-source-type: "file" # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: "VERSION" # use for file name
       language: "ruby"  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
+
+      detect-policy-check-fail-on-severities: none  # options: all, blocker, critical, major, minor, ok, trivial, none, unspcecified. Default: all
+      blackduck-break-build: false  # whether to fail the build on policy violations. Default: true
 
       # complexity-checks
       perform-complexity-checks: true
@@ -88,7 +91,6 @@ jobs:
       polaris-project-name: 'chef-19'
       # polaris-blackduck-executable: # Let common actions auto-detect executable path
       # polaris-executable-detect-path: # Let common actions auto-detect detect path
-      blackduck-break-build: false  # Parameter not supported by common workflow
 
       # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
       build: true
