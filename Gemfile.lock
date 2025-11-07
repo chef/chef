@@ -45,7 +45,7 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.1.99)
+    chef (19.1.103)
       activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
@@ -83,7 +83,7 @@ PATH
       unf_ext (~> 0.0.8.2)
       uri (~> 1.0.3)
       vault (~> 0.18.2)
-    chef (19.1.99-universal-mingw-ucrt)
+    chef (19.1.103-universal-mingw-ucrt)
       activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
@@ -471,7 +471,7 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.5.0)
+    structured_warnings (0.4.0)
     syslog (0.3.0)
       logger
     syslog-logger (1.6.8)
@@ -519,6 +519,7 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.3)
