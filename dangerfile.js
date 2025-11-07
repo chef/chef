@@ -10,8 +10,8 @@ if (danger.git.modified_files.includes("Gemfile.lock") &&
     body = danger.github.pr.body
     body = body.replace("I have used `--conservative` to do it", "")
 
-    if (danger.git.modified_files.includes("Gemfile")) {
-        message("PR updates Gemfile.lock, but it also updates Gemfile, so that" +
+    if (danger.git.modified_files.includes("Gemfile") || danger.git.modified_files.includes("chef.gemspec") || danger.git.modified_files.includes("chef-universal-mingw-ucrt.gemspec")) {
+        message("PR updates Gemfile.lock, but it also updates Gemfile/gemspec, so that" +
             " is probably OK - but the reviewer should check updates are solely" +
             " from the Gemfile update")
     } else if (!body.includes("--conservative")) {
