@@ -150,6 +150,7 @@ for plan in ${habitat_plans[@]}; do
     echo "      - \"-Command\""
     echo "      environment:"
     echo "        - HAB_AUTH_TOKEN"
+    echo "        - BUILDKITE_ORGANIZATION_SLUG"
     echo "      propagate-environment: true"
   else
     echo "    queue: default-privileged"
@@ -159,6 +160,7 @@ for plan in ${habitat_plans[@]}; do
     echo "      privileged: true"
     echo "      environment:"
     echo "        - HAB_AUTH_TOKEN"
+    echo "        - BUILDKITE_ORGANIZATION_SLUG"
     echo "      propagate-environment: true"
   fi
   # echo "  plugins:"

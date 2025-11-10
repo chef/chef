@@ -235,6 +235,25 @@ function Invoke-Install {
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
 
+        # Test artifactory access and install chef-official-distribution if accessible
+        Write-BuildLine "******* Testing access to artifactory*****"
+        $ArtifactoryUrl = "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+        try {
+            $null = Invoke-WebRequest -Uri $ArtifactoryUrl -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+            Write-BuildLine "******* Artifactory is accessible, installing chef-official-distribution gem*****"
+            gem sources --add $ArtifactoryUrl
+            gem install chef-official-distribution
+            gem sources --remove $ArtifactoryUrl
+
+            # Verify chef-official-distribution installation
+            Write-BuildLine "******* Verifying chef-official-distribution installation******"
+            gem list chef-official-distribution
+            If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        } catch {
+            Write-BuildLine "******* Artifactory is not accessible, skipping chef-official-distribution installation*****"
+            Write-BuildLine "******* Error: $($_.Exception.Message)*****"
+        }
+
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
             appbundler.bat "${HAB_CACHE_SRC_PATH}/${pkg_dirname}" $pkg_prefix/bin $gem
