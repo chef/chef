@@ -1,10 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 18.8.55 -->
+## [v18.8.55](https://github.com/chef/chef/tree/v18.8.55) (2025-11-10)
+
+#### Merged Pull Requests
+- Also pass danger if Gemfile.lock updated because of gemspecs (#15428) [#15429](https://github.com/chef/chef/pull/15429) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=18.8.54 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Also pass danger if Gemfile.lock updated because of gemspecs (#15428) [#15429](https://github.com/chef/chef/pull/15429) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.55 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
