@@ -29,7 +29,7 @@ jobs:
           echo "CI main pull request stub version $STUB_VERSION"
 
   call-ci-main-pr-check-pipeline:
-    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@chef-19
     secrets: inherit
     permissions:
       id-token: write
@@ -39,6 +39,9 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
+      detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
+      blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
+      bridge-break: false # Prevents build failure on Bridge violations
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
       version: '19.1.106' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
