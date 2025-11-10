@@ -350,7 +350,7 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    multi_json (1.15.0)
+    multi_json (1.17.0)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
     net-ftp (0.3.8)
