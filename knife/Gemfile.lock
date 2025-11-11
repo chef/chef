@@ -34,7 +34,7 @@ PATH
   remote: ../chef-bin
   specs:
     chef-bin (19.1.24)
-      chef (= 19.1.106)
+      chef (= 19.1.107)
 
 PATH
   remote: ../chef-config
@@ -57,7 +57,7 @@ PATH
 PATH
   remote: ..
   specs:
-    chef (19.1.106)
+    chef (19.1.107)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)

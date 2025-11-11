@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.106 -->
-## [v19.1.106](https://github.com/chef/chef/tree/v19.1.106) (2025-11-10)
+<!-- latest_release 19.1.107 -->
+## [v19.1.107](https://github.com/chef/chef/tree/v19.1.107) (2025-11-11)
 
 #### Merged Pull Requests
-- updating blackduck to not die on false positives [#15430](https://github.com/chef/chef/pull/15430) ([johnmccrae](https://github.com/johnmccrae))
+- update chef-powershell gem to 18.6.6 [#15426](https://github.com/chef/chef/pull/15426) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update chef-powershell gem to 18.6.6 [#15426](https://github.com/chef/chef/pull/15426) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.107 -->
 - updating blackduck to not die on false positives [#15430](https://github.com/chef/chef/pull/15430) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.106 -->
 - Update inspec to non-beta and bump train-core [#15432](https://github.com/chef/chef/pull/15432) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.105 -->
 - Also pass danger if Gemfile.lock updated because of gemspecs [#15428](https://github.com/chef/chef/pull/15428) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.104 -->
