@@ -43,7 +43,7 @@ jobs:
       blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
       bridge-break: false # Prevents build failure on Bridge violations
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '19.1.106' # ${{ github.event.repository.version }}
+      version: '19.1.107' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
@@ -99,7 +99,7 @@ jobs:
       export-github-sbom: true      # SPDX JSON artifact on job instance
       perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
-      blackduck-project-name: 'chef-19' # BlackDuck project name, typically the repository name
+      blackduck-project-name: 'chef' # BlackDuck project name, typically the repository name
       generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
 
       generate-msft-sbom: false
