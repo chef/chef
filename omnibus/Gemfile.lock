@@ -341,9 +341,9 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    pedump (0.6.10)
+    pedump (0.7.3)
       awesome_print
-      iostruct (>= 0.0.4)
+      iostruct (>= 0.5.0)
       multipart-post (>= 2.0.0)
       rainbow
       zhexdump (>= 0.0.2)
