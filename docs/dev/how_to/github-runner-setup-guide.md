@@ -47,7 +47,7 @@ Remove-Item "actions-runner.zip"
 
 ```powershell
 # Configure the runner (replace with your actual values)
-$repoUrl = "https://github.com/your-username/your-repo"  # For repo-level runner
+$repoUrl = "https://github.com/chef/chef"  # For repo-level runner
 # OR for organization-level: $orgUrl = "https://github.com/your-org"
 $token = "YOUR_REGISTRATION_TOKEN_HERE"
 $runnerName = "windows-runner-01"
@@ -167,7 +167,7 @@ EOF
 ssh runneradmin@$VM_IP
 
 # Configure runner (replace with your values)
-REPO_URL="https://github.com/chef"
+REPO_URL="https://github.com/chef/chef"
 TOKEN="ABFBQT5WJE4YTDVFEL3EMBDJCX7CS"
 RUNNER_NAME="ubuntu-2404-pro-fips-tester"
 
@@ -183,21 +183,21 @@ EOF
 # Install as service
 sudo -u runner bash << 'EOF'
 cd /home/runner/actions-runner
-./svc.sh install
-./svc.sh start
+sudo ./svc.sh install
+sudo ./svc.sh start
 EOF
 
 # Verify service is running
 sudo -u runner bash << 'EOF'
 cd /home/runner/actions-runner
-./svc.sh status
+sudo ./svc.sh status
 EOF
 ```
 
 ### Step 8: Verify the Runner
 
 1. Go back to GitHub Settings > Actions > Runners
-2. You should see your Linux runner listed as "Online"
+2. You should see your Linux runner listed as "Ready". If the runner shows up as "idle" something is not correct in the configuration.
 3. Test with a workflow that targets the "linux" label
 4. You can also test using "./config.sh --check --url https://github.com/chef/chef" - you will be prompted to enter your personal PAT
 
