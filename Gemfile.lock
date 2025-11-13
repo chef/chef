@@ -45,7 +45,7 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.1.103)
+    chef (19.1.107)
       activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
@@ -83,56 +83,6 @@ PATH
       unf_ext (~> 0.0.8.2)
       uri (~> 1.0.3)
       vault (~> 0.18.2)
-    chef (19.1.103-universal-mingw-ucrt)
-      activesupport (~> 7.2.2.2)
-      addressable
-      aws-sdk-s3 (~> 1.91)
-      aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.107)
-      chef-licensing (>= 0.7.5)
-      chef-powershell (~> 18.6.6)
-      chef-utils (= 19.1.107)
-      chef-vault
-      chef-zero (~> 15.0.21)
-      corefoundation (~> 0.3.4)
-      csv (~> 3.3.5)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
-      erubis (~> 2.7)
-      ffi (>= 1.15.5, < 1.18.0)
-      ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
-      iniparse (~> 1.4)
-      inspec-core (~> 7.0.95)
-      iso8601 (>= 0.12.1, < 0.14)
-      license-acceptance (>= 1.0.5, < 3)
-      mixlib-archive (>= 0.4, < 2.0)
-      mixlib-authentication (>= 2.1, < 4)
-      mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
-      mixlib-shellout (~> 3.3.8)
-      net-ftp
-      net-sftp (>= 2.1.2, < 5.0)
-      ohai (~> 19.0)
-      plist (~> 3.2)
-      proxifier2 (~> 1.1)
-      syslog
-      syslog-logger (~> 1.6)
-      train-core (~> 3.13, >= 3.13.4)
-      train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.17)
-      unf_ext (~> 0.0.8.2)
-      uri (~> 1.0.3)
-      vault (~> 0.18.2)
-      win32-api (~> 1.10.0)
-      win32-certstore (~> 0.6.15)
-      win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
-      win32-mmap (~> 0.4.1)
-      win32-mutex (~> 0.4.2)
-      win32-process (~> 0.9)
-      win32-service (>= 2.1.5, < 3.0)
-      win32-taskscheduler (~> 2.0)
-      wmi-lite (~> 1.0)
 
 PATH
   remote: chef-bin
@@ -221,9 +171,6 @@ GEM
       pstore (~> 0.1.1)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.6.6)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
@@ -289,11 +236,8 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
-    ffi-win32-extensions (1.0.4)
-      ffi
     ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
@@ -340,7 +284,6 @@ GEM
     inspec-core-bin (7.0.95)
       inspec-core (= 7.0.95)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.13.2)
     language_server-protocol (3.17.0.5)
@@ -364,8 +307,6 @@ GEM
     minitest (5.25.1)
     mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.7-universal-mingw32)
-      mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
@@ -374,11 +315,6 @@ GEM
       ffi (>= 1.15.5)
     mixlib-shellout (3.3.8)
       chef-utils
-    mixlib-shellout (3.3.8-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     multi_json (1.17.0)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
@@ -419,7 +355,7 @@ GEM
     pstore (0.1.4)
     public_suffix (6.0.2)
     racc (1.8.1)
-    rack (3.2.1)
+    rack (3.2.4)
     rackup (2.2.1)
       rack (>= 3)
     rainbow (3.1.1)
@@ -471,7 +407,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.5.0)
     syslog (0.3.0)
       logger
     syslog-logger (1.6.8)
@@ -519,7 +454,6 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf_ext (0.0.8.2)
-    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.3)
@@ -531,35 +465,12 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
-    win32-api (1.10.1-universal-mingw32)
-    win32-certstore (0.6.16)
-      chef-powershell
-      ffi
-    win32-event (0.6.3)
-      win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
-      ffi
-    win32-ipc (0.7.0)
-      ffi
-    win32-mmap (0.4.2)
-      ffi
-    win32-mutex (0.4.3)
-      win32-ipc (>= 0.6.0)
-    win32-process (0.10.0)
-      ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
-      ffi-win32-extensions
-    win32-taskscheduler (2.0.4)
-      ffi
-      structured_warnings
     wisper (2.0.1)
     wmi-lite (1.0.7)
 
 PLATFORMS
   arm64-darwin-21
   ruby
-  x64-mingw-ucrt
 
 DEPENDENCIES
   appbundler
