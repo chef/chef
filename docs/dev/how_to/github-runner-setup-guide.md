@@ -181,7 +181,7 @@ ssh runneradmin@$VM_IP
 
 # Configure runner (replace with your values)
 REPO_URL="https://github.com/chef/chef"
-TOKEN="ABFBQT5WJE4YTDVFEL3EMBDJCX7CS"
+TOKEN="ABFBQT5WJE4YTDVFEL3EMBDJCX7CS" # // cspell:ignore-line
 RUNNER_NAME="ubuntu-2404-pro-fips-tester"
 
 sudo -u runner bash << EOF
