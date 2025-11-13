@@ -1,13 +1,22 @@
-# Step-by-Step Guide to Create a Self-Hosted GitHub Runner
+# Step-by-Step Guide to Create a Self-Hosted GitHub Runner on Azure
 
 This guide provides instructions for setting up self-hosted GitHub runners on both Windows (using PowerShell) and Linux (using Bash and Azure CLI). Self-hosted runners allow you to run GitHub Actions workflows on your own infrastructure.
 
 ## Prerequisites
 
-- A GitHub repository or organization with admin access
+- You need to have Owner rights in the Chef org
+- You need a resource group in the "Engineering Dev/Test" subscription
 - For Windows: Administrative privileges on the Windows machine
 - For Linux: An Azure subscription and Azure CLI installed
 - GitHub Personal Access Token (PAT) with `repo` scope (for repository-level runners) or `admin:org` scope (for organization-level runners)
+
+Github also allows you to create a token to execute the runner with that does not require your PAT. Do this to get a spiffy token:
+
+```PowerShell
+gh api --method POST /repos/chef/chef/actions/runners/registration-token \
+  --header 'Accept: application/vnd.github+json' \
+  --header 'X-GitHub-Api-Version: 2022-11-28'
+```
 
 ## Part 1: Windows Runner Setup (Using PowerShell)
 
@@ -132,7 +141,11 @@ sudo apt install -y curl wget unzip jq
 # Create runner user (optional, for security)
 sudo useradd -m -s /bin/bash runner
 sudo usermod -aG sudo runner
-sudo passwd runner  # Set a password for the runner user
+# Note: Do not set a password for the runner account. Instead do this:
+sudo visudo
+# now add this to the list:
+runner ALL=(ALL) NOPASSWD:ALL
+# Ctrl-O, Ctrl-X to save and exit
 
 # Switch to runner user for the rest of the setup
 sudo -u runner mkdir -p /home/runner/actions-runner
@@ -180,11 +193,11 @@ EOF
 ### Step 7: Install and Start the Service
 
 ```bash
-# Install as service
+# Install as service. Since we added the NOPASSWD settings to the runner user account, we pass the '-n' flag in when we start the service, otherwise bad things happen.
 sudo -u runner bash << 'EOF'
 cd /home/runner/actions-runner
 sudo ./svc.sh install
-sudo ./svc.sh start
+sudo -n ./svc.sh start
 EOF
 
 # Verify service is running
