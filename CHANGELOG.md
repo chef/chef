@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.56 -->
-## [v18.8.56](https://github.com/chef/chef/tree/v18.8.56) (2025-11-10)
+<!-- latest_release 18.8.57 -->
+## [v18.8.57](https://github.com/chef/chef/tree/v18.8.57) (2025-11-13)
 
 #### Merged Pull Requests
-- Deprecate  mac 12  and add mac 13  as Builder [#15415](https://github.com/chef/chef/pull/15415) ([poorndm](https://github.com/poorndm))
+- bundle update --conservative rack to 3.2.4 [#15439](https://github.com/chef/chef/pull/15439) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.54 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- bundle update --conservative rack to 3.2.4 [#15439](https://github.com/chef/chef/pull/15439) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.57 -->
 - Deprecate  mac 12  and add mac 13  as Builder [#15415](https://github.com/chef/chef/pull/15415) ([poorndm](https://github.com/poorndm)) <!-- 18.8.56 -->
 - Also pass danger if Gemfile.lock updated because of gemspecs (#15428) [#15429](https://github.com/chef/chef/pull/15429) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.55 -->
 <!-- release_rollup -->
