@@ -2,6 +2,54 @@
 
 This guide provides instructions for setting up self-hosted GitHub runners on both Windows (using PowerShell) and Linux (using Bash and Azure CLI). Self-hosted runners allow you to run GitHub Actions workflows on your own infrastructure.
 
+## Quick Start: Automated Deployment with Bicep
+
+🚀 **New!** For automated deployment of runners on Azure, use our Bicep templates and deployment scripts:
+
+**Deploy a Windows runner:**
+
+```powershell
+# PowerShell (works on any platform)
+.\scripts\deploy-runner.ps1 -RunnerType windows -ResourceGroupName "github-runners-rg" -GithubRepoUrl "https://github.com/chef/chef"
+```
+
+```bash
+# Bash (macOS/Linux/WSL)
+./scripts/deploy-runner.sh -t windows -g "github-runners-rg" -r "https://github.com/chef/chef"
+```
+
+**Deploy a Linux runner:**
+
+```powershell
+# PowerShell (works on any platform)
+.\scripts\deploy-runner.ps1 -RunnerType linux -ResourceGroupName "github-runners-rg" -SshPublicKey "~/.ssh/id_rsa.pub" -GithubRepoUrl "https://github.com/chef/chef"
+```
+
+```bash
+# Bash (macOS/Linux/WSL)
+./scripts/deploy-runner.sh -t linux -g "github-runners-rg" -k ~/.ssh/id_rsa.pub -r "https://github.com/chef/chef"
+```
+
+The scripts will:
+
+- ✅ Create the Azure VM with all necessary networking
+- ✅ Automatically install and configure the GitHub Actions runner
+- ✅ Set up the runner as a system service
+- ✅ Return connection details for your new runner
+
+**Files:**
+
+- `scripts/deploy-runner.ps1` - PowerShell deployment script (cross-platform)
+- `scripts/deploy-runner.sh` - Bash deployment script (macOS/Linux/WSL)
+- `templates/github-runner-windows.bicep` - Windows VM template
+- `templates/github-runner-linux.bicep` - Linux VM template
+
+---
+
+## Manual Setup Instructions
+
+If you prefer manual setup or need to configure a runner on an existing machine, follow the instructions below.
+
 ## Prerequisites
 
 - You need to have Owner rights in the Chef org
@@ -252,3 +300,91 @@ EOF
 - **Linux**: `/home/runner/actions-runner/_diag/*.log`
 
 For more detailed troubleshooting, refer to the [GitHub Actions documentation](https://docs.github.com/en/actions/hosting-your-own-runners).
+
+---
+
+## Automated Deployment with Bicep Templates
+
+For a faster, more reproducible approach to deploying GitHub runners on Azure, consider using the Bicep templates and deployment scripts provided in this repository:
+
+### Benefits of Automated Deployment
+
+- **Faster**: Deploy a fully configured runner in minutes instead of following 8+ manual steps
+- **Consistent**: Infrastructure as Code ensures identical configuration every time
+- **Reproducible**: Easily create multiple runners with the same configuration
+- **Cross-platform**: Deploy from Windows, macOS, or Linux using the same scripts
+- **Comprehensive**: Automatically sets up networking, security groups, and runner service
+
+### Available Scripts and Templates
+
+**Deployment Scripts:**
+
+- `scripts/deploy-runner.ps1` - PowerShell script (works on any platform with PowerShell)
+- `scripts/deploy-runner.sh` - Bash script (works on macOS, Linux, Windows with WSL)
+
+**Bicep Templates:**
+
+- `templates/github-runner-windows.bicep` - Windows Server VM with GitHub runner
+- `templates/github-runner-linux.bicep` - Ubuntu Linux VM with GitHub runner
+
+### Quick Examples
+
+**Deploy a Windows runner:**
+
+```powershell
+.\scripts\deploy-runner.ps1 `
+    -RunnerType windows `
+    -ResourceGroupName "github-runners-rg" `
+    -GithubRepoUrl "https://github.com/chef/chef" `
+    -VmName "windows-fips-runner-01" `
+    -RunnerLabels "windows,fips,self-hosted,azure"
+```
+
+**Deploy a Linux runner:**
+
+```bash
+./scripts/deploy-runner.sh \
+    --type linux \
+    --resource-group "github-runners-rg" \
+    --repo-url "https://github.com/chef/chef" \
+    --vm-name "ubuntu-fips-runner-01" \
+    --ssh-key ~/.ssh/id_rsa.pub \
+    --runner-labels "linux,ubuntu,fips,self-hosted,azure"
+```
+
+### What Gets Deployed
+
+The Bicep templates create:
+
+1. **Virtual Network** - Isolated network for the runner
+2. **Network Security Group** - Firewall rules (RDP for Windows, SSH for Linux)
+3. **Public IP Address** - For remote access
+4. **Network Interface** - Connects VM to the network
+5. **Virtual Machine** - Windows Server or Ubuntu Linux
+6. **Custom Script Extension** - Automatically installs and configures the GitHub runner
+
+The runner is fully configured and ready to accept jobs as soon as the deployment completes.
+
+### Script Parameters
+
+Both scripts support the following parameters:
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `-RunnerType` / `-t` | Yes | 'windows' or 'linux' |
+| `-ResourceGroupName` / `-g` | Yes | Azure resource group name |
+| `-GithubRepoUrl` / `-r` | Yes | GitHub repository URL |
+| `-VmName` / `-n` | No | VM name (defaults to `github-runner-TYPE`) |
+| `-Location` / `-l` | No | Azure region (default: eastus) |
+| `-VmSize` / `-s` | No | VM size (defaults vary by type) |
+| `-RunnerLabels` / `--runner-labels` | No | Runner labels (defaults vary by type) |
+
+For Windows runners, you'll be prompted for an admin password.
+For Linux runners, you'll need to provide an SSH public key path.
+
+### Learn More
+
+See the script files for complete parameter documentation and additional examples:
+
+- Run `.\scripts\deploy-runner.ps1 -?` for PowerShell help
+- Run `./scripts/deploy-runner.sh --help` for Bash help
