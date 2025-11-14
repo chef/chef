@@ -844,8 +844,51 @@ AI MUST NOT:
 - Force-push to protected branches
 - Bypass Expeditor automation controls
 
----
 
-**Document Version**: 1.0  
-**Last Updated**: 2025-10-10  
-**Maintained By**: Chef Infra AI Assistant Guidelines
+## AI-Assisted Development & Compliance
+
+- ✅ Create PR with `ai-assisted` label (if label doesn't exist, create it with description "Work completed with AI assistance following Progress AI policies" and color "9A4DFF")
+- ✅ Include "This work was completed with AI assistance following Progress AI policies" in PR description
+
+### Jira Ticket Updates (MANDATORY)
+
+- ✅ **IMMEDIATELY after PR creation**: Update Jira ticket custom field `customfield_11170` ("Does this Work Include AI Assisted Code?") to "Yes"
+- ✅ Use atlassian-mcp tools to update the Jira field programmatically
+- ✅ **CRITICAL**: Use correct field format: `{"customfield_11170": {"value": "Yes"}}`
+- ✅ Verify the field update was successful
+
+### Documentation Requirements
+
+- ✅ Reference AI assistance in commit messages where appropriate
+- ✅ Document any AI-generated code patterns or approaches in PR description
+- ✅ Maintain transparency about which parts were AI-assisted vs manual implementation
+
+### Workflow Integration
+
+This AI compliance checklist should be integrated into the main development workflow Step 4 (Pull Request Creation):
+
+```
+Step 4: Pull Request Creation & AI Compliance
+- Step 4.1: Create branch and commit changes WITH SIGNED-OFF COMMITS
+- Step 4.2: Push changes to remote
+- Step 4.3: Create PR with ai-assisted label
+- Step 4.4: IMMEDIATELY update Jira customfield_11170 to "Yes"
+- Step 4.5: Verify both PR labels and Jira field are properly set
+- Step 4.6: Provide complete summary including AI compliance confirmation
+```
+
+- **Never skip Jira field updates** - This is required for Progress AI governance
+- **Always verify updates succeeded** - Check response from atlassian-mcp tools
+- **Treat as atomic operation** - PR creation and Jira updates should happen together
+- **Double-check before final summary** - Confirm all AI compliance items are completed
+
+### Audit Trail
+
+All AI-assisted work must be traceable through:
+
+1. GitHub PR labels (`ai-assisted`)
+2. Jira custom field (`customfield_11170` = "Yes")
+3. PR descriptions mentioning AI assistance
+4. Commit messages where relevant
+
+---
