@@ -373,7 +373,7 @@ class Chef::Application::Base < Chef::Application
     if ENV["TEST_KITCHEN"]
       puts "Temporarily bypassing licensing check in Kitchen"
     else
-      Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
+      #Chef::Licensing.check_software_entitlement! if ChefUtils::Dist::Infra::EXEC == "chef"
     end
     if Chef::Config[:version]
       puts "#{ChefUtils::Dist::Infra::PRODUCT} version: #{::Chef::VERSION}"

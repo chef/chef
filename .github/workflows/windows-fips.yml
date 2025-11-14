@@ -97,16 +97,31 @@ jobs:
           Exit 1
         }
 
-    - name: 'Run chef-client with FIPS'
+    - name: 'Test chef-client with FIPS'
       run: |
-        # Verify FIPS mode is active
-        hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client --version
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
+        # Accept Chef license
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --chef-license accept
 
-        #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-        # $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client -l debug --no-color 2>&1 | Select-String "FIPS"
-        # if ($output -match "OpenSSL FIPS 140 mode enabled") {
-        #   Write-Host "✅ Chef Infra Client is running in FIPS mode"
-        # } else {
-        #   Write-Host "❌ FIPS mode not detected"
-        #   Exit 1
-        # }
+        # Create a minimal cookbook structure
+        New-Item -ItemType Directory -Force -Path "$env:TEMP\test_cookbook\recipes" | Out-Null
+        @"
+        file 'C:\tmp\test' do
+          content Digest::MD5.hexdigest('test')
+        end
+        "@ | Set-Content -Path "$env:TEMP\test_cookbook\recipes\default.rb"
+
+        # Run chef-client with FIPS recipe
+        $logPath = "$env:TEMP\chef-client.log"
+        $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z -o test_cookbook 2>&1
+        $output | Out-File -FilePath $logPath
+
+        # Check for MD5 error (indicating FIPS enforcement)
+        if ($output -match "MD5" -and $output -match "not allowed|disabled|forbidden") {
+          Write-Host "PASS: FIPS mode detected and enforced - MD5 blocked"
+          exit 0
+        } else {
+          Write-Host "FAIL: FIPS mode not working - MD5 allowed or not detected"
+          Get-Content $logPath  # Debug output
+          exit 1
+        }

@@ -83,15 +83,24 @@ jobs:
             exit 1
           fi
 
-      - name: Run chef-client with FIPS
+      - name: Test chef-client with FIPS
         run: |
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client --chef-license accept
 
-          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-          # output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
-          # if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
-          #   echo "✅ Chef Infra Client is running in FIPS mode"
-          # else
-          #   echo "❌ FIPS mode not detected"
-          #   exit 1
-          # fi
+          # Create a minimal cookbook structure
+          mkdir -p /tmp/test_cookbook/recipes
+          echo 'file "/tmp/test" do; content Digest::MD5.hexdigest("test"); end' > /tmp/test_cookbook/recipes/default.rb
+
+          # Run chef-client in local mode with the cookbook
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z -o test_cookbook 2>&1 | tee /tmp/chef-client.log
+
+          # Check for MD5 error (indicating FIPS enforcement)
+          if grep -q "MD5" /tmp/chef-client.log && grep -q "not allowed\|disabled\|forbidden" /tmp/chef-client.log; then
+            echo "PASS: FIPS mode detected and enforced - MD5 blocked"
+            exit 0
+          else
+            echo "FAIL: FIPS mode not working - MD5 allowed or not detected"
+            cat /tmp/chef-client.log  # Debug output
+            exit 1
+          fi
