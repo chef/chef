@@ -71,7 +71,7 @@ chef/
 **Testing Frameworks**:
 - RSpec (unit, functional, integration tests)
 - Test Kitchen (end-to-end integration tests)
-- ChefStyle (RuboCop-based linting)
+- Cookstyle (RuboCop-based linting)
 
 **Packaging**:
 - Omnibus (multi-platform package building)
@@ -88,7 +88,7 @@ chef/
 bundle install                    # Install dependencies
 bundle exec rake spec:unit        # Run unit tests
 bundle exec rake component_specs  # Run component tests
-bundle exec chefstyle            # Run lint checks
+bundle exec cookstyle            # Run lint checks
 kitchen test                      # Run Test Kitchen integration tests
 ```
 
@@ -158,7 +158,7 @@ AI MUST follow these phases in order:
 3. **Plan Draft**: Create implementation plan with all required sections
 4. **Plan Confirmation** (GATE): User must approve with "yes"
 5. **Incremental Implementation**: Make smallest cohesive changes
-6. **Lint / Style**: Run ChefStyle and fix violations
+6. **Lint / Style**: Run Cookstyle and fix violations
 7. **Test & Coverage Validation**: Ensure tests pass, coverage adequate
 8. **DCO Commit**: Create properly formatted, signed-off commits
 9. **Push & Draft PR Creation**: Push branch, create draft PR
@@ -430,7 +430,7 @@ The repository uses GitHub Actions for continuous integration:
 |----------|---------|---------|
 | `unit_specs.yml` | PR, push to chef-18 | Runs unit tests and component specs on macOS |
 | `func_spec.yml` | PR, push to chef-18 | Runs functional tests (chocolatey on Windows, userdefaults on macOS) |
-| `lint.yml` | PR, push to chef-18 | ChefStyle linting and spell checking |
+| `lint.yml` | PR, push to chef-18 | Cookstyle linting and spell checking |
 | `kitchen.yml` | PR, push to chef-18 | Test Kitchen integration tests on Windows and macOS |
 | `kitchen-fips.yml` | PR, push to chef-18 | FIPS-compliant kitchen tests |
 | `selfhosted-fips.yml` | PR, push to chef-18 | Self-hosted FIPS testing |
@@ -540,7 +540,7 @@ User must explicitly type "yes" to proceed. Any other response requires clarific
 Task is COMPLETE ONLY IF all criteria met:
 
 1. ✅ Feature/fix branch exists and pushed to remote
-2. ✅ Lint/style checks pass (ChefStyle)
+2. ✅ Lint/style checks pass (Cookstyle)
 3. ✅ All tests pass (unit, functional, integration as applicable)
 4. ✅ Coverage mapping complete + ≥80% changed lines covered
 5. ✅ PR open (draft or ready) with all required HTML sections
@@ -727,7 +727,7 @@ Proceed? (yes/no)
 → Analyze failures; fix code or tests; re-run; do not proceed until green
 
 **Lint failures**:
-→ Run `bundle exec chefstyle -a` for auto-fixes; manually fix remaining; re-run until passing
+→ Run `bundle exec cookstyle -a` for auto-fixes; manually fix remaining; re-run until passing
 
 **Merge conflicts**:
 → Inform user; request: "Merge conflicts detected. Resolve manually or provide conflict resolution strategy."
@@ -745,7 +745,7 @@ Proceed? (yes/no)
 - **DCO**: Developer Certificate of Origin - sign-off confirming legal right to contribute code
 - **Expeditor**: Chef's CI/CD automation system for building, testing, and releasing software
 - **Omnibus**: Full-stack installer packaging system for multi-platform distribution
-- **ChefStyle**: Ruby linting tool based on RuboCop with Chef-specific rules
+- **Cookstyle**: Ruby linting tool based on RuboCop with Chef-specific rules
 - **Test Kitchen**: Integration testing framework for Chef cookbooks and infrastructure code
 
 ---
@@ -770,8 +770,8 @@ bundle exec rake spec:functional        # Functional tests
 bundle exec rspec spec/unit/path/to/specific_spec.rb  # Specific test
 
 # Lint
-bundle exec chefstyle                   # Check style
-bundle exec chefstyle -a                # Auto-fix issues
+bundle exec cookstyle                   # Check style
+bundle exec cookstyle -a                # Auto-fix issues
 
 # Test Kitchen
 cd kitchen-tests
