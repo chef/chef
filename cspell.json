@@ -1635,7 +1635,8 @@
     "zuazo",
     "zypp",
     "Ásgeirsson",
-    "ümlauts"
+    "ümlauts",
+    "customfield"
   ],
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
@@ -1661,8 +1662,7 @@
     "knife/spec/**",
     "docs_site",
     "cspell.json",
-    ".mailmap",
-    ".github/copilot-instructions.md"
+    ".mailmap"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".
