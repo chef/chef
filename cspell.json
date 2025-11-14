@@ -1661,7 +1661,8 @@
     "knife/spec/**",
     "docs_site",
     "cspell.json",
-    ".mailmap"
+    ".mailmap",
+    "NOTICE"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".
