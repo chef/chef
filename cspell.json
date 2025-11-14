@@ -1661,7 +1661,8 @@
     "knife/spec/**",
     "docs_site",
     "cspell.json",
-    ".mailmap"
+    ".mailmap",
+    ".github/copilot-instructions.md"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".
