@@ -225,6 +225,17 @@ function Invoke-Build {
 
 function Invoke-Install {
     write-output "*** invoke-install"
+
+    # Copy NOTICE to the package directory
+    $NoticeFile = "$PLAN_CONTEXT\..\..\NOTICE"
+
+    if (Test-Path $NoticeFile) {
+        Write-BuildLine "** Copying NOTICE to package directory"
+        Copy-Item -Path $NoticeFile -Destination $pkg_prefix -Force
+    } else {
+        Write-BuildLine "** Warning: NOTICE not found at $NoticeFile"
+    }
+
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
