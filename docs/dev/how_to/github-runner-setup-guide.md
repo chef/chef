@@ -2,6 +2,9 @@
 
 This guide provides instructions for setting up self-hosted GitHub runners on both Windows (using PowerShell) and Linux (using Bash and Azure CLI). Self-hosted runners allow you to run GitHub Actions workflows on your own infrastructure.
 
+Side Note: Internally on the Chef team, we use Github hosted Windows runners already. There is no need to spin up a new runner in that use case.
+However, for FIPS testing, we need to create our own Liunx runners using an OS like Ubuntu with the Pro subscription and then configure it to be FIPS enabled.
+
 ## Prerequisites
 
 - You need to have Owner rights in the Chef org
