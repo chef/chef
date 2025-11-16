@@ -142,7 +142,7 @@ Over time, this gem may/will evolve from a basic toggle to a **dynamic configura
 
 The enforcement model will not rely on the gem’s name or inclusion, but on **the configuration logic it executes within the `chef-licensing` library**. This ensures flexibility and avoids coupling enforcement to package identity or distribution tooling.
 
-> To maintain openness and compliance with the **Apache 2.0 license**, the implementation must also support legitimate **downstream and community builds**. Distributors who repackage Chef under Apache 2.0—while removing Progress trademarks and branding per the existing trademark policy—must be able to rebuild without the `chef-official-distribution` gem and still operate legally and functionally. The gem’s design therefore cannot introduce hard dependencies or license validation requirements that would prevent lawful downstream redistribution.
+> To maintain openness and compliance with the **Apache 2.0 license**, the implementation must also support legitimate **downstream and community builds**. Distributors who repackage Chef under Apache 2.0 while removing Progress trademarks and branding per the existing trademark policy—must be able to rebuild without the `chef-official-distribution` gem and still operate legally and functionally. The gem’s design therefore cannot introduce hard dependencies or license validation requirements that would prevent lawful downstream redistribution.
 
 The gem will remain **private and embedded only in official Progress builds** (e.g., Habitat packages, Artifactory distributions, or Chef 360 containers) to protect configuration integrity and prevent misuse of internal settings.
 
@@ -160,6 +160,29 @@ The gem will remain **private and embedded only in official Progress builds** (e
 * **Bad**, because the presence of hidden configuration behavior could be misinterpreted as obfuscation if insufficiently documented for internal and partner teams.
 * **Bad**, because managing private gem distribution and embedding across multiple packaging systems adds operational overhead and dependency management risk.
 * **Bad**, because exposing even partial details of the gem’s configuration logic could enable unauthorized modifications or attempts to bypass license checks, requiring ongoing build and signing controls.
+
+## Security and Supply Chain Safeguards
+
+To prevent accidental or malicious misuse of the `chef-official-distribution` gem name and to ensure the integrity of official builds, Progress Chef will/has implemented several **supply chain protection measures**.
+
+An **upstream placeholder (empty) gem** has been published to RubyGems.org under the same name (`chef-official-distribution`).
+This placeholder serves no functional purpose other than to **reserve the gem namespace** and **prevent unauthorized uploads** that could impersonate an official Progress artifact or distribute misleading or harmful configuration logic.
+
+The following safeguards accompany this approach:
+
+* The **RubyGems account** controlling the `chef-official-distribution` namespace is secured and is restricted to a small set of vetted Progress release engineering maintainers.
+* The **empty upstream gem** contains no configuration logic, no runtime effects, and no licensing behavior. Its presence alone cannot alter product functionality.
+* The **actual enforcement logic** is delivered only through the private, internally packaged version of the gem included exclusively in official Progress distributions (e.g., Habitat packages, Artifactory releases, Chef 360 containers).
+* Licensing behavior depends on **executed configuration logic**, not the gem’s name or installation.
+  Installing the upstream placeholder gem **does not** enable, disable, or circumvent license requirements in any way.
+* This approach eliminates the risk of community users or downstream redistributors **accidentally** introducing a gem that mimics or interferes with Progress licensing configuration.
+* It also prevents malicious actors from publishing a counterfeit version of the gem under the same name, preserving the identity, authenticity, and trustworthiness of official Chef distributions.
+
+While this mechanism is **not intended as DRM**, it provides essential **namespace protection** and **lightweight identity assurance**.
+
+Together, these safeguards ensure customers cannot unintentionally violate license terms and that Progress maintains control and integrity over official distribution channels.
+
+
 
 ### Confirmation
 Verification of this decision will occur through a combination of **automated validation**, **release governance**, and **policy alignment reviews**.
