@@ -45,7 +45,7 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.1.103)
+    chef (19.1.109)
       activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
@@ -83,7 +83,7 @@ PATH
       unf_ext (~> 0.0.8.2)
       uri (~> 1.0.3)
       vault (~> 0.18.2)
-    chef (19.1.103-universal-mingw-ucrt)
+    chef (19.1.109-universal-mingw-ucrt)
       activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
@@ -587,4 +587,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.6.9
+   2.5.23
