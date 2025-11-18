@@ -37,6 +37,7 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
+      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -395,7 +396,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
-    openssl (3.3.0)
+    openssl (3.3.2)
     ostruct (0.1.0)
     parallel (1.27.0)
     parser (3.3.9.0)
@@ -576,7 +577,7 @@ DEPENDENCIES
   ffi (>= 1.15.5, < 1.18.0)
   inspec-core-bin (= 7.0.95)
   ohai!
-  openssl (= 3.3.0)
+  openssl (= 3.3.2)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -587,4 +588,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.5.23
+   2.7.2
