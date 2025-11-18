@@ -15,7 +15,7 @@ steps:
           propagate-environment: true
           environment:
             - ARTIFACTORY_API_KEY
-
+            - HAB_AUTH_TOKEN
   - label: ":windows: push gem to artifactory"
     commands:
       - .expeditor/scripts/gem_push_artifactory.ps1
@@ -23,3 +23,4 @@ steps:
       queue: single-use-windows-2019-privileged
     env:
       - ARTIFACTORY_API_KEY
+      - HAB_AUTH_TOKEN
