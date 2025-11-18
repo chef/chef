@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.110 -->
-## [v19.1.110](https://github.com/chef/chef/tree/v19.1.110) (2025-11-17)
+<!-- latest_release 19.1.111 -->
+## [v19.1.111](https://github.com/chef/chef/tree/v19.1.111) (2025-11-18)
 
 #### Merged Pull Requests
-- Downgrade bundler due to platform loss and conservative update chef [#15445](https://github.com/chef/chef/pull/15445) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating the OpenSSL gem to 3.3.2 [#15448](https://github.com/chef/chef/pull/15448) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating the OpenSSL gem to 3.3.2 [#15448](https://github.com/chef/chef/pull/15448) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.111 -->
 - Downgrade bundler due to platform loss and conservative update chef [#15445](https://github.com/chef/chef/pull/15445) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.110 -->
 - Adding code to include notice.txt in builds [#15444](https://github.com/chef/chef/pull/15444) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.109 -->
 - Creating a new runner  [#15440](https://github.com/chef/chef/pull/15440) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.108 -->
