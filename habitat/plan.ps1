@@ -225,6 +225,17 @@ function Invoke-Build {
 
 function Invoke-Install {
     write-output "*** invoke-install"
+
+    # Copy NOTICE to the package directory
+    $NoticeFile = "$PLAN_CONTEXT\..\..\NOTICE"
+
+    if (Test-Path $NoticeFile) {
+        Write-BuildLine "** Copying NOTICE to package directory"
+        Copy-Item -Path $NoticeFile -Destination $pkg_prefix -Force
+    } else {
+        Write-BuildLine "** Warning: NOTICE not found at $NoticeFile"
+    }
+
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
@@ -234,6 +245,25 @@ function Invoke-Install {
         $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
+
+        # Test artifactory access and install chef-official-distribution if accessible
+        Write-BuildLine "******* Testing access to artifactory*****"
+        $ArtifactoryUrl = "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+        try {
+            $null = Invoke-WebRequest -Uri $ArtifactoryUrl -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+            Write-BuildLine "******* Artifactory is accessible, installing chef-official-distribution gem*****"
+            gem sources --add $ArtifactoryUrl
+            gem install chef-official-distribution
+            gem sources --remove $ArtifactoryUrl
+
+            # Verify chef-official-distribution installation
+            Write-BuildLine "******* Verifying chef-official-distribution installation******"
+            gem list chef-official-distribution
+            If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        } catch {
+            Write-BuildLine "******* Artifactory is not accessible, skipping chef-official-distribution installation*****"
+            Write-BuildLine "******* Error: $($_.Exception.Message)*****"
+        }
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"

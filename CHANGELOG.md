@@ -1,17 +1,32 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.99 -->
-## [v19.1.99](https://github.com/chef/chef/tree/v19.1.99) (2025-10-30)
+<!-- latest_release 19.1.114 -->
+## [v19.1.114](https://github.com/chef/chef/tree/v19.1.114) (2025-11-18)
 
 #### Merged Pull Requests
-- Test recipes using test-kitchen-enterprise on docker containers [#15401](https://github.com/chef/chef/pull/15401) ([neha-p6](https://github.com/neha-p6))
+- point berkshelf back to main [#15259](https://github.com/chef/chef/pull/15259) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- point berkshelf back to main [#15259](https://github.com/chef/chef/pull/15259) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.114 -->
+- Only log a debug for net-http monkey patch [#15447](https://github.com/chef/chef/pull/15447) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.113 -->
+- Update copilot instructions with AI compliance workflow [#15443](https://github.com/chef/chef/pull/15443) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.112 -->
+- Updating the OpenSSL gem to 3.3.2 [#15448](https://github.com/chef/chef/pull/15448) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.111 -->
+- Downgrade bundler due to platform loss and conservative update chef [#15445](https://github.com/chef/chef/pull/15445) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.110 -->
+- Adding code to include notice.txt in builds [#15444](https://github.com/chef/chef/pull/15444) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.109 -->
+- Creating a new runner  [#15440](https://github.com/chef/chef/pull/15440) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.108 -->
+- update chef-powershell gem to 18.6.6 [#15426](https://github.com/chef/chef/pull/15426) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.107 -->
+- updating blackduck to not die on false positives [#15430](https://github.com/chef/chef/pull/15430) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.106 -->
+- Update inspec to non-beta and bump train-core [#15432](https://github.com/chef/chef/pull/15432) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.105 -->
+- Also pass danger if Gemfile.lock updated because of gemspecs [#15428](https://github.com/chef/chef/pull/15428) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.104 -->
+- Bump to latest ohai [#15406](https://github.com/chef/chef/pull/15406) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.103 -->
+- Updating chef-zero, and rest-client [#15419](https://github.com/chef/chef/pull/15419) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.102 -->
+- Updating chef versioning in Blackduck [#15425](https://github.com/chef/chef/pull/15425) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.101 -->
+- updating blackduck [#15423](https://github.com/chef/chef/pull/15423) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.100 -->
 - Test recipes using test-kitchen-enterprise on docker containers [#15401](https://github.com/chef/chef/pull/15401) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.99 -->
 - Rebased and squashed Ruby 3.4 Upgrade (from 15148) with unrelated/separable changes extracted to main [#15379](https://github.com/chef/chef/pull/15379) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->
 - Disable vm_lnx_x86_64 due to GA instability [#15391](https://github.com/chef/chef/pull/15391) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->

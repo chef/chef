@@ -17,7 +17,7 @@ jobs:
   linux:
     strategy:
       fail-fast: false
-    runs-on: [self-hosted, ubuntu-2204-pro-fips-tester]
+    runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel

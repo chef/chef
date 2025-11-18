@@ -84,6 +84,7 @@
     "autovivify",
     "autovivifying",
     "avishai",
+    "azureuser",
     "Backcompat",
     "backcompat",
     "backends",
@@ -335,6 +336,7 @@
     "DYNALINK",
     "DYNLINK",
     "EASTEUROPE",
+    "eastus",
     "ebusy",
     "eckey",
     "ecparam",
@@ -1208,6 +1210,7 @@
     "RUNFULLSCREEN",
     "runid",
     "runlock",
+    "runneradmin",
     "runpid",
     "runrun",
     "rvmrc",
@@ -1635,7 +1638,8 @@
     "zuazo",
     "zypp",
     "Ásgeirsson",
-    "ümlauts"
+    "ümlauts",
+    "customfield"
   ],
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
@@ -1661,7 +1665,8 @@
     "knife/spec/**",
     "docs_site",
     "cspell.json",
-    ".mailmap"
+    ".mailmap",
+    "NOTICE"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".

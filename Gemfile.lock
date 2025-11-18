@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: c813fad09573d6a5659bce9d65478eab31a2c58a
+  revision: 5b2f9d10f5734d185060cf61d538598cbdf9076d
   branch: main
   specs:
-    ohai (19.1.9)
+    ohai (19.1.14)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -32,21 +32,12 @@ GIT
 
 GIT
   remote: https://github.com/chef/rest-client
-  revision: 5b3bb34ea536e5207388b84c5dd6360ea3fc2799
+  revision: 4725c8b5ae09b3f6b968831beae27503f1261ea9
   branch: jfm/ucrt_update1
   specs:
     rest-client (2.1.0)
       base64
       ffi (>= 1.15.5, < 1.18.0)
-      fiddle
-      http-accept (~> 2.1.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw-ucrt)
-      base64
-      ffi (>= 1.15.5, < 1.18.0)
-      fiddle
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -55,13 +46,14 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.1.99)
+    chef (19.1.114)
+      activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.99)
+      chef-config (= 19.1.114)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.1.99)
+      chef-utils (= 19.1.114)
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
@@ -72,7 +64,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (= 7.0.38.beta)
+      inspec-core (~> 7.0.95)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -86,20 +78,21 @@ PATH
       proxifier2 (~> 1.1)
       syslog
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.7)
+      train-core (~> 3.13, >= 3.13.4)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
       uri (~> 1.0.3)
       vault (~> 0.18.2)
-    chef (19.1.99-universal-mingw-ucrt)
+    chef (19.1.114-universal-mingw-ucrt)
+      activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.99)
+      chef-config (= 19.1.114)
       chef-licensing (>= 0.7.5)
-      chef-powershell (~> 18.1.0)
-      chef-utils (= 19.1.99)
+      chef-powershell (~> 18.6.6)
+      chef-utils (= 19.1.114)
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
@@ -110,7 +103,7 @@ PATH
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (= 7.0.38.beta)
+      inspec-core (~> 7.0.95)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -125,7 +118,7 @@ PATH
       proxifier2 (~> 1.1)
       syslog
       syslog-logger (~> 1.6)
-      train-core (~> 3.10, <= 3.12.7)
+      train-core (~> 3.13, >= 3.13.4)
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.8.2)
@@ -145,15 +138,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.1.99)
-      chef (= 19.1.99)
+    chef-bin (19.1.114)
+      chef (= 19.1.114)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.1.99)
+    chef-config (19.1.114)
       addressable
-      chef-utils (= 19.1.99)
+      chef-utils (= 19.1.114)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -163,7 +156,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.1.99)
+    chef-utils (19.1.114)
       concurrent-ruby
 
 GEM
@@ -219,15 +212,17 @@ GEM
     chef-gyoku (1.5.0)
       builder (>= 2.1.2)
       rexml (~> 3.4)
-    chef-licensing (1.1.0)
-      activesupport (~> 7.2, >= 7.2.2.1)
+    chef-licensing (1.3.0)
       chef-config (>= 15)
-      faraday (>= 1, < 3)
+      faraday (>= 1, < 2)
       faraday-http-cache
+      faraday_middleware (~> 1.0)
+      mixlib-log (~> 3.0)
       ostruct (~> 0.1.0)
+      pstore (~> 0.1.1)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.1.0)
+    chef-powershell (18.6.6)
       ffi (~> 1.15)
       ffi-yajl (~> 2.4)
     chef-ruby-shadow (3.0.0)
@@ -256,8 +251,7 @@ GEM
       erubi (>= 1.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
-    chef-zero (15.0.21)
-      activesupport (>= 7, < 8.1)
+    chef-zero (15.0.26)
       ffi-yajl (>= 2.2, < 4.0)
       hashie (>= 2.0, < 6.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -284,28 +278,25 @@ GEM
     ed25519 (1.4.0)
     erubi (1.13.1)
     erubis (2.7.0)
-    faraday (2.13.4)
-      faraday-net_http (>= 2.0, < 3.5)
-      json
-      logger
+    faraday (1.2.0)
+      multipart-post (>= 1.2, < 3)
+      ruby2_keywords
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
     faraday-http-cache (2.5.1)
       faraday (>= 0.8)
-    faraday-net_http (3.4.1)
-      net-http (>= 0.5.0)
+    faraday_middleware (1.2.1)
+      faraday (~> 1.0)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.17.2)
-    ffi (1.17.2-arm64-darwin)
-    ffi (1.17.2-x64-mingw-ucrt)
+    ffi (1.16.3)
+    ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
     ffi-yajl (2.6.0)
       libyajl2 (>= 1.2)
-    fiddle (1.1.8)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
@@ -319,11 +310,12 @@ GEM
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
-    inspec-core (7.0.38.beta)
+    inspec-core (7.0.95)
       addressable (~> 2.4)
-      chef-licensing (>= 1.0.2)
+      chef-licensing (>= 1.2.0)
       chef-telemetry (~> 1.0, >= 1.0.8)
       cookstyle
+      csv (~> 3.0)
       faraday (>= 1, < 3)
       faraday-follow_redirects (~> 0.3)
       hashie (>= 3.4, < 6.0)
@@ -331,21 +323,23 @@ GEM
       method_source (>= 0.8, < 2.0)
       mixlib-log (~> 3.0)
       multipart-post (~> 2.0)
+      ostruct (>= 0.1, < 0.7)
       parallel (~> 1.9)
-      parslet (>= 1.5, < 2.0)
+      parslet (>= 1.5, < 3.0)
       pry (~> 0.13)
       rspec (>= 3.9, <= 3.14)
-      rspec-its (~> 1.2)
-      rubyzip (>= 1.2.2, < 3.0)
+      rspec-its (>= 1.2, < 3.0)
+      rubyzip (>= 1.2.2, < 4.0)
       semverse (~> 3.0)
       sslshake (~> 1.2)
-      thor (>= 0.20, < 1.3.0)
-      tomlrb (>= 1.2, < 2.1)
-      train-core (>= 3.11.0)
+      syslog (~> 0.1)
+      thor (>= 0.20, < 1.5.0)
+      tomlrb (>= 1.3, < 2.1)
+      train-core (~> 3.13, >= 3.13.4)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (7.0.38.beta)
-      inspec-core (= 7.0.38.beta)
+    inspec-core-bin (7.0.95)
+      inspec-core (= 7.0.95)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -392,8 +386,6 @@ GEM
     net-ftp (0.3.8)
       net-protocol
       time
-    net-http (0.6.0)
-      uri
     net-protocol (0.2.2)
       timeout
     net-scp (4.1.0)
@@ -404,7 +396,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
-    openssl (3.3.0)
+    openssl (3.3.2)
     ostruct (0.1.0)
     parallel (1.27.0)
     parser (3.3.9.0)
@@ -425,6 +417,7 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
+    pstore (0.1.4)
     public_suffix (6.0.2)
     racc (1.8.1)
     rack (3.2.1)
@@ -466,6 +459,7 @@ GEM
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     ruby-progressbar (1.13.0)
+    ruby2_keywords (0.0.5)
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
@@ -487,9 +481,9 @@ GEM
       date
     timeout (0.4.3)
     tomlrb (1.3.0)
-    train-core (3.12.7)
+    train-core (3.13.4)
       addressable (~> 2.5)
-      ffi (!= 1.13.0)
+      ffi (~> 1.16.0)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 5.0)
@@ -526,6 +520,7 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.3)
@@ -579,10 +574,10 @@ DEPENDENCIES
   crack (< 0.4.6)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5)
-  inspec-core-bin (= 7.0.38.beta)
+  ffi (>= 1.15.5, < 1.18.0)
+  inspec-core-bin (= 7.0.95)
   ohai!
-  openssl (= 3.3.0)
+  openssl (= 3.3.2)
   pry (= 0.13.0)
   pry-byebug
   pry-stack_explorer
@@ -593,4 +588,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.6.9
+   2.5.23
