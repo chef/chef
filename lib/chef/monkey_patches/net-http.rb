@@ -122,5 +122,5 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
     end
   end
 else
-  warn "Not applying net/http monkey patch needed for ruby 3.1"
+  Chef::Log.debug("Not applying net/http monkey patch on #{RUBY_VERSION}")
 end
