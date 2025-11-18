@@ -10,7 +10,7 @@ steps:
       - .expeditor/scripts/gem_push_artifactory.sh
     expeditor:
       executor:
-        docker:
+        linux:
           privileged: true
           propagate-environment: true
           environment:
