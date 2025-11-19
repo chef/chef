@@ -6,8 +6,8 @@ async function checkChefGemVersions() {
         return
     }
 
-    const diff = await danger.git.diffForFile("Gemfile.lock")
-    if (!diff) {
+    const versionsComparison = await danger.git.diffForFile("Gemfile.lock")
+    if (!versionsComparison) {
         return
     }
 
@@ -15,7 +15,7 @@ async function checkChefGemVersions() {
     const changedGems = []
 
     // Check if any of the chef gem version lines were modified
-    diff.diff.split('\n').forEach(line => {
+    versionsComparison.diff.split('\n').forEach(line => {
         // Look for lines that start with +/- and contain gem version info
         if ((line.startsWith('+') || line.startsWith('-')) && !line.startsWith('+++') && !line.startsWith('---')) {
             chefGems.forEach(gem => {
