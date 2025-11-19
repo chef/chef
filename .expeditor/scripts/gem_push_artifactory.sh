@@ -12,13 +12,13 @@ export ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory
 export ARTIFACTORY_USERNAME="buildkite"
 
 # Debug output
-echo "Script: HAB_AUTH_TOKEN=$HAB_AUTH_TOKEN"
+#echo "Script: HAB_AUTH_TOKEN=$HAB_AUTH_TOKEN"
 
-# error if hab_auth_token is not set
-if [ -z "${HAB_AUTH_TOKEN:-}" ]; then
-  echo "HAB_AUTH_TOKEN is not set. Exiting."
-  exit 1
-fi
+# # error if hab_auth_token is not set
+# if [ -z "${HAB_AUTH_TOKEN:-}" ]; then
+#   echo "HAB_AUTH_TOKEN is not set. Exiting."
+#   exit 1
+# fi
 
 lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region us-west-2)
 artifactory_api_key=$(echo -n "lita:${lita_password}" | base64)
