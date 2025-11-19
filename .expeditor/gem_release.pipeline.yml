@@ -8,6 +8,8 @@ steps:
   - label: ":linux: push gem to artifactory"
     commands:
       - .expeditor/scripts/gem_push_artifactory.sh
+    agents:
+      queue: default-privileged
     expeditor:
       executor:
         linux:
@@ -20,7 +22,12 @@ steps:
     commands:
       - .expeditor/scripts/gem_push_artifactory.ps1
     agents:
-      queue: single-use-windows-2019-privileged
-    env:
-      - ARTIFACTORY_API_KEY
-      - HAB_AUTH_TOKEN
+      queue: default-windows-2019-privileged
+    expeditor:
+      executor:
+        windows:
+          privileged: true
+          propagate-environment: true
+          environment:
+            - ARTIFACTORY_API_KEY
+            - HAB_AUTH_TOKEN
