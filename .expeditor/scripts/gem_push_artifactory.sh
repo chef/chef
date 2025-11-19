@@ -11,6 +11,9 @@ export PROJECT_NAME="chef"
 export ARTIFACTORY_ENDPOINT="https://artifactory-internal.ps.chef.co/artifactory"
 export ARTIFACTORY_USERNAME="buildkite"
 
+# Debug output
+echo "Script: HAB_AUTH_TOKEN=$HAB_AUTH_TOKEN"
+
 # error if hab_auth_token is not set
 if [ -z "${HAB_AUTH_TOKEN:-}" ]; then
   echo "HAB_AUTH_TOKEN is not set. Exiting."

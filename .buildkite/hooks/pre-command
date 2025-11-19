@@ -20,7 +20,7 @@ RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
 export RUBY_VERSION
 echo "Proposed Ruby Version: $RUBY_VERSION"
 
-if [[ "$BUILDKITE_STEP_KEY" =~ "build-windows" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
+if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
   ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
@@ -32,6 +32,7 @@ then
   AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
   export AWS_SESSION_TOKEN
 fi
+
 
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
@@ -69,6 +70,9 @@ elif [[ $BUILDKITE_ORGANIZATION_SLUG = 'chef' ]] || [[ $BUILDKITE_ORGANIZATION_S
 fi
 
 export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
+
+# Debug output
+echo "Pre-command: HAB_AUTH_TOKEN=$HAB_AUTH_TOKEN"
 
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
