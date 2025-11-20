@@ -82,7 +82,7 @@ function checkPRDescription() {
     const descriptionSection = descriptionMatch[1].trim()
 
     // Remove HTML comments to get the actual content
-    const contentWithoutComments = descriptionSection.replaceAll(/<!---.*?--->/, '').replaceAll(/<!--.*?-->/, '').trim()
+    const contentWithoutComments = descriptionSection.replace(/<!---.*?--->/gs, '').replace(/<!--.*?-->/gs, '').trim()
 
     // Check if description still contains the template text
     const templateText = "Describe your changes in detail, what problems does it solve?"
@@ -94,7 +94,6 @@ function checkPRDescription() {
     // Check if description is empty or too short (less than 20 characters of actual content)
     if (contentWithoutComments.length < 20) {
         fail("❌ PR description is too short or empty. Please provide a meaningful description of your changes (at least 20 characters).")
-        return
     }
 }
 
