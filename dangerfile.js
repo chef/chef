@@ -71,21 +71,8 @@ function checkPRDescription() {
         return
     }
 
-    // Common placeholder texts from PR templates that should be replaced
-    const placeholderPatterns = [
-        /<!---.*?--->/gs, // HTML comments
-        /<!--.*?-->/gs,  // Alternative HTML comments
-        /\[Describe what this change achieves\]/i,
-        /\[Add detailed description here\]/i,
-        /\[Please describe\]/i,
-        /\[Provide a description\]/i,
-        /\[Brief description\]/i,
-        /\[description of changes\]/i,
-        /\[Your description here\]/i,
-    ]
-
-    // Extract the Description section (between "Description" and "Types of changes" headers)
-    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*Types of changes|##?\s*Checklist|$)/i)
+    // Extract the Description section (between "Description" and "Related Issue" or "Types of changes" headers)
+    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*Related Issue|##?\s*Types of changes|$)/i)
 
     if (!descriptionMatch) {
         fail("❌ PR description is missing a 'Description' section. Please provide a description of your changes.")
@@ -94,18 +81,20 @@ function checkPRDescription() {
 
     const descriptionSection = descriptionMatch[1].trim()
 
-    // Check if description is empty or too short (less than 10 characters)
-    if (descriptionSection.length < 10) {
-        fail("❌ PR description is too short or empty. Please provide a meaningful description of your changes.")
+    // Remove HTML comments to get the actual content
+    const contentWithoutComments = descriptionSection.replace(/<!---.*?--->/gs, '').replace(/<!--.*?-->/gs, '').trim()
+
+    // Check if description still contains the template text
+    const templateText = "Describe your changes in detail, what problems does it solve?"
+    if (descriptionSection.includes(templateText)) {
+        fail("❌ PR description contains unedited template text. Please replace '<!--- Describe your changes in detail, what problems does it solve? --->' with an actual description of your changes.")
         return
     }
 
-    // Check if description contains placeholder text
-    for (const pattern of placeholderPatterns) {
-        if (pattern.test(descriptionSection)) {
-            fail("❌ PR description appears to contain template placeholder text. Please replace the template text with an actual description of your changes.")
-            return
-        }
+    // Check if description is empty or too short (less than 20 characters of actual content)
+    if (contentWithoutComments.length < 20) {
+        fail("❌ PR description is too short or empty. Please provide a meaningful description of your changes (at least 20 characters).")
+        return
     }
 }
 
