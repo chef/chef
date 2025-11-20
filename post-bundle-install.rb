@@ -122,6 +122,6 @@ if resolv_info.include?("Installed at (default):") && resolv_info.include?("reso
   end
 
   puts "Installing resolv gem..."
-  system("gem install resolv") or raise "gem install resolv failed" # rubocop:disable Style/RaiseArgs, Style/OrAssignment
+  system("gem install resolv") or raise "gem install resolv failed" # NOSONAR
   puts "resolv gem installed successfully"
 end
