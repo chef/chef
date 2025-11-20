@@ -122,6 +122,6 @@ if resolv_info.include?("Installed at (default):") && resolv_info.include?("reso
   end
 
   puts "Installing resolv gem..."
-  system("gem install resolv") || raise(RuntimeError, "gem install resolv failed")
+  system("gem install resolv") or raise "gem install resolv failed"
   puts "resolv gem installed successfully"
 end
