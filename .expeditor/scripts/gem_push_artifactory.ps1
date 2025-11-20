@@ -16,11 +16,14 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 $env:Path = "C:\hab\bin;" + $env:Path # add hab bin path for binlinking so 'gem' command is found.
 
 # check hab_auth_token is set
+Write-Output "--- Checking HAB_AUTH_TOKEN environment variable"
+Write-Output "HAB_AUTH_TOKEN=$env:HAB_AUTH_TOKEN"
 if (-not $env:HAB_AUTH_TOKEN) {
     throw "HAB_AUTH_TOKEN is not set. Exiting."
 }
 
 # check hab auth token value
+Write-Output "--- Validating HAB_AUTH_TOKEN value"
 if ([string]::IsNullOrWhiteSpace($env:HAB_AUTH_TOKEN)) {
     throw "HAB_AUTH_TOKEN is empty or whitespace. Exiting."
 }
