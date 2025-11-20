@@ -117,15 +117,16 @@ class Chef
       end
 
       def gid_from_resource(resource)
-        return nil if resource.nil? || resource.group.nil?
+        group = resource&.group
+        return nil if group.nil?
 
-        if resource.group.is_a?(String)
-          diminished_radix_complement( TargetIO::Etc.getgrnam(resource.group).gid )
+        if group.is_a?(String)
+          diminished_radix_complement( TargetIO::Etc.getgrnam(group).gid )
         elsif resource.group.is_a?(Integer)
-          resource.group
+          group
         else
-          Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
+          Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{group.inspect})")
+          raise ArgumentError, "cannot resolve #{group.inspect} to gid, group must be a string or integer"
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
@@ -169,9 +170,10 @@ class Chef
       end
 
       def mode_from_resource(res)
-        return nil if res.nil? || res.mode.nil?
+        mode = res&.mode
+        return nil if mode.nil?
 
-        (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
+        (mode.respond_to?(:oct) ? mode.oct : mode.to_i) & 007777
       end
 
       def target_mode
@@ -266,15 +268,16 @@ class Chef
       end
 
       def uid_from_resource(resource)
-        return nil if resource.nil? || resource.owner.nil?
+        owner = resource&.owner
+        return nil if owner.nil?
 
-        if resource.owner.is_a?(String)
-          diminished_radix_complement( TargetIO::Etc.getpwnam(resource.owner).uid )
-        elsif resource.owner.is_a?(Integer)
-          resource.owner
+        if owner.is_a?(String)
+          diminished_radix_complement( TargetIO::Etc.getpwnam(owner).uid )
+        elsif owner.is_a?(Integer)
+          owner
         else
-          Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
+          Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{owner.inspect})")
+          raise ArgumentError, "cannot resolve #{owner.inspect} to uid, owner must be a string or integer"
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
