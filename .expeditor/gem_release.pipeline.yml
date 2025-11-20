@@ -8,11 +8,9 @@ steps:
   - label: ":linux: push gem to artifactory"
     commands:
       - .expeditor/scripts/gem_push_artifactory.sh
-    agents:
-      queue: default-privileged
     expeditor:
       executor:
-        linux:
+        docker:
           privileged: true
           propagate-environment: true
           environment:
