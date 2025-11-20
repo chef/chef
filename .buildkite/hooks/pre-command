@@ -2,8 +2,9 @@
 
 set -eu
 
-# Only execute in the verify pipeline
-#[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary)|docker-build)$ ]] || exit 0
+# Only execute in the few pipelines that need it
+# if this needs to be extended to other pipelines/steps, let the build team know to take their input on it
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary)|docker-build)$ ]] || exit 0
 
 docker ps || true
 
@@ -32,7 +33,6 @@ then
   AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
   export AWS_SESSION_TOKEN
 fi
-
 
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.

@@ -15,19 +15,6 @@ if (-not $?) { throw "Could not ensure the minimum hab version required is insta
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $env:Path = "C:\hab\bin;" + $env:Path # add hab bin path for binlinking so 'gem' command is found.
 
-# check hab_auth_token is set
-Write-Output "--- Checking HAB_AUTH_TOKEN environment variable"
-Write-Output "HAB_AUTH_TOKEN=$env:HAB_AUTH_TOKEN"
-if (-not $env:HAB_AUTH_TOKEN) {
-    throw "HAB_AUTH_TOKEN is not set. Exiting."
-}
-
-# check hab auth token value
-Write-Output "--- Validating HAB_AUTH_TOKEN value"
-if ([string]::IsNullOrWhiteSpace($env:HAB_AUTH_TOKEN)) {
-    throw "HAB_AUTH_TOKEN is empty or whitespace. Exiting."
-}
-
 Write-Output "--- Installing core/ruby3_4-plus-devkit via Habitat"
 hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
