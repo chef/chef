@@ -28,7 +28,7 @@ echo "Generating origin key"
 hab origin key generate "$HAB_ORIGIN"
 
 echo "Building gems via habitat"
-hab pkg build . --channel base-2025 || echo "failed to build package"
+hab pkg build . || echo "failed to build package"
 
 echo "Push gems to artifactory"
 gem install artifactory -v 3.0.17 --no-document
