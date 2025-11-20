@@ -72,7 +72,7 @@ function checkPRDescription() {
     }
 
     // Extract the Description section (between "Description" and "Related Issue" or "Types of changes" headers)
-    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*Related Issue|##?\s*Types of changes|$)/i)
+    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*(?:Related Issue|Types of changes)|$)/i)
 
     if (!descriptionMatch) {
         fail("❌ PR description is missing a 'Description' section. Please provide a description of your changes.")
@@ -82,7 +82,7 @@ function checkPRDescription() {
     const descriptionSection = descriptionMatch[1].trim()
 
     // Remove HTML comments to get the actual content
-    const contentWithoutComments = descriptionSection.replace(/<!---.*?--->/gs, '').replace(/<!--.*?-->/gs, '').trim()
+    const contentWithoutComments = descriptionSection.replaceAll(/<!---.*?--->/, '').replaceAll(/<!--.*?-->/, '').trim()
 
     // Check if description still contains the template text
     const templateText = "Describe your changes in detail, what problems does it solve?"
