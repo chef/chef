@@ -104,7 +104,6 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
 end
 
-
 # Handle resolv gem conflict with default gem
 puts "Checking resolv gem installation..."
 resolv_info = `gem info resolv`
