@@ -23,7 +23,7 @@ description "Base resource for interacting with REST APIs. Extend this resource 
 
 introduced "18.0"
 
-examples <<~DOC
+examples <<~'DOC'
   **Create a custom REST resource for managing users in an API**
 
   ```ruby
@@ -101,7 +101,7 @@ examples <<~DOC
     action_class do
       def rest_headers
         {
-          "Authorization" => "Bearer #{node["api_token"]}",
+          "Authorization" => "Bearer #{node['api_token']}",
           "X-API-Version" => "2024-01-01"
         }
       end
