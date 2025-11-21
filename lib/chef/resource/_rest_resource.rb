@@ -101,7 +101,7 @@ examples <<~DOC
     action_class do
       def rest_headers
         {
-          "Authorization" => "Bearer #{node['api_token']}",
+          "Authorization" => "Bearer #{node["api_token"]}",
           "X-API-Version" => "2024-01-01"
         }
       end
