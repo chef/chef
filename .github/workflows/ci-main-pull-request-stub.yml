@@ -9,7 +9,7 @@ on:
   pull_request:
     branches: [ main, release/** ]
   push:
-    branches: [ main, release/**, sougata/ci_sbom ]
+    branches: [ main, release/** ]
 
   workflow_dispatch:
 
@@ -64,8 +64,8 @@ jobs:
       perform-blackduck-polaris: true
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-19'
-      polaris-blackduck-executable: 'path/to/blackduck/binary'
-      polaris-executable-detect-path: 'path/to/detect'
+      # polaris-blackduck-executable: 'path/to/blackduck/binary'
+      # polaris-executable-detect-path: 'path/to/detect'
 
       # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
       build: false
@@ -73,7 +73,7 @@ jobs:
       # language: $chef-ga-build-language   # this will be removed from stub as autodetected in central GA
       unit-tests: false
 
-      # perform SonarQube scan, with or wihout unit test coverage data
+      # perform SonarQube scan, with or without unit test coverage data
       # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
       perform-sonarqube-scan: false
       # perform-sonar-build: true
