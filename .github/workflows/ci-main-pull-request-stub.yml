@@ -1,4 +1,4 @@
-# stub to call common GitHub Action (GA) as part of Continuous Integration (CI) Pull Request process checks for Chef 18 Branch
+# stub to call common GitHub Action (GA) as part of Continuous Integration (CI) Pull Request process checks for Chef main Branch
 # inputs are described in the chef/common-github-actions/<GA.yml> with same name as this stub
 #
 # secrets are inherited from the calling workflow, typically SONAR_TOKEN, SONAR_HOST_URL, GH_TOKEN, AKEYLESS_JWT_ID, POLARIS_SERVER_URL and POLARIS_ACCESS_TOKEN
@@ -20,39 +20,15 @@ env:
   STUB_VERSION: "1.0.5"
 
 jobs:
-  extract-version:
-    name: 'Extract major version from VERSION file'
-    runs-on: ubuntu-latest
-    outputs:
-      major-version: ${{ steps.get-version.outputs.major-version }}
-      full-version: ${{ steps.get-version.outputs.full-version }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Extract version information
-        id: get-version
-        run: |
-          FULL_VERSION=$(cat VERSION)
-          MAJOR_VERSION=$(echo $FULL_VERSION | cut -d. -f1)
-          echo "full-version=$FULL_VERSION" >> $GITHUB_OUTPUT
-          echo "major-version=$MAJOR_VERSION" >> $GITHUB_OUTPUT
-          echo "Full version: $FULL_VERSION"
-          echo "Major version: $MAJOR_VERSION"
-
   echo_version:
     name: 'Echo stub version'
     runs-on: ubuntu-latest
-    needs: extract-version
     steps:
       - name: echo version of stub and inputs
         run: |
           echo "CI main pull request stub version $STUB_VERSION"
-          echo "Detected major version: ${{ needs.extract-version.outputs.major-version }}"
-          echo "Detected full version: ${{ needs.extract-version.outputs.full-version }}"
 
   call-ci-main-pr-check-pipeline:
-    needs: extract-version
     uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@chef-19
     secrets: inherit
     permissions:
@@ -63,16 +39,14 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
-      # Version is explicitly passed from extract-version job to ensure Black Duck SCA gets the correct version
-      # Without this, Black Duck defaults to 1.0.0 which is incorrect
-      version: ${{ needs.extract-version.outputs.full-version }}
-      detect-version-source-type: "file" # options include "none" (do not detect), "file", "github-tag" or "github-release"
-      detect-version-source-parameter: "VERSION" # use for file name
-      language: "ruby"  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
-
       detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
       blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
       bridge-break: false # Prevents build failure on Bridge violations
+      # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
+      version: '19.1.107' # ${{ github.event.repository.version }}
+      detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
+      detect-version-source-parameter: '' # use for file name
+      language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
 
       # complexity-checks
       perform-complexity-checks: true
@@ -90,18 +64,18 @@ jobs:
       perform-blackduck-polaris: true
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-19'
-      # polaris-blackduck-executable: # Let common actions auto-detect executable path
-      # polaris-executable-detect-path: # Let common actions auto-detect detect path
+      # polaris-blackduck-executable: 'path/to/blackduck/binary'
+      # polaris-executable-detect-path: 'path/to/detect'
 
       # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
-      build: true
+      build: false
       # ga-build-profile: $chef-ga-build-profile
       # language: $chef-ga-build-language   # this will be removed from stub as autodetected in central GA
       unit-tests: false
 
       # perform SonarQube scan, with or without unit test coverage data
       # requires secrets SONAR_TOKEN and SONAR_HOST_URL (progress.sonar.com)
-      perform-sonarqube-scan: true
+      perform-sonarqube-scan: false
       # perform-sonar-build: true
       # build-profile: 'default'
       # report-unit-test-coverage: true
@@ -109,11 +83,10 @@ jobs:
       # report to central developer dashboard
       report-to-atlassian-dashboard: false
       # quality-product-name: 'Chef-client'   # product name for quality reporting, like Chef360, Courier, Inspec
-      quality-product-name: 'Chef-Infra-Client-${{ needs.extract-version.outputs.major-version }}'   # Dynamic product name using major version
-      #  ${{ github.event.repository.name }}   # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
+      quality-product-name: 'chef-19'   # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
       # quality-sonar-app-name: 'YourSonarAppName'
       # quality-testing-type: 'Integration' like Unit, Integration, e2e, api, Performance, Security
-      quality-service-name: 'chef-${{ github.ref_name }}'  # Service/component name for detailed tracking
+      # quality-service-name: 'YourServiceOrRepoName'
       # quality-junit-report: 'path/to/junit/report''
 
       # perform native and Habitat packaging, publish to package repositories
@@ -126,8 +99,8 @@ jobs:
       export-github-sbom: true      # SPDX JSON artifact on job instance
       perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
-      blackduck-project-name: 'chef-19' #'${{ github.event.repository.name }}-${{ github.ref_name }}' # Dynamic project name: repo-branch
-      generate-blackduck-sbom: false # obsolete, use perform-blackduck-sca-scan instead
+      blackduck-project-name: 'chef' # BlackDuck project name, typically the repository name
+      generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
 
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
