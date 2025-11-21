@@ -45,6 +45,7 @@
 
 require "chef_zero/server"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "chef/telemetry/run_context_probe" unless defined?(Chef::Telemetry::RunContextProbe)
 module Net
   autoload :HTTPResponse, "net/http"
 end
@@ -154,6 +155,8 @@ class Chef
 
       # FIXME: yard with @yield
       def request(method, url, body, headers)
+        # To identify chef-zero using run context probe.
+        Chef::Telemetry::RunContextProbe.chef_zero = true
         request = req_to_rack(method, url, body, headers)
         res = ChefZero::SocketlessServerMap.request(port, request)
 
