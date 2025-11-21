@@ -90,3 +90,5 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   puts "Leftover ffi dependency tree..."
   system("gem dependency ffi")
 end
+
+system('gem uninstall rexml -v "<3.4.2" -a -x -I')
