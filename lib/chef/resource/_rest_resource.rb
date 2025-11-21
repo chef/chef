@@ -54,9 +54,9 @@ examples <<~DOC
   **Use the custom resource to create a user**
 
   ```ruby
-  api_user "johndoe" do
-    email "john.doe@example.com"
-    full_name "John Doe"
+  api_user "testuser" do
+    email "testuser@example.com"
+    full_name "Test User"
     active true
     action :configure
   end
@@ -65,7 +65,7 @@ examples <<~DOC
   **Delete a user via the API**
 
   ```ruby
-  api_user "johndoe" do
+  api_user "testuser" do
     action :delete
   end
   ```
