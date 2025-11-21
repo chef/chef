@@ -129,7 +129,7 @@ end
 
 # Uninstall specific versions of bundled gems that raise CVE errors due to their presence:
 bundled_gems_to_remove = {
-  "rexml" => ["3.2.5"],
+  "rexml" => ["3.2.5", "3.3.9"],
 }
 
 puts "Checking for bundled gems to uninstall..."
