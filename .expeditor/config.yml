@@ -63,9 +63,9 @@ pipelines:
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
-  - gem_push_artifactory:
+  - gem_validate/release:
       description: Builds and uploads the gems to artifactory
-      definition: .expeditor/gem_push_artifactory.pipeline.yml
+      definition: .expeditor/gem_release.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -143,7 +143,7 @@ subscriptions:
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
       - trigger_pipeline:habitat/verify
-      - trigger_pipeline:gem_push_artifactory
+      - trigger_pipeline:gem_validate/release
       - trigger_pipeline:docker/build
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
