@@ -83,15 +83,68 @@ jobs:
             exit 1
           fi
 
-      - name: Run chef-client with FIPS
+      - name: Test chef-client with FIPS
         run: |
-          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z --chef-license accept
 
-          #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-          # output=$(sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -l debug 2>&1 | grep "FIPS")
-          # if [[ $output == *"OpenSSL FIPS 140 mode enabled"* ]]; then
-          #   echo "✅ Chef Infra Client is running in FIPS mode"
-          # else
-          #   echo "❌ FIPS mode not detected"
-          #   exit 1
-          # fi
+          # Create a minimal cookbook structure
+          mkdir -p /tmp/test_cookbook/recipes
+          echo 'file "/tmp/test" do; content Digest::MD5.hexdigest("test"); end' > /tmp/test_cookbook/recipes/default.rb
+
+          # Run chef-client in local mode, specifying cookbook_path via config option, expect recipe run to fail due to FIPS and md5 usage
+          sudo bash -c "
+            set -o pipefail
+            hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z \
+              --config-option cookbook_path=/tmp \
+              -o test_cookbook 2>&1 | tee /tmp/chef-client.log
+            echo \$? > /tmp/chef-exit-code.txt
+          " || true
+
+          # Read the exit code from the file
+          EXIT_CODE=$(cat /tmp/chef-exit-code.txt)
+
+          # Check if the command failed AND the error is related to MD5/Digest
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "=== Chef-client failed as expected in FIPS mode ==="
+            if grep -qi "Digest" /tmp/chef-client.log && \
+               grep -qi "initialization" /tmp/chef-client.log; then
+              echo "=== PASS: FIPS mode detected and enforced - MD5 blocked with Digest error ==="
+              exit 0
+            else
+              echo "=== FAIL: Command failed but not due to FIPS/MD5 enforcement ==="
+              echo "=== Log excerpt ==="
+              tail -50 /tmp/chef-client.log
+              exit 1
+            fi
+          else
+            echo "=== FAIL: FIPS mode not working - chef-client succeeded when it should have failed ==="
+            tail -50 /tmp/chef-client.log
+            exit 1
+          fi
+
+      # This is self-hosted runner, so we need to clean up after ourselves
+      - name: 'Cleanup self-hosted runner'
+        if: always()  # Run even if previous steps fail
+        run: |
+          echo "=== Cleaning up test artifacts ==="
+
+          # Remove test cookbook and files
+          sudo rm -rf /tmp/test_cookbook
+          sudo rm -f /tmp/test
+          sudo rm -f /tmp/chef-client.log
+          sudo rm -f /tmp/client.rb
+
+          # Remove the installed Chef Infra Client package(s) from /hab/pkgs
+          sudo rm -rf /hab/pkgs/$HAB_ORIGIN/chef-infra-client || true
+
+          # Clean up Habitat build artifacts
+          sudo rm -rf /hab/cache/artifacts/$HAB_ORIGIN-chef-infra-client-*.hart || true
+
+          # Remove origin keys
+          sudo rm -f /hab/cache/keys/$HAB_ORIGIN-*.* || true
+
+          # Clean up any Chef local-mode cache
+          sudo rm -rf /root/.chef/local-mode-cache || true
+          sudo rm -rf /var/chef || true
+
+          echo "=== Cleanup complete ==="
