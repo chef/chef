@@ -104,6 +104,7 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
 end
 
+
 # Handle resolv gem conflict with default gem
 puts "Checking resolv gem installation..."
 resolv_info = `gem info resolv`
@@ -124,4 +125,25 @@ if resolv_info.include?("Installed at (default):") && resolv_info.include?("reso
   puts "Installing resolv gem..."
   system("gem install resolv") or raise "gem install resolv failed" # NOSONAR
   puts "resolv gem installed successfully"
+end
+
+# Uninstall specific versions of bundled gems that raise CVE errors due to their presence:
+bundled_gems_to_remove = {
+  "rexml" => ["3.2.5"],
+}
+
+puts "Checking for bundled gems to uninstall..."
+bundled_gems_to_remove.each do |gem_name, versions|
+  versions.each do |version|
+    # Check if the specific version is installed (-e for exact name match)
+    gem_list_output = `gem list #{gem_name} -e -v #{version}`
+
+    if gem_list_output.include?(gem_name) && gem_list_output.include?(version)
+      puts "Uninstalling #{gem_name} version #{version}..."
+      system("gem uninstall #{gem_name} -v #{version} -I") or raise "gem uninstall #{gem_name} -v #{version} failed" # NOSONAR
+      puts "Successfully uninstalled #{gem_name} #{version}"
+    else
+      puts "#{gem_name} version #{version} not installed, skipping"
+    end
+  end
 end
