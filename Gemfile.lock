@@ -314,7 +314,7 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (5.0.1)
-    rack (2.2.6.4)
+    rack (2.2.21)
     rainbow (3.1.1)
     rake (13.0.6)
     rb-readline (0.5.5)
