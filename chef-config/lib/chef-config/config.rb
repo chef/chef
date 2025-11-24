@@ -924,7 +924,11 @@ module ChefConfig
     default :profile, nil
 
     default :chef_guid_path do
-      PathHelper.join(config_dir, "#{ChefUtils::Dist::Infra::SHORT}_guid")
+      if target_mode?
+        PathHelper.join(config_dir, target_mode.host, "#{ChefUtils::Dist::Infra::SHORT}_guid")
+      else
+        PathHelper.join(config_dir, "#{ChefUtils::Dist::Infra::SHORT}_guid")
+      end
     end
 
     default :chef_guid, nil

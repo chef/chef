@@ -400,6 +400,27 @@ RSpec.describe ChefConfig::Config do
           end
         end
 
+        describe "ChefConfig::Config[:chef_guid_path]" do
+          it "sets the default path to the chef guid" do
+            expected_path = ChefConfig::PathHelper.join(ChefConfig::Config.config_dir, "chef_guid")
+            expect(ChefConfig::Config.chef_guid_path).to eq(expected_path)
+          end
+
+          context "when target mode is enabled" do
+            let(:target_mode_host) { "fluffy.kittens.org" }
+
+            before do
+              ChefConfig::Config.target_mode.enabled = true
+              ChefConfig::Config.target_mode.host = target_mode_host
+            end
+
+            it "sets the default path to the chef guid with the target host name" do
+              expected_path = ChefConfig::PathHelper.join(ChefConfig::Config.config_dir, target_mode_host, "chef_guid")
+              expect(ChefConfig::Config.chef_guid_path).to eq(expected_path)
+            end
+          end
+        end
+
         describe "ChefConfig::Config[:fips]" do
           let(:fips_enabled) { false }
 

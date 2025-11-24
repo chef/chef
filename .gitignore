@@ -8,6 +8,7 @@ tags
 .chef
 results
 *.swp
+.ruby-version
 
 # Docker
 .dobi
