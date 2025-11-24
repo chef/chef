@@ -20,7 +20,8 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 
 # gems below are added here for Chef-16 compat. Their modern versions don't support Ruby 2.6
 gem "semverse", "= 3.0.0"
-gem "train-core", "= 3.2"
+# bumped to known working version per CHEF-28290
+gem "train-core", "= 3.8.1"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
