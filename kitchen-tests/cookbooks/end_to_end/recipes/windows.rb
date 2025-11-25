@@ -225,12 +225,12 @@ directory "C:\\mordor" do
   rights :full_control, "everyone"
 end
 
-cookbook_file "c:\\mordor\\steveb.pfx" do
-  source "/certs/steveb.pfx"
+cookbook_file "c:\\mordor\\steveb-new.pfx" do
+  source "/certs/steveb-new.pfx"
   action :create_if_missing
 end
 
-windows_certificate "c:/mordor/steveb.pfx" do
+windows_certificate "c:/mordor/steveb-new.pfx" do
   pfx_password "1234"
   action :create
   user_store true
