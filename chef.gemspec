@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
     s.required_ruby_version = ">= 3.1.0"
   end
 
-  s.add_dependency "activesupport", ">= 4.2.7.1", "<= 7.1.5.2"
+  s.add_dependency "activesupport", ">= 4.2.7.1", "< 8"
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
   s.add_dependency "train-core", "~> 3.13", ">= 3.13.4"
