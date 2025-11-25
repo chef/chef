@@ -63,7 +63,7 @@ Gem::Specification.new do |s|
   s.add_dependency "csv", "~> 3.3.5" # really needs to come from inspec?
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
-  s.add_dependency "uri", "~> 1.0.3" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
+  s.add_dependency "uri", "~> 1.0.4" # CVE-2025-61594 fixed in >= 1.0.4
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   # this is temporary until activesupport is removed from chef-licensing/chef-zero/oc-chef-pedant and published
