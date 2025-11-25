@@ -104,24 +104,31 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
 end
 
-# Handle resolv gem conflict with default gem
-puts "Checking resolv gem installation..."
-resolv_info = `gem info resolv`
+default_gem_list = {
+  resolv: '0.2.1',
+  uri: '0.12.4'
+}
 
-if resolv_info.include?("Installed at (default):") && resolv_info.include?("resolv (0.2.1)")
-  # Extract the default gem path
-  default_path = resolv_info.match(/Installed at \(default\): (.+)$/)[1]
+default_gem_list.each do |gem_name, version|
+  # Handle resolv gem conflict with default gem
+  puts "Checking #{gem_name} gem installation..."
+  gem_info = `gem info #{gem_name}`
 
-  if default_path
-    gemspec_path = File.join(default_path.strip, "specifications", "default", "resolv-0.2.1.gemspec")
+  if resolv_info.include?("default):") && resolv_info.include?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
+    # Extract the default gem path
+    default_path = gem_info.match(/default\): (.+)$/)[1]
 
-    if File.exist?(gemspec_path)
-      puts "Removing default resolv gemspec: #{gemspec_path}"
-      File.delete(gemspec_path)
+    if default_path
+      gemspec_path = File.join(default_path.strip, "specifications", "default", "#{gem_name}-#{version}.gemspec")
+
+      if File.exist?(gemspec_path)
+        puts "Removing default #{gem_name} gemspec: #{gemspec_path}"
+        File.delete(gemspec_path)
+      end
     end
-  end
 
-  puts "Installing resolv gem..."
-  system("gem install resolv") or raise "gem install resolv failed" # NOSONAR
-  puts "resolv gem installed successfully"
+    puts "Installing #{gem_name} gem..."
+    system("gem install #{gem_name}") or raise "gem install #{gem_name} failed" # NOSONAR
+    puts "#{gem_name} gem installed successfully"
+  end
 end
