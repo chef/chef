@@ -114,7 +114,7 @@ default_gem_list.each do |gem_name, version|
   puts "Checking #{gem_name} gem installation..."
   gem_info = `gem info #{gem_name}`
 
-  if resolv_info.include?("default):") && resolv_info.include?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
+  if gem_info.include?("default):") && gem_info.include?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
     # Extract the default gem path
     default_path = gem_info.match(/default\): (.+)$/)[1]
 
