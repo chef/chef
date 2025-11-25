@@ -424,7 +424,7 @@ GEM
     rackup (2.2.1)
       rack (>= 3)
     rainbow (3.1.1)
-    rake (13.3.0)
+    rake (13.3.1)
     rb-readline (0.5.5)
     regexp_parser (2.11.2)
     rexml (3.4.2)
