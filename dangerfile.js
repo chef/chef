@@ -64,7 +64,7 @@ if (danger.git.modified_files.includes("Gemfile.lock") &&
 }
 
 // Check if PR description has been properly filled out
-function checkPRDescription() {
+async function checkPRDescription() {
     const body = danger.github.pr.body || ""
 
     if (danger.github.pr.user.type === "Bot") {
@@ -101,4 +101,4 @@ function checkPRDescription() {
 schedule(checkChefGemVersions())
 
 // Check PR description
-checkPRDescription()
+schedule(checkPRDescription())
