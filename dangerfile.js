@@ -63,5 +63,42 @@ if (danger.git.modified_files.includes("Gemfile.lock") &&
     }
 }
 
+// Check if PR description has been properly filled out
+async function checkPRDescription() {
+    const body = danger.github.pr.body || ""
+
+    if (danger.github.pr.user.type === "Bot") {
+        return
+    }
+
+    // Extract the Description section (between "Description" and "Related Issue" or "Types of changes" headers)
+    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*(?:Related Issue|Types of changes)|$)/i)
+
+    if (!descriptionMatch) {
+        fail("❌ PR description is missing a 'Description' section. Please provide a description of your changes.")
+        return
+    }
+
+    const descriptionSection = descriptionMatch[1].trim()
+
+    // Remove HTML comments to get the actual content
+    const contentWithoutComments = descriptionSection.replace(/<!---.*?--->/gs, '').replace(/<!--.*?-->/gs, '').trim()
+
+    // Check if description still contains the template text
+    const templateText = "Describe your changes in detail, what problems does it solve?"
+    if (descriptionSection.includes(templateText)) {
+        fail("❌ PR description contains unedited template text. Please replace '<!--- Describe your changes in detail, what problems does it solve? --->' with an actual description of your changes.")
+        return
+    }
+
+    // Check if description is empty or too short (less than 20 characters of actual content)
+    if (contentWithoutComments.length < 20) {
+        fail("❌ PR description is too short or empty. Please provide a meaningful description of your changes (at least 20 characters).")
+    }
+}
+
 // Check for chef gem version changes
 schedule(checkChefGemVersions())
+
+// Check PR description
+schedule(checkPRDescription())
