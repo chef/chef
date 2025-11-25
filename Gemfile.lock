@@ -476,7 +476,7 @@ GEM
     syslog (0.3.0)
       logger
     syslog-logger (1.6.8)
-    thor (1.2.2)
+    thor (1.4.0)
     time (0.4.1)
       date
     timeout (0.4.3)
