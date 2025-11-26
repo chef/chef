@@ -43,7 +43,7 @@ class Chef
           node = data_collector.node
           {
             "chef_server_fqdn" => URI(Chef::Config[:chef_server_url]).host,
-            "entity_uuid" => node&.uuid || Chef::Config[:chef_guid],
+            "entity_uuid" => (node && node['uuid']) || Chef::Config[:chef_guid],
             "id" => run_status&.run_id,
             "message_version" => "1.0.0",
             "message_type" => "run_start",

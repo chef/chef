@@ -451,8 +451,8 @@ describe Chef::DataCollector do
         events.run_started(run_status)
       end
 
-      it "falls back to chef_guid when node.uuid is not set" do
-        allow(node).to receive(:uuid).and_return(nil) # Ensure node.uuid is nil
+      it "falls back to chef_guid when node['uuid'] is not set" do
+        node.default["uuid"] = nil # Ensure node["uuid"] is nil
         Chef::Config[:chef_guid] = node_uuid
         expect_start_message("entity_uuid" => node_uuid)
         events.run_started(run_status)
