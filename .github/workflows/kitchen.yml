@@ -117,7 +117,6 @@ jobs:
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-      HAB2_AUTH_TOKEN: ${{ secrets.HAB2_AUTH_TOKEN }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -128,6 +127,7 @@ jobs:
           sudo hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
+          echo "HAB_AUTH_TOKEN is set to a secret of length ${#HAB_AUTH_TOKEN}"
           sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/1.1.4 --channel unstable --auth ${{ secrets.HAB_AUTH_TOKEN }}
           kitchen --version
           # chef-cli is needed for some kitchen operations
