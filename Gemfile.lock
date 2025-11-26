@@ -373,9 +373,9 @@ GEM
       tomlrb
     mixlib-log (3.2.3)
       ffi (>= 1.15.5)
-    mixlib-shellout (3.3.8)
+    mixlib-shellout (3.3.9)
       chef-utils
-    mixlib-shellout (3.3.8-x64-mingw-ucrt)
+    mixlib-shellout (3.3.9-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
