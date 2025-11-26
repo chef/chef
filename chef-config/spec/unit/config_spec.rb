@@ -22,7 +22,7 @@ require "chef-config/config"
 require "date" unless defined?(Date)
 
 RSpec.describe ChefConfig::Config do
-  TARGET_MODE_HOST = "fluffy.kittens.org"
+  TARGET_MODE_HOST = "fluffy.kittens.org".freeze
 
   before(:each) do
     ChefConfig::Config.reset
