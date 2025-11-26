@@ -22,6 +22,8 @@ require "chef-config/config"
 require "date" unless defined?(Date)
 
 RSpec.describe ChefConfig::Config do
+  TARGET_MODE_HOST = "fluffy.kittens.org"
+
   before(:each) do
     ChefConfig::Config.reset
 
@@ -379,7 +381,7 @@ RSpec.describe ChefConfig::Config do
           end
 
           context "when target mode is enabled" do
-            let(:target_mode_host) { "fluffy.kittens.org" }
+            let(:target_mode_host) { TARGET_MODE_HOST }
 
             before do
               ChefConfig::Config.target_mode.enabled = true
@@ -407,7 +409,7 @@ RSpec.describe ChefConfig::Config do
           end
 
           context "when target mode is enabled" do
-            let(:target_mode_host) { "fluffy.kittens.org" }
+            let(:target_mode_host) { TARGET_MODE_HOST }
 
             before do
               ChefConfig::Config.target_mode.enabled = true
@@ -516,7 +518,7 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:cache_path]" do
-          let(:target_mode_host) { "fluffy.kittens.org" }
+          let(:target_mode_host) { TARGET_MODE_HOST }
           let(:target_mode_primary_cache_path) { ChefUtils.windows? ? "#{primary_cache_path}\\#{target_mode_host}" : "#{primary_cache_path}/#{target_mode_host}" }
           let(:target_mode_secondary_cache_path) { ChefUtils.windows? ? "#{secondary_cache_path}\\#{target_mode_host}" : "#{secondary_cache_path}/#{target_mode_host}" }
 
