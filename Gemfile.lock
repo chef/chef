@@ -408,7 +408,7 @@ GEM
     plist (3.7.2)
     prism (1.4.0)
     proxifier2 (1.1.0)
-    pry (0.13.0)
+    pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     pry-byebug (3.11.0)
@@ -578,7 +578,7 @@ DEPENDENCIES
   inspec-core-bin (= 7.0.95)
   ohai!
   openssl (= 3.3.2)
-  pry (= 0.13.0)
+  pry (~> 0.15.2)
   pry-byebug
   pry-stack_explorer
   rake (>= 12.3.3)
