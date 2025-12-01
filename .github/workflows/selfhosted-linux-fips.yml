@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   linux:
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
     runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
