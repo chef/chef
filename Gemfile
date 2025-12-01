@@ -2,9 +2,11 @@ source "https://rubygems.org"
 
 gem "chef", path: "."
 
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "rishichawda/update-ffi-yajl"
 
 gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
+
+gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim", glob: "chef-powershell/chef-powershell.gemspec", branch: "rishichawda/update-ffi-yajl"
 
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
