@@ -22,7 +22,7 @@ require "chef-config/config"
 require "date" unless defined?(Date)
 
 RSpec.describe ChefConfig::Config do
-  TARGET_MODE_HOST = "fluffy.kittens.org".freeze
+  let(:target_mode_host) { "fluffy.kittens.org".freeze }
 
   before(:each) do
     ChefConfig::Config.reset
@@ -383,11 +383,11 @@ RSpec.describe ChefConfig::Config do
           context "when target mode is enabled" do
             before do
               ChefConfig::Config.target_mode.enabled = true
-              ChefConfig::Config.target_mode.host = TARGET_MODE_HOST
+              ChefConfig::Config.target_mode.host = target_mode_host
             end
 
             it "sets the default path to the client key with the target host name" do
-              expect(ChefConfig::Config.client_key).to eq(path_to_client_key + TARGET_MODE_HOST + ChefConfig::PathHelper.path_separator + "client.pem")
+              expect(ChefConfig::Config.client_key).to eq(path_to_client_key + target_mode_host + ChefConfig::PathHelper.path_separator + "client.pem")
             end
           end
 
@@ -409,11 +409,11 @@ RSpec.describe ChefConfig::Config do
           context "when target mode is enabled" do
             before do
               ChefConfig::Config.target_mode.enabled = true
-              ChefConfig::Config.target_mode.host = TARGET_MODE_HOST
+              ChefConfig::Config.target_mode.host = target_mode_host
             end
 
             it "sets the default path to the chef guid with the target host name" do
-              expected_path = ChefConfig::PathHelper.join(ChefConfig::Config.config_dir, TARGET_MODE_HOST, "chef_guid")
+              expected_path = ChefConfig::PathHelper.join(ChefConfig::Config.config_dir, target_mode_host, "chef_guid")
               expect(ChefConfig::Config.chef_guid_path).to eq(expected_path)
             end
           end
@@ -514,8 +514,8 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:cache_path]" do
-          let(:target_mode_primary_cache_path) { ChefUtils.windows? ? "#{primary_cache_path}\\#{TARGET_MODE_HOST}" : "#{primary_cache_path}/#{TARGET_MODE_HOST}" }
-          let(:target_mode_secondary_cache_path) { ChefUtils.windows? ? "#{secondary_cache_path}\\#{TARGET_MODE_HOST}" : "#{secondary_cache_path}/#{TARGET_MODE_HOST}" }
+          let(:target_mode_primary_cache_path) { ChefUtils.windows? ? "#{primary_cache_path}\\#{target_mode_host}" : "#{primary_cache_path}/#{target_mode_host}" }
+          let(:target_mode_secondary_cache_path) { ChefUtils.windows? ? "#{secondary_cache_path}\\#{target_mode_host}" : "#{secondary_cache_path}/#{target_mode_host}" }
 
           before do
             if is_windows
@@ -535,7 +535,7 @@ RSpec.describe ChefConfig::Config do
             context "and target mode is enabled" do
               it "cache path includes the target host name" do
                 ChefConfig::Config.target_mode.enabled = true
-                ChefConfig::Config.target_mode.host = TARGET_MODE_HOST
+                ChefConfig::Config.target_mode.host = target_mode_host
                 expect(ChefConfig::Config[:cache_path]).to eq(target_mode_primary_cache_path)
               end
             end
@@ -571,7 +571,7 @@ RSpec.describe ChefConfig::Config do
             context "and target mode is enabled" do
               it "cache path defaults to $HOME/.chef with the target host name" do
                 ChefConfig::Config.target_mode.enabled = true
-                ChefConfig::Config.target_mode.host = TARGET_MODE_HOST
+                ChefConfig::Config.target_mode.host = target_mode_host
                 expect(ChefConfig::Config[:cache_path]).to eq(target_mode_secondary_cache_path)
               end
             end
