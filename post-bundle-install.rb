@@ -105,8 +105,8 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
 end
 
 default_gem_list = {
-  resolv: '0.2.1',
-  uri: '0.12.4'
+  resolv: "0.2.1",
+  uri: "0.12.4",
 }
 
 default_gem_list.each do |gem_name, version|
