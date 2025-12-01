@@ -87,6 +87,7 @@ jobs:
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
     name: dokr_lnx_x86_64_hab
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
