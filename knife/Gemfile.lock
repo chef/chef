@@ -12,15 +12,15 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: c813fad09573d6a5659bce9d65478eab31a2c58a
-  branch: main
+  revision: b9abc31c994316aca9d2fe78473bf1a8ebef1b39
+  branch: rishichawda/update-ffi-yajl
   specs:
-    ohai (19.1.9)
+    ohai (19.1.15)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
       ffi (>= 1.15.5)
-      ffi-yajl (~> 2.2)
+      ffi-yajl (~> 3.0.0)
       ipaddress
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
@@ -33,15 +33,15 @@ GIT
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (19.1.24)
-      chef (= 19.1.124)
+    chef-bin (19.1.119)
+      chef (= 19.1.119)
 
 PATH
   remote: ../chef-config
   specs:
-    chef-config (19.1.98)
+    chef-config (19.1.119)
       addressable
-      chef-utils (= 19.1.98)
+      chef-utils (= 19.1.119)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -51,28 +51,33 @@ PATH
 PATH
   remote: ../chef-utils
   specs:
-    chef-utils (19.1.98)
+    chef-utils (19.1.119)
       concurrent-ruby
 
 PATH
   remote: ..
   specs:
+<<<<<<< HEAD
     chef (19.1.124)
+=======
+    chef (19.1.119)
+      activesupport (~> 7.2.2.2)
+>>>>>>> f15883cb4c (update ohai pin in knife)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 19.1.98)
+      chef-config (= 19.1.119)
       chef-licensing (>= 0.7.5)
-      chef-utils (= 19.1.98)
+      chef-utils (= 19.1.119)
       chef-vault
       chef-zero (~> 15.0.21)
       corefoundation (~> 0.3.4)
       csv (~> 3.3.5)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      diff-lcs (~> 1.6.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5, < 1.18.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
-      ffi-yajl (~> 2.2)
+      ffi-yajl (~> 3.0.0)
       iniparse (~> 1.4)
       inspec-core (~> 7.0.95)
       license-acceptance (>= 1.0.5, < 3)
@@ -147,7 +152,7 @@ PATH
 PATH
   remote: .
   specs:
-    knife (19.1.98)
+    knife (19.1.119)
       abbrev
       bcrypt_pbkdf (~> 1.1)
       chef (>= 19)
@@ -156,7 +161,7 @@ PATH
       chef-vault
       erubis (~> 2.7)
       ffi (>= 1.15, < 1.18.0)
-      ffi-yajl (~> 2.2)
+      ffi-yajl (~> 3.0.0)
       highline (>= 1.6.9, < 3)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -234,9 +239,6 @@ GEM
       pstore (~> 0.1.1)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.1.0)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -284,7 +286,7 @@ GEM
     csv (3.3.5)
     date (3.4.1)
     debug_inspector (1.2.0)
-    diff-lcs (1.5.1)
+    diff-lcs (1.6.2)
     domain_name (0.6.20240107)
     drb (2.2.3)
     erubi (1.13.1)
@@ -304,7 +306,7 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.6.0)
+    ffi-yajl (3.0.0)
       libyajl2 (>= 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
@@ -349,7 +351,6 @@ GEM
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
     ipaddress (0.8.3)
-    iso8601 (0.13.0)
     jmespath (1.6.2)
     json (2.13.2)
     language_server-protocol (3.17.0.5)
@@ -488,7 +489,6 @@ GEM
       unicode-display_width (>= 1.5, < 3.0)
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
-    structured_warnings (0.5.0)
     syslog (0.3.0)
       logger
     syslog-logger (1.6.8)
@@ -535,10 +535,10 @@ GEM
       tty-screen (~> 0.8)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unf_ext (0.0.8.2)
+    unf_ext (0.0.9.1)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
-    uri (1.0.3)
+    uri (1.0.4)
     uuidtools (2.2.0)
     vault (0.18.2)
       aws-sigv4
