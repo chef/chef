@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.120 -->
-## [v19.1.120](https://github.com/chef/chef/tree/v19.1.120) (2025-12-01)
+<!-- latest_release 19.1.121 -->
+## [v19.1.121](https://github.com/chef/chef/tree/v19.1.121) (2025-12-01)
 
 #### Merged Pull Requests
-- [Target Mode] Correcting missing guids [#15467](https://github.com/chef/chef/pull/15467) ([johnmccrae](https://github.com/johnmccrae))
+- CHEF-3854: Replace YAML.load_stream with regex for security [#15477](https://github.com/chef/chef/pull/15477) ([nikhil2611](https://github.com/nikhil2611))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-3854: Replace YAML.load_stream with regex for security [#15477](https://github.com/chef/chef/pull/15477) ([nikhil2611](https://github.com/nikhil2611)) <!-- 19.1.121 -->
 - [Target Mode] Correcting missing guids [#15467](https://github.com/chef/chef/pull/15467) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.120 -->
 - Removed conflicting openssl installation [#15482](https://github.com/chef/chef/pull/15482) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.119 -->
 - Enforce description content for PRs [#15456](https://github.com/chef/chef/pull/15456) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.118 -->
