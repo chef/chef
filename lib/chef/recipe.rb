@@ -83,7 +83,9 @@ class Chef
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
         yaml_contents = IO.read(filename)
-        if ::YAML.load_stream(yaml_contents).length > 1
+        # Count document separators instead of using unsafe load_stream
+        doc_count = yaml_contents.scan(/^---\s*$/).length
+        if doc_count > 1
           raise ArgumentError, "YAML recipe '#{filename}' contains multiple documents, only one is supported"
         end
 
