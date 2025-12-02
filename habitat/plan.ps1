@@ -296,6 +296,11 @@ function Invoke-After {
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
 
+    Write-Output "Inspect rbs and typeprof"
+    gem info rbs
+    gem info typeprof
+
+
     # we need the built gems outside of the studio
     write-output "Copying gems to ${SRC_PATH}"
     New-Item -ItemType Directory -Force "${SRC_PATH}\pkg","${SRC_PATH}\chef-bin\pkg","${SRC_PATH}\chef-config\pkg","${SRC_PATH}\chef-utils\pkg"
