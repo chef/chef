@@ -4,7 +4,9 @@ permissions:
   contents: read
 
 "on":
-  pull_request:
+  pull_request_target:
+    branches:
+      - main
   push:
     branches:
       - main
@@ -15,6 +17,7 @@ concurrency:
 
 jobs:
   windows:
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'safe-to-run')
     strategy:
       fail-fast: false
       matrix:

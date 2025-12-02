@@ -88,6 +88,7 @@ jobs:
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
+    if: contains(github.event.pull_request.labels.*.name, 'safe-to-run')
     name: dokr_lnx_x86_64_hab
     strategy:
       fail-fast: false

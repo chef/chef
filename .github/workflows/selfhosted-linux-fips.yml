@@ -4,7 +4,9 @@ permissions:
   contents: read
 
 "on":
-  pull_request:
+  pull_request_target:
+    branches:
+      - main
   push:
     branches:
       - main
@@ -15,9 +17,12 @@ concurrency:
 
 jobs:
   linux:
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'safe-to-run')
     strategy:
       fail-fast: false
-    runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
+      matrix:
+        platform: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
+    runs-on: ${{ matrix.platform }}
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
