@@ -57,12 +57,7 @@ PATH
 PATH
   remote: ..
   specs:
-<<<<<<< HEAD
     chef (19.1.124)
-=======
-    chef (19.1.119)
-      activesupport (~> 7.2.2.2)
->>>>>>> f15883cb4c (update ohai pin in knife)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)

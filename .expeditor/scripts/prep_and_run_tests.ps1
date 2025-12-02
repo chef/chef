@@ -77,10 +77,81 @@ ruby -e "require 'openssl'; puts 'OpenSSL loaded successfully: ' + OpenSSL::OPEN
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
-# making sure we find the dlls from chef powershell
-$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
-$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
-$env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
+Write-Output "--- Locating chef-powershell-shim"
+$chef_powershell_gem_path = bundle info chef-powershell --path
+if (-not $?) {
+    Write-Error "Could not locate chef-powershell gem."
+    exit 1
+}
+$chef_powershell_gem_path = $chef_powershell_gem_path.Trim()
+$shim_repo_path = Split-Path -Path $chef_powershell_gem_path -Parent
+Write-Output "chef-powershell-shim repo located at: $shim_repo_path"
+
+if (-not (Test-Path (Join-Path $shim_repo_path "habitat"))) {
+    Write-Error "Could not find habitat directory in $shim_repo_path. Is the gem structure correct?"
+    exit 1
+}
+
+# Copy to a temporary directory with a short path to avoid Windows path length issues in Habitat Studio
+$build_dir = "C:\cps-build"
+if (Test-Path $build_dir) {
+    Remove-Item $build_dir -Recurse -Force
+}
+New-Item -ItemType Directory -Force -Path $build_dir | Out-Null
+Write-Output "--- Copying chef-powershell-shim to $build_dir for build"
+Copy-Item "$shim_repo_path\*" $build_dir -Recurse -Force
+
+Push-Location $build_dir
+
+Write-Output "--- Building chef-powershell-shim via Habitat"
+Write-Output "--- Generating temporary 'chef' origin key for signing"
+hab origin key generate chef
+if (-not $?) { throw "Could not generate habitat key for chef origin." }
+
+$env:HAB_ORIGIN = "chef"
+hab pkg build habitat
+if (-not $?) { throw "Could not build chef-powershell-shim via Habitat." }
+
+$last_build_env = Get-Content "results/last_build.env" | ConvertFrom-StringData
+$pkg_ident = $last_build_env.pkg_ident
+$pkg_artifact = $last_build_env.pkg_artifact
+
+Write-Output "--- Installing chef-powershell-shim package"
+hab pkg install "results/$pkg_artifact"
+if (-not $?) { throw "Could not install chef-powershell-shim package." }
+
+$pkg_path = hab pkg path $pkg_ident
+$arch = $env:PROCESSOR_ARCHITECTURE
+if (-not $arch) { $arch = "AMD64" }
+
+# Copy DLLs to the bundler gem path so tests can use them
+$dll_target_bundler = Join-Path $chef_powershell_gem_path "bin/ruby_bin_folder/$arch"
+if (-not (Test-Path $dll_target_bundler)) {
+    New-Item -ItemType Directory -Force -Path $dll_target_bundler
+}
+Write-Output "--- Copying DLLs from $pkg_path/bin to $dll_target_bundler"
+Copy-Item "$pkg_path/bin/*" $dll_target_bundler -Recurse -Force
+
+# Also copy to the build dir to build the gem
+$dll_target_build = Join-Path $build_dir "chef-powershell/bin/ruby_bin_folder/$arch"
+if (-not (Test-Path $dll_target_build)) {
+    New-Item -ItemType Directory -Force -Path $dll_target_build
+}
+Write-Output "--- Copying DLLs from $pkg_path/bin to $dll_target_build"
+Copy-Item "$pkg_path/bin/*" $dll_target_build -Recurse -Force
+
+Write-Output "--- Building chef-powershell gem"
+Push-Location chef-powershell
+gem build chef-powershell.gemspec
+if (-not $?) { throw "Could not build chef-powershell gem." }
+
+$gem_file = Get-ChildItem chef-powershell-*.gem | Sort-Object LastWriteTime | Select-Object -Last 1
+Write-Output "--- Installing chef-powershell gem: $gem_file"
+gem install $gem_file --verbose
+if (-not $?) { throw "Could not install chef-powershell gem." }
+
+Pop-Location # chef-powershell
+Pop-Location # build_dir
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}
