@@ -32,14 +32,16 @@ env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_
 windows_arch env_omnibus_windows_arch
 
 # chef16 is now built using ruby 3.1. The artifacts get built when we disable caching for git and s3.
-use_git_caching false
+use_git_caching true
 
 # Enable S3 asset caching
 # ------------------------------
-use_s3_caching false
+use_s3_caching ENV.fetch("OMNIBUS_USE_S3_CACHING", true)
 s3_access_key  ENV["AWS_ACCESS_KEY_ID"]
 s3_secret_key  ENV["AWS_SECRET_ACCESS_KEY"]
-s3_bucket      "opscode-omnibus-cache"
+s3_bucket      "opscode-omnibus-cache-private"
+s3_acl         "private"
+s3_region      "us-west-2"
 
 build_retries 3
 fetcher_retries 3
