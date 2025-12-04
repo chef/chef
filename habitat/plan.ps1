@@ -15,7 +15,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "core/openssl"
+ # "core/openssl"
   "core/zlib"
   "core/libarchive"
   "core/ruby3_4-plus-devkit"
@@ -32,6 +32,13 @@ function Invoke-Begin {
         throw "unable to build: required minimum version of Habitat not installed"
     } else {
         Write-BuildLine ":habicat: I think I have the version I need to build."
+    }
+
+    # TEMPORARY: Install openssl from unstable for testing
+    Write-BuildLine "** TESTING: Installing core/openssl from unstable channel **"
+    hab pkg install core/openssl/3.5.0/20251203051850 --channel unstable
+    if ($LASTEXITCODE -ne 0) {
+        exit_with "Failed to install core/openssl from unstable channel" 1
     }
 }
 
@@ -276,56 +283,55 @@ function Invoke-Install {
     }
 
     # Temporary code for testing Openssl FIPS
-    $confDir = "$pkg_prefix\openssl"
-    New-Item -ItemType Directory -Force -Path $confDir | Out-Null
+#     $confDir = "$pkg_prefix\openssl"
+#     New-Item -ItemType Directory -Force -Path $confDir | Out-Null
 
-@"
-openssl_conf = openssl_init
+# @"
+# openssl_conf = openssl_init
 
-[openssl_init]
-providers = provider_sect
+# [openssl_init]
+# providers = provider_sect
 
-[provider_sect]
-default = default_sect
-fips = fips_sect
+# [provider_sect]
+# default = default_sect
+# fips = fips_sect
 
-[default_sect]
-activate = 1
+# [default_sect]
+# activate = 1
 
-[fips_sect]
-activate = 1
-"@ | Set-Content "$confDir\openssl.cnf"
+# [fips_sect]
+# activate = 1
+# "@ | Set-Content "$confDir\openssl.cnf"
 
-@"
-openssl_conf = openssl_init
+# @"
+# openssl_conf = openssl_init
 
-[openssl_init]
-providers   = provider_sect
-alg_section = algorithm_sect
+# [openssl_init]
+# providers   = provider_sect
+# alg_section = algorithm_sect
 
-[provider_sect]
-default = default_sect
-fips   = fips_sect
+# [provider_sect]
+# default = default_sect
+# fips   = fips_sect
 
-[default_sect]
-activate = 1
+# [default_sect]
+# activate = 1
 
-[fips_sect]
-activate = 1
+# [fips_sect]
+# activate = 1
 
-[algorithm_sect]
-default_properties = fips=yes
-"@ | Set-Content "$confDir\fipsmodule.cnf"
+# [algorithm_sect]
+# default_properties = fips=yes
+# "@ | Set-Content "$confDir\fipsmodule.cnf"
 
-Write-Host "openssl.cnf:"
-Get-Content "$confDir\openssl.cnf"
-Write-Host "fipsmodule.cnf:"
-Get-Content "$confDir\fipsmodule.cnf"
+# Write-Host "openssl.cnf:"
+# Get-Content "$confDir\openssl.cnf"
+# Write-Host "fipsmodule.cnf:"
+# Get-Content "$confDir\fipsmodule.cnf"
+#Set-RuntimeEnv -Force OPENSSL_CONF "$confDir\openssl.cnf"
 
-Set-RuntimeEnv -Force OPENSSL_CONF "$confDir\openssl.cnf"
-    
-    
-
+$openssl_path = "$(Get-HabPackagePath core/openssl)"
+Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl.cnf"
 }
 
 function Invoke-After {
