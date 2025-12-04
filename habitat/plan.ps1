@@ -17,6 +17,7 @@ $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
   "core/zlib"
+  "core/xz"
   "core/libarchive"
   "core/ruby3_4-plus-devkit"
   "chef/chef-powershell-shim"
@@ -49,6 +50,7 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
     $ruby_version = "3.4.0"
