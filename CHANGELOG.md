@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.124 -->
-## [v19.1.124](https://github.com/chef/chef/tree/v19.1.124) (2025-12-02)
+<!-- latest_release 19.1.125 -->
+## [v19.1.125](https://github.com/chef/chef/tree/v19.1.125) (2025-12-04)
 
 #### Merged Pull Requests
-- [File#load_current_resource] assign #path call to variable [#15484](https://github.com/chef/chef/pull/15484) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- CHEF-20594: Add comprehensive documentation for REST resource [#15461](https://github.com/chef/chef/pull/15461) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-20594: Add comprehensive documentation for REST resource [#15461](https://github.com/chef/chef/pull/15461) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.125 -->
 - [File#load_current_resource] assign #path call to variable [#15484](https://github.com/chef/chef/pull/15484) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.124 -->
 - CHEF-28003 dependency updates for chef 19 [#15471](https://github.com/chef/chef/pull/15471) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.123 -->
 - Only run docker TKE and -fips builds if a non-forked repo [#15487](https://github.com/chef/chef/pull/15487) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 19.1.122 -->
