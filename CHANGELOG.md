@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.125 -->
-## [v19.1.125](https://github.com/chef/chef/tree/v19.1.125) (2025-12-04)
+<!-- latest_release 19.1.126 -->
+## [v19.1.126](https://github.com/chef/chef/tree/v19.1.126) (2025-12-05)
 
 #### Merged Pull Requests
-- CHEF-20594: Add comprehensive documentation for REST resource [#15461](https://github.com/chef/chef/pull/15461) ([rishichawda](https://github.com/rishichawda))
+- remove activesupport from chef main [#15492](https://github.com/chef/chef/pull/15492) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove activesupport from chef main [#15492](https://github.com/chef/chef/pull/15492) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.126 -->
 - CHEF-20594: Add comprehensive documentation for REST resource [#15461](https://github.com/chef/chef/pull/15461) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.125 -->
 - [File#load_current_resource] assign #path call to variable [#15484](https://github.com/chef/chef/pull/15484) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.124 -->
 - CHEF-28003 dependency updates for chef 19 [#15471](https://github.com/chef/chef/pull/15471) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.123 -->
