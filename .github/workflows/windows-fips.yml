@@ -24,8 +24,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: unstable
-      HAB_REFRESH_CHANNEL: unstable
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
     - uses: actions/checkout@v4

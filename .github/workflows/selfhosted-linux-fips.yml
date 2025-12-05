@@ -21,8 +21,8 @@ jobs:
     runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: unstable # Explicitly set the builder channel
-      HAB_REFRESH_CHANNEL: unstable # Explicitly set the refresh channel
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
       - name: 'Clean up any previous installs'
