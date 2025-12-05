@@ -15,7 +15,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  # "core/openssl"
+  "core/openssl"
   "core/zlib"
   "core/libarchive"
   "core/ruby3_4-plus-devkit"
@@ -32,13 +32,6 @@ function Invoke-Begin {
         throw "unable to build: required minimum version of Habitat not installed"
     } else {
         Write-BuildLine ":habicat: I think I have the version I need to build."
-    }
-
-    # TEMPORARY: Install openssl from unstable for testing
-    Write-BuildLine "** TESTING: Installing core/openssl from unstable channel **"
-    hab pkg install core/openssl/3.5.0/20251203051850 --channel unstable
-    if ($LASTEXITCODE -ne 0) {
-        exit_with "Failed to install core/openssl from unstable channel" 1
     }
 }
 
