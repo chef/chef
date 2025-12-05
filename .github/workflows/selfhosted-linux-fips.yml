@@ -53,7 +53,7 @@ jobs:
 
       - name: Install openssl from unstable channel
         run: |
-          hab pkg install --binlink --force core/openssl/3.5.0/20251203074720  --channel unstable
+          hab pkg install --binlink --force core/openssl/3.5.0/20251203074720  --channel unstable --auth "${{ secrets.HAB_AUTH_TOKEN }}"
 
       - name: Build Habitat Package for Chef Infra Client
         run: |
@@ -62,17 +62,11 @@ jobs:
           source ./results/last_build.env
           cp "./results/$pkg_artifact" chef-infra-client-latest.hart
 
-      - name: Set up HAB token file
-        run: |
-          # Create a token file for habitat operations
-          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
-          chmod 600 hab_token
-
       - name: Install Chef Infra Client Habitat Package
         run: |
           # Import the previously exported key
           cat "$HAB_ORIGIN-key.tar.gz" | sudo hab origin key import
-          sudo hab pkg install ./chef-infra-client-latest.hart --auth "$(cat hab_token)"
+          sudo hab pkg install ./chef-infra-client-latest.hart --auth "${{ secrets.HAB_AUTH_TOKEN }}"
           # Verify installation
           sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
 

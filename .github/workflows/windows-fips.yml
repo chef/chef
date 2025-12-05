@@ -49,7 +49,7 @@ jobs:
 
     - name: Install Unstable OpenSSL
       run: |
-        hab pkg install --binlink --force core/openssl/3.5.0/20251203051850 --channel unstable
+        hab pkg install --binlink --force core/openssl/3.5.0/20251203051850 --channel unstable --auth $env:HAB_AUTH_TOKEN
 
     - name: 'Build Habitat Package for Chef Infra Client'
       run: |
