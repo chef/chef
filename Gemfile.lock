@@ -55,7 +55,7 @@ PATH
       chef-licensing (>= 0.7.5)
       chef-utils (= 19.1.125)
       chef-vault
-      chef-zero (~> 15.0.21)
+      chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
       csv (~> 3.3.5)
       diff-lcs (~> 1.6.0)
@@ -94,7 +94,7 @@ PATH
       chef-powershell (~> 18.6.6)
       chef-utils (= 19.1.125)
       chef-vault
-      chef-zero (~> 15.0.21)
+      chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
       csv (~> 3.3.5)
       diff-lcs (~> 1.6.0)
@@ -252,7 +252,7 @@ GEM
       erubi (>= 1.7)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
-    chef-zero (15.0.26)
+    chef-zero (15.1.0)
       ffi-yajl (>= 2.2, < 4.0)
       hashie (>= 2.0, < 6.0)
       mixlib-log (>= 2.0, < 4.0)
