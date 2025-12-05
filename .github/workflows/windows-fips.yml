@@ -47,10 +47,6 @@ jobs:
         # Generate the origin key for signing packages
         hab origin key generate "$env:HAB_ORIGIN"
 
-    - name: Install Unstable OpenSSL
-      run: |
-        hab pkg install --binlink --force core/openssl/3.5.0/20251203051850 --channel unstable --auth $env:HAB_AUTH_TOKEN
-
     - name: 'Build Habitat Package for Chef Infra Client'
       run: |
         # Build the package for current checkout

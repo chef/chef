@@ -48,6 +48,10 @@ do_before() {
   update_pkg_version
   # We must wait until we update the pkg_version to use the pkg_version
   pkg_filename="${pkg_name}-${pkg_version}.tar.gz"
+
+  # TEMPORARY: Install openssl from unstable for testing
+  build_line "** TESTING: Installing core/openssl from unstable channel **"
+  hab pkg install core/openssl/3.5.0/20251203074720 --channel unstable
 }
 
 do_download() {

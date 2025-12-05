@@ -51,10 +51,6 @@ jobs:
           # Export the keys for later use
           hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
 
-      - name: Install openssl from unstable channel
-        run: |
-          sudo hab pkg install --binlink --force core/openssl/3.5.0/20251203074720  --channel unstable --auth "${{ secrets.HAB_AUTH_TOKEN }}"
-
       - name: Build Habitat Package for Chef Infra Client
         run: |
           # Build the Habitat package
