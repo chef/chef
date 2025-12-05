@@ -66,9 +66,6 @@ Gem::Specification.new do |s|
   s.add_dependency "uri", "~> 1.0.4" # CVE-2025-61594 fixed in >= 1.0.4
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
-  # this is temporary until activesupport is removed from chef-licensing/chef-zero/oc-chef-pedant and published
-  s.add_dependency "activesupport", "~> 7.2.2.2"
-
   s.add_dependency "proxifier2", "~> 1.1"
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support

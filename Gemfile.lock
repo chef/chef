@@ -47,7 +47,6 @@ PATH
   remote: .
   specs:
     chef (19.1.125)
-      activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -85,7 +84,6 @@ PATH
       uri (~> 1.0.4)
       vault (~> 0.18.2)
     chef (19.1.125-universal-mingw-ucrt)
-      activesupport (~> 7.2.2.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
@@ -162,18 +160,6 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.2.2.2)
-      base64
-      benchmark (>= 0.3)
-      bigdecimal
-      concurrent-ruby (~> 1.0, >= 1.3.1)
-      connection_pool (>= 2.2.5)
-      drb
-      i18n (>= 1.6, < 2)
-      logger (>= 1.4.2)
-      minitest (>= 5.1)
-      securerandom (>= 0.3)
-      tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
@@ -263,7 +249,6 @@ GEM
       webrick
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
-    connection_pool (2.5.4)
     cookstyle (8.5.2)
       rubocop (= 1.81.6)
     corefoundation (0.3.13)
@@ -276,7 +261,6 @@ GEM
     debug_inspector (1.2.0)
     diff-lcs (1.6.2)
     domain_name (0.6.20240107)
-    drb (2.2.3)
     ed25519 (1.4.0)
     erubi (1.13.1)
     erubis (2.7.0)
@@ -309,8 +293,6 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.9.0)
       mutex_m
-    i18n (1.14.7)
-      concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
     inspec-core (7.0.95)
       addressable (~> 2.4)
@@ -364,7 +346,6 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2025.0924)
-    minitest (5.26.2)
     mixlib-archive (1.3.3)
       mixlib-log
     mixlib-authentication (3.0.10)
@@ -463,7 +444,6 @@ GEM
     rubyntlm (0.6.5)
       base64
     rubyzip (2.4.1)
-    securerandom (0.4.1)
     semverse (3.0.2)
     socksify (1.8.1)
     sslshake (1.3.1)
@@ -517,8 +497,6 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    tzinfo (2.0.6)
-      concurrent-ruby (~> 1.0)
     unf_ext (0.0.9.1)
     unf_ext (0.0.9.1-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
