@@ -31,7 +31,7 @@ pkg_deps=(
   core/libiconv
   core/xz
   core/zlib
-  core/openssl
+  core/openssl/3.5.0/20251203074720
   core/cacerts
   core/libffi
   core/coreutils
@@ -176,6 +176,59 @@ do_install() {
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
   )
+
+  # Temporary code for testing Openssl FIPS
+#   conf_dir="${pkg_prefix}/openssl"
+#   mkdir -p "$conf_dir"
+
+#   cat > "${conf_dir}/openssl.cnf" <<'EOF'
+# openssl_conf = openssl_init
+
+# [openssl_init]
+# providers = provider_sect
+
+# [provider_sect]
+# default = default_sect
+# fips = fips_sect
+
+# [default_sect]
+# activate = 1
+
+# [fips_sect]
+# activate = 1
+# EOF
+
+#   cat > "${conf_dir}/fipsmodule.cnf" <<EOF
+# openssl_conf = openssl_init
+
+# [openssl_init]
+# providers   = provider_sect
+# alg_section = algorithm_sect
+
+# [provider_sect]
+# default = default_sect
+# fips   = fips_sect
+
+# [default_sect]
+# activate = 1
+
+# [fips_sect]
+# activate = 1
+
+# [algorithm_sect]
+# default_properties = fips=yes
+# EOF
+
+#   build_line "Base OpenSSL config:"
+#   sed 's/^/  /' "${conf_dir}/openssl.cnf"
+#   build_line "FIPS OpenSSL config:"
+#   sed 's/^/  /' "${conf_dir}/fipsmodule.cnf"
+
+  # Export default (non-FIPS) OPENSSL_CONF (runtime)
+  #set_runtime_env OPENSSL_CONF "${conf_dir}/openssl.cnf"
+  # Export default (non-FIPS) OPENSSL_CONF (runtime)
+  openssl_path="$(pkg_path_for core/openssl)"
+  set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl.cnf"
 }
 
 do_after() {
