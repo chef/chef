@@ -15,7 +15,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "core/openssl"
+  "core/openssl/3.5.0/20251203051850"
   "core/zlib"
   "core/libarchive"
   "core/ruby3_4-plus-devkit"
