@@ -139,7 +139,7 @@ describe Chef::Knife::SslFetch do
     let(:trusted_certs_dir) { Dir.mktmpdir }
 
     def run
-      ssl_fetch.run
+      ssl_fetch.run.tap { |n| p n; p OpenSSL::VERSION }
     rescue Exception
       puts "OUT: #{stdout_io.string}"
       puts "ERR: #{stderr_io.string}"
@@ -165,7 +165,8 @@ describe Chef::Knife::SslFetch do
 
       it "fetches the cert chain and writes the certs to the trusted_certs_dir" do
         run
-        stored_cert_path = File.join(trusted_certs_dir, "example_local.crt")
+        # if this fails, p Dir[File.join(trusted_certs_dir, "*")] to see if the filename changed
+        stored_cert_path = File.join(trusted_certs_dir, "example__com.crt")
         expect(File).to exist(stored_cert_path)
         expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
       end
