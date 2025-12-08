@@ -12,7 +12,6 @@ $pkg_filename="${pkg_name}-${pkg_version}.zip"
 $pkg_bin_dirs=@(
     "bin"
     "vendor/bin"
-    "$(Get-HabPackagePath xz)/bin"
 )
 $pkg_deps=@(
   "core/cacerts"
@@ -51,7 +50,6 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
-    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
     $ruby_version = "3.4.0"
@@ -238,6 +236,12 @@ function Invoke-Install {
     } else {
         Write-BuildLine "** Warning: NOTICE not found at $NoticeFile"
     }
+
+    # Copy xz.exe and liblzma.dll from core/xz to our bin directory
+    $xz_bin = "$(Get-HabPackagePath xz)/bin"
+    $target_bin = "$pkg_prefix/bin"
+    Copy-Item "$xz_bin/xz.exe" $target_bin -Force
+    Copy-Item "$xz_bin/liblzma.dll" $target_bin -Force
 
     try {
         Push-Location $pkg_prefix
