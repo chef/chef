@@ -12,6 +12,7 @@ $pkg_filename="${pkg_name}-${pkg_version}.zip"
 $pkg_bin_dirs=@(
     "bin"
     "vendor/bin"
+    "$(Get-HabPackagePath xz)/bin"
 )
 $pkg_deps=@(
   "core/cacerts"
@@ -51,9 +52,6 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
-
-    # Put xz.exe in PATH so that archive_file can shell_out to it
-    Push-RuntimeEnv -IsPath PATH "$(Get-HabPackagePath xz)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
     $ruby_version = "3.4.0"
