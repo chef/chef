@@ -237,11 +237,19 @@ function Invoke-Install {
         Write-BuildLine "** Warning: NOTICE not found at $NoticeFile"
     }
 
-    # Copy xz.exe and liblzma.dll from core/xz to our bin directory
+    # Copy ALL files from core/xz/bin to our bin directory (includes xz.exe, liblzma.dll, and any other executables/DLLs)
     $xz_bin = "$(Get-HabPackagePath xz)/bin"
     $target_bin = "$pkg_prefix/bin"
-    Copy-Item "$xz_bin/xz.exe" $target_bin -Force
-    Copy-Item "$xz_bin/liblzma.dll" $target_bin -Force
+    if (!(Test-Path $target_bin)) { New-Item -ItemType Directory -Path $target_bin }
+    Copy-Item "$xz_bin/*" $target_bin -Force -Recurse
+
+    # Test that xz.exe works in the build environment
+    try {
+        & "$target_bin/xz.exe" --version
+        Write-BuildLine "xz.exe test passed in build"
+    } catch {
+        throw "xz.exe failed to run in build environment: $_"
+    }
 
     try {
         Push-Location $pkg_prefix
