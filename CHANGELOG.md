@@ -1,17 +1,98 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.46 -->
-## [v19.1.46](https://github.com/chef/chef/tree/v19.1.46) (2025-06-26)
+<!-- latest_release 19.1.126 -->
+## [v19.1.126](https://github.com/chef/chef/tree/v19.1.126) (2025-12-05)
 
 #### Merged Pull Requests
-- Add bundler to hab package&#39;s vendor/gems [#15070](https://github.com/chef/chef/pull/15070) ([neha-p6](https://github.com/neha-p6))
+- remove activesupport from chef main [#15492](https://github.com/chef/chef/pull/15492) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- remove activesupport from chef main [#15492](https://github.com/chef/chef/pull/15492) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.126 -->
+- CHEF-20594: Add comprehensive documentation for REST resource [#15461](https://github.com/chef/chef/pull/15461) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.125 -->
+- [File#load_current_resource] assign #path call to variable [#15484](https://github.com/chef/chef/pull/15484) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.124 -->
+- CHEF-28003 dependency updates for chef 19 [#15471](https://github.com/chef/chef/pull/15471) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.123 -->
+- Only run docker TKE and -fips builds if a non-forked repo [#15487](https://github.com/chef/chef/pull/15487) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 19.1.122 -->
+- CHEF-3854: Replace YAML.load_stream with regex for security [#15477](https://github.com/chef/chef/pull/15477) ([nikhil2611](https://github.com/nikhil2611)) <!-- 19.1.121 -->
+- [Target Mode] Correcting missing guids [#15467](https://github.com/chef/chef/pull/15467) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.120 -->
+- Removed conflicting openssl installation [#15482](https://github.com/chef/chef/pull/15482) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.119 -->
+- Enforce description content for PRs [#15456](https://github.com/chef/chef/pull/15456) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.118 -->
+- rename pipeline to match regex [#15455](https://github.com/chef/chef/pull/15455) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.117 -->
+- bundle update --conservative rack to 3.2.4 [#15441](https://github.com/chef/chef/pull/15441) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.116 -->
+- Catch accidental changes to the chef gems in Gemfile.lock [#15446](https://github.com/chef/chef/pull/15446) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.115 -->
+- point berkshelf back to main [#15259](https://github.com/chef/chef/pull/15259) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.114 -->
+- Only log a debug for net-http monkey patch [#15447](https://github.com/chef/chef/pull/15447) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.113 -->
+- Update copilot instructions with AI compliance workflow [#15443](https://github.com/chef/chef/pull/15443) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.112 -->
+- Updating the OpenSSL gem to 3.3.2 [#15448](https://github.com/chef/chef/pull/15448) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.111 -->
+- Downgrade bundler due to platform loss and conservative update chef [#15445](https://github.com/chef/chef/pull/15445) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.110 -->
+- Adding code to include notice.txt in builds [#15444](https://github.com/chef/chef/pull/15444) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.109 -->
+- Creating a new runner  [#15440](https://github.com/chef/chef/pull/15440) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.108 -->
+- update chef-powershell gem to 18.6.6 [#15426](https://github.com/chef/chef/pull/15426) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.107 -->
+- updating blackduck to not die on false positives [#15430](https://github.com/chef/chef/pull/15430) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.106 -->
+- Update inspec to non-beta and bump train-core [#15432](https://github.com/chef/chef/pull/15432) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.105 -->
+- Also pass danger if Gemfile.lock updated because of gemspecs [#15428](https://github.com/chef/chef/pull/15428) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.104 -->
+- Bump to latest ohai [#15406](https://github.com/chef/chef/pull/15406) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.103 -->
+- Updating chef-zero, and rest-client [#15419](https://github.com/chef/chef/pull/15419) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.102 -->
+- Updating chef versioning in Blackduck [#15425](https://github.com/chef/chef/pull/15425) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.101 -->
+- updating blackduck [#15423](https://github.com/chef/chef/pull/15423) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.100 -->
+- Test recipes using test-kitchen-enterprise on docker containers [#15401](https://github.com/chef/chef/pull/15401) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.99 -->
+- Rebased and squashed Ruby 3.4 Upgrade (from 15148) with unrelated/separable changes extracted to main [#15379](https://github.com/chef/chef/pull/15379) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->
+- Disable vm_lnx_x86_64 due to GA instability [#15391](https://github.com/chef/chef/pull/15391) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.98 -->
+- Updating the blackduck project name so it doesn&#39;t conflict with other… [#15385](https://github.com/chef/chef/pull/15385) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.97 -->
+- Fix JSON::GeneratorError if a large binary file fed to ResourceReporter [#15332](https://github.com/chef/chef/pull/15332) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.96 -->
+- Adding an sbom [#15383](https://github.com/chef/chef/pull/15383) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.95 -->
+- Update scheduling invocation paths for hab paths. [#15381](https://github.com/chef/chef/pull/15381) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.94 -->
+- Remove omnibus folder [#15380](https://github.com/chef/chef/pull/15380) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.93 -->
+- Fix handling of frozen_string_literals [#15363](https://github.com/chef/chef/pull/15363) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.92 -->
+- Pin to beta version of InSpec 7 against main [#15374](https://github.com/chef/chef/pull/15374) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.91 -->
+- fix: use correct Ruby in gem_package resource dependency resolution [#15349](https://github.com/chef/chef/pull/15349) ([fretb](https://github.com/fretb)) <!-- 19.1.90 -->
+- remove uuidtools from lockfile [#15351](https://github.com/chef/chef/pull/15351) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.89 -->
+- Remove macos-15-intel due to corefoundation gem issue [#15352](https://github.com/chef/chef/pull/15352) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.88 -->
+- [Chef::Property][get_value,set_value,value_is_set?] Only call instance_variable_name once [#15328](https://github.com/chef/chef/pull/15328) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.87 -->
+- ohai.config is an empty hash the first time a reload is called [#15295](https://github.com/chef/chef/pull/15295) ([dschlenk](https://github.com/dschlenk)) <!-- 19.1.86 -->
+- [recipe#from_hash] Add include_recipes key [#15299](https://github.com/chef/chef/pull/15299) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.85 -->
+- fix errors on habitat/verify [#15303](https://github.com/chef/chef/pull/15303) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.84 -->
+- fix chef-workstation install [#15314](https://github.com/chef/chef/pull/15314) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.83 -->
+- update GHA testing [#15302](https://github.com/chef/chef/pull/15302) ([Stromweld](https://github.com/Stromweld)) <!-- 19.1.82 -->
+- fixing the broken habitat test pipeline [#15301](https://github.com/chef/chef/pull/15301) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.81 -->
+- Updating self-hosted fips [#15296](https://github.com/chef/chef/pull/15296) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.80 -->
+- Delete osx_profile resource. [#15184](https://github.com/chef/chef/pull/15184) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.79 -->
+- Dedupe membership when modifying group. [#14987](https://github.com/chef/chef/pull/14987) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.1.78 -->
+- [CHEF-23856] knife code scan fixes [#15195](https://github.com/chef/chef/pull/15195) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.77 -->
+- [ChefRepositoryFileSystemCookbookEntry] Add `any_children?` method [#15244](https://github.com/chef/chef/pull/15244) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.76 -->
+- set up ai assisted development workflow [#15257](https://github.com/chef/chef/pull/15257) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.75 -->
+- fix: apt_repository gpg key import for newer APT versions [#15220](https://github.com/chef/chef/pull/15220) ([fretb](https://github.com/fretb)) <!-- 19.1.74 -->
+- don&#39;t ship specs with the gem [#15231](https://github.com/chef/chef/pull/15231) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.73 -->
+- forward port of dll removal change from #15190 [#15215](https://github.com/chef/chef/pull/15215) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.72 -->
+- [CHEF-18482] change adhoc pipeline to be hab based builds [#15120](https://github.com/chef/chef/pull/15120) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.71 -->
+- fix: multiple apt_repos with same key url should be signed-by [#15218](https://github.com/chef/chef/pull/15218) ([fretb](https://github.com/fretb)) <!-- 19.1.70 -->
+- fix(apt_repository): Use import instead of dearmor to import key from url [#15209](https://github.com/chef/chef/pull/15209) ([tmccombs](https://github.com/tmccombs)) <!-- 19.1.69 -->
+- fix(apt_repository): Don&#39;t set signed-by if there is no key to use [#15207](https://github.com/chef/chef/pull/15207) ([tmccombs](https://github.com/tmccombs)) <!-- 19.1.68 -->
+- [CHEF-21785] Updated the knife ec backup to preserve the frozen cookbook status [#15204](https://github.com/chef/chef/pull/15204) ([ashiqueps](https://github.com/ashiqueps)) <!-- 19.1.67 -->
+- Fix ffi-libarchive load error from habitat package on windows [#15149](https://github.com/chef/chef/pull/15149) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.66 -->
+- Add test for #14369 [#14882](https://github.com/chef/chef/pull/14882) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.65 -->
+- Add &#39;check-all-checks&#39; check [#14925](https://github.com/chef/chef/pull/14925) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.64 -->
+- Bump openssl gem to 3.3.0 to appease the kitchen-tests for now [#15193](https://github.com/chef/chef/pull/15193) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.63 -->
+- Bump berkshelf from 8.0.9 to 8.0.22 in /omnibus [#15123](https://github.com/chef/chef/pull/15123) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.62 -->
+- Updating chef-zero [#15167](https://github.com/chef/chef/pull/15167) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.61 -->
+- Fix docker build pipeline which needs HAB_AUTH_TOKEN [#15157](https://github.com/chef/chef/pull/15157) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.60 -->
+- temporarily pin berkshelf in verify [#15158](https://github.com/chef/chef/pull/15158) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.59 -->
+- Bump omnibus from `5c0122b` to `c885825` in /omnibus [#15137](https://github.com/chef/chef/pull/15137) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.1.58 -->
+- Updating uri to get past a CVE [#15138](https://github.com/chef/chef/pull/15138) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.57 -->
+- Add support for secrets in credentials file [#15064](https://github.com/chef/chef/pull/15064) ([thheinen](https://github.com/thheinen)) <!-- 19.1.56 -->
+- Use notifies and sleeps to stabilize kitchen-tests for snap [#15118](https://github.com/chef/chef/pull/15118) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.55 -->
+- Ohai custom plug-ins Chef-11588 [#15090](https://github.com/chef/chef/pull/15090) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.54 -->
+- Support JSON recipes [#15094](https://github.com/chef/chef/pull/15094) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.53 -->
+- Apply new version and stability fix for hab package to main [#15113](https://github.com/chef/chef/pull/15113) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.52 -->
+- Use chef/ vs. removed skylerto/ package in hab for tests [#15098](https://github.com/chef/chef/pull/15098) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.51 -->
+- adds environment properties to apt_package, dnf_package and yum_package [#14868](https://github.com/chef/chef/pull/14868) ([kristofvandam](https://github.com/kristofvandam)) <!-- 19.1.50 -->
+- [ChefRepositoryFileSystemCookbookEntry#children] Use in-place mutations [#15061](https://github.com/chef/chef/pull/15061) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.49 -->
+- don&#39;t promote when habitat/test finishes [#15082](https://github.com/chef/chef/pull/15082) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.48 -->
+- Disable no-op omnibus nightlies that run [#15078](https://github.com/chef/chef/pull/15078) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.47 -->
 - Add bundler to hab package&#39;s vendor/gems [#15070](https://github.com/chef/chef/pull/15070) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.46 -->
 - Just a random attempt for rocky linux 9 [#15071](https://github.com/chef/chef/pull/15071) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.45 -->
 - remove chef foundation from verify pipeline [#15022](https://github.com/chef/chef/pull/15022) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.44 -->

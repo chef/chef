@@ -11,10 +11,7 @@ steps:
 
 - label: ":linux: Validate Linux"
   commands:
-    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
-    - echo "--- Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
-    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
-    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
+    - sudo -E .expeditor/scripts/habitat-test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
   expeditor:
     executor:
       linux:
@@ -30,16 +27,3 @@ steps:
         privileged: true
         single-use: true
         shell: ["powershell", "-Command"]
-
-# Wait for the package testing to succeed before promoting whatever was tested.
-- wait
-
-- label: ":habicat: Promoting packages to the current channel."
-  commands:
-    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX current x86_64-linux
-    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS current x86_64-windows
-  expeditor:
-    executor:
-      docker:
-        environment:
-          - HAB_AUTH_TOKEN

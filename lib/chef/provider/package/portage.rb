@@ -28,7 +28,7 @@ class Chef
         provides :package, platform: "gentoo"
         provides :portage_package
 
-        PACKAGE_NAME_PATTERN = %r{^(?:([^/]+)/)?([^/]+)$}.freeze
+        PACKAGE_NAME_PATTERN = %r{^(?:([^/]+)/)?([^/]+)$}
 
         def load_current_resource
           @current_resource = Chef::Resource::PortagePackage.new(new_resource.name)
@@ -57,6 +57,15 @@ class Chef
           end
 
           current_resource
+        end
+
+        def define_resource_requirements
+          super
+
+          requirements.assert(:all_actions) do |a|
+            a.assertion { !new_resource.environment }
+            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
+          end
         end
 
         def raise_error_for_query(msg)

@@ -5,7 +5,7 @@ describe "openssl checks" do
     if macos?
       "1.1.1m"
     else
-      "3.0.9"
+      "3.5.0"
     end
   end
 

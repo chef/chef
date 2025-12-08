@@ -18,13 +18,13 @@ Gem::Specification.new do |s|
   s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "train-core", "~> 3.10" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
+  s.add_dependency "train-core", "~> 3.13", ">= 3.13.4" # Updated to be compatible with InSpec 7
   s.add_dependency "train-winrm", ">= 0.2.17"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 19.0"
-  s.add_dependency "ffi", ">= 1.15", "< 1.17.0" # 1.14 versions are broken on i386 windows
+  s.add_dependency "ffi", ">= 1.15", "< 1.18.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", ">= 5.1", "< 8"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   # disabling this until we get get it to compile on RHEL 7
   # s.add_dependency "x25519", ">= 1.0.9" # ed25519 KEX module. 1.0.9+ required to resolve sigill failures
   s.add_dependency "highline", ">= 1.6.9", "< 3" # Used in UI to present a list, no other usage.
+  s.add_dependency "abbrev"
 
   s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
   s.add_dependency "tty-screen", "~> 0.6" # knife list

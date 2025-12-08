@@ -8,6 +8,7 @@ tags
 .chef
 results
 *.swp
+.ruby-version
 
 # Docker
 .dobi
@@ -93,7 +94,6 @@ docs_site
 
 # Rendered Templates
 ext/win32-eventlog/chef-log.man
-distro/powershell/chef/chef.psm1
 
 # tool logs
 mkmf.log

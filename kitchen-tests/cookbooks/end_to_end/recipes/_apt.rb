@@ -25,16 +25,24 @@ end
 
 apt_repository "test" do
   uri "http://ftp.be.debian.org/debian/"
-  distribution "bookworm"
+  distribution "trixie"
   components %w{main contrib non-free}
   signed_by true
-  key "https://ftp-master.debian.org/keys/archive-key-12.asc"
+  key "https://ftp-master.debian.org/keys/archive-key-13.asc"
 end
 
 apt_repository "test" do
   uri "http://ftp.be.debian.org/debian/"
-  distribution "bookworm"
+  distribution "trixie"
   components %w{main contrib non-free}
   signed_by true
-  key "https://ftp-master.debian.org/keys/archive-key-12.asc"
+  key "https://ftp-master.debian.org/keys/archive-key-13.asc"
+end
+
+apt_repository "test-with-same-key" do
+  uri "http://ftp.be.debian.org/debian/"
+  distribution "trixie-updates"
+  components %w{main contrib non-free}
+  signed_by true
+  key "https://ftp-master.debian.org/keys/archive-key-13.asc"
 end

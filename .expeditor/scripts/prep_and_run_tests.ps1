@@ -30,20 +30,20 @@ if(-not ($installed_version -match ('^2'))){
     }
 }
 
-Write-Output "--- Installing chef/ruby31-plus-devkit/3.1.6 via Habitat"
-hab pkg install chef/ruby31-plus-devkit/3.1.6 --channel LTS-2024 --binlink --force
+Write-Output "--- Installing core/ruby3_4-plus-devkit via Habitat"
+hab pkg install core/ruby3_4-plus-devkit --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
-$ruby_dir = & hab pkg path chef/ruby31-plus-devkit/3.1.6
+$ruby_dir = & hab pkg path core/ruby3_4-plus-devkit
 
 Write-Output "--- Installing OpenSSL via Habitat"
-hab pkg install core/openssl/3.0.9 --channel LTS-2024 --binlink --force
+hab pkg install core/openssl/3.5.0 --channel base-2025 --binlink --force
 if (-not $?) { throw "Could not install OpenSSL via Habitat." }
 
 # Set $openssl_dir to Habitat OpenSSL package installation path
-$openssl_dir = & hab pkg path core/openssl/3.0.9
+$openssl_dir = & hab pkg path core/openssl/3.5.0
 if (-not $openssl_dir) { throw "Could not determine core/openssl installation directory." }
 
-hab pkg install core/cacerts --channel LTS-2024
+hab pkg install core/cacerts --channel base-2025
 $cacerts_dir = & hab pkg path core/cacerts
 if (-not $cacerts_dir) { throw "Could not determine core/cacerts installation directory." }
 # Set the env variables for OpenSSL
@@ -58,7 +58,7 @@ $env:Path = "$openssl_dir\bin;$ruby_dir\bin;" + $env:Path
 
 Write-Output "Configure bundle to build openssl gem with $openssl_dir"
 bundle config build.openssl --with-openssl-dir=$openssl_dir
-gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir\include" --with-openssl-lib="$openssl_dir\lib"
+gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir\include" --with-openssl-lib="$openssl_dir\lib"
 
 Write-Output "OpenSSL directory: $openssl_dir"
 Write-Output "PATH: $env:Path"
@@ -76,6 +76,11 @@ ruby -e "require 'openssl'; puts 'OpenSSL loaded successfully: ' + OpenSSL::OPEN
 
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
+
+# making sure we find the dlls from chef powershell
+$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
+$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
+$env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
 
 switch ($TestType) {
     "Unit"          {[string[]]$RakeTest = 'spec:unit','component_specs'; break}

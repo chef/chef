@@ -10,7 +10,7 @@ ruby_block "wait-for-svc-default-startup" do
   retry_delay 1
 end
 
-habitat_service "skylerto/splunkforwarder"
+habitat_service "chef/splunkforwarder"
 
 habitat_config "splunkforwarder.default" do
   config(

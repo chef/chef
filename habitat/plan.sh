@@ -1,6 +1,6 @@
-export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_BLDR_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
-_chef_client_ruby="core/ruby3_1"
+_chef_client_ruby="core/ruby3_4/3.4.2"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
@@ -84,10 +84,10 @@ do_prepare() {
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
   export CFLAGS="${CPPFLAGS}"
   export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib"
-  export HAB_BLDR_CHANNEL="LTS-2024"
+  export HAB_BLDR_CHANNEL="base-2025"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
-  export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="LTS-2024"
-  export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="LTS-2024"
+  export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"
+  export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 
@@ -134,8 +134,39 @@ do_build() {
 }
 
 do_install() {
+
+  # Copy NOTICE to the package directory
+  if [[ -f "$PLAN_CONTEXT/../NOTICE" ]]; then
+    build_line "Copying NOTICE to package directory"
+    cp "$PLAN_CONTEXT/../NOTICE" "$pkg_prefix/"
+  else
+    build_line "Warning: NOTICE not found at $PLAN_CONTEXT/../NOTICE"
+  fi
+
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
     export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+    # Test if artifactory-internal.ps.chef.co is reachable
+    build_line "Testing connectivity to artifactory-internal.ps.chef.co..."
+    artifactory_url="https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+
+    if wget --spider --timeout=30 --tries=1 --quiet "$artifactory_url" > /dev/null 2>&1; then
+      build_line "Artifactory is reachable, proceeding with chef-official-distribution installation"
+
+      echo "***************** INSTALLING  chef-official-distribution *****************"
+      gem sources --add "$artifactory_url"
+      gem install chef-official-distribution
+      gem sources --remove "$artifactory_url"
+
+      # verify installation
+      echo "***************** VERIFYING  chef-official-distribution *****************"
+      gem list chef-official-distribution
+
+      if [ $? -ne 0 ]; then
+        exit 1
+      fi
+    else
+      build_line "WARNING: Artifactory is not reachable, skipping chef-official-distribution installation"
+    fi
 
     build_line "** fixing binstub shebangs"
     fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby

@@ -71,32 +71,33 @@ class Chef
       end
 
       def load_current_resource
+        new_resource_path = new_resource.path
         # true if there is a symlink and we need to manage what it points at
-        @managing_symlink = file_class.symlink?(new_resource.path) && ( new_resource.manage_symlink_source || new_resource.manage_symlink_source.nil? )
+        @managing_symlink = file_class.symlink?(new_resource_path) && ( new_resource.manage_symlink_source || new_resource.manage_symlink_source.nil? )
 
         # true if there is a non-file thing in the way that we need to unlink first
         @needs_unlinking =
-          if ::TargetIO::File.exist?(new_resource.path)
+          if ::TargetIO::File.exist?(new_resource_path)
             if managing_symlink?
-              !symlink_to_real_file?(new_resource.path)
+              !symlink_to_real_file?(new_resource_path)
             else
-              !real_file?(new_resource.path)
+              !real_file?(new_resource_path)
             end
           else
             false
           end
 
         # true if we are going to be creating a new file
-        @needs_creating = !::TargetIO::File.exist?(new_resource.path) || needs_unlinking?
+        @needs_creating = !::TargetIO::File.exist?(new_resource_path) || needs_unlinking?
 
         # Let children resources override constructing the current_resource
         @current_resource ||= Chef::Resource::File.new(new_resource.name)
-        current_resource.path(new_resource.path)
+        current_resource.path(new_resource_path)
 
         unless needs_creating?
           # we are updating an existing file
           if managing_content?
-            logger.trace("#{new_resource} checksumming file at #{new_resource.path}.")
+            logger.trace("#{new_resource} checksumming file at #{new_resource_path}.")
 
             resource_to_check = current_resource.path
             resource_to_check = ::TargetIO::File.open(current_resource.path) if ChefConfig::Config.target_mode?

@@ -30,7 +30,7 @@ RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/lates
     HAB_DIR=$(find /tmp/hab -type d -name "hab-*") && \
     $HAB_DIR/hab pkg install --binlink --force --channel "stable" "core/hab" && \
     rm -rf /tmp/* && \
-    hab pkg install --binlink --force --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
+    hab pkg install --binlink --force --auth "${HAB_AUTH_TOKEN}" --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
     rm -rf /hab/cache
 
 VOLUME [ "/hab" ]

@@ -21,10 +21,11 @@ rubygems:
 
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
-schedules:
-  - name: nightly_build_main
-    description: "Run a nightly build in the Buildkite pipeline"
-    cronline: "0 6 * * *"
+# For the moment, nightly builds do nothing useful because omnibus builds are disabled
+#schedules:
+#  - name: nightly_build_main
+#    description: "Run a nightly build in the Buildkite pipeline"
+#    cronline: "0 6 * * *"
 
 pipelines:
   - verify:
@@ -53,35 +54,18 @@ pipelines:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
   - habitat/build
-  - habitat/test:
+  - habitat/verify:
       public: true
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
-  # - omnibus/release:
-  #     env:
-  #       - IGNORE_CACHE: true # caching causes constant build failures
-  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  - omnibus/adhoc:
-      definition: .expeditor/release.omnibus.yml
-      env:
-        - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
-  # the adhoc-canary pipeline is used to test new omnibus workers
-  - omnibus/adhoc-canary:
-      canary: true
-      definition: .expeditor/adhoc-canary.omnibus.yml
-      env:
-        - ADHOC: true
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
-  - gem_push_artifactory:
+  - gem_validate/release:
       description: Builds and uploads the gems to artifactory
-      definition: .expeditor/gem_push_artifactory.pipeline.yml
+      definition: .expeditor/gem_release.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -158,8 +142,8 @@ subscriptions:
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
       # when all of the hab package publish to the unstable channel, test and promote them
-      - trigger_pipeline:habitat/test
-      - trigger_pipeline:gem_push_artifactory
+      - trigger_pipeline:habitat/verify
+      - trigger_pipeline:gem_validate/release
       - trigger_pipeline:docker/build
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
@@ -296,6 +280,7 @@ subscriptions:
   - workload: ruby_gem_published:train-winrm-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
-    actions:
-      - trigger_pipeline:validate/adhoc
+# now that omnibus is not part of the build, we're working to redefine what the nightly should be
+#  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
+#    actions:
+#      - trigger_pipeline:validate/adhoc

@@ -5,7 +5,7 @@ set -euo pipefail
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
-export HAB_BLDR_CHANNEL="LTS-2024"
+export HAB_BLDR_CHANNEL="base-2025"
 
 project_root="$(git rev-parse --show-toplevel)"
 pkg_ident="$1"
@@ -47,6 +47,7 @@ echo "--- :mag_right: Testing ${pkg_ident} functionality"
 rspec_path=$(dirname ${results[1]})
 export PATH="${rspec_path}":$PATH
 export HAB_TEST="true"
+
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/integration

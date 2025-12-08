@@ -69,7 +69,7 @@ class Chef
     # return updated user
     def get_updated_user(original_user)
       if config[:input]
-        edited_user = JSON.parse(IO.read(config[:input]))
+        edited_user = JSON.parse(File.read(config[:input]))
       elsif config[:filename]
         file = config[:filename]
         unless File.exist?(file) ? File.writable?(file) : File.writable?(File.dirname(file))
@@ -83,7 +83,7 @@ class Chef
             f.close
             raise "Please set EDITOR environment variable. See https://docs.chef.io/workstation/knife_setup/#setting-your-text-editor for details." unless system("#{config[:editor]} #{f.path}")
 
-            edited_user = JSON.parse(IO.read(f.path))
+            edited_user = JSON.parse(File.read(f.path))
           end
         end
       else

@@ -57,7 +57,7 @@ class Chef::Knife::Exec < Chef::Knife
     elsif !scripts.empty?
       scripts.each do |script|
         file = find_script(script)
-        context.instance_eval(IO.read(file), file, 0)
+        context.instance_eval(File.read(file), file, 0)
       end
     else
       puts "An interactive shell is opened"

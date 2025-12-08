@@ -129,6 +129,10 @@ class Chef
       #     actually different (which will take time to determine).
       #   - +dry_run+ - if +true+, action will not actually be taken;
       #     things will be printed out instead.
+      #   - +skip_frozen_cookbook_status+ - if +true+ (default), status.json files will
+      #     NOT be created for cookbook directories. If +false+, status.json files
+      #     containing frozen cookbook information will be created.
+      #     Used primarily by knife-ec-backup.
       #
       # ==== Examples
       #
@@ -312,6 +316,7 @@ class Chef
                     new_dest_parent.create_child_from(src_entry)
                     ui.output "Created #{dest_path}" if ui
                   end
+                  create_cookbook_status_file(src_entry, dest_entry, options, ui)
                   return
                 end
 
@@ -331,6 +336,7 @@ class Chef
                       error ||= child_error
                     end
                   end
+                  create_cookbook_status_file(src_entry, new_dest_dir, options, ui)
                 else
                   if options[:dry_run]
                     ui.output "Would create #{dest_path}" if ui
@@ -355,6 +361,7 @@ class Chef
                     ui.output "Updated #{dest_path}" if ui
                   end
                 end
+                create_cookbook_status_file(src_entry, dest_entry, options, ui)
                 return
               end
 
@@ -368,6 +375,7 @@ class Chef
                       error ||= child_error
                     end
                   end
+                  create_cookbook_status_file(src_entry, dest_entry, options, ui)
                 else
                   # If they are different types.
                   ui.error("File #{src_path} is a directory while file #{dest_path} is a regular file\n") if ui
@@ -439,6 +447,16 @@ class Chef
           parent
         end
 
+        def create_cookbook_status_file(src_entry, dest_entry, options, ui = nil)
+          # Skip status.json creation by default, unless explicitly disabled
+          skip_creation = options.key?(:skip_frozen_cookbook_status) ? options[:skip_frozen_cookbook_status] : true
+          return if skip_creation || !src_entry.is_a?(Chef::ChefFS::FileSystem::ChefServer::CookbookDir)
+
+          status_file = dest_entry.child("status.json")
+          frozen_status = src_entry.cookbook_frozen? || false
+          status_file.write({ "frozen": frozen_status }.to_json)
+          ui.output "Created status.json with frozen: #{frozen_status} for #{src_entry.name}" if ui
+        end
       end
     end
   end

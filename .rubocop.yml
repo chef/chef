@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.7 # this cannot be bumped until we upgrade RuboCop
+  TargetRubyVersion: 3.1 # this cannot be bumped until we upgrade RuboCop
   Exclude:
     - "spec/data/**/*"
     - "knife/spec/data/**/*"

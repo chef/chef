@@ -1,7 +1,7 @@
-$env:HAB_BLDR_CHANNEL = "LTS-2024"
+$env:HAB_BLDR_CHANNEL = "base-2025"
 $pkg_name="chef-infra-client"
 
-$env:HAB_BLDR_CHANNEL="LTS-2024"
+$env:HAB_BLDR_CHANNEL="base-2025"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
@@ -16,10 +16,11 @@ $pkg_bin_dirs=@(
 $pkg_deps=@(
   "core/cacerts"
   "core/openssl"
+  "core/zlib"
   "core/libarchive"
-  "chef/ruby31-plus-devkit"
+  "core/ruby3_4-plus-devkit"
   "chef/chef-powershell-shim"
-  "core/visual-cpp-redist-2015"
+  "core/visual-cpp-redist-2022"
 )
 
 function Invoke-Begin {
@@ -45,7 +46,13 @@ function Invoke-SetupEnvironment {
     Set-RuntimeEnv LC_CTYPE "en_US.UTF-8"
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
-    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2015)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
+
+    # Ensure Ruby 3.4 gem paths are properly set up
+    $ruby_version = "3.4.0"
+    Push-RuntimeEnv -IsPath GEM_PATH "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
 }
 
 function Invoke-Download() {
@@ -115,6 +122,11 @@ function Invoke-Prepare {
     write-output " ** Start Invoke-Prepare Function"
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
+    # Ensure Ruby 3.4 can find its gems
+    $ruby_version = "3.4.0"
+    $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+    $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
         Write-BuildLine " ** Where is my gem at?"
@@ -143,10 +155,16 @@ function Invoke-Build {
         write-output "*** invoke-build"
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
+        # Ensure gem environment is set up correctly for appbundler
+        $ruby_version = "3.4.0"
+        $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+        $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+        $env:GEM_HOME = "$pkg_prefix/vendor"
+
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        gem install openssl:3.2.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
@@ -159,7 +177,7 @@ function Invoke-Build {
                 # The rest client doesn't have an 'Install' task so it bombs out when we call Rake Install for it
                 # Happily, its Rakefile ultimately calls 'gem build' to build itself with. We're doing that here.
                 if ($git_gem -match "rest-client"){
-                    $gemspec_path = $git_gem.ToString() + "\rest-client.windows.gemspec"
+                    $gemspec_path = $git_gem.ToString() + "\rest-client.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
@@ -173,13 +191,32 @@ function Invoke-Build {
             }
         }
         Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        $install_attempt = 0
-        do {
-            Start-Sleep -Seconds 5
-            $install_attempt++
-            Write-BuildLine "Install attempt $install_attempt"
-            bundle exec rake install:local --trace=stdout
-        } while ((-not $?) -and ($install_attempt -lt 5))
+        foreach($path_gem in @("chef-utils", "chef-config", "chef", "chef-bin")) {
+            Write-BuildLine " -- installing $path_gem gem"
+
+            if ($path_gem -ne "chef") {
+                $path_gem_path = "${HAB_CACHE_SRC_PATH}/${pkg_dirname}/$path_gem"
+                Push-Location $path_gem_path
+            }
+
+            try {
+                bundle exec rake build --trace=stdout
+                if (-not $?) { throw "unable to build $path_gem gem" }
+
+                $built_gem = Get-ChildItem "pkg/$path_gem-*.gem" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                if ($built_gem) {
+                    Write-BuildLine "Installing $path_gem gem from $($built_gem.Name)"
+                    gem install --local $built_gem.FullName
+                    if (-not $?) { throw "unable to install built $path_gem gem from $($built_gem.FullName)" }
+                } else {
+                    throw "unable to locate built $path_gem gem"
+                }
+            } finally {
+                if ($path_gem -ne "chef") {
+                    Pop-Location
+                }
+            }
+        }
 
     } finally {
         Pop-Location
@@ -188,9 +225,45 @@ function Invoke-Build {
 
 function Invoke-Install {
     write-output "*** invoke-install"
+
+    # Copy NOTICE to the package directory
+    $NoticeFile = "$PLAN_CONTEXT\..\..\NOTICE"
+
+    if (Test-Path $NoticeFile) {
+        Write-BuildLine "** Copying NOTICE to package directory"
+        Copy-Item -Path $NoticeFile -Destination $pkg_prefix -Force
+    } else {
+        Write-BuildLine "** Warning: NOTICE not found at $NoticeFile"
+    }
+
     try {
         Push-Location $pkg_prefix
         $env:BUNDLE_GEMFILE="${HAB_CACHE_SRC_PATH}/${pkg_dirname}/Gemfile"
+
+        # Ensure gem environment is set up correctly for appbundler
+        $ruby_version = "3.4.0"
+        $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+        $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
+        $env:GEM_HOME = "$pkg_prefix/vendor"
+
+        # Test artifactory access and install chef-official-distribution if accessible
+        Write-BuildLine "******* Testing access to artifactory*****"
+        $ArtifactoryUrl = "https://artifactory-internal.ps.chef.co/artifactory/omnibus-gems-local/"
+        try {
+            $null = Invoke-WebRequest -Uri $ArtifactoryUrl -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+            Write-BuildLine "******* Artifactory is accessible, installing chef-official-distribution gem*****"
+            gem sources --add $ArtifactoryUrl
+            gem install chef-official-distribution
+            gem sources --remove $ArtifactoryUrl
+
+            # Verify chef-official-distribution installation
+            Write-BuildLine "******* Verifying chef-official-distribution installation******"
+            gem list chef-official-distribution
+            If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        } catch {
+            Write-BuildLine "******* Artifactory is not accessible, skipping chef-official-distribution installation*****"
+            Write-BuildLine "******* Error: $($_.Exception.Message)*****"
+        }
 
         foreach($gem in ("chef-bin", "chef", "inspec-core-bin", "ohai")) {
             Write-BuildLine "** generating binstubs for $gem with precise version pins"
