@@ -106,6 +106,7 @@ jobs:
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
 
+      # User Defined Flags
       # udf1: 'default' # user defined flag 1
       # udf2: 'default' # user defined flag 2
       # udf3: 'default' # user defined flag 3
