@@ -71,7 +71,7 @@ describe Chef::Resource::ChefClientHabCaCert do
       end
 
       it "raises an error" do
-        expect { provider.ca_cert_path }.to raise_error(RuntimeError, /Unable to find 'core\/cacerts'/)
+        expect { provider.ca_cert_path }.to raise_error(RuntimeError, %r{/Unable to find 'core\/cacerts'/})
       end
     end
   end

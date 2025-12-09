@@ -14,8 +14,10 @@
 # limitations under the License.
 #
 
-require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require_relative "../resource"
+
+class CertsNotFoundError < StandardError; end
 
 class Chef
   class Resource
@@ -67,7 +69,7 @@ class Chef
         return if cert_installed? new_resource.certificate
 
         converge_by("Add new CA bundle #{new_resource.cert_name} to #{ca_cert_path}") do
-          open(ca_cert_path, "a") do |f|
+          File.open(ca_cert_path, "a") do |f|
             f.puts "\nCert Bundle - #{new_resource.cert_name}"
             f.puts "==========================="
             f.puts new_resource.certificate
@@ -98,23 +100,23 @@ class Chef
           # find the current running version of chef to get THAT versions cacerts package.
           current_chef_path = Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path
           # Extract version from path: /hab/pkgs/chef/chef-infra-client/VERSION/...
-          path_parts = current_chef_path.split('/')
-          chef_version = path_parts[5]  # VERSION is the 6th element (0-indexed)
+          path_parts = current_chef_path.split("/")
+          chef_version = path_parts[5] # VERSION is the 6th element (0-indexed)
           package_ident = "chef/chef-infra-client/#{chef_version}"
           ca_pkg = shell_out("hab pkg dependencies #{package_ident}")
           if ca_pkg.error?
-            raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
+            raise CertsNotFoundError, "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
           end
 
           hab_cacerts_pkg = ca_pkg.stdout.scan(%r{core/cacerts.*$}).flatten.first
 
           if hab_cacerts_pkg.nil?
-            raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
+            raise CertsNotFoundError, "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
           end
 
           ca_path = shell_out("/hab/bin/hab pkg path #{hab_cacerts_pkg}")
           if ca_path.error?
-            raise "Unable to find path for the 'core/cacerts' habitat package."
+            raise CertsNotFoundError, "Unable to find path for the 'core/cacerts' habitat package."
           end
 
           path = ca_path.stdout.lines.first
