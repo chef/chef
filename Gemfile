@@ -69,7 +69,7 @@ group(:development, :test) do
   gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
-  gem "bigdecimal", "~> 3.1.0"
+  gem "bigdecimal", "~> 2.0.0"
 end
 
 group(:chefstyle) do
