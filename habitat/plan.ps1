@@ -50,6 +50,12 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
+
+    # WINDOWS-SPECIFIC FIX: Explicitly add xz to PATH for subprocess calls (archive_file resource)
+    # This works around a Habitat Windows limitation where dependency bin directories are not automatically
+    # added to PATH like they are on Linux. Without this, libarchive's subprocess call to "xz -d -qq" fails.
+    Set-RuntimeEnv XZ_BIN_PATH "$(Get-HabPackagePath xz)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
     $ruby_version = "3.4.0"
@@ -235,20 +241,6 @@ function Invoke-Install {
         Copy-Item -Path $NoticeFile -Destination $pkg_prefix -Force
     } else {
         Write-BuildLine "** Warning: NOTICE not found at $NoticeFile"
-    }
-
-    # Copy ALL files from core/xz/bin to our bin directory (includes xz.exe, liblzma.dll, and any other executables/DLLs)
-    $xz_bin = "$(Get-HabPackagePath xz)/bin"
-    $target_bin = "$pkg_prefix/bin"
-    if (!(Test-Path $target_bin)) { New-Item -ItemType Directory -Path $target_bin }
-    Copy-Item "$xz_bin/*" $target_bin -Force -Recurse
-
-    # Test that xz.exe works in the build environment
-    try {
-        & "$target_bin/xz.exe" --version
-        Write-BuildLine "xz.exe test passed in build"
-    } catch {
-        throw "xz.exe failed to run in build environment: $_"
     }
 
     try {

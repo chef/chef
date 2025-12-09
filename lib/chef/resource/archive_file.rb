@@ -65,6 +65,12 @@ begin
 
     FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
     Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+    # WINDOWS-SPECIFIC FIX FOR XZ: Add xz to PATH for libarchive subprocess calls
+    # This ensures libarchive can find and run "xz -d -qq" when extracting .tar.xz files.
+    if ENV["XZ_BIN_PATH"]
+      ENV["PATH"] = "#{ENV["XZ_BIN_PATH"]};#{ENV["PATH"]}"
+      Chef::Log.debug("Added Habitat xz path to PATH for archive_file resource: #{ENV["XZ_BIN_PATH"]}")
+    end
   end
 
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
