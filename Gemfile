@@ -67,11 +67,12 @@ end
 group(:development, :test) do
   gem "rake"
   gem "rspec"
-  # Lock webmock to version that works with Ruby 2.7 and bigdecimal 2.0.0
-  # webmock 3.18.x and earlier don't require bigdecimal 3.x
-  gem "webmock", "~> 3.18.0"
-  # Lock crack to avoid pulling in bigdecimal 3.x
-  gem "crack", "~> 0.4.5"
+  # Use older webmock that doesn't require bigdecimal 3.x
+  gem "webmock", "~> 3.14.0"  # Change from 3.18.0 to 3.14.0
+  # Lock crack to older version
+  gem "crack", "< 0.4.6"  # Explicitly exclude 0.4.6+
+  # Explicitly use the default bigdecimal from Ruby 2.7.5
+  gem "bigdecimal", "2.0.0"
   gem "fauxhai-ng" # for chef-utils gem
 end
 
