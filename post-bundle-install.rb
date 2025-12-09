@@ -103,3 +103,32 @@ if RUBY_PLATFORM =~ /mswin|mingw|windows/
   require "openssl"
   puts "::SSL_ENV_CACERT_PATCH is #{defined?(::SSL_ENV_CACERT_PATCH) ? "defined" : "not defined"}"
 end
+
+default_gem_list = {
+  resolv: "0.2.1",
+  uri: "0.12.4",
+}
+
+default_gem_list.each do |gem_name, version|
+  # Handle resolv gem conflict with default gem
+  puts "Checking #{gem_name} gem installation..."
+  gem_info = `gem info #{gem_name}`
+
+  if gem_info.include?("default):") && gem_info.match?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
+    # Extract the default gem path
+    default_path = gem_info.match(/default\): (.+)$/)[1]
+
+    if default_path
+      gemspec_path = File.join(default_path.strip, "specifications", "default", "#{gem_name}-#{version}.gemspec")
+
+      if File.exist?(gemspec_path)
+        puts "Removing default #{gem_name} gemspec: #{gemspec_path}"
+        File.delete(gemspec_path)
+      end
+    end
+
+    puts "Installing #{gem_name} gem..."
+    system("gem install #{gem_name}") or raise "gem install #{gem_name} failed" # NOSONAR
+    puts "#{gem_name} gem installed successfully"
+  end
+end

@@ -1062,6 +1062,7 @@
     "norestart",
     "NORESTART",
     "nori",
+    "NOSONAR",
     "nospace",
     "nospinner",
     "notapplicable",
