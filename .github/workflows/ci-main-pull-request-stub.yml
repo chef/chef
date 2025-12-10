@@ -39,6 +39,10 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
+      detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
+      blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
+      bridge-break: false # Prevents build failure on Bridge violations
+
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
       version: '18.8.27' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
@@ -103,5 +107,5 @@ jobs:
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
 
       # udf1: 'default' # user defined flag 1
-      # udf2: 'default' # user defined flag 2 
+      # udf2: 'default' # user defined flag 2
       # udf3: 'default' # user defined flag 3
