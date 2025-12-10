@@ -48,7 +48,7 @@ jobs:
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
-      blackducksca-scan-full: true
+      blackducksca_scan_full: true
 
       # complexity-checks
       perform-complexity-checks: true
