@@ -42,8 +42,8 @@ jobs:
       detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
       blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
       bridge-break: false # Prevents build failure on Bridge violations
-      blackducksca_scan_full: true
-
+      detect-args: '--detect.excluded.detector.types=PIP --detect.blackduck.scan.mode=INTELLIGENT'  # Set scan mode to intelligent instead of rapid
+      
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
       version: '18.8.27' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
