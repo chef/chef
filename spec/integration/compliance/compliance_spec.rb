@@ -46,15 +46,17 @@ describe "chef-client with compliance phase" do
       file "attributes.json", <<~FILE
         {
           "audit": {
+            "reporter": ["json-file"],
             "compliance_phase": true,
             "json_file": {
               "location": "#{report_file}"
             },
-            "profiles": {
-              "my-profile": {
+            "profiles": [
+              {
+                "name": "my-profile",
                 "path": "#{path_to("profiles/my-profile")}"
               }
-            }
+            ]
           }
         }
       FILE
