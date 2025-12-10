@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.67 -->
-## [v18.8.67](https://github.com/chef/chef/tree/v18.8.67) (2025-12-09)
+<!-- latest_release 18.8.68 -->
+## [v18.8.68](https://github.com/chef/chef/tree/v18.8.68) (2025-12-10)
 
 #### Merged Pull Requests
-- Backport - Added -a or --all-users to show all user details in user list command [#15494](https://github.com/chef/chef/pull/15494) ([sanghinitin](https://github.com/sanghinitin))
+- Pull in latest chef to knife lockfile to release knife gem [#15497](https://github.com/chef/chef/pull/15497) ([nikhil2611](https://github.com/nikhil2611))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.54 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in latest chef to knife lockfile to release knife gem [#15497](https://github.com/chef/chef/pull/15497) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.8.68 -->
 - Backport - Added -a or --all-users to show all user details in user list command [#15494](https://github.com/chef/chef/pull/15494) ([sanghinitin](https://github.com/sanghinitin)) <!-- 18.8.67 -->
 - Pull in latest chef to knife lockfile [#15490](https://github.com/chef/chef/pull/15490) ([neha-p6](https://github.com/neha-p6)) <!-- 18.8.66 -->
 - [Chef18][File#load_current_resource] assign #path call to variable [#15485](https://github.com/chef/chef/pull/15485) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.8.65 -->
