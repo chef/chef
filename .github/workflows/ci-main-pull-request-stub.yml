@@ -29,7 +29,7 @@ jobs:
           echo "CI main pull request stub version $STUB_VERSION"
 
   call-ci-chef-18-pr-check-pipeline:
-    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@chef-19
     secrets: inherit
     permissions: 
       id-token: write
@@ -39,11 +39,16 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
+      detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
+      blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
+      bridge-break: false # Prevents build failure on Bridge violations
+      
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
       version: '18.8.27' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
+      blackducksca_scan_full: true
 
       # complexity-checks
       perform-complexity-checks: true
@@ -58,11 +63,11 @@ jobs:
       
       # BlackDuck SAST (Polaris) and SCA scans (requires a build or download to do SAST)
       # requires these secrets: POLARIS_SERVER_URL, POLARIS_ACCESS_TOKEN
-      perform-blackduck-polaris: true
+      perform-blackduck-polaris: false
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-18'
-      polaris-blackduck-executable: 'path/to/blackduck/binary'
-      polaris-executable-detect-path: 'path/to/detect'
+      # polaris-blackduck-executable: 'path/to/blackduck/binary'
+      # polaris-executable-detect-path: 'path/to/detect'
  
       # perform application build and unit testing, will use custom repository properties when implemented for chef-primary-application, chef-build-profile, and chef-build-language
       build: false
@@ -80,7 +85,7 @@ jobs:
       # report to central developer dashboard
       report-to-atlassian-dashboard: false
       # quality-product-name: 'Chef-client'   # product name for quality reporting, like Chef360, Courier, Inspec
-      quality-product-name: ${{ github.event.repository.name }}   # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
+      quality-product-name: chef-18  # like 'Chef-360' - the product name for quality reporting, like Chef360, Courier, Inspec
       # quality-sonar-app-name: 'YourSonarAppName'
       # quality-testing-type: 'Integration' like Unit, Integration, e2e, api, Performance, Security
       # quality-service-name: 'YourServiceOrRepoName'
@@ -92,16 +97,16 @@ jobs:
       publish-packages: false     # Publish packages (e.g., container from Dockerfile to ECR, go-releaser binary to releases page, omnibus to artifactory, gems, choco, homebrew, other app stores)
 
       # generate and export Software Bill of Materials (SBOM) in various formats
-      generate-sbom: false
+      generate-sbom: true
       export-github-sbom: true      # SPDX JSON artifact on job instance  
       perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
-      blackduck-project-name: ${{ github.event.repository.name }} # BlackDuck project name, typically the repository name
+      blackduck-project-name: chef # BlackDuck project name, typically the repository name
       generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
         
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
 
       # udf1: 'default' # user defined flag 1
-      # udf2: 'default' # user defined flag 2 
+      # udf2: 'default' # user defined flag 2
       # udf3: 'default' # user defined flag 3
