@@ -52,10 +52,7 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
 
-    # WINDOWS-SPECIFIC FIX: Explicitly add xz to PATH for subprocess calls (archive_file resource)
-    # This works around a Habitat Windows limitation where dependency bin directories are not automatically
-    # added to PATH like they are on Linux. Without this, libarchive's subprocess call to "xz -d -qq" fails.
-    Set-RuntimeEnv XZ_BIN_PATH "$(Get-HabPackagePath xz)/bin"
+    Push-RuntimeEnv -IsPath PATH "$(Get-HabPackagePath xz)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
     $ruby_version = "3.4.0"
