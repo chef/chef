@@ -248,6 +248,8 @@ class Chef
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
             Dir.chdir(dest) do
+              puts "Well, hello again. Here is my path."
+              puts ENV["PATH"]
               Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
                 archive.each_entry do |e|
                   archive.extract(e, flags.to_i)
