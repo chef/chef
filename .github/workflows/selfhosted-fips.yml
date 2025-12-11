@@ -15,7 +15,7 @@ jobs:
   linux:
     strategy:
       fail-fast: false
-    runs-on: [self-hosted, ubuntu-2204-pro-fips-tester]
+    runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
     steps:
       - name: 'If Ruby 3.1 not installed, then install it'
         id: ruby
