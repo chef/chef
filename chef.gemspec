@@ -50,6 +50,8 @@ Gem::Specification.new do |s|
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
+  s.add_dependency "ed25519", "~> 1.2" # ssh-ed25519 support for target mode
+  s.add_dependency "bcrypt_pbkdf", "~> 1.0" # ssh-ed25519 support for target mode
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
   s.add_dependency "diff-lcs", "~> 1.6.0" # Used in lib/chef/util/diff
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
