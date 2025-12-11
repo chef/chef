@@ -40,7 +40,58 @@ describe Chef::Resource::ChefClientHabCaCert do
     expect { resource.action :remove }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  describe "#cert_path" do
+  describe "#ca_cert_path" do
+    let(:mock_chef_path) { "/hab/pkgs/chef/chef-infra-client/19.0.0/20250101010101/bin/chef-client" }
+    let(:mock_hab_path) { "/hab/bin/hab" }
+    let(:dependencies_output) { "core/cacerts/2023.1.0\nother/dependency" }
+    let(:pkg_path_output) { "/hab/pkgs/core/cacerts/2023.1.0\n" }
+
+    before do
+      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_binary_path).and_return(mock_chef_path)
+      allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0").and_return(double(stdout: dependencies_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
+    end
+
+    it "returns the correct ca cert path" do
+      expect(provider.ca_cert_path).to eq("/hab/pkgs/core/cacerts/2023.1.0/ssl/certs/ssl/cacert.pem")
+    end
+
+    context "when shell_out fails for dependencies" do
+      before do
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0").and_return(double(error?: true))
+      end
+
+      it "raises an error" do
+        expect { provider.ca_cert_path }.to raise_error(RuntimeError, /Failed to determine CA Certs/)
+      end
+    end
+
+    context "when core/cacerts is not found in dependencies" do
+      before do
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0").and_return(double(stdout: "other/dependency\n", error?: false))
+      end
+
+      it "raises an error" do
+        expect { provider.ca_cert_path }.to raise_error(RuntimeError, /Unable to find 'core\/cacerts'/)
+      end
+    end
+
+    context "when running on Windows" do
+      let(:mock_chef_path_windows) { "C:\\hab\\pkgs\\chef\\chef-infra-client\\19.0.0\\20250101010101\\bin\\chef-client.exe" }
+      let(:mock_hab_path_windows) { "C:\\ProgramData\\Habitat\\hab.exe" }
+
+      before do
+        allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_binary_path).and_return(mock_chef_path_windows)
+        allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path_windows)
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg dependencies chef/chef-infra-client/19.0.0").and_return(double(stdout: dependencies_output, error?: false))
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
+      end
+
+      it "extracts version correctly from Windows paths" do
+        expect(provider.ca_cert_path).to eq("/hab/pkgs/core/cacerts/2023.1.0/ssl/certs/ssl/cacert.pem")
+      end
+    end
   end
 
 end

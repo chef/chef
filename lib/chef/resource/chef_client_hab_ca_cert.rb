@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
@@ -92,10 +91,25 @@ class Chef
         # @api private
         #
         def hab_cacerts_pkg_path
-          return @hab_cacerts_pkg_path unless @hab_ca_certs_pkg_path.nil?
+          return @hab_cacerts_pkg_path if @hab_cacerts_pkg_path
 
-          # The hab based installer packages `hab` binary inside `/hab/bin` - which can be expected to be available.
-          ca_pkg = shell_out("hab pkg dependencies chef/chef-infra-client")
+          # Find the current running version of chef to get THAT version's cacerts package.
+          current_chef_path = Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path
+          current_hab_path = Chef::ResourceHelpers::PathHelpers.hab_executable_binary_path
+
+          # Extract version from path: /hab/pkgs/chef/chef-infra-client/VERSION/RELEASE/bin/chef-client
+          # or: C:\hab\pkgs\chef\chef-infra-client\VERSION\RELEASE\bin\chef-client.exe
+          # Use regex to work cross-platform
+          match = current_chef_path.match(%r{[\/\\]hab[\/\\]pkgs[\/\\]chef[\/\\]chef-infra-client[\/\\]([^\/\\]+)[\/\\]})
+
+          unless match
+            raise "Unable to extract Chef version from path: #{current_chef_path}"
+          end
+
+          chef_version = match[1]
+          package_ident = "chef/chef-infra-client/#{chef_version}"
+
+          ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}")
           if ca_pkg.error?
             raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
           end
@@ -106,12 +120,12 @@ class Chef
             raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
           end
 
-          ca_path = shell_out("/hab/bin/hab pkg path #{hab_cacerts_pkg}")
+          ca_path = shell_out("#{current_hab_path} pkg path #{hab_cacerts_pkg}")
           if ca_path.error?
             raise "Unable to find path for the 'core/cacerts' habitat package."
           end
 
-          path = ca_path.stdout.readline
+          path = ca_path.stdout.lines.first
 
           @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
         end # hab_cacerts_pkg_path
