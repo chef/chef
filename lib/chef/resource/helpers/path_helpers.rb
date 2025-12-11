@@ -27,12 +27,12 @@ class Chef
       def hab_executable_binary_path
         # Only proceed if running from a Habitat package
         current_path = File.realpath($PROGRAM_NAME)
-        unless current_path.match?(/[\/\\]hab[\/\\]pkgs[\/\\]/)
+        unless current_path.match?(%r{/[\/\\]hab[\/\\]pkgs[\/\\]/})
           return ""
         end
 
         # Find hab in PATH
-        hab_bin = find_executable('hab')
+        hab_bin = find_executable("hab")
         return hab_bin if hab_bin
 
         ""
@@ -43,10 +43,10 @@ class Chef
       def find_executable(name)
         # On Windows, also check with .exe if not provided
         names_to_check = [name]
-        names_to_check << "#{name}.exe" if ChefUtils.windows? && !name.end_with?('.exe')
+        names_to_check << "#{name}.exe" if ChefUtils.windows? && !name.end_with?(".exe")
 
         # Search through PATH
-        ENV['PATH'].split(File::PATH_SEPARATOR).each do |dir|
+        ENV["PATH"].split(File::PATH_SEPARATOR).each do |dir|
           names_to_check.each do |exe_name|
             exe_path = File.join(dir, exe_name)
             return exe_path if File.exist?(exe_path)
