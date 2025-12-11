@@ -52,8 +52,6 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
 
-    Push-RuntimeEnv -IsPath PATH "$(Get-HabPackagePath xz)/bin"
-
     # Ensure Ruby 3.4 gem paths are properly set up
     $ruby_version = "3.4.0"
     Push-RuntimeEnv -IsPath GEM_PATH "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
