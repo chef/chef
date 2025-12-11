@@ -66,7 +66,7 @@ class Chef
         return if cert_installed? new_resource.certificate
 
         converge_by("Add new CA bundle #{new_resource.cert_name} to #{ca_cert_path}") do
-          open(ca_cert_path, "a") do |f|
+          File.open(ca_cert_path, "a") do |f|
             f.puts "\nCert Bundle - #{new_resource.cert_name}"
             f.puts "==========================="
             f.puts new_resource.certificate
