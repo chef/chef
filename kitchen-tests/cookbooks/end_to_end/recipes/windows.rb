@@ -191,6 +191,8 @@ include_recipe "::_chef_client_trusted_certificate"
 
 include_recipe "git"
 
+puts "Hello. Here is my path."
+puts ENV["PATH"]
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
   cookbook_file File.join(Chef::Config[:file_cache_path], archive) do
