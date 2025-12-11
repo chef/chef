@@ -51,12 +51,11 @@ describe "chef-client with compliance phase" do
             "json_file": {
               "location": "#{report_file}"
             },
-            "profiles": [
-              {
-                "name": "my-profile",
+            "profiles": {
+              "my-profile": {
                 "path": "#{path_to("profiles/my-profile")}"
               }
-            ]
+            }
           }
         }
       FILE
