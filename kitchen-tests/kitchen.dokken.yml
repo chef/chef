@@ -106,6 +106,15 @@ platforms:
         - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
+  - name: almalinux-10
+    driver:
+      image: dokken/almalinux-10
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN mkdir /etc/sysconfig/network-scripts
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
   - name: rockylinux-8
     driver:
       image: dokken/rockylinux-8
@@ -118,6 +127,15 @@ platforms:
   - name: rockylinux-9
     driver:
       image: dokken/rockylinux-9
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN mkdir -p /etc/sysconfig/network-scripts
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+  - name: rockylinux-10
+    driver:
+      image: dokken/rockylinux-10
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
@@ -148,6 +166,16 @@ platforms:
   - name: oraclelinux-9
     driver:
       image: dokken/oraclelinux-9
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN dnf -y install e2fsprogs
+        - RUN dnf -y reinstall systemd
+        - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+  - name: oraclelinux-10
+    driver:
+      image: dokken/oraclelinux-10
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
