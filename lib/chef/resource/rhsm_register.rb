@@ -176,8 +176,8 @@ class Chef
         # @return [Boolean] is the node registered with RHSM. Return true ONLY if the status is "Current"
         #
         def registered_with_rhsm?
-	  @rhsm_status_stdout ||= shell_out("subscription-manager status").stdout
-	  @rhsm_status_stdout.include?("Overall Status: Current")
+          @rhsm_status_stdout ||= shell_out("subscription-manager status").stdout
+          @rhsm_status_stdout.include?("Overall Status: Current")
         end
 
         #
