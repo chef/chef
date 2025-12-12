@@ -189,7 +189,7 @@ end
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
-include_recipe "git"
+# include_recipe "git"
 
 puts "Hello. Here is my path."
 puts ENV["PATH"]
