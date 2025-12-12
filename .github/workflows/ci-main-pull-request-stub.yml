@@ -44,7 +44,7 @@ jobs:
       bridge-break: false # Prevents build failure on Bridge violations
       
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '18.8.70' # ${{ github.event.repository.version }}
+      version: '18.9.0' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
