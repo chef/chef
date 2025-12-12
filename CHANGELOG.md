@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.8.71 -->
-## [v18.8.71](https://github.com/chef/chef/tree/v18.8.71) (2025-12-12)
+<!-- latest_release 18.8.72 -->
+## [v18.8.72](https://github.com/chef/chef/tree/v18.8.72) (2025-12-12)
 
 #### Merged Pull Requests
-- Updating version and removing extraneous calls for a scan [#15505](https://github.com/chef/chef/pull/15505) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-18] updating runners in workflow for self hosted fips [#15507](https://github.com/chef/chef/pull/15507) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.54 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] updating runners in workflow for self hosted fips [#15507](https://github.com/chef/chef/pull/15507) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.72 -->
 - Updating version and removing extraneous calls for a scan [#15505](https://github.com/chef/chef/pull/15505) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.71 -->
 - updating blackduck with the help of chef-19, take 3 [#15502](https://github.com/chef/chef/pull/15502) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.70 -->
 - Revert &quot;Pull in latest chef to knife lockfile to release knife gem&quot; [#15498](https://github.com/chef/chef/pull/15498) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.8.69 -->
