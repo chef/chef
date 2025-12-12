@@ -67,6 +67,15 @@ begin
     Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
   end
 
+  # Ensure that the xz binary path is included in the PATH environment variable for ffi-libarchive to handle .xz files
+  stdout, stderr, status = Open3.capture3("hab pkg path core/xz")
+  if status.success?
+    xz_bin = File.join(stdout.strip.tr("\\", "/"), "bin")
+    unless ENV["PATH"].include?(xz_bin)
+      ENV["PATH"] = "#{xz_bin};#{ENV["PATH"]}"
+    end
+  end
+
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
   require "ffi-libarchive" unless defined?(Archive::Reader)
 rescue LoadError => e
