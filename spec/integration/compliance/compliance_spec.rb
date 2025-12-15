@@ -63,9 +63,14 @@ describe "chef-client with compliance phase" do
 
     it "should complete with success" do
       result = shell_out!("#{chef_client} --local-mode --json-attributes #{path_to("attributes.json")}", cwd: chef_dir)
-      result.error!
+      p result
+      p result.error!
 
-      inspec_report = JSON.parse(File.read(report_file))
+      report=File.read(report_file)
+      puts report
+      inspec_report = JSON.parse(report)
+      p inspec_report
+      p inspec_report["profiles"]
       expect(inspec_report["profiles"].length).to eq(1)
 
       profile = inspec_report["profiles"].first
