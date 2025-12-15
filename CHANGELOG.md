@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.128 -->
-## [v19.1.128](https://github.com/chef/chef/tree/v19.1.128) (2025-12-11)
+<!-- latest_release 19.1.129 -->
+## [v19.1.129](https://github.com/chef/chef/tree/v19.1.129) (2025-12-15)
 
 #### Merged Pull Requests
-- Updating Chef version [#15506](https://github.com/chef/chef/pull/15506) ([johnmccrae](https://github.com/johnmccrae))
+- fix target mode run with ed25519 keys [#15499](https://github.com/chef/chef/pull/15499) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix target mode run with ed25519 keys [#15499](https://github.com/chef/chef/pull/15499) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.129 -->
 - Updating Chef version [#15506](https://github.com/chef/chef/pull/15506) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.128 -->
 - Added -a or --all-users to show all user details in user list command [#15493](https://github.com/chef/chef/pull/15493) ([sanghinitin](https://github.com/sanghinitin)) <!-- 19.1.127 -->
 - remove activesupport from chef main [#15492](https://github.com/chef/chef/pull/15492) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.126 -->
