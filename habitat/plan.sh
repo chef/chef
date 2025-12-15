@@ -128,6 +128,8 @@ do_build() {
     build_line "Installing gems from git repos properly ..."
     ruby ./post-bundle-install.rb
 
+    ruby ./scripts/cleanup_lint_roller.rb
+
     build_line "Installing this project's gems ..."
     bundle exec rake install:local
   )
