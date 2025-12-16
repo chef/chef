@@ -1,0 +1,36 @@
+name: Fork PR Handler
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  create-shadow-pr:
+    if: github.event.pull_request.head.repo.fork == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create shadow branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUM=${{ github.event.pull_request.number }}
+          FORK_REF=${{ github.event.pull_request.head.sha }}
+          BRANCH_NAME="shadow/pr-${PR_NUM}"
+
+          # Fetch fork branch
+          git fetch origin pull/${PR_NUM}/head:${BRANCH_NAME}
+
+          # Push to target repo
+          git push -f origin ${BRANCH_NAME}
+
+          # Create PR if doesn't exist
+          gh pr list --head ${BRANCH_NAME} || \
+            gh pr create \
+              --head ${BRANCH_NAME} \
+              --base main \
+              --title "[Shadow] ${{ github.event.pull_request.title }}" \
+              --body "Shadow PR for fork PR #${PR_NUM}"
+
