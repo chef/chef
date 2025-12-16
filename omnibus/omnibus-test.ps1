@@ -1,24 +1,35 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
-# install choco as necessary
+# install choco 1.4.0 specifically
 function installChoco {
-
-  if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
-    Write-Output "Chocolatey is not installed, proceeding to install"
+  # Uninstall existing Chocolatey if present
+  if (Test-Path "$($env:ProgramData)\chocolatey\choco.exe") {
+    Write-Output "Chocolatey is installed, proceeding to uninstall"
     try {
-      write-output "installing in 3..2..1.."
-      Set-ExecutionPolicy Bypass -Scope Process -Force
-      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-      iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+      $chocoUninstallScript = "$($env:ProgramData)\chocolatey\bin\choco.exe"
+      if (Test-Path $chocoUninstallScript) {
+        & $chocoUninstallScript uninstall chocolatey -y
+      }
+      Remove-Item -Recurse -Force "$($env:ProgramData)\chocolatey" -ErrorAction SilentlyContinue
+      Write-Output "Chocolatey uninstalled successfully"
     }
-
     catch {
       Write-Error $_.Exception.Message
     }
   }
-  else {
-    Write-Output "Chocolatey is already installed"
+
+  # Install Chocolatey 1.4.0
+  Write-Output "Installing Chocolatey 1.4.0"
+  try {
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    $env:chocolateyVersion = '1.4.0'
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    Write-Output "Chocolatey 1.4.0 installed successfully"
+  }
+  catch {
+    Write-Error $_.Exception.Message
   }
 }
 

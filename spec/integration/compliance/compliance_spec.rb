@@ -62,10 +62,21 @@ describe "chef-client with compliance phase" do
 
     it "should complete with success" do
       result = shell_out!("#{chef_client} --local-mode --json-attributes #{path_to("attributes.json")}", cwd: chef_dir)
-      result.error!
 
-      inspec_report = JSON.parse(File.read(report_file))
-      expect(inspec_report["profiles"].length).to eq(1)
+      report=File.read(report_file)
+      inspec_report = JSON.parse(report)
+      begin
+        expect(inspec_report["profiles"].length).to eq(1)
+      rescue RSpec::Expectations::ExpectationNotMetError
+        puts 'inspec_report["profiles"] length was not 1, listing out the contents for debugging'
+        puts "report ==>"
+        p report
+        puts "inspec_report ==>"
+        p inspec_report
+        puts 'inspec_report["profiles"]'
+        p inspec_report["profiles"]
+        raise
+      end
 
       profile = inspec_report["profiles"].first
       expect(profile["name"]).to eq("my-profile")

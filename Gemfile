@@ -21,7 +21,7 @@ gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?
 # gems below are added here for Chef-16 compat. Their modern versions don't support Ruby 2.6
 gem "semverse", "= 3.0.0"
 # bumped to known working version per CHEF-28290
-gem "train-core", "= 3.8.1"
+gem "train-core", "= 3.12.13"
 
 if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
@@ -67,7 +67,12 @@ end
 group(:development, :test) do
   gem "rake"
   gem "rspec"
-  gem "webmock"
+  # Use older webmock that doesn't require bigdecimal 3.x
+  gem "webmock", "~> 3.14.0"  # Change from 3.18.0 to 3.14.0
+  # Lock crack to older version
+  gem "crack", "< 0.4.6"  # Explicitly exclude 0.4.6+
+  # Explicitly use the default bigdecimal from Ruby 2.7.5
+  gem "bigdecimal", "2.0.0"
   gem "fauxhai-ng" # for chef-utils gem
 end
 
