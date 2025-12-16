@@ -96,6 +96,13 @@ class Chef
         description: "Sets the operating system minor release to use for subscriptions for the system. Products and updates are limited to the specified minor release version. This is used with the `auto_attach` or `activation_key` options.  For example, `release '6.4'` will append `--release=6.4` to the register command.",
         introduced: "17.8"
 
+      property :not_registered_strings,
+        [String, Array],
+        coerce: proc { |x| Array(x) },
+        description: "The string value(s) that when present in the output of the `subscription-manager status` command indicate that the system is not registered.",
+        default: ['Overall Status: Unknown', 'Overall Status: Not registered'], desired_state: false,
+        introduced: "18.9"
+
       action :register, description: "Register the node with RHSM." do
         package "subscription-manager"
 
@@ -176,7 +183,7 @@ class Chef
         # @return [Boolean] is the node registered with RHSM
         #
         def registered_with_rhsm?
-          @registered ||= !shell_out("subscription-manager status").stdout.include?("Overall Status: Unknown")
+          @registered ||= !new_resource.not_registered_strings.any? { |unreg_str| shell_out("subscription-manager status").stdout.include?(unreg_str) }
         end
 
         #
