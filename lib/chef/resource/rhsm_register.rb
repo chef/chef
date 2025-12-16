@@ -183,7 +183,8 @@ class Chef
         # @return [Boolean] is the node registered with RHSM
         #
         def registered_with_rhsm?
-          @registered ||= !new_resource.not_registered_strings.any? { |s| shell_out("subscription-manager status").stdout.include?(s) }
+          out = shell_out("subscription-manager status").stdout
+          @registered ||= !new_resource.not_registered_strings.any? { |s| out.include?(s) }
         end
 
         #
