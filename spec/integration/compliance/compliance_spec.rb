@@ -67,7 +67,7 @@ describe "chef-client with compliance phase" do
       inspec_report = JSON.parse(report)
       begin
         expect(inspec_report["profiles"].length).to eq(1)
-      rescue RSpec::Expectations::ExpectationsNotMetError
+      rescue RSpec::Expectations::ExpectationNotMetError
         puts 'inspec_report["profiles"] length was not 1, listing out the contents for debugging'
         puts "report ==>"
         p report
@@ -75,6 +75,7 @@ describe "chef-client with compliance phase" do
         p inspec_report
         puts 'inspec_report["profiles"]'
         p inspec_report["profiles"]
+        raise
       end
 
       profile = inspec_report["profiles"].first
