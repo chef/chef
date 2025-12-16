@@ -46,7 +46,6 @@ describe "chef-client with compliance phase" do
       file "attributes.json", <<~FILE
         {
           "audit": {
-            "reporter": ["json-file"],
             "compliance_phase": true,
             "json_file": {
               "location": "#{report_file}"
@@ -63,15 +62,20 @@ describe "chef-client with compliance phase" do
 
     it "should complete with success" do
       result = shell_out!("#{chef_client} --local-mode --json-attributes #{path_to("attributes.json")}", cwd: chef_dir)
-      p result
-      p result.error!
 
       report=File.read(report_file)
-      puts report
       inspec_report = JSON.parse(report)
-      p inspec_report
-      p inspec_report["profiles"]
-      expect(inspec_report["profiles"].length).to eq(1)
+      begin
+        expect(inspec_report["profiles"].length).to eq(1)
+      rescue RSpec::Expectations::ExpectationsNotMetError
+        puts 'inspec_report["profiles"] length was not 1, listing out the contents for debugging'
+        puts "report ==>"
+        p report
+        puts "inspec_report ==>"
+        p inspec_report
+        puts 'inspec_report["profiles"]'
+        p inspec_report["profiles"]
+      end
 
       profile = inspec_report["profiles"].first
       expect(profile["name"]).to eq("my-profile")
