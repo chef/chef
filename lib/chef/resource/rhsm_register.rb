@@ -100,7 +100,7 @@ class Chef
         [String, Array],
         coerce: proc { |x| Array(x) },
         description: "The string value(s) that when present in the output of the `subscription-manager status` command indicate that the system is not registered.",
-        default: ['Overall Status: Unknown', 'Overall Status: Not registered'], desired_state: false,
+        default: ["Overall Status: Unknown", "Overall Status: Not registered"], desired_state: false,
         introduced: "18.9"
 
       action :register, description: "Register the node with RHSM." do
@@ -183,7 +183,7 @@ class Chef
         # @return [Boolean] is the node registered with RHSM
         #
         def registered_with_rhsm?
-          @registered ||= !new_resource.not_registered_strings.any? { |unreg_str| shell_out("subscription-manager status").stdout.include?(unreg_str) }
+          @registered ||= !new_resource.not_registered_strings.any? { |s| shell_out("subscription-manager status").stdout.include?(s) }
         end
 
         #
