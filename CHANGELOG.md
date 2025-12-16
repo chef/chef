@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.130 -->
-## [v19.1.130](https://github.com/chef/chef/tree/v19.1.130) (2025-12-16)
+<!-- latest_release 19.1.131 -->
+## [v19.1.131](https://github.com/chef/chef/tree/v19.1.131) (2025-12-16)
 
 #### Merged Pull Requests
-- cleaning up lint_roller after cookstyle installs [#15509](https://github.com/chef/chef/pull/15509) ([johnmccrae](https://github.com/johnmccrae))
+- Bump chef-licensing to 1.3.4 [#15511](https://github.com/chef/chef/pull/15511) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef-licensing to 1.3.4 [#15511](https://github.com/chef/chef/pull/15511) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.131 -->
 - cleaning up lint_roller after cookstyle installs [#15509](https://github.com/chef/chef/pull/15509) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.130 -->
 - fix target mode run with ed25519 keys [#15499](https://github.com/chef/chef/pull/15499) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.129 -->
 - Updating Chef version [#15506](https://github.com/chef/chef/pull/15506) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.128 -->
