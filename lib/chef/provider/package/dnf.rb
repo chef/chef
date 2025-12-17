@@ -1,5 +1,7 @@
 #
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) 2026 Meta Platforms, Inc.
+# Copyright:: Copyright (c) 2026 Phil Dibowitz
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +62,13 @@ class Chef
         #
         def python_helper
           @python_helper ||= PythonHelper.instance
+        end
+
+        def dnf5?
+          @dnf5 ||= begin
+            dnf_version = shell_out!("dnf --version").stdout
+            dnf_version =~ /dnf5/i
+          end
         end
 
         def load_current_resource
@@ -138,14 +147,19 @@ class Chef
         # NB: the dnf_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
         # support to lock / unlock.  The best solution is to write an execute resource which does a not_if `dnf versionlock | grep '^pattern`` kind of approach
         def lock_package(names, versions)
-          dnf("-d0", "-e0", "-y", options, "versionlock", "add", resolved_package_lock_names(names))
+          default_opts = dnf5? ? [] : %w{-d0 -e0}
+          dnf(default_opts, options, "versionlock", "add", resolved_package_lock_names(names))
         end
 
         # NB: the dnf_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
         # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `dnf versionlock | grep '^pattern`` kind of approach
         def unlock_package(names, versions)
-          # dnf versionlock delete on rhel6 needs the glob nonsense in the following command
-          dnf("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "*:#{n}-*" })
+          if dnf5?
+            dnf("-y", options, "versionlock", "delete", resolved_package_lock_names(names))
+          else
+            # dnf versionlock delete on rhel6 needs the glob nonsense in the following command
+            dnf("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "*:#{n}-*" })
+          end
         end
 
         private
@@ -167,8 +181,13 @@ class Chef
           @locked_packages ||=
             begin
               locked = dnf("versionlock", "list")
-              locked.stdout.each_line.map do |line|
-                line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
+              if dnf5?
+                locked.stdout.each_line.select { |x| x.start_with?("Package name:") }
+                  .map { |line| line.split(": ").last.strip }
+              else
+                locked.stdout.each_line.map do |line|
+                  line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
+                end
               end
             end
         end

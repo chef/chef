@@ -191,13 +191,37 @@ platforms:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
         - RUN dnf -y install python3-libdnf python3-dnf
 
+  - name: fedora-41
+    driver:
+      image: dokken/fedora-41
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN dnf -y install python3-libdnf python3-dnf
+
+  - name: fedora-42
+    driver:
+      image: dokken/fedora-42
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN dnf -y install python3-libdnf python3-dnf
+
+  - name: fedora-43
+    driver:
+      image: dokken/fedora-43
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN dnf -y install python3-libdnf5 python3-rpm
+
   - name: fedora-latest
     driver:
       image: dokken/fedora-latest
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-        - RUN dnf -y install python3-libdnf python3-dnf
+        - RUN dnf -y install python3-libdnf5 python3-rpm
 
   - name: ubuntu-18.04
     driver:
