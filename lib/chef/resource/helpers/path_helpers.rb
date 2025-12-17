@@ -1,12 +1,15 @@
+require "chef/mixin/which"
+
 class Chef
   module ResourceHelpers
     # Helpers for path manipulation
     module PathHelpers
       extend self
-      # Returns the path to the Chef Infra Client binary when installed via Habitat.
-      # This method attempts to locate the chef-client binary by checking the path
-      # of the currently executing program. If the current program's filename
-      # matches the Chef client name (e.g., "chef-client"), it returns that path.
+      include Chef::Mixin::Which
+
+      # This method returns the absolute path to the chef-client binary that is currently executing.
+      # In a Habitat environment, you might have multiple versions of chef-client installed,
+      # we want to ensure we get the path to the one currently running.
       #
       # @return [String] The absolute path to the chef-client binary if found,
       #   or an empty string if no valid binary path is detected.
@@ -22,6 +25,11 @@ class Chef
 
         # Return empty string if no valid path is found
         ""
+      end
+
+      def hab_executable_binary_path
+        # Find hab in PATH
+        which("hab") || ""
       end
     end
   end
