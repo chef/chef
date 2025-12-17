@@ -26,7 +26,11 @@ lifecycle:
     - remote: sudo dnf install -y openssl cronie
       includes:
         - fedora-40
-        - fedora-latest
+        - fedora-41
+        - fedora-42
+    - remote: kitchen-tests/kitchen.linux.ci.yml
+      includes:
+        - fedora-43
     - remote: sudo pkg update && sudo pkg install -y git gcc gmake autoconf automake libtool
       includes:
         - freebsd-13

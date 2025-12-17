@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
 #
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# Copyright:: Copyright (c) 2026 Meta Platforms, Inc.
+# Copyright:: Copyright (c) 2026 Phil Dibowitz
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,9 +44,10 @@ class Chef
 
           def dnf_command
             # platform-python is used for system tools on RHEL 8 and is installed under /usr/libexec
+            py_cmd = "try:\n    import libdnf5\nexcept ImportError:\n    import dnf"
             @dnf_command ||= begin
                                executables = where("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec")
-                               cmd = executables.find { |f| shell_out("#{f} -c 'import dnf'").exitstatus == 0 }
+                               cmd = executables.find { |f| shell_out("#{f} -c '#{py_cmd}'").exitstatus == 0 }
                                raise Chef::Exceptions::Package, "cannot find dnf libraries, you may need to use yum_package" unless cmd
 
                                "#{cmd} #{DNF_HELPER}"

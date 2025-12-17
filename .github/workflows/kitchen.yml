@@ -69,7 +69,9 @@ jobs:
           - debian-11
           - debian-12
           - fedora-40
-          # - fedora-latest
+          - fedora-41
+          - fedora-42
+          - fedora-43
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
@@ -122,7 +124,9 @@ jobs:
 #          - debian-11
 #          - debian-12
 #          - fedora-40
-#          # - fedora-latest
+#          - fedora-41
+#          - fedora-42
+#          - fedora-43
 ##          - freebsd-13 runner is broken
 #          - freebsd-14
 #          - opensuse-leap-15
