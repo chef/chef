@@ -276,6 +276,7 @@ jobs:
           - debian-12
           - debian-13
           - fedora-42
+          - fedora-43
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
@@ -355,6 +356,7 @@ jobs:
           - debian-12
           - debian-13
           - fedora-42
+          - fedora-43
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
@@ -422,6 +424,7 @@ jobs:
 #          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
 #          - fedora-41
 #          - fedora-42
+#          - fedora-43
 #          - opensuse-leap-15
 #          - oraclelinux-8
 #          - oraclelinux-9

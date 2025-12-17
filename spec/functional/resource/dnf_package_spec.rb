@@ -19,7 +19,11 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 # test on any fedora-ish platform with dnf
-exclude_test = !(%w{rhel amazon fedora}.include?(OHAI_SYSTEM[:platform_family]) && File.exist?("/usr/bin/dnf"))
+exclude_test = !(
+  %w{rhel amazon fedora}.include?(OHAI_SYSTEM[:platform_family]) &&
+  (File.exist?("/usr/bin/dnf") || File.exist?("/usr/bin/dnf5"))
+)
+
 describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
   include RecipeDSLHelper
   include Chef::Mixin::ShellOut
@@ -45,6 +49,13 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
     expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match(version)
   end
 
+  def dnf5?
+    @dnf5 ||= begin
+      dnf_version = shell_out!("dnf --version").stdout
+      dnf_version =~ /dnf5/i
+    end
+  end
+
   before(:all) do
     shell_out!("dnf -y install dnf-plugins-core")
   end
@@ -57,9 +68,23 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         [chef-dnf-localtesting]
         name=Chef DNF spec testing repo
         baseurl=file://#{CHEF_SPEC_ASSETS}/yumrepo
-        enable=1
+        enabled=1
         gpgcheck=0
       EOF
+    end
+    # make sure any config-manager work we did on previous tests is cleaned up
+    if dnf5?
+      # dnf5 uses config overrides, and if they're not there, it will error
+      # out, so don't check the exit status
+      shell_out("dnf config-manager unsetopt chef-dnf-localtesting.enabled")
+    else
+      # in dnf, it's modifying the repo file in place, so this should not
+      # be needed, but.... why not.
+      shell_out("dnf config-manager --set-enabled chef-dnf-localtesting")
+    end
+    # our test RPMs are not signed, so disable package verification
+    File.open("/etc/rpm/macros.chef-localtesting", "w+") do |f|
+      f.write("%_pkgverify_level none\n")
     end
     # ensure we don't have any stray chef_rpms installed
     shell_out!("rpm -qa --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep chef_rpm | xargs -r rpm -e")
@@ -71,6 +96,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
   after(:all) do
     shell_out!("rpm -qa --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | grep chef_rpm | xargs -r rpm -e")
     FileUtils.rm_f "/etc/yum.repos.d/chef-dnf-localtesting.repo"
+    FileUtils.rm_f "/etc/rpm/macros.chef-localtesting"
   end
 
   let(:default_options) { "--nogpgcheck --disablerepo=* --enablerepo=chef-dnf-localtesting" }
@@ -1002,7 +1028,12 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
       end
 
       it "should work to enable a disabled repo" do
-        shell_out!("dnf config-manager --set-disabled chef-dnf-localtesting")
+        if dnf5?
+          disable_cmd = "setopt chef-dnf-localtesting.enabled=0"
+        else
+          disable_cmd = "--set-disabled chef-dnf-localtesting"
+        end
+        shell_out!("dnf config-manager #{disable_cmd}")
         flush_cache
         expect {
           dnf_package "chef_rpm" do
@@ -1550,7 +1581,21 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
     end
 
     before(:each) do
-      shell_out("dnf versionlock delete 'chef_rpm-*'") # will exit with error when nothing is locked, we don't care
+      if dnf5?
+        # exits successfully even when nothing is locked
+        shell_out!("dnf versionlock delete chef_rpm")
+      else
+        # will exit with error when nothing is locked, we don't care
+        shell_out("dnf versionlock delete 'chef_rpm-*'")
+      end
+    end
+
+    let(:lock_string) do
+      if dnf5?
+        "Package name: chef_rpm\n"
+      else
+        "^chef_rpm-0:"
+      end
     end
 
     it "locks an rpm" do
@@ -1559,7 +1604,8 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         options default_options
         action :lock
       end.should_be_updated
-      expect(shell_out("dnf versionlock list").stdout.chomp).to match("^chef_rpm-0:")
+      expect(shell_out("dnf versionlock list").stdout.chomp).to match(lock_string)
+
       dnf_package "chef_rpm" do
         options default_options
         action :lock
@@ -1573,7 +1619,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         options default_options
         action :lock
       end.should_not_be_updated
-      expect(shell_out("dnf versionlock list").stdout.chomp).to match("^chef_rpm-0:")
+      expect(shell_out("dnf versionlock list").stdout.chomp).to match(lock_string)
     end
 
     it "unlocks an rpm" do
@@ -1583,7 +1629,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         options default_options
         action :unlock
       end.should_be_updated
-      expect(shell_out("dnf versionlock list").stdout.chomp).not_to match("^chef_rpm-0:")
+      expect(shell_out("dnf versionlock list").stdout.chomp).not_to match(lock_string)
       dnf_package "chef_rpm" do
         options default_options
         action :unlock
@@ -1596,7 +1642,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         options default_options
         action :unlock
       end.should_not_be_updated
-      expect(shell_out("dnf versionlock list").stdout.chomp).not_to match("^chef_rpm-0:")
+      expect(shell_out("dnf versionlock list").stdout.chomp).not_to match(lock_string)
     end
 
     it "check that we can lock based on provides" do
@@ -1605,7 +1651,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         options default_options
         action :lock
       end.should_be_updated
-      expect(shell_out("dnf versionlock list").stdout.chomp).to match("^chef_rpm-0:")
+      expect(shell_out("dnf versionlock list").stdout.chomp).to match(lock_string)
       dnf_package "chef_rpm_provides" do
         options default_options
         action :lock
@@ -1619,7 +1665,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         options default_options
         action :unlock
       end.should_be_updated
-      expect(shell_out("dnf versionlock list").stdout.chomp).not_to match("^chef_rpm-0:")
+      expect(shell_out("dnf versionlock list").stdout.chomp).not_to match(lock_string)
       dnf_package "chef_rpm_provides" do
         options default_options
         action :unlock
