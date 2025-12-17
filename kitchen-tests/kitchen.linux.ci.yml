@@ -11,6 +11,9 @@ lifecycle:
       includes:
         - fedora-41
         - fedora-42
+    - remote: sudo yum install -y openssl cronie python3-libdnf5 python3-rpm
+      includes:
+        - fedora-43
     - remote: curl https://omnitruck.chef.io/install.sh | sudo sh -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef container's Chef / Ohai release:"

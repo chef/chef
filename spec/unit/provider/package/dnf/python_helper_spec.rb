@@ -47,6 +47,9 @@ describe Chef::Provider::Package::Dnf::PythonHelper, "#dnf_command" do
 
   let(:success_result) { double("shell_out", exitstatus: 0) }
   let(:failure_result) { double("shell_out", exitstatus: 1) }
+  let(:py_cmd) {
+    "try:\n    import libdnf5\nexcept ImportError:\n    import dnf"
+  }
 
   it "stops shell_out calls after finding the first working python" do
     allow(helper).to receive(:where).and_return(
@@ -54,12 +57,12 @@ describe Chef::Provider::Package::Dnf::PythonHelper, "#dnf_command" do
     )
 
     expect(helper).to receive(:shell_out)
-      .with("/usr/bin/python3 -c 'import dnf'")
+      .with("/usr/bin/python3 -c '#{py_cmd}'")
       .and_return(success_result)
     expect(helper).not_to receive(:shell_out)
-      .with("/usr/bin/python2 -c 'import dnf'")
+      .with("/usr/bin/python2 -c '#{py_cmd}'")
     expect(helper).not_to receive(:shell_out)
-      .with("/usr/bin/python2.7 -c 'import dnf'")
+      .with("/usr/bin/python2.7 -c '#{py_cmd}'")
 
     expect(helper.dnf_command).to eq("/usr/bin/python3 #{dnf_helper_path}")
   end
@@ -70,10 +73,10 @@ describe Chef::Provider::Package::Dnf::PythonHelper, "#dnf_command" do
     )
 
     expect(helper).to receive(:shell_out)
-      .with("/usr/bin/python3 -c 'import dnf'")
+      .with("/usr/bin/python3 -c '#{py_cmd}'")
       .and_return(failure_result)
     expect(helper).to receive(:shell_out)
-      .with("/usr/bin/python2 -c 'import dnf'")
+      .with("/usr/bin/python2 -c '#{py_cmd}'")
       .and_return(success_result)
 
     expect(helper.dnf_command).to eq("/usr/bin/python2 #{dnf_helper_path}")
@@ -85,7 +88,7 @@ describe Chef::Provider::Package::Dnf::PythonHelper, "#dnf_command" do
     )
 
     expect(helper).to receive(:shell_out)
-      .with("/usr/bin/python3 -c 'import dnf'")
+      .with("/usr/bin/python3 -c '#{py_cmd}'")
       .and_return(failure_result)
 
     expect { helper.dnf_command }.to raise_error(
