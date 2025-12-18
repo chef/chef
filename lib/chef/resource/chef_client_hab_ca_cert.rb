@@ -100,8 +100,8 @@ class Chef
 
           # Extract package ident from path: /hab/pkgs/chef/chef-infra-client/VERSION/RELEASE/bin/chef-client
           # or: C:\hab\pkgs\chef\chef-infra-client\VERSION\RELEASE\bin\chef-client.exe
-          # Result should be: chef-infra-client/VERSION/RELEASE
-          package_ident = ::File.join(Pathname.new(current_chef_path).each_filename.to_a[3..5])
+          # Result should be: chef/chef-infra-client/VERSION/RELEASE
+          package_ident = ::File.join(Pathname.new(current_chef_path).each_filename.to_a[2..5])
 
           ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}")
           if ca_pkg.error?
