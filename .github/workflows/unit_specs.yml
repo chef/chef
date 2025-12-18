@@ -20,7 +20,8 @@ jobs:
         clean: true
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.4.2"
+        # ruby-version: "3.4.2"
+        ruby-version: ruby-3.4.2
         bundler-cache: false
     - run: bundle install
     - run: bundle exec rake spec:unit
