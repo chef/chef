@@ -467,9 +467,9 @@ GEM
       date
     timeout (0.4.4)
     tomlrb (1.3.0)
-    train-core (3.13.4)
+    train-core (3.14.1)
       addressable (~> 2.5)
-      ffi (~> 1.16.0)
+      ffi (>= 1.16.0, < 1.18)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 5.0)
