@@ -98,25 +98,10 @@ class Chef
           current_chef_path = Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path
           current_hab_path = Chef::ResourceHelpers::PathHelpers.hab_executable_binary_path
 
-          # Extract full package ident from path: /hab/pkgs/chef/chef-infra-client/VERSION/RELEASE/bin/chef-client
+          # Extract package ident from path: /hab/pkgs/chef/chef-infra-client/VERSION/RELEASE/bin/chef-client
           # or: C:\hab\pkgs\chef\chef-infra-client\VERSION\RELEASE\bin\chef-client.exe
-          # Result should be: chef/chef-infra-client/VERSION/RELEASE
-          normalized_path = current_chef_path.tr("\\", "/").sub(%r{^[A-Za-z]:}, "") # rubocop:disable Style/RegexpLiteral
-          path_parts = Pathname.new(normalized_path).each_filename.to_a
-
-          # Find 'chef-infra-client' in the path and extract org/name/version/release
-          chef_client_index = path_parts.index("chef-infra-client")
-
-          unless chef_client_index && path_parts[chef_client_index + 2]
-            raise "Unable to extract Chef package identifier from path: #{current_chef_path}"
-          end
-
-          org = path_parts[chef_client_index - 1]
-          name = path_parts[chef_client_index]
-          version = path_parts[chef_client_index + 1]
-          release = path_parts[chef_client_index + 2]
-
-          package_ident = "#{org}/#{name}/#{version}/#{release}"
+          # Result should be: chef-infra-client/VERSION/RELEASE
+          package_ident = ::File.join(Pathname.new(current_chef_path).each_filename.to_a[3..5])
 
           ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}")
           if ca_pkg.error?
