@@ -82,7 +82,11 @@ class Chef
         # @return [String]
         #
         def ca_cert_path
-          @ca_cert_path ||= ::File.join(hab_cacerts_pkg_path, "ssl", "cacert.pem")
+          return @ca_cert_path if @ca_cert_path
+
+          @ca_cert_path = ::File.join(hab_cacerts_pkg_path, "ssl", "certs", "cacert.pem")
+          Chef::Log.debug "Determined CA cert path: #{@ca_cert_path}"
+          @ca_cert_path
         end
 
         private
@@ -121,7 +125,9 @@ class Chef
 
           path = ca_path.stdout.lines.first
 
-          @hab_cacerts_pkg_path = ::File.join(path.strip, "ssl", "certs")
+          @hab_cacerts_pkg_path = path.strip
+          Chef::Log.debug "Determined cacerts package path: #{@hab_cacerts_pkg_path}"
+          @hab_cacerts_pkg_path
         end # hab_cacerts_pkg_path
 
         def cert_installed?(certificate)
