@@ -54,7 +54,7 @@ describe Chef::Resource::ChefClientHabCaCert do
     end
 
     it "returns the correct ca cert path" do
-      expect(provider.ca_cert_path).to eq("/hab/pkgs/core/cacerts/2023.1.0/ssl/certs/ssl/cacert.pem")
+      expect(provider.ca_cert_path).to eq("/hab/pkgs/core/cacerts/2023.1.0/ssl/certs/cacert.pem")
     end
 
     context "when shell_out fails for dependencies" do
