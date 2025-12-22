@@ -55,6 +55,7 @@ try {
   }
 } finally {
     Pop-Location
+}
 
 if ($testsFailed) {
   Write-Host "--- :fire: Tests failed"
