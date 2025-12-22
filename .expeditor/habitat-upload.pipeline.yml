@@ -1,0 +1,37 @@
+---
+expeditor:
+  secrets:
+    PIPELINE_HAB_AUTH_TOKEN:
+      path: account/static/habitat/chef-ci
+      field: auth_token # Production Builder
+  defaults:
+    buildkite:
+      timeout_in_minutes: 30
+      env:
+        HAB_ORIGIN: "chef"
+        PIPELINE_HAB_BLDR_URL: "https://bldr.habitat.sh"
+
+steps:
+
+  - label: "[:linux: upload linux/windows harts to bldr:]"
+    command: |
+      set -euo pipefail
+
+      echo "--- installing Habitat"
+      .expeditor/scripts/install-hab.sh x86_64-linux
+
+      echo "--- promoting ${EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX} to current"
+      hab pkg promote "${EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX}" current \
+        --auth "${PIPELINE_HAB_AUTH_TOKEN}" \
+        --url "${PIPELINE_HAB_BLDR_URL}" \
+        --target x86_64-linux
+
+      echo "--- promoting ${EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS} to current"
+      hab pkg promote "${EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS}" current \
+        --auth "${PIPELINE_HAB_AUTH_TOKEN}" \
+        --url "${PIPELINE_HAB_BLDR_URL}" \
+        --target x86_64-windows
+    expeditor:
+      executor:
+        docker:
+          privileged: true

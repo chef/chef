@@ -49,7 +49,3 @@ Write-Host "--- Setting INFRA_HAB_ARTIFACT_WINDOWS metadata for buildkite agent"
 Write-Host "setting INFRA_HAB_ARTIFACT_WINDOWS to $pkg_artifact"
 buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_WINDOWS" $pkg_artifact
 if (-not $?) { throw "Unable to set buildkite metadata" }
-
-Write-Host "--- :habicat: Uploading package to current Hab channel"
-hab pkg upload $pkg_artifact --channel current
-if (-not $?) { throw "Unable to upload package to current" }

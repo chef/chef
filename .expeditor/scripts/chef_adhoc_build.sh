@@ -28,6 +28,3 @@ buildkite-agent artifact upload "$pkg_artifact" || error 'unable to upload packa
 echo "--- Setting INFRA_HAB_ARTIFACT_LINUX metadata for buildkite agent"
 echo "setting INFRA_HAB_ARTIFACT_LINUX to $pkg_artifact"
 buildkite-agent meta-data set "INFRA_HAB_ARTIFACT_LINUX" "$pkg_artifact"
-
-echo "--- :habicat: Uploading package to the current Hab channel"
-hab pkg upload $pkg_artifact --channel current || error 'unable to upload package to current'
