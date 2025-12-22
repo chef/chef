@@ -1,3 +1,5 @@
+# This file is not being used currently as there is no exec driver support for Windows in Test Kitchen Enterprise.
+# It is being kept here for future reference should that change.
 ---
 driver:
   name: exec
