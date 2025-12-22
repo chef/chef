@@ -261,11 +261,9 @@ describe Chef::Resource::Git do
     end
   end
 
-  context "when dealing with a repo with a degenerate tag named 'HEAD'" do
+  context "when dealing with a repo with a degenerate tag named 'HEAD'", not_supported_on_windows: true, git_no_tag_head: true do
     before do
-      unless ChefUtils.windows?
-        shell_out!("git", "tag", "-m \"degenerate tag\"", "HEAD", "ed181b3419b6f489bedab282348162a110d6d3a1", cwd: origin_repo)
-      end
+      shell_out!("git", "tag", "-m \"degenerate tag\"", "HEAD", "ed181b3419b6f489bedab282348162a110d6d3a1", cwd: origin_repo)
     end
 
     it "checks out the (master) HEAD revision and ignores the tag" do

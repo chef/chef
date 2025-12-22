@@ -145,6 +145,7 @@ RSpec.configure do |config|
   # config.filter_run_excluding :fips_mode if windows?
 
   config.filter_run_excluding windows_only: true unless windows?
+  config.filter_run_excluding git_no_tag_head: true if git_version_ge?("2.48.0")
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_windows_11: true if windows_11?
   config.filter_run_excluding not_supported_on_macos: true if macos?
