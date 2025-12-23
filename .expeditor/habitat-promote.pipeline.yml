@@ -13,7 +13,7 @@ expeditor:
 
 steps:
 
-  - label: "[:linux: upload linux/windows harts to bldr:]"
+  - label: "[:linux: promote linux/windows harts to bldr:]"
     command: |
       set -euo pipefail
 
