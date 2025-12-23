@@ -141,9 +141,11 @@ function Invoke-Prepare {
 
         # Configure OpenSSL path for native gem compilation
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        $env:RUBY_DLL_PATH = "$openssl_dir/bin;$(Get-HabPackagePath zlib)/bin;$(Get-HabPackagePath visual-cpp-redist-2022)/bin;$(Get-HabPackagePath libarchive)/bin"
-        $env:PATH = "$openssl_dir/bin;$env:PATH"
+        # CRITICAL: OpenSSL bin must be FIRST in PATH for Windows DLL loading
+        $env:PATH = "$openssl_dir\bin;$env:PATH"
+        $env:RUBY_DLL_PATH = "$openssl_dir\bin;$(Get-HabPackagePath zlib)\bin;$(Get-HabPackagePath visual-cpp-redist-2022)\bin;$(Get-HabPackagePath libarchive)\bin"
         Write-BuildLine "OpenSSL Dir: $openssl_dir"
+        Write-BuildLine "OpenSSL bin in PATH: $openssl_dir\bin"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci
@@ -160,11 +162,36 @@ function Invoke-Prepare {
 
         # Force installation of openssl gem with correct OpenSSL before bundler runs
         Write-BuildLine " ** Pre-installing openssl gem with Habitat OpenSSL 3.5.0"
-        gem install openssl:3.3.0 --no-document -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        # Ensure OpenSSL 3.5.0 DLLs are found by prepending to PATH
+        $originalPath = $env:PATH
+        $env:PATH = "$openssl_dir\bin;$originalPath"
+        $env:RUBY_DLL_PATH = "$openssl_dir\bin;$(Get-HabPackagePath zlib)\bin;$(Get-HabPackagePath visual-cpp-redist-2022)\bin;$(Get-HabPackagePath libarchive)\bin"
+
+        gem install openssl:3.3.0 --no-document -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir\include" --with-openssl-lib="$openssl_dir\lib"
         if (-not $?) { throw "Failed to pre-install openssl gem with Habitat OpenSSL" }
 
         Write-BuildLine " ** Verifying openssl gem links to correct OpenSSL"
-        ruby -ropenssl -e "puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION; puts 'OpenSSL Version: ' + OpenSSL::OPENSSL_VERSION; exit(1) unless OpenSSL::OPENSSL_LIBRARY_VERSION.include?('3.5')"
+        Write-BuildLine " ** PATH (first 200 chars): $($env:PATH.Substring(0, [Math]::Min(200, $env:PATH.Length)))..."
+        Write-BuildLine " ** RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
+
+        # Verify both compile-time and runtime OpenSSL versions match 3.5
+        $verifyScript = @"
+require 'openssl'
+puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION
+puts 'OpenSSL Version: ' + OpenSSL::OPENSSL_VERSION
+lib_version = OpenSSL::OPENSSL_LIBRARY_VERSION
+header_version = OpenSSL::OPENSSL_VERSION
+unless lib_version.include?('3.5')
+  puts "ERROR: Runtime library is #{lib_version} but expected 3.5.x"
+  exit(1)
+end
+unless header_version.include?('3.5')
+  puts "ERROR: Compile-time version is #{header_version} but expected 3.5.x"
+  exit(1)
+end
+puts 'SUCCESS: Both runtime and compile-time versions are 3.5.x'
+"@
+        ruby -e $verifyScript
         if (-not $?) { throw "OpenSSL gem verification failed - not using Habitat OpenSSL 3.5.0" }
     } finally {
         Pop-Location
@@ -186,10 +213,12 @@ function Invoke-Build {
 
         # Ensure OpenSSL and other native libraries are discoverable during gem compilation
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        $env:RUBY_DLL_PATH = "$openssl_dir/bin;$(Get-HabPackagePath zlib)/bin;$(Get-HabPackagePath visual-cpp-redist-2022)/bin;$(Get-HabPackagePath libarchive)/bin"
-        $env:PATH = "$openssl_dir/bin;$env:PATH"
+        # CRITICAL: OpenSSL bin must be FIRST in PATH for Windows DLL loading
+        $env:PATH = "$openssl_dir\bin;$env:PATH"
+        $env:RUBY_DLL_PATH = "$openssl_dir\bin;$(Get-HabPackagePath zlib)\bin;$(Get-HabPackagePath visual-cpp-redist-2022)\bin;$(Get-HabPackagePath libarchive)\bin"
         Write-BuildLine "OpenSSL Dir: $openssl_dir"
         Write-BuildLine "RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
+        Write-BuildLine "PATH (first 300 chars): $($env:PATH.Substring(0, [Math]::Min(300, $env:PATH.Length)))..."
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
