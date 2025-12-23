@@ -153,6 +153,19 @@ function Invoke-Prepare {
         Write-BuildLine " ** Configuring bundler to use Habitat OpenSSL"
         bundle config build.openssl --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
         if (-not $?) { throw "unable to configure bundler OpenSSL path" }
+
+        # Uninstall any existing openssl gem that may have been installed with wrong OpenSSL version
+        Write-BuildLine " ** Uninstalling any existing openssl gem"
+        gem uninstall openssl -x -a -I 2>&1 | Out-Null
+
+        # Force installation of openssl gem with correct OpenSSL before bundler runs
+        Write-BuildLine " ** Pre-installing openssl gem with Habitat OpenSSL 3.5.0"
+        gem install openssl:3.3.0 --no-document -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        if (-not $?) { throw "Failed to pre-install openssl gem with Habitat OpenSSL" }
+
+        Write-BuildLine " ** Verifying openssl gem links to correct OpenSSL"
+        ruby -ropenssl -e "puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION; puts 'OpenSSL Version: ' + OpenSSL::OPENSSL_VERSION; exit(1) unless OpenSSL::OPENSSL_LIBRARY_VERSION.include?('3.5')"
+        if (-not $?) { throw "OpenSSL gem verification failed - not using Habitat OpenSSL 3.5.0" }
     } finally {
         Pop-Location
     }
@@ -177,17 +190,26 @@ function Invoke-Build {
         $env:PATH = "$openssl_dir/bin;$env:PATH"
         Write-BuildLine "OpenSSL Dir: $openssl_dir"
         Write-BuildLine "RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
-        Write-BuildLine " ** Installing openssl gem with Habitat OpenSSL"
-        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
-        if (-not $?) { throw "Failed to install openssl gem with Habitat OpenSSL" }
-
-        Write-BuildLine " ** Verifying openssl gem installation"
-        ruby -ropenssl -e "puts 'OpenSSL Version: ' + OpenSSL::OPENSSL_VERSION"
-        if (-not $?) { Write-Warning "OpenSSL gem verification failed" }
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
+
+        # Verify bundler installed the correct openssl gem (or reinstall if wrong)
+        Write-BuildLine " ** Verifying bundler used correct openssl gem"
+        $opensslCheck = ruby -ropenssl -e "puts OpenSSL::OPENSSL_LIBRARY_VERSION" 2>&1
+        if ($opensslCheck -notmatch "3\.5") {
+            Write-BuildLine " ** WARNING: Bundler installed wrong OpenSSL version ($opensslCheck), forcing reinstall"
+            gem uninstall openssl -x -a -I 2>&1 | Out-Null
+            gem install openssl:3.3.0 --no-document -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+            if (-not $?) { throw "Failed to reinstall openssl gem with Habitat OpenSSL" }
+
+            Write-BuildLine " ** Re-verifying openssl gem"
+            ruby -ropenssl -e "puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION; exit(1) unless OpenSSL::OPENSSL_LIBRARY_VERSION.include?('3.5')"
+            if (-not $?) { throw "OpenSSL gem still using wrong version after reinstall" }
+        } else {
+            Write-BuildLine " ** Verified: OpenSSL gem is using correct version ($opensslCheck)"
+        }
 
         Write-BuildLine " ** Cleaning up lint_roller Gemfile.lock"
         ruby .\scripts\cleanup_lint_roller.rb
