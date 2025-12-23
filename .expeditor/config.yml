@@ -58,9 +58,9 @@ pipelines:
       public: true
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
-  - habitat/upload:
-      description: Uploads habitat packages to the current channel after successful verification
-      definition: .expeditor/habitat-upload.pipeline.yml
+  - habitat/promote:
+      description: Promotes habitat packages to the current channel after successful verification
+      definition: .expeditor/habitat-promote.pipeline.yml
       trigger: default
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
