@@ -175,7 +175,7 @@ function Invoke-Prepare {
         Write-BuildLine " ** RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
 
         # Verify both compile-time and runtime OpenSSL versions match 3.5
-        $verifyScript = @"
+        $verifyScript = @'
 require 'openssl'
 puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION
 puts 'OpenSSL Version: ' + OpenSSL::OPENSSL_VERSION
@@ -190,7 +190,7 @@ unless header_version.include?('3.5')
   exit(1)
 end
 puts 'SUCCESS: Both runtime and compile-time versions are 3.5.x'
-"@
+'@
         ruby -e $verifyScript
         if (-not $?) { throw "OpenSSL gem verification failed - not using Habitat OpenSSL 3.5.0" }
     } finally {
