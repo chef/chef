@@ -55,7 +55,7 @@ jobs:
       run: |
         # Build from repo root, not kitchen-tests
         Write-Host "I am in the following directory before building: $(Get-Location)"
-        cd ..
+        # cd ..
         hab pkg build habitat
         $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
                     Sort-Object LastWriteTime -Descending |
