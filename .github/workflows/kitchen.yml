@@ -40,7 +40,7 @@ jobs:
       run: |
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
         .\install-habitat.ps1
-        $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
+        $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;" + $env:PATH
         echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
         hab license accept
         hab --version
@@ -79,6 +79,7 @@ jobs:
                     Select-Object -First 1
 
         Write-Host "Installing package: $($pkg_path.FullName)"
+
         hab pkg install $pkg_path.FullName --binlink --force
 
         # Verify installation
