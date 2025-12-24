@@ -55,7 +55,7 @@ jobs:
       run: |
         # Build from repo root, not kitchen-tests
         cd ..
-        hab pkg build .
+        hab pkg build habitat
         $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
                     Sort-Object LastWriteTime -Descending |
                     Select-Object -First 1
