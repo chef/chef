@@ -40,7 +40,7 @@ jobs:
       run: |
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
         .\install-habitat.ps1
-        $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;" + $env:PATH
+        $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
         echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
         hab license accept
         hab --version
