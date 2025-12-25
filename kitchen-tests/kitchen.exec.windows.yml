@@ -11,7 +11,7 @@ provisioner:
   product_name: chef
   # Use the binlinked chef-client from habitat package installed in workflow
   install_strategy: skip
-  chef_binary: chef-client
+  chef_binary: chef-client.bat
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
