@@ -32,6 +32,16 @@ lifecycle:
             Write-Error "chef-client not available"
             Exit 1
         }
+  - remote: |
+    # Create a wrapper at <Drive>:\bin\chef-client.bat to satisfy exec script invocation
+    $drive = (Get-Location).Drive.Name
+    $binDir = "$drive`:\bin"
+    New-Item -ItemType Directory -Force -Path $binDir | Out-Null
+    $wrapperPath = Join-Path $binDir 'chef-client.bat'
+    $content = "@echo off`r`n"
+    $content += "chef-client %*`r`n"
+    Set-Content -Path $wrapperPath -Value $content -Encoding ASCII
+    Write-Host "Ensured wrapper: $wrapperPath"
   post_converge:
     - remote: |
         $clientDir = "C:\chef"
