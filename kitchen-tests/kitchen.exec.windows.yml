@@ -11,6 +11,7 @@ provisioner:
   product_name: chef
   # Use the binlinked chef-client from habitat package installed in workflow
   install_strategy: skip
+  chef_binary: chef-client
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
@@ -30,6 +31,51 @@ lifecycle:
         if ($LASTEXITCODE -ne 0) {
             Write-Error "chef-client not available"
             Exit 1
+        }
+  post_converge:
+    # Ensure tests find expected client.rb at C:\chef\client.rb
+    - remote: |
+        $clientDir = "C:\chef"
+        New-Item -ItemType Directory -Force -Path $clientDir | Out-Null
+        $clientRb = @'
+chef_server_url "https://localhost/organizations/test"
+chef_license "accept"
+rubygems_url "https://rubygems.org/"
+require 'aws-sdk'
+'@
+        Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $clientRb -Encoding UTF8
+
+    # Provide openssl.exe at the legacy path expected by tests
+    - remote: |
+        $targetDir = "C:\opscode\chef\embedded\bin"
+        New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
+
+        $candidates = @(
+          "C:\opscode\chef-workstation\embedded\bin\openssl.exe",
+          "D:\opscode\chef-workstation\embedded\bin\openssl.exe"
+        )
+
+        $openssl = $null
+        foreach ($cand in $candidates) {
+          if (Test-Path $cand) { $openssl = $cand; break }
+        }
+
+        if (-not $openssl) {
+          # Fallback: search common install root for workstation's embedded openssl
+          $searchRoot = "C:\opscode"
+          if (Test-Path $searchRoot) {
+            $found = Get-ChildItem -Path $searchRoot -Recurse -Filter openssl.exe -ErrorAction SilentlyContinue |
+                     Where-Object { $_.FullName -match 'embedded\\bin' } |
+                     Select-Object -First 1
+            if ($found) { $openssl = $found.FullName }
+          }
+        }
+
+        if ($openssl) {
+          Copy-Item -Path $openssl -Destination (Join-Path $targetDir 'openssl.exe') -Force
+          Write-Host "Mapped openssl.exe to $targetDir"
+        } else {
+          Write-Warning "OpenSSL executable not found in Chef Workstation installation; tests may fail"
         }
 
 platforms:
