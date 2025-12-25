@@ -36,13 +36,11 @@ lifecycle:
     - remote: |
         $clientDir = "C:\chef"
         New-Item -ItemType Directory -Force -Path $clientDir | Out-Null
-        $clientRb = @"
-chef_server_url "https://localhost/organizations/test"
-chef_license "accept"
-rubygems_url "https://rubygems.org/"
-require 'aws-sdk'
-"@
-        Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $clientRb -Encoding UTF8
+        $content = 'chef_server_url "https://localhost/organizations/test"' + "`n"
+        $content += 'chef_license "accept"' + "`n"
+        $content += 'rubygems_url "https://rubygems.org/"' + "`n"
+        $content += "require 'aws-sdk'"
+        Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
     - remote: |
         $targetDir = "C:\opscode\chef\embedded\bin"
