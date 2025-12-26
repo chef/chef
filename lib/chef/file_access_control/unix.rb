@@ -77,15 +77,15 @@ class Chef
       end
 
       def should_update_owner?
-        if target_uid.nil?
+        if (target = target_uid).nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.trace("Found target_uid == nil, so no owner was specified on resource, not managing owner")
           false
-        elsif current_uid.nil?
+        elsif (current = current_uid).nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.trace("Found current_uid == nil, so we are creating a new file, updating owner")
           true
-        elsif target_uid != current_uid
+        elsif target != current
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.trace("Found target_uid != current_uid, updating owner")
           true
@@ -117,15 +117,16 @@ class Chef
       end
 
       def gid_from_resource(resource)
-        return nil if resource.nil? || resource.group.nil?
+        group = resource&.group
+        return nil if group.nil?
 
-        if resource.group.is_a?(String)
-          diminished_radix_complement( Etc.getgrnam(resource.group).gid )
+        if group.is_a?(String)
+          diminished_radix_complement( Etc.getgrnam(group).gid )
         elsif resource.group.is_a?(Integer)
-          resource.group
+          group
         else
-          Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.group.inspect} to gid, group must be a string or integer"
+          Chef::Log.error("The `group` parameter of the #{@resource} resource is set to an invalid value (#{group.inspect})")
+          raise ArgumentError, "cannot resolve #{group.inspect} to gid, group must be a string or integer"
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
@@ -137,15 +138,15 @@ class Chef
       end
 
       def should_update_group?
-        if target_gid.nil?
+        if (target = target_gid).nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.trace("Found target_gid == nil, so no group was specified on resource, not managing group")
           false
-        elsif current_gid.nil?
+        elsif (current = current_gid).nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.trace("Found current_gid == nil, so we are creating a new file, updating group")
           true
-        elsif target_gid != current_gid
+        elsif target != current
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.trace("Found target_gid != current_gid, updating group")
           true
@@ -169,9 +170,10 @@ class Chef
       end
 
       def mode_from_resource(res)
-        return nil if res.nil? || res.mode.nil?
+        mode = res&.mode
+        return nil if mode.nil?
 
-        (res.mode.respond_to?(:oct) ? res.mode.oct : res.mode.to_i) & 007777
+        (mode.respond_to?(:oct) ? mode.oct : mode.to_i) & 007777
       end
 
       def target_mode
@@ -187,15 +189,15 @@ class Chef
       end
 
       def should_update_mode?
-        if target_mode.nil?
+        if (target = target_mode).nil?
           # the user has not specified a permission on the new resource, so we never manage it with FAC
           Chef::Log.trace("Found target_mode == nil, so no mode was specified on resource, not managing mode")
           false
-        elsif current_mode.nil?
+        elsif (current = current_mode).nil?
           # the user has specified a permission, and we are creating a file, so always enforce permissions
           Chef::Log.trace("Found current_mode == nil, so we are creating a new file, updating mode")
           true
-        elsif target_mode != current_mode
+        elsif target != current
           # the user has specified a permission, and it does not match the file, so fix the permission
           Chef::Log.trace("Found target_mode != current_mode, updating mode")
           true
@@ -266,15 +268,16 @@ class Chef
       end
 
       def uid_from_resource(resource)
-        return nil if resource.nil? || resource.owner.nil?
+        owner = resource&.owner
+        return nil if owner.nil?
 
-        if resource.owner.is_a?(String)
-          diminished_radix_complement( Etc.getpwnam(resource.owner).uid )
-        elsif resource.owner.is_a?(Integer)
-          resource.owner
+        if owner.is_a?(String)
+          diminished_radix_complement( Etc.getpwnam(owner).uid )
+        elsif owner.is_a?(Integer)
+          owner
         else
-          Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{resource.owner.inspect})")
-          raise ArgumentError, "cannot resolve #{resource.owner.inspect} to uid, owner must be a string or integer"
+          Chef::Log.error("The `owner` parameter of the #{@resource} resource is set to an invalid value (#{owner.inspect})")
+          raise ArgumentError, "cannot resolve #{owner.inspect} to uid, owner must be a string or integer"
         end
       rescue ArgumentError
         provider.requirements.assert(:create, :create_if_missing, :touch) do |a|
