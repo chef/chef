@@ -1,17 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.135 -->
-## [v19.1.135](https://github.com/chef/chef/tree/v19.1.135) (2025-12-18)
+<!-- latest_release 19.1.137 -->
+## [v19.1.137](https://github.com/chef/chef/tree/v19.1.137) (2025-12-23)
 
 #### Merged Pull Requests
-- conservative update train-core [#15519](https://github.com/chef/chef/pull/15519) ([rishichawda](https://github.com/rishichawda))
+- [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.137 -->
+- Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.136 -->
+- Disable testing &#39;HEAD&#39; as a tag name [#15522](https://github.com/chef/chef/pull/15522) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.136 -->
 - conservative update train-core [#15519](https://github.com/chef/chef/pull/15519) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.135 -->
 - conservative update ohai [#15518](https://github.com/chef/chef/pull/15518) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.134 -->
 - add property to specify strings used to determine registration status in rhsm_register [#15513](https://github.com/chef/chef/pull/15513) ([dschlenk](https://github.com/dschlenk)) <!-- 19.1.133 -->
