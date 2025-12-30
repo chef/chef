@@ -42,7 +42,7 @@ end
 group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
-  gem "pry", "= 0.13.0"
+  gem "pry", "~> 0.15.2"
   # byebug does not install on freebsd on ruby 3.0
   install_if -> { !RUBY_PLATFORM.match?(/freebsd/i) } do
     gem "pry-byebug"
@@ -66,7 +66,7 @@ group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
   gem "webmock"
-  gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
+  gem "crack", "~> 1.0.1"
   gem "fauxhai-ng" # for chef-utils gem
 end
 

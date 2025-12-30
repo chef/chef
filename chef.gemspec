@@ -50,10 +50,12 @@ Gem::Specification.new do |s|
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
+  s.add_dependency "ed25519", "~> 1.2" # ssh-ed25519 support for target mode
+  s.add_dependency "bcrypt_pbkdf", "~> 1.0" # ssh-ed25519 support for target mode
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
-  s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
+  s.add_dependency "diff-lcs", "~> 1.6.0" # Used in lib/chef/util/diff
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
-  s.add_dependency "chef-zero", "~> 15.0.21"
+  s.add_dependency "chef-zero", "~> 15.1.0"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
 
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, and plist resources
@@ -62,19 +64,16 @@ Gem::Specification.new do |s|
   s.add_dependency "syslog"
   s.add_dependency "csv", "~> 3.3.5" # really needs to come from inspec?
   s.add_dependency "syslog-logger", "~> 1.6"
-  s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
-  s.add_dependency "uri", "~> 1.0.3" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
+  s.add_dependency "unf_ext", "~> 0.0.9.1" # older platforms
+  s.add_dependency "uri", "~> 1.0.4" # CVE-2025-61594 fixed in >= 1.0.4
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
-
-  # this is temporary until activesupport is removed from chef-licensing/chef-zero/oc-chef-pedant and published
-  s.add_dependency "activesupport", "~> 7.2.2.2"
 
   s.add_dependency "proxifier2", "~> 1.1"
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", "~> 0.18.2" # hashi vault official client gem
-  s.add_dependency "chef-licensing", ">= 0.7.5"
+  s.add_dependency "chef-licensing", "~> 1.3"
 
   s.bindir = "bin"
   s.executables = %w{ }

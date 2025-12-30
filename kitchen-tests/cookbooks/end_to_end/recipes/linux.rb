@@ -237,3 +237,8 @@ include_recipe "::_ifconfig"
 # end
 
 include_recipe "::_snap" if platform?("ubuntu")
+
+# Exercise Habitat CA cert resource when Habitat-based Chef is present
+if ::File.exist?("/hab/bin/hab")
+  include_recipe "::_chef_client_hab_ca_cert"
+end

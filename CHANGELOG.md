@@ -1,17 +1,37 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.119 -->
-## [v19.1.119](https://github.com/chef/chef/tree/v19.1.119) (2025-11-27)
+<!-- latest_release 19.1.137 -->
+## [v19.1.137](https://github.com/chef/chef/tree/v19.1.137) (2025-12-23)
 
 #### Merged Pull Requests
-- Removed conflicting openssl installation [#15482](https://github.com/chef/chef/pull/15482) ([johnmccrae](https://github.com/johnmccrae))
+- [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.137 -->
+- Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.136 -->
+- Disable testing &#39;HEAD&#39; as a tag name [#15522](https://github.com/chef/chef/pull/15522) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.136 -->
+- conservative update train-core [#15519](https://github.com/chef/chef/pull/15519) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.135 -->
+- conservative update ohai [#15518](https://github.com/chef/chef/pull/15518) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.134 -->
+- add property to specify strings used to determine registration status in rhsm_register [#15513](https://github.com/chef/chef/pull/15513) ([dschlenk](https://github.com/dschlenk)) <!-- 19.1.133 -->
+- Updating inspec version in kitchen tests [#15514](https://github.com/chef/chef/pull/15514) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.132 -->
+- Bump chef-licensing to 1.3.4 [#15511](https://github.com/chef/chef/pull/15511) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.131 -->
+- cleaning up lint_roller after cookstyle installs [#15509](https://github.com/chef/chef/pull/15509) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.130 -->
+- fix target mode run with ed25519 keys [#15499](https://github.com/chef/chef/pull/15499) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.129 -->
+- Updating Chef version [#15506](https://github.com/chef/chef/pull/15506) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.128 -->
+- Added -a or --all-users to show all user details in user list command [#15493](https://github.com/chef/chef/pull/15493) ([sanghinitin](https://github.com/sanghinitin)) <!-- 19.1.127 -->
+- remove activesupport from chef main [#15492](https://github.com/chef/chef/pull/15492) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.126 -->
+- CHEF-20594: Add comprehensive documentation for REST resource [#15461](https://github.com/chef/chef/pull/15461) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.125 -->
+- [File#load_current_resource] assign #path call to variable [#15484](https://github.com/chef/chef/pull/15484) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.124 -->
+- CHEF-28003 dependency updates for chef 19 [#15471](https://github.com/chef/chef/pull/15471) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.123 -->
+- Only run docker TKE and -fips builds if a non-forked repo [#15487](https://github.com/chef/chef/pull/15487) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 19.1.122 -->
+- CHEF-3854: Replace YAML.load_stream with regex for security [#15477](https://github.com/chef/chef/pull/15477) ([nikhil2611](https://github.com/nikhil2611)) <!-- 19.1.121 -->
+- [Target Mode] Correcting missing guids [#15467](https://github.com/chef/chef/pull/15467) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.120 -->
 - Removed conflicting openssl installation [#15482](https://github.com/chef/chef/pull/15482) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.119 -->
 - Enforce description content for PRs [#15456](https://github.com/chef/chef/pull/15456) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.118 -->
 - rename pipeline to match regex [#15455](https://github.com/chef/chef/pull/15455) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.117 -->

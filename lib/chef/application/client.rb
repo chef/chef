@@ -120,6 +120,8 @@ class Chef::Application::Client < Chef::Application::Base
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if config[:target] || Chef::Config.target
+      require "ed25519" # required for net-ssh to support ed25519 keys
+
       Chef::Config.target_mode.host = config[:target] || Chef::Config.target
       if URI.parse(Chef::Config.target_mode.host).scheme
         train_config = Train.unpack_target_from_uri(Chef::Config.target_mode.host)
