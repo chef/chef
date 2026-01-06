@@ -40,7 +40,7 @@ pipelines:
   - validate/release:
       description: Validate release and promote Habitat package
       # Note: We use a shell script for pipeline generation, not static YAML
-      definition: .buildkite/validate.release.pipeline.sh
+      definition: .expeditor/verify.release.pipeline.sh
       env:
         - IGNORE_CACHE: true
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true
