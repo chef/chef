@@ -180,7 +180,11 @@ do_install() {
 
     build_line "** patching binstubs to allow running directly"
     for binstub in ${pkg_prefix}/bin/*; do
+      build_line "Before patching $(basename $binstub):"
+      head -n 20 "$binstub"
       sed -i "/require \"rubygems\"/r ${PLAN_CONTEXT}/binstub_patch.rb" "$binstub"
+      build_line "After patching $(basename $binstub):"
+      head -n 20 "$binstub"
     done
   )
 }
