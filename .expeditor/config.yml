@@ -37,6 +37,13 @@ pipelines:
   #     env:
   #       - IGNORE_CACHE: true # caching causes constant build failures
   #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  - validate/release:
+      description: Validate release and promote Habitat package
+      # Note: We use a shell script for pipeline generation, not static YAML
+      definition: .buildkite/validate.release.pipeline.sh
+      env:
+        - IGNORE_CACHE: true
+        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
   - validate/adhoc:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
@@ -66,12 +73,6 @@ pipelines:
   - gem_validate/release:
       description: Builds and uploads the gems to artifactory
       definition: .expeditor/gem_release.pipeline.yml
-  - validate/release:
-      description: Validate release and promote Habitat package
-      definition: .buildkite/validate-release.yml
-      env:
-        - IGNORE_CACHE: true
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch

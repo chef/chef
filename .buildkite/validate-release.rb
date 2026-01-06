@@ -26,17 +26,14 @@ arm_targets = [
   "ubuntu-2204-arm:ubuntu-2204-arm",
   "amazon-2023-arm:amazon-2023-arm"
 ]
-
 # because windows queues are very different, the target queue is very explicit.
 win_targets = [
   "windows-2019:default-windows-2019",
   "windows-2022:single-use-windows-2022",
   "windows-2025:single-use-windows-2025"
 ]
-
 # Update target list
 targets.concat(win_targets)
-
 if ENV['ARM_ENABLED'] == '1'
   targets.concat(arm_targets)
 end
@@ -159,42 +156,21 @@ targets.each do |target|
   pipeline["steps"] << step
 end
 
-# Collect keys for all validate steps
-validate_keys = targets.map { |target| "validate-#{target.split(':').first}" }
-
-pipeline["steps"] << {
-  "block" => "Promote to Current",
-  "key" => "promote_to_current",
-  "depends_on" => validate_keys,
-  "prompt" => "Do you want to promote these artifacts to the 'current' folder?",
-  "fields" => [
-    {
-      "select" => "Are you sure?",
-      "key" => "confirmation",
-      "options" => [
-        {"label" => "Yes", "value" => "yes"},
-        {"label" => "No", "value" => "no"}
-      ]
-    }
-  ]
-}
-
-pipeline["steps"] << {
-  "label" => ":arrow_up: Promote to Current",
-  "key" => "promote_artifacts",
-  "commands" => [
-    "echo 'Starting promotion process...'",
-    ".expeditor/scripts/promote_to_current.sh"
-  ],
-  "expeditor" => {
-    "accounts" => ["aws/chef-artifactory"],
-    "executor" => {
-      "docker" => {
-        "privileged" => true
-      }
-    }
-  },
-  "depends_on" => ["promote_to_current"]
-}
+# # Optionally, add a manual approval block before promotion, handled by Expeditor
+# pipeline["steps"] << {
+#   "block" => "Approve promotion to current? (promotion handled by Expeditor after pipeline completes)",
+#   "key" => "approve-promotion",
+#   "prompt" => "Do you want to promote these artifacts to the 'current' channel?",
+#   "fields" => [
+#     {
+#       "select" => "Are you sure?",
+#       "key" => "confirmation",
+#       "options" => [
+#         {"label" => "Yes", "value" => "yes"},
+#         {"label" => "No", "value" => "no"}
+#       ]
+#     }
+#   ]
+# }
 
 puts pipeline.to_yaml
