@@ -153,6 +153,13 @@ subscriptions:
       - trigger_pipeline:gem_validate/release
       - trigger_pipeline:docker/build
 
+  # Custom: promote Habitat packages after validate/release completes
+  - workload: pipeline_completed:chef/chef:validate/release:*
+    actions:
+      - built_in:promote_habitat_packages:
+          artifact_channels:
+            - current
+
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
     actions:
