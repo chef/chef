@@ -177,6 +177,11 @@ do_install() {
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
+
+    build_line "** patching binstubs to allow running directly"
+    for binstub in ${pkg_prefix}/bin/*; do
+      sed -i "/require \"rubygems\"/a ENV[\"APPBUNDLER_ALLOW_RVM\"] = \"true\"\nENV[\"GEM_PATH\"] = [File.expand_path(File.join(__dir__, \"..\", \"vendor\")), ENV[\"GEM_PATH\"]].compact.join(File::PATH_SEPARATOR)" "$binstub"
+    done
   )
 }
 
