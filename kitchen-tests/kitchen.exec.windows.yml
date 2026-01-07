@@ -55,23 +55,37 @@ lifecycle:
     - remote: |
         $targetDir = "C:\opscode\chef\embedded\bin"
         New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
-        $candidates = @("C:\opscode\chef-workstation\embedded\bin\openssl.exe", "D:\opscode\chef-workstation\embedded\bin\openssl.exe")
+
         $openssl = $null
-        foreach ($cand in $candidates) {
-          if (Test-Path $cand) { $openssl = $cand; break }
-        }
-        if (-not $openssl) {
-          $searchRoot = "C:\opscode"
-          if (Test-Path $searchRoot) {
-            $found = Get-ChildItem -Path $searchRoot -Recurse -Filter openssl.exe -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'embedded\\bin' } | Select-Object -First 1
-            if ($found) { $openssl = $found.FullName }
+        $binOpenssl = "C:\hab\bin\openssl.exe"
+        $habExe = "C:\hab\bin\hab.exe"
+        $pkgPath = $null
+
+        if (Test-Path $binOpenssl) {
+          $openssl = $binOpenssl
+          Write-Host "Using binlinked Habitat openssl at $binOpenssl"
+        } elseif (Test-Path $habExe) {
+          try {
+            $pkgPath = & $habExe pkg path core/openssl 2>$null
+          } catch {
+            $pkgPath = $null
+          }
+
+          if ($pkgPath) {
+            Write-Host "Resolved Habitat core/openssl pkg path: $pkgPath"
+            $pkgOpenssl = Join-Path $pkgPath 'bin\openssl.exe'
+            if (Test-Path $pkgOpenssl) {
+              $openssl = $pkgOpenssl
+            }
           }
         }
+
         if ($openssl) {
           Copy-Item -Path $openssl -Destination (Join-Path $targetDir 'openssl.exe') -Force
-          Write-Host "Mapped openssl.exe to $targetDir"
+          Write-Host "Mapped Habitat openssl.exe to $targetDir"
         } else {
-          Write-Warning "OpenSSL not found"
+          Write-Error "Habitat openssl.exe not found in C:\hab\bin or via 'hab pkg path core/openssl'"
+          exit 1
         }
 
     - remote: |
@@ -81,6 +95,13 @@ lifecycle:
         $opensslPath = "C:\opscode\chef\embedded\bin\openssl.exe"
         if (-not (Test-Path $opensslPath)) {
           Write-Error "openssl.exe not found at $opensslPath"
+          exit 1
+        }
+
+        try {
+          & $opensslPath version
+        } catch {
+          Write-Error "openssl.exe at $opensslPath failed to execute"
           exit 1
         }
 
