@@ -81,8 +81,7 @@ lifecycle:
         if (-not($openssl)) {
           Write-Error "Habitat openssl.exe not found in C:\hab\bin or via 'hab pkg path core/openssl'"
           exit 1
-        }
-        else {
+        } else {
           Write-Host "Using openssl at $openssl"
         }
 
