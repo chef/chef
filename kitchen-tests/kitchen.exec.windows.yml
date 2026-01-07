@@ -53,12 +53,10 @@ lifecycle:
         Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
     - remote: |
-        $targetDir = "C:\opscode\chef\embedded\bin"
-        New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
-
+        $root = (Get-Location).Drive.Root
         $openssl = $null
-        $binOpenssl = "C:\hab\bin\openssl.exe"
-        $habExe = "C:\hab\bin\hab.exe"
+        $binOpenssl = $root + "hab\bin\openssl.exe"
+        $habExe = $root + "hab\bin\hab.exe"
         $pkgPath = $null
 
         if (Test-Path $binOpenssl) {
@@ -80,12 +78,12 @@ lifecycle:
           }
         }
 
-        if ($openssl) {
-          Copy-Item -Path $openssl -Destination (Join-Path $targetDir 'openssl.exe') -Force
-          Write-Host "Mapped Habitat openssl.exe to $targetDir"
-        } else {
+        if (-not($openssl)) {
           Write-Error "Habitat openssl.exe not found in C:\hab\bin or via 'hab pkg path core/openssl'"
           exit 1
+        }
+        else {
+          Write-Host "Using openssl at $openssl"
         }
 
     - remote: |
