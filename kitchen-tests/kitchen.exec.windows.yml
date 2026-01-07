@@ -56,13 +56,18 @@ lifecycle:
         $root = (Get-Location).Drive.Root
         $openssl = $null
         $binOpenssl = $root + "hab\bin\openssl.exe"
-        $habExe = $root + "hab\bin\hab.exe"
+        # $habExe = $root + "hab\bin\hab.exe"
+        $habExe = (get-command hab).source
+        Write-Host "Looking for Habitat openssl... @ $binOpenssl"
+        Write-Host "Using hab exe at $habExe"
         $pkgPath = $null
 
         if (Test-Path $binOpenssl) {
           $openssl = $binOpenssl
           Write-Host "Using binlinked Habitat openssl at $binOpenssl"
         } elseif (Test-Path $habExe) {
+          Write-Host "Openssl NOT FOUND in the \hab\bin directory."
+          Write-Host "hab.exe found at $habExe, attempting to resolve core/openssl pkg path"
           try {
             $pkgPath = & $habExe pkg path core/openssl 2>$null
           } catch {
@@ -79,7 +84,7 @@ lifecycle:
         }
 
         if (-not($openssl)) {
-          Write-Error "Habitat openssl.exe not found in C:\hab\bin or via 'hab pkg path core/openssl'"
+          Write-Error "Habitat openssl.exe not found in $($root + 'hab\bin') or via 'hab pkg path core/openssl'"
           exit 1
         } else {
           Write-Host "Using openssl at $openssl"
