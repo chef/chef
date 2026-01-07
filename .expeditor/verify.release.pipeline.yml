@@ -9,11 +9,5 @@ expeditor:
 
 steps:
   - commands:
-    - ./.buildkite/validate.release.pipeline.sh
+    - ./.buildkite/validate.adhoc.pipeline.sh
     label: ":pipeline: Upload"
-
-  - commands:
-      - .expeditor/scripts/promote_habitat_packages.sh
-    label: ":habitat: Promote Habitat packages to current channel"
-    # Optionally uncomment if you want promotion only on main branch
-    # branches: "main"

@@ -102,6 +102,10 @@ release_branches:
 changelog:
   rollup_header: Changes not yet released to stable
 
+artifact_channels:
+  - current
+  - stable
+
 subscriptions:
   - workload: project_promoted:{{agent_id}}:*
     actions:
@@ -153,12 +157,11 @@ subscriptions:
       - trigger_pipeline:gem_validate/release
       - trigger_pipeline:docker/build
 
-  # # Custom: promote Habitat packages after validate/release completes
-  # - workload: pipeline_completed:chef/chef:validate/release:*
-  #   actions:
-  #     - built_in:promote_habitat_packages:
-  #         artifact_channels:
-  #           - current
+  - workload: buildkite_build_passed:{{agent_id}}: chef/chef:validate/adhoc:*
+     actions:
+      - built_in:promote_habitat_packages:
+           artifact_channels:
+            - current
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
