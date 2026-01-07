@@ -298,9 +298,20 @@ function Invoke-Install {
     } finally {
         Pop-Location
     }
-    # Export default (non-FIPS) OPENSSL_CONF (runtime)
+
+    # Set OPENSSL_CONF based on FIPS mode
     $openssl_path = "$(Get-HabPackagePath core/openssl)"
-    Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl.cnf"
+    $fipsRegPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy"
+    $fipsEnabled = 0
+    try {
+      $fipsEnabled = (Get-ItemProperty -Path $fipsRegPath -Name "Enabled" -ErrorAction Stop).Enabled
+    } catch {}
+
+    if ($fipsEnabled -eq 1) {
+      Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl-fips.cnf"
+    } else {
+      Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl.cnf"
+    }
 }
 
 function Invoke-After {

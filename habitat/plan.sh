@@ -190,9 +190,19 @@ do_install() {
       head -n 20 "$binstub"
     done
   )
-  # Export default (non-FIPS) OPENSSL_CONF (runtime)
+
+  # Set OPENSSL_CONF based on FIPS mode
   openssl_path="$(pkg_path_for core/openssl)"
-  set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl.cnf"
+  fips_enabled=0
+  if [ -f /proc/sys/crypto/fips_enabled ]; then
+    fips_enabled=$(cat /proc/sys/crypto/fips_enabled)
+  fi
+
+  if [ "$fips_enabled" = "1" ]; then
+    set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl-fips.cnf"
+  else
+    set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl.cnf"
+  fi
 }
 
 do_after() {
