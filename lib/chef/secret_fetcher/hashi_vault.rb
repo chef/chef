@@ -18,6 +18,15 @@
 
 require_relative "base"
 require "aws-sdk-core" # Support for aws instance profile auth
+
+# The vault gem mutates OpenSSL::SSL::SSLContext::DEFAULT_PARAMS as it loads.
+# Ruby 3.4 can ship that hash frozen (seen on Windows builds), so duplicate it
+# before requiring vault to avoid a FrozenError during load.
+if defined?(OpenSSL::SSL::SSLContext::DEFAULT_PARAMS) && OpenSSL::SSL::SSLContext::DEFAULT_PARAMS.frozen?
+  mutable_defaults = OpenSSL::SSL::SSLContext::DEFAULT_PARAMS.dup
+  OpenSSL::SSL::SSLContext.const_set(:DEFAULT_PARAMS, mutable_defaults)
+end
+
 require "vault"
 class Chef
   class SecretFetcher

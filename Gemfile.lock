@@ -280,8 +280,9 @@ GEM
       net-http (~> 0.5)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
+    ffi (1.17.3)
+    ffi (1.17.3-arm64-darwin)
+    ffi (1.17.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
