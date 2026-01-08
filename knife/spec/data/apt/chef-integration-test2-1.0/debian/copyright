@@ -8,7 +8,7 @@ Upstream Author(s):
 
 Copyright:
 
-    Copyright 2010-2016, Chef Software Inc.
+    Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 
 License:
 
@@ -26,7 +26,7 @@ License:
 
 The Debian packaging is:
 
-    Copyright 2010-2016, Chef Software Inc. (<legal@chef.io>)
+    Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved. (<legal@chef.io>)
 
 
 and is licensed under the Apache 2.0 license.

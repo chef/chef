@@ -4,7 +4,7 @@
 #
 # Copyright:: 2011-2018, Bryan w. Berry
 # Copyright:: 2012-2018, Seth Vargo
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

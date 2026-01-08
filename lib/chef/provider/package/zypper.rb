@@ -1,7 +1,7 @@
 #
 # Authors:: Adam Jacob (<adam@chef.io>)
 #           Ionuț Arțăriși (<iartarisi@suse.cz>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # Copyright:: 2013-2016, SUSE Linux GmbH
 # License:: Apache License, Version 2.0
 #
