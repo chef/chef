@@ -1,7 +1,7 @@
 #
 # Author:: Doug Ireton (<doug@1strategy.com>)
 # Copyright:: 2012-2018, Nordstrom, Inc.
-# Copyright:: Chef Software, Inc.
+#  Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
