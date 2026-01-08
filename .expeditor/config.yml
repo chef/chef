@@ -32,17 +32,16 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-  # - validate/release:
-  #     definition: .expeditor/verify.pipeline.yml
-  #     env:
-  #       - IGNORE_CACHE: true # caching causes constant build failures
-  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+
+  - validate/release:
+      description: Validate release and promote Habitat package
+      # Note: We use a shell script for pipeline generation, not static YAML
+      definition: .expeditor/verify.release.pipeline.yml
+
   - validate/adhoc:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
         - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - validate/adhoc-canary:
       canary: true
       definition: .expeditor/verify.adhoc.pipeline.yml
@@ -95,6 +94,12 @@ release_branches:
 changelog:
   rollup_header: Changes not yet released to stable
 
+artifact_channels:
+  - current
+  - stable
+  - unstable
+  - base-2025
+
 subscriptions:
   - workload: project_promoted:{{agent_id}}:*
     actions:
@@ -135,8 +140,7 @@ subscriptions:
             - "Expeditor: Skip Omnibus"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      - built_in:build_gem:
-          only_if: built_in:bump_version
+
 
   # the habitat chain
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
@@ -145,6 +149,12 @@ subscriptions:
       - trigger_pipeline:habitat/verify
       - trigger_pipeline:gem_validate/release
       - trigger_pipeline:docker/build
+
+  - workload: buildkite_build_passed:{{agent_id}}:chef/chef:validate/release:*
+    actions:
+      - built_in:promote_habitat_packages:
+          artifact_channels:
+            - current
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*

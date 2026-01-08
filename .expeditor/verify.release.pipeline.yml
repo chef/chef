@@ -1,0 +1,13 @@
+---
+expeditor:
+  defaults:
+    buildkite:
+      retry:
+        automatic:
+          limit: 1
+      timeout_in_minutes: 60
+
+steps:
+  - commands:
+    - ./.buildkite/validate.adhoc.pipeline.sh
+    label: ":pipeline: Upload"
