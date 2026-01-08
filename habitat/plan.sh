@@ -193,14 +193,18 @@ do_install() {
 
   # Set OPENSSL_CONF based on FIPS mode
   openssl_path="$(pkg_path_for core/openssl)"
+  build_line "DEBUG: openssl_path is $openssl_path"
   fips_enabled=0
   if [ -f /proc/sys/crypto/fips_enabled ]; then
+    build_line "DEBUG: Reading /proc/sys/crypto/fips_enabled to determine FIPS mode"
     fips_enabled=$(cat /proc/sys/crypto/fips_enabled)
   fi
 
   if [ "$fips_enabled" = "1" ]; then
+    build_line "DEBUG: FIPS mode is enabled"
     set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl-fips.cnf"
   else
+    build_line "DEBUG: FIPS mode is disabled"
     set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl.cnf"
   fi
 }
