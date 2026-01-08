@@ -52,7 +52,6 @@ lifecycle:
         $content += "require 'aws-sdk'"
         Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
-    - remote: |
         $root = (Get-Location).Drive.Root
         $openssl = $null
         $binOpenssl = $root + "hab\bin\openssl.exe"
@@ -86,17 +85,25 @@ lifecycle:
         if (-not($openssl)) {
           Write-Error "Habitat openssl.exe not found in $($root + 'hab\bin') or via 'hab pkg path core/openssl'"
           exit 1
-        } else {
-          $sslDir = "C:\ssl_test"
-          Write-Host "Using openssl at $openssl"
-          if (-not(Test-Path "C:\$sslDir")) {
-            New-Item -ItemType Directory -Force -Path "C:\$sslDir" | Out-Null
-          }
-          Set-Content -Path "C:\$sslDir\openssl_path.txt" -Value $openssl -Encoding UTF8
-          Write-Host "Wrote openssl path to C:\$sslDir\openssl_path.txt"
         }
 
-    - remote: |
+        $sslDir = "C:\ssl_test"
+        Write-Host "Using openssl at $openssl"
+        if (-not(Test-Path "$sslDir")) {
+          New-Item -ItemType Directory -Force -Path $sslDir | Out-Null
+        }
+        Set-Content -Path "$sslDir\openssl_path.txt" -Value $openssl -Encoding UTF8
+        Write-Host "Wrote openssl path to $sslDir\openssl_path.txt"
+
+        Write-Host "Setting the OPENSSL_CONF environment variable to the Habitat package's openssl.cnf"
+        if ($pkgPath) {
+          $opensslConf = Join-Path $pkgPath 'ssl\openssl.cnf'
+          if (Test-Path $opensslConf) {
+            $env:OPENSSL_CONF = $opensslConf
+            Write-Host "Set OPENSSL_CONF to $opensslConf"
+          }
+        }
+
         Push-Location $sslDir
         # Generate CA
         & $openssl genrsa -out ca.key 2048
@@ -105,7 +112,7 @@ lifecycle:
         & $openssl genrsa -out my_signed_cert.key 2048
         & $openssl req -new -key my_signed_cert.key -subj "/CN=localhost" -out my_signed_cert.csr
         & $openssl x509 -req -in my_signed_cert.csr -CA my_ca.crt -CAkey ca.key -CAcreateserial -out my_signed_cert.crt -days 365 -sha256
-        Pop-Location
+        # Pop-Location
 
         # Quick verify to mirror the test expectation
         $verify = & $openssl verify -CAfile "$sslDir\my_ca.crt" "$sslDir\my_signed_cert.crt"
