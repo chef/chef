@@ -88,8 +88,8 @@ lifecycle:
           exit 1
         } else {
           Write-Host "Using openssl at $openssl"
-          $env:CHEF_TEST_OPENSSL = $openssl
-          Write-Host "Set env var CHEF_TEST_OPENSSL to $openssl"
+          Set-Content -Path "C:\ssl_test\openssl_path.txt" -Value $openssl -Encoding UTF8
+          Write-Host "Wrote openssl path to C:\ssl_test\openssl_path.txt"
         }
 
     - remote: |
