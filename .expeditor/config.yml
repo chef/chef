@@ -151,7 +151,7 @@ subscriptions:
       - trigger_pipeline:docker/build
 
   - workload: buildkite_build_passed:{{agent_id}}: chef/chef:validate/release:*
-     actions:
+    actions:
       - built_in:promote_habitat_packages:
           artifact_channels:
             - current
