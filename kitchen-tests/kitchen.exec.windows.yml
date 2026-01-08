@@ -87,15 +87,16 @@ lifecycle:
           Write-Error "Habitat openssl.exe not found in $($root + 'hab\bin') or via 'hab pkg path core/openssl'"
           exit 1
         } else {
+          $sslDir = "C:\ssl_test"
           Write-Host "Using openssl at $openssl"
-          Set-Content -Path "C:\ssl_test\openssl_path.txt" -Value $openssl -Encoding UTF8
-          Write-Host "Wrote openssl path to C:\ssl_test\openssl_path.txt"
+          if (-not(Test-Path "C:\$sslDir")) {
+            New-Item -ItemType Directory -Force -Path "C:\$sslDir" | Out-Null
+          }
+          Set-Content -Path "C:\$sslDir\openssl_path.txt" -Value $openssl -Encoding UTF8
+          Write-Host "Wrote openssl path to C:\$sslDir\openssl_path.txt"
         }
 
     - remote: |
-        $sslDir = "C:\ssl_test"
-        New-Item -ItemType Directory -Force -Path $sslDir | Out-Null
-
         Push-Location $sslDir
         # Generate CA
         & $openssl genrsa -out ca.key 2048
