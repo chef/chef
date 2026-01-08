@@ -21,7 +21,8 @@ build_dir = Dir.pwd
 
 env = {
   "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'; " \
-    "gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'main'",
+    "gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'main'; " \
+    "gem 'ffi-yajl', '2.6.0'", # hold ffi-yajl back until chef/chef Gemfile.lock is upgraded to 2.7.5 or later
   "CHEF_LICENSE" => "accept-no-persist",
 }
 

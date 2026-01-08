@@ -1,18 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.137 -->
-## [v19.1.137](https://github.com/chef/chef/tree/v19.1.137) (2025-12-23)
+<!-- latest_release 19.1.139 -->
+## [v19.1.139](https://github.com/chef/chef/tree/v19.1.139) (2026-01-07)
 
 #### Merged Pull Requests
-- [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby))
-- Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef-19] Fix archive_file resource when using .tar.xz extension [#15536](https://github.com/chef/chef/pull/15536) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-19] Fix archive_file resource when using .tar.xz extension [#15536](https://github.com/chef/chef/pull/15536) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.139 -->
+- Hold ffi-yajl for external tests [#15534](https://github.com/chef/chef/pull/15534) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.138 -->
 - [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.137 -->
 - Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.136 -->
 - Disable testing &#39;HEAD&#39; as a tag name [#15522](https://github.com/chef/chef/pull/15522) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.136 -->
