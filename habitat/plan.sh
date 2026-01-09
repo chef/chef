@@ -177,6 +177,15 @@ do_install() {
       build_line "** generating binstubs for $gem with precise version pins"
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
+
+    build_line "** patching binstubs to allow running directly"
+    for binstub in ${pkg_prefix}/bin/*; do
+      build_line "Before patching $(basename $binstub):"
+      head -n 20 "$binstub"
+      sed -i "/require \"rubygems\"/r ${PLAN_CONTEXT}/binstub_patch.rb" "$binstub"
+      build_line "After patching $(basename $binstub):"
+      head -n 20 "$binstub"
+    done
   )
 }
 
