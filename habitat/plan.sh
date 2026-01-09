@@ -1,6 +1,6 @@
 export HAB_BLDR_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
-_chef_client_ruby="core/ruby3_4/3.4.2"
+_chef_client_ruby="core/ruby3_4/3.4.3/20260106104609"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
@@ -31,11 +31,13 @@ pkg_deps=(
   core/libiconv
   core/xz
   core/zlib
-  core/openssl
+  # core/openssl # pulls in core/openssl/3.5.0/20251009054030
+  core/openssl/3.5.0/20251208051439
   core/cacerts
   core/libffi
   core/coreutils
-  core/libarchive
+  core/libarchive/3.8.1/20251208054127
+  # core/libarchive # pulls in core/libarchive/3.8.1/20251009063318 which has the wrong version of openssl in it
 )
 pkg_svc_user=root
 
