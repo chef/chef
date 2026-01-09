@@ -112,11 +112,12 @@ lifecycle:
         & $openssl genrsa -out my_signed_cert.key 2048
         & $openssl req -new -key my_signed_cert.key -subj "/CN=localhost" -out my_signed_cert.csr
         & $openssl x509 -req -in my_signed_cert.csr -CA my_ca.crt -CAkey ca.key -CAcreateserial -out my_signed_cert.crt -days 365 -sha256
-        # Pop-Location
+        Pop-Location
 
         # Quick verify to mirror the test expectation
         $verify = & $openssl verify -CAfile "$sslDir\my_ca.crt" "$sslDir\my_signed_cert.crt"
-        Write-Host "openssl verify output: $verify"
+        Write-Host "Leaving kitchen.exec.windows.yml - openssl verify output: $verify"
+        Write-Output "Leaving kitchen.exec.windows.yml - openssl verify output: $verify"
 
 platforms:
   - name: windows-2022
