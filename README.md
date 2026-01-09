@@ -47,9 +47,7 @@ We'd love to have your help developing Chef Infra. See our [Contributing Documen
 ### Community PR Reviews
 Want to raise, review, and help merge a PR with the community and the engineering staff? Please see: [Community Pr Review](./docs/dev/how_to/community_pr_review_checklist.md)
 
-## License and Copyright
-
-Copyright 2008-2020, Chef Software, Inc.
+## License
 
 ```
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,3 +62,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+# Copyright
+See [COPYRIGHT.md](./COPYRIGHT.md).
