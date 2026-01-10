@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.9.3 -->
-## [v18.9.3](https://github.com/chef/chef/tree/v18.9.3) (2025-12-26)
+<!-- latest_release 18.9.4 -->
+## [v18.9.4](https://github.com/chef/chef/tree/v18.9.4) (2026-01-10)
 
 #### Merged Pull Requests
-- [Chef18][FileAccessControl] Reduce Securable object usage [#15458](https://github.com/chef/chef/pull/15458) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Sean sype simmons/chef18-OpenSSL-Fix [#15544](https://github.com/chef/chef/pull/15544) ([sean-sype-simmons](https://github.com/sean-sype-simmons))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.54 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Sean sype simmons/chef18-OpenSSL-Fix [#15544](https://github.com/chef/chef/pull/15544) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.9.4 -->
 - [Chef18][FileAccessControl] Reduce Securable object usage [#15458](https://github.com/chef/chef/pull/15458) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.9.3 -->
 - Updating to latest Notice text [#15524](https://github.com/chef/chef/pull/15524) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.9.2 -->
 - Updating to latest Ohai [#15520](https://github.com/chef/chef/pull/15520) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.9.1 -->
