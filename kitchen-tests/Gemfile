@@ -7,6 +7,6 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main" # avoids fai
 gem "chef-cli"
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
-gem "kitchen-inspec"
+gem "kitchen-inspec", git: "https://github.com/inspec/kitchen-inspec.git", branch: "jfm/chef18-inspec-bump" # avoids failures when we bump chef major
 gem "inspec", "= 7.0.95"
 gem "test-kitchen"
