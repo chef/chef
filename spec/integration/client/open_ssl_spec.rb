@@ -4,11 +4,11 @@ require "openssl"
 describe "openssl checks" do
   let(:openssl_version_default) do
     if windows?
-      "3.2.4"
+      "3.2.6"
     elsif macos?
       "1.1.1m"
     else
-      "3.2.4"
+      "3.2.6"
     end
   end
 
