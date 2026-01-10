@@ -53,11 +53,15 @@ lifecycle:
         Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
         $root = (Get-Location).Drive.Root
-        # $openssl = $null
-        # $binOpenssl = $root + "hab\bin\openssl.exe"
+        $openssl = $null
         $habExe = $root + "hab\bin\hab.exe"
-        $binOpenssl = (get-command hab).source
-        Write-Host "Looking for Habitat openssl... @ $binOpenssl"
+        $opensslroot = $(hab pkg path core/openssl)
+        $binOpenssl = $opensslroot + "\bin\openssl.exe"
+        if (-not (Test-Path $binOpenssl)) {
+          Write-Error "openssl.exe not found at expected location: $binOpenssl"
+          exit 1
+        }
+        Write-Host "Looking for Habitat-based openssl... @ $binOpenssl"
         Write-Host "Using hab exe at $habExe"
         $pkgPath = $null
 
