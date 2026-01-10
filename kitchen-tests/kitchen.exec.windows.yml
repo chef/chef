@@ -52,74 +52,47 @@ lifecycle:
         $content += "require 'aws-sdk'"
         Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
-        $root = (Get-Location).Drive.Root
-        $openssl = $null
-        $habExe = $root + "hab\bin\hab.exe"
+        $habExe = $(Get-Command hab).Source
         $opensslroot = $(hab pkg path core/openssl)
         $binOpenssl = $opensslroot + "\bin\openssl.exe"
         if (-not (Test-Path $binOpenssl)) {
           Write-Error "openssl.exe not found at expected location: $binOpenssl"
           exit 1
         }
-        Write-Host "Looking for Habitat-based openssl... @ $binOpenssl"
+        Write-Host "Using Habitat-based openssl... @ $binOpenssl"
         Write-Host "Using hab exe at $habExe"
-        $pkgPath = $null
-
-        if (Test-Path $binOpenssl) {
-          $openssl = $binOpenssl
-          Write-Host "Using binlinked Habitat openssl at $binOpenssl"
-        } elseif (Test-Path $habExe) {
-          Write-Host "Openssl NOT FOUND in the \hab\bin directory."
-          Write-Host "hab.exe found at $habExe, attempting to resolve core/openssl pkg path"
-          try {
-            $pkgPath = & $habExe pkg path core/openssl
-          } catch {
-            $pkgPath = $null
-          }
-
-          if ($pkgPath) {
-            Write-Host "Resolved Habitat core/openssl pkg path: $pkgPath"
-            $pkgOpenssl = Join-Path $pkgPath 'bin\openssl.exe'
-            if (Test-Path $pkgOpenssl) {
-              $openssl = $pkgOpenssl
-            }
-          }
-        }
-
-        if (-not($openssl)) {
-          Write-Error "Habitat openssl.exe not found in $($root + 'hab\bin') or via 'hab pkg path core/openssl'"
-          exit 1
-        }
 
         $sslDir = "C:\ssl_test"
-        Write-Host "Using openssl at $openssl"
+        Write-Host "\r\nUsing openssl at $binOpenssl"
         if (-not(Test-Path "$sslDir")) {
           New-Item -ItemType Directory -Force -Path $sslDir | Out-Null
         }
-        Set-Content -Path "$sslDir\openssl_path.txt" -Value $openssl -Encoding UTF8
+        Set-Content -Path "$sslDir\openssl_path.txt" -Value $binOpenssl -Encoding UTF8
         Write-Host "Wrote openssl path to $sslDir\openssl_path.txt"
 
         Write-Host "Setting the OPENSSL_CONF environment variable to the Habitat package's openssl.cnf"
-        if ($pkgPath) {
-          $opensslConf = Join-Path $pkgPath 'ssl\openssl.cnf'
-          if (Test-Path $opensslConf) {
-            $env:OPENSSL_CONF = $opensslConf
-            Write-Host "Set OPENSSL_CONF to $opensslConf"
-          }
+
+        $opensslConf = Join-Path $opensslroot -ChildPath 'ssl\openssl.cnf'
+        if (Test-Path $opensslConf) {
+          $env:OPENSSL_CONF = $opensslConf
+          Write-Host "Set OPENSSL_CONF to $opensslConf"
+        } else {
+          Write-Error "Could not find openssl.cnf at expected location: $opensslConf"
+          exit 1
         }
 
         Push-Location $sslDir
         # Generate CA
-        & $openssl genrsa -out ca.key 2048
-        & $openssl req -x509 -new -nodes -key ca.key -subj "/CN=Test CA" -days 365 -out my_ca.crt
+        & $binOpenssl genrsa -out ca.key 2048
+        & $binOpenssl req -x509 -new -nodes -key ca.key -subj "/CN=Test CA" -days 365 -out my_ca.crt
         # Generate leaf key/cert
-        & $openssl genrsa -out my_signed_cert.key 2048
-        & $openssl req -new -key my_signed_cert.key -subj "/CN=localhost" -out my_signed_cert.csr
-        & $openssl x509 -req -in my_signed_cert.csr -CA my_ca.crt -CAkey ca.key -CAcreateserial -out my_signed_cert.crt -days 365 -sha256
+        & $binOpenssl genrsa -out my_signed_cert.key 2048
+        & $binOpenssl req -new -key my_signed_cert.key -subj "/CN=localhost" -out my_signed_cert.csr
+        & $binOpenssl x509 -req -in my_signed_cert.csr -CA my_ca.crt -CAkey ca.key -CAcreateserial -out my_signed_cert.crt -days 365 -sha256
         Pop-Location
 
         # Quick verify to mirror the test expectation
-        $verify = & $openssl verify -CAfile "$sslDir\my_ca.crt" "$sslDir\my_signed_cert.crt"
+        $verify = & $binOpenssl verify -CAfile "$sslDir\my_ca.crt" "$sslDir\my_signed_cert.crt"
         Write-Host "Leaving kitchen.exec.windows.yml - openssl verify output: $verify"
         Write-Output "Leaving kitchen.exec.windows.yml - openssl verify output: $verify"
 
