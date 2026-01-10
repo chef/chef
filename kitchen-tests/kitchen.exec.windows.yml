@@ -52,11 +52,11 @@ lifecycle:
         $content += "require 'aws-sdk'"
         Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
-        $root = (Get-Location).Drive.Root
-        $openssl = $null
-        $binOpenssl = $root + "hab\bin\openssl.exe"
+        # $root = (Get-Location).Drive.Root
+        # $openssl = $null
+        # $binOpenssl = $root + "hab\bin\openssl.exe"
         # $habExe = $root + "hab\bin\hab.exe"
-        $habExe = (get-command hab).source
+        $binOpenssl = (get-command hab).source
         Write-Host "Looking for Habitat openssl... @ $binOpenssl"
         Write-Host "Using hab exe at $habExe"
         $pkgPath = $null

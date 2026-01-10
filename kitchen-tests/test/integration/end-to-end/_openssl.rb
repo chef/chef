@@ -15,6 +15,7 @@ puts "Executing command: #{cmd}"
 
 if os.windows?
   puts "Running OpenSSL verify command on Windows"
+
   ca_crt_path = "c:/ssl_test/my_ca.crt"
   signed_cert_path = "c:/ssl_test/my_signed_cert.crt"
 
