@@ -201,7 +201,7 @@ class Chef
           # the package provider can magically handle that
           shell_out_cmd = options[:allow_failure] ? :shell_out : :shell_out!
 
-          output = send(shell_out_cmd, homebrew_bin_path, *command, user: homebrew_uid, login: true, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          output = send(shell_out_cmd, homebrew_bin_path, *command, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           puts output.stderr
           output.stdout.chomp
         end
