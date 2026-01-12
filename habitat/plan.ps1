@@ -139,60 +139,14 @@ function Invoke-Prepare {
         $gem_file | Set-Content "$PWD\\gem.bat"
         $env:Path += ";c:\\Program Files\\Git\\bin;"
 
-        # Configure OpenSSL path for native gem compilation
-        $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        # CRITICAL: OpenSSL bin must be FIRST in PATH for Windows DLL loading
-        $env:PATH = "$openssl_dir\bin;$env:PATH"
-        $env:RUBY_DLL_PATH = "$openssl_dir\bin;$(Get-HabPackagePath zlib)\bin;$(Get-HabPackagePath visual-cpp-redist-2022)\bin;$(Get-HabPackagePath libarchive)\bin"
-        Write-BuildLine "OpenSSL Dir: $openssl_dir"
-        Write-BuildLine "OpenSSL bin in PATH: $openssl_dir\bin"
-
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
-        Write-BuildLine " ** Configuring bundler to use Habitat OpenSSL"
-        bundle config build.openssl --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
-        if (-not $?) { throw "unable to configure bundler OpenSSL path" }
-
-        # Uninstall any existing openssl gem that may have been installed with wrong OpenSSL version
-        Write-BuildLine " ** Uninstalling any existing openssl gem"
-        gem uninstall openssl -x -a -I 2>&1 | Out-Null
-
-        # Force installation of openssl gem with correct OpenSSL before bundler runs
-        Write-BuildLine " ** Pre-installing openssl gem with Habitat OpenSSL 3.5.0"
-        # Ensure OpenSSL 3.5.0 DLLs are found by prepending to PATH
-        $originalPath = $env:PATH
-        $env:PATH = "$openssl_dir\bin;$originalPath"
-        $env:RUBY_DLL_PATH = "$openssl_dir\bin;$(Get-HabPackagePath zlib)\bin;$(Get-HabPackagePath visual-cpp-redist-2022)\bin;$(Get-HabPackagePath libarchive)\bin"
-
-        gem install openssl:3.3.0 --no-document -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir\include" --with-openssl-lib="$openssl_dir\lib"
-        if (-not $?) { throw "Failed to pre-install openssl gem with Habitat OpenSSL" }
-
-        Write-BuildLine " ** Verifying openssl gem links to correct OpenSSL"
-        Write-BuildLine " ** PATH (first 200 chars): $($env:PATH.Substring(0, [Math]::Min(200, $env:PATH.Length)))..."
-        Write-BuildLine " ** RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
-
-        # Verify both compile-time and runtime OpenSSL versions match 3.5
-        $verifyScript = @'
-require 'openssl'
-puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION
-puts 'OpenSSL Version: ' + OpenSSL::OPENSSL_VERSION
-lib_version = OpenSSL::OPENSSL_LIBRARY_VERSION
-header_version = OpenSSL::OPENSSL_VERSION
-unless lib_version.include?('3.5')
-  puts "ERROR: Runtime library is #{lib_version} but expected 3.5.x"
-  exit(1)
-end
-unless header_version.include?('3.5')
-  puts "ERROR: Compile-time version is #{header_version} but expected 3.5.x"
-  exit(1)
-end
-puts 'SUCCESS: Both runtime and compile-time versions are 3.5.x'
-'@
-        ruby -e $verifyScript
-        if (-not $?) { throw "OpenSSL gem verification failed - not using Habitat OpenSSL 3.5.0" }
+        $openssl_dir = "$(Get-HabPackagePath core/openssl)"
+        Write-BuildLine "OpenSSL Dir $openssl_dir"
+        bundle config build.openssl --with-openssl-dir=$openssl_dir
     } finally {
         Pop-Location
     }
@@ -211,34 +165,12 @@ function Invoke-Build {
 
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
-        # Ensure OpenSSL and other native libraries are discoverable during gem compilation
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        # CRITICAL: OpenSSL bin must be FIRST in PATH for Windows DLL loading
-        $env:PATH = "$openssl_dir\bin;$env:PATH"
-        $env:RUBY_DLL_PATH = "$openssl_dir\bin;$(Get-HabPackagePath zlib)\bin;$(Get-HabPackagePath visual-cpp-redist-2022)\bin;$(Get-HabPackagePath libarchive)\bin"
-        Write-BuildLine "OpenSSL Dir: $openssl_dir"
-        Write-BuildLine "RUBY_DLL_PATH: $env:RUBY_DLL_PATH"
-        Write-BuildLine "PATH (first 300 chars): $($env:PATH.Substring(0, [Math]::Min(300, $env:PATH.Length)))..."
+        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
         if (-not $?) { throw "unable to install gem dependencies" }
-
-        # Verify bundler installed the correct openssl gem (or reinstall if wrong)
-        Write-BuildLine " ** Verifying bundler used correct openssl gem"
-        $opensslCheck = ruby -ropenssl -e "puts OpenSSL::OPENSSL_LIBRARY_VERSION" 2>&1
-        if ($opensslCheck -notmatch "3\.5") {
-            Write-BuildLine " ** WARNING: Bundler installed wrong OpenSSL version ($opensslCheck), forcing reinstall"
-            gem uninstall openssl -x -a -I 2>&1 | Out-Null
-            gem install openssl:3.3.0 --no-document -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
-            if (-not $?) { throw "Failed to reinstall openssl gem with Habitat OpenSSL" }
-
-            Write-BuildLine " ** Re-verifying openssl gem"
-            ruby -ropenssl -e "puts 'OpenSSL Library Version: ' + OpenSSL::OPENSSL_LIBRARY_VERSION; exit(1) unless OpenSSL::OPENSSL_LIBRARY_VERSION.include?('3.5')"
-            if (-not $?) { throw "OpenSSL gem still using wrong version after reinstall" }
-        } else {
-            Write-BuildLine " ** Verified: OpenSSL gem is using correct version ($opensslCheck)"
-        }
 
         Write-BuildLine " ** Cleaning up lint_roller Gemfile.lock"
         ruby .\scripts\cleanup_lint_roller.rb
@@ -319,11 +251,6 @@ function Invoke-Install {
         $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
         $env:GEM_PATH = "$pkg_prefix/vendor;$ruby_gem_path"
         $env:GEM_HOME = "$pkg_prefix/vendor"
-
-        # Ensure OpenSSL is discoverable for appbundler
-        $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        $env:RUBY_DLL_PATH = "$openssl_dir/bin;$(Get-HabPackagePath zlib)/bin;$(Get-HabPackagePath visual-cpp-redist-2022)/bin;$(Get-HabPackagePath libarchive)/bin"
-        $env:PATH = "$openssl_dir/bin;$env:PATH"
 
         # Test artifactory access and install chef-official-distribution if accessible
         Write-BuildLine "******* Testing access to artifactory*****"
