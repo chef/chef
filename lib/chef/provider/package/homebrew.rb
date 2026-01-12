@@ -100,10 +100,13 @@ class Chef
         # @returns [Hash] a hash of package information where the key is the package name
         def brew_info
           @brew_info ||= begin
+          p package_name_array
             command_array = ["info", "--json=v1"].concat package_name_array
+          p command_array
             # convert the array of hashes into a hash where the key is the package name
 
             cmd_output = brew_cmd_output(command_array, allow_failure: true)
+          p cmd_output 
 
             if cmd_output.empty?
               # we had some kind of failure so we need to iterate through each package to find them
@@ -199,6 +202,7 @@ class Chef
           shell_out_cmd = options[:allow_failure] ? :shell_out : :shell_out!
 
           output = send(shell_out_cmd, homebrew_bin_path, *command, user: homebrew_uid, login: true, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          puts output.stderr
           output.stdout.chomp
         end
       end

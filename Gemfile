@@ -47,7 +47,7 @@ end
 group(:ruby_shadow) do
   install_if -> { RUBY_PLATFORM.match?(/linux|darwin|bsd|solaris/i) } do
     # if ruby-shadow does a release that supports ruby-3.0 this can be removed
-    gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
+    gem "chef-ruby-shadow"
   end
 end
 
