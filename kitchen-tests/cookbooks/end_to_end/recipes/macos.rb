@@ -91,8 +91,7 @@ homebrew_update "update" do
   action :update
 end
 
-# homebrew_package "dos2unix"
-Mixlib::ShellOut.new("brew install dos2unix --verbose --debug").run_command
+homebrew_package "dos2unix"
 
 homebrew_package "dos2unix" do
   action :purge
