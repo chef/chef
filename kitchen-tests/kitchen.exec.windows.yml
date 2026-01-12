@@ -39,7 +39,7 @@ lifecycle:
         New-Item -ItemType Directory -Force -Path $binDir | Out-Null
         $wrapperPath = Join-Path $binDir 'chef-client.bat'
         $content = "@echo off`r`n"
-        $content += "chef-client %*`r`n"
+        $content += "C:\hab\bin\chef-client.bat %*`r`n"
         Set-Content -Path $wrapperPath -Value $content -Encoding ASCII
         Write-Host "Ensured wrapper: $wrapperPath"
   post_converge:
