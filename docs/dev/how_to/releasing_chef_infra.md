@@ -24,6 +24,8 @@ Open 2 tickets on the [Chef-Infra board](https://chefio.atlassian.net/jira/softw
 
 ### Write the release notes
 
+Release notes are published from the [chef/chef-web-docs repository](https://github.com/chef/chef-web-docs/blob/main/content/release_notes/client.md).
+
 The importance of our release notes cannot be understated. As developers, we understand changes between releases and we are accustomed to reading git history. Users are not, and if we don't call out new functionality, they will not find it on their own. We need to take the time and effort to write quality release notes that give a compelling reason to upgrade and also properly warn of any potential breaking changes. Make sure to involve the docs team so we can make sure our English is legible.
 
 #### Overall Release Notes Structure
