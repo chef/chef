@@ -39,7 +39,7 @@ lifecycle:
         New-Item -ItemType Directory -Force -Path $binDir | Out-Null
         $wrapperPath = Join-Path $binDir 'chef-client.bat'
         $content = "@echo off`r`n"
-        $content += "chef-client %*`r`n"
+        $content += "C:\hab\bin\chef-client.bat %*`r`n"
         Set-Content -Path $wrapperPath -Value $content -Encoding ASCII
         Write-Host "Ensured wrapper: $wrapperPath"
   post_converge:
@@ -52,51 +52,48 @@ lifecycle:
         $content += "require 'aws-sdk'"
         Set-Content -Path (Join-Path $clientDir 'client.rb') -Value $content -Encoding UTF8
 
-    - remote: |
-        $targetDir = "C:\opscode\chef\embedded\bin"
-        New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
-        $candidates = @("C:\opscode\chef-workstation\embedded\bin\openssl.exe", "D:\opscode\chef-workstation\embedded\bin\openssl.exe")
-        $openssl = $null
-        foreach ($cand in $candidates) {
-          if (Test-Path $cand) { $openssl = $cand; break }
+        $habExe = $(Get-Command hab).Source
+        $opensslroot = $(hab pkg path core/openssl)
+        $binOpenssl = $opensslroot + "\bin\openssl.exe"
+        if (-not (Test-Path $binOpenssl)) {
+          Write-Error "openssl.exe not found at expected location: $binOpenssl"
+          exit 1
         }
-        if (-not $openssl) {
-          $searchRoot = "C:\opscode"
-          if (Test-Path $searchRoot) {
-            $found = Get-ChildItem -Path $searchRoot -Recurse -Filter openssl.exe -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'embedded\\bin' } | Select-Object -First 1
-            if ($found) { $openssl = $found.FullName }
-          }
-        }
-        if ($openssl) {
-          Copy-Item -Path $openssl -Destination (Join-Path $targetDir 'openssl.exe') -Force
-          Write-Host "Mapped openssl.exe to $targetDir"
-        } else {
-          Write-Warning "OpenSSL not found"
-        }
+        Write-Host "Using Habitat-based openssl... @ $binOpenssl"
+        Write-Host "Using hab exe at $habExe"
 
-    - remote: |
         $sslDir = "C:\ssl_test"
-        New-Item -ItemType Directory -Force -Path $sslDir | Out-Null
+        Write-Host "Using openssl at $binOpenssl"
+        if (-not(Test-Path "$sslDir")) {
+          New-Item -ItemType Directory -Force -Path $sslDir | Out-Null
+        }
+        Set-Content -Path "$sslDir\openssl_path.txt" -Value $binOpenssl -Encoding ASCII
+        Write-Host "Wrote openssl path to $sslDir\openssl_path.txt"
 
-        $opensslPath = "C:\opscode\chef\embedded\bin\openssl.exe"
-        if (-not (Test-Path $opensslPath)) {
-          Write-Error "openssl.exe not found at $opensslPath"
+        Write-Host "Setting the OPENSSL_CONF environment variable to the Habitat package's openssl.cnf"
+
+        $opensslConf = Join-Path $opensslroot -ChildPath 'ssl\openssl.cnf'
+        if (Test-Path $opensslConf) {
+          $env:OPENSSL_CONF = $opensslConf
+          Write-Host "Set OPENSSL_CONF to $opensslConf"
+        } else {
+          Write-Error "Could not find openssl.cnf at expected location: $opensslConf"
           exit 1
         }
 
         Push-Location $sslDir
         # Generate CA
-        & $opensslPath genrsa -out ca.key 2048
-        & $opensslPath req -x509 -new -nodes -key ca.key -subj "/CN=Test CA" -days 365 -out my_ca.crt
+        & $binOpenssl genrsa -out ca.key 2048
+        & $binOpenssl req -x509 -new -nodes -key ca.key -subj "/CN=Test CA" -days 365 -out my_ca.crt
         # Generate leaf key/cert
-        & $opensslPath genrsa -out my_signed_cert.key 2048
-        & $opensslPath req -new -key my_signed_cert.key -subj "/CN=localhost" -out my_signed_cert.csr
-        & $opensslPath x509 -req -in my_signed_cert.csr -CA my_ca.crt -CAkey ca.key -CAcreateserial -out my_signed_cert.crt -days 365 -sha256
+        & $binOpenssl genrsa -out my_signed_cert.key 2048
+        & $binOpenssl req -new -key my_signed_cert.key -subj "/CN=localhost" -out my_signed_cert.csr
+        & $binOpenssl x509 -req -in my_signed_cert.csr -CA my_ca.crt -CAkey ca.key -CAcreateserial -out my_signed_cert.crt -days 365 -sha256
         Pop-Location
 
         # Quick verify to mirror the test expectation
-        $verify = & $opensslPath verify -CAfile "$sslDir\my_ca.crt" "$sslDir\my_signed_cert.crt"
-        Write-Host "openssl verify output: $verify"
+        $verify = & $binOpenssl verify -CAfile "$sslDir\my_ca.crt" "$sslDir\my_signed_cert.crt"
+        Write-Host "Leaving kitchen.exec.windows.yml - openssl verify output: $verify"
 
 platforms:
   - name: windows-2022
