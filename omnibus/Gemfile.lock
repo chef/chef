@@ -348,12 +348,6 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw32)
-      ffi (~> 1.9)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
     rest-client (2.1.0-x86-mingw32)
       ffi (~> 1.9)
       http-accept (>= 1.7.0, < 2.0)
@@ -456,7 +450,7 @@ GEM
     unf_ext (0.0.8.2)
     unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
-    uri (0.13.0)
+    uri (0.13.3)
     uuidtools (2.2.0)
     vault (0.18.2)
       aws-sigv4
@@ -510,7 +504,6 @@ PLATFORMS
   ruby
   x64-mingw
   x64-mingw-ucrt
-  x64-mingw32
   x86-mingw32
 
 DEPENDENCIES
