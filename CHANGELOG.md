@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.142 -->
-## [v19.1.142](https://github.com/chef/chef/tree/v19.1.142) (2026-01-13)
+<!-- latest_release 19.1.143 -->
+## [v19.1.143](https://github.com/chef/chef/tree/v19.1.143) (2026-01-13)
 
 #### Merged Pull Requests
-- Change the plan file to use Ruby 3.4 latest package [#15542](https://github.com/chef/chef/pull/15542) ([johnmccrae](https://github.com/johnmccrae))
+- Raise FileTypeMismatch when directory :create encounters a file [#15559](https://github.com/chef/chef/pull/15559) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Raise FileTypeMismatch when directory :create encounters a file [#15559](https://github.com/chef/chef/pull/15559) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.143 -->
 - Change the plan file to use Ruby 3.4 latest package [#15542](https://github.com/chef/chef/pull/15542) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.142 -->
 - bump ffi-yajl to 2.7.6 [#15550](https://github.com/chef/chef/pull/15550) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.141 -->
 - Fix kitchen test homebrew_package failure on post-install hook [#15551](https://github.com/chef/chef/pull/15551) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.140 -->
