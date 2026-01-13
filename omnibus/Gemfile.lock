@@ -236,7 +236,7 @@ GEM
       train-core (~> 3.10)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    iostruct (0.1.2)
+    iostruct (0.5.0)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -329,9 +329,9 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    pedump (0.6.10)
+    pedump (0.7.3)
       awesome_print
-      iostruct (>= 0.0.4)
+      iostruct (>= 0.5.0)
       multipart-post (>= 2.0.0)
       rainbow
       zhexdump (>= 0.0.2)
@@ -344,12 +344,6 @@ GEM
     rack (2.2.9)
     rainbow (3.1.1)
     rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rest-client (2.1.0-x64-mingw32)
-      ffi (~> 1.9)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -504,13 +498,12 @@ GEM
       winrm (~> 2.0)
     wisper (2.0.1)
     wmi-lite (1.0.7)
-    zhexdump (0.1.1)
+    zhexdump (0.3.0)
 
 PLATFORMS
   ruby
   x64-mingw
   x64-mingw-ucrt
-  x64-mingw32
   x86-mingw32
 
 DEPENDENCIES
