@@ -23,7 +23,7 @@ class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
 
-      provides :yum_package, target_mode: true
+      provides :yum_package
       provides :package, platform_family: "fedora_derived"
       target_mode support: :full
 
@@ -156,11 +156,6 @@ class Chef
 
       property :yum_binary, String,
         description: "The path to the yum binary."
-
-      property :environment, Hash,
-        introduced: "19.0",
-        description: "A Hash of environment variables in the form of {'ENV_VARIABLE' => 'VALUE'} to be set before running the command.",
-        default: {}, desired_state: false
     end
   end
 end

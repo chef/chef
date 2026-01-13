@@ -17,16 +17,6 @@
 require "spec_helper"
 
 describe Chef::Resource::MacosUserDefaults, :macos_only do
-  before(:all) do
-    @test_temp_dir = Dir.mktmpdir("chef_macos_test")
-  end
-
-  after(:all) do
-    FileUtils.rm_rf(@test_temp_dir)
-  end
-
-  let(:temp_pref_path) { File.join(@test_temp_dir, "test_preferences.plist") }
-
   def create_resource
     node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
@@ -68,7 +58,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
 
   context "can process expected data" do
     it "set array values" do
-      resource.domain temp_pref_path
+      resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestArrayValues"
       resource.value [ "/Library/Managed Installs/fake.log", "/Library/Managed Installs/also_fake.log"]
       resource.run_action(:write)
@@ -76,7 +66,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
     end
 
     it "set dictionary value" do
-      resource.domain temp_pref_path
+      resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestDictionaryValues"
       resource.value "User": "/Library/Managed Installs/way_fake.log"
       resource.run_action(:write)
@@ -84,7 +74,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
     end
 
     it "set array of dictionaries" do
-      resource.domain temp_pref_path
+      resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestArrayWithDictionary"
       resource.value [ { "User": "/Library/Managed Installs/way_fake.log" } ]
       resource.run_action(:write)
@@ -92,7 +82,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
     end
 
     it "set boolean for preference value" do
-      resource.domain temp_pref_path
+      resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestBooleanValue"
       resource.value true
       resource.run_action(:write)
@@ -116,7 +106,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
   end
 
   it "we can delete a preference with full path" do
-    resource.domain temp_pref_path
+    resource.domain "/Library/Preferences/ManagedInstalls"
     resource.key "TestKey"
     expect { resource.run_action(:delete) }. to_not raise_error
   end
@@ -129,7 +119,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
 
   context "resource can process FFI::Pointer type" do
     it "for host property" do
-      resource.domain temp_pref_path
+      resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestDictionaryValues"
       resource.value "User": "/Library/Managed Installs/way_fake.log"
       resource.host :current
@@ -138,7 +128,7 @@ describe Chef::Resource::MacosUserDefaults, :macos_only do
     end
 
     it "for user property" do
-      resource.domain temp_pref_path
+      resource.domain "/Library/Preferences/ManagedInstalls"
       resource.key "TestDictionaryValues"
       resource.value "User": "/Library/Managed Installs/way_fake.log"
       resource.user :current

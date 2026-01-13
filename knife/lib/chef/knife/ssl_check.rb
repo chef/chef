@@ -267,7 +267,7 @@ class Chef
 
       def check_X509_certificate(cert_file)
         store = OpenSSL::X509::Store.new
-        cert = OpenSSL::X509::Certificate.new(File.read(File.expand_path(cert_file)))
+        cert = OpenSSL::X509::Certificate.new(IO.read(File.expand_path(cert_file)))
         begin
           store.add_cert(cert)
           # test if the store can verify the cert we just added

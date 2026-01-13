@@ -96,7 +96,7 @@ class Chef
             "/opt/homebrew",
             "/usr/local/Homebrew",
             "/home/linuxbrew/.linuxbrew",
-          ].select { |x| Dir.exist?(x) }.first
+          ].filter_map { |x| x if Dir.exist?(x) }.first
           tap_dir = name.gsub("/", "/homebrew-")
           ::File.directory?("#{base_path}/Library/Taps/#{tap_dir}")
         end

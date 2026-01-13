@@ -58,7 +58,7 @@ class Chef
         long: "--concurrency NUMBER_OF_THREADS",
         description: "How many concurrent threads will be used.",
         default: 10,
-        proc: lambda(&:to_i)
+        proc: lambda { |o| o.to_i }
 
       option :environment,
         short: "-E",

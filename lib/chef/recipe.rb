@@ -18,7 +18,6 @@
 #
 
 autoload :YAML, "yaml"
-require_relative "json_compat"
 require_relative "dsl/recipe"
 require_relative "mixin/from_file"
 require_relative "mixin/deprecation"
@@ -83,9 +82,7 @@ class Chef
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
         yaml_contents = IO.read(filename)
-        # Count document separators instead of using unsafe load_stream
-        doc_count = yaml_contents.scan(/^---\s*$/).length
-        if doc_count > 1
+        if ::YAML.load_stream(yaml_contents).length > 1
           raise ArgumentError, "YAML recipe '#{filename}' contains multiple documents, only one is supported"
         end
 
@@ -97,34 +94,15 @@ class Chef
 
     def from_yaml(string)
       res = ::YAML.safe_load(string, permitted_classes: [Date])
-      unless res.is_a?(Hash) && (res.key?("resources") || res.key?("include_recipes"))
-        raise ArgumentError, "YAML recipe '#{source_file}' must contain a top-level 'resources' or 'include_recipes' hash (YAML sequence), i.e. 'resources:'"
-      end
-
-      from_hash(res)
-    end
-
-    def from_json_file(filename)
-      self.source_file = filename
-      if File.file?(filename) && File.readable?(filename)
-        json_contents = IO.read(filename)
-        from_json(json_contents)
-      else
-        raise IOError, "Cannot open or read file '#{filename}'!"
-      end
-    end
-
-    def from_json(string)
-      res = JSONCompat.from_json(string)
-      unless res.is_a?(Hash) && (res.key?("resources") || res.key?("include_recipes"))
-        raise ArgumentError, "JSON recipe '#{source_file}' must contain a top-level 'resources' or 'include_recipes' hash key"
+      unless res.is_a?(Hash) && res.key?("resources")
+        raise ArgumentError, "YAML recipe '#{source_file}' must contain a top-level 'resources' hash (YAML sequence), i.e. 'resources:'"
       end
 
       from_hash(res)
     end
 
     def from_hash(hash)
-      hash["resources"]&.each do |rhash|
+      hash["resources"].each do |rhash|
         type = rhash.delete("type").to_sym
         name = rhash.delete("name")
         res = declare_resource(type, name)
@@ -132,9 +110,6 @@ class Chef
           # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
           res.send(key, value)
         end
-      end
-      hash["include_recipes"]&.each do |recipe|
-        run_context.include_recipe recipe
       end
     end
 

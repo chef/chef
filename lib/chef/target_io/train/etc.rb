@@ -102,6 +102,10 @@ module TargetIO
             "mem"      => x.at(3),
           }
         end
+
+        def __transport_connection
+          Chef.run_context&.transport_connection
+        end
       end
     end
   end

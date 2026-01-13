@@ -16,7 +16,6 @@
 
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
-require_relative "helpers/path_helpers"
 
 class Chef
   class Resource
@@ -69,8 +68,6 @@ class Chef
       DOC
 
       resource_name :chef_client_scheduled_task
-
-      extend Chef::ResourceHelpers::PathHelpers
 
       property :task_name, String,
         description: "The name of the scheduled task to create.",
@@ -139,7 +136,7 @@ class Chef
 
       property :chef_binary_path, String,
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
-        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path }
+        default: "C:/#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
@@ -148,7 +145,7 @@ class Chef
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
         introduced: "17.5",
-        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v.between?(0, 10) } }
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
 
       action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists

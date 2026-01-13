@@ -106,7 +106,7 @@ class Chef
         #
         # @return [Boolean]
         def remote_file_schema?(schema)
-          true if %w{http https ftp}.include?(schema)
+          return true if %w{http https ftp}.include?(schema)
         end
 
         # return new_resource.source if we have a proper URI specified

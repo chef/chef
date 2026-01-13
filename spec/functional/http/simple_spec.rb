@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
@@ -91,7 +90,7 @@ describe Chef::HTTP::Simple do
   context "when Chef::Log.level = :trace" do
     before do
       Chef::Log.level = :trace
-      @debug_log = String.new
+      @debug_log = ""
       allow(Chef::Log).to receive(:trace) { |str| @debug_log << str }
     end
 

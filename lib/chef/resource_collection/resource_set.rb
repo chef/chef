@@ -26,14 +26,14 @@ class Chef
 
       # Matches a multiple resource lookup specification,
       # e.g., "service[nginx,unicorn]"
-      MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/
+      MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/.freeze
 
       # Matches a single resource lookup specification,
       # e.g., "service[nginx]"
-      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/
+      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/.freeze
 
       # Matches e.g. "apt_update" with no name
-      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/
+      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/.freeze
 
       def initialize
         @resources_by_key = {}
@@ -122,8 +122,6 @@ class Chef
       # === Raises
       # * Chef::Exceptions::InvalidResourceSpecification for all invalid input.
       def validate_lookup_spec!(query_object)
-        # expect query_object to be from a controlled source
-        # codeql[ruby/polynomial-redos]
         case query_object
           when Chef::Resource, SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH, Hash
             true
@@ -164,23 +162,20 @@ class Chef
 
       def find_resource_by_string(arg)
         begin
-          # expect arg to be from a controlled source
-          # codeql[ruby/polynomial-redos]
           if arg =~ SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
             return [ lookup(create_key(resource_type, name)) ]
           end
         rescue Chef::Exceptions::ResourceNotFound => e
-          # expect arg to be from a controlled source
-          # codeql[ruby/polynomial-redos]
           if arg =~ MULTIPLE_RESOURCE_MATCH
             begin
+              results = []
               resource_type = $1
               arg =~ /^.+\[(.+)\]$/
               resource_list = $1
-              results = resource_list.split(",").map do |instance_name|
-                lookup(create_key(resource_type, instance_name))
+              resource_list.split(",").each do |instance_name|
+                results << lookup(create_key(resource_type, instance_name))
               end
               Chef.deprecated(:multiresource_match, "The resource_collection multi-resource syntax is deprecated")
               return results

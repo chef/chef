@@ -9,8 +9,6 @@
 # release.
 ############################################################################
 
-set -eou pipefail
-#set expeditor_version equal to the version file
-export EXPEDITOR_VERSION=$(cat VERSION)
+set -evx
 
 sed -i -r "s/^ARG VERSION=.+/ARG VERSION=${EXPEDITOR_VERSION}/" Dockerfile

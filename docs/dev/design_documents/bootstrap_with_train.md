@@ -147,3 +147,4 @@ protocol, so both are handled within the bootstrap command directly.
 If we want to support additional protocols, it will become unwieldy to continue with protocol `if`
 checks, and would be advisable to separate out protocol-specific behaviors
 into classes determined at runtime based on protocol.
+

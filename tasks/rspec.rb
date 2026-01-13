@@ -67,7 +67,7 @@ begin
     desc "Run chef's node and role unit specs with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
       t.verbose = false
-      t.rspec_opts = %w{--profile}
+      t.rspec_opts = %w{--require active_support/core_ext --profile}
       # Only node_spec and role_spec specifically have issues, target those tests
       t.pattern = FileList["spec/unit/node_spec.rb", "spec/unit/role_spec.rb"]
     end

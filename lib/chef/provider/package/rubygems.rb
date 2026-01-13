@@ -92,12 +92,7 @@ class Chef
           #
           def installed_versions(gem_dep)
             rubygems_version = Gem::Version.new(Gem::VERSION)
-            if rubygems_version >= Gem::Version.new("3.5.11")
-              # The API changed as of rubygems 3.5.11
-              stubs = gem_specification_record.send(:installed_stubs, "#{gem_dep.name}-*.gemspec")
-              stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
-              stubs
-            elsif rubygems_version >= Gem::Version.new("3.1")
+            if rubygems_version >= Gem::Version.new("3.1")
               # In newer Rubygems, bundler is now a "default gem" which means
               # even with AlternateGemEnvironment when you try to get the
               # installed versions, you get the one from Chef's Ruby's default
@@ -279,10 +274,6 @@ class Chef
             Gem::Specification
           end
 
-          def gem_specification_record
-            Gem::SpecificationRecord.new(gem_specification.dirs)
-          end
-
           def rubygems_version
             Gem::VERSION
           end
@@ -296,7 +287,7 @@ class Chef
         end
 
         class AlternateGemEnvironment < GemEnvironment
-          JRUBY_PLATFORM = /(:?universal|x86_64|x86)\-java\-[0-9\.]+/
+          JRUBY_PLATFORM = /(:?universal|x86_64|x86)\-java\-[0-9\.]+/.freeze
 
           def self.gempath_cache
             @gempath_cache ||= {}
@@ -343,13 +334,6 @@ class Chef
             @specification
           end
 
-          def gem_specification_record
-            unless @specification_record
-              @specification_record = Gem::SpecificationRecord.new(gem_specification.dirs)
-            end
-            @specification_record
-          end
-
           ##
           # Attempt to detect the correct platform settings for the target gem
           # environment.
@@ -387,27 +371,6 @@ class Chef
           end
 
           def candidate_version_from_remote(gem_dependency, *sources)
-            source_args = sources.compact.map { |s| "--source=#{s}" }.join(" ")
-            cmd = "#{@gem_binary_location} list #{gem_dependency.name} --remote --all #{source_args}"
-            result = shell_out!(cmd)
-
-            versions = []
-            result.stdout.each_line do |line|
-              next unless line.start_with?("#{gem_dependency.name} (")
-
-              version_string = line[/\((.*)\)/, 1]
-              next unless version_string
-
-              version_string.split(/,\s*/).each do |v|
-                version = Gem::Version.new(v.strip)
-                versions << version if gem_dependency.requirement.satisfied_by?(version)
-              rescue ArgumentError
-                # Skip invalid versions
-              end
-            end
-
-            versions.max
-          rescue Mixlib::ShellOut::ShellCommandFailed
             with_gem_sources(*sources) do
               with_gem_platforms(*gem_platforms) do
                 find_newest_remote_version(gem_dependency, *sources)
@@ -550,15 +513,6 @@ class Chef
             current_resource.version(current_spec.version.to_s)
           end
           current_resource
-        end
-
-        def define_resource_requirements
-          super
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.environment }
-            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
-          end
         end
 
         def cleanup_after_converge

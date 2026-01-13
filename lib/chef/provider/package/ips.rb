@@ -39,11 +39,6 @@ class Chef
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found"
             a.whyrun "Assuming package #{new_resource.package_name} would have been made available."
           end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.environment }
-            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
-          end
         end
 
         def get_current_version

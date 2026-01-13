@@ -216,7 +216,7 @@ describe Chef::Mixin::Template, "render_template" do
 
         it "should create a pretty output for the terminal" do
           expect(exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
-          expect(exception.to_s).to match(/undefined method .*\[\].* for nil/)
+          expect(exception.to_s).to match(/undefined method `\[\]' for nil:NilClass/)
           expect(exception.to_s).to include("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
           expect(exception.to_s).to include(exception.original_exception.backtrace.first)
         end
@@ -283,7 +283,7 @@ describe Chef::Mixin::Template, "render_template" do
 
       it "should have the original exception" do
         expect(@exception.original_exception).to be
-        expect(@exception.original_exception.message).to match(/undefined local variable or method [`']this_is_not_defined[`']/)
+        expect(@exception.original_exception.message).to match(/undefined local variable or method `this_is_not_defined'/)
       end
 
       it "should determine the line number of the exception" do
@@ -299,7 +299,7 @@ describe Chef::Mixin::Template, "render_template" do
       end
 
       it "should defer the message to the original exception" do
-        expect(@exception.message).to match(/undefined local variable or method [`']this_is_not_defined[`']/)
+        expect(@exception.message).to match(/undefined local variable or method `this_is_not_defined'/)
       end
 
       it "should provide a nice source location" do
@@ -308,7 +308,7 @@ describe Chef::Mixin::Template, "render_template" do
 
       it "should create a pretty output for the terminal" do
         expect(@exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
-        expect(@exception.to_s).to match(/undefined local variable or method [`']this_is_not_defined[`']/)
+        expect(@exception.to_s).to match(/undefined local variable or method `this_is_not_defined'/)
         expect(@exception.to_s).to include("  2: bar\n  3: baz\n  4: <%= this_is_not_defined %>\n  5: quin\n  6: qunx")
         expect(@exception.to_s).to include(@exception.original_exception.backtrace.first)
       end

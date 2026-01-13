@@ -123,3 +123,4 @@ describe Chef::SecretFetcher::HashiVault do
     end
   end
 end
+

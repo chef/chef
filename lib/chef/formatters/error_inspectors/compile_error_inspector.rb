@@ -126,7 +126,7 @@ class Chef
         end
 
         def filtered_bt
-          backtrace_lines_in_cookbooks.any? ? backtrace_lines_in_cookbooks : exception.backtrace
+          backtrace_lines_in_cookbooks.count > 0 ? backtrace_lines_in_cookbooks : exception.backtrace
         end
 
         def found_error_in_cookbooks?

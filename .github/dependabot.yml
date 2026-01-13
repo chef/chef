@@ -11,7 +11,7 @@ updates:
   labels:
   - "Type: Chore"
 - package-ecosystem: bundler
-  target-branch: "chef-18"
+  target-branch: "chef-17"
   directory: "/omnibus"
   schedule:
     interval: daily
@@ -21,7 +21,7 @@ updates:
   labels:
   - "Type: Chore"
 - package-ecosystem: bundler
-  target-branch: "chef-17"
+  target-branch: "chef-16"
   directory: "/omnibus"
   schedule:
     interval: daily

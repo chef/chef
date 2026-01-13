@@ -52,11 +52,10 @@ class Chef
           end
 
           def children
-            entries = Dir.entries(file_path)
-            entries.sort!
-            entries.map! { |child_name| make_child_entry(child_name) }
-            entries.select! { |child| child && can_have_child?(child.name, child.dir?) && !(child.dir? && child.children.size == 0 ) }
-            entries
+            entries = Dir.entries(file_path).sort
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |child| child && can_have_child?(child.name, child.dir?) }
+            entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
@@ -65,7 +64,7 @@ class Chef
             if is_dir
               return recursive && name != "." && name != ".."
             elsif ruby_only
-              return false unless name.end_with?(".rb")
+              return false if name[-3..] != ".rb"
             end
 
             # Check chefignore
@@ -88,18 +87,6 @@ class Chef
             end
 
             true
-          end
-
-          # This is a lighter (than `#children.size == 0`) existence check.
-          # return earlier where we only care if 1 or more children exist
-          def any_children?
-            Dir.entries(file_path).any? { |child_name|
-              (child = make_child_entry(child_name)) &&
-                can_have_child?(child.name, child.dir?) &&
-                !(child.dir? && !child.any_children? )
-            }
-          rescue Errno::ENOENT
-            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def write_pretty_json

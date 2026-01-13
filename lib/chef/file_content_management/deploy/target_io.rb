@@ -12,8 +12,10 @@ module TargetIO
       uid  = stat.uid
       gid  = stat.gid
 
+      # TODO: Switch to TargetIO::File.open as soon as writing is implemented
       Chef::Log.trace("Uploading local temporary file #{src} as remote file #{dst}")
-      ::TargetIO::File.upload(src, dst)
+      connection = Chef.run_context&.transport_connection
+      connection.upload(src, dst)
 
       Chef::Log.trace("Applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{dst}")
       ::TargetIO::File.chown(uid, nil, dst)

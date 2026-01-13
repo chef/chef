@@ -28,7 +28,7 @@ class Chef
         # to maintain a local state of service across restart's internal calls
         attr_accessor :upstart_service_running
 
-        UPSTART_STATE_FORMAT = %r{\S+ \(?(start|stop)?\)? ?[/ ](\w+)}
+        UPSTART_STATE_FORMAT = %r{\S+ \(?(start|stop)?\)? ?[/ ](\w+)}.freeze
 
         # Returns true if the configs for the service name has upstart variable
         def self.supports?(resource, action)

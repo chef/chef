@@ -145,7 +145,6 @@ RSpec.configure do |config|
   # config.filter_run_excluding :fips_mode if windows?
 
   config.filter_run_excluding windows_only: true unless windows?
-  config.filter_run_excluding git_no_tag_head: true if git_version_ge?("2.48.0")
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_windows_11: true if windows_11?
   config.filter_run_excluding not_supported_on_macos: true if macos?
@@ -154,6 +153,7 @@ RSpec.configure do |config|
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_freebsd_gte_12_3: true if freebsd_gte_12_3?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
+  config.filter_run_excluding not_supported_on_gce: true if gce?
   config.filter_run_excluding win2012r2_only: true unless windows_2012r2?
   config.filter_run_excluding windows64_only: true unless windows64?
   config.filter_run_excluding windows32_only: true unless windows32?
@@ -180,7 +180,7 @@ RSpec.configure do |config|
   config.filter_run_excluding requires_unprivileged_user: true if root?
   config.filter_run_excluding openssl_gte_101: true unless openssl_gte_101?
   config.filter_run_excluding openssl_lt_101: true unless openssl_lt_101?
-  config.filter_run_excluding openssl_version_check: true unless ENV.fetch("BUILDKITE_BUILD_URL", "") =~ /adhoc/
+  config.filter_run_excluding openssl_version_check: true unless ENV.fetch("HAB_TEST", "").match?("true")
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
   config.filter_run_excluding broken: true
   config.filter_run_excluding not_wpar: true unless wpar?

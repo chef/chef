@@ -40,11 +40,6 @@ class Chef
             a.failure_message Chef::Exceptions::Package, "#{new_resource} source file(s) do not exist: #{missing_sources}"
             a.whyrun "Assuming they would have been previously created."
           end
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.environment }
-            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
-          end
         end
 
         def load_current_resource

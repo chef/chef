@@ -288,18 +288,3 @@ def hab_test?
 
   @hab_test = ENV["HAB_TEST"] =~ /true/i ? true : false
 end
-
-def git_version_ge?(version)
-  result = ShellHelpers.shell_out("git --version")
-  return false unless result.exitstatus == 0
-
-  # Parse version from output like "git version 2.32.0"
-  match = result.stdout.match(/git version (\d+\.\d+\.\d+)/)
-  return false unless match
-
-  current_version = Gem::Version.new(match[1])
-  required_version = Gem::Version.new(version)
-  current_version >= required_version
-rescue
-  false
-end

@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Thom May (<thom@clearairturbulence.org>)
@@ -46,25 +45,25 @@ class Chef
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
 
       UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +#{ChefUtils::Dist::Org::WEBSITE})".freeze
-      DEFAULT_UA = "Chef Client" + UA_COMMON
+      DEFAULT_UA = "Chef Client" << UA_COMMON
 
-      USER_AGENT = "User-Agent"
+      USER_AGENT = "User-Agent".freeze
 
-      ACCEPT_ENCODING = "Accept-Encoding"
-      ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+      ACCEPT_ENCODING = "Accept-Encoding".freeze
+      ENCODING_GZIP_DEFLATE = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3".freeze
 
-      GET     = "get"
-      PATCH   = "patch"
-      PUT     = "put"
-      POST    = "post"
-      DELETE  = "delete"
-      HEAD    = "head"
+      GET     = "get".freeze
+      PATCH   = "patch".freeze
+      PUT     = "put".freeze
+      POST    = "post".freeze
+      DELETE  = "delete".freeze
+      HEAD    = "head".freeze
 
-      HTTPS = "https"
+      HTTPS = "https".freeze
 
-      SLASH = "/"
+      SLASH = "/".freeze
 
-      HOST_LOWER = "host"
+      HOST_LOWER = "host".freeze
 
       URI_SCHEME_DEFAULT_PORT = { "http" => 80, "https" => 443 }.freeze
 
@@ -150,7 +149,7 @@ class Chef
         # Only include port in Host header when it is not the default port
         # for the url scheme (80;443) - Fixes CHEF-5355
         host_header = uri_safe_host.dup
-        host_header += ":#{port}" unless URI_SCHEME_DEFAULT_PORT[@url.scheme] == port.to_i
+        host_header << ":#{port}" unless URI_SCHEME_DEFAULT_PORT[@url.scheme] == port.to_i
         @headers["Host"] = host_header unless @headers.keys.any? { |k| k.downcase.to_s == HOST_LOWER }
 
         @headers
@@ -158,7 +157,7 @@ class Chef
 
       def configure_http_request(request_body = nil)
         req_path = path.to_s.dup
-        req_path += "?#{query}" if query
+        req_path << "?#{query}" if query
 
         @http_request = case method.to_s.downcase
                         when GET

@@ -51,7 +51,7 @@ class Chef
           else
             # Ensure the .chef/ folder exists.
             FileUtils.mkdir_p(File.dirname(context_file))
-            File.write(context_file, "#{profile}\n")
+            IO.write(context_file, "#{profile}\n")
             ui.msg("Set default profile to #{profile}")
           end
         end

@@ -88,12 +88,12 @@ class Chef
         def install_package(name, version)
           if current_resource.version
             if allow_downgrade
-              shell_out!("rpm", options, "-U", "--oldpackage", new_resource.source, env: new_resource.environment)
+              shell_out!("rpm", options, "-U", "--oldpackage", new_resource.source)
             else
-              shell_out!("rpm", options, "-U", new_resource.source, env: new_resource.environment)
+              shell_out!("rpm", options, "-U", new_resource.source)
             end
           else
-            shell_out!("rpm", options, "-i", new_resource.source, env: new_resource.environment)
+            shell_out!("rpm", options, "-i", new_resource.source)
           end
         end
 

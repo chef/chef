@@ -89,7 +89,11 @@ class Chef
           key.public_key(File.read(File.expand_path(@config[:public_key])))
         end
 
-        key.name(@config[:key_name] || @original_name)
+        if @config[:key_name]
+          key.name(@config[:key_name])
+        else
+          key.name(@original_name)
+        end
 
         if @config[:expiration_date]
           key.expiration_date(@config[:expiration_date])

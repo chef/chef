@@ -105,8 +105,9 @@ class Chef
         columns = environments.count + 1
         environments.each { |env| rows << ui.color(env, :bold) }
         cookbooks.each_key do |c|
-          total = environments.map { |n| constraints[n][c] }
-          if total.uniq.one?
+          total = []
+          environments.each { |n| total << constraints[n][c] }
+          if total.uniq.count == 1
             next if config[:mismatch]
 
             color = :white

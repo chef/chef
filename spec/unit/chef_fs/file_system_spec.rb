@@ -19,7 +19,6 @@
 require "spec_helper"
 require "chef/chef_fs/file_system"
 require "chef/chef_fs/file_pattern"
-require "chef/chef_fs/file_system/chef_server/cookbook_dir"
 
 describe Chef::ChefFS::FileSystem, ruby: ">= 3.0" do
   include FileSystemSupport
@@ -148,79 +147,4 @@ describe Chef::ChefFS::FileSystem, ruby: ">= 3.0" do
   end
 
   # Need to add the test case for copy_to method - not able to do the implimentation with Dir.mktmpdir
-
-  describe ".create_cookbook_status_file" do
-    let(:chef_server_cookbook_dir) { double("Chef::ChefFS::FileSystem::ChefServer::CookbookDir") }
-    let(:local_cookbook_dir) { double("LocalCookbookDir") }
-    let(:status_file) { double("StatusFile") }
-    let(:non_cookbook_dir) { double("RegularDir") }
-
-    before do
-      allow(Chef::ChefFS::FileSystem).to receive(:create_cookbook_status_file).and_call_original
-    end
-
-    context "when source is a CookbookDir" do
-      before do
-        allow(chef_server_cookbook_dir).to receive(:is_a?).with(Chef::ChefFS::FileSystem::ChefServer::CookbookDir).and_return(true)
-        allow(local_cookbook_dir).to receive(:child).with("status.json").and_return(status_file)
-      end
-
-      it "does not create status.json file by default (skip_frozen_cookbook_status defaults to true)" do
-        allow(chef_server_cookbook_dir).to receive(:cookbook_frozen?).and_return(true)
-        expect(local_cookbook_dir).not_to receive(:child)
-        expect(status_file).not_to receive(:write)
-
-        Chef::ChefFS::FileSystem.send(:create_cookbook_status_file, chef_server_cookbook_dir, local_cookbook_dir, {}, nil)
-      end
-
-      it "does not create status.json file when skip_frozen_cookbook_status is true" do
-        allow(chef_server_cookbook_dir).to receive(:cookbook_frozen?).and_return(true)
-        expect(local_cookbook_dir).not_to receive(:child)
-        expect(status_file).not_to receive(:write)
-
-        Chef::ChefFS::FileSystem.send(:create_cookbook_status_file, chef_server_cookbook_dir, local_cookbook_dir, { skip_frozen_cookbook_status: true }, nil)
-      end
-
-      it "creates status.json file with frozen: true when skip_frozen_cookbook_status is false and cookbook is frozen" do
-        allow(chef_server_cookbook_dir).to receive(:cookbook_frozen?).and_return(true)
-        expect(status_file).to receive(:write).with('{"frozen":true}')
-
-        Chef::ChefFS::FileSystem.send(:create_cookbook_status_file, chef_server_cookbook_dir, local_cookbook_dir, { skip_frozen_cookbook_status: false }, nil)
-      end
-
-      it "creates status.json file with frozen: false when skip_frozen_cookbook_status is false and cookbook is not frozen" do
-        allow(chef_server_cookbook_dir).to receive(:cookbook_frozen?).and_return(false)
-        expect(status_file).to receive(:write).with('{"frozen":false}')
-
-        Chef::ChefFS::FileSystem.send(:create_cookbook_status_file, chef_server_cookbook_dir, local_cookbook_dir, { skip_frozen_cookbook_status: false }, nil)
-      end
-    end
-
-    context "when source is not a CookbookDir" do
-      before do
-        allow(non_cookbook_dir).to receive(:is_a?).with(Chef::ChefFS::FileSystem::ChefServer::CookbookDir).and_return(false)
-      end
-
-      it "does not create status.json file when source is not a CookbookDir" do
-        expect(local_cookbook_dir).not_to receive(:child)
-        expect(status_file).not_to receive(:write)
-
-        Chef::ChefFS::FileSystem.send(:create_cookbook_status_file, non_cookbook_dir, local_cookbook_dir, { skip_frozen_cookbook_status: false }, nil)
-      end
-    end
-
-    context "when cookbook_frozen? returns nil" do
-      before do
-        allow(chef_server_cookbook_dir).to receive(:is_a?).with(Chef::ChefFS::FileSystem::ChefServer::CookbookDir).and_return(true)
-        allow(chef_server_cookbook_dir).to receive(:cookbook_frozen?).and_return(nil)
-        allow(local_cookbook_dir).to receive(:child).with("status.json").and_return(status_file)
-      end
-
-      it "creates status.json file with frozen: false when cookbook_frozen? returns nil and skip_frozen_cookbook_status is false" do
-        expect(status_file).to receive(:write).with('{"frozen":false}')
-
-        Chef::ChefFS::FileSystem.send(:create_cookbook_status_file, chef_server_cookbook_dir, local_cookbook_dir, { skip_frozen_cookbook_status: false }, nil)
-      end
-    end
-  end
 end

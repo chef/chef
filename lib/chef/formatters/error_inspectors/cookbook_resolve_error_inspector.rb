@@ -70,7 +70,6 @@ class Chef
           when Net::HTTPBadRequest
             describe_400_error(error_description)
           when Net::HTTPNotFound
-            # do nothing
           when Net::HTTPInternalServerError
             describe_500_error(error_description)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable

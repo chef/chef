@@ -255,7 +255,7 @@ class Chef
         when "before"
           notifies_before(action, resource)
         else
-          raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} " \
+          raise ArgumentError,  "invalid timing: #{timing} for notifies(#{action}, #{resources.inspect}, #{timing}) resource #{self} "\
             "Valid timings are: :delayed, :immediate, :immediately, :before"
         end
       end
@@ -620,7 +620,6 @@ class Chef
       # Reporting endpoint doesn't accept a negative resource duration so set it to 0.
       # A negative value can occur when a resource changes the system time backwards
       @elapsed_time = 0 if @elapsed_time < 0
-
       events.resource_completed(self)
     end
 

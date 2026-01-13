@@ -70,13 +70,13 @@ include_recipe "::_chef_gem"
 
 unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
   include_recipe value_for_platform(
-    opensuseleap: { "default" => "ntp" },
-    amazon: { "2" => "ntp" },
-    oracle: { "<= 8" => "ntp" },
-    centos: { "<= 8" => "ntp" },
-    rhel: { "<= 8" => "ntp" },
-    default: "chrony"
-  )
+                   opensuseleap: { "default" => "ntp" },
+                   amazon: { "2" => "ntp" },
+                   oracle: { "<= 8" => "ntp" },
+                   centos: { "<= 8" => "ntp" },
+                   rhel: { "<= 8" => "ntp" },
+                   default: "chrony"
+                 )
 end
 
 resolver_config "/etc/resolv.conf" do
@@ -93,24 +93,17 @@ users_manage "sysadmin" do
   action [:create]
 end
 
-# Install required packages for using ssh_known_hosts_entry on docker containers
-package_name_by_platform = {
-  "suse" => "ssh-tools",
-  "rhel" => "openssh-clients",
-  "fedora" => "openssh-clients",
-  "amazon" => "openssh-clients",
-  "debian" => "openssh-client",
-}
-package_name = package_name_by_platform[node["platform_family"]]
-package "SSH tools with ssh-keyscan" do
-  package_name package_name
-  action :install
-  only_if { package_name }
+# ssh_known_hosts_entry requires ssh-keyscan binary but that one
+# is not in the OpenSUSE Leap 15.5 dokken images by default
+package "ssh-tools" do
+  only_if { platform_family?("suse") }
 end
 
 ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
+
+include_recipe "nscd" unless fedora? # fedora 34+ doesn't have nscd
 
 logrotate_package "logrotate"
 
@@ -172,16 +165,10 @@ include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
 chef_client_cron "Run chef-client as a cron job" do
-  # Temporarily setting chef_binary_path for vagrant boxes using community test-kitchen
-  # This allows recipes to run on both omnibus and habitat environments
-  chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
   not_if { amazon? && node["platform_version"] >= "2023" } # TODO: look into cron.d template file issue with resource
 end
 
 chef_client_cron "Run chef-client with base recipe" do
-  # Temporarily setting chef_binary_path for vagrant boxes using community test-kitchen
-  # This allows recipes to run on both omnibus and habitat environments
-  chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
   minute 0
   hour "0,12"
   job_name "chef-client-base"
@@ -192,18 +179,12 @@ chef_client_cron "Run chef-client with base recipe" do
 end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
-  # Temporarily setting chef_binary_path for vagrant boxes using community test-kitchen
-  # This allows recipes to run on both omnibus and habitat environments
-  chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
   interval "1hr"
   cpu_quota 50
   only_if { systemd? }
 end
 
 chef_client_systemd_timer "a timer that does not exist" do
-  # Temporarily setting chef_binary_path for vagrant boxes using community test-kitchen
-  # This allows recipes to run on both omnibus and habitat environments
-  chef_binary_path "/opt/chef/bin/chef-client" if ::File.exist?("/opt/chef/bin/chef-client")
   action :remove
 end
 
@@ -237,8 +218,3 @@ include_recipe "::_ifconfig"
 # end
 
 include_recipe "::_snap" if platform?("ubuntu")
-
-# Exercise Habitat CA cert resource when Habitat-based Chef is present
-if ::File.exist?("/hab/bin/hab")
-  include_recipe "::_chef_client_hab_ca_cert"
-end

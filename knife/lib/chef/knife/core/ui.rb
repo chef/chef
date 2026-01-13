@@ -236,7 +236,7 @@ class Chef
             tf.close
             raise "Please set EDITOR environment variable. See https://docs.chef.io/workstation/knife_setup/#setting-your-text-editor for details." unless system("#{config[:editor]} #{tf.path}")
 
-            output = File.read(tf.path)
+            output = IO.read(tf.path)
           end
         end
 

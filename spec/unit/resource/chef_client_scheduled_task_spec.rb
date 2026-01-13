@@ -24,12 +24,6 @@ describe Chef::Resource::ChefClientScheduledTask do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::ChefClientScheduledTask.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:add) }
-  let(:chef_habitat_binary_path) { "C:/hab/pkgs/chef/chef-infra-client/19.2.7/20250122151044/bin/chef-client" }
-
-  before do
-    # Stub the chef_binary_path property to return the Habitat path
-    allow(resource).to receive(:chef_binary_path).and_return(chef_habitat_binary_path)
-  end
 
   before do
     allow(ENV).to receive(:[]).and_call_original
@@ -86,7 +80,7 @@ describe Chef::Resource::ChefClientScheduledTask do
   end
 
   it "builds a default value for chef_binary_path dist values" do
-    expect(resource.chef_binary_path).to eql(chef_habitat_binary_path)
+    expect(resource.chef_binary_path).to eql("C:/opscode/chef/bin/chef-client")
   end
 
   context "priority" do
@@ -122,7 +116,7 @@ describe Chef::Resource::ChefClientScheduledTask do
     end
 
     it "sleeps the same amount each time based on splay before running the task" do
-      expect(provider.full_command).to eql("C:\\Windows\\System32\\cmd.exe /c \"C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s 272 && #{chef_habitat_binary_path} -L C:/chef/log/client.log -c C:/chef/client.rb\"")
+      expect(provider.full_command).to eql("C:\\Windows\\System32\\cmd.exe /c \"C:/windows/system32/windowspowershell/v1.0/powershell.exe Start-Sleep -s 272 && C:/opscode/chef/bin/chef-client -L C:/chef/log/client.log -c C:/chef/client.rb\"")
     end
   end
 
@@ -148,46 +142,45 @@ describe Chef::Resource::ChefClientScheduledTask do
   describe "#splay_sleep_time" do
     it "uses shard_seed attribute if present" do
       node.automatic_attrs[:shard_seed] = "73399073"
-      expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
     end
 
     it "uses a hex conversion of a md5 hash of the splay if present" do
       node.automatic_attrs[:shard_seed] = nil
       allow(node).to receive(:name).and_return("test_node")
-      expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
     end
   end
 
   describe "#client_cmd" do
     it "creates a valid command if using all default properties" do
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/opscode/chef/bin/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb --foo 1 --bar 2") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --foo 1 --bar 2") | eql("C:/opscode/chef/bin/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "C:/foo/bar"
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/log/client.log -c C:/foo/bar/client.rb")
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/log/client.log -c C:/foo/bar/client.rb")
     end
 
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "C:/foo/bar"
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c /etc/chef/client.rb") | eql("#{chef_habitat_binary_path} -L C:/foo/bar/my-client.log -c C:\\chef/client.rb")
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/my-client.log -c /etc/chef/client.rb") | eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/my-client.log -c C:\\chef/client.rb")
     end
 
     it "uses custom chef-client binary if set" do
-      # Temporarily override the stubbed value for this test
-      allow(resource).to receive(:chef_binary_path).and_return("C:/foo/bar/chef-client")
+      resource.chef_binary_path "C:/foo/bar/chef-client"
       expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/foo/bar/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.client_cmd).to eql("#{chef_habitat_binary_path} -L /etc/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("#{chef_habitat_binary_path} -L C:\\chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("C:/opscode/chef/bin/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
     end
   end
 end

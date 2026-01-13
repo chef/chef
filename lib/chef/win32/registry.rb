@@ -384,6 +384,7 @@ class Chef
         hive_name = reg_path.shift
         key = reg_path.join("\\")
       end
+
     end
   end
 end

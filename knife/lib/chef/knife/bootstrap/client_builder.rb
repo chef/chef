@@ -126,7 +126,7 @@ class Chef
           when nil
             []
           when String
-            run_list.split(",").map(&:strip)
+            run_list.split(/\s*,\s*/)
           when Array
             run_list
           end

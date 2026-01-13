@@ -40,11 +40,6 @@ describe Chef::Resource::RhsmRegister do
     expect(resource.activation_key).to eql(["foo"])
   end
 
-  it "coerces not_registered_strings to an array" do
-    resource.not_registered_strings "unregistered"
-    expect(resource.not_registered_strings).to eql(["unregistered"])
-  end
-
   describe "#katello_cert_rpm_installed?" do
     context "when the output contains katello-ca-consumer" do
       let(:with_katello) { double("shell_out", stdout: <<~RPM) }
@@ -292,7 +287,7 @@ describe Chef::Resource::RhsmRegister do
   end
 
   describe "#registered_with_rhsm?" do
-    context "when not_registered_strings is default and the status is Unknown" do
+    context "when the status is Unknown" do
       let(:unknown_status) { double("shell_out", stdout: "Overall Status: Unknown") }
 
       it "returns false" do
@@ -301,32 +296,12 @@ describe Chef::Resource::RhsmRegister do
       end
     end
 
-    context "when not_registered_strings is default and the status is Not registered" do
-      let(:not_registered) { double("shell_out", stdout: "Overall Status: Not registered") }
-
-      it "returns false" do
-        allow(provider).to receive(:shell_out).and_return(not_registered)
-        expect(provider.registered_with_rhsm?).to eq(false)
-      end
-    end
-
-    context "when not_registered_strings is default and the status is anything else" do
+    context "when the status is anything else" do
       let(:known_status) { double("shell_out", stdout: "Overall Status: Insufficient") }
 
       it "returns true" do
         allow(provider).to receive(:shell_out).and_return(known_status)
         expect(provider.registered_with_rhsm?).to eq(true)
-      end
-    end
-
-    context "when not_registered_strings is Insufficient and the status is Insufficient" do
-      before { resource.not_registered_strings "Overall Status: Insufficient" }
-
-      let(:known_status) { double("shell_out", stdout: "Overall Status: Insufficient") }
-
-      it "returns false" do
-        allow(provider).to receive(:shell_out).and_return(known_status)
-        expect(provider.registered_with_rhsm?).to eq(false)
       end
     end
   end

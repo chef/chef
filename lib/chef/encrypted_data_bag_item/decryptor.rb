@@ -177,7 +177,11 @@ class Chef::EncryptedDataBagItem
         digest = OpenSSL::Digest.new("sha256")
         raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
 
-        candidate_hmac_matches?(raw_hmac) || raise(DecryptionFailure, "Error decrypting data bag value: invalid hmac. Most likely the provided key is incorrect")
+        if candidate_hmac_matches?(raw_hmac)
+          true
+        else
+          raise DecryptionFailure, "Error decrypting data bag value: invalid hmac. Most likely the provided key is incorrect"
+        end
       end
 
       private

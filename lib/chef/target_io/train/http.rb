@@ -1,10 +1,8 @@
-require_relative "../support"
+# require_relative "../mixin/which"
 
 module TargetIO
   module TrainCompat
     class HTTP
-      include TargetIO::Support
-
       attr_reader :last_response
 
       def initialize(url, options = {})
@@ -88,7 +86,8 @@ module TargetIO
 
         raise "Target needs one of #{SUPPORTED_COMMANDS.join("/")} for HTTP requests to work" unless cmd
 
-        run_command(cmd).stdout
+        connection = Chef.run_context&.transport_connection
+        connection.run_command(cmd).stdout
       end
 
       SUPPORTED_COMMANDS = %w{curl wget}.freeze
@@ -110,7 +109,8 @@ module TargetIO
 
       # extend Chef::Mixin::Which
       def which(cmd)
-        run_command("which #{cmd}").stdout
+        connection = Chef.run_context&.transport_connection
+        connection.run_command("which #{cmd}").stdout
       end
     end
   end

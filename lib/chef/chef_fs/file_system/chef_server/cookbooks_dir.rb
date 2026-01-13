@@ -80,8 +80,9 @@ class Chef
                 tmp_cl.load_cookbooks
                 tmp_cl.compile_metadata
                 tmp_cl.freeze_versions if options[:freeze]
-                cookbook_for_upload = tmp_cl.map do |cookbook_name, cookbook|
-                  cookbook
+                cookbook_for_upload = []
+                tmp_cl.each do |cookbook_name, cookbook|
+                  cookbook_for_upload << cookbook
                 end
 
                 uploader = Chef::CookbookUploader.new(cookbook_for_upload, force: options[:force], rest: chef_rest)

@@ -57,9 +57,9 @@ describe Chef::Resource::Group, "initialize" do
     expect(resource.users).to eql([])
   end
 
-  it "accepts domain groups (@ or  separator) on non-windows" do
-    expect { resource.group_name "domain@group" }.not_to raise_error
-    expect(resource.group_name).to eq("domain@group")
+  it "accepts domain groups (@ or \ separator) on non-windows" do
+    expect { resource.group_name "domain\@group" }.not_to raise_error
+    expect(resource.group_name).to eq("domain\@group")
     expect { resource.group_name "domain\\group" }.not_to raise_error
     expect(resource.group_name).to eq("domain\\group")
     expect { resource.group_name "domain\\group^name" }.not_to raise_error
@@ -113,7 +113,7 @@ describe Chef::Resource::Group, "members" do
     end
 
     it "(#{method}) does not allow a Hash" do
-      expect { resource.send(method, { some_user: "is freakin awesome" }) }.to raise_error(NoMethodError)
+      expect { resource.send(method, { some_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
     end
   end
 end

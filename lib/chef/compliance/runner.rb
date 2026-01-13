@@ -386,12 +386,7 @@ class Chef
       end
 
       def requested_reporters
-        if node["audit"]["quiet"]
-          logger.info "node[\"audit\"][\"quiet\"] is set to true, skipping cli reporter"
-          Array(node["audit"]["reporter"]).uniq - ["cli"]
-        else
-          (Array(node["audit"]["reporter"]) + ["cli"]).uniq
-        end
+        (Array(node["audit"]["reporter"]) + ["cli"]).uniq
       end
 
       def create_timestamp_file

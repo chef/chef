@@ -43,7 +43,6 @@ class Chef
           deconstruct_keys
           default
           default_proc
-          deep_merge?
           detect
           dig
           drop

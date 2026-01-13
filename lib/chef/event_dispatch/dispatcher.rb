@@ -90,6 +90,7 @@ class Chef
       def process_events_until_done
         call_subscribers(*event_list.shift) until event_list.empty?
       end
+
     end
   end
 end

@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
@@ -274,10 +273,10 @@ describe Chef::RunLock do
         exit! 0
       end
 
-      _pid, exit_status = Process.waitpid2(p2)
+      pid, exit_status = Process.waitpid2(p2)
       expect(exit_status).to eq(0)
       to_fork.puts "you can exit now"
-      _pid, exit_status = Process.waitpid2(p1)
+      pid, exit_status = Process.waitpid2(p1)
       expect(exit_status).to eq(0)
     end
 
@@ -297,7 +296,7 @@ describe Chef::RunLock do
       expect(run_lock.test).to eq(false)
 
       to_fork.puts "you can exit now"
-      _pid, exit_status = Process.waitpid2(p1)
+      pid, exit_status = Process.waitpid2(p1)
       expect(exit_status).to eq(0)
     end
 
@@ -466,7 +465,7 @@ describe Chef::RunLock do
     end
 
     def readline_nonblock(fd)
-      buffer = String.new
+      buffer = ""
       buffer << fd.read_nonblock(1) while buffer[-1] != "\n"
 
       buffer

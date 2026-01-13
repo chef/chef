@@ -201,17 +201,6 @@ describe Chef::Provider::Directory do
       end
     end
 
-    describe "when a file exists at the directory path" do
-      before do
-        FileUtils.rmdir tmp_dir
-        FileUtils.touch tmp_dir
-      end
-
-      it "raises an exception" do
-        expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::FileTypeMismatch)
-      end
-    end
-
     describe "on macOS" do
       before do
         allow(ChefUtils).to receive(:macos?).and_return(true)

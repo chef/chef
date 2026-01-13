@@ -1,11 +1,7 @@
-require_relative "../support"
-
 module TargetIO
   module TrainCompat
     class File
       class << self
-        include TargetIO::Support
-
         def foreach(name)
           raise "TargetIO does not implement block-less File.foreach yet" unless block_given?
 
@@ -38,6 +34,7 @@ module TargetIO
         end
 
         def open(file_name, mode = "r")
+          # Would need to hook into io.close (Closure?)
           raise "TargetIO does not implement block-less File.open with modes other than read yet" if mode != "r" && !block_given?
 
           content = exist?(file_name) ? read(file_name) : ""
@@ -54,21 +51,22 @@ module TargetIO
           if block_given?
             yield(io)
 
-            # Return name of new remote file to be used in later operations
-            file_name = write_file(file_name, new_content) if (content != new_content) && !mode.start_with?("r")
-
-            return file_name
+            if (content != new_content) && !mode.start_with?("r")
+              __transport_connection.file(file_name).content = new_content # Need Train 2.5+
+            end
           end
 
           io
         end
 
         def readlines(file_name)
-          content = read_file(file_name)
+          content = __transport_connection.file(file_name).content
           raise Errno::ENOENT if content.nil? # Not found
 
           content.split("\n")
         end
+
+        ### START Could be in Train::File::...
 
         def executable?(file_name)
           mode(file_name) & 0111 != 0
@@ -76,12 +74,12 @@ module TargetIO
 
         def readable?(file_name)
           cmd = format("test -r %s", file_name)
-          run_command(cmd).exit_status == 0
+          __transport_connection.run_command(cmd).exit_status == 0
         end
 
         def writable?(file_name)
           cmd = format("test -w %s", file_name)
-          run_command(cmd).exit_status == 0
+          __transport_connection.run_command(cmd).exit_status == 0
         end
 
         # def ftype(file_name)
@@ -101,7 +99,7 @@ module TargetIO
           cmd = "realpath #{file_name}" # coreutils, not MacOSX
           Chef::Log.debug cmd
 
-          run_command(cmd).stdout.chop
+          __transport_connection.run_command(cmd).stdout.chop
         end
 
         def readlink(file_name)
@@ -110,45 +108,44 @@ module TargetIO
           cmd = "readlink #{file_name}"
           Chef::Log.debug cmd
 
-          run_command(cmd).stdout.chop
+          __transport_connection.run_command(cmd).stdout.chop
         end
 
-        def setgid?(file_name)
-          mode(file_name) & 04000 != 0
-        end
+        # def setgid?(file_name)
+        #   mode(file_name) & 04000 != 0
+        # end
 
-        def setuid?(file_name)
-          mode(file_name) & 02000 != 0
-        end
+        # def setuid?(file_name)
+        #   mode(file_name) & 02000 != 0
+        # end
 
-        def sticky?(file_name)
-          mode(file_name) & 01000 != 0
-        end
+        # def sticky?(file_name)
+        #   mode(file_name) & 01000 != 0
+        # end
 
-        def size?(file_name)
-          exist?(file_name) && size(file_name) > 0
-        end
+        # def size?(file_name)
+        #   exist?(file_name) && size(file_name) > 0
+        # end
 
-        def world_readable?(file_name)
-          mode(file_name) & 0001 != 0
-        end
+        # def world_readable?(file_name)
+        #   mode(file_name) & 0001 != 0
+        # end
 
-        def world_writable?(file_name)
-          mode(file_name) & 0002 != 0
-        end
+        # def world_writable?(file_name)
+        #   mode(file_name) & 0002 != 0
+        # end
 
-        def zero?(file_name)
-          exists?(file_name) && size(file_name) == 0
-        end
+        # def zero?(file_name)
+        #   exists?(file_name) && size(file_name) == 0
+        # end
 
-        def tempfile(filename)
-          tempdir = ::TargetIO::Dir.mktmpdir(path)
-          ::File.join(tempdir, filename)
-        end
+        ### END: Could be in Train
 
         # passthrough or map calls to third parties
         def method_missing(m, *args, **kwargs, &block)
           nonio    = %i{extname join dirname path split}
+
+          # TODO: writable?
           passthru = %i{basename directory? exist? exists? file? path pipe? socket? symlink?}
           redirect_train = {
             blockdev?: :block_device?,
@@ -167,7 +164,7 @@ module TargetIO
             Chef::Log.debug "File::#{m} passed to Train.file.stat"
 
             follow_symlink = m == :stat
-            tfile = transport_connection.file(args[0], follow_symlink).stat
+            tfile = __transport_connection.file(args[0], follow_symlink).stat
 
             require "ostruct" unless defined?(OpenStruct)
             OpenStruct.new(tfile)
@@ -181,18 +178,18 @@ module TargetIO
 
             file_name, other_args = args[0], args[1..]
 
-            file = transport_connection.file(file_name)
+            file = __transport_connection.file(file_name)
             file.send(m, *other_args, **kwargs) # block?
 
           elsif m == :mtime
             # Solve a data type disparity between Train.file and File
-            timestamp = transport_connection.file(args[0]).mtime
+            timestamp = __transport_connection.file(args[0]).mtime
             Time.at(timestamp)
 
           elsif filestat.include? m
             Chef::Log.debug "File::#{m} passed to Train.file.stat.#{m}"
 
-            transport_connection.file(args[0]).stat[m]
+            __transport_connection.file(args[0]).stat[m]
 
           elsif redirect_utils.key?(m)
             new_method = redirect_utils[m]
@@ -206,12 +203,16 @@ module TargetIO
 
             file_name, other_args = args[0], args[1..]
 
-            file = transport_connection.file(file_name)
+            file = __transport_connection.file(file_name)
             file.send(redirect[m], *other_args, **kwargs) # TODO: pass block
 
           else
             raise "Unsupported File method #{m}"
           end
+        end
+
+        def __transport_connection
+          Chef.run_context&.transport_connection
         end
       end
     end

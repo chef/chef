@@ -924,11 +924,7 @@ module ChefConfig
     default :profile, nil
 
     default :chef_guid_path do
-      if target_mode?
-        PathHelper.join(config_dir, target_mode.host, "#{ChefUtils::Dist::Infra::SHORT}_guid")
-      else
-        PathHelper.join(config_dir, "#{ChefUtils::Dist::Infra::SHORT}_guid")
-      end
+      PathHelper.join(config_dir, "#{ChefUtils::Dist::Infra::SHORT}_guid")
     end
 
     default :chef_guid, nil
@@ -1212,7 +1208,7 @@ module ChefConfig
                 end
               end
 
-      proxy unless fuzzy_hostname_match_any?(host, ENV["no_proxy"])
+      return proxy unless fuzzy_hostname_match_any?(host, ENV["no_proxy"])
     end
 
     # Chef requires an English-language UTF-8 locale to function properly.  We attempt

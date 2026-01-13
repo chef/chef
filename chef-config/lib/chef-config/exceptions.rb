@@ -23,8 +23,5 @@ module ChefConfig
   class ConfigurationError < ArgumentError; end
   class InvalidPath < StandardError; end
   class UnparsableConfigOption < StandardError; end
-  class NoCredentialsFound < StandardError; end
 
-  class UnsupportedSecretsProvider < ConfigurationError; end
-  class UnresolvedSecret < ConfigurationError; end
 end

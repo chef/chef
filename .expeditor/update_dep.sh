@@ -9,10 +9,7 @@
 # a PR. That way humans can do hard work and bots can open gem bump PRs.
 ############################################################################
 
-set -eou pipefail
-
-#set expeditor_version equal to the version file
-export EXPEDITOR_VERSION=$(cat VERSION)
+set -evx
 
 REPONAME=$(echo $EXPEDITOR_REPO | cut -d '/' -f 2)
 DEPNAME="${EXPEDITOR_GEM_NAME:-${REPONAME:?Could not find gem name}}"

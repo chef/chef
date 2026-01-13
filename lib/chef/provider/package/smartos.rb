@@ -40,15 +40,6 @@ class Chef
           current_resource # modified by check_package_state
         end
 
-        def define_resource_requirements
-          super
-
-          requirements.assert(:all_actions) do |a|
-            a.assertion { !new_resource.environment }
-            a.failure_message Chef::Exceptions::Package, "The environment property is not supported for package resources on this platform"
-          end
-        end
-
         def check_package_state(name)
           logger.trace("#{new_resource} checking package #{name}")
           version = nil

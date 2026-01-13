@@ -307,7 +307,7 @@ class Chef
     #
     def required?(action = nil)
       if !action.nil? && options[:required].is_a?(Array)
-        options[:required].intersect?(Array(action))
+        (options[:required] & Array(action)).any?
       else
         !!options[:required]
       end
@@ -655,8 +655,8 @@ class Chef
 
     # @api private
     def get_value(resource)
-      if (i = instance_variable_name)
-        resource.instance_variable_get(i)
+      if instance_variable_name
+        resource.instance_variable_get(instance_variable_name)
       else
         resource.send(name)
       end
@@ -664,8 +664,8 @@ class Chef
 
     # @api private
     def set_value(resource, value)
-      if (i = instance_variable_name)
-        resource.instance_variable_set(i, value)
+      if instance_variable_name
+        resource.instance_variable_set(instance_variable_name, value)
       else
         resource.send(name, value)
       end
@@ -673,8 +673,8 @@ class Chef
 
     # @api private
     def value_is_set?(resource)
-      if (i = instance_variable_name)
-        resource.instance_variable_defined?(i)
+      if instance_variable_name
+        resource.instance_variable_defined?(instance_variable_name)
       else
         true
       end

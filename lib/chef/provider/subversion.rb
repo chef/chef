@@ -29,7 +29,7 @@ class Chef
 
       provides :subversion, target_mode: true
 
-      SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
+      SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/.freeze
 
       include ChefConfig::Mixin::FuzzyHostnameMatcher
 

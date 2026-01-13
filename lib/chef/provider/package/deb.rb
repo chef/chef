@@ -111,7 +111,7 @@ class Chef
             # Runs command via shell_out with magic environment to disable
             # interactive prompts.
             def run_noninteractive(*command)
-              shell_out!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" }.merge(new_resource.environment))
+              shell_out!(*command, env: { "DEBIAN_FRONTEND" => "noninteractive" })
             end
 
             private

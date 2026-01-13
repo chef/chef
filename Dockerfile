@@ -15,22 +15,15 @@
 # applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
 
 FROM busybox
-LABEL maintainer="Progress Chef <docker@chef.io>"
+LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 
-#TODO: Change back to stable when 19.x is GA
-ARG CHANNEL=unstable
-ARG VERSION=19.0.49
+ARG CHANNEL=stable
+ARG VERSION=18.3.0
 ARG ARCH=x86_64
+ARG PKG_VERSION=6
 
-ENV HAB_LICENSE="accept-no-persist"
-# Download and extract hab binary and install infra-client habitat package
-RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
-    mkdir /tmp/hab && \
-    tar -xzf /tmp/hab.tar.gz -C /tmp/hab && \
-    HAB_DIR=$(find /tmp/hab -type d -name "hab-*") && \
-    $HAB_DIR/hab pkg install --binlink --force --channel "stable" "core/hab" && \
-    rm -rf /tmp/* && \
-    hab pkg install --binlink --force --auth "${HAB_AUTH_TOKEN}" --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
-    rm -rf /hab/cache
+RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/${PKG_VERSION}/chef-${VERSION}-1.el${PKG_VERSION}.${ARCH}.rpm" -O /tmp/chef-client.rpm && \
+    rpm2cpio /tmp/chef-client.rpm | cpio -idmv && \
+    rm -rf /tmp/chef-client.rpm
 
-VOLUME [ "/hab" ]
+VOLUME [ "/opt/chef" ]

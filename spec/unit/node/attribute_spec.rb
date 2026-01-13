@@ -1100,7 +1100,7 @@ describe Chef::Node::Attribute do
           "c" => 4,
       }
       attributes = Chef::Node::Attribute.new(nil, default_hash, override_hash, nil)
-      expect(attributes).to match({ "a" => 1, "b" => 3, "c" => 4 })
+      expect(attributes.to_s).to eq('{"a"=>1, "b"=>3, "c"=>4}')
     end
   end
 

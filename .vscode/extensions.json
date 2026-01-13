@@ -1,8 +1,0 @@
-{
-  "recommendations": [
-    "chef-software.chef",
-    "Shopify.ruby-lsp",
-    "editorconfig.editorconfig",
-    "DavidAnson.vscode-markdownlint"
-  ]
-}
