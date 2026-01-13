@@ -15,6 +15,101 @@
 # limitations under the License.
 #
 
+unified_mode true
+
+provides :rest_resource
+
+description "Base resource for interacting with REST APIs. Extend this resource to create custom resources that manage REST API endpoints."
+
+introduced "18.0"
+
+examples <<~'DOC'
+  **Create a custom REST resource for managing users in an API**
+
+  ```ruby
+  class Chef::Resource::ApiUser < Chef::Resource::RestResource
+    resource_name :api_user
+    provides :api_user
+
+    rest_api_endpoint "https://api.example.com"
+    rest_api_collection "/api/v1/users"
+    rest_identity_property :username
+
+    property :username, String, name_property: true
+    property :email, String
+    property :full_name, String
+    property :active, [true, false], default: true
+
+    rest_property_map({
+      username: "username",
+      email: "email",
+      full_name: "profile.fullName",
+      active: "status.active"
+    })
+
+    rest_post_only_properties [:username]
+  end
+  ```
+
+  **Use the custom resource to create a user**
+
+  ```ruby
+  api_user "testuser" do
+    email "testuser@example.com"
+    full_name "Test User"
+    active true
+    action :configure
+  end
+  ```
+
+  **Delete a user via the API**
+
+  ```ruby
+  api_user "testuser" do
+    action :delete
+  end
+  ```
+
+  **Use JMESPath for complex JSON mapping**
+
+  ```ruby
+  class Chef::Resource::ApiProject < Chef::Resource::RestResource
+    resource_name :api_project
+
+    rest_api_endpoint "https://api.example.com"
+    rest_api_collection "/projects"
+    rest_identity_property :project_id
+
+    property :project_id, String, name_property: true
+    property :member_emails, Array
+
+    # Extract email addresses from nested members array
+    rest_property_map({
+      project_id: "id",
+      member_emails: "members[*].email"
+    })
+  end
+  ```
+
+  **Configure authentication with custom headers**
+
+  ```ruby
+  class Chef::Resource::ApiResource < Chef::Resource::RestResource
+    rest_api_endpoint "https://api.example.com"
+    rest_api_collection "/resources"
+
+    action_class do
+      def rest_headers
+        {
+          "Authorization" => "Bearer #{node['api_token']}",
+          "X-API-Version" => "2024-01-01"
+        }
+      end
+    end
+  end
+  ```
+DOC
+
 require "addressable/template" unless defined?(Addressable::Template)
 require "rest-client" unless defined?(RestClient)
 require "jmespath" unless defined?(JMESPath)
@@ -48,7 +143,7 @@ action_class do
   end
 end
 
-action :configure do
+action :configure, description: "Create or update the resource via the REST API. If the resource doesn't exist, this performs a POST to create it. If the resource exists and properties changed, this performs a PATCH to update it." do
   if resource_exists?
     converge_if_changed do
       data = {}
@@ -79,7 +174,7 @@ action :configure do
   end
 end
 
-action :delete do
+action :delete, description: "Delete the resource via the REST API. If the resource doesn't exist, this action takes no action." do
   if resource_exists?
     converge_by "deleting resource" do
       rest_delete
@@ -91,12 +186,24 @@ action :delete do
 end
 
 action_class do
-  # Override this for postprocessing device-specifics (paging, data conversion)
+  #
+  # Postprocess API responses. Override in custom resources to transform
+  # or extract data from responses, handle pagination, etc.
+  #
+  # @param response [RestClient::Response] The API response object
+  # @return [RestClient::Response] The processed response
+  #
   def rest_postprocess(response)
     response
   end
 
-  # Override this for error handling of device-specifics (readable error messages)
+  #
+  # Handle REST API errors. Override in custom resources to provide
+  # user-friendly error messages or handle specific error codes.
+  #
+  # @param error_obj [RestClient::Exception] The exception object
+  # @return [RestClient::Exception] The processed error
+  #
   def rest_errorhandler(error_obj)
     error_obj
   end
@@ -111,7 +218,9 @@ action_class do
     current_resource.class.properties.select { |_, v| v.required? }.except(:name).keys
   end
 
+  #
   # Return changed value or nil for delta current->new
+  #
   def changed_value(property)
     new_value = new_resource.send(property)
     return new_value if current_resource.nil?
@@ -127,7 +236,9 @@ action_class do
     current_resource.class.identity_attr
   end
 
+  #
   # Map properties to their current values
+  #
   def property_map
     map = {}
 
@@ -142,7 +253,15 @@ action_class do
     map
   end
 
-  # Map part of a JSON (Hash) to resource property via JMESPath or user-supplied function
+  #
+  # Convert JSON API response to a resource property value.
+  # Supports JMESPath expressions (String) or custom functions (Symbol).
+  #
+  # @param match_instruction [String, Symbol] How to extract the value
+  # @param property [Symbol] The property name
+  # @param resource_data [Hash] The JSON response data
+  # @return [Object] The extracted property value
+  #
   def json_to_property(match_instruction, property, resource_data)
     case match_instruction
     when String
@@ -157,7 +276,14 @@ action_class do
     end
   end
 
-  # Map resource contents into a JSON (Hash) via JMESPath-like syntax or user-supplied function
+  #
+  # Convert a resource property value to JSON for API request.
+  # Supports JMESPath-like notation (String) or custom functions (Symbol).
+  #
+  # @param property [Symbol] The property name
+  # @param match_instruction [String, Symbol] How to structure the value
+  # @return [Hash] A hash representing the JSON structure
+  #
   def property_to_json(property, match_instruction)
     case match_instruction
     when String
@@ -177,13 +303,17 @@ action_class do
     current_resource.class.rest_api_collection
   end
 
+  #
   # Resource document URL after RFC 6570 template evaluation via properties substitution
+  #
   def rest_url_document
     template = ::Addressable::Template.new(current_resource.class.rest_api_document)
     template.expand(property_map).to_s
   end
 
+  #
   # Convenience method for conditional requires
+  #
   def conditionally_require_on_setting(property, dependent_properties)
     dependent_properties = Array(dependent_properties)
 
@@ -267,12 +397,16 @@ action_class do
 
   # REST parameter mapping
 
+  #
   # Return number of parameters needed to identify a resource (pre- and post-creation)
+  #
   def rest_arity
     rest_identity_map.keys.count
   end
 
+  #
   # Return mapping of template placeholders to property value of identity parameters
+  #
   def rest_identity_values
     data = {}
 
@@ -288,11 +422,14 @@ action_class do
     rest_identity_explicit || rest_identity_implicit
   end
 
+  #
   # Accept direct mapping like { "svm.name" => :name } for specifying the x-ary identity of a resource
+  #
   def rest_identity_explicit
     current_resource.class.rest_identity_map
   end
 
+  #
   # Parse document URL for RFC 6570 templates and map them to resource properties.
   #
   # Examples:
@@ -351,8 +488,11 @@ action_class do
     Chef.run_context.transport.connection
   end
 
+  #
   # Remove all empty keys (recursively) from Hash.
+  #
   # @see https://stackoverflow.com/questions/56457020/#answer-56458673
+  #
   def deep_compact!(hsh)
     raise TypeError unless hsh.is_a? Hash
 
@@ -361,22 +501,27 @@ action_class do
     end.reject! { |_, v| v.nil? || (v.respond_to?(:empty?) && v.empty?) }
   end
 
+  #
   # Deep merge two hashes
+  #
   # @see https://stackoverflow.com/questions/41109599#answer-41109737
+  #
   def deep_merge!(hsh1, hsh2)
     raise TypeError unless hsh1.is_a?(Hash) && hsh2.is_a?(Hash)
 
     hsh1.merge!(hsh2) { |_, v1, v2| deep_merge!(v1, v2) }
   end
 
+  #
   # Create nested hashes from JMESPath syntax.
+  #
   def bury(path, value)
     raise TypeError unless path.is_a?(String)
 
     arr = path.split(".")
     ret = {}
 
-    if arr.count == 1
+    if arr.one?
       ret[arr.first] = value
 
       ret

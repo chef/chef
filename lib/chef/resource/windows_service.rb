@@ -226,7 +226,7 @@ class Chef
       property :run_as_user, String,
         description: "The user under which a Microsoft Windows service runs.",
         default: "localsystem",
-        coerce: proc { |x| x.downcase }
+        coerce: proc(&:downcase)
 
       property :run_as_password, String,
         description: "The password for the user specified by `run_as_user`.",

@@ -49,11 +49,7 @@ shared_context Chef::Resource::WindowsScript do
   shared_examples_for "a script resource with architecture attribute" do
     context "with the given architecture attribute value" do
       let(:expected_architecture) do
-        if resource_architecture
-          expected_architecture = resource_architecture
-        else
-          expected_architecture = @ohai_reader.data["kernel"]["machine"].to_sym
-        end
+        expected_architecture = resource_architecture || @ohai_reader.data["kernel"]["machine"].to_sym
       end
       let(:expected_architecture_output) do
         expected_architecture == :i386 ? "X86" : "AMD64"

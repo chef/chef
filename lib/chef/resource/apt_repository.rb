@@ -164,6 +164,10 @@ class Chef
       property :key_proxy, [String, nil, FalseClass],
         description: "If set, a specified proxy is passed to GPG via `http-proxy=`."
 
+      property :signed_by, [String, true, false, nil],
+        description: "If a string, specify the file and/or fingerprint the repo is signed with. If true, set Signed-With to use the specified key",
+        default: true
+
       property :cookbook, [String, nil, FalseClass],
         description: "If key should be a cookbook_file, specify a cookbook where the key is located for files/default. Default value is nil, so it will use the cookbook where the resource is used.",
         desired_state: false
@@ -197,7 +201,7 @@ class Chef
         # @return [Array] an array of fingerprints
         def extract_fingerprints_from_cmd(*cmd)
           so = shell_out(*cmd)
-          so.stdout.split(/\n/).map do |t|
+          so.stdout.split("\n").map do |t|
             if z = t.match(/^fpr:+([0-9A-F]+):/)
               z[1].split.join
             end
@@ -214,7 +218,7 @@ class Chef
           so = shell_out(*cmd)
           # Sample output
           # pub:-:4096:1:D94AA3F0EFE21092:1336774248:::-:::scSC::::::23::0:
-          so.stdout.split(/\n/).map do |t|
+          so.stdout.split("\n").map do |t|
             if t.match(/^pub:/)
               f = t.split(":")
               f.slice(0, 6).join(":")
@@ -231,6 +235,28 @@ class Chef
 
           logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
           valid
+        end
+
+        # validate the key against the gpg keyring to see if that version is expired or revoked
+        # @param [String] key
+        # @param [String] keyring
+        #
+        # @return [Boolean] if the key valid or not
+        def keyring_key_is_valid?(keyring, key)
+          out = shell_out("gpg", "--no-default-keyring", "--keyring", keyring, "--list-public-keys", key)
+          valid = out.exitstatus == 0 && out.stdout.each_line.none?(/\[(expired|revoked):/)
+
+          logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
+          valid
+        end
+
+        # validate the key against the gpg keyring to see if the key is present
+        # @param [String] key
+        # @param [String] keyring
+        #
+        # @return [Boolean] if the key present
+        def keyring_key_is_present?(keyring, key)
+          shell_out(*%W{gpg --no-default-keyring --keyring #{keyring} --list-public-keys --with-fingerprint --with-colons #{key}}).exitstatus == 0
         end
 
         # return the specified cookbook name or the cookbook containing the
@@ -269,7 +295,7 @@ class Chef
         # @raise [Chef::Exceptions::FileNotFound] Key isn't remote or found in the current run
         #
         # @return [Symbol] :remote_file or :cookbook_file
-        def key_type(uri)
+        def key_resource_type(uri)
           if uri.start_with?("http")
             :remote_file
           elsif has_cookbook_file?(uri)
@@ -277,6 +303,19 @@ class Chef
           else
             raise Chef::Exceptions::FileNotFound, "Cannot locate key file: #{uri}"
           end
+        end
+
+        def keyring_path
+          "/etc/apt/keyrings/#{new_resource.repo_name}.gpg"
+        end
+
+        # Get the current APT version, this is important for creating keyring files,
+        # on newer APT versions these need to be an _older_ GnuPG format due to "sqv"
+        # being used to verify
+        #
+        # @return [Integer]
+        def apt_version
+          @apt_version ||= shell_out("apt -v").stdout.strip[/([0-9]\.?){3}/, 0].to_i
         end
 
         # Fetch the key using either cookbook_file or remote_file, validate it,
@@ -288,25 +327,54 @@ class Chef
         # @return [void]
         def install_key_from_uri(key)
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
-          cached_keyfile = ::File.join(Chef::Config[:file_cache_path], key_name)
+          keyfile_tmp_path = ::File.join(Chef::Config[:file_cache_path], key_name)
+          keyfile_path = keyring_path
+          gpg_keyring_prefix = apt_version > 2 ? "gnupg-ring:" : ""
           tmp_dir = TargetIO::Dir.mktmpdir(".gpg")
           at_exit { TargetIO::FileUtils.remove_entry(tmp_dir) }
 
-          declare_resource(key_type(key), cached_keyfile) do
-            source key
-            mode "0644"
-            sensitive new_resource.sensitive
-            action :create
-            verify "gpg --homedir #{tmp_dir} %{path}"
-          end
+          if new_resource.signed_by
+            directory "/etc/apt/keyrings" do
+              mode "0755"
+            end
 
-          execute "apt-key add #{cached_keyfile}" do
-            command [ "apt-key", "add", cached_keyfile ]
-            default_env true
-            sensitive new_resource.sensitive
-            action :run
-            not_if { no_new_keys?(cached_keyfile) }
-            notifies :run, "execute[apt-cache gencaches]", :immediately
+            declare_resource(key_resource_type(key), keyfile_tmp_path) do
+              source key
+              mode "0644"
+              sensitive new_resource.sensitive
+              action :create
+              verify "gpg --homedir #{tmp_dir} %{path}"
+              notifies :run, "execute[import #{keyfile_path}]", :immediately
+            end
+
+            execute "import #{keyfile_path}" do
+              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", "#{gpg_keyring_prefix}#{keyfile_path}", keyfile_tmp_path ]
+              default_env true
+              sensitive new_resource.sensitive
+              action :nothing
+            end
+
+            file keyfile_path do
+              mode "0644"
+              notifies :run, "execute[import #{keyfile_path}]", :before unless ::File.exist?(keyfile_path)
+            end
+          else
+            declare_resource(key_resource_type(key), keyfile_path) do
+              source key
+              mode "0644"
+              sensitive new_resource.sensitive
+              action :create
+              verify "gpg --homedir #{tmp_dir} %{path}"
+            end
+
+            execute "apt-key add #{keyfile_path}" do
+              command [ "apt-key", "add", keyfile_path ]
+              default_env true
+              sensitive new_resource.sensitive
+              action :run
+              not_if { no_new_keys?(keyfile_path) }
+              notifies :run, "execute[apt-cache gencaches]", :immediately
+            end
           end
         end
 
@@ -336,6 +404,10 @@ class Chef
         #
         # @return [void]
         def install_key_from_keyserver(key, keyserver = new_resource.keyserver)
+          if new_resource.signed_by
+            install_key_from_keyserver_to_keyring(key, keyserver, keyring_path)
+            return
+          end
           execute "install-key #{key}" do
             command keyserver_install_cmd(key, keyserver)
             default_env true
@@ -350,6 +422,30 @@ class Chef
           end
 
           raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless key_is_valid?(key.upcase)
+        end
+
+        # @param [String] key
+        # @param [String] keyserver
+        # @param [String] keyring
+        def install_key_from_keyserver_to_keyring(key, keyserver, keyring)
+          keyserver = "hkp://#{keyserver}:80" unless keyserver.start_with?("hkp://")
+
+          cmd = "gpg --no-default-keyring --keyring #{keyring}"
+          cmd << " --keyserver-options http-proxy=#{new_resource.key_proxy}" if new_resource.key_proxy
+          cmd << " --keyserver #{keyserver}"
+          cmd << " --recv #{key}"
+
+          execute "install-key #{key}" do
+            command cmd
+            default_env true
+            sensitive new_resource.sensitive
+            not_if do
+              keyring_key_is_present?(keyring, key.upcase) && keyring_key_is_valid?(keyring, key.upcase)
+            end
+            notifies :run, "execute[apt-cache gencaches]", :immediately
+          end
+
+          raise "The key #{key} is invalid and cannot be used to verify an apt repository." unless keyring_key_is_valid?(keyring, key.upcase)
         end
 
         # @param [String] owner
@@ -405,11 +501,12 @@ class Chef
         # @param [Array] components
         # @param [Boolean] trusted
         # @param [String] arch
+        # @param [String] signed_by
         # @param [Array] options
         # @param [Boolean] add_src
         #
         # @return [String] complete repo config text
-        def build_repo(uri, distribution, components, trusted, arch, options, add_src = false)
+        def build_repo(uri, distribution, components, trusted, arch, signed_by, options, add_src = false)
           uri = make_ppa_url(uri) if is_ppa_url?(uri)
 
           uri = Addressable::URI.parse(uri)
@@ -417,6 +514,7 @@ class Chef
           options_list = []
           options_list << "arch=#{arch}" if arch
           options_list << "trusted=yes" if trusted
+          options_list << "signed-by=#{signed_by}" if signed_by
           options_list += options
           optstr = unless options_list.empty?
                      "[" + options_list.join(" ") + "]"
@@ -474,12 +572,23 @@ class Chef
 
         cleanup_legacy_file!
 
+        signed_by = new_resource.signed_by
+        if signed_by == true
+          if new_resource.key || ::File.exist?(keyring_path)
+            signed_by = keyring_path
+          else
+            # There isn't a key to use, so don't set the signed-by attribute
+            signed_by = false
+          end
+        end
+
         repo = build_repo(
           new_resource.uri,
           new_resource.distribution,
           repo_components,
           new_resource.trusted,
           new_resource.arch,
+          signed_by,
           new_resource.options,
           new_resource.deb_src
         )
@@ -505,6 +614,11 @@ class Chef
             apt_update new_resource.name do
               ignore_failure true
               action :nothing
+            end
+
+            file keyring_path do
+              sensitive new_resource.sensitive
+              action :delete
             end
 
             file "/etc/apt/sources.list.d/#{new_resource.repo_name}.list" do

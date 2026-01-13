@@ -154,12 +154,12 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command = ["useradd",
                   "-c", "Adam Jacob",
                   "-g", "23" ]
-      command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
-      command.concat([ "-s", "/usr/bin/zsh",
+      command.push("-p", "abracadabra") if supported_useradd_options.key?("password")
+      command.push( "-s", "/usr/bin/zsh",
                        "-u", "1000",
                        "-d", "/Users/mud",
                        "-m",
-                       "adam"])
+                       "adam")
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
@@ -176,11 +176,11 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         command = ["useradd",
                     "-c", "Adam Jacob",
                     "-g", "23"]
-        command.concat(["-p", "abracadabra"]) if supported_useradd_options.key?("password")
-        command.concat([ "-s", "/usr/bin/zsh",
+        command.push("-p", "abracadabra") if supported_useradd_options.key?("password")
+        command.push( "-s", "/usr/bin/zsh",
                          "-u", "1000",
                          "-r", "-m",
-                         "adam"])
+                         "adam")
         expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
         provider.create_user
       end
@@ -209,7 +209,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam"]
-      command.concat([ { returns: [0, 12] } ])
+      command.push( { returns: [0, 12] } )
       expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
@@ -221,7 +221,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam"]
-      command.concat([ { returns: [0, 12] } ])
+      command.push( { returns: [0, 12] } )
       expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
@@ -231,7 +231,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command = ["usermod",
                   "-g", "23",
                   "adam"]
-      command.concat([ { returns: [0, 12] } ])
+      command.push( { returns: [0, 12] } )
       expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end

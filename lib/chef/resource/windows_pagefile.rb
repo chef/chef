@@ -47,7 +47,7 @@ class Chef
 
       ```ruby
       windows_pagefile 'Change the pagefile to System Managed' do
-        path 'E:\'
+        path 'E:\\'
         system_managed true
         action :set
       end
@@ -57,7 +57,7 @@ class Chef
 
       ```ruby
       windows_pagefile 'create the pagefile with these sizes' do
-        path 'f:\'
+        path 'f:\\'
         initial_size 100
         maximum_size 200
       end

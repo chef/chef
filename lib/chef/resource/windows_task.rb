@@ -233,7 +233,7 @@ class Chef
 
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
-        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v.between?(0, 10) } }
 
       property :disallow_start_if_on_batteries, [TrueClass, FalseClass],
         introduced: "14.4", default: false,
@@ -300,7 +300,7 @@ class Chef
 
       # Validate the passed value is numeric values only if it is a string
       def numeric_value_in_string?(val)
-        return true if Integer(val)
+        true if Integer(val)
       rescue ArgumentError
         false
       end
@@ -339,7 +339,6 @@ class Chef
         raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(random_delay)
       end
 
-      # @todo when we drop ruby 2.3 support this should be converted to .match?() instead of =~f
       def validate_start_day(start_day, frequency)
         if start_day && frequency == :none
           raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
@@ -351,7 +350,6 @@ class Chef
         end
       end
 
-      # @todo when we drop ruby 2.3 support this should be converted to .match?() instead of =~
       def validate_start_time(start_time, frequency)
         if start_time
           raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if frequency == :none

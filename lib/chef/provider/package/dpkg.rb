@@ -25,9 +25,9 @@ class Chef
     class Package
       class Dpkg < Chef::Provider::Package
         include Chef::Provider::Package::Deb
-        DPKG_REMOVED   = /^Status: deinstall ok config-files/.freeze
-        DPKG_INSTALLED = /^Status: install ok installed/.freeze
-        DPKG_VERSION   = /^Version: (.+)$/.freeze
+        DPKG_REMOVED   = /^Status: deinstall ok config-files/
+        DPKG_INSTALLED = /^Status: install ok installed/
+        DPKG_VERSION   = /^Version: (.+)$/
 
         provides :dpkg_package, target_mode: true
 

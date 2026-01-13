@@ -26,9 +26,9 @@ class Chef
 
       SPECIAL_TIME_VALUES = %i{reboot yearly annually monthly weekly daily midnight hourly}.freeze
       CRON_ATTRIBUTES = %i{minute hour day month weekday time command mailto path shell home environment}.freeze
-      CRON_PATTERN = %r{\A([-0-9*,/]+)\s([-0-9*,/]+)\s([-0-9*,/]+)\s([-0-9*,/]+|[a-zA-Z]{3})\s([-0-9*,/]+|[a-zA-Z]{3})\s(.*)}.freeze
-      SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/.freeze
-      ENV_PATTERN = /\A(\S+)=(\S*)/.freeze
+      CRON_PATTERN = %r{\A([-0-9*,/]+)\s([-0-9*,/]+)\s([-0-9*,/]+)\s([-0-9*,/]+|[a-zA-Z]{3})\s([-0-9*,/]+|[a-zA-Z]{3})\s(.*)}
+      SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join("|")}))\s(.*)/
+      ENV_PATTERN = /\A(\S+)=(\S*)/
       ENVIRONMENT_PROPERTIES = %w{MAILTO PATH SHELL HOME}.freeze
 
       def initialize(new_resource, run_context)
@@ -206,9 +206,11 @@ class Chef
         write_exception = false
 
         tempname = Dir::Tmpname.create(["crontab-"]) {}
-        TargetIO::File.open(tempname, "w") do |tempfile|
+        staging_file = TargetIO::File.open(tempname, "w") do |tempfile|
           tempfile.write(crontab)
         end
+
+        tempname = staging_file if staging_file && ChefConfig::Config.target_mode?
 
         so = shell_out!("crontab -u #{new_resource.user} #{tempname}")
 

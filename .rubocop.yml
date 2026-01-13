@@ -1,9 +1,10 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.1 # this cannot be bumped until we upgrade RuboCop
   Exclude:
     - "spec/data/**/*"
     - "knife/spec/data/**/*"
     - "vendor/**/*"
+    - "*/vendor/**/*"
     - "pkg/**/*"
     - "chef-config/pkg/**/*"
     - "habitat/**/*"
@@ -33,6 +34,15 @@ Lint/DeprecatedConstants:
   Exclude:
     - lib/chef/node/attribute.rb # false alarms
 
+# Disable these until we upgrade to a modern Rubocop release
+Layout/ArgumentAlignment:
+  Enabled: false
+Layout/HashAlignment:
+  Enabled: false
+Layout/AssignmentIndentation:
+  Enabled: false
+Layout/HeredocIndentation:
+  Enabled: false
 
 # This cop shouldn't alert on the helper / specs itself
 Chef/Ruby/LegacyPowershellOutMethods:

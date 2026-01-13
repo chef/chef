@@ -26,8 +26,8 @@ class Chef
           debianrcd?
         end
 
-        UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i.freeze
-        UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i.freeze
+        UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i
+        UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i
         RUNLEVELS = %w{ 1 2 3 4 5 S }.freeze
 
         def self.supports?(resource, action)
@@ -91,11 +91,9 @@ class Chef
 
         def get_priority
           priority = {}
-          rc_files = []
-
           levels = parse_init_file(@init_command)
-          levels.each do |level|
-            rc_files.push TargetIO::Dir.glob("/etc/rc#{level}.d/[SK][0-9][0-9]#{current_resource.service_name}")
+          rc_files = levels.map do |level|
+            TargetIO::Dir.glob("/etc/rc#{level}.d/[SK][0-9][0-9]#{current_resource.service_name}")
           end
 
           rc_files.flatten.each do |line|

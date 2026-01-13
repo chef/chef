@@ -42,6 +42,15 @@ describe Chef::Resource::Ohai do
     it_behaves_like "reloaded :uptime"
   end
 
+  describe "when reloading all plugins" do
+    let(:ohai_resource) { Chef::Resource::Ohai.new("reload all", run_context) }
+
+    it "should leave platform_version as a Chef::VersionString" do
+      ohai_resource.run_action(:reload)
+      expect(run_context.node["platform_version"]).to be_an_instance_of(Chef::VersionString)
+    end
+  end
+
   describe "when reloading only uptime" do
     let(:ohai_resource) do
       r = Chef::Resource::Ohai.new("reload all", run_context)

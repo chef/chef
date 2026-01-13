@@ -833,7 +833,7 @@ describe Chef::Provider::SystemdUnit, :linux_only do
             "ActiveState" => "inactive",
             "UnitFileState" => nil,
           }
-          with_systemctl_show(systemctl_path, "--system", {},  nil_and_inactive)
+          with_systemctl_show(systemctl_path, "--system", {}, nil_and_inactive)
           expect(provider.systemd_unit_status).to eql(nil_and_inactive_h)
         end
 

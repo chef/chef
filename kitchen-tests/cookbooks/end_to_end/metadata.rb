@@ -4,7 +4,6 @@ description      "Installs/Configures base"
 version          "2.0.0"
 
 depends          "logrotate"
-depends          "nscd"
 depends          "ntp"
 depends          "chrony"
 depends          "openssh"

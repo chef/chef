@@ -21,10 +21,56 @@
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
 begin
+  # The explicit call to FFI::DynamicLibrary.open was added to address an issue specific to the Habitat packaging of Chef Infra Client on windows.
+  # In the Habitat environment, the libarchive library (archive.dll) is installed in a non-standard location that is not included
+  # in the default search paths used by the FFI gem to locate dynamic libraries. The default search paths for FFI are:
+  #   - <system library path>
+  #   - /usr/lib
+  #   - /usr/local/lib
+  #   - /opt/local/lib
+  # These paths do not account for the Habitat package structure, where libraries are installed in isolated directories under
+  # the Habitat package path (e.g., C:/hab/pkgs/core/libarchive/<version>/bin on Windows).
+  #
+  # Without explicitly loading archive.dll using FFI::DynamicLibrary.open, the ffi-libarchive gem fails to locate and load the library,
+  # resulting in runtime errors when attempting to use the archive_file resource.
+  #
+  # This code dynamically determines the path to archive.dll using the Habitat CLI (`hab pkg path core/libarchive`) and explicitly
+  # loads the library using FFI::DynamicLibrary.open. This ensures that the library is correctly loaded in the Habitat environment.
+  #
+  # Note: This logic is gated by a check for Habitat-specific environment variables (HAB_CACHE_SRC_PATH or HAB_PKG_PATH) to ensure
+  # that it is only applied in Habitat runs. For other environments (e.g., Omnibus, plain gem installations, or git checkouts),
+  # the default behavior of FFI is sufficient, as the libraries are installed in standard locations or embedded paths that are
+  # included in the default search paths.
+  if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && (ENV["HAB_CACHE_SRC_PATH"] || ENV["HAB_PKG_PATH"])
+    require "ffi" unless defined?(FFI)
+    require "open3" unless defined?(Open3)
+    # Dynamically determine the path to the core/libarchive package
+    stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
+    unless status.success?
+      Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
+      return
+    end
+
+    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
+    unless Dir.exist?(habitat_libarchive_path)
+      Chef::Log.debug("Habitat libarchive path not found: #{habitat_libarchive_path}")
+      return
+    end
+
+    archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
+    unless File.exist?(archive_dll_path)
+      Chef::Log.debug("archive.dll not found in Habitat path: #{habitat_libarchive_path}")
+      return
+    end
+
+    FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
+    Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+  end
+
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
   require "ffi-libarchive" unless defined?(Archive::Reader)
-rescue LoadError
-  STDERR.puts "ffi-libarchive could not be loaded, libarchive is probably not installed on system, archive_file will not be available"
+rescue LoadError => e
+  STDERR.puts "ffi-libarchive could not be loaded. libarchive is probably not installed on system, archive_file will not be available"
 end
 
 class Chef
@@ -125,9 +171,10 @@ class Chef
 
         if new_resource.owner || new_resource.group
           converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            archive = Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components)
-            archive.each_entry do |e|
-              FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+            Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components) do |archive|
+              archive.each_entry do |e|
+                FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+              end
             end
           end
         end
@@ -164,16 +211,17 @@ class Chef
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
           modified = false
-          archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
-          Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
-          archive.each_entry do |e|
-            pathname = ::File.expand_path(e.pathname, dest)
-            if ::File.exist?(pathname)
-              Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
-              modified = true unless ::File.mtime(pathname) == e.mtime
-            else
-              Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
-              modified = true
+          Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+            Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
+            archive.each_entry do |e|
+              pathname = ::File.expand_path(e.pathname, dest)
+              if ::File.exist?(pathname)
+                Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
+                modified = true unless ::File.mtime(pathname) == e.mtime
+              else
+                Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
+                modified = true
+              end
             end
           end
           modified
@@ -191,12 +239,11 @@ class Chef
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
             Dir.chdir(dest) do
-              archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
-
-              archive.each_entry do |e|
-                archive.extract(e, flags.to_i)
+              Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+                archive.each_entry do |e|
+                  archive.extract(e, flags.to_i)
+                end
               end
-              archive.close
             end
           end
         end

@@ -59,6 +59,7 @@ class Chef
           empty?
           entries
           fetch
+          fetch_values
           filter
           filter_map
           find

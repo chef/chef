@@ -117,6 +117,8 @@ class Chef
     end
 
     def current_mode
+      return if stat.mode.nil?
+
       case new_resource.mode
       when String, Integer, nil
         "0#{(stat.mode & 07777).to_s(8)}"

@@ -74,7 +74,7 @@ describe Chef::Knife::CookbookDelete do
 
       knife.run
 
-      expect(stdout.string).to match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
+      expect(stdout.string).to match(/#{Regexp.escape("Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)")}/)
       expect(cb100_deleted).to be_truthy
     end
 
@@ -90,8 +90,8 @@ describe Chef::Knife::CookbookDelete do
 
       knife.run
 
-      expect(stdout.string).to match(/#{Regexp.escape('Are you sure you want to purge files')}/)
-      expect(stdout.string).to match(/#{Regexp.escape('Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)')}/)
+      expect(stdout.string).to match(/#{Regexp.escape("Are you sure you want to purge files")}/)
+      expect(stdout.string).to match(/#{Regexp.escape("Do you really want to delete obsolete-cookbook version 1.0.0? (Y/N)")}/)
       expect(cb100_deleted).to be_truthy
 
     end

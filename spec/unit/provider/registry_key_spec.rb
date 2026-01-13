@@ -26,7 +26,7 @@ shared_examples_for "a registry key" do
     describe "when the key exists" do
       before(:each) do
         expect(@double_registry).to receive(:key_exists?).with(keyname).and_return(true)
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval2 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval2] )
         @provider.load_current_resource
       end
 
@@ -66,7 +66,7 @@ shared_examples_for "a registry key" do
       end
       it "should do nothing if the if a case insensitive key and the value both exist" do
         @provider.new_resource.key(keyname.downcase)
-        expect(@double_registry).to receive(:get_values).with(keyname.downcase).and_return( testval1 )
+        expect(@double_registry).to receive(:get_values).with(keyname.downcase).and_return( [testval1 ])
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
@@ -77,25 +77,25 @@ shared_examples_for "a registry key" do
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "should do nothing if the key and the value both exist" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1] )
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should create the value if the key exists but the value does not" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval2 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval2] )
         expect(@double_registry).to receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should set the value if the key exists but the data does not match" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1_wrong_data] )
         expect(@double_registry).to receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
       end
       it "should set the value if the key exists but the type does not match" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1_wrong_type] )
         expect(@double_registry).to receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create
@@ -105,7 +105,7 @@ shared_examples_for "a registry key" do
       it "when a value is in the key, it should do nothing" do
         @provider.new_resource.values([])
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1] )
         expect(@double_registry).not_to receive(:create_key)
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
@@ -150,25 +150,25 @@ shared_examples_for "a registry key" do
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "should do nothing if the key and the value both exist" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1] )
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
       it "should create the value if the key exists but the value does not" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval2 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval2] )
         expect(@double_registry).to receive(:set_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
       it "should not set the value if the key exists but the data does not match" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1_wrong_data] )
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
       end
       it "should not set the value if the key exists but the type does not match" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1_wrong_type] )
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create_if_missing
@@ -193,25 +193,25 @@ shared_examples_for "a registry key" do
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "deletes the value when the value exists" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1] )
         expect(@double_registry).to receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
       it "deletes the value when the value exists, but the type is wrong" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_type )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1_wrong_type] )
         expect(@double_registry).to receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
       it "deletes the value when the value exists, but the data is wrong" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1_wrong_data )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1_wrong_data] )
         expect(@double_registry).to receive(:delete_value).with(keyname, testval1)
         @provider.load_current_resource
         @provider.action_delete
       end
       it "does not delete the value when the value does not exist" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval2 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval2] )
         expect(@double_registry).not_to receive(:delete_value)
         @provider.load_current_resource
         @provider.action_delete
@@ -235,7 +235,7 @@ shared_examples_for "a registry key" do
         expect(@double_registry).to receive(:key_exists?).twice.with(keyname).and_return(true)
       end
       it "deletes the key" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( testval1 )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [testval1] )
         expect(@double_registry).to receive(:delete_key).with(keyname, false)
         @provider.load_current_resource
         @provider.action_delete_key
@@ -303,7 +303,7 @@ describe Chef::Provider::RegistryKey do
       end
 
       it "does not make a change for datatype of data value differing" do
-        expect(@double_registry).to receive(:get_values).with(keyname).and_return( dword_passed_as_integer )
+        expect(@double_registry).to receive(:get_values).with(keyname).and_return( [dword_passed_as_integer] )
         expect(@double_registry).not_to receive(:set_value)
         @provider.load_current_resource
         @provider.action_create

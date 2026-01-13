@@ -54,7 +54,7 @@ class Chef
 
       def count
         num = all_resources.count
-        num > amount ? amount : num
+        [num, amount].min
       end
 
       def stripped_source_line(resource)

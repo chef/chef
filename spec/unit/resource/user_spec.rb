@@ -56,9 +56,9 @@ describe Chef::Resource::User, "initialize" do
     expect(resource.gid).to eql(1234)
   end
 
-  it "accepts domain users (@ or \ separator) on non-windows" do
-    expect { resource.username "domain\@user" }.not_to raise_error
-    expect(resource.username).to eq("domain\@user")
+  it "accepts domain users (@ or  separator) on non-windows" do
+    expect { resource.username "domain@user" }.not_to raise_error
+    expect(resource.username).to eq("domain@user")
     expect { resource.username "domain\\user" }.not_to raise_error
     expect(resource.username).to eq("domain\\user")
   end

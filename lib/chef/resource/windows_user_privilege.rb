@@ -76,7 +76,7 @@ class Chef
       ```ruby
       windows_user_privilege 'Create Pagefile' do
         privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\\Guests']
+        principal      'BUILTIN\\Guests'
         action         :remove
       end
       ```
@@ -222,7 +222,7 @@ class Chef
         missing_res_privileges = (new_resource.privilege - curr_res_privilege)
 
         if missing_res_privileges
-          Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
+          Chef::Log.info("User '#{new_resource.principal}' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
         end
 
         (new_resource.privilege - missing_res_privileges).each do |principal_right|

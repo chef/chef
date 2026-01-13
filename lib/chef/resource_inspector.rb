@@ -87,8 +87,7 @@ class Chef
         # Here we do some magic to extract resources from files where there are multiple resources
         # in a file - to do this, we load the file, and take the delta of which resources
         # exist in object space
-        existing_classes = []
-        ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each { |klass| existing_classes << klass }
+        existing_classes = ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.map { |klass| klass }
         # Load the set of resources from this file
         Chef::Resource::LWRPBase.build_from_file(name, pth, Chef::RunContext.new(Chef::Node.new, nil, nil))
         # Finally, process every new class added to the object space by that

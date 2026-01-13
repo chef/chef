@@ -30,12 +30,27 @@ class Chef
       banner "knife user list (options)"
 
       option :with_uri,
-        short: "-w",
-        long: "--with-uri",
-        description: "Show corresponding URIs."
+             short: "-w",
+             long: "--with-uri",
+             description: "Show corresponding URIs."
+
+      option :all_users,
+             short: "-a",
+             long: "--all-users",
+             description: "Show all user details."
 
       def run
-        output(format_list_for_display(Chef::UserV1.list))
+        users = Chef::UserV1.list(config[:all_users])
+        if config[:all_users]
+          # When showing all user details, convert UserV1 objects to hashes for display
+          detailed_users = {}
+          users.each do |name, user|
+            detailed_users[name] = user.to_h
+          end
+          output(detailed_users)
+        else
+          output(format_list_for_display(users))
+        end
       end
 
     end

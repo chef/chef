@@ -152,6 +152,20 @@ class Chef
       end
     end
 
+    def recipe_json_filenames_by_name
+      @recipe_json_filenames_by_name ||= begin
+        name_map = json_filenames_by_name(files_for("recipes"))
+        root_alias = cookbook_manifest.root_files.find { |record|
+          record[:name] == "root_files/recipe.json"
+        }
+        if root_alias
+          Chef::Log.error("Cookbook #{name} contains both recipe.json and recipes/default.json, ignoring recipes/default.json") if name_map["default"]
+          name_map["default"] = root_alias[:full_path]
+        end
+        name_map
+      end
+    end
+
     def recipe_filenames_by_name
       @recipe_filenames_by_name ||= begin
         name_map = filenames_by_name(files_for("recipes"))
@@ -203,9 +217,24 @@ class Chef
         load_ruby_recipe(recipe_name, run_context)
       elsif recipe_yml_filenames_by_name.key?(recipe_name)
         load_yml_recipe(recipe_name, run_context)
+      elsif recipe_json_filenames_by_name.key?(recipe_name)
+        load_json_recipe(recipe_name, run_context)
       else
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
+    end
+
+    def load_json_recipe(recipe_name, run_context)
+      Chef::Log.trace("Found recipe #{recipe_name} in cookbook #{name}")
+      recipe = Chef::Recipe.new(name, recipe_name, run_context)
+      recipe_filename = recipe_json_filenames_by_name[recipe_name]
+
+      unless recipe_filename
+        raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
+      end
+
+      recipe.from_json_file(recipe_filename)
+      recipe
     end
 
     def load_yml_recipe(recipe_name, run_context)
@@ -576,13 +605,13 @@ class Chef
     # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def relative_paths_by_name(records)
-      records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:path]; memo }
+      records.select { |record| record[:name].end_with?(".rb") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:path]; memo }
     end
 
     # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(records)
-      records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
+      records.select { |record| record[:name].end_with?(".rb") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
     end
 
     # Filters YAML files from the superset of provided files.
@@ -606,6 +635,11 @@ class Chef
         acc
       end
       result
+    end
+
+    # Filters JSON files from the superset of provided files.
+    def json_filenames_by_name(records)
+      records.select { |record| record[:name].end_with?(".json") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".json")] = record[:full_path]; memo }
     end
 
     def file_vendor

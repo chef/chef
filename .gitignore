@@ -8,6 +8,7 @@ tags
 .chef
 results
 *.swp
+.ruby-version
 
 # Docker
 .dobi
@@ -62,9 +63,6 @@ spec/data/chef_guid
 vendor/
 kitchen-tests/vendor
 
-# Visual Studio Code files
-.vscode
-
 # ignore nodes generated during local testing
 nodes/
 
@@ -96,7 +94,6 @@ docs_site
 
 # Rendered Templates
 ext/win32-eventlog/chef-log.man
-distro/powershell/chef/chef.psm1
 
 # tool logs
 mkmf.log

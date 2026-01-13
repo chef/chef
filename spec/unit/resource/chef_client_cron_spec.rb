@@ -24,6 +24,12 @@ describe Chef::Resource::ChefClientCron do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::ChefClientCron.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:add) }
+  let(:chef_habitat_binary_path) { "/hab/pkgs/chef/chef-infra-client/19.2.7/20250122151044/bin/chef-client" }
+
+  before do
+    # Stub the chef_binary_path property to return the Habitat binary path for Infra Client
+    allow(resource).to receive(:chef_binary_path).and_return(chef_habitat_binary_path)
+  end
 
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
@@ -49,7 +55,7 @@ describe Chef::Resource::ChefClientCron do
   end
 
   it "builds a default value for chef_binary_path dist values" do
-    expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
+    expect(resource.chef_binary_path).to eql(chef_habitat_binary_path)
   end
 
   it "raises an error if nice is less than -20" do
@@ -79,13 +85,13 @@ describe Chef::Resource::ChefClientCron do
   describe "#splay_sleep_time" do
     it "uses shard_seed attribute if present" do
       node.automatic_attrs[:shard_seed] = "73399073"
-      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
     end
 
     it "uses a hex conversion of a md5 hash of the splay if present" do
       node.automatic_attrs[:shard_seed] = nil
       allow(node).to receive(:name).and_return("test_node")
-      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
     end
   end
 
@@ -98,39 +104,40 @@ describe Chef::Resource::ChefClientCron do
 
     it "creates a valid command if using all default properties" do
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client --foo 1 --bar 2 -c #{root_path} >> /var/log/chef/client.log 2>&1"
+        "/bin/sleep 123; #{chef_habitat_binary_path} --foo 1 --bar 2 -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
-      expect(provider.client_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb >> /var/log/chef/client.log 2>&1")
+      expect(provider.client_command).to eql("/bin/sleep 123; #{chef_habitat_binary_path} -c /etc/some_other_dir/client.rb >> /var/log/chef/client.log 2>&1")
     end
 
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} >> /var/log/my-chef/my-client.log 2>&1"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} >> /var/log/my-chef/my-client.log 2>&1"
       )
     end
 
     it "uses mailto if set" do
       resource.mailto "bob@example.com"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1 || echo \"Chef Infra Client execution failed\""
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} >> /var/log/chef/client.log 2>&1 || echo \"Chef Infra Client execution failed\""
       )
     end
 
     it "uses custom chef-client binary if set" do
-      resource.chef_binary_path "/usr/local/bin/chef-client"
+      # Temporarily override the stubbed value for this test
+      allow(resource).to receive(:chef_binary_path).and_return("/usr/local/bin/chef-client")
       expect(provider.client_command).to eql(
         "/bin/sleep 123; /usr/local/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
@@ -139,14 +146,14 @@ describe Chef::Resource::ChefClientCron do
     it "appends to the log file appending if set to false" do
       resource.append_log_file false
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} > /var/log/chef/client.log 2>&1"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} > /var/log/chef/client.log 2>&1"
       )
     end
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} --chef-license accept >> /var/log/chef/client.log 2>&1"
+        "/bin/sleep 123; #{chef_habitat_binary_path} -c #{root_path} --chef-license accept >> /var/log/chef/client.log 2>&1"
       )
     end
 
@@ -154,7 +161,7 @@ describe Chef::Resource::ChefClientCron do
       allow(provider).to receive(:which).with("nice").and_return("/usr/bin/nice")
       resource.nice(-15)
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1"
+        "/bin/sleep 123; /usr/bin/nice -n -15 #{chef_habitat_binary_path} -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
   end

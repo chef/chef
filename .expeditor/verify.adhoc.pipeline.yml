@@ -8,5 +8,6 @@ expeditor:
       timeout_in_minutes: 60
 
 steps:
-  - command: .buildkite/verify.adhoc.pipeline.sh | buildkite-agent pipeline upload
+  - commands:
+    - ./.buildkite/validate.adhoc.pipeline.sh
     label: ":pipeline: Upload"

@@ -72,8 +72,8 @@ class Chef
         # do we need to worry about binary data?
         if unsafe?(s)
           encoded_str = Base64.strict_encode64(s.encode("UTF-8"))
-          "([System.Text.Encoding]::UTF8.GetString("\
-               "[System.Convert]::FromBase64String('#{encoded_str}')"\
+          "([System.Text.Encoding]::UTF8.GetString(" \
+               "[System.Convert]::FromBase64String('#{encoded_str}')" \
           "))"
         else
           "'#{s}'"

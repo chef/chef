@@ -66,6 +66,17 @@ class Chef
         end
 
         requirements.assert(:create) do |a|
+          a.assertion do
+            if ::TargetIO::File.exist?(new_resource.path)
+              ::TargetIO::File.directory?(new_resource.path)
+            else
+              true
+            end
+          end
+          a.failure_message(Chef::Exceptions::FileTypeMismatch, "Cannot create #{new_resource} at #{new_resource.path} because a file already exists at that path")
+        end
+
+        requirements.assert(:create) do |a|
           parent_directory = ::File.dirname(new_resource.path)
           a.assertion do
             if new_resource.recursive

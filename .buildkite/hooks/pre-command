@@ -2,8 +2,9 @@
 
 set -eu
 
-# Only execute in the verify pipeline
-[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
+# Only execute in the few pipelines that need it
+# if this needs to be extended to other pipelines/steps, let the build team know to take their input on it
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary)|docker-build)$ ]] || exit 0
 
 docker ps || true
 
@@ -16,7 +17,11 @@ OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolc
 export OMNIBUS_TOOLCHAIN_VERSION
 echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
-if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
+RUBY_VERSION=$(cat .buildkite-platform.json | jq -r '.ruby_version')
+export RUBY_VERSION
+echo "Proposed Ruby Version: $RUBY_VERSION"
+
+if [[ "$BUILDKITE_STEP_KEY" =~ "build-windows" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
   ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
@@ -58,16 +63,15 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
   fi
 fi
 
-# Only if on chef-canary or chef org
-# force regions on omnibus queues
-[[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]]; then
-  export AWS_REGION="us-west-2"
-else
-  export AWS_REGION="us-west-1"
+if [[ $BUILDKITE_ORGANIZATION_SLUG = 'chef-canary' ]]; then
+  export AWS_REGION='us-west-1'
+elif [[ $BUILDKITE_ORGANIZATION_SLUG = 'chef' ]] || [[ $BUILDKITE_ORGANIZATION_SLUG = 'chef-oss' ]]; then
+  export AWS_REGION='us-west-2'
 fi
 
-if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 
+if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
     lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
     export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)

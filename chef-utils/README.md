@@ -42,7 +42,8 @@ The Platform Family helpers provide an alternative to comparing values from `nod
 
 Super Families:
 
-* `fedora_based?` - anything of fedora lineage (fedora, redhat, centos, amazon, pidora, etc)
+* `fedora_derived?` - anything of fedora lineage (fedora, redhat, centos, amazon, pidora, etc)
+* `redhat_based?` - fedora and rhel platform_families, nothing else. This is most likely not as useful as the `fedora_derived?` helper.
 * `rpm_based?`- all `fedora_based` systems plus `suse` and any future linux distros based on RPM (excluding AIX)
 * `solaris_based?`- all solaris-derived systems (omnios, smartos, openindiana, etc)
 * `bsd_based?`- all bsd-derived systems (freebsd, netbsd, openbsd, dragonflybsd).
@@ -131,6 +132,7 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `azure?` - if the node is running in azure
 * `digital_ocean?` - if the node is running in digital ocean
 * `softlayer?` - if the node is running in softlayer
+* `oci?` - if the node is running in oracle cloud infrastructure
 
 ### Virtualization Helpers
 

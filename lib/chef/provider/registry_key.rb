@@ -51,9 +51,11 @@ class Chef
         current_resource.recursive(new_resource.recursive)
         if registry.key_exists?(new_resource.key)
           current_registry_values = registry.get_values(new_resource.key) || []
+
           current_resource.values(current_registry_values)
         end
         values_to_hash(current_resource.unscrubbed_values)
+
         current_resource
       end
 
@@ -122,6 +124,7 @@ class Chef
             registry.create_key(new_resource.key, new_resource.recursive)
           end
         end
+
         new_resource.unscrubbed_values.each do |value|
           if @name_hash.key?(value[:name].downcase)
             current_value = @name_hash[value[:name].downcase]

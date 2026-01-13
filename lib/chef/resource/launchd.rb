@@ -190,7 +190,7 @@ class Chef
 
       property :nice, Integer,
         description: "The program scheduling priority value in the range -20 to 19.",
-        callbacks: { "should be a Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
+        callbacks: { "should be a Integer between -20 and 19" => proc { |v| v.between?(-20, 19) } }
 
       property :on_demand, [ TrueClass, FalseClass ],
         description: "Keep a job alive. Only applies to macOS version 10.4 (and earlier); use `keep_alive` instead for newer versions."

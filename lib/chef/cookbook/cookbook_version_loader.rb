@@ -213,9 +213,10 @@ class Chef
         # directories at the top level are not included for backcompat), this
         # actually keeps things a bit cleaner.
         Dir.entries(cookbook_path).each do |top_filename|
-          # Skip top-level directories starting with "."
+          # Skip top-level directories starting with "." and broken links
           top_path = File.join(cookbook_path, top_filename)
           next if top_filename.start_with?(".") && File.directory?(top_path)
+          next unless File.exist?(top_path)
 
           # Use Find.find because it:
           # (a) returns any children, recursively

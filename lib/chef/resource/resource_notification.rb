@@ -41,7 +41,7 @@ class Chef
       # @return [Boolean] does the resource match
       def duplicates?(other_notification)
         unless other_notification.respond_to?(:resource) && other_notification.respond_to?(:action)
-          msg = "only duck-types of Chef::Resource::Notification can be checked for duplication "\
+          msg = "only duck-types of Chef::Resource::Notification can be checked for duplication " \
                 "you gave #{other_notification.inspect}"
           raise ArgumentError, msg
         end
@@ -73,7 +73,7 @@ class Chef
       def fix_resource_reference(resource_collection, always_raise = false)
         matching_resource = resource_collection.find(resource)
         if Array(matching_resource).size > 1
-          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, "\
+          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple resources, " \
           "but can only notify one resource. Notifying resource was defined on #{notifying_resource.source_line}"
           raise Chef::Exceptions::InvalidResourceReference, msg
         end
@@ -108,8 +108,8 @@ class Chef
       def fix_notifier_reference(resource_collection)
         matching_notifier = resource_collection.find(notifying_resource)
         if Array(matching_notifier).size > 1
-          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple notifying "\
-          "resources, but can only originate from one resource.  Destination resource was defined "\
+          msg = "Notification #{self} from #{notifying_resource} was created with a reference to multiple notifying " \
+          "resources, but can only originate from one resource.  Destination resource was defined " \
           "on #{resource.source_line}"
           raise Chef::Exceptions::InvalidResourceReference, msg
         end

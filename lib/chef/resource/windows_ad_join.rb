@@ -97,7 +97,7 @@ class Chef
 
       action :join, description: "Join the Active Directory domain." do
         unless on_desired_domain?
-          cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
+          cmd = "$pswd = ConvertTo-SecureString '#{new_resource.domain_password}' -AsPlainText -Force;"
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
@@ -128,7 +128,7 @@ class Chef
       action :leave, description: "Leave an Active Directory domain and re-join a workgroup." do
         if joined_to_domain?
           cmd = ""
-          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
+          cmd << "$pswd = ConvertTo-SecureString '#{new_resource.domain_password}' -AsPlainText -Force;"
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
           cmd << "Remove-Computer"
           cmd << " -UnjoinDomainCredential $credential"

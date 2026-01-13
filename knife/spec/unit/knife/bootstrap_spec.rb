@@ -368,7 +368,7 @@ describe Chef::Knife::Bootstrap do
       allow(::File).to receive(:read).and_return('{ "foo" : "bar" }')
       knife.parse_options(["--hint", "openstack=hints/openstack.json"])
       knife.merge_configs
-      expect(knife.render_template).to match(/\{\"foo\":\"bar\"\}/)
+      expect(knife.render_template).to match(/\{ \"foo\" : \"bar\"\ }/)
     end
   end
 
@@ -563,7 +563,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "creates /etc/chef/client.d" do
-        expect(rendered_template).to match("mkdir -p /etc/chef/client\.d")
+        expect(rendered_template).to match("mkdir -p /etc/chef/client.d")
       end
 
       context "a flat directory structure" do
@@ -774,7 +774,7 @@ describe Chef::Knife::Bootstrap do
   context "validating use_sudo_password option" do
     it "use_sudo_password contains description and long params for help" do
       expect(knife.options).to(have_key(:use_sudo_password)) \
-        && expect(knife.options[:use_sudo_password][:description].to_s).not_to(eq(""))\
+        && expect(knife.options[:use_sudo_password][:description].to_s).not_to(eq("")) \
         && expect(knife.options[:use_sudo_password][:long].to_s).not_to(eq(""))
     end
   end

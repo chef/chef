@@ -110,7 +110,7 @@ describe Chef::Node do
       expect { node.name("") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
-    it "should not accept name doesn't match /^[\-[:alnum:]_:.]+$/" do
+    it "should not accept name doesn't match /^[-[:alnum:]_:.]+$/" do
       expect { node.name("space in it") }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end

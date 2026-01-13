@@ -50,6 +50,7 @@ class Chef
           :type => :binary,
           :data => [0, 1, 2].map(&:chr).join
         }]
+
         action :create
       end
       ```

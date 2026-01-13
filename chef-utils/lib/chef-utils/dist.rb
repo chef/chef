@@ -66,7 +66,7 @@ module ChefUtils
       GEM = "chef"
 
       # The client's container image
-      CONTAINER_REF = "chef/chef"
+      CONTAINER_REF = "chef/chef-hab"
     end
 
     class Inspec

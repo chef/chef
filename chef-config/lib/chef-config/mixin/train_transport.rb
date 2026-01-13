@@ -36,15 +36,17 @@ module ChefConfig
       #
       def load_credentials(profile)
         # Tomlrb.load_file returns a hash with keys as strings
-        credentials = parse_credentials_file
-        if contains_split_fqdn?(credentials, profile)
+        credentials_config = parse_credentials_file
+        if contains_split_fqdn?(credentials_config, profile)
           logger.warn("Credentials file #{credentials_file_path} contains target '#{profile}' as a Hash, expected a string.")
           logger.warn("Hostnames must be surrounded by single quotes, e.g. ['host.example.org']")
         end
 
+        resolve_secrets(profile)
+
         # host names must be specified in credentials file as ['foo.example.org'] with quotes
-        if !credentials.nil? && !credentials[profile].nil?
-          credentials[profile].transform_keys(&:to_sym) # return symbolized keys to match Train.options()
+        if !credentials_config.nil? && !credentials_config[profile].nil?
+          credentials_config[profile].transform_keys(&:to_sym) # return symbolized keys to match Train.options()
         else
           nil
         end
@@ -59,6 +61,8 @@ module ChefConfig
       # This will be a common mistake so we should catch it
       #
       def contains_split_fqdn?(hash, fqdn)
+        return unless fqdn.include?(".")
+
         fqdn.split(".").reduce(hash) do |h, k|
           v = h[k]
           if Hash === v
@@ -74,21 +78,25 @@ module ChefConfig
       #
       # Credentials file preference:
       #
-      # 1) target_mode.credentials_file
-      # 2) /etc/chef/TARGET_MODE_HOST/credentials
-      # 3) #credentials_file_path from parent ($HOME/.chef/credentials)
+      # 1) environment variable CHEF_CREDENTIALS_FILE
+      # 2) target_mode.credentials_file
+      # 3) /etc/chef/TARGET_MODE_HOST/credentials
+      # 4) user configuration ($HOME/.chef/target_credentials)
       #
       def credentials_file_path
         tm_config = config.target_mode
         profile = tm_config.host
 
+        env_file = ENV["CHEF_CREDENTIALS_FILE"]
         credentials_file =
-          if tm_config.credentials_file && File.exist?(tm_config.credentials_file)
+          if env_file && File.exist?(env_file)
+            env_file
+          elsif tm_config.credentials_file && File.exist?(tm_config.credentials_file)
             tm_config.credentials_file
           elsif File.exist?(config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials"))
             config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials")
           else
-            super
+            PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR, "target_credentials").freeze
           end
 
         raise ArgumentError, "No credentials file found for target '#{profile}'" unless credentials_file
@@ -112,14 +120,9 @@ module ChefConfig
         # Load the credentials file, and place any valid settings into the train configuration
         credentials = load_credentials(tm_config.host)
 
-        protocol = credentials[:transport_protocol] || tm_config.protocol
+        protocol = credentials&.dig(:transport_protocol) || tm_config.protocol
         train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
         logger.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
-
-        # If the user is not root, warn that some functionality may not work.
-        unless credentials[:train_user] == "root" || credentials[:user] == "root"
-          logger.warn("Target Mode requires the root user for full functionality. Other users might result in failures")
-        end
 
         if credentials
           valid_settings = credentials.select { |k| Train.options(protocol).key?(k) }

@@ -57,7 +57,7 @@ class Chef
 
         def get_latest_package_version(name, channel)
           cmd = shell_out("snap info #{name}")
-          latest = cmd.stdout.lines.detect { |l| l.start_with? "  latest/#{new_resource.channel}:" }
+          latest = cmd.stdout.lines.detect { |l| l.start_with? "  #{new_resource.channel}:" }
           return unless latest
 
           latest.split.at(1)

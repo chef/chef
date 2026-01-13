@@ -50,7 +50,7 @@ git push origin *new_release_branch_name* # e.g. chef-18
 
 Once you've forked to a new stable branch such as `chef-17` you'll want to create a new branch so you can build a PR, which will get this branch ready for release:
 
-- In ./expeditor/config.yml remove the update_dep.sh subscriptions which don't work against stable branches such as chefstyle and ohai.
+- In ./expeditor/config.yml remove the update_dep.sh subscriptions which don't work against stable branches such as ohai.
 - In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to main.
 - In kitchen-tests/Gemfile update the Ohai branch to point to the new Ohai stable
 - In kitchen-tests/kitchen.yml update chef_version to be your new stable version and not current. Ex: 15
@@ -88,5 +88,4 @@ Create a PR that performs the following:
 - In the ohai repo checkout the stable branch
 - Update the `chef-config` and `chef-utils` deps in the Gemfile to point to the chef-XYZ stable branch in the `chef/chef` repo.
 
-### Step 6. Have a github admin update the branch protections for the new release branch. 
-
+### Step 6. Have a github admin update the branch protections for the new release branch.

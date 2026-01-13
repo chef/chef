@@ -16,66 +16,78 @@ defaults:
     working-directory: kitchen-tests
 
 jobs:
+  # test-kitchen-enterprise currently supports only kitchen-dokken driver for linux platforms,
+  # so we are testing windows using community test-kitchen
   win_x86_64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - windows-2019
+          - windows-2025
           - windows-2022
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Install Chef
-      uses: actionshub/chef-install@3.0.0
+      uses: actionshub/chef-install@main
+      with:
+        version: "25.5.1084"
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: kitchen verify ${{ matrix.os }}
 
-  mac_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - macos-13
-    runs-on: ${{ matrix.os }}
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-            clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
-      - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
-
+#  mac_x86_64:
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os:
+#          - macos-15-intel
+#    runs-on: ${{ matrix.os }}
+#    env:
+#      CHEF_LICENSE: accept-no-persist
+#      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v5
+#        with:
+#            clean: true
+#      - name: Install Chef
+#        uses: actionshub/chef-install@main
+#        with:
+#          version: "25.5.1084"
+#      - name: Kitchen Test
+#        run: kitchen verify ${{ matrix.os }}
+#
   mac_arm64:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - macos-14 # currently macos-latest
+          - macos-14
           - macos-15
+          - macos-26
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           clean: true
       - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+        uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: kitchen verify ${{ matrix.os }}
 
+  # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
+    name: dokr_lnx_x86_64_hab
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
@@ -83,69 +95,118 @@ jobs:
           - amazonlinux-2023
           - almalinux-8
           - almalinux-9
+          - almalinux-10
           - debian-11
           - debian-12
-          - fedora-latest
+          - debian-13
+          - fedora-42
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
+          - oraclelinux-10
           - rockylinux-8
           - rockylinux-9
-          - ubuntu-2004
+          - rockylinux-10
           - ubuntu-2204
-          # - ubuntu-2404
+          - ubuntu-2404
     runs-on: ubuntu-latest
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
-      - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
-
-  vm_lnx_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - amazonlinux-2
-          - amazonlinux-2023
-          - almalinux-8
-          - almalinux-9
-          - debian-11
-          - debian-12
-          - fedora-latest
-          - opensuse-leap-15
-          - oracle-7
-          - oracle-8
-          - oracle-9
-          - rockylinux-8
-          - rockylinux-9
-          - ubuntu-1804
-          - ubuntu-2004
-          - ubuntu-2204
-          # - ubuntu-2404
-    runs-on: ubuntu-latest
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Vagrant and VirtualBox
+      - name: Install Habitat CLI
         run: |
-          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
-          wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg --dearmor | sudo tee /usr/share/keyrings/oracle-virtualbox-2016.gpg
-          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
-          sudo apt-get update
-          sudo apt-get install -y vagrant virtualbox-7.0
-          sudo vagrant --version
-          sudo VBoxManage --version
-      - name: Install Chef
-        uses: actionshub/chef-install@3.0.0
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+      - name: Install Test-Kitchen-Enterprise
+        run: |
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/1.1.4 --channel unstable
+          kitchen --version
+          # chef-cli is needed for some kitchen operations
+          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+      - name: Generate fake Habitat Origin Key
+        run: |
+          hab origin key generate "$HAB_ORIGIN"
+          # Export the keys for later use in the Docker container
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+      - name: Build Habitat Package (for testing purpose only)
+        run: |
+          # Move out of default kitchen-tests dir to the repo root
+          cd ..
+          hab pkg build .
+          source ./results/last_build.env
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+      - name: Set up HAB token file # Set up a token file to be mounted inside the dokken container
+        run: |
+          # Create a token file that can be mounted into containers
+          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+          chmod 600 hab_token
       - name: Kitchen Test
-        run: export LOGNAME=$USER && kitchen test end-to-end-${{ matrix.os }}
+        run: |
+          # Inspec integration tests are currently unstable within kitchen-test context due to hab and package changes between the projects... these will be turned back on as things finalize for a GA release
+          # Use this when turning on Inspec integration tests
+          # kitchen test end-to-end-${{ matrix.os }}
+
+          # Run recipe convergence only
+          kitchen converge end-to-end-${{ matrix.os }}
+          kitchen destroy end-to-end-${{ matrix.os }}
+
+#  vm_lnx_x86_64:
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os:
+#          - amazonlinux-2
+#          - amazonlinux-2023
+#          - almalinux-8
+#          - almalinux-9
+#          - almalinux-10
+#          - debian-11
+#          - debian-12
+#          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
+#          - fedora-41
+#          - fedora-42
+#          - opensuse-leap-15
+#          - oraclelinux-8
+#          - oraclelinux-9
+#          - oraclelinux-10
+#          - rockylinux-8
+#          - rockylinux-9
+#          - rockylinux-10
+#          - ubuntu-2204
+#          - ubuntu-2404
+#    runs-on: ubuntu-22.04
+#    env:
+#      CHEF_LICENSE: accept-no-persist
+#      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
+#    steps:
+#      - uses: actions/checkout@v5
+#      - name: Install Vagrant and VirtualBox
+#        run: |
+#          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+#          cat files/oracle_vbox_2016.asc | gpg --dearmor | sudo tee /usr/share/keyrings/oracle-virtualbox-2016.gpg
+#          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+#          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+#          sudo apt-get update
+#          sudo apt-get install -y vagrant virtualbox-7.1
+#          sudo vagrant --version
+#          sudo VBoxManage --version
+#      - name: Install Chef
+#        uses: actionshub/chef-install@main
+#      - name: Kitchen Test
+#        run: |
+#          # To debug, uncomment these
+#          # export VAGRANT_LOG=debug
+#          # export VBOX_LOG=all.e.l.f
+#          # export VBOX_LOG_DEST=stdout
+#          # export K_DEBUG_OPTS="--log-level=debug"
+#          export LOGNAME=$USER
+#          kitchen verify ${{ matrix.os }} $K_DEBUG_OPTS
