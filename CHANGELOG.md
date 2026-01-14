@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.9.5 -->
-## [v18.9.5](https://github.com/chef/chef/tree/v18.9.5) (2026-01-13)
+<!-- latest_release 18.10.0 -->
+## [v18.10.0](https://github.com/chef/chef/tree/v18.10.0) (2026-01-14)
 
 #### Merged Pull Requests
-- [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.8.54 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.0 -->
 - [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.9.5 -->
 - Sean sype simmons/chef18-OpenSSL-Fix [#15544](https://github.com/chef/chef/pull/15544) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.9.4 -->
 - [Chef18][FileAccessControl] Reduce Securable object usage [#15458](https://github.com/chef/chef/pull/15458) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.9.3 -->
