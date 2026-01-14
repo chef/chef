@@ -8,38 +8,43 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.8.54 -->
+<!-- release_rollup since=18.9.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.0 -->
 - [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.9.5 -->
-- Sean sype simmons/chef18-OpenSSL-Fix [#15544](https://github.com/chef/chef/pull/15544) ([sean-sype-simmons](https://github.com/sean-sype-simmons)) <!-- 18.9.4 -->
-- [Chef18][FileAccessControl] Reduce Securable object usage [#15458](https://github.com/chef/chef/pull/15458) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.9.3 -->
-- Updating to latest Notice text [#15524](https://github.com/chef/chef/pull/15524) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.9.2 -->
-- Updating to latest Ohai [#15520](https://github.com/chef/chef/pull/15520) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.9.1 -->
-- [Chef-18] manual version bump [#15508](https://github.com/chef/chef/pull/15508) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.9.0 -->
-- [chef-18] updating runners in workflow for self hosted fips [#15507](https://github.com/chef/chef/pull/15507) ([rishichawda](https://github.com/rishichawda)) <!-- 18.8.72 -->
-- Updating version and removing extraneous calls for a scan [#15505](https://github.com/chef/chef/pull/15505) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.71 -->
-- updating blackduck with the help of chef-19, take 3 [#15502](https://github.com/chef/chef/pull/15502) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.8.70 -->
-- Revert &quot;Pull in latest chef to knife lockfile to release knife gem&quot; [#15498](https://github.com/chef/chef/pull/15498) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.8.69 -->
-- Pull in latest chef to knife lockfile to release knife gem [#15497](https://github.com/chef/chef/pull/15497) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.8.68 -->
-- Backport - Added -a or --all-users to show all user details in user list command [#15494](https://github.com/chef/chef/pull/15494) ([sanghinitin](https://github.com/sanghinitin)) <!-- 18.8.67 -->
-- Pull in latest chef to knife lockfile [#15490](https://github.com/chef/chef/pull/15490) ([neha-p6](https://github.com/neha-p6)) <!-- 18.8.66 -->
-- [Chef18][File#load_current_resource] assign #path call to variable [#15485](https://github.com/chef/chef/pull/15485) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.8.65 -->
-- CVE-2025-61594 remove old uri as well [#15475](https://github.com/chef/chef/pull/15475) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.64 -->
-- backport of #15477- fix(security): Replace YAML.load_stream to prevent deserialization attacks (CHEF-3854) [#15466](https://github.com/chef/chef/pull/15466) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.8.63 -->
-- Remove direct dependency on activesupport [#15472](https://github.com/chef/chef/pull/15472) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.62 -->
-- NIST CVE-2025-58767: Remove vulnerable rexml bundled gems [#15462](https://github.com/chef/chef/pull/15462) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.61 -->
--  CVE-2025-24294: try manual removal of old resolv.gemspec (0.2.1) [#15459](https://github.com/chef/chef/pull/15459) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.60 -->
-- Feature/update multi json [#15421](https://github.com/chef/chef/pull/15421) ([fretb](https://github.com/fretb)) <!-- 18.8.59 -->
-- Catch accidental changes to the chef gems in Gemfile.lock (#15446) [#15453](https://github.com/chef/chef/pull/15453) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.58 -->
-- bundle update --conservative rack to 3.2.4 [#15439](https://github.com/chef/chef/pull/15439) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.57 -->
-- Deprecate  mac 12  and add mac 13  as Builder [#15415](https://github.com/chef/chef/pull/15415) ([poorndm](https://github.com/poorndm)) <!-- 18.8.56 -->
-- Also pass danger if Gemfile.lock updated because of gemspecs (#15428) [#15429](https://github.com/chef/chef/pull/15429) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.8.55 -->
+- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.0 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.9.4](https://github.com/chef/chef/tree/v18.9.4) (2026-01-14)
+
+#### Merged Pull Requests
+- Also pass danger if Gemfile.lock updated because of gemspecs (#15428) [#15429](https://github.com/chef/chef/pull/15429) ([tpowell-progress](https://github.com/tpowell-progress))
+- Deprecate  mac 12  and add mac 13  as Builder [#15415](https://github.com/chef/chef/pull/15415) ([poorndm](https://github.com/poorndm))
+- bundle update --conservative rack to 3.2.4 [#15439](https://github.com/chef/chef/pull/15439) ([tpowell-progress](https://github.com/tpowell-progress))
+- Catch accidental changes to the chef gems in Gemfile.lock (#15446) [#15453](https://github.com/chef/chef/pull/15453) ([tpowell-progress](https://github.com/tpowell-progress))
+- Feature/update multi json [#15421](https://github.com/chef/chef/pull/15421) ([fretb](https://github.com/fretb))
+-  CVE-2025-24294: try manual removal of old resolv.gemspec (0.2.1) [#15459](https://github.com/chef/chef/pull/15459) ([tpowell-progress](https://github.com/tpowell-progress))
+- NIST CVE-2025-58767: Remove vulnerable rexml bundled gems [#15462](https://github.com/chef/chef/pull/15462) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove direct dependency on activesupport [#15472](https://github.com/chef/chef/pull/15472) ([tpowell-progress](https://github.com/tpowell-progress))
+- backport of #15477- fix(security): Replace YAML.load_stream to prevent deserialization attacks (CHEF-3854) [#15466](https://github.com/chef/chef/pull/15466) ([nikhil2611](https://github.com/nikhil2611))
+- CVE-2025-61594 remove old uri as well [#15475](https://github.com/chef/chef/pull/15475) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef18][File#load_current_resource] assign #path call to variable [#15485](https://github.com/chef/chef/pull/15485) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Pull in latest chef to knife lockfile [#15490](https://github.com/chef/chef/pull/15490) ([neha-p6](https://github.com/neha-p6))
+- Backport - Added -a or --all-users to show all user details in user list command [#15494](https://github.com/chef/chef/pull/15494) ([sanghinitin](https://github.com/sanghinitin))
+- Pull in latest chef to knife lockfile to release knife gem [#15497](https://github.com/chef/chef/pull/15497) ([nikhil2611](https://github.com/nikhil2611))
+- Revert &quot;Pull in latest chef to knife lockfile to release knife gem&quot; [#15498](https://github.com/chef/chef/pull/15498) ([nikhil2611](https://github.com/nikhil2611))
+- updating blackduck with the help of chef-19, take 3 [#15502](https://github.com/chef/chef/pull/15502) ([johnmccrae](https://github.com/johnmccrae))
+- Updating version and removing extraneous calls for a scan [#15505](https://github.com/chef/chef/pull/15505) ([johnmccrae](https://github.com/johnmccrae))
+- [chef-18] updating runners in workflow for self hosted fips [#15507](https://github.com/chef/chef/pull/15507) ([rishichawda](https://github.com/rishichawda))
+- [Chef-18] manual version bump [#15508](https://github.com/chef/chef/pull/15508) ([johnmccrae](https://github.com/johnmccrae))
+- Updating to latest Ohai [#15520](https://github.com/chef/chef/pull/15520) ([johnmccrae](https://github.com/johnmccrae))
+- Updating to latest Notice text [#15524](https://github.com/chef/chef/pull/15524) ([johnmccrae](https://github.com/johnmccrae))
+- [Chef18][FileAccessControl] Reduce Securable object usage [#15458](https://github.com/chef/chef/pull/15458) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Sean sype simmons/chef18-OpenSSL-Fix [#15544](https://github.com/chef/chef/pull/15544) ([sean-sype-simmons](https://github.com/sean-sype-simmons))
+<!-- latest_stable_release -->
+
 ## [v18.8.54](https://github.com/chef/chef/tree/v18.8.54) (2025-11-04)
 
 #### Merged Pull Requests
@@ -51,7 +56,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump ohai [#15407](https://github.com/chef/chef/pull/15407) ([tpowell-progress](https://github.com/tpowell-progress))
 - Bump to chef-powershell 18.6.6 [#15414](https://github.com/chef/chef/pull/15414) ([tpowell-progress](https://github.com/tpowell-progress))
 - updating notice.txt [#15416](https://github.com/chef/chef/pull/15416) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v18.8.46](https://github.com/chef/chef/tree/v18.8.46) (2025-10-15)
 
