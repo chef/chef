@@ -1,4 +1,7 @@
-export HAB_BLDR_CHANNEL="base-2025"
+#export HAB_BLDR_CHANNEL="base-2025"
+export HAB_BLDR_CHANNEL="fips-testing"
+export HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL="fips-testing"
+export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
 _chef_client_ruby="core/ruby3_4"
 pkg_name="chef-infra-client"
@@ -178,6 +181,23 @@ do_install() {
       "${pkg_prefix}/vendor/bin/appbundler" $CACHE_PATH $pkg_prefix/bin $gem
     done
   )
+
+  # Set OPENSSL_CONF based on FIPS mode
+  openssl_path="$(pkg_path_for core/openssl)"
+  build_line "DEBUG: openssl_path is $openssl_path"
+  fips_enabled=0
+  if [ -f /proc/sys/crypto/fips_enabled ]; then
+    build_line "DEBUG: Reading /proc/sys/crypto/fips_enabled to determine FIPS mode"
+    fips_enabled=$(cat /proc/sys/crypto/fips_enabled)
+  fi
+
+  if [ "$fips_enabled" = "1" ]; then
+    build_line "DEBUG: FIPS mode is enabled"
+    set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl-fips.cnf"
+  else
+    build_line "DEBUG: FIPS mode is disabled"
+    set_runtime_env OPENSSL_CONF "${openssl_path}/ssl/openssl.cnf"
+  fi
 }
 
 do_after() {
