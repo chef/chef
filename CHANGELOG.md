@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.144 -->
-## [v19.1.144](https://github.com/chef/chef/tree/v19.1.144) (2026-01-15)
+<!-- latest_release 19.1.145 -->
+## [v19.1.145](https://github.com/chef/chef/tree/v19.1.145) (2026-01-15)
 
 #### Merged Pull Requests
-- Updating version and Notice [#15573](https://github.com/chef/chef/pull/15573) ([johnmccrae](https://github.com/johnmccrae))
+- trying to fix chef-client binstub execution [#15533](https://github.com/chef/chef/pull/15533) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- trying to fix chef-client binstub execution [#15533](https://github.com/chef/chef/pull/15533) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.145 -->
 - Updating version and Notice [#15573](https://github.com/chef/chef/pull/15573) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.144 -->
 - Raise FileTypeMismatch when directory :create encounters a file [#15559](https://github.com/chef/chef/pull/15559) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.143 -->
 - Change the plan file to use Ruby 3.4 latest package [#15542](https://github.com/chef/chef/pull/15542) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.142 -->
