@@ -144,7 +144,7 @@ module Shell
       # remove this clause for any Chef version that has upgraded to ruby >= 3.3.0
       if RUBY_VERSION >= "3.3.0"
         conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > "
-        conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} ?> "
+        # prompt_n deprecation warnings as of 3.4.x
         conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}%l> "
       else
         # there's a bug if you use a left arrow and the alternative prompts
