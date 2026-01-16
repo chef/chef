@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.0 -->
-## [v18.10.0](https://github.com/chef/chef/tree/v18.10.0) (2026-01-14)
+<!-- latest_release 18.10.1 -->
+## [v18.10.1](https://github.com/chef/chef/tree/v18.10.1) (2026-01-16)
 
 #### Merged Pull Requests
-- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Bump train-core to 3.16.0 [#15572](https://github.com/chef/chef/pull/15572) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.9.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core to 3.16.0 [#15572](https://github.com/chef/chef/pull/15572) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.10.1 -->
 - [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.9.5 -->
 - [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.0 -->
 <!-- release_rollup -->
