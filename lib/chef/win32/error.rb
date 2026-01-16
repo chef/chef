@@ -73,7 +73,7 @@ class Chef
         if code == ERROR_USER_NOT_FOUND
           raise Chef::Exceptions::UserIDNotFound, msg
         else
-          formatted_message = ""
+          formatted_message = String.new
           formatted_message << message if message
           formatted_message << "---- Begin Win32 API output ----\n"
           formatted_message << "System Error Code: #{code}\n"
