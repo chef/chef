@@ -39,6 +39,8 @@ group(:omnibus_package) do
   gem "chef-vault"
 end
 
+gem "repl_type_completor", "~> 0.1.12" # deprecation warnings in chef-shell
+
 group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
