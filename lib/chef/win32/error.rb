@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.

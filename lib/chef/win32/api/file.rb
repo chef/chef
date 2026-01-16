@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@ospcode.com>)
