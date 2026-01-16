@@ -46,14 +46,14 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.1.136)
+    chef (19.1.147)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       bcrypt_pbkdf (~> 1.0)
-      chef-config (= 19.1.136)
+      chef-config (= 19.1.147)
       chef-licensing (~> 1.3)
-      chef-utils (= 19.1.136)
+      chef-utils (= 19.1.147)
       chef-vault
       chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
@@ -85,15 +85,15 @@ PATH
       unf_ext (~> 0.0.9.1)
       uri (~> 1.0.4)
       vault (~> 0.18.2)
-    chef (19.1.136-universal-mingw-ucrt)
+    chef (19.1.147-universal-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       bcrypt_pbkdf (~> 1.0)
-      chef-config (= 19.1.136)
+      chef-config (= 19.1.147)
       chef-licensing (~> 1.3)
       chef-powershell (~> 18.6.6)
-      chef-utils (= 19.1.136)
+      chef-utils (= 19.1.147)
       chef-vault
       chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
@@ -140,15 +140,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.1.136)
-      chef (= 19.1.136)
+    chef-bin (19.1.147)
+      chef (= 19.1.147)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.1.136)
+    chef-config (19.1.147)
       addressable
-      chef-utils (= 19.1.136)
+      chef-utils (= 19.1.147)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -158,7 +158,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.1.136)
+    chef-utils (19.1.147)
       concurrent-ruby
 
 GEM
@@ -280,14 +280,19 @@ GEM
       net-http (~> 0.5)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
+    ffi (1.17.3)
+    ffi (1.17.3-arm64-darwin)
+    ffi (1.17.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.6.0)
-      libyajl2 (>= 1.2)
+    ffi-yajl (2.7.6)
+      libyajl2 (>= 2.1)
+      yajl
+    ffi-yajl (2.7.6-universal-mingw-ucrt)
+      libyajl2 (>= 2.1)
+      yajl
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
@@ -540,6 +545,7 @@ GEM
       structured_warnings
     wisper (2.0.1)
     wmi-lite (1.0.7)
+    yajl (0.3.4)
 
 PLATFORMS
   arm64-darwin-21

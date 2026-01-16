@@ -1,17 +1,29 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.136 -->
-## [v19.1.136](https://github.com/chef/chef/tree/v19.1.136) (2025-12-22)
+<!-- latest_release 19.1.147 -->
+## [v19.1.147](https://github.com/chef/chef/tree/v19.1.147) (2026-01-16)
 
 #### Merged Pull Requests
-- Disable testing &#39;HEAD&#39; as a tag name [#15522](https://github.com/chef/chef/pull/15522) ([tpowell-progress](https://github.com/tpowell-progress))
+- Making the frozen string warnings stop [#15580](https://github.com/chef/chef/pull/15580) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Making the frozen string warnings stop [#15580](https://github.com/chef/chef/pull/15580) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.147 -->
+- Clean up prompt_n deprecation warnings on newer ruby [#15574](https://github.com/chef/chef/pull/15574) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.146 -->
+- trying to fix chef-client binstub execution [#15533](https://github.com/chef/chef/pull/15533) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.145 -->
+- Updating version and Notice [#15573](https://github.com/chef/chef/pull/15573) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.144 -->
+- Raise FileTypeMismatch when directory :create encounters a file [#15559](https://github.com/chef/chef/pull/15559) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.143 -->
+- Change the plan file to use Ruby 3.4 latest package [#15542](https://github.com/chef/chef/pull/15542) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.142 -->
+- bump ffi-yajl to 2.7.6 [#15550](https://github.com/chef/chef/pull/15550) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.141 -->
+- Fix kitchen test homebrew_package failure on post-install hook [#15551](https://github.com/chef/chef/pull/15551) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.140 -->
+- [Chef-19] Fix archive_file resource when using .tar.xz extension [#15536](https://github.com/chef/chef/pull/15536) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.139 -->
+- Hold ffi-yajl for external tests [#15534](https://github.com/chef/chef/pull/15534) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.138 -->
+- [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.137 -->
+- Updating cert pathing for hab [#15504](https://github.com/chef/chef/pull/15504) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.136 -->
 - Disable testing &#39;HEAD&#39; as a tag name [#15522](https://github.com/chef/chef/pull/15522) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.136 -->
 - conservative update train-core [#15519](https://github.com/chef/chef/pull/15519) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.135 -->
 - conservative update ohai [#15518](https://github.com/chef/chef/pull/15518) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.134 -->

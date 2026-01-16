@@ -67,7 +67,6 @@ describe Shell do
       Shell.irb_conf[:IRB_RC].call(conf)
       if RUBY_VERSION >= "3.3.0"
         expect(conf.prompt_c).to      eq("chef > ")
-        expect(conf.prompt_n).to      eq("chef ?> ")
         expect(conf.prompt_s).to      eq("chef%l> ")
       else
         expect(conf.prompt_c).to      eq("chef (#{Chef::VERSION})> ")
@@ -88,7 +87,6 @@ describe Shell do
       Shell.irb_conf[:IRB_RC].call(conf)
       if RUBY_VERSION >= "3.3.0"
         expect(conf.prompt_c).to eq("chef:recipe > ")
-        expect(conf.prompt_n).to eq("chef:recipe ?> ")
         expect(conf.prompt_s).to eq("chef:recipe%l> ")
       else
         expect(conf.prompt_c).to eq("chef:recipe (#{Chef::VERSION})> ")
@@ -108,7 +106,6 @@ describe Shell do
 
       if RUBY_VERSION >= "3.3.0"
         expect(conf.prompt_c).to eq("chef:attributes > ")
-        expect(conf.prompt_n).to eq("chef:attributes ?> ")
         expect(conf.prompt_s).to eq("chef:attributes%l> ")
       else
         expect(conf.prompt_c).to eq("chef:attributes (#{Chef::VERSION})> ")

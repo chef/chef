@@ -31,6 +31,15 @@ hab origin key download $env:HAB_ORIGIN
 hab origin key download $env:HAB_ORIGIN --secret
 if (-not $?) { throw "Unable to download origin key" }
 
+Write-Host "--- :key: Importing origin keys into studio"
+# Import the downloaded keys to make them available in the local studio
+$keyDir = "C:\hab\cache\keys"
+$secretKey = Get-ChildItem "$keyDir\chef-*.sig.key" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+$publicKey = Get-ChildItem "$keyDir\chef-*.pub" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if ($secretKey) { Get-Content $secretKey.FullName | hab origin key import }
+if ($publicKey) { Get-Content $publicKey.FullName | hab origin key import }
+if (-not $?) { throw "Unable to import origin keys" }
+
 Write-Host "--- Building Chef Infra Client package"
 hab pkg build . --refresh-channel base-2025
 if (-not $?) { throw "Unable to build package" }

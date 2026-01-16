@@ -263,4 +263,10 @@ end
 
 include_recipe "::_chef_gem"
 include_recipe "::_openssl"
+
+# Exercise Habitat CA cert resource when Habitat-based Chef is present on Windows
+if ::File.exist?("C:/ProgramData/Habitat/hab.exe")
+  include_recipe "::_chef_client_hab_ca_cert"
+end
+
 include_recipe "git"
