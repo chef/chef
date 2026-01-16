@@ -524,7 +524,7 @@ BOOL WINAPI VerQueryValue(
         # preserve relative paths because symbolic links can actually
         # point to a relative path (relative to the link itself).
         def encode_path(path)
-          (path_prepender << path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
+          (path_prepender + path.gsub(::File::SEPARATOR, ::File::ALT_SEPARATOR)).to_wstring
         end
 
         # Expands the path, prepends "\\?\" and UTF-16LE encodes it.
