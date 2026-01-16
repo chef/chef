@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 # Author:: Jamie Winsor (<jamie@vialstudios.com>)
 # Author:: Tim Smith (<tsmith@chef.io>)
 #
