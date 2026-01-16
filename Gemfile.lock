@@ -287,10 +287,10 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.7.6)
+    ffi-yajl (2.7.7)
       libyajl2 (>= 2.1)
       yajl
-    ffi-yajl (2.7.6-universal-mingw-ucrt)
+    ffi-yajl (2.7.7-universal-mingw-ucrt)
       libyajl2 (>= 2.1)
       yajl
     fuzzyurl (0.9.0)
