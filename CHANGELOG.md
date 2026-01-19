@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.150 -->
-## [v19.1.150](https://github.com/chef/chef/tree/v19.1.150) (2026-01-16)
+<!-- latest_release 19.1.151 -->
+## [v19.1.151](https://github.com/chef/chef/tree/v19.1.151) (2026-01-19)
 
 #### Merged Pull Requests
-- Pick up ffi-yajl that correctly loads ext [#15579](https://github.com/chef/chef/pull/15579) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating openssl and getting Test Kitchen working [#15571](https://github.com/chef/chef/pull/15571) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating openssl and getting Test Kitchen working [#15571](https://github.com/chef/chef/pull/15571) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.151 -->
 - Pick up ffi-yajl that correctly loads ext [#15579](https://github.com/chef/chef/pull/15579) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.150 -->
 - end-to-end recipe testing of Habitat package of infra client on windows by running it in local mode [#15468](https://github.com/chef/chef/pull/15468) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.149 -->
 - Add repl_type_completor due to deprecation warnings with the default [#15575](https://github.com/chef/chef/pull/15575) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.148 -->
