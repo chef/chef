@@ -1,17 +1,29 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.139 -->
-## [v19.1.139](https://github.com/chef/chef/tree/v19.1.139) (2026-01-07)
+<!-- latest_release 19.1.151 -->
+## [v19.1.151](https://github.com/chef/chef/tree/v19.1.151) (2026-01-19)
 
 #### Merged Pull Requests
-- [Chef-19] Fix archive_file resource when using .tar.xz extension [#15536](https://github.com/chef/chef/pull/15536) ([neha-p6](https://github.com/neha-p6))
+- Updating openssl and getting Test Kitchen working [#15571](https://github.com/chef/chef/pull/15571) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating openssl and getting Test Kitchen working [#15571](https://github.com/chef/chef/pull/15571) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.151 -->
+- Pick up ffi-yajl that correctly loads ext [#15579](https://github.com/chef/chef/pull/15579) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.150 -->
+- end-to-end recipe testing of Habitat package of infra client on windows by running it in local mode [#15468](https://github.com/chef/chef/pull/15468) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.149 -->
+- Add repl_type_completor due to deprecation warnings with the default [#15575](https://github.com/chef/chef/pull/15575) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.148 -->
+- Making the frozen string warnings stop [#15580](https://github.com/chef/chef/pull/15580) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.147 -->
+- Clean up prompt_n deprecation warnings on newer ruby [#15574](https://github.com/chef/chef/pull/15574) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.146 -->
+- trying to fix chef-client binstub execution [#15533](https://github.com/chef/chef/pull/15533) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.145 -->
+- Updating version and Notice [#15573](https://github.com/chef/chef/pull/15573) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.144 -->
+- Raise FileTypeMismatch when directory :create encounters a file [#15559](https://github.com/chef/chef/pull/15559) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.143 -->
+- Change the plan file to use Ruby 3.4 latest package [#15542](https://github.com/chef/chef/pull/15542) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.142 -->
+- bump ffi-yajl to 2.7.6 [#15550](https://github.com/chef/chef/pull/15550) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.141 -->
+- Fix kitchen test homebrew_package failure on post-install hook [#15551](https://github.com/chef/chef/pull/15551) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.140 -->
 - [Chef-19] Fix archive_file resource when using .tar.xz extension [#15536](https://github.com/chef/chef/pull/15536) ([neha-p6](https://github.com/neha-p6)) <!-- 19.1.139 -->
 - Hold ffi-yajl for external tests [#15534](https://github.com/chef/chef/pull/15534) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.138 -->
 - [FileAccessControl] Reduce Securable object usage [#15457](https://github.com/chef/chef/pull/15457) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.1.137 -->
