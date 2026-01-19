@@ -16,7 +16,7 @@ hab origin key download "$HAB_ORIGIN"
 hab origin key download "$HAB_ORIGIN" --secret
 
 echo "--- Building Chef Infra Client package"
-hab pkg build . --refresh-channel base-2025 || error 'unable to build'
+hab pkg build . --refresh-channel chef-private || error 'unable to build'
 
 project_root="$(git rev-parse --show-toplevel)"
 source "${project_root}/results/last_build.env" || error 'unable to determine details about this build'
