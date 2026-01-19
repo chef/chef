@@ -1,0 +1,73 @@
+expeditor:
+  secrets:
+    PIPELINE_HAB_AUTH_TOKEN:
+      path: account/static/habitat/chef-ci
+      field: auth_token # Production Builder
+      # acceptance_auth_token = acceptance
+  accounts:
+    - aws/chef-cd
+  defaults:
+    buildkite:
+      timeout_in_minutes: 45
+      env:
+        HAB_ORIGIN: "chef-demo"
+        PIPELINE_HAB_BLDR_URL: "https://bldr.habitat.sh"
+        # Necessary to prevent old studios from poisoning builds after core plans refreshes
+        HAB_STUDIO_SECRET_HAB_PREFER_LOCAL_CHEF_DEPS: "true"
+        HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: "stable"
+
+steps:
+
+- label: "[:linux: build hab-pkg-export-tar and uplaod to :amazon-s3:]"
+  commands:
+    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+    - echo "--- Installing $EXPEDITOR_PKG_IDENTS_<  >"
+    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_<   >
+    - echo "--- Exporting to buildkite files $EXPEDITOR_PKG_IDENTS_<   >"
+    - sudo hab pkg export tar $EXPEDITOR_PKG_IDENTS_<  >
+    - buildkite-agent artifact upload "$(sed 's/\//-/g' <<< $EXPEDITOR_PKG_IDENTS_<  >).${tar.gz}*"
+  expeditor:
+      accounts:
+        - aws/chef-cd
+      executor:
+        linux:
+          privileged: true
+          single-use: true
+
+# - label: ":windows: Validate Habitat Builds of Chef Infra"
+#   commands:
+#     - .expeditor/scripts/habitat-test.ps1 -WindowsArtifact $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
+#   expeditor:
+#     executor:
+#       windows:
+#         privileged: true
+#         single-use: true
+#         shell: ["powershell", "-Command"]
+
+
+
+
+  # - label: "[:linux: build hab-pkg-export-tar and uplaod to :amazon-s3:]"
+  #   command:
+  #     - echo "--- testing hab export tar chef-demo/hello-omnibus-harmony"
+  #     - hab pkg export tar chef-demo/hello-omnibus-harmony
+  #     - echo "--- uploading tar.gz file to buldkite, artifactory, and s3" && buildkite-agent artifact upload "*.tar.gz"
+  #     - aws s3 cp $tar_filename $s3_bucket_uri/$tar_filename --content-type "application/gzip" --profile "<profile to use>"
+  #     - curl -ussimmons@progress.com:<PASSWORD> -T <PATH_TO_FILE> "https://artifactory-internal.ps.chef.co/artifactory/unstable-habitat-tarbal/<TARGET_FILE_PATH>"
+  #   expeditor:
+  #     executor:
+  #       docker:
+  #         privileged: true
+  #         environment:
+  #           - BUILD_PKG_TARGET=x86_64-linux
+
+  # - label: "[:windows: build hab-pkg-export-tar]"
+  #   command:
+  #     - powershell .expeditor/scripts/release_habitat/build_component.ps1 pkg-export-tar
+  #   expeditor:
+  #     executor:
+  #       docker:
+  #         host_os: windows
+  #         environment:
+  #           - BUILD_PKG_TARGET=x86_64-windows
+  #           - BUILDKITE_AGENT_ACCESS_TOKEN
