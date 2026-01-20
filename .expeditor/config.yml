@@ -101,7 +101,6 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Docker Build"
             - "Expeditor: Skip All"
-          post_commit: true
           only_if: built_in:bump_version
       - bash:.expeditor/update_version.sh:
           only_if: built_in:bump_version
@@ -109,7 +108,6 @@ subscriptions:
             - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
       - built_in:update_changelog:
-          post_commit: true
           ignore_labels:
             - "Expeditor: Skip Changelog"
             - "Expeditor: Skip All"
@@ -117,7 +115,6 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
-          post_commit: true
           only_if: built_in:bump_version
       - trigger_pipeline:gem_validate/release:
           only_if: built_in:bump_version
