@@ -148,20 +148,23 @@ subscriptions:
       - built_in:promote_habitat_packages
 
 # this is the only way currently to promote built-in rubygems publish
-  - workload: project_promoted:{{agent_id}}:*
+  - workload: product_promoted:{{agent_id}}:*
     actions:
-      # - built_in:rollover_changelog
-      - built_in:publish_rubygems_chef
-      # this should promote from current to stable
-      - built_in:promote_habitat_packages
+      - built_in:rollover_changelog
+      #- bash:.expeditor/update_dockerfile.sh
+      #- bash:.expeditor/promote-docker-images.sh
+      - bash:.expeditor/publish-release-notes.sh
+      - bash:.expeditor/announce-release.sh
       - built_in:publish_rubygems
+      - built_in:promote_habitat_packages
+      - built_in:notify_chefio_slack_channels
 
   # once project_promoted in slack is done from current to stable, we then promote to stable to base-2025
   - workload: hab_package_published:stable:chef-infra-client/19.*
     actions:
       - bash:.expeditor/scripts/base-2025-promote.sh
 
-  # subscriptions to Ruby gem dependencies' releases, open PR for updates
+# subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
     actions:
       - bash:.expeditor/update_dep.sh
