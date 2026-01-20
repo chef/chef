@@ -122,8 +122,8 @@ subscriptions:
       - trigger_pipeline:gem_validate/release:
           only_if: built_in:bump_version
           ignore_labels:
+            - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
-          post_commit: true
 
   # the habitat chain
   # Build  Habitat packages promote to unstable when validate/release pipeline passes
