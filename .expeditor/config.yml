@@ -93,6 +93,7 @@ subscriptions:
   # These actions are taken, in order they are specified, anytime a Pull Request is merged.
   - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
     actions:
+      # STEP 1: File-modifying actions (create commits) - MUST come first
       - built_in:bump_version:
           ignore_labels:
             - "Expeditor: Skip Version Bump"
@@ -106,6 +107,8 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Changelog"
             - "Expeditor: Skip All"
+
+      # STEP 2: Pipeline triggers - MUST come after all file modifications
       - trigger_pipeline:docker/build:
           ignore_labels:
             - "Expeditor: Skip Docker Build"
@@ -123,7 +126,7 @@ subscriptions:
             - "Expeditor: Skip All"
 
   # the habitat chain
-  # Build  Habitat packages and promote to unstable when validate/release pipeline passes
+  # Build Habitat packages and promote to unstable when validate/release pipeline passes
   - workload: buildkite_build_passed:{{agent_id}}:validate/release:*
     actions:
       - trigger_pipeline:habitat/build
@@ -133,7 +136,7 @@ subscriptions:
     actions:
       - built_in:promote_habitat_packages
 
-# this is the only way currently to promote built-in rubygems publish
+  # this is the only way currently to promote built-in rubygems publish
   - workload: product_promoted:{{agent_id}}:*
     actions:
       - built_in:rollover_changelog
