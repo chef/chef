@@ -89,7 +89,6 @@ changelog:
 artifact_channels:
   - current
   - stable
-  - unstable
   - base-2025
 
 subscriptions:
@@ -144,6 +143,9 @@ subscriptions:
   # Automatically promote the Habitat packages from unstable to current  upon successful build
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
+      - trigger_pipeline:habitat/verify
+      - trigger_pipeline:gem_validate/release
+      - trigger_pipeline:docker/build
       - built_in:promote_habitat_packages
 
 # this is the only way currently to promote built-in rubygems publish
@@ -156,7 +158,7 @@ subscriptions:
       # - built_in:publish_rubygems
 
   # once project_promoted in slack is done from current to stable, we then promote to stable to base-2025
-  - workload: hab_package_published:stable:chef-private/*
+  - workload: hab_package_published:stable:chef-infra-client/*
     actions:
       - bash:.expeditor/scripts/base-2025-promote.sh
 
