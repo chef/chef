@@ -113,7 +113,12 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
-            - trigger_pipeline:docker/build
+      - trigger_pipeline:docker/build:
+          ignore_labels:
+            - "Expeditor: Skip Docker Build"
+            - "Expeditor: Skip All"
+          post_commit: true
+          only_if: built_in:bump_version
       - bash:.expeditor/update_version.sh:
           only_if: built_in:bump_version
           ignore_labels:
