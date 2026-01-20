@@ -1,11 +1,9 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
 ---
-
 # The name of the product keys for this product (from mixlib-install)
 # setting this value also tells expeditor its an omnibus build.
 # product_key:
 #   - chef
-
 # Slack channel in Chef Software slack to send notifications about build failures, etc
 slack:
   notify_channel: chef-infra-notify
@@ -32,12 +30,10 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-
   - validate/release:
       description: Validate release and promote Habitat package
       # Note: We use a shell script for pipeline generation, not static YAML
       definition: .expeditor/verify.release.pipeline.yml
-
   - validate/adhoc:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
@@ -45,7 +41,6 @@ pipelines:
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
-
   - habitat/verify:
       public: true
       definition: .expeditor/habitat-test.pipeline.yml
@@ -141,8 +136,6 @@ subscriptions:
             - "Expeditor: Skip All"
           post_commit: true
 
-
-
   # the habitat chain
   # Build  Habitat packages promote to unstable when validate/release pipeline passes
   - workload: buildkite_build_passed:{{agent_id}}:validate/release:*
@@ -167,7 +160,6 @@ subscriptions:
   - workload: hab_package_published:stable:chef-infra-client/19.*
     actions:
       - bash:.expeditor/scripts/base-2025-promote.sh
-
 
   # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
