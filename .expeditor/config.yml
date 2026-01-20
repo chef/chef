@@ -137,7 +137,7 @@ subscriptions:
       - built_in:promote_habitat_packages
 
   # this is the only way currently to promote built-in rubygems publish
-  - workload: product_promoted:{{agent_id}}:*
+  - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:rollover_changelog
       #- bash:.expeditor/update_dockerfile.sh
