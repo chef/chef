@@ -97,11 +97,6 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
-      - trigger_pipeline:docker/build:
-          ignore_labels:
-            - "Expeditor: Skip Docker Build"
-            - "Expeditor: Skip All"
-          only_if: built_in:bump_version
       - bash:.expeditor/update_version.sh:
           only_if: built_in:bump_version
           ignore_labels:
@@ -111,6 +106,11 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Changelog"
             - "Expeditor: Skip All"
+      - trigger_pipeline:docker/build:
+          ignore_labels:
+            - "Expeditor: Skip Docker Build"
+            - "Expeditor: Skip All"
+          only_if: built_in:bump_version
       - trigger_pipeline:validate/release:
           ignore_labels:
             - "Expeditor: Skip Habitat"
@@ -123,12 +123,12 @@ subscriptions:
             - "Expeditor: Skip All"
 
   # the habitat chain
-  # Build  Habitat packages promote to unstable when validate/release pipeline passes
+  # Build  Habitat packages and promote to unstable when validate/release pipeline passes
   - workload: buildkite_build_passed:{{agent_id}}:validate/release:*
     actions:
       - trigger_pipeline:habitat/build
 
-  # Automatically promote the Habitat packages from unstable to current  upon successful build
+  # Automatically promote the Habitat packages from unstable to current upon successful build of habitat/build
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
       - built_in:promote_habitat_packages
