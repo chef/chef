@@ -298,25 +298,6 @@ function Invoke-Install {
     } finally {
         Pop-Location
     }
-
-    # Set OPENSSL_CONF based on FIPS mode
-    $openssl_path = "$(Get-HabPackagePath core/openssl)"
-    Write-BuildLine "OpenSSL Path: $openssl_path"
-    $fipsRegPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy"
-    $fipsEnabled = 0
-    try {
-        $fipsEnabled = (Get-ItemProperty -Path $fipsRegPath -Name "Enabled" -ErrorAction Stop).Enabled
-        Write-BuildLine "FIPS Enabled Registry Value: $fipsEnabled"
-    } catch {
-        Write-BuildLine "FIPS Algorithm Policy registry key not found or inaccessible. Assuming FIPS is disabled."
-    }
-    if ($fipsEnabled -eq 1) {
-        Write-BuildLine "FIPS mode is enabled. Setting OPENSSL_CONF to openssl-fips.cnf."
-        Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl-fips.cnf"
-    } else {
-        Write-BuildLine "FIPS mode is disabled. Setting OPENSSL_CONF to openssl.cnf."
-        Set-RuntimeEnv -Force OPENSSL_CONF "$openssl_path/ssl/openssl.cnf"
-    }
 }
 
 function Invoke-After {
