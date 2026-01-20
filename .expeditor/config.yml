@@ -46,6 +46,7 @@ pipelines:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
   - habitat/build:
+  - habitat/verify:
       definition: .expeditor/build.habitat.yml
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
