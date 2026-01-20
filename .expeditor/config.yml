@@ -95,8 +95,8 @@ subscriptions:
   - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:rollover_changelog
-      # - bash:.expeditor/update_dockerfile.sh
-      # - bash:.expeditor/promote-docker-images.sh
+      - bash:.expeditor/update_dockerfile.sh
+      - bash:.expeditor/promote-docker-images.sh
       - bash:.expeditor/publish-release-notes.sh
       - bash:.expeditor/announce-release.sh
       - built_in:publish_rubygems
@@ -110,6 +110,7 @@ subscriptions:
           ignore_labels:
             - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
+            - trigger_pipeline:docker/build
       - bash:.expeditor/update_version.sh:
           only_if: built_in:bump_version
           ignore_labels:
@@ -143,9 +144,6 @@ subscriptions:
   # Automatically promote the Habitat packages from unstable to current  upon successful build
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
-      - trigger_pipeline:habitat/verify
-      - trigger_pipeline:gem_validate/release
-      - trigger_pipeline:docker/build
       - built_in:promote_habitat_packages
 
 # this is the only way currently to promote built-in rubygems publish
@@ -155,10 +153,10 @@ subscriptions:
       - built_in:publish_rubygems_chef
       # this should promote from current to stable
       - built_in:promote_habitat_packages
-      # - built_in:publish_rubygems
+      - built_in:publish_rubygems
 
   # once project_promoted in slack is done from current to stable, we then promote to stable to base-2025
-  - workload: hab_package_published:stable:chef-infra-client/*
+  - workload: hab_package_published:stable:chef-infra-client/19.*
     actions:
       - bash:.expeditor/scripts/base-2025-promote.sh
 
