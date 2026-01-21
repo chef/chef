@@ -288,10 +288,13 @@ function Invoke-Install {
             $patchContent = Get-Content "$PLAN_CONTEXT\binstub_patch.rb" -Raw
             $content = $content -replace '(require "rubygems")', "`$1`n$patchContent"
 
+            # this likely needs to be resolved by making sure the openssl gem is the same in the ruby package
+            # as in our Gemfile.lock and may also break FIPS
+            # https://github.com/chef/appbundler/blob/b929e15a7b7545c377496b2e23620b7d9d3fcf2e/lib/appbundler/app.rb#L294
             # Move any 'require "openssl"' line to the end of the binstub
             if ($content -match 'require [''"]openssl[''"]') {
-                # Remove the require "openssl" line from its current position
-                $content = $content -replace '\s*require [''"]openssl[''"]\s*\n?', ''
+                # Remove the require "openssl" line from its current position (entire line including newline)
+                $content = $content -replace '(?m)^.*require [''"]openssl[''"].*\r?\n', ''
                 # Add it at the end
                 $content = $content.TrimEnd() + "`nrequire `"openssl`"`n"
             }
