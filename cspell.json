@@ -933,6 +933,7 @@
     "NPAS",
     "nproc",
     "nread",
+    "nrequire",
     "NTSTATUS",
     "nupkg",
     "objfs",
