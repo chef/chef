@@ -19,29 +19,45 @@ if ($chef_gem_root -match "vendor\\gems\\chef-") {
     }
 }
 
+$testsFailed = $false
+
 try {
-    Push-Location $chef_gem_root
-    $env:PATH = "C:\hab\bin;$env:PATH"
+  Push-Location $chef_gem_root
+  $env:PATH = "C:\hab\bin;$env:PATH"
 
-    # Put chef's GEM_PATH in the machine environment so that the windows service
-    # tests will be able to consume the win32-service gem
-    $pkgEnv = hab pkg env $PackageIdentifier
-    $gemPath = $pkgEnv | Where-Object { $_.StartsWith("`$env:GEM_PATH=") }
-    SETX GEM_PATH $($gemPath.Split("=")[1]) /m
+  # Put chef's GEM_PATH in the machine environment so that the windows service
+  # tests will be able to consume the win32-service gem
+  $pkgEnv = hab pkg env $PackageIdentifier
+  $gemPath = $pkgEnv | Where-Object { $_.StartsWith("`$env:GEM_PATH=") }
+  SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
-    hab pkg binlink --force $PackageIdentifier
+  hab pkg binlink --force $PackageIdentifier
 
-    # [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "Machine")
-    # [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
-    $env:HAB_TEST="true"
+  # [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "Machine")
+  # [System.Environment]::SetEnvironmentVariable("HAB_TEST", "true", "User")
+  $env:HAB_TEST="true"
 
-    # TODO need to merge this branch before these will pass, so don't throw errors just yet.
-    hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/unit
-    if (-not $?) { Write-Host "--- :fire: Unit tests failed" }
-    hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/functional
-    if (-not $?) { Write-Host "--- :fire: Functional tests failed" }
-    hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/integration
-    if (-not $?) { Write-Host "--- :fire: Integration tests failed" }
+  # TODO need to merge this branch before these will pass, so don't throw errors just yet.
+  hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/unit
+  if (-not $?) {
+    Write-Host "--- :fire: Unit tests failed"
+    $testsFailed = $true
+  }
+  hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/functional
+  if (-not $?) {
+    Write-Host "--- :fire: Functional tests failed"
+    $testsFailed = $true
+  }
+  hab pkg exec $PackageIdentifier rspec -f progress --profile -- ./spec/integration
+  if (-not $?) {
+    Write-Host "--- :fire: Integration tests failed"
+    $testsFailed = $true
+  }
 } finally {
     Pop-Location
+}
+
+if ($testsFailed) {
+  Write-Host "--- :fire: Tests failed"
+  exit 1
 }
