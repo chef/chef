@@ -155,8 +155,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1203.0)
-    aws-sdk-core (3.241.3)
+    aws-partitions (1.1207.0)
+    aws-sdk-core (3.241.4)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -164,15 +164,15 @@ GEM
       bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-kms (1.120.0)
-      aws-sdk-core (~> 3, >= 3.241.3)
+    aws-sdk-kms (1.121.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.211.0)
-      aws-sdk-core (~> 3, >= 3.241.3)
+    aws-sdk-s3 (1.212.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-secretsmanager (1.127.0)
-      aws-sdk-core (~> 3, >= 3.241.3)
+    aws-sdk-secretsmanager (1.128.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -258,12 +258,12 @@ GEM
     ffi (1.16.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
-    ffi-win32-extensions (1.0.4)
-      ffi
-    ffi-yajl (2.7.6)
+    ffi-win32-extensions (1.1.0)
+      ffi (>= 1.15.5, <= 1.17.0)
+    ffi-yajl (2.7.7)
       libyajl2 (>= 2.1)
       yajl
-    ffi-yajl (2.7.6-universal-mingw-ucrt)
+    ffi-yajl (2.7.7-universal-mingw-ucrt)
       libyajl2 (>= 2.1)
       yajl
     fuzzyurl (0.9.0)
@@ -332,13 +332,8 @@ GEM
       tomlrb
     mixlib-log (3.1.2.1)
       ffi (< 1.17.0)
-    mixlib-shellout (3.3.9)
+    mixlib-shellout (3.4.10)
       chef-utils
-    mixlib-shellout (3.3.9-x64-mingw-ucrt)
-      chef-utils
-      ffi-win32-extensions (~> 1.0.3)
-      win32-process (~> 0.9)
-      wmi-lite (~> 1.0)
     multi_json (1.19.1)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
@@ -359,7 +354,7 @@ GEM
       bigdecimal
     openssl (3.3.0)
     parallel (1.27.0)
-    parser (3.3.10.0)
+    parser (3.3.10.1)
       ast (~> 2.4.1)
       racc
     parslet (2.0.0)
@@ -435,7 +430,7 @@ GEM
       date
     timeout (0.6.0)
     tomlrb (1.3.0)
-    train-core (3.16.0)
+    train-core (3.16.1)
       addressable (~> 2.5)
       ffi (>= 1.16.0, < 1.18)
       json (>= 1.8, < 3.0)
