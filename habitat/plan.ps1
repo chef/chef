@@ -287,6 +287,15 @@ function Invoke-Install {
             # Find the line containing 'require "rubygems"' and insert the patch after it
             $patchContent = Get-Content "$PLAN_CONTEXT\binstub_patch.rb" -Raw
             $content = $content -replace '(require "rubygems")', "`$1`n$patchContent"
+
+            # Move any 'require "openssl"' line to the end of the binstub
+            if ($content -match 'require [''"]openssl[''"]') {
+                # Remove the require "openssl" line from its current position
+                $content = $content -replace '\s*require [''"]openssl[''"]\s*\n?', ''
+                # Add it at the end
+                $content = $content.TrimEnd() + "`nrequire `"openssl`"`n"
+            }
+
             # Write back to the file
             Set-Content -Path $binstub -Value $content -NoNewline
 
