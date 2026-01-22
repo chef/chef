@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.153 -->
-## [v19.1.153](https://github.com/chef/chef/tree/v19.1.153) (2026-01-22)
+<!-- latest_release 19.1.154 -->
+## [v19.1.154](https://github.com/chef/chef/tree/v19.1.154) (2026-01-22)
 
 #### Merged Pull Requests
-- Downgrade openssl gem to be consistent with ruby package [#15588](https://github.com/chef/chef/pull/15588) ([tpowell-progress](https://github.com/tpowell-progress))
+- CHEF-29559 Update and standardize copyright notices to Progress Software Corporation - copyright_update [#15541](https://github.com/chef/chef/pull/15541) ([clintoncwolfe](https://github.com/clintoncwolfe))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-29559 Update and standardize copyright notices to Progress Software Corporation - copyright_update [#15541](https://github.com/chef/chef/pull/15541) ([clintoncwolfe](https://github.com/clintoncwolfe)) <!-- 19.1.154 -->
 - Downgrade openssl gem to be consistent with ruby package [#15588](https://github.com/chef/chef/pull/15588) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.153 -->
 - Escape interpolation in git resource doc examples [#15521](https://github.com/chef/chef/pull/15521) ([plechenko-coupa](https://github.com/plechenko-coupa)) <!-- 19.1.152 -->
 - Updating openssl and getting Test Kitchen working [#15571](https://github.com/chef/chef/pull/15571) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.151 -->
