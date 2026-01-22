@@ -408,6 +408,190 @@ The following workflows do NOT require HAB or CHEF license keys:
 
 ---
 
+## ⚠️ Forked Repository Limitations
+
+### Problem: GitHub Secrets Not Available in Forks
+
+**GitHub Actions workflows that require secrets will FAIL for external contributors** due to GitHub's security model:
+
+```mermaid
+graph LR
+    subgraph MainRepo["chef/chef (Main Repository)"]
+        MainSecrets["✅ GitHub Secrets Available<br/>- HAB_AUTH_TOKEN<br/>- AWS credentials<br/>- etc."]
+    end
+
+    subgraph Fork["contributor/chef (Forked Repository)"]
+        NoSecrets["❌ GitHub Secrets NOT Available<br/>⚠️ Workflows will FAIL"]
+    end
+
+    MainRepo -->|Fork| Fork
+    MainSecrets -.->|NOT copied| NoSecrets
+
+    style MainSecrets fill:#69db7c
+    style NoSecrets fill:#ff6b6b
+```
+
+### Affected Workflows in Forked Repos
+
+| Workflow | Impact on Forks | Failure Point |
+|----------|----------------|---------------|
+| **selfhosted-linux-fips.yml** | 🔴 **WILL FAIL** | Cannot install Habitat CLI or build packages without `HAB_AUTH_TOKEN` |
+| **windows-fips.yml** | 🔴 **WILL FAIL** | Cannot install Habitat CLI or build packages without `HAB_AUTH_TOKEN` |
+| **allchecks.yml** | 🟢 **Will work** | No secrets required |
+| **unit_specs.yml** | 🟢 **Will work** | No secrets required |
+| **func_spec.yml** | 🟢 **Will work** | No secrets required |
+| **kitchen.yml** | 🟢 **Will work** | No secrets required |
+| **lint.yml** | 🟢 **Will work** | No secrets required |
+| **sonarqube.yml** | 🟡 **May fail** | May require SonarQube token |
+| **danger.yml** | 🟡 **May fail** | May require GitHub token for PR comments |
+
+### Workflow Behavior Analysis
+
+#### Linux FIPS Workflow (selfhosted-linux-fips.yml)
+
+```yaml
+# Line 26: Secret injection - WILL BE EMPTY in forks
+env:
+  HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}  # ❌ Not available in forks
+
+# Line 42-44: This step WILL FAIL without authentication
+- name: Install Habitat CLI
+  run: |
+    curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+    # Without HAB_AUTH_TOKEN, authenticated operations will fail
+
+# Line 17-18: Conditional prevents running on forks by default
+if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
+```
+
+**Current Mitigation**: The workflow includes a conditional check that **prevents execution on forked PRs**:
+```yaml
+if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
+```
+
+This means:
+- ✅ FIPS workflows only run when PR is from a branch in the main repo
+- ✅ FIPS workflows only run on pushes to the main repo
+- ❌ FIPS workflows are **skipped entirely** for external contributor PRs
+
+#### Windows FIPS Workflow (windows-fips.yml)
+
+Same behavior as Linux FIPS:
+```yaml
+# Line 29: Secret injection - WILL BE EMPTY in forks
+env:
+  HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}  # ❌ Not available in forks
+
+# Line 17-18: Conditional prevents running on forks
+if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
+```
+
+### Impact Summary
+
+#### For External Contributors (Forked Repos)
+
+**What Works:**
+- ✅ Basic unit tests (unit_specs.yml)
+- ✅ Functional tests (func_spec.yml)
+- ✅ Linting and style checks (lint.yml)
+- ✅ Kitchen tests (kitchen.yml)
+- ✅ All checks workflow (allchecks.yml)
+
+**What Doesn't Work:**
+- ❌ **FIPS validation** - Completely skipped for forked PRs
+- ❌ **Habitat package builds** - Cannot test Habitat packaging changes
+- ❌ **Integration with Habitat Builder** - No authentication available
+
+**The Good News:**
+- The conditional checks prevent workflows from **failing** - they simply **skip** instead
+- Core test coverage (unit, functional, integration) is available to contributors
+- Maintainers can trigger FIPS/Habitat workflows after merging to a branch in the main repo
+
+**The Bad News:**
+- Contributors cannot validate FIPS compliance locally via GitHub Actions
+- Contributors cannot test Habitat packaging changes in their PRs
+- Maintainers must trust non-FIPS tests and potentially run additional validation
+
+### Workarounds and Recommendations
+
+#### For Contributors
+
+1. **Run Habitat builds locally** (if you have your own Habitat setup):
+   ```bash
+   # Generate a local origin key
+   hab origin key generate myorigin
+
+   # Build locally
+   hab pkg build .
+   ```
+
+2. **Focus on non-Habitat tests** in your PR:
+   - Ensure unit tests pass
+   - Ensure functional tests pass
+   - Ensure linting passes
+   - Let maintainers validate FIPS/Habitat after initial review
+
+3. **Request maintainer validation**:
+   - Ask a maintainer to push your branch to a branch in the main repo
+   - This allows FIPS workflows to run with proper secrets
+
+#### For Maintainers
+
+1. **Review strategy for external PRs**:
+   ```
+   External PR → Review code → Push to branch in main repo → FIPS tests run
+   ```
+
+2. **Alternative: Pull request to branch workflow**:
+   ```bash
+   # Create a branch in the main repo from contributor's PR
+   git checkout -b contributor-feature
+   git pull https://github.com/contributor/chef.git feature-branch
+   git push origin contributor-feature
+   # Now FIPS workflows will run with secrets
+   ```
+
+3. **Consider adding a comment bot** that explains to contributors:
+   - Why FIPS tests are skipped on their fork
+   - What tests they should focus on
+   - That FIPS validation will happen after maintainer review
+
+#### Potential Long-term Solutions
+
+1. **Self-hosted runners with fork support** (requires careful security review):
+   - Set up runners that can safely execute forked PR code
+   - Implement approval workflow before running sensitive tests
+   - **RISK**: Forks could potentially exfiltrate secrets if not properly isolated
+
+2. **Separate FIPS validation from PR checks**:
+   - Run FIPS validation only on merge to main
+   - Make FIPS checks optional for PR approval
+   - **TRADE-OFF**: Reduces pre-merge confidence in FIPS compliance
+
+3. **Public Habitat Builder alternative**:
+   - Use a publicly accessible Habitat Builder instance
+   - Generate ephemeral tokens per PR
+   - **LIMITATION**: Still requires infrastructure and maintenance
+
+4. **GitHub Environment Secrets with manual approval**:
+   - Use GitHub Environments to require manual approval before exposing secrets
+   - Maintainers approve each run on forked PRs
+   - **PRO**: Secure and allows fork testing
+   - **CON**: Adds manual overhead for maintainers
+
+### Current Status: ✅ Secure But Limited
+
+The current implementation prioritizes **security over convenience**:
+- ✅ Secrets are never exposed to forked repositories
+- ✅ FIPS workflows gracefully skip on forks (don't fail)
+- ✅ Core test coverage remains available to all contributors
+- ⚠️ FIPS validation happens post-review for external contributions
+- ⚠️ Habitat packaging changes cannot be validated by external contributors
+
+This is a **reasonable trade-off** for an open-source project handling infrastructure automation tools.
+
+---
+
 ## References
 
 - **Verify Pipeline**: `.buildkite/verify.pipeline.sh`
