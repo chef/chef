@@ -168,7 +168,7 @@ for plan in ${habitat_plans[@]}; do
   # echo "      s3_bucket: core-buildkite-cache-chef-oss-prod"
   # echo "      cached_folders:"
   # echo "      - vendor"
-  echo "  timeout_in_minutes: 60"
+  echo "  timeout_in_minutes: 120"
   echo "  commands:"
   if [ $plan == "windows" ]
   then
