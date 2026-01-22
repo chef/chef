@@ -1,5 +1,5 @@
 # Author:: Stephan Renatus <srenatus@chef.io>
-# Copyright:: Copyright (c) Chef Software Inc. <legal@chef.io>
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved. <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

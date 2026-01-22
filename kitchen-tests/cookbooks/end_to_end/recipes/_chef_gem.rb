@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: chef_gem
 #
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
 #
 
 # make sure customers can install knife back into the client for now
