@@ -1,11 +1,9 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
 ---
-
 # The name of the product keys for this product (from mixlib-install)
 # setting this value also tells expeditor its an omnibus build.
 # product_key:
 #   - chef
-
 # Slack channel in Chef Software slack to send notifications about build failures, etc
 slack:
   notify_channel: chef-infra-notify
@@ -32,40 +30,31 @@ pipelines:
       public: true
       env:
         - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-  # - validate/release:
-  #     definition: .expeditor/verify.pipeline.yml
-  #     env:
-  #       - IGNORE_CACHE: true # caching causes constant build failures
-  #       - IGNORE_ARTIFACTORY_RUBY_PROXY: true
+  - validate/release:
+      description: Validate release and promote Habitat package
+      # Note: We use a shell script for pipeline generation, not static YAML
+      definition: .expeditor/verify.release.pipeline.yml
   - validate/adhoc:
       definition: .expeditor/verify.adhoc.pipeline.yml
       env:
         - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
-  - validate/adhoc-canary:
-      canary: true
-      definition: .expeditor/verify.adhoc.pipeline.yml
-      env:
-        - ADHOC: true
-        - IGNORE_CACHE: true # caching causes constant build failures
-        - IGNORE_ARTIFACTORY_RUBY_PROXY: true # Artifactory is throwing 500's when downloading some gems.
   - docker/build:
       definition: .expeditor/docker-build.pipeline.yml
       trigger: default
-  - habitat/build
   - habitat/verify:
       public: true
       definition: .expeditor/habitat-test.pipeline.yml
       trigger: default
+  - habitat/build:
+      definition: .expeditor/build.habitat.yml
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
-  - macos_universal_package:
-      description: Builds universal macos package using arch specific packages
-      definition: .expeditor/macos_universal_package.pipeline.yml
   - gem_validate/release:
       description: Builds and uploads the gems to artifactory
       definition: .expeditor/gem_release.pipeline.yml
+  - macos_universal_package:
+      description: Builds universal macos package using arch specific packages
+      definition: .expeditor/macos_universal_package.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -95,58 +84,76 @@ release_branches:
 changelog:
   rollup_header: Changes not yet released to stable
 
-subscriptions:
-  - workload: project_promoted:{{agent_id}}:*
-    actions:
-      - built_in:rollover_changelog
-      # - bash:.expeditor/update_dockerfile.sh
-      # - bash:.expeditor/promote-docker-images.sh
-      - bash:.expeditor/publish-release-notes.sh
-      - bash:.expeditor/announce-release.sh
-      - built_in:publish_rubygems
-      - built_in:promote_habitat_packages
-      - built_in:notify_chefio_slack_channels
+artifact_channels:
+  - current
+  - stable
+  - base-2025
 
+subscriptions:
   # These actions are taken, in order they are specified, anytime a Pull Request is merged.
   - workload: pull_request_merged:{{github_repo}}:{{release_branch}}:*
     actions:
+      # STEP 1: File-modifying actions (create commits) - MUST come first
       - built_in:bump_version:
           ignore_labels:
             - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
       - bash:.expeditor/update_version.sh:
           only_if: built_in:bump_version
+          ignore_labels:
+            - "Expeditor: Skip Version Bump"
+            - "Expeditor: Skip All"
       - built_in:update_changelog:
           ignore_labels:
             - "Expeditor: Skip Changelog"
             - "Expeditor: Skip All"
-      - trigger_pipeline:habitat/build:
+
+      # STEP 2: Pipeline triggers - MUST come after all file modifications
+      - trigger_pipeline:docker/build:
+          ignore_labels:
+            - "Expeditor: Skip Docker Build"
+            - "Expeditor: Skip All"
+          only_if: built_in:bump_version
+      - trigger_pipeline:validate/release:
           ignore_labels:
             - "Expeditor: Skip Habitat"
             - "Expeditor: Skip All"
           only_if: built_in:bump_version
-      # - trigger_pipeline:omnibus/release:
-      #     ignore_labels:
-      #       - "Expeditor: Skip Omnibus"
-      #       - "Expeditor: Skip All"
-      #     only_if: built_in:bump_version
-      - trigger_pipeline:validate/release:
+      - trigger_pipeline:gem_validate/release:
+          only_if: built_in:bump_version
           ignore_labels:
-            - "Expeditor: Skip Omnibus"
+            - "Expeditor: Skip Version Bump"
             - "Expeditor: Skip All"
-          only_if: built_in:bump_version
-      - built_in:build_gem:
-          only_if: built_in:bump_version
 
   # the habitat chain
+  # Build Habitat packages and promote to unstable when validate/release pipeline passes
+  - workload: buildkite_build_passed:{{agent_id}}:validate/release:*
+    actions:
+      - trigger_pipeline:habitat/build
+
+  # Automatically promote the Habitat packages from unstable to current upon successful build of habitat/build
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
-      # when all of the hab package publish to the unstable channel, test and promote them
-      - trigger_pipeline:habitat/verify
-      - trigger_pipeline:gem_validate/release
-      - trigger_pipeline:docker/build
+      - built_in:promote_habitat_packages
 
-  # subscriptions to Ruby gem dependencies' releases, open PR for updates
+  # this is the only way currently to promote built-in rubygems publish
+  - workload: project_promoted:{{agent_id}}:*
+    actions:
+      - built_in:rollover_changelog
+      #- bash:.expeditor/update_dockerfile.sh
+      #- bash:.expeditor/promote-docker-images.sh
+      - bash:.expeditor/publish-release-notes.sh
+      - bash:.expeditor/announce-release.sh
+      - built_in:publish_rubygems
+      - built_in:promote_habitat_packages
+      - built_in:notify_chefio_slack_channels
+
+  # once project_promoted in slack is done from current to stable, we then promote to stable to base-2025
+  - workload: hab_package_published:stable:chef-infra-client/19.*
+    actions:
+      - bash:.expeditor/scripts/base-2025-promote.sh
+
+# subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:corefoundation-*
     actions:
       - bash:.expeditor/update_dep.sh
