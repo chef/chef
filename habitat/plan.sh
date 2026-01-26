@@ -186,6 +186,13 @@ do_install() {
       build_line "After patching $(basename $binstub):"
       head -n 20 "$binstub"
     done
+
+    CONFIG_DIR="/etc/chef"
+    mkdir -p "$CONFIG_DIR"
+    mkdir -p "$CONFIG_DIR/client.d"
+    mkdir -p "$CONFIG_DIR/accepted_licenses"
+    mkdir -p "$CONFIG_DIR/trusted_certs"
+    mkdir -p "$CONFIG_DIR/ohai/plugins"
   )
 }
 
