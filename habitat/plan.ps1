@@ -276,22 +276,26 @@ function Invoke-Install {
         }
 
         Write-BuildLine "** patching binstubs to allow running directly"
-        Get-ChildItem -Path "$pkg_prefix\bin\*" -File | ForEach-Object {
+        Get-ChildItem -Path "$pkg_prefix\bin\*.bat" -File | ForEach-Object {
             $binstub = $_.FullName
             $binstubName = $_.Name
             Write-BuildLine "Before patching ${binstubName}:"
             Get-Content $binstub -TotalCount 20
 
-            # Read the binstub content
+            # Read the .bat file content
             $content = Get-Content $binstub -Raw
-            # Find the line containing 'require "rubygems"' and insert the patch after it
-            $patchContent = Get-Content "$PLAN_CONTEXT\binstub_patch.rb" -Raw
-            $content = $content -replace '(require "rubygems")', "`$1`n$patchContent"
+
+            # Read the patch content from binstub_patch.bat
+            $envLoaderBat = Get-Content "$PLAN_CONTEXT\binstub_patch.bat" -Raw
+
+            # Replace @ECHO OFF with @ECHO OFF followed by the environment loader
+            $content = $content -replace '(?m)^@ECHO OFF', "@ECHO OFF`r`n$envLoaderBat"
+
             # Write back to the file
             Set-Content -Path $binstub -Value $content -NoNewline
 
             Write-BuildLine "After patching ${binstubName}:"
-            Get-Content $binstub -TotalCount 20
+            Get-Content $binstub -TotalCount 30
         }
 
         Remove-StudioPathFrom -File $pkg_prefix/vendor/gems/chef-$pkg_version*/Gemfile
