@@ -9,10 +9,13 @@ steps:
   agents:
     queue: docker-linux
   expeditor:
+    secrets:
+      HAB_AUTH_TOKEN:
+        path: account/static/habitat/chef-ci
+        field: auth_token
     executor:
       linux:
         privileged: true
-        single-use: true
         propagate-environment: true
         environment:
           - HAB_AUTH_TOKEN

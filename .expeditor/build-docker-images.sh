@@ -1,7 +1,6 @@
 #! /bin/bash
 set -eou pipefail
 
-#set expeditor_version equal to the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
 
 arch=$1
@@ -22,11 +21,16 @@ if [[ "${channel}" != "stable" ]] && [[ -z "${HAB_AUTH_TOKEN:-}" ]]; then
 fi
 
 echo "--- Building chef/chef-hab:${version} docker image for ${arch}"
+
+# Enable BuildKit for secret support
+export DOCKER_BUILDKIT=1
+
+# Use --secret instead of --build-arg for sensitive data
 docker build \
   --build-arg "CHANNEL=${channel}" \
   --build-arg "VERSION=${version}" \
   --build-arg "ARCH=${dockerfile_arch}" \
-  --build-arg "HAB_AUTH_TOKEN=${HAB_AUTH_TOKEN}" \
+  --secret id=hab_token,env=HAB_AUTH_TOKEN \
   -t "chef/chef-hab:${version}-${arch}" .
 
 echo "--- Pushing chef/chef-hab:${version} docker image for ${arch} to dockerhub"

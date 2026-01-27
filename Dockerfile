@@ -23,14 +23,16 @@ ARG VERSION=19.0.49
 ARG ARCH=x86_64
 
 ENV HAB_LICENSE="accept-no-persist"
-# Download and extract hab binary and install infra-client habitat package
-RUN wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
+
+# Use --mount=type=secret to access HAB_AUTH_TOKEN securely
+RUN --mount=type=secret,id=hab_token \
+    wget -qO /tmp/hab.tar.gz https://packages.chef.io/files/stable/habitat/latest/hab-${ARCH}-linux.tar.gz && \
     mkdir /tmp/hab && \
     tar -xzf /tmp/hab.tar.gz -C /tmp/hab && \
     HAB_DIR=$(find /tmp/hab -type d -name "hab-*") && \
     $HAB_DIR/hab pkg install --binlink --force --channel "stable" "core/hab" && \
     rm -rf /tmp/* && \
-    hab pkg install --binlink --force --auth "${HAB_AUTH_TOKEN}" --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
+    HAB_AUTH_TOKEN=$(cat /run/secrets/hab_token) hab pkg install --binlink --force --auth "$(cat /run/secrets/hab_token)" --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
     rm -rf /hab/cache
-
-VOLUME [ "/hab" ]
+WORKDIR /hab
+ENTRYPOINT ["/bin/hab"]
