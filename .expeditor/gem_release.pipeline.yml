@@ -25,7 +25,6 @@ steps:
       executor:
         docker:
           host_os: windows
-          privileged: true
           propagate-environment: true
           environment:
             - ARTIFACTORY_API_KEY
