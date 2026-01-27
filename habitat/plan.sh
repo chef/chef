@@ -1,4 +1,7 @@
-export HAB_BLDR_CHANNEL="base-2025"
+#export HAB_BLDR_CHANNEL="base-2025"
+export HAB_BLDR_CHANNEL="fips-testing"
+export HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL="fips-testing"
+export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$PLAN_CONTEXT")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"

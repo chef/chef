@@ -24,9 +24,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: base-2025
-      HAB_REFRESH_CHANNEL: base-2025
+      # HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      # HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_BLDR_CHANNEL: fips-testing
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: fips-testing
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
+      HAB_STUDIO_SECRET_HAB_PREFER_LOCAL_CHEF_DEPS: true
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      CHEF_LICENSE_KEY: free-79df705d-b685-419a-8b68-88401f74ff72-3999
     steps:
     - uses: actions/checkout@v4
     - name: 'Install Habitat CLI'
@@ -47,7 +52,7 @@ jobs:
         # Generate the origin key for signing packages
         hab origin key generate "$env:HAB_ORIGIN"
 
-    - name: 'Build Habitat Package'
+    - name: 'Build Habitat Package for Chef Infra Client'
       run: |
         # Build the package for current checkout
         hab pkg build .
@@ -98,16 +103,73 @@ jobs:
           Exit 1
         }
 
-    - name: 'Run chef-client with FIPS'
+    - name: 'Test chef-client with FIPS'
       run: |
-        # Verify FIPS mode is active
-        hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client --version
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client --version
+        # Accept Chef license in local mode
+        hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z --chef-license accept
 
-        #*** Uncomment the below lines to check for FIPS mode in chef-client logs once OpenSSL has FIPS mode enabled
-        # $output = hab pkg exec $env:HAB_ORIGIN/chef-infra-client chef-client -l debug --no-color 2>&1 | Select-String "FIPS"
-        # if ($output -match "OpenSSL FIPS 140 mode enabled") {
-        #   Write-Host "✅ Chef Infra Client is running in FIPS mode"
-        # } else {
-        #   Write-Host "❌ FIPS mode not detected"
-        #   Exit 1
-        # }
+        # Create a minimal cookbook structure
+        New-Item -ItemType Directory -Force -Path "$env:TEMP\test_cookbook\recipes" | Out-Null
+        @"
+        file 'C:\temp\test' do
+          content Digest::MD5.hexdigest('test')
+        end
+        "@ | Set-Content -Path "$env:TEMP\test_cookbook\recipes\default.rb"
+
+        # Run chef-client and capture output, expect it to fail due to FIPS and MD5 usage
+        $logPath = "$env:TEMP\chef-client.log"
+        $exitCode = 0
+
+        try {
+          hab pkg exec $env:HAB_ORIGIN/chef-infra-client -- chef-client -z `
+            --config-option "cookbook_path=$env:TEMP" `
+            -o test_cookbook 2>&1 | Tee-Object -FilePath $logPath
+          $exitCode = $LASTEXITCODE
+        } catch {
+          $exitCode = 1
+          $_ | Out-File -Append -FilePath $logPath
+        }
+
+        Write-Host "=== Test Results ==="
+        Write-Host "Chef-client exit code: $exitCode"
+
+        # Check if Infra Client run failed AND the error is related to MD5/Digest
+        if ($exitCode -ne 0) {
+          Write-Host "=== Chef-client failed as expected in FIPS mode ==="
+          $logContent = Get-Content $logPath -Raw
+
+          if ($logContent -match "(?i)Digest" -and $logContent -match "(?i)initialization") {
+            Write-Host "=== PASS: FIPS mode detected and enforced - MD5 blocked with Digest error ==="
+            exit 0
+          } else {
+            Write-Host "=== FAIL: Command failed but not due to FIPS/MD5 enforcement ==="
+            Write-Host "=== Log excerpt ==="
+            Get-Content $logPath -Tail 50
+            Write-Host "=== End log excerpt ==="
+            exit 1
+          }
+        } else {
+          Write-Host "=== FAIL: FIPS mode not working - chef-client succeeded when it should have failed ==="
+          Write-Host "=== Log excerpt ==="
+          Get-Content $logPath -Tail 50
+          Write-Host "=== End log excerpt ==="
+          exit 1
+        }
+
+    - name: 'Cleanup artifacts on runner'
+      if: always()
+      run: |
+        Write-Host "=== Cleaning up test artifacts ==="
+
+        # Remove test cookbook and files
+        Remove-Item -Path "$env:TEMP\test_cookbook" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "C:\temp\test" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:TEMP\chef-client.log" -Force -ErrorAction SilentlyContinue
+
+        # Clean up Habitat artifacts
+        Remove-Item -Path "hab_token" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:HAB_ORIGIN-key.tar.gz" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "chef-infra-client-latest.hart" -Force -ErrorAction SilentlyContinue
+
+        Write-Host "=== Cleanup complete ==="
