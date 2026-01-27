@@ -20,7 +20,7 @@ steps:
     commands:
       - .expeditor/scripts/gem_push_artifactory.ps1
     agents:
-      queue: core-single-use-windows-2019
+      queue: single-use-windows-2019
     expeditor:
       executor:
         windows:
