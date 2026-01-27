@@ -49,7 +49,7 @@ pipeline = {
 }
 
 # if pipeline slug is chef-chef-main-validate-adhoc, then run buildkite_adhoc_metadata.sh
-if ENV['BUILDKITE_PIPELINE_SLUG'] == 'chef-chef-main-validate-adhoc'
+if ENV['BUILDKITE_PIPELINE_SLUG'] =~ (chef-chef-main-validate-adhoc|chef-chef-main-validate-release)
   pipeline["steps"] << {
     "label" => ":habicat::linux: Building Habitat package",
     "commands" => [
