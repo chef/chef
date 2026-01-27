@@ -45,6 +45,7 @@ steps:
         - "-Command"
         environment:
           - ARTIFACTORY_API_KEY
+          - ARTIFACTORY_LITA_PASSWORD
           - HAB_AUTH_TOKEN
         propagate-environment: true
     commands:
