@@ -33,12 +33,37 @@ if (-not $?) { throw "Unable to download origin key" }
 
 Write-Host "--- :key: Importing origin keys into studio"
 # Import the downloaded keys to make them available in the local studio
-$keyDir = "C:\hab\cache\keys"
-$secretKey = Get-ChildItem "$keyDir\chef-*.sig.key" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-$publicKey = Get-ChildItem "$keyDir\chef-*.pub" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-if ($secretKey) { Get-Content $secretKey.FullName | hab origin key import }
-if ($publicKey) { Get-Content $publicKey.FullName | hab origin key import }
-if (-not $?) { throw "Unable to import origin keys" }
+# On Windows, hab stores keys in $env:HAB_CACHE_KEY_PATH or default location
+$habCachePath = if ($env:HAB_CACHE_KEY_PATH) { $env:HAB_CACHE_KEY_PATH } else { "$env:SystemDrive\hab\cache\keys" }
+
+Write-Host "Looking for keys in: $habCachePath"
+
+# Find the most recent secret and public keys for the origin
+$secretKey = Get-ChildItem "$habCachePath\$env:HAB_ORIGIN-*.sig.key" -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+
+$publicKey = Get-ChildItem "$habCachePath\$env:HAB_ORIGIN-*.pub" -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1
+
+if ($secretKey) {
+    Write-Host "Importing secret key: $($secretKey.Name)"
+    $keyContent = Get-Content $secretKey.FullName -Raw
+    $keyContent | hab origin key import
+    if (-not $?) { throw "Unable to import secret origin key" }
+} else {
+    Write-Host "Warning: No secret key found for origin $env:HAB_ORIGIN"
+}
+
+if ($publicKey) {
+    Write-Host "Importing public key: $($publicKey.Name)"
+    $keyContent = Get-Content $publicKey.FullName -Raw
+    $keyContent | hab origin key import
+    if (-not $?) { throw "Unable to import public origin key" }
+} else {
+    throw "No public key found for origin $env:HAB_ORIGIN"
+}
 
 Write-Host "--- Building Chef Infra Client package"
 hab pkg build . --refresh-channel base-2025
@@ -48,6 +73,11 @@ if (-not $?) { throw "Unable to build package" }
 $project_root = git rev-parse --show-toplevel
 $results_dir = Join-Path $project_root "results"
 $build_script_path = Join-Path $results_dir "last_build.ps1"
+
+if (-not (Test-Path $build_script_path)) {
+    throw "Build script not found: $build_script_path"
+}
+
 . $build_script_path
 
 Set-Location $results_dir
