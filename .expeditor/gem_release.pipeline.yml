@@ -23,7 +23,8 @@ steps:
       queue: default-windows-2019-privileged
     expeditor:
       executor:
-        windows:
+        docker:
+          host_os: windows
           privileged: true
           propagate-environment: true
           environment:
