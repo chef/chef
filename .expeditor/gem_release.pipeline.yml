@@ -16,16 +16,37 @@ steps:
           environment:
             - ARTIFACTORY_API_KEY
             - HAB_AUTH_TOKEN
+  # - label: ":windows: push gem to artifactory"
+  #   commands:
+  #     - .expeditor/scripts/gem_push_artifactory.ps1
+  #   agents:
+  #     queue: default-windows-2019-privileged
+  #   expeditor:
+  #     executor:
+  #       docker:
+  #       windows:
+  #         privileged: true
+  #         single-use: true
+  #         propagate-environment: true
+  #         environment:
+  #           - ARTIFACTORY_API_KEY
+  #           - HAB_AUTH_TOKEN
   - label: ":windows: push gem to artifactory"
-    commands:
-      - .expeditor/scripts/gem_push_artifactory.ps1
+    retry:
+      automatic:
+        limit: 1
     agents:
-      queue: single-use-windows-2019
-    expeditor:
-      executor:
-        windows:
-          privileged: true
-          propagate-environment: true
-          environment:
-            - ARTIFACTORY_API_KEY
-            - HAB_AUTH_TOKEN
+      queue: default-windows-2019-privileged
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-windows-2019:3.0.39
+        shell:
+        - powershell
+        - "-Command"
+        environment:
+          - ARTIFACTORY_API_KEY
+          - HAB_AUTH_TOKEN
+        propagate-environment: true
+    commands:
+    - ".expeditor/scripts/gem_push_artifactory.ps1"
+    timeout_in_minutes: 120
