@@ -34,5 +34,5 @@ RUN --mount=type=secret,id=hab_token \
     rm -rf /tmp/* && \
     HAB_AUTH_TOKEN=$(cat /run/secrets/hab_token) hab pkg install --binlink --force --auth "$(cat /run/secrets/hab_token)" --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
     rm -rf /hab/cache
-WORKDIR /hab
-ENTRYPOINT ["/bin/hab"]
+
+VOLUME [ "/hab" ]
