@@ -18,8 +18,8 @@ $pkg_deps=@(
   "core/xz"
   "core/libarchive"
   "core/ruby3_4-plus-devkit/3.4.8"
-  "chef/chef-powershell-shim"
-  "core/visual-cpp-redist-2022"
+  # "chef/chef-powershell-shim" - Rmoved for the first Chef-19 release
+  # "core/visual-cpp-redist-2022" - Removed for the first Chef-19 release because of licneinse issues
 )
 
 function Invoke-Begin {
