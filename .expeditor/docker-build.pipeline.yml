@@ -1,8 +1,24 @@
 ---
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 60
+
 steps:
 - label: ":docker: build chef-hab amd64"
   agents:
     queue: docker-linux
+  expeditor:
+    secrets:
+      HAB_AUTH_TOKEN:
+        path: account/static/habitat/chef-ci
+        field: auth_token
+    executor:
+      linux:
+        privileged: true
+        propagate-environment: true
+        environment:
+          - HAB_AUTH_TOKEN
   command: .expeditor/build-docker-images.sh amd64
 
 # Commenting this as Habitat doesn't support arm64 builds yet
@@ -11,6 +27,14 @@ steps:
 #- label: ":docker: build chef-hab arm64"
 #  agents:
 #    queue: docker-linux-arm64
+#  expeditor:
+#    executor:
+#      linux:
+#        privileged: true
+#        single-use: true
+#        propagate-environment: true
+#        environment:
+#          - HAB_AUTH_TOKEN
 #  command: .expeditor/build-docker-images.sh arm64
 
 - wait

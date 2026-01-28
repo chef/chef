@@ -140,8 +140,8 @@ subscriptions:
   - workload: project_promoted:{{agent_id}}:*
     actions:
       - built_in:rollover_changelog
-      #- bash:.expeditor/update_dockerfile.sh
-      #- bash:.expeditor/promote-docker-images.sh
+      - bash:.expeditor/update_dockerfile.sh
+      - bash:.expeditor/promote-docker-images.sh
       - bash:.expeditor/publish-release-notes.sh
       - bash:.expeditor/announce-release.sh
       - built_in:publish_rubygems

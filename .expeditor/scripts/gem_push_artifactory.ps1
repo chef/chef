@@ -1,5 +1,14 @@
 $ErrorActionPreference = "Stop"
 
+# Validate required environment variable exists
+if (-not $env:ARTIFACTORY_LITA_PASSWORD) {
+    Write-Host "CRITICAL: ARTIFACTORY_LITA_PASSWORD environment variable not found" -ForegroundColor Red
+    Write-Host "This variable should be set by the pre-command hook for pipeline: chef-chef-main-gem-validate-release" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Using Artifactory credentials from environment (injected by pre-command hook)"
+
 # Set environment variables
 $env:HAB_ORIGIN = "chef"
 $env:CHEF_LICENSE = "accept-no-persist"
@@ -21,19 +30,18 @@ if (-not $?) { throw "Could not install ruby with devkit via Habitat." }
 
 Write-Output "--- Building and pushing gems to Artifactory"
 try {
-    # Get password from AWS SSM Parameter Store
-    Write-Host "Retrieving artifactory password from AWS SSM..."
-    $lita_password = aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region us-west-2
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to retrieve password from AWS SSM"
-    }
+    # Use password from environment (no AWS call needed)
+    $lita_password = $env:ARTIFACTORY_LITA_PASSWORD
 
     # Create base64 encoded API key
     $credentials = "lita:$lita_password"
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($credentials)
     $artifactory_api_key = [System.Convert]::ToBase64String($bytes)
     $env:GEM_HOST_API_KEY = "Basic $artifactory_api_key"
+
+    # Clear sensitive variables from memory
+    $lita_password = $null
+    $credentials = $null
 
     # Generate origin key
     Write-Host "Generating origin key"
