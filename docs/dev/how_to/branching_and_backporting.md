@@ -16,6 +16,6 @@ If there is a critical fix that you believe should be backported from main to a 
     3. Cherry Pick the SHA with the fix: `git cherry-pick SHA`
     4. Address any conflicts (if necessary)
     5. Push the new branch to your origin: `git push origin`
-5. Open a PR for your backport
+5. Open a PR for your backport:
     1. The PR title should be `Backport: ORIGINAL_PR_TEXT`
     2. The description should link to the original PR and include a description of why it needs to be backported
