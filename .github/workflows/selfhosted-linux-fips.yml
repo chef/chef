@@ -1,6 +1,7 @@
 ---
 name: linux-fips
 permissions:
+  id-token: write
   contents: read
 
 "on":
@@ -14,7 +15,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  oidc-or-github-secret:
+    runs-on: ubuntu-latest
+    outputs:
+      hab_auth_token: ${{ steps.resolve_value.outputs.token }}
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::174176611541:role/CommunityHabTokenKitchenPipelineAccess
+        aws-region: us-west-2
+
+    - name: Resolve VALUE (SSM for forks, Secrets otherwise)
+      id: resolve_value
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.head.repo.fork }}" == "true" ]]; then
+          echo "Using SSM Parameter (fork PR)."
+          VALUE="$(aws ssm get-parameter \
+            --name "habitat-read-only-token" \
+            --with-decryption \
+            --query 'Parameter.Value' \
+            --output text)"
+        else
+          echo "Using GitHub Secret (non-fork PR)."
+          VALUE="${{ secrets.HAB_AUTH_TOKEN }}"
+        fi
+
+        # Mask the token value to prevent it from appearing in logs
+        echo "::add-mask::$VALUE"
+        echo "token=$VALUE" >> $GITHUB_OUTPUT
+
   linux:
+    needs: oidc-or-github-secret
     if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
@@ -23,7 +58,7 @@ jobs:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
-      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_AUTH_TOKEN: ${{ needs.oidc-or-github-secret.outputs.hab_auth_token }}
     steps:
       - name: 'Clean up any previous installs'
         id: cleanup
@@ -61,7 +96,7 @@ jobs:
       - name: Set up HAB token file
         run: |
           # Create a token file for habitat operations
-          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+          echo "$HAB_AUTH_TOKEN" > hab_token
           chmod 600 hab_token
 
       - name: Install Chef Infra Client Habitat Package
