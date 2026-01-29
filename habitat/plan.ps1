@@ -18,8 +18,8 @@ $pkg_deps=@(
   "core/xz"
   "core/libarchive"
   "core/ruby3_4-plus-devkit/3.4.8"
-  # "chef/chef-powershell-shim" - Removed for the first Chef-19 release
-  # "core/visual-cpp-redist-2022" - Removed for the first Chef-19 release because of license issues
+  "chef/chef-powershell-shim"
+  "core/visual-cpp-redist-2022"
 )
 
 function Invoke-Begin {
@@ -46,7 +46,7 @@ function Invoke-SetupEnvironment {
 
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath openssl)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath zlib)/bin"
-    # Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath visual-cpp-redist-2022)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath libarchive)/bin"
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
 
