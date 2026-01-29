@@ -18,7 +18,7 @@ $pkg_deps=@(
   "core/xz"
   "core/libarchive"
   "core/ruby3_4-plus-devkit/3.4.8"
-  # "chef/chef-powershell-shim" - Removed for the first Chef-19 release
+  "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2022"
 )
 
