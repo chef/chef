@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.158 -->
-## [v19.1.158](https://github.com/chef/chef/tree/v19.1.158) (2026-01-29)
+<!-- latest_release 19.1.159 -->
+## [v19.1.159](https://github.com/chef/chef/tree/v19.1.159) (2026-01-30)
 
 #### Merged Pull Requests
-- update openssl version in spec [#15597](https://github.com/chef/chef/pull/15597) ([rishichawda](https://github.com/rishichawda))
+- update NOTICE  [#15601](https://github.com/chef/chef/pull/15601) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.5.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update NOTICE  [#15601](https://github.com/chef/chef/pull/15601) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.159 -->
 - update openssl version in spec [#15597](https://github.com/chef/chef/pull/15597) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.158 -->
 - Removing the Powershell package for now [#15594](https://github.com/chef/chef/pull/15594) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.157 -->
 - Updating Notice text file [#15592](https://github.com/chef/chef/pull/15592) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.156 -->
