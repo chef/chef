@@ -2,7 +2,7 @@
 name: kitchen
 
 "on":
-  pull_request:
+  pull_request_target:
   push:
     branches:
       - main
@@ -11,12 +11,23 @@ concurrency:
   group: kitchen-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 defaults:
   run:
     working-directory: kitchen-tests
 
 jobs:
+  workflow_guard:
+    if: github.event_name == 'pull_request_target'
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
   win_x86_64:
+    needs: workflow_guard
+    permissions:
+      contents: read
     # temporarily adding this back for inspec testing until we can get Kitchen Enterprise working for Windows.
     strategy:
       fail-fast: false
@@ -33,66 +44,71 @@ jobs:
       HAB_REFRESH_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
-    - uses: actions/checkout@v6
+      - name: Checkout PR code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          clean: true
 
-    - name: Install Habitat CLI
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
-        .\install-habitat.ps1
-        $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
-        echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-        hab license accept
-        hab --version
+      - name: Install Habitat CLI
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
+          .\install-habitat.ps1
+          $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
+          echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          hab license accept
+          hab --version
 
-    - name: Generate Habitat Origin Key
-      shell: pwsh
-      run: hab origin key generate "$env:HAB_ORIGIN"
+      - name: Generate Habitat Origin Key
+        shell: pwsh
+        run: hab origin key generate "$env:HAB_ORIGIN"
 
-    - name: Build Habitat Package
-      shell: pwsh
-      working-directory: .
-      run: |
-        # Build from repo root, not kitchen-tests
-        Write-Host "I am in the following directory before building: $(Get-Location)"
-        # cd ..
-        hab pkg build habitat
-        $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
-                    Sort-Object LastWriteTime -Descending |
-                    Select-Object -First 1
+      - name: Build Habitat Package
+        shell: pwsh
+        working-directory: .
+        run: |
+          # Build from repo root, not kitchen-tests
+          Write-Host "I am in the following directory before building: $(Get-Location)"
+          # cd ..
+          hab pkg build habitat
+          $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
+                      Sort-Object LastWriteTime -Descending |
+                      Select-Object -First 1
 
-        if ($pkg_path) {
-            Write-Host "✓ Built package: $($pkg_path.Name)"
-        } else {
-            Write-Error "× No package built"
-            Get-ChildItem -Path "results" -ErrorAction SilentlyContinue
-            Exit 1
-        }
+          if ($pkg_path) {
+              Write-Host "✓ Built package: $($pkg_path.Name)"
+          } else {
+              Write-Error "× No package built"
+              Get-ChildItem -Path "results" -ErrorAction SilentlyContinue
+              Exit 1
+          }
 
-    - name: Install Chef Infra Client from Habitat Package
-      shell: pwsh
-      working-directory: .
-      run: |
-        # cd ..
-        $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
-                    Sort-Object LastWriteTime -Descending |
-                    Select-Object -First 1
+      - name: Install Chef Infra Client from Habitat Package
+        shell: pwsh
+        working-directory: .
+        run: |
+          # cd ..
+          $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
+                      Sort-Object LastWriteTime -Descending |
+                      Select-Object -First 1
 
-        Write-Host "Installing package: $($pkg_path.FullName)"
+          Write-Host "Installing package: $($pkg_path.FullName)"
 
-        hab pkg install $pkg_path.FullName --binlink --force
+          hab pkg install $pkg_path.FullName --binlink --force
 
-        # Verify installation
-        Write-Host "Installed Chef Infra Client version:"
-        chef-client --version
+          # Verify installation
+          Write-Host "Installed Chef Infra Client version:"
+          chef-client --version
 
-    - name: Install Chef Workstation (for kitchen CLI)
-      shell: pwsh
-      run: choco install -y chef-workstation
+      - name: Install Chef Workstation (for kitchen CLI)
+        shell: pwsh
+        run: choco install -y chef-workstation
 
-    - name: Kitchen Test
-      shell: pwsh
-      run: kitchen verify end-to-end-${{ matrix.os }}
+      - name: Kitchen Test
+        shell: pwsh
+        run: kitchen verify end-to-end-${{ matrix.os }}
 
 
   # Testing on windows by running habitat package of Infra Client chef-client in local mode.
@@ -114,7 +130,12 @@ jobs:
   #     HAB_REFRESH_CHANNEL: base-2025
   #     HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
   #   steps:
-  #   - uses: actions/checkout@v4
+  #   - name: Checkout PR code
+  #     uses: actions/checkout@v6
+  #     with:
+  #       ref: ${{ github.event.pull_request.head.sha }}
+  #       persist-credentials: false
+  #       clean: true
   #   - name: Install Habitat CLI
   #     run: |
   #       # Install Habitat using Chocolatey
@@ -200,6 +221,9 @@ jobs:
 #        run: kitchen verify ${{ matrix.os }}
 #
   mac_arm64:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -212,9 +236,11 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
-      - name: Check out code
-        uses: actions/checkout@v5
+      - name: Checkout PR code
+        uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
           clean: true
       - name: Install Chef
         uses: actionshub/chef-install@main
@@ -226,6 +252,9 @@ jobs:
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
     name: dokr_lnx_x86_64_hab
+    needs: workflow_guard
+    permissions:
+      contents: read
     if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
@@ -258,8 +287,12 @@ jobs:
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
+      - name: Checkout PR code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install Habitat CLI
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
@@ -327,7 +360,12 @@ jobs:
 #      CHEF_LICENSE: accept-no-persist
 #      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
 #    steps:
-#      - uses: actions/checkout@v5
+#      - name: Checkout PR code
+#        uses: actions/checkout@v6
+#        with:
+#          ref: ${{ github.event.pull_request.head.sha }}
+#          persist-credentials: false
+#          clean: true
 #      - name: Install Vagrant and VirtualBox
 #        run: |
 #          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg

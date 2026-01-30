@@ -97,8 +97,75 @@ async function checkPRDescription() {
     }
 }
 
+async function stickyWorkflowChangeReminder() {
+    if (danger.github.pr.user.type === "Bot") {
+        return
+    }
+
+    const workflowChanges = danger.git.modified_files.filter(file =>
+        file.startsWith(".github/workflows/")
+    )
+
+    if (workflowChanges.length === 0) {
+        return
+    }
+
+    const filesList = workflowChanges.map(f => `- \`${f}\``).join("\n")
+
+    const body = `
+### ⚠️ Workflow changes detected
+
+This PR modifies GitHub Actions workflow files:
+
+${filesList}
+
+**Reviewer reminder – please double-check for:**
+- [ ] Changes to **secrets usage** or new secret references
+- [ ] Workflow **permissions** increases (especially \`contents\`, \`actions\`, or \`id-token\`)
+- [ ] Any way secrets could be **exfiltrated** (logs, artifacts, uploads)
+
+These workflow changes are gated for manual approval — please review carefully before approving.
+`
+
+    const api = danger.github.api
+    const issue = danger.github.pr.number
+    const repo = danger.github.thisPR.repo
+    const owner = danger.github.thisPR.owner
+
+    const { data: comments } = await api.issues.listComments({
+        owner,
+        repo,
+        issue_number: issue,
+        per_page: 100,
+    })
+
+    const existing = comments.find(c =>
+        c.user?.login === "github-actions[bot]" &&
+        c.body?.includes("⚠️ Workflow changes detected")
+    )
+
+    if (existing) {
+        await api.issues.updateComment({
+            owner,
+            repo,
+            comment_id: existing.id,
+            body,
+        })
+    } else {
+        await api.issues.createComment({
+            owner,
+            repo,
+            issue_number: issue,
+            body,
+        })
+    }
+}
+
 // Check for chef gem version changes
 schedule(checkChefGemVersions())
 
 // Check PR description
 schedule(checkPRDescription())
+
+// Remind reviewers about workflow changes
+schedule(stickyWorkflowChangeReminder)
