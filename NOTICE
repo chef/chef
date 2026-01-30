@@ -66,51 +66,52 @@ Artistic License 2.0:
   Park Heesob, Daniel J. Berger    | win32-taskscheduler | 2.0.4
 
 BSD 2-Clause "Simplified" License:
-  Akinori MUSHA                    | public_suffix_service | 0.6.20240107
-  Akinori MUSHA                    | syslog                | 0.3.0
-  Akira Yamada                     | uri                   | 1.0.4
-  Daniel Luz                       | JSON for Ruby         | 2.18.0
-  David Rodriguez, Kent Sibilev,…  | byebug                | 12.0.0
-  > Mark Moseley                   |                       |
-  Hiroshi Nakamura                 | nahi's httpclient     | 2.9.0
-  James Edward Gray II, Kouhei…    | ruby csv              | 3.3.5
-  > Sutou                          |                       |
-  Keiju ISHITSUKA                  | mutex_m               | 0.3.0
-  Kenta Murata, Zachary Scott,…    | bigdecimal            | 3.3.1
-  > Shigeo Kobayashi               |                       |
-  Kouhei Sutou                     | ruby/rexml            | 3.4.4
-  Marc-Andre Lafortune             | ostruct               | 0.6.3
-  Martin Bosslet, SHIBATA Hiroshi… | ruby/openssl          | 3.3.1
-  > , Zachary Scott, Kazuki…       |                       |
-  > Yamaguchi                      |                       |
-  Minero Aoki, Aaron Patterson     | racc                  | 1.8.1
-  NARUSE, Yui                      | net-http              | 0.8.0
-  Naotoshi Seo, SHIBATA Hiroshi    | ruby/logger           | 1.7.0
-  Robert Haines, John Lees-Miller… | RubyZip               | 2.4.1
-  > , Alexander Simonov            |                       |
-  Shugo Maeda                      | net-ftp               | 0.3.9
-  Soutaro Matsumoto                | rbs                   | 3.10.2
-  Stephan Maka, Andrey Kouznetsov… | Ruby-SOCKSify         | 1.8.1
-  > , Christopher Thorpe, Musy…    |                       |
-  > Bite, Yuichi Tateno, David…    |                       |
-  > Dollar                         |                       |
-  TAKAHASHI Masayoshi, GOTOU…      | webrick               | 1.9.2
-  > YUUZOU, Eric Wong              |                       |
-  Tadayoshi Funaba                 | date                  | 3.5.0
-  Tanaka Akira                     | timingfuction         | 0.4.1
-  The Habitat Maintainers          | Habitat core_lz4      | 1.10.0
-  The Habitat Maintainers          | Habitat core_ruby3_4  | 3.4.8
-  Yukihiro Matsumoto               | net-protocol          | 0.2.2
-  Yukihiro Matsumoto               | pstore                | 0.1.4
-  Yukihiro Matsumoto               | ruby/benchmark        | 0.5.0
-  Yukihiro Matsumoto               | timeout               | 0.4.4
-  Yusuke Endoh                     | base64                | 0.3.0
+  Akinori MUSHA                    | public_suffix_service        | 0.6.20240107
+  Akinori MUSHA                    | syslog                       | 0.3.0
+  Akira Yamada                     | uri                          | 1.0.4
+  Daniel Luz                       | JSON for Ruby                | 2.18.0
+  David Rodriguez, Kent Sibilev,…  | byebug                       | 12.0.0
+  > Mark Moseley                   |                              |
+  Hiroshi Nakamura                 | nahi's httpclient            | 2.9.0
+  James Edward Gray II, Kouhei…    | ruby csv                     | 3.3.5
+  > Sutou                          |                              |
+  Keiju ISHITSUKA                  | mutex_m                      | 0.3.0
+  Kenta Murata, Zachary Scott,…    | bigdecimal                   | 3.3.1
+  > Shigeo Kobayashi               |                              |
+  Kouhei Sutou                     | ruby/rexml                   | 3.4.4
+  Marc-Andre Lafortune             | ostruct                      | 0.6.3
+  Martin Bosslet, SHIBATA Hiroshi… | ruby/openssl                 | 3.3.1
+  > , Zachary Scott, Kazuki…       |                              |
+  > Yamaguchi                      |                              |
+  Minero Aoki, Aaron Patterson     | racc                         | 1.8.1
+  NARUSE, Yui                      | net-http                     | 0.8.0
+  Naotoshi Seo, SHIBATA Hiroshi    | ruby/logger                  | 1.7.0
+  Robert Haines, John Lees-Miller… | RubyZip                      | 2.4.1
+  > , Alexander Simonov            |                              |
+  Shugo Maeda                      | net-ftp                      | 0.3.9
+  Soutaro Matsumoto                | rbs                          | 3.10.2
+  Stephan Maka, Andrey Kouznetsov… | Ruby-SOCKSify                | 1.8.1
+  > , Christopher Thorpe, Musy…    |                              |
+  > Bite, Yuichi Tateno, David…    |                              |
+  > Dollar                         |                              |
+  TAKAHASHI Masayoshi, GOTOU…      | webrick                      | 1.9.2
+  > YUUZOU, Eric Wong              |                              |
+  Tadayoshi Funaba                 | date                         | 3.5.0
+  Tanaka Akira                     | timingfuction                | 0.4.1
+  The Habitat Maintainers          | Habitat core_lz4             | 1.10.0
+  The Habitat Maintainers          | Habitat core_ruby3_4-dev-kit | 3.4.8
+  Yukihiro Matsumoto               | net-protocol                 | 0.2.2
+  Yukihiro Matsumoto               | pstore                       | 0.1.4
+  Yukihiro Matsumoto               | ruby/benchmark               | 0.5.0
+  Yukihiro Matsumoto               | timeout                      | 0.4.4
+  Yusuke Endoh                     | base64                       | 0.3.0
 
 BSD 3-Clause "New" or "Revised" License:
-  Park Heesob, Daniel Berger,…     | rb-readline   | 0.5.5
-  > Luis Lavena, Connor Atherton   |               |
-  Stefan Lang                      | unicode_utils | 1.4.0
-  Wayne Meissner                   | ffi           | 1.17.3
+  Park Heesob, Daniel Berger,…     | rb-readline          | 0.5.5
+  > Luis Lavena, Connor Atherton   |                      |
+  Stefan Lang                      | unicode_utils        | 1.4.0
+  The Habitat Maintainers          | Habitat core_ruby3_4 | 3.4.8
+  Wayne Meissner                   | ffi                  | 1.17.3
 
 BSD 3-Clause No Modification:
   The Habitat Maintainers | Habitat core_libarchive | 3.8.1
@@ -148,7 +149,7 @@ GNU General Public License v3.0 w/GCC Runtime Library exception:
 GNU Lesser General Public License v2.1 only:
   The Habitat Maintainers | Habitat core_acl            | 2.3.1
   The Habitat Maintainers | Habitat core_attr           | 2.5.1
-  The Habitat Maintainers | Habitat core_glibc          | 2.36
+  The Habitat Maintainers | Habitat core_glibc          | 2.41
   The Habitat Maintainers | Habitat core_nss-myhostname | 0.3
 
 GNU Lesser General Public License v3.0 only:
@@ -158,18 +159,23 @@ ICU License:
   The Habitat Maintainers | Habitat core_icu | 72.1
 
 Internal Progress Product License: (*)
-  Progress Software Corporation | Chef                  | 18.6.6
-  Progress Software Corporation | appbundler            | 0.13.4
-  Progress Software Corporation | chef-telemetry        | 1.1.1
-  Progress Software Corporation | cheffish              | 17.1.8
-  Progress Software Corporation | inspec/inspec         | 7.0.95
-  Progress Software Corporation | mixlib-authentication | 3.0.10
-  Progress Software Corporation | mixlib-cli            | 2.1.8
-  Progress Software Corporation | mixlib-config         | 3.0.27
-  Progress Software Corporation | mixlib-log            | 3.2.3
-  Progress Software Corporation | train-rest            | 0.5.0
-  Progress Software Corporation | train-winrm           | 0.4.0
-  Progress Software Corporation | win32-certstore       | 0.6.16
+  Progress Software Corporation | Chef                         | 18.6.6
+  Progress Software Corporation | appbundler                   | 0.13.4
+  Progress Software Corporation | chef-telemetry               | 1.1.1
+  Progress Software Corporation | cheffish                     | 17.1.8
+  Progress Software Corporation | inspec/inspec                | 7.0.95
+  Progress Software Corporation | mixlib-authentication        | 3.0.10
+  Progress Software Corporation | mixlib-cli                   | 2.1.8
+  Progress Software Corporation | mixlib-config                | 3.0.27
+  Progress Software Corporation | mixlib-log                   | 3.2.3
+  Progress Software Corporation | train-rest                   | 0.5.0
+  Progress Software Corporation | train-winrm                  | 0.4.0
+  Progress Software Corporation | win32-certstore              | 0.6.16
+  The Habitat Maintainers       | Habitat chef_powershell_shim | 19.1.0
+
+Microsoft Visual Studio Enterprise 2022, Visual Studio Professional 2022, and
+Trial Edition:
+  The Habitat Maintainers | Habitat core_visual-cpp-redist-2022 | 14.44.35208.0
 
 MIT License:
   @technoweenie, @iMacTia, …       | technoweenie's faraday      | 2.14.0
@@ -348,7 +354,7 @@ Mozilla Public License 2.0:
   Seth Vargo              | vault                | 0.18.2
   The Habitat Maintainers | Habitat core_cacerts | 2025-05-20
 
-OpenSSL License:
+OpenSSL Combined License:
   The Habitat Maintainers | Habitat core_openssl | 3.5.4
 
 The Unlicense:
@@ -784,11 +790,11 @@ win32-taskscheduler 2.0.4.
 (3) BSD 2-Clause "Simplified" License:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_lz4 1.10.0, Habitat
-core_ruby3_4 3.4.8, JSON for Ruby 2.18.0, Ruby-SOCKSify 1.8.1, RubyZip 2.4.1,
-base64 0.3.0, bigdecimal 3.3.1, byebug 12.0.0, date 3.5.0, mutex_m 0.3.0,
-nahi's httpclient 2.9.0, net-ftp 0.3.9, net-http 0.8.0, net-protocol 0.2.2,
-ostruct 0.6.3, pstore 0.1.4, public_suffix_service 0.6.20240107, racc 1.8.1,
-rbs 3.10.2, ruby csv 3.3.5, ruby/benchmark 0.5.0, ruby/logger 1.7.0,
+core_ruby3_4-dev-kit 3.4.8, JSON for Ruby 2.18.0, Ruby-SOCKSify 1.8.1, RubyZip
+2.4.1, base64 0.3.0, bigdecimal 3.3.1, byebug 12.0.0, date 3.5.0, mutex_m
+0.3.0, nahi's httpclient 2.9.0, net-ftp 0.3.9, net-http 0.8.0, net-protocol
+0.2.2, ostruct 0.6.3, pstore 0.1.4, public_suffix_service 0.6.20240107, racc
+1.8.1, rbs 3.10.2, ruby csv 3.3.5, ruby/benchmark 0.5.0, ruby/logger 1.7.0,
 ruby/openssl 3.3.1, ruby/rexml 3.4.4, syslog 0.3.0, timeout 0.4.4,
 timingfuction 0.4.1, uri 1.0.4, and webrick 1.9.2.
 
@@ -799,12 +805,11 @@ timingfuction 0.4.1, uri 1.0.4, and webrick 1.9.2.
   modification, are permitted provided that the following conditions are met:
 
     1. Redistributions of source code must retain the above copyright notice,
-    this
-      list of conditions and the following disclaimer.
+    this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
+    2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
   THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
   WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -888,6 +893,41 @@ Progress Chef Infra Client 19.1 incorporates unicode_utils 1.4.0.
 
 (6) BSD 3-Clause "New" or "Revised" License:
 
+Progress Chef Infra Client 19.1 incorporates Habitat core_ruby3_4 3.4.8.
+
+  Copyright (c) , The Habitat Maintainers <humans@habitat.sh> All rights
+  reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+    this
+      list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+    * Neither the name of the * nor the names of its contributors may
+      be used to endorse or promote products derived from this software without
+      specific prior written permission.
+
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
+
+(7) BSD 3-Clause "New" or "Revised" License:
+
 Progress Chef Infra Client 19.1 incorporates ffi 1.17.3.
 
   Copyright (c) , Wayne Meissner All rights reserved.
@@ -920,7 +960,7 @@ Progress Chef Infra Client 19.1 incorporates ffi 1.17.3.
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 
-(7) BSD 3-Clause No Modification:
+(8) BSD 3-Clause No Modification:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_libarchive 3.8.1,
 Habitat core_libcap 2.73, Habitat core_libpcre2 10.42, Habitat core_pcre2
@@ -957,7 +997,7 @@ Habitat core_libcap 2.73, Habitat core_libpcre2 10.42, Habitat core_pcre2
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 
-(8) Bzip2 License:
+(9) Bzip2 License:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_bzip2 1.0.8.
 
@@ -998,7 +1038,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_bzip2 1.0.8.
   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(9) Creative Commons Zero v1.0 Universal:
+(10) Creative Commons Zero v1.0 Universal:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_libb2 0.98.1.
 
@@ -1161,7 +1201,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_libb2 0.98.1.
       to this document and has no duty or obligation with respect to this CC0
       or use of the Work.
 
-(10) Expat License:
+(11) Expat License:
 
 Progress Chef Infra Client 19.1 incorporates netrc 0.11.0.
 
@@ -1190,7 +1230,7 @@ Progress Chef Infra Client 19.1 incorporates netrc 0.11.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(11) GNU General Public License v2.0 or later:
+(12) GNU General Public License v2.0 or later:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_xz 5.8.1.
 
@@ -1536,7 +1576,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_xz 5.8.1.
   library. If this is what you want to do, use the GNU Library General Public
   License instead of this License.
 
-(12) GNU General Public License v2.0 with Linux Syscall Note:
+(13) GNU General Public License v2.0 with Linux Syscall Note:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_linux-headers 5.19.8.
 
@@ -1824,7 +1864,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_linux-headers 5.19.8.
 
   END OF TERMS AND CONDITIONS
 
-(13) GNU General Public License v3.0 only:
+(14) GNU General Public License v3.0 only:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_bash 5.2.37, Habitat
 core_coreutils 9.7, Habitat core_grep 3.11, Habitat core_less 668, Habitat
@@ -2489,7 +2529,7 @@ core_libiconv 1.18, and Habitat core_readline 8.2.
   License instead of this License. But first, please read
   <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
-(14) GNU General Public License v3.0 w/GCC Runtime Library exception:
+(15) GNU General Public License v3.0 w/GCC Runtime Library exception:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 12.2.0.
 
@@ -3168,10 +3208,10 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 12.2.0.
   License instead of this License. But first, please read
   <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
-(15) GNU Lesser General Public License v2.1 only:
+(16) GNU Lesser General Public License v2.1 only:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_acl 2.3.1, Habitat
-core_attr 2.5.1, Habitat core_glibc 2.36, and Habitat core_nss-myhostname 0.3.
+core_attr 2.5.1, Habitat core_glibc 2.41, and Habitat core_nss-myhostname 0.3.
 
   GNU Lesser General Public License Version 2.1 Only
   --------------------------------------------------
@@ -3688,7 +3728,7 @@ core_attr 2.5.1, Habitat core_glibc 2.36, and Habitat core_nss-myhostname 0.3.
 
   That's all there is to it!
 
-(16) GNU Lesser General Public License v3.0 only:
+(17) GNU Lesser General Public License v3.0 only:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_gmp 6.3.0.
 
@@ -4523,7 +4563,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_gmp 6.3.0.
   License instead of this License. But first, please read
   <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
-(17) ICU License:
+(18) ICU License:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_icu 72.1.
 
@@ -4562,7 +4602,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_icu 72.1.
   All trademarks and registered trademarks mentioned herein are the property of
   their respective owners.
 
-(18) MIT License:
+(19) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Rake 13.3.1.
 
@@ -4588,7 +4628,7 @@ Progress Chef Infra Client 19.1 incorporates Rake 13.3.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(19) MIT License:
+(20) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates rspec-support 3.13.6.
 
@@ -4615,7 +4655,7 @@ Progress Chef Infra Client 19.1 incorporates rspec-support 3.13.6.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(20) MIT License:
+(21) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates savonrb/nori 2.7.0.
 
@@ -4641,7 +4681,7 @@ Progress Chef Infra Client 19.1 incorporates savonrb/nori 2.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(21) MIT License:
+(22) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates regexp_parser 2.11.3.
 
@@ -4667,7 +4707,7 @@ Progress Chef Infra Client 19.1 incorporates regexp_parser 2.11.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(22) MIT License:
+(23) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates yajl 0.3.4.
 
@@ -4693,7 +4733,7 @@ Progress Chef Infra Client 19.1 incorporates yajl 0.3.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(23) MIT License:
+(24) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates pastel 0.8.0, strings 0.2.1,
 strings-ansi 0.2.0, tty 0.23.1, tty 0.6.0, tty-command 0.7.0, tty-command
@@ -4722,7 +4762,7 @@ strings-ansi 0.2.0, tty 0.23.1, tty 0.6.0, tty-command 0.7.0, tty-command
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(24) MIT License:
+(25) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates halostatue/diff-lcs 1.6.2,
 mime-types-data 3.2025.0924, and ruby-mime-types 3.7.0.
@@ -4749,7 +4789,7 @@ mime-types-data 3.2025.0924, and ruby-mime-types 3.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(25) MIT License:
+(26) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates repl_type_completor 0.1.12.
 
@@ -4775,7 +4815,7 @@ Progress Chef Infra Client 19.1 incorporates repl_type_completor 0.1.12.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(26) MIT License:
+(27) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates bleything's plist 3.7.2.
 
@@ -4801,7 +4841,7 @@ Progress Chef Infra Client 19.1 incorporates bleything's plist 3.7.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(27) MIT License:
+(28) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates hashdiff 1.2.1.
 
@@ -4827,7 +4867,7 @@ Progress Chef Infra Client 19.1 incorporates hashdiff 1.2.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(28) MIT License:
+(29) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Ruby Public Suffix 7.0.0.
 
@@ -4853,7 +4893,7 @@ Progress Chef Infra Client 19.1 incorporates Ruby Public Suffix 7.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(29) MIT License:
+(30) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates ast 2.4.3 and parser 3.3.10.0.
 
@@ -4879,7 +4919,7 @@ Progress Chef Infra Client 19.1 incorporates ast 2.4.3 and parser 3.3.10.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(30) MIT License:
+(31) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates erubi 1.13.1.
 
@@ -4905,7 +4945,7 @@ Progress Chef Infra Client 19.1 incorporates erubi 1.13.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(31) MIT License:
+(32) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates jfelchner/ruby-progressbar 1.13.0.
 
@@ -4931,7 +4971,7 @@ Progress Chef Infra Client 19.1 incorporates jfelchner/ruby-progressbar 1.13.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(32) MIT License:
+(33) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates ipaddress-gem/ipaddress 0.8.3.
 
@@ -4957,7 +4997,7 @@ Progress Chef Infra Client 19.1 incorporates ipaddress-gem/ipaddress 0.8.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(33) MIT License:
+(34) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates unicode-display_width 2.6.0.
 
@@ -4983,7 +5023,7 @@ Progress Chef Infra Client 19.1 incorporates unicode-display_width 2.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(34) MIT License:
+(35) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates rubychan's coderay 1.1.3.
 
@@ -5009,7 +5049,7 @@ Progress Chef Infra Client 19.1 incorporates rubychan's coderay 1.1.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(35) MIT License:
+(36) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates lint_roller 1.1.0.
 
@@ -5035,7 +5075,7 @@ Progress Chef Infra Client 19.1 incorporates lint_roller 1.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(36) MIT License:
+(37) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates erubis 2.7.0.
 
@@ -5061,7 +5101,7 @@ Progress Chef Infra Client 19.1 incorporates erubis 2.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(37) MIT License:
+(38) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_libffi 3.4.7, Habitat
 core_libxml2 2.14.3, Habitat core_libxslt 1.1.43, Habitat core_libyaml 0.2.5,
@@ -5089,7 +5129,7 @@ and Habitat core_ncurses 6.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(38) MIT License:
+(39) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates pry-byebug 3.11.0.
 
@@ -5115,7 +5155,7 @@ Progress Chef Infra Client 19.1 incorporates pry-byebug 3.11.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(39) MIT License:
+(40) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates sickill's rainbow 3.1.1.
 
@@ -5141,7 +5181,7 @@ Progress Chef Infra Client 19.1 incorporates sickill's rainbow 3.1.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(40) MIT License:
+(41) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates binding_of_caller 1.0.1,
 debug_inspector 1.2.0, method_source 1.1.0, and pry-stack_explorer 0.6.1.
@@ -5168,7 +5208,7 @@ debug_inspector 1.2.0, method_source 1.1.0, and pry-stack_explorer 0.6.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(41) MIT License:
+(42) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates technoweenie's faraday 2.14.0.
 
@@ -5194,7 +5234,7 @@ Progress Chef Infra Client 19.1 incorporates technoweenie's faraday 2.14.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(42) MIT License:
+(43) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates bcrypt_pbkdf-ruby 1.1.2.
 
@@ -5220,7 +5260,7 @@ Progress Chef Infra Client 19.1 incorporates bcrypt_pbkdf-ruby 1.1.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(43) MIT License:
+(44) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates corefoundation 0.3.13.
 
@@ -5246,7 +5286,7 @@ Progress Chef Infra Client 19.1 incorporates corefoundation 0.3.13.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(44) MIT License:
+(45) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates TwP's logging 2.4.0 and
 little-plugger 1.1.4.
@@ -5273,7 +5313,7 @@ little-plugger 1.1.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(45) MIT License:
+(46) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates arnau/iso8601 0.13.0.
 
@@ -5299,7 +5339,7 @@ Progress Chef Infra Client 19.1 incorporates arnau/iso8601 0.13.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(46) MIT License:
+(47) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates rackup 2.2.1.
 
@@ -5337,7 +5377,7 @@ Progress Chef Infra Client 19.1 incorporates rackup 2.2.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(47) MIT License:
+(48) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates concurrent-ruby 1.3.6.
 
@@ -5363,7 +5403,7 @@ Progress Chef Infra Client 19.1 incorporates concurrent-ruby 1.3.6.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(48) MIT License:
+(49) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates adamwiggins's rest-client 2.1.0.
 
@@ -5389,7 +5429,7 @@ Progress Chef Infra Client 19.1 incorporates adamwiggins's rest-client 2.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(49) MIT License:
+(50) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates tomlrb 1.3.0.
 
@@ -5415,7 +5455,7 @@ Progress Chef Infra Client 19.1 incorporates tomlrb 1.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(50) MIT License:
+(51) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates structured_warnings 0.5.0.
 
@@ -5441,7 +5481,7 @@ Progress Chef Infra Client 19.1 incorporates structured_warnings 0.5.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(51) MIT License:
+(52) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates mwunsch's prism 1.6.0.
 
@@ -5467,7 +5507,7 @@ Progress Chef Infra Client 19.1 incorporates mwunsch's prism 1.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(52) MIT License:
+(53) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates jnunemaker's crack 1.0.1.
 
@@ -5493,7 +5533,7 @@ Progress Chef Infra Client 19.1 incorporates jnunemaker's crack 1.0.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(53) MIT License:
+(54) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates http-accept 2.1.1.
 
@@ -5519,7 +5559,7 @@ Progress Chef Infra Client 19.1 incorporates http-accept 2.1.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(54) MIT License:
+(55) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates unf_ext 0.0.9.1.
 
@@ -5545,7 +5585,7 @@ Progress Chef Infra Client 19.1 incorporates unf_ext 0.0.9.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(55) MIT License:
+(56) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates language_server-protocol 3.17.0.5.
 
@@ -5571,7 +5611,7 @@ Progress Chef Infra Client 19.1 incorporates language_server-protocol 3.17.0.5.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(56) MIT License:
+(57) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates syslog-logger 1.6.8.
 
@@ -5599,7 +5639,7 @@ Progress Chef Infra Client 19.1 incorporates syslog-logger 1.6.8.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(57) MIT License:
+(58) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Rack 3.2.4.
 
@@ -5625,7 +5665,7 @@ Progress Chef Infra Client 19.1 incorporates Rack 3.2.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(58) MIT License:
+(59) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Parslet 2.0.0.
 
@@ -5651,7 +5691,7 @@ Progress Chef Infra Client 19.1 incorporates Parslet 2.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(59) MIT License:
+(60) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates ed25519 1.4.0.
 
@@ -5677,7 +5717,7 @@ Progress Chef Infra Client 19.1 incorporates ed25519 1.4.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(60) MIT License:
+(61) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates gssapi 1.3.1.
 
@@ -5703,7 +5743,7 @@ Progress Chef Infra Client 19.1 incorporates gssapi 1.3.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(61) MIT License:
+(62) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates faraday-net_http 3.4.2.
 
@@ -5729,7 +5769,7 @@ Progress Chef Infra Client 19.1 incorporates faraday-net_http 3.4.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(62) MIT License:
+(63) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates rubyntlm 0.6.5.
 
@@ -5755,7 +5795,7 @@ Progress Chef Infra Client 19.1 incorporates rubyntlm 0.6.5.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(63) MIT License:
+(64) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates grosser's parallel 1.27.0.
 
@@ -5781,7 +5821,7 @@ Progress Chef Infra Client 19.1 incorporates grosser's parallel 1.27.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(64) MIT License:
+(65) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates hashie 5.0.0.
 
@@ -5807,7 +5847,7 @@ Progress Chef Infra Client 19.1 incorporates hashie 5.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(65) MIT License:
+(66) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates nicksieger's multipart-post 2.4.1.
 
@@ -5840,7 +5880,7 @@ Progress Chef Infra Client 19.1 incorporates nicksieger's multipart-post 2.4.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(66) MIT License:
+(67) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates webmock 3.26.1.
 
@@ -5866,7 +5906,7 @@ Progress Chef Infra Client 19.1 incorporates webmock 3.26.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(67) MIT License:
+(68) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates RSpec 3.13.2, RSpec 3.13.5, and
 RSpec 3.13.7.
@@ -5893,7 +5933,7 @@ RSpec 3.13.7.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(68) MIT License:
+(69) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Pry REPL 0.15.2.
 
@@ -5920,7 +5960,7 @@ Progress Chef Infra Client 19.1 incorporates Pry REPL 0.15.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(69) MIT License:
+(70) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates antw's iniparse 1.5.0.
 
@@ -5946,7 +5986,7 @@ Progress Chef Infra Client 19.1 incorporates antw's iniparse 1.5.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(70) MIT License:
+(71) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates net-scp 4.1.0, net-sftp 4.0.0, and
 ruby-net-ssh 7.3.0.
@@ -5973,7 +6013,7 @@ ruby-net-ssh 7.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(71) MIT License:
+(72) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates proxifier2 1.1.0.
 
@@ -5999,7 +6039,7 @@ Progress Chef Infra Client 19.1 incorporates proxifier2 1.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(72) MIT License:
+(73) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates chefspec/fauxhai 9.3.0.
 
@@ -6025,7 +6065,7 @@ Progress Chef Infra Client 19.1 incorporates chefspec/fauxhai 9.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(73) MIT License:
+(74) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates jimweirich's builder 3.3.0.
 
@@ -6051,7 +6091,7 @@ Progress Chef Infra Client 19.1 incorporates jimweirich's builder 3.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(74) MIT License:
+(75) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates chef-gyoku 1.5.0.
 
@@ -6077,7 +6117,7 @@ Progress Chef Infra Client 19.1 incorporates chef-gyoku 1.5.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(75) MIT License:
+(76) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates wisper 2.0.1.
 
@@ -6103,7 +6143,7 @@ Progress Chef Infra Client 19.1 incorporates wisper 2.0.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(76) MIT License:
+(77) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates rspec-its 2.0.0.
 
@@ -6129,7 +6169,7 @@ Progress Chef Infra Client 19.1 incorporates rspec-its 2.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(77) MIT License:
+(78) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates faraday-follow_redirects 0.3.0.
 
@@ -6155,7 +6195,7 @@ Progress Chef Infra Client 19.1 incorporates faraday-follow_redirects 0.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(78) MIT License:
+(79) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates http-cookie 1.1.0.
 
@@ -6181,7 +6221,7 @@ Progress Chef Infra Client 19.1 incorporates http-cookie 1.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(79) MIT License:
+(80) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates multi_json 1.17.0.
 
@@ -6207,7 +6247,7 @@ Progress Chef Infra Client 19.1 incorporates multi_json 1.17.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(80) MIT License:
+(81) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates RSpec 3.13.6.
 
@@ -6233,7 +6273,7 @@ Progress Chef Infra Client 19.1 incorporates RSpec 3.13.6.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(81) MIT License:
+(82) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates ffi-yajl 2.7.7.
 
@@ -6259,7 +6299,7 @@ Progress Chef Infra Client 19.1 incorporates ffi-yajl 2.7.7.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(82) MIT License:
+(83) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates Thor 1.4.0.
 
@@ -6285,7 +6325,7 @@ Progress Chef Infra Client 19.1 incorporates Thor 1.4.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(83) MIT License:
+(84) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates fuzzyurl 0.9.0.
 
@@ -6311,7 +6351,7 @@ Progress Chef Infra Client 19.1 incorporates fuzzyurl 0.9.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(84) MIT License:
+(85) MIT License:
 
 Progress Chef Infra Client 19.1 incorporates rubocop 1.81.6 and rubocop-ast
 1.48.0.
@@ -6338,7 +6378,520 @@ Progress Chef Infra Client 19.1 incorporates rubocop 1.81.6 and rubocop-ast
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(85) Mozilla Public License 2.0:
+(86) Microsoft Visual Studio Enterprise 2022, Visual Studio Professional 2022,
+and Trial Edition:
+
+Progress Chef Infra Client 19.1 incorporates Habitat
+core_visual-cpp-redist-2022 14.44.35208.0.
+
+  MICROSOFT SOFTWARE LICENSE TERMS
+
+  MICROSOFT VISUAL STUDIO ENTERPRISE 2022, VISUAL STUDIO PROFESSIONAL 2022, AND
+  TRIAL EDITION
+
+
+  These license terms are an agreement between you and Microsoft Corporation
+  (or based on where you live, one of its affiliates). They apply to the
+  software named above. The terms also apply to any Microsoft services and
+  updates for the software, except to the extent those have different terms.
+
+  BY USING THE SOFTWARE, YOU ACCEPT THESE TERMS. IF YOU DO NOT ACCEPT THEM, DO
+  NOT USE THE SOFTWARE. INSTEAD, RETURN IT TO THE RETAILER FOR A REFUND OR
+  CREDIT. If you cannot obtain a refund there, contact Microsoft about
+  Microsoft’s refund policies. See www.microsoft.com/worldwide. In the United
+  States and Canada, call (800) MICROSOFT or see aka.ms/nareturns.
+
+
+  1. TRIAL EDITION AND PREVIEW USE RIGHTS. If you have not acquired a valid
+  full-use license, the software is a trial edition, and this Section applies
+  to your use of the trial edition. This Section also applies as indicated to
+  previews and preview channel software as defined in Section 2(f) of the
+  Full-Use License Terms Section below.
+
+  a. TRIAL EDITIONS AND PREVIEW CHANNEL SOFTWARE. You may use any number of
+  copies of the trial edition or preview channel software on your devices. You
+  may only use the trial edition or preview channel software for internal
+  evaluation purposes, and, for the trial edition, only during the trial
+  period. You may not distribute or deploy any applications you make with the
+  trial edition, or with the preview channel software to a production
+  environment. You may run load tests of up to 250 virtual users during the
+  trial period.
+
+  b. TRIAL PERIOD AND CONVERSION. The trial period for the trial edition lasts
+  for 30 days after you install the trial edition, plus any permitted extension
+  period. After the expiration of the trial period, the trial edition will stop
+  running. You may extend the trial period an additional 90 days if you sign in
+  to the software. You may not be able to access data used with the trial
+  edition after it stops running. You may convert your trial rights at any time
+  to the full-use rights described below by acquiring a valid full-use license.
+
+  c. DISCLAIMER OF WARRANTY. THE TRIAL EDITION AND ANY PREVIEWS ARE LICENSED
+  “AS-IS”. YOU BEAR THE RISK OF USING THEM. MICROSOFT GIVES NO EXPRESS
+  WARRANTIES, GUARANTEES OR CONDITIONS. TO THE EXTENT PERMITTED UNDER YOUR
+  LOCAL LAWS, MICROSOFT EXCLUDES THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+  d. FOR AUSTRALIA – YOU HAVE STATUTORY GUARANTEES UNDER THE AUSTRALIAN
+  CONSUMER LAW AND NOTHING IN THESE TERMS IS INTENDED TO AFFECT THOSE RIGHTS.
+
+  e. SUPPORT. Because the trial edition or preview is “as is”, we may not
+  provide support services for it.
+
+  f. LIMITATIONS ON DAMAGES. YOU CAN RECOVER FROM MICROSOFT AND ITS SUPPLIERS
+  ONLY DIRECT DAMAGES UP TO U.S. $5.00. YOU CANNOT RECOVER ANY OTHER DAMAGES,
+  INCLUDING CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT OR INCIDENTAL
+  DAMAGES.
+
+  This limitation applies to (a) anything related to the trial version or
+  preview, services, content (including code) on third party Internet sites, or
+  third party programs; and (b) claims for breach of contract, breach
+
+  of warranty, guarantee or condition, strict liability, negligence, or other
+  tort to the extent permitted by applicable law.
+
+  It also applies even if Microsoft knew or should have known about the
+  possibility of the damages. The above limitation or exclusion may not apply
+  to you because your country may not allow the exclusion or limitation of
+  incidental, consequential or other damages.
+
+
+
+  FULL-USE LICENSE TERMS FOR THE SOFTWARE: When you acquire a valid license and
+  either enter a product key or sign in to the software, the terms below apply.
+  You may not share your product key or access credentials.
+
+  1. OVERVIEW
+
+  a. Software. The software includes developmental tools, applications, and
+  documentation.
+
+  b. License Model. The software is licensed on a per user basis.
+
+  2. USE RIGHTS.
+
+  a. General. One user may install and use copies of the software on your
+  devices to develop and test applications. This includes using copies of the
+  software on your own internal servers that remain fully dedicated to your own
+  use. You may not, however, separate the components of the software (except as
+  otherwise stated in this agreement) and run those in a production
+  environment, or on third party devices, or for any purpose other than
+  developing and testing your applications. Running the software on Microsoft
+  Azure may require separate online usage fees.
+
+  b. Workloads. These license terms apply to your use of the workloads made
+  available to you within the software, except to the extent a workload or a
+  workload component comes with different license terms and support policies.
+
+  c. Backup Copy. You may make one backup copy of the software, for
+  reinstalling the software.
+
+  d. Online Services in the Software. Some features of the software make use of
+  online services to provide you information about updates to the software or
+  extensions, or to enable you to retrieve content, collaborate with others, or
+  otherwise supplement your development experience. As used throughout this
+  agreement, the term “software” includes these online service features, and by
+  using them, you consent to the transmission of information as described in
+  Section 7, DATA.
+
+  e. Demo Use. The use rights permitted above include using the software to
+  demonstrate your applications.
+
+  f. Previews. You may use any number of copies of software, components, or
+  features (“preview channel software”) Microsoft may make available to you
+  through the Preview Channel only for internal evaluation purposes. Microsoft
+  may also make available to you preview features or components (“preview
+  features”) through the Current Channel. Preview features may be used
+  consistent with your use rights to Visual Studio. Preview Channel software
+  and preview features (collectively, “previews”), the Preview Channel, and
+  Current Channel are further described at
+  https://aka.ms/vs/17/channels-overview. Previews are experimental and may be
+  substantially different from the commercially released version. They may not
+  operate correctly or work the way a final version will. Microsoft may change
+  it previews for the final, commercial version, if any. Microsoft is not
+  obligated to provide maintenance, technical support or updates to you for
+  previews. The Trial Edition and Preview Use Rights Section above applies to
+  your use of previews.
+
+  3. VISUAL STUDIO INTELLICODE SERVICE.
+
+  a. AI-assisted IntelliSense Service. This service provides a base model
+  trained on publicly available open source code that enables you to receive
+  AI-assisted IntelliSense suggestions. The base model will enable you to
+  receive AI-assisted IntelliSense suggestions for common types and components.
+  You may use the base model, in whole or in part, only with the software. The
+  service also provides the facility to train any number of team completion
+  models on your own applications. These team completion models are for your
+  use and use by those with whom you wish to share. (See 3.c. below for the
+  definition of a team completion model.)
+
+  b. Your Data. AI-assisted IntelliSense analyzes your application locally to
+  generate a summary file with metadata on the types and their usage across
+  your application which illustrate your patterns of usage. The summary file
+  contains information about the names of classes, methods, and how often they
+  are used in your application (“Your Data”). You retain ownership of all
+  aspects of Your Data, including, but not limited to, all right, title and
+  interest in and to the underlying application code.
+
+  c. Team Completion Model.
+
+  i. You may submit Your Data to Microsoft through the AI-assisted IntelliSense
+  service for the sole purpose of enabling Microsoft to create a team
+  completion model. The team completion model is an AI-assisted IntelliSense
+  set of recommendations based on Your Data. By submitting Your Data to
+  Microsoft, you give Microsoft the right and license to copy, modify, create
+  derivative works of, and transform Your Data to create a team completion
+  model. Microsoft will not use Your Data or the resulting trained machine
+  learning of the team completion model for any other purpose.
+
+  ii. You may use the team completion model, in whole or in part, only with the
+  software.
+
+  4. TERMS FOR SPECIFIC COMPONENTS. a. Utilities. The software contains items
+  on the Utilities List at https://aka.ms/vs/17/utilities. You may copy and
+  install those items onto your devices to debug and deploy your applications
+  and databases you develop with the software. The Utilities are designed for
+  temporary use. Microsoft may not be able to patch or update Utilities
+  separately from the rest of the software. Some Utilities by their nature may
+  make it possible for others to access the devices on which the Utilities are
+  installed. You should delete all Utilities you have installed after you
+  finish debugging or deploying your applications and databases. Microsoft is
+  not responsible for any third party use or access of devices, or of the
+  applications or databases on devices, on which Utilities have been installed.
+
+  b. Build Devices and Visual Studio Build Tools. You may copy and install
+  files from the software or from Visual Studio Build Tools onto your build
+  devices, including physical devices and virtual machines or containers on
+  those machines, whether on-premises or remote machines that are owned by you,
+  hosted on Microsoft Azure for you, or dedicated solely to your use
+  (collectively, “Build Devices”). You and others in your organization may use
+  these files on your Build Devices solely to compile, build, and verify
+  applications developed by using the software, or run quality or performance
+  tests of those applications as part of the build process.
+
+  c. Code Inspection. This software includes functionality that enables you to
+  inspect binary code and reproduce source code from original binary code. Use
+  of these features of the software is entirely optional. By using this
+  functionality, you acknowledge that the binary code and source code may be
+  protected by copyright and trademark laws. You also agree not to violate any
+  applicable copyright and trademark laws or license agreements, and represent
+  that you will have obtained permission or otherwise be permitted to inspect
+  binary code and reproduce source code if you use this functionality.
+  Microsoft is not responsible for any uses by you in violation of applicable
+  laws or license agreements.
+
+  d. Font Components. While the software is running, you may use its fonts to
+  display and print content. You may only: (i) embed fonts in content as
+  permitted by the embedding restrictions in the fonts; and (ii) temporarily
+  download them to a printer or other output device to help print content.
+
+  e. Licenses for Other Components.
+
+  i. Microsoft Platforms. The software may include components from Microsoft
+  Windows, Microsoft Windows Server, Microsoft SQL Server, Microsoft Exchange,
+  Microsoft Office, or Microsoft SharePoint, or other Microsoft software. These
+  components are governed by separate agreements and their own product support
+  policies, as described in the Microsoft “Licenses” folder accompanying the
+  software, or at https://aka.ms/vs/17/AdditionalLicenses, except that, if
+  separate license terms for those components are included in the associated
+  installation directly, those license terms control.
+
+  ii. Third Party Components. The software may include third party components
+  with separate legal notices or governed by other agreements, as may be
+  described in the notices file(s) accompanying the software.
+
+  f. Package Managers. The software includes package managers, like NuGet, that
+  give you the option to download other Microsoft and third party software
+  packages to use with your applications. Those packages are under their own
+  licenses, and not these license terms. Microsoft does not distribute, license
+  or provide any warranties for any of the third party packages.
+
+  5. DISTRIBUTABLE CODE. The software contains code that you are permitted to
+  distribute in applications you develop as described in this Section. For
+  purposes of this Section 5, the term “distribution” also means deployment of
+  your applications for third parties to access over the Internet.
+
+  a. Right to Use and Distribute. The code and text files listed below are
+  “Distributable Code”:
+
+  i. Distributable List. You may copy and distribute the object code form of
+  code listed on the Distributable List located at
+  https://aka.ms/vs/17/redistribution.
+
+  ii. Sample Code, Templates, and Styles. You may copy, modify, and distribute
+  the source and object code form of code marked as “sample”, “template”,
+  “simple styles”, and “sketch styles”.
+
+  iii. Third Party Distribution. You may permit distributors of your
+  applications to copy and distribute the Distributable Code as part of those
+  applications.
+
+  b. Distribution Requirements. For any Distributable Code you distribute, you
+  must:
+
+  · add significant primary functionality to it in your applications;
+
+  · require distributors and external end users to agree to terms that protect
+  the Distributable Code at least as much as this agreement; and
+
+  · indemnify, defend, and hold harmless Microsoft from any claims, including
+  attorneys’ fees, related to the distribution or use of your applications,
+  except to the extent that any claim is based solely on the Distributable Code.
+
+  c. Distribution Restrictions. You may not:
+
+  · distribute components or runtimes that are marked “Preview”, “Pre-release”,
+  or “Beta”;
+
+  · use Microsoft’s trademarks in your applications’ names or in a way that
+  suggests your applications come from or are endorsed by Microsoft; or
+
+  · modify or distribute the source code of any Distributable Code so that any
+  part of it becomes subject to an Excluded License. An Excluded License is one
+  that requires, as a condition of use, modification
+
+  or distribution of code, that (i) it be disclosed or distributed in source
+  code form; or (ii) others have the right to modify it.
+
+  6. DEVELOPING EXTENSIONS.
+
+  a. Limits on Extensions. You may not develop or enable others to develop
+  extensions for the software (or any other component of the Visual Studio
+  family of products) which circumvent the technical limitations implemented in
+  the software. If Microsoft technically limits or disables extensibility for
+  the software, you may not extend the software by, among other things, loading
+  or injecting into the software any non-Microsoft add-ins, macros, or
+  packages; modifying the software registry settings; or adding features or
+  functionality equivalent to that found in the Visual Studio family of
+  products.
+
+  b. No Degrading the Software. If you develop an extension for the software
+  (or any other component of the Visual Studio family of products), you must
+  test the installation, uninstallation, and operation of your extension to
+  ensure that such processes do not disable any features or adversely affect
+  the functionality of the software (or such component) or of any previous
+  version or edition of thereof.
+
+  7. DATA.
+
+  a. Data Collection. The software may collect information about you and your
+  use of the software, and send that to Microsoft. Microsoft may use this
+  information to provide services and improve our products and services. You
+  may opt out of many of these scenarios, but not all, as described in the
+  software documentation. There are also some features in the software that may
+  enable you and Microsoft to collect data from users of your applications. If
+  you use these features, you must comply with applicable law, including
+  providing appropriate notices to users of your applications together with
+  Microsoft’s privacy statement. Our privacy statement is located at
+  https://aka.ms./privacy. You can learn more about data collection and its use
+  from the software documentation and our privacy statement. Your use of the
+  software operates as your consent to these practices.
+
+  b. Processing of Personal Data. To the extent Microsoft is a processor or
+  subprocessor of personal data in connection with the software, Microsoft
+  makes the commitments in the European Union General Data Protection
+  Regulation Terms of the Microsoft Products and Services Data Protection
+  Addendum to all customers effective May 25, 2018, at
+  https://docs.microsoft.com/legal/gdpr.
+
+  8. SCOPE OF LICENSE. The software is licensed, not sold. These license terms
+  only give you some rights to use the software. Microsoft reserves all other
+  rights. Unless applicable law gives you more rights despite this limitation,
+  you may use the software only as expressly permitted in these license terms.
+  In doing so, you must comply with any technical limitations in the software
+  that only allow you to use it in certain ways. In addition, you may not:
+
+  · work around any technical limitations in the software;
+
+  · reverse engineer, decompile or disassemble the software, or otherwise
+  attempt to derive the source code for the software, except and only to the
+  extent required by third party licensing terms governing use of certain open
+  source components that may be included in the software;
+
+  · remove, minimize, block, or modify any notices of Microsoft or its
+  suppliers in the software;
+
+  · use the software in any way that is against the law;
+
+  · share, publish, rent, or lease the software; or
+
+  · provide the software as a stand-alone offering or combine it with any of
+  your applications for others to use.
+
+  9. NOT FOR RESALE SOFTWARE. You may not sell the software if it is marked as
+  “NFR” or “Not for Resale”.
+
+  10. MULTIPLE VERSIONS.  If when acquiring the software you were provided with
+  multiple versions (such as 32-bit and 64-bit versions), you may install and
+  activate only one of those versions per each licensed user.
+
+  11. PREVIOUS VERSIONS OR OTHER EDITIONS. These license terms do not supersede
+  your right to use validly licensed previous versions or other editions of the
+  software. You may use the software and those previous versions or other
+  editions of the software concurrently.
+
+  12. PROOF OF LICENSE. If you purchased an online copy of the software, your
+  proof of license is the Microsoft product key you received with your purchase
+  and your receipt and/or being able to access the software service through
+  your Microsoft account. To identify genuine Microsoft software, see
+  www.howtotell.com.
+
+  13. TRANSFER TO A THIRD PARTY. If you are a valid licensee of the software,
+  you may transfer it and this agreement directly to another party. Before the
+  transfer, that party must agree that these license terms apply to the
+  transfer and use of the software. The transfer must include the software,
+  this agreement, the genuine Microsoft product key, and (if applicable) the
+  Proof of License label. The transferor must uninstall all copies of the
+  software after transferring it from the device. The transferor may not retain
+  any copies of the genuine Microsoft product key to be transferred, and may
+  only retain copies of the software if otherwise licensed to do so. If you
+  have acquired a non-perpetual license to use the software, Visual Studio
+  Subscriptions software, or if the software is marked Not for Resale you may
+  not transfer the software or the software license agreement to another party.
+
+  14. EXPORT RESTRICTIONS. You must comply with all domestic and international
+  export laws and regulations that apply to the software, which include
+  restrictions on destinations, end users, and end use. For further information
+  on export restrictions, visit www.microsoft.com/exporting. 15. SUPPORT.
+  Microsoft provides support for the software as described at
+  https://support.microsoft.com.
+
+  16. ENTIRE AGREEMENT. This agreement (including the warranty below), and the
+  terms for supplements, updates, Internet-based services, and support
+  services, are the entire agreement for the software and support services.
+
+  17. APPLICABLE LAW. If you acquired the software in the United States,
+  Washington state law applies to interpretation of, and claims for breach of
+  this agreement, and the laws of the state where you live apply to all other
+  claims. If you acquire the software in any other country, its laws apply.
+
+  18. CONSUMER RIGHTS; REGIONAL VARIATIONS. These license terms describe
+  certain legal rights. You may have other rights, including consumer rights,
+  under the laws of your state or country. You may also have rights with
+  respect to the party from which you acquired the software. This agreement
+  does not change those other rights if the laws of your state or country do
+  not permit it to do so. For example, if you acquired the software in one of
+  the below regions, or if mandatory country law applies, then the following
+  provisions apply to you:
+
+  a. Australia. References to “Limited Warranty” are references to the express
+  warranty provided by Microsoft. This warranty is given in addition to other
+  rights and remedies you may have under law, including your rights and
+  remedies in accordance with the statutory guarantees in the Australian
+  Consumer Law.
+
+  In this section, “goods” refers to the software for which Microsoft provides
+  the express warranty. Our goods come with guarantees that cannot be excluded
+  under the Australian Consumer Law. You are entitled to a replacement or
+  refund for a major failure and compensation for any other reasonably
+  foreseeable loss or damage. You are also entitled to have the goods repaired
+  or replaced if the goods fail to be of acceptable quality and the failure
+  does not amount to a major failure.
+
+  b. Canada. You may stop receiving updates on your device by turning off
+  Internet access. If and when you re-connect to the Internet, the software
+  will resume checking for and installing updates.
+
+  c. Germany and Austria.
+
+  i. Warranty. The properly licensed software will perform substantially as
+  described in any Microsoft materials that accompany the software. However,
+  Microsoft gives no contractual guarantee in relation to the software.
+
+  ii. Limitation of Liability. In case of intentional conduct, gross
+  negligence, claims based on the Product Liability Act, as well as, in the
+  case of death or personal or physical injury, Microsoft is liable according
+  to the statutory law.
+
+  Subject to the preceding sentence (ii), Microsoft will only be liable for
+  slight negligence if Microsoft is in breach of such material contractual
+  obligations, the fulfillment of which facilitate the due performance of this
+  agreement, the breach of which would endanger the purpose of this agreement
+  and the compliance with which a party may constantly trust in (so-called
+  "cardinal obligations"). In other cases of slight negligence, Microsoft will
+  not be liable for slight negligence.
+
+
+  ********************************************************************************************
+
+  LIMITED WARRANTY
+
+  Microsoft warrants that properly licensed software will perform substantially
+  as described in any Microsoft materials that accompany the software. This
+  limited warranty does not cover problems that you cause, that arise when you
+  fail to follow instructions, or that are caused by events beyond Microsoft’s
+  reasonable control. The limited warranty starts when the first user acquires
+  the software, and lasts for one year. Any supplements, updates, or
+  replacement software that you may receive from Microsoft during that year are
+  also covered, but only for the remainder of that one-year period or for 30
+  days, whichever is longer. Transferring the software will not extend the
+  limited warranty.
+
+  Microsoft gives no other express warranties, guarantees, or conditions.
+  Microsoft excludes all implied warranties and conditions, including those of
+  merchantability, fitness for a particular purpose, and non-infringement. If
+  your local law does not allow the exclusion of implied warranties, then any
+  implied warranties, guarantees, or conditions last only during the term of
+  the limited warranty and are limited as much as your local law allows. If
+  your local law requires a longer limited warranty term, despite this
+  agreement, then that longer term will apply, but you can recover only the
+  remedies this agreement allows.
+
+  If Microsoft breaches its limited warranty, it will, at its election, either:
+  (i) repair or replace the software at no charge, or (ii) accept return of the
+  software (or at its election the Microsoft branded device on which the
+  software was preinstalled) for a refund of the amount paid, if any. These are
+  your only remedies for breach of warranty. This limited warranty gives you
+  specific legal rights, and you may also have other rights which vary from
+  state to state or country to country.
+
+  Except for any repair, replacement, or refund Microsoft may provide, you may
+  not recover under this limited warranty, under any other part of this
+  agreement, or under any theory, any damages or other remedy, including lost
+  profits or direct, consequential, special, indirect, or incidental damages.
+  The damage exclusions and remedy limitations in this agreement apply even if
+  repair, replacement or a refund does not fully compensate you for any losses,
+  if Microsoft knew or should have known about the possibility of the damages,
+  or if the remedy fails of its essential purpose. Some states and countries do
+  not allow the exclusion or limitation of incidental, consequential, or other
+  damages, so those limitations or exclusions may not apply to you. If your
+  local law allows you to recover damages from Microsoft even though this
+  agreement does not, you cannot recover more than you paid for the software
+  (or up to $50 USD if you acquired the software for no charge).
+
+  Warranty Procedures
+
+  For service or a refund, you must provide a copy of your proof of purchase
+  and comply with Microsoft’s return policies, which might require you to
+  uninstall the software and return it to Microsoft or return the software with
+  the entire Microsoft branded device on which the software is installed; the
+  certificate of authenticity label including the product key (if provided with
+  your device) must remain affixed.
+
+  1. United States and Canada. For limited warranty service or information
+  about how to obtain a refund for software acquired in the United States or
+  Canada, contact Microsoft via telephone at (800) MICROSOFT; via mail at
+  Microsoft Customer Service and Support, One Microsoft Way, Redmond, WA
+  98052-6399; or visit (aka.ms/nareturns).
+
+  2. Europe, Middle East, and Africa. If you acquired the software in Europe,
+  the Middle East, or Africa, Microsoft Ireland Operations Limited makes the
+  limited warranty. To make a claim under the limited warranty, you must
+  contact either Microsoft Ireland Operations Limited, Customer Care Centre,
+  Atrium Building Block B, Carmanhall Road, Sandyford Industrial Estate, Dublin
+  18, Ireland, or the Microsoft affiliate serving your country
+  (aka.ms/msoffices).
+
+  3. Australia. If you acquired the software in Australia, contact Microsoft to
+  make a claim at 13 20 58; or Microsoft Pty Ltd, 1 Epping Road, North Ryde NSW
+  2113 Australia.
+
+  4. Other countries. If you acquired the software in another country, contact
+  the Microsoft affiliate serving your country (aka.ms/msoffices).
+
+
+  EULAID: VS_EntPro_2022_ENU.1033
+
+(87) Mozilla Public License 2.0:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_cacerts 2025-05-20,
 sslshake 1.3.1, and vault 0.18.2.
@@ -6757,18 +7310,28 @@ sslshake 1.3.1, and vault 0.18.2.
     This Source Code Form is "Incompatible With Secondary Licenses", as defined
     by the Mozilla Public License, v. 2.0.
 
-(86) OpenSSL License:
+(88) OpenSSL Combined License:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_openssl 3.5.4.
 
-  OpenSSL Project License
-  =======================
+  LICENSE ISSUES
+  ==============
+
+  The OpenSSL toolkit stays under a dual license, i.e. both the conditions of
+  the OpenSSL License and the original SSLeay license apply to the toolkit. See
+  below for the actual license texts. Actually both licenses are BSD-style Open
+  Source licenses. In case of any license issues related to OpenSSL please
+  contact openssl-core@openssl.org.
+
+
 
   OpenSSL License
+  ===============
+
   ---------------
 
   ====================================================================
-  Copyright (c) 1998-2001 The OpenSSL Project. All rights reserved.
+  Copyright (c) 1998-2008 The OpenSSL Project. All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -6784,28 +7347,29 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_openssl 3.5.4.
 
     3. All advertising materials mentioning features or use of this software
     must
-      display the following acknowledgment: "This product includes software
-      developed by the OpenSSL Project for use in the OpenSSL Toolkit.
-      (http://www.openssl.org/)"
+      display the following acknowledgment:
+
+        "This product includes software developed by the OpenSSL Project for
+        use in the OpenSSL Toolkit. (http://www.openssl.org/)"
 
     4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
       endorse or promote products derived from this software without prior
       written permission. For written permission, please contact
       openssl-core@openssl.org.
 
-    5.  Products derived from this software may not be called "OpenSSL" nor may
+    5. Products derived from this software may not be called "OpenSSL" nor may
       "OpenSSL" appear in their names without prior written permission of the
       OpenSSL Project.
 
-    6. Redistributions of any form whatsoever must retain the following
+    6.  Redistributions of any form whatsoever must retain the following
       acknowledgment:
 
         "This product includes software developed by the OpenSSL Project for
         use in the OpenSSL Toolkit (http://www.openssl.org/)"
 
-  THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY EXPRESSED
-  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+  THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT "AS IS" AND ANY EXPRESSED OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
   EVENT SHALL THE OpenSSL PROJECT OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
@@ -6819,7 +7383,77 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_openssl 3.5.4.
   (eay@cryptsoft.com). This product includes software written by Tim Hudson
   (tjh@cryptsoft.com).
 
-(87) The Unlicense:
+
+
+
+
+  Original SSLeay License
+  =======================
+
+  -----------------------
+
+  Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com) All rights reserved.
+
+  This package is an SSL implementation written by Eric Young
+  (eay@cryptsoft.com). The implementation was written so as to conform with
+  Netscapes SSL.
+
+  This library is free for commercial and non-commercial use as long as the
+  following conditions are aheared to. The following conditions apply to all
+  code found in this distribution, be it the RC4, RSA, lhash, DES, etc., code;
+  not just the SSL code. The SSL documentation included with this distribution
+  is covered by the same copyright terms except that the holder is Tim Hudson
+  (tjh@cryptsoft.com). Copyright remains Eric Young's, and as such any
+  Copyright notices in the code are not to be removed. If this package is used
+  in a product, Eric Young should be given attribution as the author of the
+  parts of the library used. This can be in the form of a textual message at
+  program startup or in documentation (online or textual) provided with the
+  package.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the copyright notice, this
+    list
+      of conditions and the following disclaimer.
+
+    2.  Redistributions in binary form must reproduce the above copyright
+    notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+    3. All advertising materials mentioning features or use of this software
+    must
+      display the following acknowledgement:
+
+        "This product includes cryptographic software written by Eric Young
+        (eay@cryptsoft.com)"
+
+      The word 'cryptographic' can be left out if the rouines from the library
+      being used are not cryptographic related :-).
+
+    4.  If you include any Windows specific code (or a derivative thereof) from
+    the
+      apps directory (application code) you must include an acknowledgement:
+      "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+
+  THIS SOFTWARE IS PROVIDED BY ERIC YOUNG "AS IS" AND ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+  EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+  OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+  The licence and distribution terms for any publically available version or
+  derivative of this code cannot be changed. i.e. this code cannot simply be
+  copied and put under another distribution licence [including the GNU Public
+  Licence.]
+
+(89) The Unlicense:
 
 Progress Chef Infra Client 19.1 incorporates ruby-shadow 3.0.0.
 
@@ -6848,7 +7482,7 @@ Progress Chef Infra Client 19.1 incorporates ruby-shadow 3.0.0.
 
   For more information, please refer to http://unlicense.org/
 
-(88) zlib License:
+(90) zlib License:
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_zlib 1.3.1.
 
@@ -6880,11 +7514,11 @@ Product:
 
 (1) Internal Progress Product License:
 
-Progress Chef Infra Client 19.1 incorporates Chef 18.6.6, appbundler 0.13.4,
-chef-telemetry 1.1.1, cheffish 17.1.8, inspec/inspec 7.0.95,
-mixlib-authentication 3.0.10, mixlib-cli 2.1.8, mixlib-config 3.0.27,
-mixlib-log 3.2.3, train-rest 0.5.0, train-winrm 0.4.0, and win32-certstore
-0.6.16.
+Progress Chef Infra Client 19.1 incorporates Chef 18.6.6, Habitat
+chef_powershell_shim 19.1.0, appbundler 0.13.4, chef-telemetry 1.1.1, cheffish
+17.1.8, inspec/inspec 7.0.95, mixlib-authentication 3.0.10, mixlib-cli 2.1.8,
+mixlib-config 3.0.27, mixlib-log 3.2.3, train-rest 0.5.0, train-winrm 0.4.0,
+and win32-certstore 0.6.16.
 
   See Progress License
 
@@ -6892,4 +7526,4 @@ NOTICE FROM PROGRESS SOFTWARE CORPORATION: Additional notices may be included
 in the release notes or other documentation that accompanies updates received
 in connection with support of the Product.
 
-Updated January 26, 2026
+Updated January 29, 2026
