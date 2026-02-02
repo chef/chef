@@ -144,11 +144,11 @@ GNU General Public License v3.0 only:
   The Habitat Maintainers | Habitat core_readline  | 8.2
 
 GNU General Public License v3.0 w/GCC Runtime Library exception:
-  The Habitat Maintainers | Habitat core_gcc-libs | 12.2.0
+  The Habitat Maintainers | Habitat core_gcc-libs | 14.3.0
 
 GNU Lesser General Public License v2.1 only:
-  The Habitat Maintainers | Habitat core_acl            | 2.3.1
-  The Habitat Maintainers | Habitat core_attr           | 2.5.1
+  The Habitat Maintainers | Habitat core_acl            | 2.3.2
+  The Habitat Maintainers | Habitat core_attr           | 2.5.2
   The Habitat Maintainers | Habitat core_glibc          | 2.41
   The Habitat Maintainers | Habitat core_nss-myhostname | 0.3
 
@@ -335,7 +335,7 @@ MIT License:
   The Habitat Maintainers          | Habitat core_libxml2        | 2.14.3
   The Habitat Maintainers          | Habitat core_libxslt        | 1.1.43
   The Habitat Maintainers          | Habitat core_libyaml        | 0.2.5
-  The Habitat Maintainers          | Habitat core_ncurses        | 6.4
+  The Habitat Maintainers          | Habitat core_ncurses        | 6.5
   The RSpec Development Team       | rspec-its                   | 2.0.0
   Tim Pease                        | TwP's logging               | 2.4.0
   Tim Pease                        | little-plugger              | 1.1.4
@@ -368,10 +368,10 @@ zlib License:
 
 ================================================================================
 
-The Product contains Habitat core_gmp v6.3.0, Habitat core_acl  v2.3.1,Habitat
-core_attr v2.5.1, Habitat core_glibc v2.41, Habitat core_nss-myhostname v0.3,
+The Product contains Habitat core_gmp v6.3.0, Habitat core_acl  v2.3.2,Habitat
+core_attr v2.5.2, Habitat core_glibc v2.41, Habitat core_nss-myhostname v0.3,
 Habitat core_bash 5.2.37, Habitat core_cacerts 2025-05-20,
-Habitat core_coreutils 9.7, Habitat core_gcc-libs 12.2.0, Habitat core_grep
+Habitat core_coreutils 9.7, Habitat core_gcc-libs 14.3.0, Habitat core_grep
 3.11, Habitat core_less 668, Habitat core_libiconv 1.18, Habitat
 core_linux-headers 5.19.8, Habitat core_readline 8.2, Habitat core_xz 5.8.1,
 sslshake 1.3.1, vault 0.18.2, win32-api 1.10.1-universal-mingw32, win32-event
@@ -386,8 +386,8 @@ also obtain the source code for these third-party technologies through
 http://iue.progress.com/3dpartysoftwares/Pages/default.aspx by following the
 instructions set forth therein.
 
-The Product contains Habitat core_gmp v6.3.0, Habitat core_acl v2.3.1,
-Habitat core_attr v2.5.1, Habitat core_glibc v2.41, and Habitat
+The Product contains Habitat core_gmp v6.3.0, Habitat core_acl v2.3.2,
+Habitat core_attr v2.5.2, Habitat core_glibc v2.41, and Habitat
 core_nss-myhostname v0.3. This technology is subject to the terms of the GNU
 Library General Public License Version 2 (“LGPL v2”), GNU Lesser General Public
 License Version 2.1 (“LGPL v2.1”) or GNU Lesser General Public License Version 3
@@ -2543,7 +2543,7 @@ core_libiconv 1.18, and Habitat core_readline 8.2.
 
 (15) GNU General Public License v3.0 w/GCC Runtime Library exception:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 12.2.0.
+Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 14.3.0.
 
   GCC RUNTIME LIBRARY EXCEPTION
   =============================
@@ -3222,8 +3222,8 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 12.2.0.
 
 (16) GNU Lesser General Public License v2.1 only:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_acl 2.3.1, Habitat
-core_attr 2.5.1, Habitat core_glibc 2.41, and Habitat core_nss-myhostname 0.3.
+Progress Chef Infra Client 19.1 incorporates Habitat core_acl 2.3.2, Habitat
+core_attr 2.5.2, Habitat core_glibc 2.41, and Habitat core_nss-myhostname 0.3.
 
   GNU Lesser General Public License Version 2.1 Only
   --------------------------------------------------
@@ -5117,7 +5117,7 @@ Progress Chef Infra Client 19.1 incorporates erubis 2.7.0.
 
 Progress Chef Infra Client 19.1 incorporates Habitat core_libffi 3.4.7, Habitat
 core_libxml2 2.14.3, Habitat core_libxslt 1.1.43, Habitat core_libyaml 0.2.5,
-and Habitat core_ncurses 6.4.
+and Habitat core_ncurses 6.5.
 
   The MIT License
   ===============
