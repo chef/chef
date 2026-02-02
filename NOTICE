@@ -368,7 +368,9 @@ zlib License:
 
 ================================================================================
 
-The Product contains Habitat core_bash 5.2.37, Habitat core_cacerts 2025-05-20,
+The Product contains Habitat core_gmp v6.3.0, Habitat core_acl  v2.3.1,Habitat
+core_attr v2.5.1, Habitat core_glibc v2.41, Habitat core_nss-myhostname v0.3,
+Habitat core_bash 5.2.37, Habitat core_cacerts 2025-05-20,
 Habitat core_coreutils 9.7, Habitat core_gcc-libs 12.2.0, Habitat core_grep
 3.11, Habitat core_less 668, Habitat core_libiconv 1.18, Habitat
 core_linux-headers 5.19.8, Habitat core_readline 8.2, Habitat core_xz 5.8.1,
@@ -383,6 +385,10 @@ reasonable shipping and handling charges for such distribution. Licensee may
 also obtain the source code for these third-party technologies through
 http://iue.progress.com/3dpartysoftwares/Pages/default.aspx by following the
 instructions set forth therein.
+
+The Product contains Habitat core_gmp v6.3.0, Habitat core_acl  v2.3.1,Habitat
+core_attr v2.5.1, Habitat core_glibc v2.41, Habitat core_nss-myhostname v0.3
+
 
 1. Special Notices Regarding Open-Source Third-Party Components incorporated
 into the Product. Such technology is subject to the following terms and
