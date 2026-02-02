@@ -208,28 +208,28 @@ jobs:
         continue-on-error: true  # Test may fail as expected with SELinux enforcing
         run: |
           # Run chef-client with the SELinux test recipe
-          docker exec selinux-test-${{ matrix.os }} bash -c '
+          docker exec selinux-test-${{ matrix.os }} bash -c "
             set -e
 
-            echo "=== Running Chef Infra Client with SELinux test recipe ==="
+            echo '=== Running Chef Infra Client with SELinux test recipe ==='
 
             # Create a minimal client.rb
             mkdir -p /etc/chef
-            cat > /etc/chef/client.rb <<EOF
-chef_license "accept-no-persist"
+            cat > /etc/chef/client.rb << 'CLIENTRB'
+chef_license 'accept-no-persist'
 log_level :info
-cookbook_path ["/chef-test/cookbooks"]
-EOF
+cookbook_path ['/chef-test/cookbooks']
+CLIENTRB
 
             # Run the SELinux test recipe
             cd /chef-test
-            hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client \
+            hab pkg exec \$HAB_ORIGIN/chef-infra-client chef-client \
               -z \
               -c /etc/chef/client.rb \
               --recipe-url /chef-test \
-              --override-runlist "recipe[end_to_end::_chef_client_systemd_timer_selinux]" \
-              --log_level info || echo "Chef run completed with errors (may be expected)"
-          '
+              --override-runlist 'recipe[end_to_end::_chef_client_systemd_timer_selinux]' \
+              --log_level info || echo 'Chef run completed with errors (may be expected)'
+          "
 
       - name: Check SELinux test results
         if: always()
