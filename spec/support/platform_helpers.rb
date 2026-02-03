@@ -303,6 +303,7 @@ def git_version_ge?(version)
 rescue
   false
 end
+
 # Check if the chef-powershell gem is properly installed
 # This validates that the gem can be required and that required runtime
 # dependencies (like vcruntime140.dll on Windows) are available

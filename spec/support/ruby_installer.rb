@@ -54,6 +54,7 @@ def load_dlls(match_path, is_powershell_dll = false)
     if is_powershell_dll
       raise "CRITICAL: Chef.PowerShell.dll not found - PowerShell tests will fail"
     end
+
     return
   end
 
