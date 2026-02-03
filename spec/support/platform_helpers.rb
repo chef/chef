@@ -303,3 +303,78 @@ def git_version_ge?(version)
 rescue
   false
 end
+# Check if the chef-powershell gem is properly installed
+# This validates that the gem can be required and that required runtime
+# dependencies (like vcruntime140.dll on Windows) are available
+def chef_powershell_gem_available?
+  return false unless windows?
+
+  begin
+    require "chef-powershell"
+    # Attempt to actually use the gem to ensure runtimes are available
+    # This will fail if vcruntime140.dll or other required DLLs are missing
+    # ChefPowerShell::PowerShell.new requires a script argument
+    ::ChefPowerShell::PowerShell.new("'test'")
+    true
+  rescue LoadError, RuntimeError, Win32OLERuntimeError => e
+    Chef::Log.warn("chef-powershell gem or its dependencies are not available: #{e.message}")
+    false
+  rescue => e
+    Chef::Log.warn("Unexpected error checking chef-powershell availability: #{e.class} - #{e.message}")
+    false
+  end
+end
+
+# Check if PowerShell execution via chef-powershell is available
+# This is a more thorough check than gem availability
+def powershell_exec_available?
+  return false unless windows?
+  return false unless chef_powershell_gem_available?
+
+  begin
+    # Try to actually execute a simple PowerShell command to verify full stack works
+    require "chef/mixin/powershell_exec"
+    # Create a test object that includes the mixin
+    test_obj = Class.new { include Chef::Mixin::PowershellExec }.new
+    # Try to execute a simple command that should always work
+    result = test_obj.powershell_exec("$PSVersionTable")
+    result.is_a?(ChefPowerShell::PowerShell) && !result.error?
+  rescue => e
+    Chef::Log.warn("PowerShell execution not available: #{e.class} - #{e.message}")
+    false
+  end
+end
+
+# Check if the required runtime dependencies are available
+# Specifically checks for vcruntime140.dll on Windows
+def powershell_runtime_available?
+  return false unless windows?
+
+  begin
+    require "ruby_installer"
+    # Check if we can load the PowerShell DLL which requires vcruntime140.dll
+    match_path = "bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll"
+    matched_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}").map { |f| File.expand_path(f) }
+
+    unless matched_paths.empty?
+      dll_path = matched_paths.first
+      dll_dir = File.dirname(dll_path)
+
+      # Verify vcruntime140.dll is accessible in the same directory
+      vcruntime_path = File.join(dll_dir, "vcruntime140.dll")
+
+      if File.exist?(vcruntime_path)
+        Chef::Log.debug("vcruntime140.dll found at: #{vcruntime_path}")
+        return true
+      else
+        Chef::Log.warn("vcruntime140.dll not found at expected location: #{vcruntime_path}")
+        return false
+      end
+    end
+
+    false
+  rescue => e
+    Chef::Log.warn("Error checking PowerShell runtime: #{e.class} - #{e.message}")
+    false
+  end
+end

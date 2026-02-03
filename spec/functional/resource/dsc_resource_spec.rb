@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
+describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_exec_only do
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
 
   let(:node) do
@@ -31,6 +31,13 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
 
   let(:new_resource) do
     Chef::Resource::DscResource.new("dsc_resource_test", run_context)
+  end
+
+  before(:all) do
+    # Verify PowerShell execution is available before running DSC tests
+    unless powershell_exec_available?
+      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
+    end
   end
 
   context "when PowerShell does not support Invoke-DscResource"
