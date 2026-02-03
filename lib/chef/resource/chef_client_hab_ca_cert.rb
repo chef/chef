@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require "pathname"
+require "pathname" unless defined?(Pathname)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
