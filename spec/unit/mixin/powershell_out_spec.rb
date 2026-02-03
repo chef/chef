@@ -62,7 +62,6 @@ describe Chef::Mixin::PowershellOut, :windows_only, :powershell_gem_required do
     end
 
     it "raises error if interpreter is invalid" do
-      ret = double("Mixlib::ShellOut")
       expect { object.powershell_out("Get-Process", :blah, timeout: 600) }.to raise_error(ArgumentError)
     end
 
