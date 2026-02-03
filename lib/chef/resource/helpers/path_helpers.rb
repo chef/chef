@@ -22,13 +22,11 @@ class Chef
         path = File.realpath($PROGRAM_NAME)
         bin = File.basename(path)
 
-        # On Windows, prefer the PowerShell wrapper if it exists and we're running chef-client
+        # On Windows, prefer the PowerShell wrapper if it exists
         # because hab pkg .bat binstubs getting the path variables correct is a challenge.
-        if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
-          ps1_path = 'C:\hab\chef\bin\chef-client.ps1'
-          return ps1_path if File.exist?(ps1_path) && ChefUtils.windows?
-          return path
-        end
+        ps1_path = "C:\\hab\\chef\\bin\\#{bin}.ps1"
+        return ps1_path if File.exist?(ps1_path) && ChefUtils.windows?
+        return path if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
 
         # Return empty string if no valid path is found
         ""
