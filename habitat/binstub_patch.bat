@@ -62,7 +62,7 @@ FOR /F "tokens=1* delims=;" %%X IN ("%origpath%") DO (
     SET "newpath=!newpath!;!segment!"
   )
   SET "origpath=%%Y"
-  IF NOT "%%Y"=="" GOTO pathloop
+  IF NOT "%%Y"=="" GOTO :pathloop
 )
 SET "PATH=%newpath%;%PATH%"
 GOTO :EOF
