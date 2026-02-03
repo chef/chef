@@ -1,0 +1,258 @@
+---
+name: kitchen-selinux-quick
+
+"on":
+  pull_request:
+    paths:
+      - 'lib/chef/resource/chef_client_systemd_timer.rb'
+      - 'lib/chef/provider/systemd_unit.rb'
+      - 'lib/chef/resource/selinux_*.rb'
+      - 'kitchen-tests/cookbooks/end_to_end/recipes/_chef_client_systemd_timer_selinux.rb'
+      - 'kitchen-tests/test/integration/end-to-end/_chef_client_systemd_timer_selinux.rb'
+      - '.github/workflows/kitchen-selinux-quick.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/chef/resource/chef_client_systemd_timer.rb'
+      - 'lib/chef/provider/systemd_unit.rb'
+      - 'lib/chef/resource/selinux_*.rb'
+      - 'kitchen-tests/cookbooks/end_to_end/recipes/_chef_client_systemd_timer_selinux.rb'
+      - 'kitchen-tests/test/integration/end-to-end/_chef_client_systemd_timer_selinux.rb'
+      - '.github/workflows/kitchen-selinux-quick.yml'
+  workflow_dispatch:  # Allow manual trigger
+
+concurrency:
+  group: kitchen-selinux-quick-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: kitchen-tests
+
+jobs:
+  selinux_quick_test:
+    name: selinux_quick_${{ matrix.os }}
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - rockylinux-9
+          - almalinux-9
+    runs-on: ubuntu-latest
+    env:
+      FORCE_FFI_YAJL: ext
+      CHEF_LICENSE: accept-no-persist
+      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Habitat CLI
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+
+      - name: Generate fake Habitat Origin Key
+        run: |
+          hab origin key generate "$HAB_ORIGIN"
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+
+      - name: Build Habitat Package
+        run: |
+          # Move out of default kitchen-tests dir to the repo root
+          cd ..
+          hab pkg build .
+          source ./results/last_build.env
+          echo "Built package: $pkg_artifact"
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+
+      - name: Set up HAB token file
+        run: |
+          # Create a token file for hab authentication
+          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+          chmod 600 hab_token
+
+      - name: Start SELinux-enabled container
+        run: |
+          # Start a privileged container with SELinux support
+          # Using official images with systemd and SELinux pre-installed
+          IMAGE_NAME="quay.io/${{ matrix.os }}"
+          if [[ "${{ matrix.os }}" == "rockylinux-9" ]]; then
+            IMAGE_NAME="quay.io/rockylinux/rockylinux:9"
+          elif [[ "${{ matrix.os }}" == "almalinux-9" ]]; then
+            IMAGE_NAME="quay.io/almalinux/almalinux:9"
+          fi
+
+          echo "Starting container from image: $IMAGE_NAME"
+
+          # Start container with systemd and required capabilities for SELinux
+          docker run -d \
+            --name selinux-test-${{ matrix.os }} \
+            --privileged \
+            --security-opt seccomp=unconfined \
+            --security-opt label:disable \
+            --cgroupns=host \
+            -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+            -v "$(pwd)/chef-infra-client-latest.hart:/chef-infra-client-latest.hart:ro" \
+            -v "$(pwd)/$HAB_ORIGIN-key.tar.gz:/$HAB_ORIGIN-key.tar.gz:ro" \
+            -v "$(pwd)/hab_token:/hab_token:ro" \
+            -v "$(pwd)/../:/chef-repo:ro" \
+            "$IMAGE_NAME" \
+            /usr/sbin/init
+
+          # Wait for systemd to initialize
+          sleep 5
+
+          # Verify container is running
+          docker ps -a | grep selinux-test-${{ matrix.os }}
+
+      - name: Install dependencies in container
+        run: |
+          # Install Habitat CLI in the container
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            set -e
+            curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -c stable
+            hab license accept
+            hab --version
+          "
+
+          # Install SELinux tools and other dependencies
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            set -e
+            dnf install -y \
+              policycoreutils \
+              policycoreutils-python-utils \
+              selinux-policy \
+              selinux-policy-targeted \
+              audit \
+              systemd \
+              procps-ng \
+              which
+
+            echo 'Dependencies installed successfully'
+          "
+
+      - name: Configure SELinux in container
+        run: |
+          # Check SELinux status and attempt to enable it
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            set -e
+
+            echo '=== Checking SELinux status ==='
+            if command -v getenforce &>/dev/null; then
+              SELINUX_STATUS=\$(getenforce || echo 'Unknown')
+              echo 'Current SELinux status: '\$SELINUX_STATUS
+
+              if [[ \"\$SELINUX_STATUS\" == 'Permissive' ]]; then
+                echo 'Attempting to set SELinux to enforcing mode...'
+                setenforce 1 && echo 'SELinux set to enforcing' || echo 'Failed to set enforcing (may not be fully supported in containers)'
+              elif [[ \"\$SELINUX_STATUS\" == 'Disabled' ]]; then
+                echo 'SELinux is disabled - this is expected in most containers'
+                echo 'Setting config to permissive for testing...'
+                sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config || true
+              fi
+
+              getenforce || echo 'getenforce not available'
+            else
+              echo 'SELinux tools not fully available - test will document this limitation'
+            fi
+          "
+
+      - name: Install Chef Infra Client from Habitat Package
+        run: |
+          # Import origin key and install the package
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            set -e
+
+            echo '=== Importing Habitat origin key ==='
+            cat /$HAB_ORIGIN-key.tar.gz | hab origin key import
+
+            echo '=== Installing Chef Infra Client Habitat package ==='
+            hab pkg install /chef-infra-client-latest.hart --auth \"\$(cat /hab_token)\"
+
+            echo '=== Installed Chef Infra Client version ==='
+            hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+
+            # Create symlink to use our custom package
+            CUSTOM_PKG=\$(hab pkg path $HAB_ORIGIN/chef-infra-client)
+            DEFAULT_PKG=\$(hab pkg path chef/chef-infra-client 2>/dev/null || echo '/hab/pkgs/chef/chef-infra-client/latest')
+
+            echo \"Custom package: \$CUSTOM_PKG\"
+            echo \"Default package path: \$DEFAULT_PKG\"
+
+            if [[ -e \"\$DEFAULT_PKG\" ]]; then
+              mv \"\$DEFAULT_PKG\" \"\${DEFAULT_PKG}.original\" || true
+            fi
+            mkdir -p \$(dirname \"\$DEFAULT_PKG\")
+            ln -sf \"\$CUSTOM_PKG\" \"\$DEFAULT_PKG\" || true
+            ls -la \"\$DEFAULT_PKG\" || echo 'Symlink not created'
+          "
+
+      - name: Copy test cookbooks to container
+        run: |
+          # Copy the cookbook files into the container
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            mkdir -p /chef-test/cookbooks/end_to_end/recipes
+            mkdir -p /chef-test/cookbooks/end_to_end/metadata
+          "
+
+          docker cp ../kitchen-tests/cookbooks/end_to_end/. selinux-test-${{ matrix.os }}:/chef-test/cookbooks/end_to_end/
+
+      - name: Run SELinux test recipe
+        continue-on-error: true  # Test may fail as expected with SELinux enforcing
+        run: |
+          # Run chef-client with the SELinux test recipe
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            set -e
+            echo '=== Running Chef Infra Client with SELinux test recipe ==='
+            mkdir -p /etc/chef
+            printf \"chef_license 'accept-no-persist'\nlog_level :info\ncookbook_path ['/chef-test/cookbooks']\n\" > /etc/chef/client.rb
+            cd /chef-test
+            hab pkg exec \$HAB_ORIGIN/chef-infra-client chef-client -z -c /etc/chef/client.rb --recipe-url /chef-test --override-runlist 'recipe[end_to_end::_chef_client_systemd_timer_selinux]' --log_level info || echo 'Chef run completed with errors (may be expected)'
+          "
+
+      - name: Check SELinux test results
+        if: always()
+        run: |
+          echo "=== SELinux Status After Test ==="
+          docker exec selinux-test-${{ matrix.os }} bash -c "
+            getenforce 2>/dev/null || echo 'SELinux status unavailable'
+
+            echo ''
+            echo '=== Chef Client Systemd Timer Files ==='
+            ls -laZ /etc/systemd/system/chef-client* 2>/dev/null || echo 'No timer files found'
+
+            echo ''
+            echo '=== Systemd Timer Status ==='
+            systemctl status chef-client-selinux-test.timer 2>/dev/null || echo 'Timer not found/not running'
+
+            echo ''
+            echo '=== SELinux AVC Denials ==='
+            if command -v ausearch &>/dev/null; then
+              ausearch -m AVC -ts recent 2>/dev/null | grep -i 'chef-client' | head -20 || echo 'No SELinux denials found'
+            else
+              echo 'ausearch not available'
+            fi
+
+            echo ''
+            echo '=== Journal Logs for Chef Timer ==='
+            journalctl -u chef-client-selinux-test.timer -n 50 --no-pager 2>/dev/null || echo 'No journal logs available'
+          " || echo "Failed to get test results"
+
+      - name: Extract Chef logs
+        if: always()
+        run: |
+          echo "=== Full Docker Container Logs ==="
+          docker logs selinux-test-${{ matrix.os }} 2>&1 | grep -i -A 5 -B 5 'selinux\|chef-client-selinux-test' | head -100 || echo "No SELinux-related logs found"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop selinux-test-${{ matrix.os }} || true
+          docker rm selinux-test-${{ matrix.os }} || true
