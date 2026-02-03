@@ -18,8 +18,16 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Mixin::PowershellOut, :windows_only do
+describe Chef::Mixin::PowershellOut, :windows_only, :powershell_exec_only do
   include Chef::Mixin::PowershellOut
+
+  # Verify at test startup that PowerShell execution is available
+  # This ensures tests fail fast if dependencies are missing
+  before(:all) do
+    unless powershell_exec_available?
+      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
+    end
+  end
 
   describe "#powershell_out" do
     it "runs a powershell command and collects stdout" do

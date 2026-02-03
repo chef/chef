@@ -21,10 +21,16 @@ require "chef/mixin/powershell_exec"
 require "chef/mixin/windows_architecture_helper"
 require "support/shared/integration/integration_helper"
 
-describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only do
+describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only, :powershell_exec_only do
   include Chef::Mixin::WindowsArchitectureHelper
   include Chef::Mixin::PowershellExec
+
   before(:all) do
+    # Verify PowerShell execution is available before running DSC tests
+    unless powershell_exec_available?
+      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
+    end
+
     @temp_dir = ::Dir.mktmpdir("dsc-functional-test")
     # enable the HTTP listener if it is not already enabled needed by underlying DSC engine
     winrm_code = <<-CODE
