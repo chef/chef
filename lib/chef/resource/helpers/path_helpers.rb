@@ -24,7 +24,7 @@ class Chef
 
         # On Windows, prefer the PowerShell wrapper if it exists
         # because hab pkg .bat binstubs getting the path variables correct is a challenge.
-        bat_path = "C:\\hab\\chef\\bin\\#{bin}.bat"
+        bat_path = "C:\\hab\\bin\\#{bin}.bat"
         return bat_path if File.exist?(bat_path) && ChefUtils.windows?
         return path if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
 
