@@ -99,7 +99,7 @@ class Chef
           return @hab_cacerts_pkg_path if @hab_cacerts_pkg_path
 
           # Find the current running version of chef to get THAT version's cacerts package.
-          current_chef_path = Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path
+          current_chef_path = Chef::ResourceHelpers::PathHelpers.chef_client_hab_package_binary_path
           current_hab_path = Chef::ResourceHelpers::PathHelpers.hab_executable_binary_path
 
           # Extract package ident from path: /hab/pkgs/chef/chef-infra-client/VERSION/RELEASE/bin/chef-client
@@ -109,7 +109,7 @@ class Chef
 
           ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}")
           if ca_pkg.error?
-            raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
+            raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package"
           end
 
           hab_cacerts_pkg = ca_pkg.stdout.scan(%r{core/cacerts.*$}).flatten.first
