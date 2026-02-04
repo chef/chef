@@ -109,7 +109,7 @@ class Chef
 
           ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}")
           if ca_pkg.error?
-            raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package."
+            raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package\ncurrent_chef_path #{current_chef_path}\ncurrent_hab_path #{current_hab_path}"
           end
 
           hab_cacerts_pkg = ca_pkg.stdout.scan(%r{core/cacerts.*$}).flatten.first
