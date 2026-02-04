@@ -34,3 +34,15 @@ require_relative "chef/event_dispatch/dsl"
 require_relative "chef/chef_class"
 
 require_relative "chef/target_io"
+
+require_relative "chef/licensing"
+require_relative "chef/context"
+
+if ChefUtils::Dist::Infra::EXEC == "chef"
+  # Switch to workstation entitlement if running in Test Kitchen context
+  Chef::Context.switch_to_workstation_entitlement if Chef::Context.test_kitchen_context?
+
+  # Fetch and persist license when Chef is loaded as a library
+  # This ensures licensing is checked even when not using Chef::Application
+  Chef::Licensing.fetch_and_persist
+end
