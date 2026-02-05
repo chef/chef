@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
+describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_exec_only do
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
 
   let(:node) do
@@ -31,6 +31,43 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
 
   let(:new_resource) do
     Chef::Resource::DscResource.new("dsc_resource_test", run_context)
+  end
+
+  it "requires PowerShell DLLs and runtimes to be present" do
+    unless powershell_exec_available?
+      raise <<~ERROR
+
+        ╔═══════════════════════════════════════════════════════════════════════════╗
+        ║                          CRITICAL TEST FAILURE                            ║
+        ╠═══════════════════════════════════════════════════════════════════════════╣
+        ║                                                                           ║
+        ║  PowerShell execution environment is NOT available!                       ║
+        ║                                                                           ║
+        ║  Required components missing:                                             ║
+        ║    - chef-powershell gem and/or                                           ║
+        ║    - Chef.PowerShell.dll and/or                                           ║
+        ║    - vcruntime140.dll (Visual C++ Runtime)                                ║
+        ║                                                                           ║
+        ║  DSC resource tests CANNOT run without these dependencies.                ║
+        ║                                                                           ║
+        ║  Please ensure all required PowerShell runtime components are installed.  ║
+        ║                                                                           ║
+        ╚═══════════════════════════════════════════════════════════════════════════╝
+
+      ERROR
+    end
+  end
+
+  context "when PowerShell DLLs are missing (mocked)" do
+    it "fails with a clear error message" do
+      allow(self).to receive(:powershell_exec_available?).and_return(false)
+
+      expect {
+        unless powershell_exec_available?
+          raise "PowerShell execution environment is NOT available!"
+        end
+      }.to raise_error(RuntimeError, /PowerShell execution environment is NOT available/)
+    end
   end
 
   context "when PowerShell does not support Invoke-DscResource"

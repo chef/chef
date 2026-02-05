@@ -19,9 +19,17 @@
 require "chef/platform/query_helpers"
 require "spec_helper"
 
-describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
+describe Chef::Resource::WindowsScript::PowershellScript, :windows_only, :powershell_exec_only do
 
   include_context Chef::Resource::WindowsScript
+
+  # Verify at test startup that PowerShell execution is available
+  # This ensures tests fail fast if dependencies are missing
+  before(:all) do
+    unless powershell_exec_available?
+      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
+    end
+  end
 
   let(:architecture_command) { "echo $env:PROCESSOR_ARCHITECTURE" }
   let(:output_command) { " | out-file -encoding ASCII " }
