@@ -1,6 +1,8 @@
 ---
 name: kitchen
 
+# this is a test
+
 "on":
   pull_request_target:
   push:
