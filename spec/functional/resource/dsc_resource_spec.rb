@@ -33,10 +33,28 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_
     Chef::Resource::DscResource.new("dsc_resource_test", run_context)
   end
 
-  before(:all) do
-    # Verify PowerShell execution is available before running DSC tests
+  it "requires PowerShell DLLs and runtimes to be present" do
     unless powershell_exec_available?
-      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
+      fail <<~ERROR
+
+        ╔═══════════════════════════════════════════════════════════════════════════╗
+        ║                          CRITICAL TEST FAILURE                            ║
+        ╠═══════════════════════════════════════════════════════════════════════════╣
+        ║                                                                           ║
+        ║  PowerShell execution environment is NOT available!                       ║
+        ║                                                                           ║
+        ║  Required components missing:                                             ║
+        ║    - chef-powershell gem and/or                                           ║
+        ║    - Chef.PowerShell.dll and/or                                           ║
+        ║    - vcruntime140.dll (Visual C++ Runtime)                                ║
+        ║                                                                           ║
+        ║  DSC resource tests CANNOT run without these dependencies.                ║
+        ║                                                                           ║
+        ║  Please ensure all required PowerShell runtime components are installed.  ║
+        ║                                                                           ║
+        ╚═══════════════════════════════════════════════════════════════════════════╝
+
+      ERROR
     end
   end
 
