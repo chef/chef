@@ -2,21 +2,35 @@
 name: kitchen
 
 "on":
-  pull_request:
+  pull_request_target:
   push:
     branches:
       - chef-18
 
+  # allow manual runs
+  workflow_dispatch:
+
 concurrency:
   group: kitchen-${{ github.ref }}
   cancel-in-progress: true
+
+permissions: {}
 
 defaults:
   run:
     working-directory: kitchen-tests
 
 jobs:
+  workflow_guard:
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
   win_x86_64:
+    needs: workflow_guard
+    permissions:
+      contents: read
+    # temporarily adding this back for inspec testing until we can get Kitchen Enterprise working for Windows.
     strategy:
       fail-fast: false
       matrix:
@@ -36,6 +50,9 @@ jobs:
       run: kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -48,9 +65,11 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
-      - name: Check out code
+      - name: Checkout PR code
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
           clean: true
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
@@ -58,6 +77,11 @@ jobs:
         run: kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
+    name: dokr_lnx_x86_64_hab
+    needs: workflow_guard
+    permissions:
+      contents: read
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
@@ -86,8 +110,12 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
-      - name: Check out code
+      - name: Checkout PR code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
       - name: Downgrade Docker to 28.0.4
@@ -140,7 +168,12 @@ jobs:
 #      CHEF_LICENSE: accept-no-persist
 #      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
 #    steps:
-#      - uses: actions/checkout@v6
+#      - name: Checkout PR code
+#        uses: actions/checkout@v6
+#        with:
+#          ref: ${{ github.event.pull_request.head.sha }}
+#          persist-credentials: false
+#          clean: true
 #      - name: Install Vagrant and VirtualBox
 #        run: |
 #          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
