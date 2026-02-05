@@ -482,3 +482,5 @@ end
 require_relative "chef_class"
 require_relative "resource_collection"
 require_relative "runner"
+
+# this is a test
