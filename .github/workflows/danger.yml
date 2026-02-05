@@ -25,4 +25,4 @@ jobs:
         with:
           args: "--verbose --text-only -f"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
