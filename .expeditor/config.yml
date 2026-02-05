@@ -129,10 +129,7 @@ subscriptions:
   # Trigger docker build once habitat/build pipeline completes and packages are available in unstable
   - workload: buildkite_build_passed:{{agent_id}}:habitat/build:*
     actions:
-      - trigger_pipeline:docker/build:
-          ignore_labels:
-            - "Expeditor: Skip Docker Build"
-            - "Expeditor: Skip All"
+      - trigger_pipeline:docker/build
 
   # Automatically promote the Habitat packages from unstable to current upon successful build of habitat/build
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
