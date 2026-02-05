@@ -23,7 +23,7 @@ describe Chef::Mixin::PowershellOut, :windows_only, :powershell_exec_only do
 
   it "requires PowerShell DLLs and runtimes to be present" do
     unless powershell_exec_available?
-      fail <<~ERROR
+      raise <<~ERROR
 
         ╔═══════════════════════════════════════════════════════════════════════════╗
         ║                          CRITICAL TEST FAILURE                            ║

@@ -35,7 +35,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_
 
   it "requires PowerShell DLLs and runtimes to be present" do
     unless powershell_exec_available?
-      fail <<~ERROR
+      raise <<~ERROR
 
         ╔═══════════════════════════════════════════════════════════════════════════╗
         ║                          CRITICAL TEST FAILURE                            ║
@@ -64,7 +64,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_
 
       expect {
         unless powershell_exec_available?
-          fail "PowerShell execution environment is NOT available!"
+          raise "PowerShell execution environment is NOT available!"
         end
       }.to raise_error(RuntimeError, /PowerShell execution environment is NOT available/)
     end
