@@ -47,7 +47,7 @@ describe Chef::Resource::ChefClientHabCaCert do
     let(:pkg_path_output) { "/hab/pkgs/core/cacerts/2023.1.0\n" }
 
     before do
-      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_binary_path).and_return(mock_chef_path)
+      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
       allow_any_instance_of(Chef::Resource::ChefClientHabCaCert::ActionClass).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
       allow_any_instance_of(Chef::Resource::ChefClientHabCaCert::ActionClass).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
@@ -85,7 +85,7 @@ describe Chef::Resource::ChefClientHabCaCert do
     let(:pkg_path_output) { "/hab/pkgs/core/cacerts/2023.1.0\n" }
 
     before do
-      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_binary_path).and_return(mock_chef_path_windows)
+      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path_windows)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path_windows)
       allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
       allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
@@ -129,7 +129,7 @@ describe Chef::Resource::ChefClientHabCaCert do
     end
 
     before do
-      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_binary_path).and_return(mock_chef_path)
+      allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
       allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
       allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))

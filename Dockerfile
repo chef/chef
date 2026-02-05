@@ -19,7 +19,7 @@ LABEL maintainer="Progress Chef <docker@chef.io>"
 
 #TODO: Change back to stable when 19.x is GA
 ARG CHANNEL=unstable
-ARG VERSION=19.0.49
+ARG VERSION=19.1.164
 ARG ARCH=x86_64
 
 ENV HAB_LICENSE="accept-no-persist"
