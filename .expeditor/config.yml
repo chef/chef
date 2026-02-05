@@ -141,7 +141,7 @@ subscriptions:
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
-      - bash:.expeditor/promote-docker-images.sh
+      # - bash:.expeditor/promote-docker-images.sh
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
