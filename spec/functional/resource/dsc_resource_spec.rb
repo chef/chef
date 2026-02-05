@@ -58,6 +58,18 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_
     end
   end
 
+  context "when PowerShell DLLs are missing (mocked)" do
+    it "fails with a clear error message" do
+      allow(self).to receive(:powershell_exec_available?).and_return(false)
+
+      expect {
+        unless powershell_exec_available?
+          fail "PowerShell execution environment is NOT available!"
+        end
+      }.to raise_error(RuntimeError, /PowerShell execution environment is NOT available/)
+    end
+  end
+
   context "when PowerShell does not support Invoke-DscResource"
   context "when PowerShell supports Invoke-DscResource" do
     before do
