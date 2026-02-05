@@ -135,7 +135,6 @@ subscriptions:
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
       - built_in:promote_habitat_packages
-      - trigger_pipeline:docker/build
 
   # this is the only way currently to promote built-in rubygems publish
   - workload: project_promoted:{{agent_id}}:*
