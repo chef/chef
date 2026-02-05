@@ -1,0 +1,61 @@
+name: workflow-change-guard
+
+on:
+  workflow_call:
+    outputs:
+      workflow_changed:
+        description: "Whether workflow files were modified"
+        value: ${{ jobs.detect.outputs.workflow_changed }}
+
+permissions: {}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      workflow_changed: ${{ steps.diff.outputs.changed }}
+
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+          clean: true
+
+      - name: Fetch PR head
+        run: git fetch origin ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect workflow file changes
+        id: diff
+        run: |
+          set -euo pipefail
+
+          CHANGED=$(git diff --name-only \
+            ${{ github.event.pull_request.base.sha }} \
+            ${{ github.event.pull_request.head.sha }} \
+            | grep '^.github/workflows/' || true)
+
+          if [ -n "$CHANGED" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Workflow files changed:"
+            echo "$CHANGED"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No workflow changes detected."
+          fi
+
+  approve:
+    needs: detect
+    if: needs.detect.outputs.workflow_changed == 'true'
+    runs-on: ubuntu-latest
+
+    # Approval happens ONLY here
+    environment: workflow_guard
+
+    permissions: {}
+
+    steps:
+      - run: echo "Workflow changes approved"
