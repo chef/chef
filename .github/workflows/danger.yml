@@ -1,7 +1,9 @@
 ---
 name: danger
 
-on: pull_request
+on: pull_request_target
+
+permissions: {}
 
 concurrency:
   group: danger-${{ github.ref }}
@@ -13,10 +15,14 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      # oddly, needed to comment on PRs
+      issues: write
     steps:
+      # Note that we do NOT checkout the PR code, this is actually
+      # 'main', but Danger rules can still use the API to read the PR
       - uses: actions/checkout@v5
       - uses: danger/danger-js@11.3.1
         with:
           args: "--verbose --text-only -f"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_SECRET }}
