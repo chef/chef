@@ -4,18 +4,28 @@ permissions:
   contents: read
 
 "on":
-  pull_request:
+  pull_request_target:
   push:
     branches:
       - main
+
+permissions: {}
 
 concurrency:
   group: selfhosted-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  workflow_guard:
+    if: github.event_name == 'pull_request_target'
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
   linux:
-    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
     runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
@@ -34,9 +44,11 @@ jobs:
           fi
           set -e
 
-      - name: Check out code
-        uses: actions/checkout@v4
+      - name: Checkout PR code
+        uses: actions/checkout@v6
         with:
+            ref: ${{ github.event.pull_request.head.sha }}
+            presist-credentials: false
             clean: false
 
       - name: Install Habitat CLI
