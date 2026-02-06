@@ -27,7 +27,7 @@ class Chef
         return bat_path if File.exist?(bat_path) && ChefUtils.windows?
 
         # return path for any bin/chef-* names
-        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ %r{^chef-[a-z-]+$}
+        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ /^chef-[a-z-]+$/
 
         # Return empty string if no valid path is found
         ""
@@ -39,7 +39,7 @@ class Chef
         path = File.realpath($PROGRAM_NAME)
         bin = File.basename(path)
 
-        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ %r{^chef-[a-z-]+$}
+        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ /^chef-[a-z-]+$/
 
         # Return empty string if no valid path is found
         ""
