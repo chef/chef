@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "fauxhai"
 
 def cloud_reports_true_for(*args, node:)
   args.each do |method|
