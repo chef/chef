@@ -27,7 +27,7 @@ class Chef
         return bat_path if File.exist?(bat_path) && ChefUtils.windows?
 
         # return path for any bin/chef-* names
-        return path if bin =~ %r{bin/chef-[a-z]+$}
+        return path if bin =~ %r{^chef-[a-z-]+$}
 
         # Return empty string if no valid path is found
         ""
