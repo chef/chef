@@ -25,7 +25,9 @@ class Chef
         # On Windows, temporarily use the c:\\hab\\bin\\*.bat binstubs
         bat_path = "C:\\hab\\bin\\#{bin}.bat"
         return bat_path if File.exist?(bat_path) && ChefUtils.windows?
-        return path if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
+
+        # return path for any bin/chef-* names
+        return path if bin =~ %r{bin/chef-[a-z]+$}
 
         # Return empty string if no valid path is found
         ""
