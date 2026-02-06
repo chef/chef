@@ -23,11 +23,11 @@ class Chef
         bin = File.basename(path)
 
         # On Windows, temporarily use the c:\\hab\\bin\\*.bat binstubs
-        bat_path = "C:\\hab\\bin\\#{bin}.bat"
+        bat_path = "C:\\hab\\bin\\#{ChefUtils::Dist::Infra::CLIENT}.bat"
         return bat_path if File.exist?(bat_path) && ChefUtils.windows?
 
         # return path for any bin/chef-* names
-        return path if bin =~ %r{^chef-[a-z-]+$}
+        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ %r{^chef-[a-z-]+$}
 
         # Return empty string if no valid path is found
         ""
@@ -39,7 +39,7 @@ class Chef
         path = File.realpath($PROGRAM_NAME)
         bin = File.basename(path)
 
-        return path if bin == "#{ChefUtils::Dist::Infra::CLIENT}"
+        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ %r{^chef-[a-z-]+$}
 
         # Return empty string if no valid path is found
         ""
