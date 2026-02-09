@@ -1,7 +1,5 @@
 ---
 name: linux-fips
-permissions:
-  contents: read
 
 "on":
   pull_request_target:
@@ -48,7 +46,7 @@ jobs:
         uses: actions/checkout@v6
         with:
             ref: ${{ github.event.pull_request.head.sha }}
-            presist-credentials: false
+            persist-credentials: false
             clean: false
 
       - name: Install Habitat CLI
