@@ -13,19 +13,36 @@ pkg_build_deps=(
   core/gcc
   core/git
 )
+# After updating a number of packages for chef-19, we have huge list of dependency version conflicts.
+# Below, we explicitly set the habitat packages to use the versions from the chef/chef-infra-client 18.9.4 package.
 pkg_deps=(
-  core/glibc
+  core/acl/2.3.1
+  core/glibc/2.35
+  core/attr/2.5.1
+  core/cacerts/2021.10.26
+  core/coreutils/8.32
+  core/gcc-libs/9.5.0
+  core/grep/3.7
+  core/libcap/2.60
+  core/libffi/3.4.2
+  core/linux-headers/4.20.17
+  core/ncurses/6.2
+  core/readline/8.1
   $_chef_client_ruby
   core/libxml2
   core/libxslt
   core/libiconv
-  core/xz
+  core/xz/5.2.5
   core/zlib/1.3
   core/openssl/1.0.2zl
+<<<<<<< HEAD
   core/cacerts
   core/libffi
   core/coreutils
   core/libarchive
+=======
+  core/libarchive/3.8.1/20250728145737
+>>>>>>> dfe17f3d37 (Maybe working?)
 )
 pkg_svc_user=root
 
@@ -93,7 +110,45 @@ do_prepare() {
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
-    bundle install --jobs=3 --retry=3
+    
+    # Manually bootstrap uri gem to fix broken Ruby 3.1+ environment
+    build_line "Manually bootstrapping uri gem..."
+    
+    # Create temp directory for manual gem extraction
+    TEMP_DIR="/tmp/uri_bootstrap"
+    mkdir -p "$TEMP_DIR"
+    cd "$TEMP_DIR"
+    
+    # Download and extract uri gem manually (avoiding broken gem command)
+    wget -q https://rubygems.org/downloads/uri-1.0.3.gem
+    
+    # Extract gem file (it's a tar archive)
+    tar -xf uri-1.0.3.gem
+    gunzip data.tar.gz
+    tar -xf data.tar
+    
+    # Create uri gem directory structure in Ruby's gem path
+    GEM_SPEC_DIR="/hab/pkgs/core/ruby31/3.1.7/20250728150529/lib/ruby/gems/3.1.0/specifications"
+    GEM_DIR="/hab/pkgs/core/ruby31/3.1.7/20250728150529/lib/ruby/gems/3.1.0/gems/uri-1.0.3"
+    
+    mkdir -p "$GEM_SPEC_DIR"
+    mkdir -p "$GEM_DIR"
+    
+    # Copy the uri library files
+    cp -r lib/* "$GEM_DIR/"
+    
+    # Extract and install the gemspec
+    gunzip metadata.gz
+    cp metadata "$GEM_SPEC_DIR/uri-1.0.3.gemspec"
+    
+    # Clean up temp files
+    cd "$CACHE_PATH"
+    rm -rf "$TEMP_DIR"
+    
+    # Now try bundle install
+    export BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
+    export BUNDLE_FORCE_RUBY_PLATFORM=true
+    bundle install --jobs=3 --retry=3 --verbose
     build_line "Installing gems from git repos properly ..."
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
