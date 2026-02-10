@@ -21,11 +21,11 @@ pkg_deps=(
   core/libiconv
   core/xz
   core/zlib/1.3
-  core/openssl/1.1.1w
+  core/openssl/1.0.2zl
   core/cacerts
   core/libffi
   core/coreutils
-  core/libarchive/3.7.2
+  core/libarchive
 )
 pkg_svc_user=root
 
