@@ -784,6 +784,7 @@
     "lgrpi",
     "LGRPID",
     "LHND",
+    "libcap",
     "libselinux",
     "libyajl",
     "linuxbrew",
