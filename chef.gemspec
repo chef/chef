@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.10", "< 3.12.5"
+  s.add_dependency "train-core", "~> 3.10", "<= 3.12.13"
   s.add_dependency "train-winrm", ">= 0.2.5"
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 17.9"
-  s.add_dependency "inspec-core", "~> 5.22.40"
+  s.add_dependency "inspec-core", "~> 5.22.95"
 
   s.add_dependency "ffi", "~> 1.15.5"
   s.add_dependency "ffi-yajl", ">= 2.2", "< 4.0"

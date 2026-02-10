@@ -30,7 +30,7 @@ end
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 5.22.40" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 5.22.95" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
