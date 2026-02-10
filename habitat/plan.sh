@@ -1,3 +1,6 @@
+export HAB_BLDR_CHANNEL="base-2025"
+export HAB_ORIGIN="chef"
+export HAB_REFRESH_CHANNEL="stable"
 _chef_client_ruby="core/ruby31"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
