@@ -7,30 +7,35 @@ name: linux-fips
     branches:
       - main
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: selfhosted-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  workflow_guard:
-    if: github.event_name == 'pull_request_target'
-    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+  habitat-build:
+    uses: ./.github/workflows/habitat-build.yml
     permissions:
       contents: read
+    with:
+      os: linux
+      runner: ubuntu-latest
+    secrets:
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
 
   linux:
-    needs: workflow_guard
+    needs: habitat-build
     permissions:
       contents: read
     strategy:
       fail-fast: false
     runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
     env:
-      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
-      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
       - name: 'Clean up any previous installs'
@@ -42,31 +47,10 @@ jobs:
           fi
           set -e
 
-      - name: Checkout PR code
-        uses: actions/checkout@v6
+      - name: Download Habitat Package
+        uses: actions/download-artifact@v4
         with:
-            ref: ${{ github.event.pull_request.head.sha }}
-            persist-credentials: false
-            clean: false
-
-      - name: Install Habitat CLI
-        run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab --version
-
-      - name: Generate fake Habitat Origin Key
-        run: |
-          hab origin key generate "$HAB_ORIGIN"
-          # Export the keys for later use
-          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
-
-      - name: Build Habitat Package
-        run: |
-          # Build the Habitat package
-          hab pkg build .
-          source ./results/last_build.env
-          cp "./results/$pkg_artifact" chef-infra-client-latest.hart
+          name: ${{ needs.habitat-build.outputs.artifact-name }}
 
       - name: Set up HAB token file
         run: |

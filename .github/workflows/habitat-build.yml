@@ -1,0 +1,130 @@
+---
+name: habitat-build
+
+"on":
+  workflow_call:
+    inputs:
+      os:
+        description: 'Operating system for the build (linux or windows)'
+        required: true
+        type: string
+      runner:
+        description: 'GitHub runner label(s)'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+    outputs:
+      artifact-name:
+        description: 'Name of the uploaded artifact'
+        value: ${{ jobs.build.outputs.artifact-name }}
+      hart-filename:
+        description: 'Filename of the built hart package'
+        value: ${{ jobs.build.outputs.hart-filename }}
+    secrets:
+      HAB_AUTH_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  workflow_guard:
+    if: github.event_name == 'pull_request_target'
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
+  build:
+    needs: [workflow_guard]
+    if: |
+      always() &&
+      (needs.workflow_guard.result == 'success' || needs.workflow_guard.result == 'skipped')
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      artifact-name: ${{ steps.artifact-info.outputs.artifact-name }}
+      hart-filename: ${{ steps.artifact-info.outputs.hart-filename }}
+    env:
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
+
+      - name: Install Habitat CLI (Linux)
+        if: inputs.os == 'linux'
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
+          sudo hab license accept
+          sudo hab --version
+
+      - name: Install Habitat CLI (Windows)
+        if: inputs.os == 'windows'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
+          .\install-habitat.ps1
+          $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
+          echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          hab license accept
+          hab --version
+
+      - name: Generate Habitat Origin Key
+        shell: ${{ inputs.os == 'windows' && 'pwsh' || 'bash' }}
+        run: |
+          hab origin key generate "${{ inputs.os == 'windows' && '$env:HAB_ORIGIN' || '$HAB_ORIGIN' }}"
+
+      - name: Export Habitat Origin Key (Linux)
+        if: inputs.os == 'linux'
+        run: |
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+
+      - name: Build Habitat Package (Linux)
+        if: inputs.os == 'linux'
+        run: |
+          hab pkg build .
+          source ./results/last_build.env
+          cp "./results/$pkg_artifact" chef-infra-client-latest.hart
+          echo "PKG_ARTIFACT=$pkg_artifact" >> $GITHUB_ENV
+
+      - name: Build Habitat Package (Windows)
+        if: inputs.os == 'windows'
+        shell: pwsh
+        run: |
+          hab pkg build .
+          $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
+                      Sort-Object LastWriteTime -Descending |
+                      Select-Object -First 1
+
+          if ($pkg_path) {
+              Write-Host "✓ Built package: $($pkg_path.Name)"
+              Copy-Item $pkg_path.FullName -Destination "chef-infra-client-latest.hart"
+              echo "PKG_ARTIFACT=$($pkg_path.Name)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          } else {
+              Write-Error "× No package built"
+              Get-ChildItem -Path "results" -ErrorAction SilentlyContinue
+              Exit 1
+          }
+
+      - name: Set artifact info
+        id: artifact-info
+        shell: bash
+        run: |
+          echo "artifact-name=habitat-package-${{ inputs.os }}-${{ github.run_id }}" >> $GITHUB_OUTPUT
+          echo "hart-filename=chef-infra-client-latest.hart" >> $GITHUB_OUTPUT
+
+      - name: Upload Habitat Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: habitat-package-${{ inputs.os }}-${{ github.run_id }}
+          path: |
+            chef-infra-client-latest.hart
+            ${{ inputs.os == 'linux' && 'gha-key.tar.gz' || '' }}
+            results/last_build.env
+          retention-days: 1
+          if-no-files-found: error
