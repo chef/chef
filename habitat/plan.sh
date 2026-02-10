@@ -35,14 +35,7 @@ pkg_deps=(
   core/xz/5.2.5
   core/zlib/1.3
   core/openssl/1.0.2zl
-<<<<<<< HEAD
-  core/cacerts
-  core/libffi
-  core/coreutils
-  core/libarchive
-=======
   core/libarchive/3.8.1/20250728145737
->>>>>>> dfe17f3d37 (Maybe working?)
 )
 pkg_svc_user=root
 
