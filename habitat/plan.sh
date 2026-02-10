@@ -1,6 +1,7 @@
 export HAB_BLDR_CHANNEL="base-2025"
 export HAB_ORIGIN="chef"
 export HAB_REFRESH_CHANNEL="stable"
+export CHEF_LICENSE="accept-silent"
 hab origin key generate chef
 
 _chef_client_ruby="core/ruby31"
