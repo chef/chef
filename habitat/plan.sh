@@ -103,42 +103,6 @@ do_prepare() {
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
-    
-    # Manually bootstrap uri gem to fix broken Ruby 3.1+ environment
-    build_line "Manually bootstrapping uri gem..."
-    
-    # Create temp directory for manual gem extraction
-    TEMP_DIR="/tmp/uri_bootstrap"
-    mkdir -p "$TEMP_DIR"
-    cd "$TEMP_DIR"
-    
-    # Download and extract uri gem manually (avoiding broken gem command)
-    wget -q https://rubygems.org/downloads/uri-1.0.3.gem
-    
-    # Extract gem file (it's a tar archive)
-    tar -xf uri-1.0.3.gem
-    gunzip data.tar.gz
-    tar -xf data.tar
-    
-    # Create uri gem directory structure in Ruby's gem path
-    GEM_SPEC_DIR="/hab/pkgs/core/ruby31/3.1.7/20250728150529/lib/ruby/gems/3.1.0/specifications"
-    GEM_DIR="/hab/pkgs/core/ruby31/3.1.7/20250728150529/lib/ruby/gems/3.1.0/gems/uri-1.0.3"
-    
-    mkdir -p "$GEM_SPEC_DIR"
-    mkdir -p "$GEM_DIR"
-    
-    # Copy the uri library files
-    cp -r lib/* "$GEM_DIR/"
-    
-    # Extract and install the gemspec
-    gunzip metadata.gz
-    cp metadata "$GEM_SPEC_DIR/uri-1.0.3.gemspec"
-    
-    # Clean up temp files
-    cd "$CACHE_PATH"
-    rm -rf "$TEMP_DIR"
-    
-    # Now try bundle install
     export BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
     export BUNDLE_FORCE_RUBY_PLATFORM=true
     bundle install --jobs=3 --retry=3 --verbose
