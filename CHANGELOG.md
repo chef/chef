@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.166 -->
-## [v19.1.166](https://github.com/chef/chef/tree/v19.1.166) (2026-02-05)
+<!-- latest_release 19.1.167 -->
+## [v19.1.167](https://github.com/chef/chef/tree/v19.1.167) (2026-02-10)
 
 #### Merged Pull Requests
-- Some CI fixups [#15621](https://github.com/chef/chef/pull/15621) ([jaymzh](https://github.com/jaymzh))
+- Allow for the hab binary path for all chef-* to be found [#15625](https://github.com/chef/chef/pull/15625) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.1.164 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Allow for the hab binary path for all chef-* to be found [#15625](https://github.com/chef/chef/pull/15625) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.167 -->
 - Some CI fixups [#15621](https://github.com/chef/chef/pull/15621) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.166 -->
 - Move, securely, to pull_request_target for kitchen [#15602](https://github.com/chef/chef/pull/15602) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.165 -->
 <!-- release_rollup -->
