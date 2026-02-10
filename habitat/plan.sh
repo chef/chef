@@ -20,12 +20,12 @@ pkg_deps=(
   core/libxslt
   core/libiconv
   core/xz
-  core/zlib
-  core/openssl
+  core/zlib/1.3
+  core/openssl/1.1.1w
   core/cacerts
   core/libffi
   core/coreutils
-  core/libarchive
+  core/libarchive/3.7.2
 )
 pkg_svc_user=root
 
