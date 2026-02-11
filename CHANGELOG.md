@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.168 -->
-## [v19.1.168](https://github.com/chef/chef/tree/v19.1.168) (2026-02-10)
+<!-- latest_release 19.1.169 -->
+## [v19.1.169](https://github.com/chef/chef/tree/v19.1.169) (2026-02-11)
 
 #### Merged Pull Requests
-- Remove fauxhai from tests that don&#39;t need it [#15624](https://github.com/chef/chef/pull/15624) ([jaymzh](https://github.com/jaymzh))
+- Removing the PowerShell package [#15611](https://github.com/chef/chef/pull/15611) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.1.164 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Removing the PowerShell package [#15611](https://github.com/chef/chef/pull/15611) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.169 -->
 - Remove fauxhai from tests that don&#39;t need it [#15624](https://github.com/chef/chef/pull/15624) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.168 -->
 - Allow for the hab binary path for all chef-* to be found [#15625](https://github.com/chef/chef/pull/15625) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.167 -->
 - Some CI fixups [#15621](https://github.com/chef/chef/pull/15621) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.166 -->
