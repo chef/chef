@@ -21,13 +21,6 @@ require "chef/mixin/powershell_exec"
 describe Chef::Resource::PowershellPackageSource, :windows_gte_10, :powershell_exec_only do
   include Chef::Mixin::PowershellExec
 
-  before(:all) do
-    # Verify PowerShell execution is available before running package source tests
-    unless powershell_exec_available?
-      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
-    end
-  end
-
   let(:source_name) { "fake" }
   let(:source_location) { "https://www.nuget.org/api/v2" }
   let(:trusted) { true }

@@ -26,15 +26,15 @@ describe Chef::Mixin::PowershellOut, :windows_only, :powershell_gem_required do
     "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Unrestricted -InputFormat None"
   end
 
-  # Verify at test startup that PowerShell gem is available
-  # This ensures tests fail fast if dependencies are missing
-  before(:all) do
-    unless chef_powershell_gem_available?
-      skip "chef-powershell gem or required dependencies are not available"
-    end
-  end
-
   describe "#powershell_out" do
+    it "ensures that the runtime dependencies are available" do
+      unless chef_powershell_gem_available?
+        raise <<~ERROR
+          The Chef PowerShell gem is not available. Please install it to run these tests.
+        ERROR
+      end
+    end
+
     it "runs a command and returns the shell_out object" do
       ret = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(

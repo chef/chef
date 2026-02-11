@@ -34,7 +34,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_
   end
 
   it "requires PowerShell DLLs and runtimes to be present" do
-    unless powershell_exec_available?
+    unless chef_powershell_gem_available?
       raise <<~ERROR
 
         ╔═══════════════════════════════════════════════════════════════════════════╗

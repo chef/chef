@@ -23,14 +23,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only, :powers
 
   include_context Chef::Resource::WindowsScript
 
-  # Verify at test startup that PowerShell execution is available
-  # This ensures tests fail fast if dependencies are missing
-  before(:all) do
-    unless powershell_exec_available?
-      skip "PowerShell execution not available - chef-powershell gem or required runtimes not present"
-    end
-  end
-
   let(:architecture_command) { "echo $env:PROCESSOR_ARCHITECTURE" }
   let(:output_command) { " | out-file -encoding ASCII " }
 

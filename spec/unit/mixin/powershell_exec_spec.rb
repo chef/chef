@@ -23,20 +23,17 @@ describe Chef::Mixin::PowershellExec, :windows_only, :powershell_gem_required do
   let(:powershell_mixin) { Class.new { include Chef::Mixin::PowershellExec } }
   subject(:object) { powershell_mixin.new }
 
-  # Verify at test startup that PowerShell gem and runtimes are available
-  # This ensures tests fail fast if dependencies are missing
-  before(:all) do
-    # This check will raise if dependencies are not available
-    unless chef_powershell_gem_available?
-      skip "chef-powershell gem or required dependencies are not available"
-    end
-
-    unless powershell_runtime_available?
-      skip "PowerShell runtime dependencies (vcruntime140.dll) not available"
-    end
-  end
-
   describe "#powershell_exec" do
+    context "ensuring runtime dependencies are available" do
+      it "raises an error if the chef-powershell gem is not available" do
+        unless chef_powershell_gem_available?
+          raise <<~ERROR
+            The Chef PowerShell gem is not available. Please install it to run these tests.
+          ERROR
+        end
+      end
+    end
+
     context "not specifying an interpreter" do
       it "runs a basic command and returns a Chef::PowerShell object" do
         expect(object.powershell_exec("$PSVersionTable")).to be_kind_of(ChefPowerShell::PowerShell)

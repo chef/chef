@@ -316,6 +316,7 @@ def chef_powershell_gem_available?
 
     # Verify runtime dependencies are available
     powershell_runtime_available?
+    powershell_exec_available?
   rescue => e
     Chef::Log.warn("Error checking chef-powershell gem availability: #{e.class} - #{e.message}")
     false
