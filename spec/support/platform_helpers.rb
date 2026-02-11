@@ -305,43 +305,34 @@ rescue
 end
 
 # Check if the chef-powershell gem is properly installed
-# This validates that the gem can be required and that required runtime
-# dependencies (like vcruntime140.dll on Windows) are available
+# This checks that the gem specification exists without forcing it to be loaded
 def chef_powershell_gem_available?
   return false unless windows?
 
   begin
-    require "chef-powershell"
-    # Attempt to actually use the gem to ensure runtimes are available
-    # This will fail if vcruntime140.dll or other required DLLs are missing
-    # ChefPowerShell::PowerShell.new requires a script argument
-    ::ChefPowerShell::PowerShell.new("'test'")
-    true
-  rescue LoadError, RuntimeError, Win32OLERuntimeError => e
-    Chef::Log.warn("chef-powershell gem or its dependencies are not available: #{e.message}")
-    false
+    # Check if gem is installed without forcing a require
+    spec = Gem.loaded_specs["chef-powershell"] || Gem.specification.find_all_by_name("chef-powershell").first
+    return false unless spec
+
+    # Verify runtime dependencies are available
+    powershell_runtime_available?
   rescue => e
-    Chef::Log.warn("Unexpected error checking chef-powershell availability: #{e.class} - #{e.message}")
+    Chef::Log.warn("Error checking chef-powershell gem availability: #{e.class} - #{e.message}")
     false
   end
 end
 
 # Check if PowerShell execution via chef-powershell is available
-# This is a more thorough check than gem availability
+# Checks that both the gem and the execution mixin can be loaded
 def powershell_exec_available?
   return false unless windows?
   return false unless chef_powershell_gem_available?
 
   begin
-    # Try to actually execute a simple PowerShell command to verify full stack works
     require "chef/mixin/powershell_exec"
-    # Create a test object that includes the mixin
-    test_obj = Class.new { include Chef::Mixin::PowershellExec }.new
-    # Try to execute a simple command that should always work
-    result = test_obj.powershell_exec("$PSVersionTable")
-    result.is_a?(ChefPowerShell::PowerShell) && !result.error?
+    true
   rescue => e
-    Chef::Log.warn("PowerShell execution not available: #{e.class} - #{e.message}")
+    Chef::Log.debug("PowerShell execution mixin not available: #{e.class} - #{e.message}")
     false
   end
 end
