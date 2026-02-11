@@ -327,7 +327,6 @@ end
 # Checks that both the gem and the execution mixin can be loaded
 def powershell_exec_available?
   return false unless windows?
-  return false unless chef_powershell_gem_available?
 
   begin
     require "chef/mixin/powershell_exec"
