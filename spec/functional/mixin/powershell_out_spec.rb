@@ -21,6 +21,31 @@ require "chef/mixin/powershell_out"
 describe Chef::Mixin::PowershellOut, :windows_only do
   include Chef::Mixin::PowershellOut
 
+  it "requires PowerShell DLLs and runtimes to be present" do
+    unless chef_powershell_gem_available?
+      raise <<~ERROR
+
+        ╔═══════════════════════════════════════════════════════════════════════════╗
+        ║                          CRITICAL TEST FAILURE                            ║
+        ╠═══════════════════════════════════════════════════════════════════════════╣
+        ║                                                                           ║
+        ║  PowerShell execution environment is NOT available!                       ║
+        ║                                                                           ║
+        ║  Required components missing:                                             ║
+        ║    - chef-powershell gem and/or                                           ║
+        ║    - Chef.PowerShell.dll and/or                                           ║
+        ║    - vcruntime140.dll (Visual C++ Runtime)                                ║
+        ║                                                                           ║
+        ║  PowershellOut mixin tests CANNOT run without these dependencies.         ║
+        ║                                                                           ║
+        ║  Please ensure all required PowerShell runtime components are installed.  ║
+        ║                                                                           ║
+        ╚═══════════════════════════════════════════════════════════════════════════╝
+
+      ERROR
+    end
+  end
+
   describe "#powershell_out" do
     it "runs a powershell command and collects stdout" do
       expect(powershell_out("get-process").run_command.stdout).to match(/Handles/)
