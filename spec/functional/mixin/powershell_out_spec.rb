@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Mixin::PowershellOut, :windows_only, :powershell_exec_only do
+describe Chef::Mixin::PowershellOut, :windows_only do
   include Chef::Mixin::PowershellOut
 
   it "requires PowerShell DLLs and runtimes to be present" do

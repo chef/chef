@@ -19,13 +19,14 @@
 require "spec_helper"
 require "chef/mixin/powershell_exec"
 
-describe Chef::Mixin::PowershellExec, :windows_only, :powershell_gem_required do
+describe Chef::Mixin::PowershellExec, :windows_only do
   let(:powershell_mixin) { Class.new { include Chef::Mixin::PowershellExec } }
   subject(:object) { powershell_mixin.new }
 
   describe "#powershell_exec" do
     context "ensuring runtime dependencies are available" do
       it "raises an error if the chef-powershell gem is not available" do
+        # even though the method is checking for the "gem", it actually verifies the runtime libraries are available, so we can use this test to verify that the runtime dependencies are present as well.
         unless chef_powershell_gem_available?
           raise <<~ERROR
             The Chef PowerShell gem is not available. Please install it to run these tests.

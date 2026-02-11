@@ -19,7 +19,7 @@
 require "chef/platform/query_helpers"
 require "spec_helper"
 
-describe Chef::Resource::WindowsScript::PowershellScript, :windows_only, :powershell_exec_only do
+describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   include_context Chef::Resource::WindowsScript
 

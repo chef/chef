@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Mixin::PowershellOut, :windows_only, :powershell_gem_required do
+describe Chef::Mixin::PowershellOut, :windows_only do
   let(:shell_out_class) { Class.new { include Chef::Mixin::PowershellOut } }
   subject(:object) { shell_out_class.new }
   let(:architecture) { "something" }

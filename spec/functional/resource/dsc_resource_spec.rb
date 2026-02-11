@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::DscResource, :windows_powershell_dsc_only, :powershell_exec_only do
+describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
   let(:event_dispatch) { Chef::EventDispatch::Dispatcher.new }
 
   let(:node) do

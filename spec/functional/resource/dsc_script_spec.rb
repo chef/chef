@@ -21,7 +21,7 @@ require "chef/mixin/powershell_exec"
 require "chef/mixin/windows_architecture_helper"
 require "support/shared/integration/integration_helper"
 
-describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only, :powershell_exec_only do
+describe Chef::Resource::DscScript, :windows_powershell_dsc_only, :ruby64_only do
   include Chef::Mixin::WindowsArchitectureHelper
   include Chef::Mixin::PowershellExec
 

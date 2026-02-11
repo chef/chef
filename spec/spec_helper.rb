@@ -163,9 +163,6 @@ RSpec.configure do |config|
   config.filter_run_excluding ruby32_only: true unless ruby_32bit?
   config.filter_run_excluding windows_powershell_dsc_only: true unless windows_powershell_dsc?
   config.filter_run_excluding windows_powershell_no_dsc_only: true if windows_powershell_dsc?
-  # Skip PowerShell tests if chef-powershell gem or required runtimes are not available
-  config.filter_run_excluding powershell_exec_only: true unless powershell_exec_available?
-  config.filter_run_excluding powershell_gem_required: true unless chef_powershell_gem_available?
   config.filter_run_excluding windows_domain_joined_only: true unless windows_domain_joined?
   config.filter_run_excluding windows_not_domain_joined_only: true if windows_domain_joined?
   config.filter_run_excluding windows_service_requires_assign_token: true if !STDOUT.isatty && !windows_user_right?("SeAssignPrimaryTokenPrivilege")

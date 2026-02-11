@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_exec"
 
-describe Chef::Resource::PowershellPackageSource, :windows_gte_10, :powershell_exec_only do
+describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
   include Chef::Mixin::PowershellExec
 
   let(:source_name) { "fake" }
