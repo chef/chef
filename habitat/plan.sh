@@ -1,3 +1,9 @@
+export HAB_BLDR_CHANNEL="base-2025"
+export HAB_ORIGIN="chef"
+export HAB_REFRESH_CHANNEL="stable"
+export CHEF_LICENSE="accept-silent"
+hab origin key generate chef
+
 _chef_client_ruby="core/ruby31"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
@@ -13,19 +19,29 @@ pkg_build_deps=(
   core/gcc
   core/git
 )
+# After updating a number of packages for chef-19, we have huge list of dependency version conflicts.
+# Below, we explicitly set the habitat packages to use the versions from the chef/chef-infra-client 18.9.4 package.
 pkg_deps=(
-  core/glibc
+  core/acl/2.3.1
+  core/glibc/2.35
+  core/attr/2.5.1
+  core/cacerts/2021.10.26
+  core/coreutils/8.32
+  core/gcc-libs/9.5.0
+  core/grep/3.7
+  core/libcap/2.60
+  core/libffi/3.4.2
+  core/linux-headers/4.20.17
+  core/ncurses/6.2
+  core/readline/8.1
   $_chef_client_ruby
   core/libxml2
   core/libxslt
   core/libiconv
-  core/xz
-  core/zlib
-  core/openssl
-  core/cacerts
-  core/libffi
-  core/coreutils
-  core/libarchive
+  core/xz/5.2.5
+  core/zlib/1.3
+  core/openssl/1.0.2zl
+  core/libarchive/3.8.1/20250728145737
 )
 pkg_svc_user=root
 
@@ -93,7 +109,9 @@ do_prepare() {
 do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
-    bundle install --jobs=3 --retry=3
+    export BUNDLE_DISABLE_LOCAL_BRANCH_CHECK=true
+    export BUNDLE_FORCE_RUBY_PLATFORM=true
+    bundle install --jobs=3 --retry=3 --verbose
     build_line "Installing gems from git repos properly ..."
     ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."

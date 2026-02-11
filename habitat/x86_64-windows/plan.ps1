@@ -13,9 +13,9 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "core/openssl"
-  "core/libarchive"
-  "core/zlib"
+  "core/openssl/1.1.1w"
+  "core/libarchive/3.7.2"
+  "core/zlib/1.3"
   "chef/ruby31-plus-devkit"
   "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015/14.0.24215/20240108064521"
