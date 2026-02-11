@@ -13,7 +13,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "core/openssl/3.5.4"
+  "core/openssl"
   "core/zlib"
   "core/xz"
   "core/libarchive"
