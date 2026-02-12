@@ -301,7 +301,7 @@ jobs:
           sudo hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/1.1.4 --channel unstable
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable
           kitchen --version
           # chef-cli is needed for some kitchen operations
           sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
