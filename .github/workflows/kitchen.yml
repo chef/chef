@@ -110,7 +110,7 @@ jobs:
 
       - name: Kitchen Test
         shell: pwsh
-        run: kitchen verify end-to-end-${{ matrix.os }}
+        run: kitchen verify -ldebug end-to-end-${{ matrix.os }}
 
 
   # Testing on windows by running habitat package of Infra Client chef-client in local mode.
