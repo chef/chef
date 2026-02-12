@@ -15,7 +15,6 @@ rubygems:
   - chef-config
   - chef-bin
   - chef-utils
-  - knife
 
 # At the given time, trigger the following scheduled workloads
 # https://expeditor.chef.io/docs/getting-started/subscriptions/#scheduling-workloads
