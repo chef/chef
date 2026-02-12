@@ -329,7 +329,7 @@ jobs:
           # kitchen test end-to-end-${{ matrix.os }}
 
           # Run recipe convergence only
-          kitchen converge end-to-end-${{ matrix.os }}
+          kitchen converge -l debug end-to-end-${{ matrix.os }}
           kitchen destroy end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
