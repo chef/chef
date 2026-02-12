@@ -1,7 +1,8 @@
 name: "Pull Request Labeler"
 on:
-  - 'pull_request_target'
-
+  pull_request_target:
+    branches:
+      - main
 concurrency:
   group: labeler-${{ github.ref }}
   cancel-in-progress: true

@@ -3,6 +3,8 @@ name: windows-fips
 
 "on":
   pull_request_target:
+    branches:
+      - main
   push:
     branches:
       - main
