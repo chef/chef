@@ -9,78 +9,47 @@ name: windows-fips
     branches:
       - main
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: windows-fips-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  workflow_guard:
-    if: github.event_name == 'pull_request_target'
-    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+  habitat-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2025]
+    uses: ./.github/workflows/habitat-build.yml
     permissions:
       contents: read
+    with:
+      os: windows
+      runner: ${{ matrix.os }}
+    secrets:
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
 
   windows:
-    needs: workflow_guard
+    needs: habitat-build
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
-        ruby: ['3.4']
     runs-on: ${{ matrix.os }}
     env:
-      HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
+      HAB_ORIGIN: gha
       HAB_BLDR_CHANNEL: base-2025
       HAB_REFRESH_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v6
+      - name: Download Habitat Package
+        uses: actions/download-artifact@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-          clean: true
-
-      - name: 'Install Habitat CLI'
-        run: |
-          # Download and install Habitat CLI
-          Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
-          .\install-habitat.ps1
-          # Add hab to PATH
-          $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
-          # Use GitHub's special environment file to persist the PATH across steps
-          echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          # Accept the license
-          hab license accept
-          hab --version
-
-      - name: 'Generate Habitat Origin Key'
-        run: |
-          # Generate the origin key for signing packages
-          hab origin key generate "$env:HAB_ORIGIN"
-
-      - name: 'Build Habitat Package'
-        run: |
-          # Build the package for current checkout
-          hab pkg build .
-          # Find the built package using relative paths
-          $pkg_path = Get-ChildItem -Path "results" -Filter "$env:HAB_ORIGIN-chef-infra-client-*.hart" |
-                      Sort-Object LastWriteTime -Descending |
-                      Select-Object -First 1
-
-          if ($pkg_path) {
-              Write-Host "✓ Built package: $($pkg_path.Name)"
-              Copy-Item $pkg_path.FullName -Destination "chef-infra-client-latest.hart"
-              Write-Host "✓ Copied to chef-infra-client-latest.hart"
-          } else {
-              Write-Error "× No package built"
-              Get-ChildItem -Path "results" -ErrorAction SilentlyContinue
-              Exit 1
-          }
+          name: habitat-package-windows-${{ github.run_id }}
 
       - name: 'Install Chef Infra Client Package'
         run: |
