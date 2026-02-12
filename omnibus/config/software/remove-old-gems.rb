@@ -21,7 +21,7 @@ build do
     gems_to_remove.each do |gem_name, version_constraint|
       puts "Removing old versions of #{gem_name} #{version_constraint}"
       # remove [-a] all versions matching constraint including [-x] executables and [-I] ignore dependencies
-      command "#{gemfile} uninstall #{gem_name} -v \"#{version_constraint}\" -a -x -I", env: env
+      command "#{gemfile} uninstall #{gem_name} -v #{version_constraint} -a -x -I", env: env
     end
   end
 end
