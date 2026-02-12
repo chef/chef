@@ -51,21 +51,24 @@ platforms:
   - name: amazonlinux-2
     driver:
       image: dokken/amazonlinux-2
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
   - name: amazonlinux-2023
     driver:
       image: dokken/amazonlinux-2023
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
   - name: debian-12
     driver:
       image: dokken/debian-12
-      pid_one_command: /bin/systemd
+      pid_one_command:
+        - /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
@@ -73,7 +76,8 @@ platforms:
   - name: debian-11
     driver:
       image: dokken/debian-11
-      pid_one_command: /bin/systemd
+      pid_one_command:
+        - /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
@@ -81,7 +85,8 @@ platforms:
   - name: centos-7
     driver:
       image: dokken/centos-7
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN yum -y install e2fsprogs
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
@@ -91,7 +96,8 @@ platforms:
   - name: almalinux-8
     driver:
       image: dokken/almalinux-8
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
@@ -100,7 +106,8 @@ platforms:
   - name: almalinux-9
     driver:
       image: dokken/almalinux-9
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir /etc/sysconfig/network-scripts # missing from the alma image
@@ -109,7 +116,8 @@ platforms:
   - name: almalinux-10
     driver:
       image: dokken/almalinux-10
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir /etc/sysconfig/network-scripts
@@ -118,7 +126,8 @@ platforms:
   - name: rockylinux-8
     driver:
       image: dokken/rockylinux-8
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir -p /etc/sysconfig/network-scripts
@@ -127,7 +136,8 @@ platforms:
   - name: rockylinux-9
     driver:
       image: dokken/rockylinux-9
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir -p /etc/sysconfig/network-scripts
@@ -136,7 +146,8 @@ platforms:
   - name: rockylinux-10
     driver:
       image: dokken/rockylinux-10
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN mkdir -p /etc/sysconfig/network-scripts
@@ -145,7 +156,8 @@ platforms:
   - name: oraclelinux-7
     driver:
       image: dokken/oraclelinux-7
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN yum -y install e2fsprogs
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
@@ -156,7 +168,8 @@ platforms:
   - name: oraclelinux-8
     driver:
       image: dokken/oraclelinux-8
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN dnf -y reinstall systemd
@@ -166,7 +179,8 @@ platforms:
   - name: oraclelinux-9
     driver:
       image: dokken/oraclelinux-9
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN dnf -y reinstall systemd
@@ -176,7 +190,8 @@ platforms:
   - name: oraclelinux-10
     driver:
       image: dokken/oraclelinux-10
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN dnf -y install e2fsprogs
         - RUN dnf -y reinstall systemd
@@ -186,7 +201,8 @@ platforms:
   - name: fedora-40
     driver:
       image: dokken/fedora-40
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
         - RUN dnf -y install python3-libdnf python3-dnf
@@ -194,7 +210,8 @@ platforms:
   - name: fedora-latest
     driver:
       image: dokken/fedora-latest
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
         - RUN dnf -y install python3-libdnf python3-dnf
@@ -202,7 +219,8 @@ platforms:
   - name: ubuntu-18.04
     driver:
       image: dokken/ubuntu-18.04
-      pid_one_command: /bin/systemd
+      pid_one_command:
+        - /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
@@ -210,7 +228,8 @@ platforms:
   - name: ubuntu-20.04
     driver:
       image: dokken/ubuntu-20.04
-      pid_one_command: /bin/systemd
+      pid_one_command:
+        - /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
@@ -218,7 +237,8 @@ platforms:
   - name: ubuntu-22.04
     driver:
       image: dokken/ubuntu-22.04
-      pid_one_command: /bin/systemd
+      pid_one_command:
+        - /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
@@ -226,7 +246,8 @@ platforms:
   - name: ubuntu-24.04
     driver:
       image: dokken/ubuntu-24.04
-      pid_one_command: /bin/systemd
+      pid_one_command:
+        - /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
@@ -234,7 +255,8 @@ platforms:
   - name: opensuse-leap-15
     driver:
       image: dokken/opensuse-leap-15
-      pid_one_command: /usr/lib/systemd/systemd
+      pid_one_command:
+        - /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN /usr/bin/zypper --non-interactive update
         - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
