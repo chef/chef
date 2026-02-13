@@ -77,8 +77,7 @@ platforms:
   - name: amazonlinux-2023
     driver:
       image: dokken/amazonlinux-2023
-      pid_one_command: 
-        - /usr/lib/systemd/systemd
+      pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
