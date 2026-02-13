@@ -290,6 +290,7 @@ GEM
       thor
     mixlib-log (3.0.9)
     mixlib-shellout (3.4.10)
+      chef-utils
     mixlib-shellout (3.4.10-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
