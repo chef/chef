@@ -24,6 +24,7 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
+      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -155,8 +156,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1203.0)
-    aws-sdk-core (3.241.3)
+    aws-partitions (1.1213.0)
+    aws-sdk-core (3.242.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -164,15 +165,15 @@ GEM
       bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-kms (1.120.0)
-      aws-sdk-core (~> 3, >= 3.241.3)
+    aws-sdk-kms (1.121.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.211.0)
-      aws-sdk-core (~> 3, >= 3.241.3)
+    aws-sdk-s3 (1.213.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sdk-secretsmanager (1.127.0)
-      aws-sdk-core (~> 3, >= 3.241.3)
+    aws-sdk-secretsmanager (1.128.0)
+      aws-sdk-core (~> 3, >= 3.241.4)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -244,7 +245,7 @@ GEM
     ed25519 (1.4.0)
     erubi (1.13.1)
     erubis (2.7.0)
-    faraday (2.14.0)
+    faraday (2.14.1)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -260,10 +261,10 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.7.6)
+    ffi-yajl (2.7.7)
       libyajl2 (>= 2.1)
       yajl
-    ffi-yajl (2.7.6-universal-mingw-ucrt)
+    ffi-yajl (2.7.7-universal-mingw-ucrt)
       libyajl2 (>= 2.1)
       yajl
     fuzzyurl (0.9.0)
@@ -323,7 +324,7 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2026.0113)
+    mime-types-data (3.2026.0203)
     mixlib-archive (1.3.3)
       mixlib-log
     mixlib-authentication (3.0.10)
@@ -427,7 +428,7 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
-    syslog (0.3.0)
+    syslog (0.4.0)
       logger
     syslog-logger (1.6.8)
     thor (1.4.0)
