@@ -119,11 +119,12 @@ jobs:
         run: |
           echo "/home/runner/.chef/gem/ruby/3.1.0/bin" >> $GITHUB_PATH
           export PATH="/home/runner/.chef/gem/ruby/3.1.0/bin:$PATH"
-          chef gem install test-kitchen -v 3.9.1 --force
-          chef gem install kitchen-dokken -v 2.22.2 --force
+          chef gem install test-kitchen -v "< 4" --force
+          chef gem install chef-utils -v "< 19" --force
+          chef gem install kitchen-dokken --force
           chef gem install kitchen-inspec -v 2.6.2 --force
-          chef gem install inspec-core -v 5.23.6 --force
-          chef gem install inspec-core-bin -v 5.23.6 --force
+          chef gem install inspec-core -v "< 6" --force
+          chef gem install inspec-core-bin -v "< 6" --force
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
