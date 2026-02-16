@@ -120,10 +120,13 @@ jobs:
           chef gem install test-kitchen -v 3.9.1 --force
           chef gem install kitchen-dokken -v 2.22.2 --force
           chef gem install kitchen-inspec -v 2.6.2 --force
+          sudo gem install test-kitchen -v 3.9.1 --force
+          sudo gem install kitchen-dokken -v 2.22.2 --force
+          sudo gem install kitchen-inspec -v 2.6.2 --force
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
-        env:
-          PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:${{ env.PATH }}
+#        env:
+#          PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:${{ env.PATH }}
 
 #  vm_lnx_x86_64:
 #    strategy:
