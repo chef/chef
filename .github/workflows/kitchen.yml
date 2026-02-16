@@ -118,6 +118,7 @@ jobs:
       - name: Bump kitchen-dokken and install kitchen-inspec
         run: |
           echo "/home/runner/.chef/gem/ruby/3.1.0/bin" >> $GITHUB_PATH
+          chef gem uninstall test-kitchen -v 4.0.0 --force
           chef gem install test-kitchen -v 3.9.1 --force
           chef gem install kitchen-dokken -v 2.22.2 --force
           chef gem install kitchen-inspec -v 2.6.2 --force
