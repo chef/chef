@@ -111,15 +111,15 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+      - name: Install Chef
+        uses: actionshub/chef-install@main
       - name: Downgrade Docker to 28.0.4
         run: |
           sudo apt-get update
           sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
           docker --version
-      - name: Check out code
-        uses: actions/checkout@v5
-      - name: Install Chef
-        uses: actionshub/chef-install@main
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
