@@ -115,6 +115,8 @@ jobs:
         uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@main
+      - name: Bump kitchen-dokken
+        run: gem install kitchen-dokken -v 2.22.2
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
