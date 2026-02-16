@@ -120,6 +120,8 @@ jobs:
           chef gem install test-kitchen -v 3.9.1 --force
           chef gem install kitchen-dokken -v 2.22.2 --force
           chef gem install kitchen-inspec -v 2.6.2 --force
+          chef gem install inspec-core -v 5.23.6 --force
+          chef gem install inspec-core-bin -v 5.23.6 --force
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
         env:
