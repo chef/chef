@@ -110,7 +110,6 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-      PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:${{ env.PATH }}
     steps:
       - name: Check out code
         uses: actions/checkout@v5
@@ -122,6 +121,8 @@ jobs:
           chef gem install kitchen-inspec
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
+        env:
+          PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:${{ env.PATH }}
 
 #  vm_lnx_x86_64:
 #    strategy:
