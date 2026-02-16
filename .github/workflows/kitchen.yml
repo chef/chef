@@ -116,7 +116,7 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@main
       - name: Bump kitchen-dokken
-        run: sudo gem install kitchen-dokken -v 2.22.2
+        run: sudo gem install kitchen-dokken -v 2.22.2 --force
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
