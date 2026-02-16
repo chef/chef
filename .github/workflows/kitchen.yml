@@ -130,7 +130,7 @@ jobs:
           
           # Install Docker 28.0.4
           sudo apt-get update
-          sudo apt-get install -y docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
+          sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
           docker --version
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
