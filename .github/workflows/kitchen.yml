@@ -125,7 +125,7 @@ jobs:
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
         env:
-          PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:${{ env.PATH }}
+          PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:$PATH
 
 #  vm_lnx_x86_64:
 #    strategy:
