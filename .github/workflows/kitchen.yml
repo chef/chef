@@ -117,8 +117,8 @@ jobs:
         uses: actionshub/chef-install@main
       - name: Bump kitchen-dokken and install kitchen-inspec
         run: |
-          sudo gem install kitchen-dokken -v 2.22.2 --force
-          sudo gem install kitchen-inspec
+          chef gem install kitchen-dokken -v 2.22.2 --force
+          chef gem install kitchen-inspec
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
