@@ -305,7 +305,7 @@ jobs:
           kitchen --version
           # chef-cli is needed for some kitchen operations
           sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
-      - name: Install the kitchen-dokken driver latest
+      - name: Install the kitchen-dokken driver latest to pick up docker fix
         run: |
           sudo -E hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-dokken --version 2.22.2
       - name: Generate fake Habitat Origin Key
