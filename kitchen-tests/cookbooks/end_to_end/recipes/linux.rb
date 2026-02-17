@@ -68,7 +68,15 @@ end
 include_recipe "::_packages"
 include_recipe "::_chef_gem"
 
-unless (amazon? && node["platform_version"] >= "2023") || (ubuntu? && node["platform_version"].start_with?("20.04")) # TODO: look into chrony service issue
+if ubuntu? && node["platform_version"].start_with?("20.04")
+  package "chrony"
+
+  execute "enable chrony container mode" do
+    command "grep -q -- '-x' /etc/default/chrony || sed -i 's/^DAEMON_OPTS=.*/DAEMON_OPTS=\"-x\"/' /etc/default/chrony"
+  end
+end
+
+unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
   include_recipe value_for_platform(
                    opensuseleap: { "default" => "ntp" },
                    amazon: { "2" => "ntp" },
