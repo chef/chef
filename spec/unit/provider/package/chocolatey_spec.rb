@@ -536,6 +536,186 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       expect(new_resource).to be_updated_by_last_action
     end
   end
+
+  describe "file lock retry functionality" do
+    describe "#file_lock_error?" do
+      it "returns true for EACCES errors" do
+        error = Errno::EACCES.new
+        expect(provider.send(:file_lock_error?, error)).to be true
+      end
+
+      it "returns true for EBUSY errors" do
+        error = Errno::EBUSY.new
+        expect(provider.send(:file_lock_error?, error)).to be true
+      end
+
+      it "returns true for EAGAIN errors" do
+        error = Errno::EAGAIN.new
+        expect(provider.send(:file_lock_error?, error)).to be true
+      end
+
+      it "returns true for errors mentioning 'being used by another process'" do
+        error = StandardError.new("The process cannot access the file because it is being used by another process")
+        expect(provider.send(:file_lock_error?, error)).to be true
+      end
+
+      it "returns true for errors mentioning 'chocolateyPending'" do
+        error = StandardError.new("Cannot access chocolateyPending file")
+        expect(provider.send(:file_lock_error?, error)).to be true
+      end
+
+      it "returns false for other errors" do
+        error = StandardError.new("Some other error")
+        expect(provider.send(:file_lock_error?, error)).to be false
+      end
+    end
+
+    describe "#with_file_lock_retry" do
+      it "executes the block successfully on first try" do
+        result = nil
+        expect {
+          result = provider.send(:with_file_lock_retry, "test operation") { "success" }
+        }.not_to raise_error
+        expect(result).to eq("success")
+      end
+
+      it "retries on file lock errors and eventually succeeds" do
+        call_count = 0
+        result = nil
+        expect(Chef::Log).to receive(:debug).twice
+
+        result = provider.send(:with_file_lock_retry, "test operation", max_retries: 3, base_delay: 0.01) do
+          call_count += 1
+          if call_count <= 2
+            raise Errno::EACCES.new
+          else
+            "success"
+          end
+        end
+
+        expect(result).to eq("success")
+        expect(call_count).to eq(3)
+      end
+
+      it "fails after max retries are exhausted" do
+        call_count = 0
+        expect(Chef::Log).to receive(:debug).exactly(2).times
+        expect(Chef::Log).to receive(:warn).once
+
+        expect {
+          provider.send(:with_file_lock_retry, "test operation", max_retries: 2, base_delay: 0.01) do
+            call_count += 1
+            raise Errno::EACCES.new
+          end
+        }.to raise_error(Errno::EACCES)
+
+        expect(call_count).to eq(3) # initial try + 2 retries
+      end
+
+      it "does not retry non-file-lock errors" do
+        call_count = 0
+        expect(Chef::Log).not_to receive(:debug)
+
+        expect {
+          provider.send(:with_file_lock_retry, "test operation") do
+            call_count += 1
+            raise StandardError.new("some other error")
+          end
+        }.to raise_error(StandardError, "some other error")
+
+        expect(call_count).to eq(1)
+      end
+    end
+
+    describe "#wait_for_chocolatey_lock_release" do
+      let(:package_names) { ["testpackage"] }
+      let(:pending_file) { File.join(choco_install_path, "lib", "testpackage", ".chocolateyPending") }
+
+      it "skips processing when no package names provided" do
+        expect(Chef::Log).not_to receive(:debug)
+        expect(File).not_to receive(:exist?)
+
+        provider.send(:wait_for_chocolatey_lock_release, [])
+      end
+
+      it "checks for .chocolateyPending files and waits when they exist" do
+        expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
+        expect(File).to receive(:exist?).with(pending_file).and_return(true)
+        expect(File).to receive(:open).with(pending_file, "r").and_yield(double(flock: true))
+
+        provider.send(:wait_for_chocolatey_lock_release, package_names)
+      end
+
+      it "skips waiting when .chocolateyPending files don't exist" do
+        expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
+        expect(File).to receive(:exist?).with(pending_file).and_return(false)
+        expect(File).not_to receive(:open)
+
+        provider.send(:wait_for_chocolatey_lock_release, package_names)
+      end
+
+      it "retries when file locking fails" do
+        expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
+        expect(File).to receive(:exist?).with(pending_file).and_return(true)
+
+        call_count = 0
+        expect(File).to receive(:open).with(pending_file, "r").twice do |&block|
+          call_count += 1
+          file_mock = double
+          if call_count == 1
+            expect(file_mock).to receive(:flock).and_raise(Errno::EAGAIN)
+          else
+            expect(file_mock).to receive(:flock).and_return(true)
+          end
+          block.call(file_mock)
+        end
+
+        expect(Chef::Log).to receive(:debug).with(/Chocolatey file lock detected/)
+
+        provider.send(:wait_for_chocolatey_lock_release, package_names)
+      end
+    end
+
+    describe "#get_pkg_data with file lock retry" do
+      let(:package_dir) { File.join(choco_install_path, "lib", "testpackage") }
+      let(:nupkg_file) { File.join(package_dir, "testpackage.1.0.0.nupkg") }
+
+      it "wraps file operations in retry logic" do
+        expect(provider).to receive(:with_file_lock_retry).with("get package data for #{package_dir}").and_yield
+        expect(File).to receive(:join).with(package_dir, "*.nupkg").and_return(File.join(package_dir, "*.nupkg"))
+        expect(Dir).to receive(:glob).and_return([])
+
+        result = provider.send(:get_pkg_data, package_dir)
+        expect(result).to eq({})
+      end
+    end
+
+    describe "integration with install_package" do
+      it "does not automatically call wait_for_chocolatey_lock_release after package installation" do
+        new_resource.package_name(["git"])
+        new_resource.version([nil])
+        allow_remote_list(["git"])
+
+        expect(provider).to receive(:choco_command).with("install", "-y", [], "git")
+        expect(provider).not_to receive(:wait_for_chocolatey_lock_release)
+
+        provider.install_package(["git"], [nil])
+      end
+    end
+
+    describe "integration with upgrade_package" do
+      it "does not automatically call wait_for_chocolatey_lock_release after package upgrade" do
+        new_resource.package_name(["git"])
+        new_resource.version([nil])
+        allow_remote_list(["git"])
+
+        expect(provider).to receive(:choco_command).with("upgrade", "-y", [], "git")
+        expect(provider).not_to receive(:wait_for_chocolatey_lock_release)
+
+        provider.upgrade_package(["git"], [nil])
+      end
+    end
+  end
 end
 
 describe "behavior when Chocolatey is not installed" do

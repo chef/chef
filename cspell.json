@@ -383,6 +383,7 @@
     "DWORDLONG",
     "DYNALINK",
     "DYNLINK",
+    "EAGAIN",
     "EASTEUROPE",
     "ebusy",
     "eckey",

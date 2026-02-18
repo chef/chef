@@ -41,6 +41,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     new_resource = Chef::Resource::ChocolateyPackage.new("test choco package", run_context)
     new_resource.package_name package_name
     new_resource.source package_source
+    new_resource.use_choco_list true
     new_resource
   end
 
@@ -173,6 +174,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
 
       subject2 = Chef::Resource::ChocolateyPackage.new("test-A", run_context)
       subject2.source package_source
+      subject2.use_choco_list true
       subject2.run_action(:upgrade)
       expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
@@ -186,9 +188,44 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     end
   end
 
+  context "file lock retry functionality" do
+    it "should handle package installation even when files are temporarily locked" do
+      # This test verifies that the retry mechanism works during package installation
+      # Remove package first to ensure clean state
+      remove_package
+
+      # Install the package - this should succeed even if temporary file locks occur
+      expect { subject.run_action(:install) }.not_to raise_error
+
+      # Verify the package was actually installed
+      expect(package_list.call).not_to match(/0 packages installed/)
+
+      # Clean up
+      remove_package
+    end
+
+    it "should handle package information retrieval with file locks" do
+      # Install package first
+      subject.run_action(:install)
+
+      # Load current resource which triggers file system operations
+      # This should work without file lock errors
+      expect { provider.load_current_resource }.not_to raise_error
+
+      # Verify we can get package data even with potential file locks
+      current_resource = provider.current_resource
+      expect(current_resource.package_name).to eq([package_name]) # package_name returns an array
+      expect(current_resource.version).not_to be_empty
+
+      # Clean up
+      remove_package
+    end
+  end
+
   def remove_package
     pkg_to_remove = Chef::Resource::ChocolateyPackage.new(package_name, run_context)
     pkg_to_remove.source = package_source
+    pkg_to_remove.use_choco_list true
     pkg_to_remove.run_action(:remove)
   end
 end

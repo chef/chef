@@ -257,7 +257,8 @@ class Chef
           @choco_install_path ||= begin
             result = powershell_exec!(PATHFINDING_POWERSHELL_COMMAND).result
             result = "" if result.empty?
-            result
+            # Ensure consistent Windows path separators
+            result.empty? ? result : result.tr("/", "\\")
           end
         end
 
@@ -459,8 +460,10 @@ class Chef
         def get_local_pkg_dirs(base_dir)
           return [] unless Dir.exist?(base_dir)
 
-          Dir.entries(base_dir).select do |dir|
-            ::File.directory?(::File.join(base_dir, dir)) && !dir.start_with?(".")
+          with_file_lock_retry("reading chocolatey package directories") do
+            Dir.entries(base_dir).select do |dir|
+              ::File.directory?(::File.join(base_dir, dir)) && !dir.start_with?(".")
+            end
           end
         end
 
@@ -496,6 +499,60 @@ class Chef
           args
         end
 
+        # Wait for chocolatey to release file locks after package operations
+        # @param names [Array<String>] package names that were just installed/upgraded
+        def wait_for_chocolatey_lock_release(names)
+          return if names.empty?
+
+          Chef::Log.debug("Waiting for chocolatey to release file locks for packages: #{names.join(", ")}")
+
+          # Check for .chocolateyPending files and wait for them to be released
+          names.each do |name|
+            pending_file = ::File.join(choco_lib_path, name.downcase, ".chocolateyPending")
+            if ::File.exist?(pending_file)
+              with_file_lock_retry("waiting for .chocolateyPending file release: #{pending_file}") do
+                # Try to open the file exclusively - this will fail if it's locked
+                ::File.open(pending_file, "r") do |f|
+                  f.flock(::File::LOCK_EX | ::File::LOCK_NB) or raise Errno::EAGAIN
+                end
+              end
+            end
+          end
+        end
+
+        # Retry file operations that might encounter chocolatey process file locks
+        # @param operation_desc [String] description of the operation for logging
+        # @param max_retries [Integer] maximum number of retry attempts
+        # @param base_delay [Float] base delay between retries in seconds
+        def with_file_lock_retry(operation_desc, max_retries: 5, base_delay: 0.5)
+          retries = 0
+          begin
+            yield
+          rescue Errno::EACCES, Errno::EBUSY, Errno::EAGAIN, Errno::ENOENT => e
+            if retries < max_retries && file_lock_error?(e)
+              retries += 1
+              delay = base_delay * (2**(retries - 1)) # exponential backoff
+              Chef::Log.debug("Chocolatey file lock detected during #{operation_desc}, retrying in #{delay}s (attempt #{retries}/#{max_retries}): #{e.message}")
+              sleep(delay)
+              retry
+            else
+              Chef::Log.warn("Failed #{operation_desc} after #{retries} retries: #{e.message}")
+              raise e
+            end
+          end
+        end
+
+        # Check if the error is related to file locking by chocolatey processes
+        # @param error [Exception] the exception to check
+        # @return [Boolean] true if it's a chocolatey file lock related error
+        def file_lock_error?(error)
+          error.message&.include?("being used by another process") ||
+            error.message&.include?("chocolateyPending") ||
+            error.is_a?(Errno::EACCES) ||
+            error.is_a?(Errno::EBUSY) ||
+            error.is_a?(Errno::EAGAIN)
+        end
+
         # Fetch the local package versions from chocolatey
         def fetch_package_versions(base_dir, target_dirs, targets)
           pkg_versions = {}
@@ -511,25 +568,27 @@ class Chef
         # Grab the locally installed packages from the nupkg list
         # rather than shelling out to chocolatey
         def get_pkg_data(path)
-          t = ::File.join(path, "*.nupkg").gsub("\\", "/")
-          targets = Dir.glob(t)
+          with_file_lock_retry("get package data for #{path}") do
+            t = ::File.join(path, "*.nupkg")
+            targets = Dir.glob(t)
 
-          # Extract package version from the first nuspec file in this nupkg
-          targets.each do |target|
-            Zip::File.open(target) do |zip_file|
-              zip_file.each do |entry|
-                next unless entry.name.end_with?(".nuspec")
+            # Extract package version from the first nuspec file in this nupkg
+            targets.each do |target|
+              Zip::File.open(target) do |zip_file|
+                zip_file.each do |entry|
+                  next unless entry.name.end_with?(".nuspec")
 
-                f = entry.get_input_stream
-                doc = REXML::Document.new(f.read.to_s)
-                f.close
-                id = doc.elements["package/metadata/id"]
-                version = doc.elements["package/metadata/version"]
-                return { id.text.to_s.downcase => version.text } if id && version
+                  f = entry.get_input_stream
+                  doc = REXML::Document.new(f.read.to_s)
+                  f.close
+                  id = doc.elements["package/metadata/id"]
+                  version = doc.elements["package/metadata/version"]
+                  return { id.text.to_s.downcase => version.text } if id && version
+                end
               end
             end
+            {}
           end
-          {}
         rescue StandardError => e
           Chef::Log.warn("Failed to get package info for #{path}: #{e}")
           {}
