@@ -33,11 +33,7 @@ GEM
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
     artifactory (3.0.17)
-<<<<<<< HEAD
-    ast (2.4.2)
-=======
     ast (2.4.3)
->>>>>>> 7ba5dcceff (Updating inspec-core and dependencies)
     aws-eventstream (1.4.0)
     aws-partitions (1.1213.0)
     aws-sdk-core (3.242.0)
