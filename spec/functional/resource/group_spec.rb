@@ -62,7 +62,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def compare_gid(resource, gid)
-    return resource.gid == Etc.getgrnam(resource.name).gid if unix?
+    resource.gid == Etc.getgrnam(resource.name).gid if unix?
   end
 
   def sid_string_from_user(user)
@@ -353,9 +353,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
 
     describe "when group name is length 256", :windows_only do
       let!(:group_name) do
-        "theoldmanwalkingdownthestreetalwayshadagood"\
-          "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface"\
-          "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking"\
+        "theoldmanwalkingdownthestreetalwayshadagood" \
+          "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface" \
+          "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking" \
           "downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestree"
       end
 
@@ -380,9 +380,9 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   # for group name > 256, Windows 2016 returns "The parameter is incorrect"
   context "group create action: when group name length is more than 256", :windows_only do
     let!(:group_name) do
-      "theoldmanwalkingdownthestreetalwayshadagood"\
-        "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface"\
-        "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking"\
+      "theoldmanwalkingdownthestreetalwayshadagood" \
+        "smileonhisfacetheoldmanwalkingdownthestreetalwayshadagoodsmileonhisface" \
+        "theoldmanwalkingdownthestreetalwayshadagoodsmileonhisfacetheoldmanwalking" \
         "downthestreetalwayshadagoodsmileonhisfacetheoldmanwalkingdownthestreeQQQQQQ"
     end
 

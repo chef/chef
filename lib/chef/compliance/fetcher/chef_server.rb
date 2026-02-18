@@ -125,7 +125,7 @@ class Chef
         private
 
         def chef_server_url
-          m = %r{^#{@config['server']}/owners/(?<owner>[^/]+)/compliance/(?<id>[^/]+)/tar$}.match(@target)
+          m = %r{^#{@config["server"]}/owners/(?<owner>[^/]+)/compliance/(?<id>[^/]+)/tar$}.match(@target)
           "#{m[:owner]}/#{m[:id]}"
         end
       end

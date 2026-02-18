@@ -28,60 +28,60 @@ class Chef
       description "Use the **windows_firewall_rule** resource to create, change or remove Windows firewall rules."
       introduced "14.7"
       examples <<~DOC
-      **Allowing port 80 access**:
+        **Allowing port 80 access**:
 
-      ```ruby
-      windows_firewall_rule 'IIS' do
-        local_port '80'
-        protocol 'TCP'
-        firewall_action :allow
-      end
-      ```
+        ```ruby
+        windows_firewall_rule 'IIS' do
+          local_port '80'
+          protocol 'TCP'
+          firewall_action :allow
+        end
+        ```
 
-      **Configuring multiple remote-address ports on a rule**:
+        **Configuring multiple remote-address ports on a rule**:
 
-      ```ruby
-      windows_firewall_rule 'MyRule' do
-        description          'Testing out remote address arrays'
-        enabled              false
-        local_port           1434
-        remote_address       %w(10.17.3.101 172.7.7.53)
-        protocol             'TCP'
-        action               :create
-      end
-      ```
+        ```ruby
+        windows_firewall_rule 'MyRule' do
+          description          'Testing out remote address arrays'
+          enabled              false
+          local_port           1434
+          remote_address       %w(10.17.3.101 172.7.7.53)
+          protocol             'TCP'
+          action               :create
+        end
+        ```
 
-      **Allow protocol ICMPv6 with ICMP Type**:
+        **Allow protocol ICMPv6 with ICMP Type**:
 
-      ```ruby
-      windows_firewall_rule 'CoreNet-Rule' do
-        rule_name 'CoreNet-ICMP6-LR2-In'
-        display_name 'Core Networking - Multicast Listener Report v2 (ICMPv6-In)'
-        local_port 'RPC'
-        protocol 'ICMPv6'
-        icmp_type '8'
-      end
-      ```
+        ```ruby
+        windows_firewall_rule 'CoreNet-Rule' do
+          rule_name 'CoreNet-ICMP6-LR2-In'
+          display_name 'Core Networking - Multicast Listener Report v2 (ICMPv6-In)'
+          local_port 'RPC'
+          protocol 'ICMPv6'
+          icmp_type '8'
+        end
+        ```
 
-      **Blocking WinRM over HTTP on a particular IP**:
+        **Blocking WinRM over HTTP on a particular IP**:
 
-      ```ruby
-      windows_firewall_rule 'Disable WinRM over HTTP' do
-        local_port '5985'
-        protocol 'TCP'
-        firewall_action :block
-        local_address '192.168.1.1'
-      end
-      ```
+        ```ruby
+        windows_firewall_rule 'Disable WinRM over HTTP' do
+          local_port '5985'
+          protocol 'TCP'
+          firewall_action :block
+          local_address '192.168.1.1'
+        end
+        ```
 
-      **Deleting an existing rule**
+        **Deleting an existing rule**
 
-      ```ruby
-      windows_firewall_rule 'Remove the SSH rule' do
-        rule_name 'ssh'
-        action :delete
-      end
-      ```
+        ```ruby
+        windows_firewall_rule 'Remove the SSH rule' do
+          rule_name 'ssh'
+          action :delete
+        end
+        ```
       DOC
 
       property :rule_name, String,

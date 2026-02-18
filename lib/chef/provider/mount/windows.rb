@@ -30,7 +30,7 @@ class Chef
         provides :mount, os: "windows"
 
         def is_volume(name)
-          /^\\\\\?\\Volume\{[\w-]+\}\\$/.match?(name) ? true : false
+          /^\\\\\?\\Volume\{[\w-]+\}\\$/.match?(name) || false
         end
 
         def initialize(new_resource, run_context)
@@ -62,9 +62,9 @@ class Chef
         def mount_fs
           unless @current_resource.mounted
             @mount.add(remote: @new_resource.device,
-                       username: @new_resource.username,
-                       domainname: @new_resource.domain,
-                       password: @new_resource.password)
+              username: @new_resource.username,
+              domainname: @new_resource.domain,
+              password: @new_resource.password)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
             logger.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")

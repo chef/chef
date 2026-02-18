@@ -180,11 +180,9 @@ describe Chef::Provider::Package::Windows, :windows_only do
       end
       let(:uninstall_key) { "blah" }
       let(:uninstall_entry) do
-        entries = []
-        uninstall_hash.each do |entry|
-          entries.push(Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", uninstall_key, entry))
+        entries = uninstall_hash.map do |entry|
+          Chef::Provider::Package::Windows::RegistryUninstallEntry.new("hive", uninstall_key, entry)
         end
-        entries
       end
 
       before do

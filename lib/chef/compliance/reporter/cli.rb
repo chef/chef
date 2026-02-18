@@ -46,11 +46,11 @@ class Chef
             end
             if result[:message]
               if found
-                result[:message].split(/\n/).reject(&:empty?).each do |m|
+                result[:message].split("\n").reject(&:empty?).each do |m|
                   output << pastel.red("#{" " * 12}#{m}")
                 end
               else
-                result[:message].split(/\n/).reject(&:empty?).each do |m|
+                result[:message].split("\n").reject(&:empty?).each do |m|
                   output << pastel.red("#{" " * 9}#{m}")
                 end
               end

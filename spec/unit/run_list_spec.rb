@@ -133,8 +133,7 @@ describe Chef::RunList do
     it "should yield each member to your block" do
       @run_list << "foo"
       @run_list << "bar"
-      seen = []
-      @run_list.each { |r| seen << r }
+      seen = @run_list.map { |r| r }
       expect(seen).to be_include("recipe[foo]")
       expect(seen).to be_include("recipe[bar]")
     end

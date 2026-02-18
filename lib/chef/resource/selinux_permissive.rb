@@ -23,18 +23,18 @@ class Chef
       description "Use the **selinux_permissive** resource to allow some domains to misbehave without stopping them. This is not as good as setting specific policies, but better than disabling SELinux entirely."
       introduced "18.0"
       examples <<~DOC
-      **Disable enforcement on Apache**:
+        **Disable enforcement on Apache**:
 
-      ```ruby
-      selinux_permissive 'httpd_t' do
-        notifies :restart, 'service[httpd]'
-      end
-      ```
+        ```ruby
+        selinux_permissive 'httpd_t' do
+          notifies :restart, 'service[httpd]'
+        end
+        ```
       DOC
 
       property :context, String,
-                name_property: true,
-                description: "The SELinux context to permit."
+        name_property: true,
+        description: "The SELinux context to permit."
 
       action_class do
         def current_permissives

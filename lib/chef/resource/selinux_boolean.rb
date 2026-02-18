@@ -25,21 +25,21 @@ class Chef
       description "Use **selinux_boolean** resource to set SELinux boolean values."
       introduced "18.0"
       examples <<~DOC
-      **Set ssh_keysign to true**:
+        **Set ssh_keysign to true**:
 
-      ```ruby
-      selinux_boolean 'ssh_keysign' do
-        value true
-      end
-      ```
+        ```ruby
+        selinux_boolean 'ssh_keysign' do
+          value true
+        end
+        ```
 
-      **Set ssh_sysadm_login to 'on'**:
+        **Set ssh_sysadm_login to 'on'**:
 
-      ```ruby
-      selinux_boolean 'ssh_sysadm_login' do
-        value 'on'
-      end
-      ```
+        ```ruby
+        selinux_boolean 'ssh_sysadm_login' do
+          value 'on'
+        end
+        ```
       DOC
 
       property :boolean, String,

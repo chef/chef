@@ -239,9 +239,9 @@ module Shell
 
       desc "returns an object to control a paused #{ChefUtils::Dist::Infra::PRODUCT} run"
       subcommands resume: "resume the #{ChefUtils::Dist::Infra::PRODUCT} run",
-                  step: "run only the next resource",
-                  skip_back: "move back in the run list",
-                  skip_forward: "move forward in the run list"
+        step: "run only the next resource",
+        skip_back: "move back in the run list",
+        skip_forward: "move forward in the run list"
       def chef_run
         Shell.session.resource_collection.iterator
       end
@@ -393,17 +393,17 @@ module Shell
           This will strip the admin privileges from any client named after borat.
       E
       subcommands all: "list all api clients",
-                  show: "load an api client by name",
-                  search: "search for API clients",
-                  transform: "edit all api clients via a code block and save them"
+        show: "load an api client by name",
+        search: "search for API clients",
+        transform: "edit all api clients via a code block and save them"
       def clients
         @clients ||= Shell::ModelWrapper.new(Chef::ApiClient, :client)
       end
 
       desc "Find and edit cookbooks"
       subcommands all: "list all cookbooks",
-                  show: "load a cookbook by name",
-                  transform: "edit all cookbooks via a code block and save them"
+        show: "load a cookbook by name",
+        transform: "edit all cookbooks via a code block and save them"
       def cookbooks
         @cookbooks ||= Shell::ModelWrapper.new(Chef::CookbookVersion)
       end
@@ -455,9 +455,9 @@ module Shell
           This will assign the attribute to every node with a FQDN matching the regex.
       E
       subcommands all: "list all nodes",
-                  show: "load a node by name",
-                  search: "search for nodes",
-                  transform: "edit all nodes via a code block and save them"
+        show: "load a node by name",
+        search: "search for nodes",
+        transform: "edit all nodes via a code block and save them"
       def nodes
         @nodes ||= Shell::ModelWrapper.new(Chef::Node)
       end
@@ -477,9 +477,9 @@ module Shell
           See the help for +nodes+ for more information about the subcommands.
       E
       subcommands all: "list all roles",
-                  show: "load a role by name",
-                  search: "search for roles",
-                  transform: "edit all roles via a code block and save them"
+        show: "load a role by name",
+        search: "search for roles",
+        transform: "edit all roles via a code block and save them"
       def roles
         @roles ||= Shell::ModelWrapper.new(Chef::Role)
       end
@@ -503,9 +503,9 @@ module Shell
 
       E
       subcommands all: "list all items in the data bag",
-                  show: "load a data bag item by id",
-                  search: "search for items in the data bag",
-                  transform: "edit all items via a code block and save them"
+        show: "load a data bag item by id",
+        search: "search for items in the data bag",
+        transform: "edit all items via a code block and save them"
       def databags(databag_name)
         @named_databags_wrappers ||= {}
         @named_databags_wrappers[databag_name] ||= Shell::NamedDataBagWrapper.new(databag_name)
@@ -526,9 +526,9 @@ module Shell
           See the help for +nodes+ for more information about the subcommands.
       E
       subcommands all: "list all environments",
-                  show: "load an environment by name",
-                  search: "search for environments",
-                  transform: "edit all environments via a code block and save them"
+        show: "load an environment by name",
+        search: "search for environments",
+        transform: "edit all environments via a code block and save them"
       def environments
         @environments ||= Shell::ModelWrapper.new(Chef::Environment)
       end

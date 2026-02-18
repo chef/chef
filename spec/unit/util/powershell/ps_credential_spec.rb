@@ -29,7 +29,7 @@ describe Chef::Util::Powershell::PSCredential do
       it "should create the script to create a PSCredential when calling" do
         allow(ps_credential).to receive(:encrypt).with(password).and_return("encrypted")
         expect(ps_credential.to_psobject).to eq(
-          "New-Object System.Management.Automation.PSCredential("\
+          "New-Object System.Management.Automation.PSCredential(" \
               "'#{username}',('encrypted' | ConvertTo-SecureString))"
         )
       end

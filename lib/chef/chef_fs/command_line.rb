@@ -29,7 +29,7 @@ class Chef
 
       def self.diff_print(pattern, a_root, b_root, recurse_depth, output_mode, format_path = nil, diff_filter = nil, ui = nil)
         if format_path.nil?
-          format_path = proc { |entry| entry.path_for_printing }
+          format_path = proc(&:path_for_printing)
         end
 
         get_content = (output_mode != :name_only && output_mode != :name_status)
@@ -119,9 +119,9 @@ class Chef
               yield result
             end
 
-          when :both_nonexistent
-          when :added_cannot_upload
-          when :deleted_cannot_download
+          when :both_nonexistent # rubocop:disable Lint/EmptyWhen
+          when :added_cannot_upload # rubocop:disable Lint/EmptyWhen
+          when :deleted_cannot_download # rubocop:disable Lint/EmptyWhen
           when :same
             # Skip these silently
           when :error

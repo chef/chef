@@ -27,73 +27,73 @@ class Chef
 
       provides(:sudo) { true }
 
-      description "Use the **sudo** resource to add or remove individual sudo entries using sudoers.d files."\
-                  " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the"\
-                  " `#includedir` directive introduced in version 1.7.2. This resource does not enforce"\
-                  " installation of the required sudo version. Chef-supported releases of Ubuntu, SuSE, Debian,"\
+      description "Use the **sudo** resource to add or remove individual sudo entries using sudoers.d files." \
+                  " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the" \
+                  " `#includedir` directive introduced in version 1.7.2. This resource does not enforce" \
+                  " installation of the required sudo version. Chef-supported releases of Ubuntu, SuSE, Debian," \
                   " and RHEL (6+) all support this feature."
       introduced "14.0"
       examples <<~DOC
-      **Grant a user sudo privileges for any command**
+        **Grant a user sudo privileges for any command**
 
-      ```ruby
-      sudo 'admin' do
-        user 'admin'
-      end
-      ```
+        ```ruby
+        sudo 'admin' do
+          user 'admin'
+        end
+        ```
 
-      **Grant a user and groups sudo privileges for any command**
+        **Grant a user and groups sudo privileges for any command**
 
-      ```ruby
-      sudo 'admins' do
-        users 'bob'
-        groups 'sysadmins, superusers'
-      end
-      ```
+        ```ruby
+        sudo 'admins' do
+          users 'bob'
+          groups 'sysadmins, superusers'
+        end
+        ```
 
-      **Grant passwordless sudo privileges for specific commands**
+        **Grant passwordless sudo privileges for specific commands**
 
-      ```ruby
-      sudo 'passwordless-access' do
-        commands ['/bin/systemctl restart httpd', '/bin/systemctl restart mysql']
-        nopasswd true
-      end
-      ```
+        ```ruby
+        sudo 'passwordless-access' do
+          commands ['/bin/systemctl restart httpd', '/bin/systemctl restart mysql']
+          nopasswd true
+        end
+        ```
 
-      **Create command aliases and assign them to a group**
+        **Create command aliases and assign them to a group**
 
-      ```ruby
-      sudo 'webteam' do
-        command_aliases [
-          {
-            'name': 'WEBTEAM_SYSTEMD_JBOSS',
-            'command_list': [
-              '/usr/bin/systemctl start eap7-standalone.service',
-              '/usr/bin/systemctl start jbcs-httpd24-httpd.service', \
-              '/usr/bin/systemctl stop eap7-standalone.service', \
-              '/usr/bin/systemctl stop jbcs-httpd24-httpd.service', \
-              '/usr/bin/systemctl restart eap7-standalone.service', \
-              '/usr/bin/systemctl restart jbcs-httpd24-httpd.service', \
-              '/usr/bin/systemctl --full edit eap7-standalone.service', \
-              '/usr/bin/systemctl --full edit jbcs-httpd24-httpd.service', \
-              '/usr/bin/systemctl daemon-reload',
-            ]
-          },
-          {
-            'name': 'GENERIC_SYSTEMD',
-            'command_list': [
-              '/usr/sbin/systemctl list-unit-files',
-              '/usr/sbin/systemctl list-timers', \
-              '/usr/sbin/systemctl is-active *', \
-              '/usr/sbin/systemctl is-enabled *',
+        ```ruby
+        sudo 'webteam' do
+          command_aliases [
+            {
+              'name': 'WEBTEAM_SYSTEMD_JBOSS',
+              'command_list': [
+                '/usr/bin/systemctl start eap7-standalone.service',
+                '/usr/bin/systemctl start jbcs-httpd24-httpd.service', \
+                '/usr/bin/systemctl stop eap7-standalone.service', \
+                '/usr/bin/systemctl stop jbcs-httpd24-httpd.service', \
+                '/usr/bin/systemctl restart eap7-standalone.service', \
+                '/usr/bin/systemctl restart jbcs-httpd24-httpd.service', \
+                '/usr/bin/systemctl --full edit eap7-standalone.service', \
+                '/usr/bin/systemctl --full edit jbcs-httpd24-httpd.service', \
+                '/usr/bin/systemctl daemon-reload',
               ]
-          }
-        ]
-        nopasswd true
-        users '%webteam'
-        commands [ 'WEBTEAM_SYSTEMD_JBOSS', 'GENERIC_SYSTEMD' ]
-      end
-      ```
+            },
+            {
+              'name': 'GENERIC_SYSTEMD',
+              'command_list': [
+                '/usr/sbin/systemctl list-unit-files',
+                '/usr/sbin/systemctl list-timers', \
+                '/usr/sbin/systemctl is-active *', \
+                '/usr/sbin/systemctl is-enabled *',
+                ]
+            }
+          ]
+          nopasswd true
+          users '%webteam'
+          commands [ 'WEBTEAM_SYSTEMD_JBOSS', 'GENERIC_SYSTEMD' ]
+        end
+        ```
       DOC
 
       # According to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
@@ -235,16 +235,16 @@ class Chef
             local true
             mode "0440"
             variables sudoer:            (new_resource.groups + new_resource.users).join(","),
-                      host:               new_resource.host,
-                      runas:              new_resource.runas,
-                      nopasswd:           new_resource.nopasswd,
-                      noexec:             new_resource.noexec,
-                      commands:           new_resource.commands,
-                      command_aliases:    new_resource.command_aliases,
-                      defaults:           new_resource.defaults,
-                      setenv:             new_resource.setenv,
-                      env_keep_add:       new_resource.env_keep_add,
-                      env_keep_subtract:  new_resource.env_keep_subtract
+              host:               new_resource.host,
+              runas:              new_resource.runas,
+              nopasswd:           new_resource.nopasswd,
+              noexec:             new_resource.noexec,
+              commands:           new_resource.commands,
+              command_aliases:    new_resource.command_aliases,
+              defaults:           new_resource.defaults,
+              setenv:             new_resource.setenv,
+              env_keep_add:       new_resource.env_keep_add,
+              env_keep_subtract:  new_resource.env_keep_subtract
             verify visudo_content(file_path) if visudo_present?
             action :create
           end

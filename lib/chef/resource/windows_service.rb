@@ -39,111 +39,111 @@ class Chef
       description "Use the **windows_service** resource to create, delete, or manage a service on the Microsoft Windows platform."
       introduced "12.0"
       examples <<~DOC
-      **Starting Services**
+        **Starting Services**
 
-      Start a service with a `manual` startup type:
+        Start a service with a `manual` startup type:
 
-      ```ruby
-      windows_service 'BITS' do
-        action :configure_startup
-        startup_type :manual
-      end
-      ```
+        ```ruby
+        windows_service 'BITS' do
+          action :configure_startup
+          startup_type :manual
+        end
+        ```
 
-      **Creating Services**
+        **Creating Services**
 
-      Create a service named chef-client:
+        Create a service named chef-client:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :create
-        binary_path_name "C:\\opscode\\chef\\bin"
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :create
+          binary_path_name "C:\\opscode\\chef\\bin"
+        end
+        ```
 
-      Create a service with `service_name` and `display_name`:
+        Create a service with `service_name` and `display_name`:
 
-      ```ruby
-      windows_service 'Setup chef-client as a service' do
-        action :create
-        display_name 'CHEF-CLIENT'
-        service_name 'chef-client'
-        binary_path_name "C:\\opscode\\chef\\bin"
-      end
-      ```
+        ```ruby
+        windows_service 'Setup chef-client as a service' do
+          action :create
+          display_name 'CHEF-CLIENT'
+          service_name 'chef-client'
+          binary_path_name "C:\\opscode\\chef\\bin"
+        end
+        ```
 
-      Create a service with the `manual` startup type:
+        Create a service with the `manual` startup type:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :create
-        binary_path_name "C:\\opscode\\chef\\bin"
-        startup_type :manual
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :create
+          binary_path_name "C:\\opscode\\chef\\bin"
+          startup_type :manual
+        end
+        ```
 
-      Create a service with the `disabled` startup type:
+        Create a service with the `disabled` startup type:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :create
-        binary_path_name "C:\\opscode\\chef\\bin"
-        startup_type :disabled
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :create
+          binary_path_name "C:\\opscode\\chef\\bin"
+          startup_type :disabled
+        end
+        ```
 
-      Create a service with the `automatic` startup type and delayed start enabled:
+        Create a service with the `automatic` startup type and delayed start enabled:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :create
-        binary_path_name "C:\\opscode\\chef\\bin"
-        startup_type :automatic
-        delayed_start true
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :create
+          binary_path_name "C:\\opscode\\chef\\bin"
+          startup_type :automatic
+          delayed_start true
+        end
+        ```
 
-      Create a service with a description:
+        Create a service with a description:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :create
-        binary_path_name "C:\\opscode\\chef\\bin"
-        startup_type :automatic
-        description "Chef client as service"
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :create
+          binary_path_name "C:\\opscode\\chef\\bin"
+          startup_type :automatic
+          description "Chef client as service"
+        end
+        ```
 
-      **Deleting Services**
+        **Deleting Services**
 
-      Delete a service named chef-client:
+        Delete a service named chef-client:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :delete
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :delete
+        end
+        ```
 
-      Delete a service with the `service_name` property:
+        Delete a service with the `service_name` property:
 
-      ```ruby
-      windows_service 'Delete chef client' do
-        action :delete
-        service_name 'chef-client'
-      end
-      ```
+        ```ruby
+        windows_service 'Delete chef client' do
+          action :delete
+          service_name 'chef-client'
+        end
+        ```
 
-      **Configuring Services**
+        **Configuring Services**
 
-      Change an existing service from automatic to manual startup:
+        Change an existing service from automatic to manual startup:
 
-      ```ruby
-      windows_service 'chef-client' do
-        action :configure
-        binary_path_name "C:\\opscode\\chef\\bin"
-        startup_type :manual
-      end
-      ```
+        ```ruby
+        windows_service 'chef-client' do
+          action :configure
+          binary_path_name "C:\\opscode\\chef\\bin"
+          startup_type :manual
+        end
+        ```
       DOC
 
       allowed_actions :configure_startup, :create, :delete, :configure
@@ -165,7 +165,7 @@ class Chef
 
       # https://github.com/chef/win32-service/blob/ffi/lib/win32/windows/constants.rb#L31-L41
       property :service_type, Integer, default: SERVICE_WIN32_OWN_PROCESS,
-      introduced: "14.0"
+        introduced: "14.0"
 
       # Valid options:
       #   - :automatic
@@ -226,7 +226,7 @@ class Chef
       property :run_as_user, String,
         description: "The user under which a Microsoft Windows service runs.",
         default: "localsystem",
-        coerce: proc { |x| x.downcase }
+        coerce: proc(&:downcase)
 
       property :run_as_password, String,
         description: "The password for the user specified by `run_as_user`.",

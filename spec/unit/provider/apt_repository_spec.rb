@@ -87,13 +87,13 @@ describe "Chef::Provider::AptRepository" do
 
   let(:gpg_shell_out_success) do
     double("shell_out", stdout: "pub  2048R/7BD9BF62 2011-08-19 nginx signing key <signing-key@nginx.com>",
-                        exitstatus: 0, error?: false)
+      exitstatus: 0, error?: false)
   end
 
   let(:gpg_shell_out_failure) do
     double("shell_out", stderr: "gpg: keybox '/etc/apt/keyrings/ring.gpg' created\ngpg: error reading key: No public key\n",
-                        stdout: "",
-                        exitstatus: 2, error?: true)
+      stdout: "",
+      exitstatus: 2, error?: true)
   end
 
   let(:gpg_shell_out_expired) do

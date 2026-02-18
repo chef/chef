@@ -37,9 +37,9 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
         if use_ssl?
           if proxy?
             plain_sock = BufferedIO.new(s, read_timeout: @read_timeout,
-                                        write_timeout: @write_timeout,
-                                        continue_timeout: @continue_timeout,
-                                        debug_output: @debug_output)
+              write_timeout: @write_timeout,
+              continue_timeout: @continue_timeout,
+              debug_output: @debug_output)
             buf = "CONNECT #{conn_address}:#{@port} HTTP/#{HTTPVersion}\r\n"
             buf << "Host: #{@address}:#{@port}\r\n"
             if proxy_user
@@ -65,8 +65,8 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           @ssl_context.set_params(ssl_parameters)
           unless @ssl_context.session_cache_mode.nil? # a dummy method on JRuby
             @ssl_context.session_cache_mode =
-                OpenSSL::SSL::SSLContext::SESSION_CACHE_CLIENT |
-                OpenSSL::SSL::SSLContext::SESSION_CACHE_NO_INTERNAL_STORE
+              OpenSSL::SSL::SSLContext::SESSION_CACHE_CLIENT |
+              OpenSSL::SSL::SSLContext::SESSION_CACHE_NO_INTERNAL_STORE
           end
           if @ssl_context.respond_to?(:session_new_cb) # not implemented under JRuby
             @ssl_context.session_new_cb = proc { |sock, sess| @ssl_session = sess }
@@ -108,9 +108,9 @@ if RUBY_VERSION.split(".")[0..1].join(".") == "3.1"
           Chef::Log.debug("SSL established, protocol: #{s.ssl_version}, cipher: #{s.cipher[0]}")
         end
         @socket = BufferedIO.new(s, read_timeout: @read_timeout,
-                                write_timeout: @write_timeout,
-                                continue_timeout: @continue_timeout,
-                                debug_output: @debug_output)
+          write_timeout: @write_timeout,
+          continue_timeout: @continue_timeout,
+          debug_output: @debug_output)
         @last_communicated = nil
         on_connect
       rescue => exception

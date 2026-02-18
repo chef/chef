@@ -61,7 +61,7 @@ class Chef
           a.assertion { ::File.directory?(dirname) }
           a.whyrun("Directory #{dirname} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
-                            "Cannot clone #{new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
+            "Cannot clone #{new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
         end
 
         requirements.assert(:all_actions) do |a|

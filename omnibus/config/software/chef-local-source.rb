@@ -32,14 +32,14 @@ skip_transitive_dependency_licensing false
 # just ran omnibus build locally.
 version("local_source") do
   source path: "#{project.files_path}/../..",
-         # Since we are using the local repo, we try to not copy any files
-         # that are generated in the process of bundle installing omnibus.
-         # If the install steps are well-behaved, this should not matter
-         # since we only perform bundle and gem installs from the
-         # omnibus cache source directory, but we do this regardless
-         # to maintain consistency between what a local build sees and
-         # what a github based build will see.
-         options: { exclude: [ "omnibus/vendor" ] }
+    # Since we are using the local repo, we try to not copy any files
+    # that are generated in the process of bundle installing omnibus.
+    # If the install steps are well-behaved, this should not matter
+    # since we only perform bundle and gem installs from the
+    # omnibus cache source directory, but we do this regardless
+    # to maintain consistency between what a local build sees and
+    # what a github based build will see.
+    options: { exclude: [ "omnibus/vendor" ] }
 end
 
 # For any version other than "local_source", fetch from github.
@@ -56,7 +56,7 @@ ruby_version = ruby_version.split(".")[0..1].join(".")
 ruby_mmv = "#{ruby_version}.0"
 ruby_dir = "#{install_dir}/embedded/lib/ruby/#{ruby_mmv}"
 gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
-bin_dirs bin_dirs.concat ["#{gem_dir}/gems/*/bin/**"]
+bin_dirs bin_dirs.push "#{gem_dir}/gems/*/bin/**"
 lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems/extensions/**", "#{gem_dir}/bundler/gems/*", "#{gem_dir}/bundler/gems/*/lib/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
 
 dependency "chef-foundation"
@@ -67,7 +67,7 @@ build do
   env = with_standard_compiler_flags(with_embedded_path)
 
   # The --without groups here MUST match groups in https://github.com/chef/chef/blob/main/Gemfile
-  excluded_groups = %w{docgen chefstyle}
+  excluded_groups = %w{docgen cookstyle}
   excluded_groups << "ruby_prof" if aix?
   excluded_groups << "ruby_shadow" if aix?
   excluded_groups << "ed25519" if solaris2?
@@ -76,7 +76,7 @@ build do
   bundle_excludes = excluded_groups + %w{development test}
 
   copy "Gemfile.aix.lock", "Gemfile.lock", remove_destination: true if aix?
-  bundle "config set --local without docgen chefstyle development test", env: env
+  bundle "config set --local without docgen cookstyle development test", env: env
   bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
   ruby "post-bundle-install.rb", env: env
 

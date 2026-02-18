@@ -29,7 +29,7 @@ class Chef
         return true if spec == "*"
 
         if spec.respond_to? :to_int
-          return spec >= min && spec <= max
+          return spec.between?(min, max)
         end
 
         # Lists of individual values, ranges, and step values all share the validity range for type
@@ -38,7 +38,7 @@ class Chef
           return false unless /^\d+$/.match?(x)
 
           x = x.to_i
-          return false unless x >= min && x <= max
+          return false unless x.between?(min, max)
         end
         true
       end

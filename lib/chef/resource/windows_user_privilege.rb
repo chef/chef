@@ -28,67 +28,67 @@ class Chef
       introduced "16.0"
 
       examples <<~DOC
-      **Set the SeNetworkLogonRight privilege for the Builtin Administrators and Authenticated Users groups**:
+        **Set the SeNetworkLogonRight privilege for the Builtin Administrators and Authenticated Users groups**:
 
-      The `:set` action will add this privilege for these two groups and remove this privilege from all other groups or users.
+        The `:set` action will add this privilege for these two groups and remove this privilege from all other groups or users.
 
-      ```ruby
-      windows_user_privilege 'Network Logon Rights' do
-        privilege      'SeNetworkLogonRight'
-        users          ['BUILTIN\\Administrators', 'NT AUTHORITY\\Authenticated Users']
-        action         :set
-      end
-      ```
+        ```ruby
+        windows_user_privilege 'Network Logon Rights' do
+          privilege      'SeNetworkLogonRight'
+          users          ['BUILTIN\\Administrators', 'NT AUTHORITY\\Authenticated Users']
+          action         :set
+        end
+        ```
 
-      **Set the SeCreatePagefilePrivilege privilege for the Builtin Guests and Administrator groups**:
+        **Set the SeCreatePagefilePrivilege privilege for the Builtin Guests and Administrator groups**:
 
-      The `:set` action will add this privilege for these two groups and remove this privilege from all other groups or users.
+        The `:set` action will add this privilege for these two groups and remove this privilege from all other groups or users.
 
-      ```ruby
-      windows_user_privilege 'Create Pagefile' do
-        privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\\Guests', 'BUILTIN\\Administrators']
-        action         :set
-      end
-      ```
+        ```ruby
+        windows_user_privilege 'Create Pagefile' do
+          privilege      'SeCreatePagefilePrivilege'
+          users          ['BUILTIN\\Guests', 'BUILTIN\\Administrators']
+          action         :set
+        end
+        ```
 
-      **Add the SeDenyRemoteInteractiveLogonRight privilege to the 'Remote interactive logon' principal**:
+        **Add the SeDenyRemoteInteractiveLogonRight privilege to the 'Remote interactive logon' principal**:
 
-      ```ruby
-      windows_user_privilege 'Remote interactive logon' do
-        privilege      'SeDenyRemoteInteractiveLogonRight'
-        action         :add
-      end
-      ```
+        ```ruby
+        windows_user_privilege 'Remote interactive logon' do
+          privilege      'SeDenyRemoteInteractiveLogonRight'
+          action         :add
+        end
+        ```
 
-      **Add the SeCreatePageFilePrivilege privilege to the Builtin Guests group**:
+        **Add the SeCreatePageFilePrivilege privilege to the Builtin Guests group**:
 
-      ```ruby
-      windows_user_privilege 'Guests add Create Pagefile' do
-        principal      'BUILTIN\\Guests'
-        privilege      'SeCreatePagefilePrivilege'
-        action         :add
-      end
-      ```
+        ```ruby
+        windows_user_privilege 'Guests add Create Pagefile' do
+          principal      'BUILTIN\\Guests'
+          privilege      'SeCreatePagefilePrivilege'
+          action         :add
+        end
+        ```
 
-      **Remove the SeCreatePageFilePrivilege privilege from the Builtin Guests group**:
+        **Remove the SeCreatePageFilePrivilege privilege from the Builtin Guests group**:
 
-      ```ruby
-      windows_user_privilege 'Create Pagefile' do
-        privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\\Guests']
-        action         :remove
-      end
-      ```
+        ```ruby
+        windows_user_privilege 'Create Pagefile' do
+          privilege      'SeCreatePagefilePrivilege'
+          users          ['BUILTIN\\Guests']
+          action         :remove
+        end
+        ```
 
-      **Clear the SeDenyNetworkLogonRight privilege from all users**:
+        **Clear the SeDenyNetworkLogonRight privilege from all users**:
 
-      ```ruby
-      windows_user_privilege 'Allow any user the Network Logon right' do
-        privilege      'SeDenyNetworkLogonRight'
-        action         :clear
-      end
-      ```
+        ```ruby
+        windows_user_privilege 'Allow any user the Network Logon right' do
+          privilege      'SeDenyNetworkLogonRight'
+          action         :clear
+        end
+        ```
       DOC
 
       PRIVILEGE_OPTS = %w{ SeAssignPrimaryTokenPrivilege
@@ -139,20 +139,20 @@ class Chef
                           }.freeze
 
       property :principal, String,
-               description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a user, group, or [special identity](https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities).",
-               name_property: true
+        description: "An optional property to add the privilege for given principal. Use only with add and remove action. Principal can either be a user, group, or [special identity](https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/special-identities).",
+        name_property: true
 
       property :users, [Array, String],
-               description: "An optional property to set the privilege for the specified users. Use only with `:set` action",
-               coerce: proc { |v| Array(v) }
+        description: "An optional property to set the privilege for the specified users. Use only with `:set` action",
+        coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
-               description: "One or more privileges to set for principal or users/groups. For more information, see [Microsoft's documentation on what each privilege does](https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment).",
-               required: true,
-               coerce: proc { |v| Array(v) },
-               callbacks: {
-                 "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
-               }, identity: true
+        description: "One or more privileges to set for principal or users/groups. For more information, see [Microsoft's documentation on what each privilege does](https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment).",
+        required: true,
+        coerce: proc { |v| Array(v) },
+        callbacks: {
+          "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
+        }, identity: true
 
       load_current_value do |new_resource|
         if new_resource.principal && (new_resource.action.include?(:add) || new_resource.action.include?(:remove))
@@ -222,7 +222,7 @@ class Chef
         missing_res_privileges = (new_resource.privilege - curr_res_privilege)
 
         if missing_res_privileges
-          Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
+          Chef::Log.info("User '#{new_resource.principal}' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
         end
 
         (new_resource.privilege - missing_res_privileges).each do |principal_right|

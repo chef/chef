@@ -27,11 +27,11 @@ class Chef
 
       provides :directory
 
-      description "Use the **directory** resource to manage a directory, which is a hierarchy"\
-                  " of folders that comprises all of the information stored on a computer."\
-                  " The root directory is the top-level, under which the rest of the directory"\
-                  " is organized. The directory resource uses the name property to specify the"\
-                  " path to a location in a directory. Typically, permission to access that"\
+      description "Use the **directory** resource to manage a directory, which is a hierarchy" \
+                  " of folders that comprises all of the information stored on a computer." \
+                  " The root directory is the top-level, under which the rest of the directory" \
+                  " is organized. The directory resource uses the name property to specify the" \
+                  " path to a location in a directory. Typically, permission to access that" \
                   " location in the directory is required."
 
       state_attrs :group, :mode, :owner
@@ -42,7 +42,7 @@ class Chef
       allowed_actions :create, :delete
 
       property :path, String, name_property: true,
-               description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
+        description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
 
       property :recursive, [ TrueClass, FalseClass ],
         description: "Create parent directories recursively, or delete directory and all children recursively. For the owner, group, and mode properties, the value of this property applies only to the leaf directory.",

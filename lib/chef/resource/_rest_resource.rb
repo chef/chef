@@ -86,7 +86,7 @@ action :delete do
     end
   else
     logger.debug format("REST resource %<name>s of type %<type>s does not exist. Skipping.",
-                        type: new_resource.name, name: id_property)
+      type: new_resource.name, name: id_property)
   end
 end
 
@@ -198,9 +198,9 @@ action_class do
       end
 
       message = format("Setting property :%<property>s requires properties :%<properties>s to be set as well on resource %<resource_name>s",
-                       property: property,
-                       properties: dependent_properties.join(", :"),
-                       resource_name: current_resource.to_s)
+        property: property,
+        properties: dependent_properties.join(", :"),
+        resource_name: current_resource.to_s)
 
       a.failure_message message
     end
@@ -376,7 +376,7 @@ action_class do
     arr = path.split(".")
     ret = {}
 
-    if arr.count == 1
+    if arr.one?
       ret[arr.first] = value
 
       ret

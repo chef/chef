@@ -27,34 +27,34 @@ class Chef
       description "Use the **apt_preference** resource to create APT [preference files](https://wiki.debian.org/AptPreferences). Preference files are used to control which package versions and sources are prioritized during installation."
       introduced "13.3"
       examples <<~DOC
-      **Pin libmysqlclient16 to a version 5.1.49-3**:
+        **Pin libmysqlclient16 to a version 5.1.49-3**:
 
-      ```ruby
-      apt_preference 'libmysqlclient16' do
-        pin          'version 5.1.49-3'
-        pin_priority '700'
-      end
-      ```
+        ```ruby
+        apt_preference 'libmysqlclient16' do
+          pin          'version 5.1.49-3'
+          pin_priority '700'
+        end
+        ```
 
-      Note: The `pin_priority` of `700` ensures that this version will be preferred over any other available versions.
+        Note: The `pin_priority` of `700` ensures that this version will be preferred over any other available versions.
 
-      **Unpin a libmysqlclient16**:
+        **Unpin a libmysqlclient16**:
 
-      ```ruby
-      apt_preference 'libmysqlclient16' do
-        action :remove
-      end
-      ```
+        ```ruby
+        apt_preference 'libmysqlclient16' do
+          action :remove
+        end
+        ```
 
-      **Pin all packages to prefer the packages.dotdeb.org repository**:
+        **Pin all packages to prefer the packages.dotdeb.org repository**:
 
-      ```ruby
-      apt_preference 'dotdeb' do
-        glob         '*'
-        pin          'origin packages.dotdeb.org'
-        pin_priority '700'
-      end
-      ```
+        ```ruby
+        apt_preference 'dotdeb' do
+          glob         '*'
+          pin          'origin packages.dotdeb.org'
+          pin_priority '700'
+        end
+        ```
       DOC
 
       property :package_name, String,

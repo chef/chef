@@ -6,4 +6,3 @@ ChefLicensing.configure do |config|
   config.chef_executable_name = "knife"
   config.license_server_url   = "https://services.chef.io/licensing"
 end
-

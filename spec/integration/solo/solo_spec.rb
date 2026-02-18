@@ -119,6 +119,7 @@ describe ChefUtils::Dist::Solo::EXEC do
       result = shell_out("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug", cwd: chef_dir)
       expect(result.exitstatus).to eq(0) # For CHEF-5120 this becomes 1
       expect(result.stdout).to include("WARN: MissingCookbookDependency")
+      expect(result.stdout).to match(/WARN:\s+MissingCookbookDependency/m)
     end
   end
 

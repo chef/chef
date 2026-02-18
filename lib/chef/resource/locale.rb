@@ -27,13 +27,13 @@ class Chef
       introduced "14.5"
 
       examples <<~DOC
-      Set the lang to 'en_US.UTF-8'
+        Set the lang to 'en_US.UTF-8'
 
-      ```ruby
-        locale 'set system locale' do
-          lang 'en_US.UTF-8'
-        end
-      ```
+        ```ruby
+          locale 'set system locale' do
+            lang 'en_US.UTF-8'
+          end
+        ```
       DOC
 
       LC_VARIABLES ||= %w{LC_ADDRESS LC_COLLATE LC_CTYPE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME}.freeze

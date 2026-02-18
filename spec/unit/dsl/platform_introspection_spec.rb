@@ -134,7 +134,7 @@ describe "ChefHelper functions mixed into classes" do
 
   METHODS.each do |method|
     it "mixes #{method} into Chef::Resource instances" do
-      expect(Chef::Resource.instance_methods.include?(method)).to be true
+      expect(Chef::Resource.method_defined?(method)).to be true
     end
 
     it "mixes #{method} into Chef::Resource classes (provides lines, etc)" do
@@ -142,7 +142,7 @@ describe "ChefHelper functions mixed into classes" do
     end
 
     it "mixes #{method} into Chef::Provider instances (actions)" do
-      expect(Chef::Provider.instance_methods.include?(method)).to be true
+      expect(Chef::Provider.method_defined?(method)).to be true
     end
 
     it "mixes #{method} into Chef::Provider classes (provides lines, etc)" do
@@ -150,11 +150,11 @@ describe "ChefHelper functions mixed into classes" do
     end
 
     it "mixes #{method} into Chef::Recipe instances (recipe files)" do
-      expect(Chef::Recipe.instance_methods.include?(method)).to be true
+      expect(Chef::Recipe.method_defined?(method)).to be true
     end
 
     it "mixes #{method} into Chef::Node instances (attribute files)" do
-      expect(Chef::Recipe.instance_methods.include?(method)).to be true
+      expect(Chef::Recipe.method_defined?(method)).to be true
     end
   end
 end

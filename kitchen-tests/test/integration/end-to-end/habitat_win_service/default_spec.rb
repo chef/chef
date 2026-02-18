@@ -10,13 +10,13 @@ describe file("C:\\hab\\sup\\default\\specs\\splunkforwarder.spec") do
   it { should_not exist }
 end
 
-servicecheck = <<-EOH
-$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-$headers.Add("Content-Type", "application/json")
-$headers.Add("Authorization", "Bearer secret")
-$uri = "http://localhost:9631/services"
-$reply = (Invoke-RestMethod -Headers $headers -uri $uri) | Convertto-Json
-$reply
+servicecheck = <<~EOH
+  $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+  $headers.Add("Content-Type", "application/json")
+  $headers.Add("Authorization", "Bearer secret")
+  $uri = "http://localhost:9631/services"
+  $reply = (Invoke-RestMethod -Headers $headers -uri $uri) | Convertto-Json
+  $reply
 EOH
 
 describe json(command: servicecheck) do

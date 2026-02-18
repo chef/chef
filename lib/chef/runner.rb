@@ -161,7 +161,7 @@ class Chef
     end
 
     def run_delayed_notification(notification)
-      Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}"\
+      Chef::Log.info( "#{notification.notifying_resource} sending #{notification.action}" \
                       " action to #{notification.resource} (delayed)")
       # notifications may have lazy strings in them to resolve
       notification.resolve_resource_reference(run_context.resource_collection)

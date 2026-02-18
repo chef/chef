@@ -37,22 +37,22 @@ describe Chef::DSL::RenderHelpers do
     json = Chef::DSL::RenderHelpers.render_json(hash)
     describe "JSON content" do
       it "expected JSON output" do
-        expected = <<-EXPECTED
-{
-  "golf": "hotel",
-  "kilo": [
-    "lima",
-    "mike"
-  ],
-  "india": {
-    "juliett": "blue"
-  },
-  "alpha": {
-    "charlie": true,
-    "bravo": 10
-  },
-  "echo": "foxtrot"
-}
+        expected = <<~EXPECTED
+          {
+            "golf": "hotel",
+            "kilo": [
+              "lima",
+              "mike"
+            ],
+            "india": {
+              "juliett": "blue"
+            },
+            "alpha": {
+              "charlie": true,
+              "bravo": 10
+            },
+            "echo": "foxtrot"
+          }
         EXPECTED
         expect(json).to eq(expected)
       end
@@ -63,15 +63,15 @@ describe Chef::DSL::RenderHelpers do
     toml = Chef::DSL::RenderHelpers.render_toml(hash)
     describe "TOML content" do
       it "expected TOML output" do
-        expected = <<-EXPECTED
-echo = "foxtrot"
-golf = "hotel"
-kilo = ["lima", "mike"]
-[alpha]
-bravo = 10
-charlie = true
-[india]
-juliett = "blue"
+        expected = <<~EXPECTED
+          echo = "foxtrot"
+          golf = "hotel"
+          kilo = ["lima", "mike"]
+          [alpha]
+          bravo = 10
+          charlie = true
+          [india]
+          juliett = "blue"
         EXPECTED
         expect(toml).to eq(expected)
       end
@@ -82,18 +82,18 @@ juliett = "blue"
     yaml = Chef::DSL::RenderHelpers.render_yaml(hash)
     describe "YAML content" do
       it "expected YAML output" do
-        expected = <<-EXPECTED
----
-golf: hotel
-kilo:
-- lima
-- mike
-india:
-  juliett: blue
-alpha:
-  charlie: true
-  bravo: 10
-echo: foxtrot
+        expected = <<~EXPECTED
+          ---
+          golf: hotel
+          kilo:
+          - lima
+          - mike
+          india:
+            juliett: blue
+          alpha:
+            charlie: true
+            bravo: 10
+          echo: foxtrot
         EXPECTED
         expect(yaml).to eq(expected)
       end

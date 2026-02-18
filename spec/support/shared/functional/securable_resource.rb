@@ -92,11 +92,9 @@ shared_context "use Windows permissions", :windows_only do
   end
 
   def extract_ace_properties(aces)
-    hashes = []
-    aces.each do |ace|
-      hashes << { mask: ace.mask, type: ace.type, flags: ace.flags }
+    hashes = aces.map do |ace|
+      { mask: ace.mask, type: ace.type, flags: ace.flags }
     end
-    hashes
   end
 
   # Standard expected rights

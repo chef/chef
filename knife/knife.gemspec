@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "chef-vault" # knife vault
 
-  s.add_development_dependency "chefstyle"
+  s.add_development_dependency "cookstyle", "~> 8.6"
 
   s.add_dependency "proxifier2", "~> 1.1"
 
@@ -57,11 +57,11 @@ Gem::Specification.new do |s|
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   s.metadata = {
-    "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
-    "changelog_uri"     => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
+    "bug_tracker_uri" => "https://github.com/chef/chef/issues",
+    "changelog_uri" => "https://github.com/chef/chef/blob/main/CHANGELOG.md",
     "documentation_uri" => "https://docs.chef.io/",
-    "homepage_uri"      => "https://www.chef.io",
-    "mailing_list_uri"  => "https://discourse.chef.io/",
-    "source_code_uri"   => "https://github.com/chef/chef/",
+    "homepage_uri" => "https://www.chef.io",
+    "mailing_list_uri" => "https://discourse.chef.io/",
+    "source_code_uri" => "https://github.com/chef/chef/",
   }
 end

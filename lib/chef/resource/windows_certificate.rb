@@ -35,30 +35,30 @@ class Chef
       description "Use the **windows_certificate** resource to install a certificate into the Windows certificate store from a file. The resource grants read-only access to the private key for designated accounts. Due to current limitations in WinRM, installing certificates remotely may not work if the operation requires a user profile. Operations on the local machine store should still work."
       introduced "14.7"
       examples <<~DOC
-      **Add PFX cert to local machine personal store and grant accounts read-only access to private key**
+        **Add PFX cert to local machine personal store and grant accounts read-only access to private key**
 
-      ```ruby
-      windows_certificate 'c:/test/mycert.pfx' do
-        pfx_password 'password'
-        private_key_acl ["acme\\fred", "pc\\jane"]
-      end
-      ```
+        ```ruby
+        windows_certificate 'c:/test/mycert.pfx' do
+          pfx_password 'password'
+          private_key_acl ["acme\\fred", "pc\\jane"]
+        end
+        ```
 
-      **Add cert to trusted intermediate store**
+        **Add cert to trusted intermediate store**
 
-      ```ruby
-      windows_certificate 'c:/test/mycert.cer' do
-        store_name 'CA'
-      end
-      ```
+        ```ruby
+        windows_certificate 'c:/test/mycert.cer' do
+          store_name 'CA'
+        end
+        ```
 
-      **Remove all certificates matching the subject**
+        **Remove all certificates matching the subject**
 
-      ```ruby
-      windows_certificate 'me.acme.com' do
-        action :delete
-      end
-      ```
+        ```ruby
+        windows_certificate 'me.acme.com' do
+          action :delete
+        end
+        ```
       DOC
 
       property :source, String,

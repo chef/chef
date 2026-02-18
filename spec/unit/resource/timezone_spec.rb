@@ -26,14 +26,14 @@ describe Chef::Resource::Timezone do
 
   # note: This weird indention is correct
   let(:shellout_timedatectl) do
-    double("shell_out", exitstatus: 0, error?: false, stdout: <<-OUTPUT)
-    Local time: Tue 2020-08-18 20:55:05 UTC
-    Universal time: Tue 2020-08-18 20:55:05 UTC
-          RTC time: Tue 2020-08-18 20:55:05
-         Time zone: Etc/UTC (UTC, +0000)
-System clock synchronized: yes
-systemd-timesyncd.service active: yes
-   RTC in local TZ: no
+    double("shell_out", exitstatus: 0, error?: false, stdout: <<~OUTPUT)
+          Local time: Tue 2020-08-18 20:55:05 UTC
+          Universal time: Tue 2020-08-18 20:55:05 UTC
+                RTC time: Tue 2020-08-18 20:55:05
+               Time zone: Etc/UTC (UTC, +0000)
+      System clock synchronized: yes
+      systemd-timesyncd.service active: yes
+         RTC in local TZ: no
     OUTPUT
   end
 

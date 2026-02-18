@@ -1,6 +1,6 @@
 # on Windows, the directory location starts with "(eval at " because it's
 # being evaled in
-file_directory = File.dirname(__FILE__).gsub(/\(eval at /, "")
+file_directory = File.dirname(__FILE__).gsub("(eval at ", "")
 $:.unshift(File.join(file_directory, "lib"))
 vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir__)
 

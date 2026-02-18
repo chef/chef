@@ -59,7 +59,7 @@ describe Chef::Knife::CookbookList do
         allow(@rest_mock).to receive(:get).and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
-          pattern = /#{Regexp.escape(@cookbook_data[item]['versions'].first['url'])}/
+          pattern = /#{Regexp.escape(@cookbook_data[item]["versions"].first["url"])}/
           expect(@stdout.string).to match pattern
         end
       end

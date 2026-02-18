@@ -318,7 +318,7 @@ class Chef
     #
     def add_delayed_action(notification)
       if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-        logger.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
+        logger.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}" \
                        " (delayed), as it's already been queued")
       else
         delayed_actions << notification
@@ -415,7 +415,7 @@ class Chef
           Recipe `#{recipe_name}` is not in the run_list, and cookbook '#{cookbook_name}'
           is not a dependency of any cookbook in the run_list. To load this recipe,
           first add a dependency of the cookbook '#{cookbook_name}' into the metadata
-		  of the cookbook which depends on '#{cookbook_name}'.
+          of the cookbook which depends on '#{cookbook_name}'.
         ERROR_MESSAGE
       end
 
