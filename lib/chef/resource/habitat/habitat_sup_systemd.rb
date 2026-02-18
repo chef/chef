@@ -34,16 +34,16 @@ class Chef
           content(Unit: {
                     Description: "The Habitat Supervisor",
                   },
-                  Service: {
-                    LimitNOFILE: new_resource.limit_no_files,
-                    Environment: service_environment,
-                    ExecStart: "/bin/hab sup run #{exec_start_options}",
-                    ExecStop: "/bin/hab sup term",
-                    Restart: "on-failure",
-                  }.compact,
-                  Install: {
-                    WantedBy: "default.target",
-                  })
+            Service: {
+              LimitNOFILE: new_resource.limit_no_files,
+              Environment: service_environment,
+              ExecStart: "/bin/hab sup run #{exec_start_options}",
+              ExecStop: "/bin/hab sup term",
+              Restart: "on-failure",
+            }.compact,
+            Install: {
+              WantedBy: "default.target",
+            })
           action :create
         end
 

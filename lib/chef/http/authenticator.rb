@@ -335,15 +335,15 @@ class Chef
       def self.get_the_key_ps(client_name, password)
         store = get_cert_user
         powershell_code = <<~CODE
-            Try {
-              $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
-              $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
-              $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
-              Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
-            }
-            Catch {
-              return $false
-            }
+          Try {
+            $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
+            $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
+            $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
+            Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
+          }
+          Catch {
+            return $false
+          }
         CODE
       end
 

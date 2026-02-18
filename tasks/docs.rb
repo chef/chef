@@ -185,7 +185,7 @@ namespace :docs_site do
 
       properties["remote_directory_recursive_directories"] = true if name == "remote_directory"
 
-      properties["remote_file_prevent_re_downloads"] =  true if name == "remote_file"
+      properties["remote_file_prevent_re_downloads"] = true if name == "remote_file"
 
       properties["remote_file_unc_path"] = true if name == "remote_file"
 

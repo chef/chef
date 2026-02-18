@@ -24,25 +24,25 @@ class Chef
       description "Use the **selinux_login** resource to add, update, or remove SELinux user to OS login mappings."
       introduced "18.1"
       examples <<~DOC
-      **Manage test OS user mapping with a range of s0 and associated SELinux user test_u**:
+        **Manage test OS user mapping with a range of s0 and associated SELinux user test_u**:
 
-      ```ruby
-      selinux_login 'test' do
-        user 'test_u'
-        range 's0'
-      end
-      ```
+        ```ruby
+        selinux_login 'test' do
+          user 'test_u'
+          range 's0'
+        end
+        ```
       DOC
 
       property :login, String,
-                name_property: true,
-                description: "An optional property to set the OS user login value if it differs from the resource block's name."
+        name_property: true,
+        description: "An optional property to set the OS user login value if it differs from the resource block's name."
 
       property :user, String,
-                description: "SELinux user to be mapped."
+        description: "SELinux user to be mapped."
 
       property :range, String,
-                description: "MLS/MCS security range for the SELinux user."
+        description: "MLS/MCS security range for the SELinux user."
 
       load_current_value do |new_resource|
         logins = shell_out!("semanage login -l").stdout.split("\n")

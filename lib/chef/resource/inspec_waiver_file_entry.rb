@@ -28,35 +28,35 @@ class Chef
       description "Use the **inspec_waiver_file_entry** resource to add or remove entries from an InSpec waiver file. This can be used in conjunction with the Compliance Phase."
       introduced "17.1"
       examples <<~DOC
-      **Add an InSpec waiver entry to a given waiver file**:
+        **Add an InSpec waiver entry to a given waiver file**:
 
-      ```ruby
-        inspec_waiver_file_entry 'Add waiver entry for control' do
-          file_path 'C:\\chef\\inspec_waiver_file.yml'
-          control 'my_inspec_control_01'
-          run_test false
-          justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
-          expiration '2022-01-01'
-          action :add
-        end
-      ```
+        ```ruby
+          inspec_waiver_file_entry 'Add waiver entry for control' do
+            file_path 'C:\\chef\\inspec_waiver_file.yml'
+            control 'my_inspec_control_01'
+            run_test false
+            justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
+            expiration '2022-01-01'
+            action :add
+          end
+        ```
 
-      **Add an InSpec waiver entry to a given waiver file using the 'name' property to identify the control**:
+        **Add an InSpec waiver entry to a given waiver file using the 'name' property to identify the control**:
 
-      ```ruby
-        inspec_waiver_file_entry 'my_inspec_control_01' do
-          justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
-          action :add
-        end
-      ```
+        ```ruby
+          inspec_waiver_file_entry 'my_inspec_control_01' do
+            justification "The subject of this control is not managed by #{ChefUtils::Dist::Infra::PRODUCT} on the systems in policy group \#{node['policy_group']}"
+            action :add
+          end
+        ```
 
-      **Remove an InSpec waiver entry to a given waiver file**:
+        **Remove an InSpec waiver entry to a given waiver file**:
 
-      ```ruby
-        inspec_waiver_file_entry "my_inspec_control_01" do
-          action :remove
-        end
-      ```
+        ```ruby
+          inspec_waiver_file_entry "my_inspec_control_01" do
+            action :remove
+          end
+        ```
       DOC
 
       property :control, String,

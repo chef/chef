@@ -201,7 +201,7 @@ class Chef
         # @return [Array] an array of fingerprints
         def extract_fingerprints_from_cmd(*cmd)
           so = shell_out(*cmd)
-          so.stdout.split(/\n/).map do |t|
+          so.stdout.split("\n").map do |t|
             if z = t.match(/^fpr:+([0-9A-F]+):/)
               z[1].split.join
             end
@@ -218,7 +218,7 @@ class Chef
           so = shell_out(*cmd)
           # Sample output
           # pub:-:4096:1:D94AA3F0EFE21092:1336774248:::-:::scSC::::::23::0:
-          so.stdout.split(/\n/).map do |t|
+          so.stdout.split("\n").map do |t|
             if t.match(/^pub:/)
               f = t.split(":")
               f.slice(0, 6).join(":")

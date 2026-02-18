@@ -26,45 +26,45 @@ class Chef
       description "Use the **chef_client_scheduled_task** resource to setup the #{ChefUtils::Dist::Infra::PRODUCT} to run as a Windows scheduled task. This resource will also create the specified log directory if it doesn't already exist."
       introduced "16.0"
       examples <<~DOC
-      **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
+        **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
-      ```ruby
-      chef_client_scheduled_task 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task'
-      ```
+        ```ruby
+        chef_client_scheduled_task 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task'
+        ```
 
-      **Run #{ChefUtils::Dist::Infra::PRODUCT} on system start**:
+        **Run #{ChefUtils::Dist::Infra::PRODUCT} on system start**:
 
-      ```ruby
-      chef_client_scheduled_task '#{ChefUtils::Dist::Infra::PRODUCT} on start' do
-        frequency 'onstart'
-      end
-      ```
+        ```ruby
+        chef_client_scheduled_task '#{ChefUtils::Dist::Infra::PRODUCT} on start' do
+          frequency 'onstart'
+        end
+        ```
 
-      **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
+        **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
-      ```ruby
-      chef_client_scheduled_task 'Run an override recipe' do
-        daemon_options ['--override-runlist mycorp_base::default']
-      end
-      ```
+        ```ruby
+        chef_client_scheduled_task 'Run an override recipe' do
+          daemon_options ['--override-runlist mycorp_base::default']
+        end
+        ```
 
-      **Run #{ChefUtils::Dist::Infra::PRODUCT} daily at 01:00 am, specifying a named run-list**:
+        **Run #{ChefUtils::Dist::Infra::PRODUCT} daily at 01:00 am, specifying a named run-list**:
 
-      ```ruby
-      chef_client_scheduled_task 'Run chef-client named run-list daily' do
-        frequency 'daily'
-        start_time '01:00'
-        daemon_options ['-n audit_only']
-      end
-      ```
+        ```ruby
+        chef_client_scheduled_task 'Run chef-client named run-list daily' do
+          frequency 'daily'
+          start_time '01:00'
+          daemon_options ['-n audit_only']
+        end
+        ```
 
-      **Run #{ChefUtils::Dist::Infra::PRODUCT} with a persistent delay on every run calculated once, similar to how chef_client_cron resource works**:
+        **Run #{ChefUtils::Dist::Infra::PRODUCT} with a persistent delay on every run calculated once, similar to how chef_client_cron resource works**:
 
-      ```ruby
-      chef_client_scheduled_task 'Run chef-client with persistent splay' do
-        use_consistent_splay true
-      end
-      ```
+        ```ruby
+        chef_client_scheduled_task 'Run chef-client with persistent splay' do
+          use_consistent_splay true
+        end
+        ```
       DOC
 
       resource_name :chef_client_scheduled_task
@@ -145,7 +145,7 @@ class Chef
       property :priority, Integer,
         description: "Use to set Priority Levels range from 0 to 10.",
         introduced: "17.5",
-        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v >= 0 && v <= 10 } }
+        default: 7, callbacks: { "should be in range of 0 to 10" => proc { |v| v.between?(0, 10) } }
 
       action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists

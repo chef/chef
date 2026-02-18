@@ -141,8 +141,8 @@ describe Chef::DSL::Secret do
     context "when used within a resource" do
       let(:run_context) {
         Chef::RunContext.new(Chef::Node.new,
-                             Chef::CookbookCollection.new(Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))),
-                             Chef::EventDispatch::Dispatcher.new)
+          Chef::CookbookCollection.new(Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))),
+          Chef::EventDispatch::Dispatcher.new)
       }
 
       it "marks that resource as 'sensitive'" do

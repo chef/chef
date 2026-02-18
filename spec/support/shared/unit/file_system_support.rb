@@ -63,8 +63,7 @@ module FileSystemSupport
   end
 
   def list_should_yield_paths(fs, pattern_str, *expected_paths)
-    result_paths = []
-    Chef::ChefFS::FileSystem.list(fs, pattern(pattern_str)).each { |result| result_paths << result.path }
+    result_paths = Chef::ChefFS::FileSystem.list(fs, pattern(pattern_str)).map(&:path)
     expect(result_paths).to match_array(expected_paths)
   end
 end

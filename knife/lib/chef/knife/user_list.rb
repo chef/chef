@@ -35,9 +35,9 @@ class Chef
         description: "Show corresponding URIs."
 
       option :all_users,
-             short: "-a",
-             long: "--all-users",
-             description: "Show all user details."
+        short: "-a",
+        long: "--all-users",
+        description: "Show all user details."
       def run
         users = Chef::UserV1.list(config[:all_users])
         if config[:all_users]

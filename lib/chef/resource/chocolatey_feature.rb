@@ -40,7 +40,7 @@ class Chef
       DOC
 
       property :feature_name, String, name_property: true,
-               description: "The name of the Chocolatey feature to enable or disable."
+        description: "The name of the Chocolatey feature to enable or disable."
 
       property :feature_state, [TrueClass, FalseClass], default: false, skip_docs: true
 

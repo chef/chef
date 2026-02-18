@@ -27,59 +27,59 @@ class Chef
       description "Use the **windows_feature** resource to add, remove or entirely delete Windows features and roles. This resource calls the 'windows_feature_dism' or 'windows_feature_powershell' resources depending on the specified installation method, and defaults to DISM, which is available on both Workstation and Server editions of Windows."
       introduced "14.0"
       examples <<~DOC
-      **Install the DHCP Server feature**:
+        **Install the DHCP Server feature**:
 
-      ```ruby
-      windows_feature 'DHCPServer' do
-        action :install
-      end
-      ```
+        ```ruby
+        windows_feature 'DHCPServer' do
+          action :install
+        end
+        ```
 
-      **Install the .Net 3.5.1 feature using repository files on DVD**:
+        **Install the .Net 3.5.1 feature using repository files on DVD**:
 
-      ```ruby
-      windows_feature "NetFx3" do
-        action :install
-        source 'd:\\sources\\sxs'
-      end
-      ```
+        ```ruby
+        windows_feature "NetFx3" do
+          action :install
+          source 'd:\\sources\\sxs'
+        end
+        ```
 
-      **Remove Telnet Server and Client features**:
+        **Remove Telnet Server and Client features**:
 
-      ```ruby
-      windows_feature %w(TelnetServer TelnetClient) do
-        action :remove
-      end
-      ```
+        ```ruby
+        windows_feature %w(TelnetServer TelnetClient) do
+          action :remove
+        end
+        ```
 
-      **Add the SMTP Server feature using the PowerShell provider**:
+        **Add the SMTP Server feature using the PowerShell provider**:
 
-      ```ruby
-      windows_feature 'smtp-server' do
-        action :install
-        all true
-        install_method :windows_feature_powershell
-      end
-      ```
+        ```ruby
+        windows_feature 'smtp-server' do
+          action :install
+          all true
+          install_method :windows_feature_powershell
+        end
+        ```
 
-      **Install multiple features using one resource with the PowerShell provider**:
+        **Install multiple features using one resource with the PowerShell provider**:
 
-      ```ruby
-      windows_feature %w(Web-Asp-Net45 Web-Net-Ext45) do
-        action :install
-        install_method :windows_feature_powershell
-      end
-      ```
+        ```ruby
+        windows_feature %w(Web-Asp-Net45 Web-Net-Ext45) do
+          action :install
+          install_method :windows_feature_powershell
+        end
+        ```
 
-      **Install the Network Policy and Access Service feature, including the management tools**:
+        **Install the Network Policy and Access Service feature, including the management tools**:
 
-      ```ruby
-      windows_feature 'NPAS' do
-        action :install
-        management_tools true
-        install_method :windows_feature_powershell
-      end
-      ```
+        ```ruby
+        windows_feature 'NPAS' do
+          action :install
+          management_tools true
+          install_method :windows_feature_powershell
+        end
+        ```
       DOC
 
       property :feature_name, [Array, String],

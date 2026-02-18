@@ -25,25 +25,25 @@ class Chef
       description "Use the **windows_defender_exclusion** resource to exclude paths, processes, or file types from Windows Defender realtime protection scanning."
       introduced "17.3"
       examples <<~DOC
-      **Add excluded items to Windows Defender scans**:
+        **Add excluded items to Windows Defender scans**:
 
-      ```ruby
-      windows_defender_exclusion 'Add to things to be excluded from scanning' do
-        paths 'c:\\foo\\bar, d:\\bar\\baz'
-        extensions 'png, foo, ppt, doc'
-        process_paths 'c:\\windows\\system32'
-        action :add
-      end
-      ```
+        ```ruby
+        windows_defender_exclusion 'Add to things to be excluded from scanning' do
+          paths 'c:\\foo\\bar, d:\\bar\\baz'
+          extensions 'png, foo, ppt, doc'
+          process_paths 'c:\\windows\\system32'
+          action :add
+        end
+        ```
 
-      **Remove excluded items from Windows Defender scans**:
+        **Remove excluded items from Windows Defender scans**:
 
-      ```ruby
-      windows_defender_exclusion 'Remove things from the list to be excluded' do
-        process_paths 'c:\\windows\\system32'
-        action :remove
-      end
-      ```
+        ```ruby
+        windows_defender_exclusion 'Remove things from the list to be excluded' do
+          process_paths 'c:\\windows\\system32'
+          action :remove
+        end
+        ```
       DOC
 
       property :paths, [String, Array], default: [],

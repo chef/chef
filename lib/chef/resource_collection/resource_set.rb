@@ -170,12 +170,11 @@ class Chef
         rescue Chef::Exceptions::ResourceNotFound => e
           if arg =~ MULTIPLE_RESOURCE_MATCH
             begin
-              results = []
               resource_type = $1
               arg =~ /^.+\[(.+)\]$/
               resource_list = $1
-              resource_list.split(",").each do |instance_name|
-                results << lookup(create_key(resource_type, instance_name))
+              results = resource_list.split(",").map do |instance_name|
+                lookup(create_key(resource_type, instance_name))
               end
               Chef.deprecated(:multiresource_match, "The resource_collection multi-resource syntax is deprecated")
               return results

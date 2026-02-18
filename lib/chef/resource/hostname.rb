@@ -237,7 +237,7 @@ class Chef
               mode "0644"
             end
           when ::File.exist?("/usr/sbin/svccfg") # solaris 5.11
-            execute "svccfg -s system/identity:node setprop config/nodename=\'#{new_resource.hostname}\'" do
+            execute "svccfg -s system/identity:node setprop config/nodename='#{new_resource.hostname}'" do
               notifies :run, "execute[svcadm refresh]", :immediately
               notifies :run, "execute[svcadm restart]", :immediately
               not_if { shell_out!("svccfg -s system/identity:node listprop config/nodename").stdout.chomp =~ %r{config/nodename\s+astring\s+#{new_resource.hostname}} }

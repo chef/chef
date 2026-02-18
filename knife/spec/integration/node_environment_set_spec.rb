@@ -40,7 +40,7 @@ describe "knife node environment set", :workstation do
 
     it "with no environment" do
       knife("node environment set adam").should_fail stderr: "FATAL: You must specify a node name and an environment.\n",
-                                                     stdout: /^USAGE: knife node environment set NODE ENVIRONMENT\n/
+        stdout: /^USAGE: knife node environment set NODE ENVIRONMENT\n/
     end
   end
 end

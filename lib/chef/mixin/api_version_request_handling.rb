@@ -42,7 +42,7 @@ class Chef
         max_server_version = Integer(header["max_version"])
 
         supported_client_versions.each do |version|
-          if version >= min_server_version && version <= max_server_version
+          if version.between?(min_server_version, max_server_version)
             server_supported_client_versions.push(version)
           end
         end

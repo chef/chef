@@ -26,33 +26,33 @@ class Chef
       description "Use the **windows_ad_join** resource to join a Windows Active Directory domain."
       introduced "14.0"
       examples <<~DOC
-      **Join a domain**
+        **Join a domain**
 
-      ```ruby
-      windows_ad_join 'ad.example.org' do
-        domain_user 'nick'
-        domain_password 'p@ssw0rd1'
-      end
-      ```
+        ```ruby
+        windows_ad_join 'ad.example.org' do
+          domain_user 'nick'
+          domain_password 'p@ssw0rd1'
+        end
+        ```
 
-      **Join a domain, as `win-workstation`**
+        **Join a domain, as `win-workstation`**
 
-      ```ruby
-      windows_ad_join 'ad.example.org' do
-        domain_user 'nick'
-        domain_password 'p@ssw0rd1'
-        new_hostname 'win-workstation'
-      end
-      ```
+        ```ruby
+        windows_ad_join 'ad.example.org' do
+          domain_user 'nick'
+          domain_password 'p@ssw0rd1'
+          new_hostname 'win-workstation'
+        end
+        ```
 
-      **Leave the current domain and re-join the `local` workgroup**
+        **Leave the current domain and re-join the `local` workgroup**
 
-      ```ruby
-      windows_ad_join 'Leave domain' do
-        action :leave
-        workgroup 'local'
-      end
-      ```
+        ```ruby
+        windows_ad_join 'Leave domain' do
+          action :leave
+          workgroup 'local'
+        end
+        ```
       DOC
 
       property :domain_name, String,
@@ -97,7 +97,7 @@ class Chef
 
       action :join, description: "Join the Active Directory domain." do
         unless on_desired_domain?
-          cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
+          cmd = "$pswd = ConvertTo-SecureString '#{new_resource.domain_password}' -AsPlainText -Force;"
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
@@ -128,7 +128,7 @@ class Chef
       action :leave, description: "Leave an Active Directory domain and re-join a workgroup." do
         if joined_to_domain?
           cmd = ""
-          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
+          cmd << "$pswd = ConvertTo-SecureString '#{new_resource.domain_password}' -AsPlainText -Force;"
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
           cmd << "Remove-Computer"
           cmd << " -UnjoinDomainCredential $credential"

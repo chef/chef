@@ -42,7 +42,7 @@ class Chef
       allowed_actions :create, :delete
 
       property :path, String, name_property: true,
-               description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
+        description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
 
       property :recursive, [ TrueClass, FalseClass ],
         description: "Create parent directories recursively, or delete directory and all children recursively. For the owner, group, and mode properties, the value of this property applies only to the leaf directory.",

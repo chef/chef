@@ -64,7 +64,7 @@ class Chef
             describe_401_error(error_description)
           when Net::HTTPBadRequest
             describe_400_error(error_description)
-          when Net::HTTPNotFound
+          when Net::HTTPNotFound # rubocop:disable Lint/EmptyWhen
           when Net::HTTPInternalServerError
             describe_500_error(error_description)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut

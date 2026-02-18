@@ -42,14 +42,14 @@ class Chef
         long: "--start ROW",
         description: "The row to start returning results at.",
         default: 0,
-        proc: lambda { |i| i.to_i }
+        proc: lambda(&:to_i)
 
       option :rows,
         short: "-R INT",
         long: "--rows INT",
         description: "The number of rows to return.",
         default: nil,
-        proc: lambda { |i| i.to_i }
+        proc: lambda(&:to_i)
 
       option :run_list,
         short: "-r",

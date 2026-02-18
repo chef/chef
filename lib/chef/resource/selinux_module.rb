@@ -23,33 +23,33 @@ class Chef
       description "Use **selinux_module** module resource to create an SELinux policy module from a cookbook file or content provided as a string."
       introduced "18.0"
       examples <<~DOC
-      **Creating SElinux module from .te file located at `files` directory of your cookbook.**:
+        **Creating SElinux module from .te file located at `files` directory of your cookbook.**:
 
-      ```ruby
-      selinux_module 'my_policy_module' do
-        source 'my_policy_module.te'
-        action :create
-      end
-      ```
+        ```ruby
+        selinux_module 'my_policy_module' do
+          source 'my_policy_module.te'
+          action :create
+        end
+        ```
       DOC
 
       property :module_name, String,
-                name_property: true,
-                description: "Override the module name."
+        name_property: true,
+        description: "Override the module name."
 
       property :source, String,
-                description: "Module source file name."
+        description: "Module source file name."
 
       property :content, String,
-                description: "Module source as String."
+        description: "Module source as String."
 
       property :cookbook, String,
-                description: "Cookbook to source from module source file from(if it is not located in the current cookbook). The default value is the current cookbook.",
-                desired_state: false
+        description: "Cookbook to source from module source file from(if it is not located in the current cookbook). The default value is the current cookbook.",
+        desired_state: false
 
       property :base_dir, String,
-                default: "/etc/selinux/local",
-                description: "Directory to create module source file in."
+        default: "/etc/selinux/local",
+        description: "Directory to create module source file in."
 
       action_class do
         def selinux_module_filepath(type)

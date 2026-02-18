@@ -78,12 +78,12 @@ class Chef
 
             def isalpha(x)
               v = x.ord
-              (v >= 65 && v <= 90) || (v >= 97 && v <= 122)
+              (v.between?(65, 90)) || (v.between?(97, 122))
             end
 
             def isdigit(x)
               v = x.ord
-              v >= 48 && v <= 57
+              v.between?(48, 57)
             end
 
             # based on the reference spec in lib/rpmvercmp.c in rpm 4.9.0

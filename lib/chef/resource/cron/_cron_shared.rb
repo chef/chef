@@ -87,7 +87,6 @@ property :time_out, Hash,
     end
   }
 
-private
 
 # Convert weekday input value into crontab format that
 # could be written in the crontab

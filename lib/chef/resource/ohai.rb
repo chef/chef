@@ -31,46 +31,46 @@ class Chef
       description "Use the **ohai** resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{ChefUtils::Dist::Infra::PRODUCT} run."
 
       examples <<~DOC
-      Reload All Ohai Plugins
+        Reload All Ohai Plugins
 
-      ```ruby
-      ohai 'reload' do
-        action :reload
-      end
-      ```
-
-      Reload A Single Ohai Plugin
-
-      ```ruby
-      ohai 'reload' do
-        plugin 'ipaddress'
-        action :reload
-      end
-      ```
-
-      Reload Ohai after a new user is created
-
-      ```ruby
-      ohai 'reload_passwd' do
-        action :nothing
-        plugin 'etc'
-      end
-
-      user 'daemon_user' do
-        home '/dev/null'
-        shell '/sbin/nologin'
-        system true
-        notifies :reload, 'ohai[reload_passwd]', :immediately
-      end
-
-      ruby_block 'just an example' do
-        block do
-          # These variables will now have the new values
-          puts node['etc']['passwd']['daemon_user']['uid']
-          puts node['etc']['passwd']['daemon_user']['gid']
+        ```ruby
+        ohai 'reload' do
+          action :reload
         end
-      end
-      ```
+        ```
+
+        Reload A Single Ohai Plugin
+
+        ```ruby
+        ohai 'reload' do
+          plugin 'ipaddress'
+          action :reload
+        end
+        ```
+
+        Reload Ohai after a new user is created
+
+        ```ruby
+        ohai 'reload_passwd' do
+          action :nothing
+          plugin 'etc'
+        end
+
+        user 'daemon_user' do
+          home '/dev/null'
+          shell '/sbin/nologin'
+          system true
+          notifies :reload, 'ohai[reload_passwd]', :immediately
+        end
+
+        ruby_block 'just an example' do
+          block do
+            # These variables will now have the new values
+            puts node['etc']['passwd']['daemon_user']['uid']
+            puts node['etc']['passwd']['daemon_user']['gid']
+          end
+        end
+        ```
       DOC
 
       property :plugin, String,

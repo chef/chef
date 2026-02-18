@@ -31,10 +31,10 @@ class Chef
       allowed_actions :get, :patch, :put, :post, :delete, :head, :options
 
       property :url, String, identity: true,
-               description: "The URL to which an HTTP request is sent."
+        description: "The URL to which an HTTP request is sent."
 
       property :headers, Hash, default: {},
-               description: "A Hash of custom headers."
+        description: "A Hash of custom headers."
 
       def initialize(name, run_context = nil)
         super

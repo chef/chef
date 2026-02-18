@@ -553,7 +553,7 @@ shared_examples_for Chef::Provider::File do
           before do
             allow(provider).to receive(:contents_changed?).and_return(true)
             diff = double("Diff", for_output: ["+++", "---", "+foo", "-bar"],
-                                  for_reporting: diff_for_reporting )
+              for_reporting: diff_for_reporting )
             allow(diff).to receive(:diff).with(resource_path, tempfile_path).and_return(true)
             expect(provider).to receive(:diff).at_least(:once).and_return(diff)
             expect(provider).to receive(:checksum).with(tempfile_path).and_return(tempfile_sha256)

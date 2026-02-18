@@ -62,7 +62,7 @@ describe "Recipe DSL methods" do
 
     it "errors when you call base_thingy do ... end in a recipe" do
       expect_converge do
-        base_thingy { ; }
+        base_thingy {}
       end.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 

@@ -52,7 +52,7 @@ class Chef
 
             get_version_info_string(method.to_s)
           rescue Chef::Exceptions::Win32APIError
-            return nil
+            nil
 
           end
         end

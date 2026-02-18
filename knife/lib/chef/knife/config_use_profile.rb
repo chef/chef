@@ -16,7 +16,7 @@
 #
 
 require_relative "../knife"
-require_relative "./config_use"
+require_relative "config_use"
 
 class Chef
   class Knife
