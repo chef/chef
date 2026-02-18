@@ -251,7 +251,7 @@ class Chef
               action :nothing
             end
           else
-            raise "Do not know how to set hostname on os #{node["os"]}, platform #{node["platform"]},"\
+            raise "Do not know how to set hostname on os #{node["os"]}, platform #{node["platform"]}," \
               "platform_version #{node["platform_version"]}, platform_family #{node["platform_family"]}"
           end
 

@@ -318,7 +318,7 @@ class Chef
     #
     def add_delayed_action(notification)
       if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
-        logger.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
+        logger.info( "#{notification.notifying_resource} not queuing delayed action #{notification.action} on #{notification.resource}" \
                        " (delayed), as it's already been queued")
       else
         delayed_actions << notification

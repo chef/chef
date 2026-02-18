@@ -89,7 +89,7 @@ class Chef
       action :create, description: "Generate the EC private key file." do
         unless new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
           converge_by("Create an EC private key #{new_resource.path}") do
-            log "Generating an #{new_resource.key_curve} "\
+            log "Generating an #{new_resource.key_curve} " \
                 "EC key file at #{new_resource.path}, this may take some time"
 
             if new_resource.key_pass
