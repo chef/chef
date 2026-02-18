@@ -509,8 +509,8 @@ class Chef
         def wait_for_chocolatey_lock_release(names)
           return if names.empty?
 
-          Chef::Log.debug("Waiting for chocolatey to release file locks for packages: #{names.join(', ')}")
-          
+          Chef::Log.debug("Waiting for chocolatey to release file locks for packages: #{names.join(", ")}")
+
           # Check for .chocolateyPending files and wait for them to be released
           names.each do |name|
             pending_file = ::File.join(choco_lib_path, name.downcase, ".chocolateyPending")
@@ -552,10 +552,10 @@ class Chef
         # @return [Boolean] true if it's a chocolatey file lock related error
         def file_lock_error?(error)
           error.message&.include?("being used by another process") ||
-          error.message&.include?("chocolateyPending") ||
-          error.is_a?(Errno::EACCES) ||
-          error.is_a?(Errno::EBUSY) ||
-          error.is_a?(Errno::EAGAIN)
+            error.message&.include?("chocolateyPending") ||
+            error.is_a?(Errno::EACCES) ||
+            error.is_a?(Errno::EBUSY) ||
+            error.is_a?(Errno::EAGAIN)
         end
 
         # Fetch the local package versions from chocolatey

@@ -583,7 +583,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
         call_count = 0
         result = nil
         expect(Chef::Log).to receive(:debug).twice
-        
+
         result = provider.send(:with_file_lock_retry, "test operation", max_retries: 3, base_delay: 0.01) do
           call_count += 1
           if call_count <= 2
@@ -592,7 +592,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
             "success"
           end
         end
-        
+
         expect(result).to eq("success")
         expect(call_count).to eq(3)
       end
@@ -601,28 +601,28 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
         call_count = 0
         expect(Chef::Log).to receive(:debug).exactly(2).times
         expect(Chef::Log).to receive(:warn).once
-        
+
         expect {
           provider.send(:with_file_lock_retry, "test operation", max_retries: 2, base_delay: 0.01) do
             call_count += 1
             raise Errno::EACCES.new
           end
         }.to raise_error(Errno::EACCES)
-        
+
         expect(call_count).to eq(3) # initial try + 2 retries
       end
 
       it "does not retry non-file-lock errors" do
         call_count = 0
         expect(Chef::Log).not_to receive(:debug)
-        
+
         expect {
           provider.send(:with_file_lock_retry, "test operation") do
             call_count += 1
             raise StandardError.new("some other error")
           end
         }.to raise_error(StandardError, "some other error")
-        
+
         expect(call_count).to eq(1)
       end
     end
@@ -634,7 +634,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
       it "skips processing when no package names provided" do
         expect(Chef::Log).not_to receive(:debug)
         expect(File).not_to receive(:exist?)
-        
+
         provider.send(:wait_for_chocolatey_lock_release, [])
       end
 
@@ -642,7 +642,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
         expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
         expect(File).to receive(:exist?).with(pending_file).and_return(true)
         expect(File).to receive(:open).with(pending_file, "r").and_yield(double(flock: true))
-        
+
         provider.send(:wait_for_chocolatey_lock_release, package_names)
       end
 
@@ -650,18 +650,18 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
         expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
         expect(File).to receive(:exist?).with(pending_file).and_return(false)
         expect(File).not_to receive(:open)
-        
+
         provider.send(:wait_for_chocolatey_lock_release, package_names)
       end
 
       it "retries when file locking fails" do
         expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
         expect(File).to receive(:exist?).with(pending_file).and_return(true)
-        
+
         call_count = 0
         expect(File).to receive(:open).with(pending_file, "r").twice do |&block|
           call_count += 1
-          file_mock = double()
+          file_mock = double
           if call_count == 1
             expect(file_mock).to receive(:flock).and_raise(Errno::EAGAIN)
           else
@@ -669,9 +669,9 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
           end
           block.call(file_mock)
         end
-        
+
         expect(Chef::Log).to receive(:debug).with(/Chocolatey file lock detected/)
-        
+
         provider.send(:wait_for_chocolatey_lock_release, package_names)
       end
     end
@@ -684,7 +684,7 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
         expect(provider).to receive(:with_file_lock_retry).with("get package data for #{package_dir}").and_yield
         expect(File).to receive(:join).with(package_dir, "*.nupkg").and_return(File.join(package_dir, "*.nupkg"))
         expect(Dir).to receive(:glob).and_return([])
-        
+
         result = provider.send(:get_pkg_data, package_dir)
         expect(result).to eq({})
       end

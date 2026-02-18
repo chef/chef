@@ -42,12 +42,12 @@ describe "Chocolatey File Lock Retry", :windows_only do
       it "retries file lock operations with exponential backoff" do
         expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
         expect(File).to receive(:exist?).with(pending_file).and_return(true)
-        
+
         # Simulate file lock being held, then released
         call_count = 0
         expect(File).to receive(:open).with(pending_file, "r").twice do |&block|
           call_count += 1
-          file_mock = double()
+          file_mock = double
           if call_count == 1
             # First attempt fails with lock error
             expect(file_mock).to receive(:flock).with(File::LOCK_EX | File::LOCK_NB).and_raise(Errno::EAGAIN)
@@ -59,22 +59,22 @@ describe "Chocolatey File Lock Retry", :windows_only do
         end
 
         expect(Chef::Log).to receive(:debug).with(/Chocolatey file lock detected.*retrying/)
-        
+
         provider.send(:wait_for_chocolatey_lock_release, ["testpackage"])
       end
 
       it "eventually gives up after max retries" do
         expect(Chef::Log).to receive(:debug).with("Waiting for chocolatey to release file locks for packages: testpackage")
         expect(File).to receive(:exist?).with(pending_file).and_return(true)
-        
+
         # Simulate persistent file lock
-        file_mock = double()
+        file_mock = double
         expect(File).to receive(:open).with(pending_file, "r").exactly(6).times.and_yield(file_mock)
         expect(file_mock).to receive(:flock).with(File::LOCK_EX | File::LOCK_NB).exactly(6).times.and_raise(Errno::EAGAIN)
-        
+
         expect(Chef::Log).to receive(:debug).exactly(5).times.with(/Chocolatey file lock detected.*retrying/)
         expect(Chef::Log).to receive(:warn).with(/Failed waiting.*after 5 retries/)
-        
+
         expect {
           provider.send(:wait_for_chocolatey_lock_release, ["testpackage"])
         }.to raise_error(Errno::EAGAIN)
@@ -85,7 +85,7 @@ describe "Chocolatey File Lock Retry", :windows_only do
       it "retries zip file operations when encountering access errors" do
         glob_pattern = File.join(package_dir, "*.nupkg")
         allow(File).to receive(:join).and_call_original
-        
+
         call_count = 0
         expect(Dir).to receive(:glob).with(glob_pattern).twice do
           call_count += 1
@@ -99,11 +99,11 @@ describe "Chocolatey File Lock Retry", :windows_only do
         end
 
         # Mock successful zip file processing
-        zip_file_mock = double()
-        zip_entry_mock = double(name: "testpackage.nuspec", get_input_stream: double())
+        zip_file_mock = double
+        zip_entry_mock = double(name: "testpackage.nuspec", get_input_stream: double)
         expect(Zip::File).to receive(:open).with(nupkg_file).and_yield(zip_file_mock)
         expect(zip_file_mock).to receive(:each).and_yield(zip_entry_mock)
-        
+
         # Mock XML parsing
         nuspec_content = <<~XML
           <?xml version="1.0"?>
@@ -120,14 +120,14 @@ describe "Chocolatey File Lock Retry", :windows_only do
         expect(Chef::Log).to receive(:debug).with(/Chocolatey file lock detected.*retrying/)
 
         result = provider.send(:get_pkg_data, package_dir)
-        expect(result).to eq({"testpackage" => "1.0.0"})
+        expect(result).to eq({ "testpackage" => "1.0.0" })
       end
     end
 
     context "when directory listing fails due to file locks" do
       it "retries directory operations" do
         expect(Dir).to receive(:exist?).with(choco_lib_path).and_return(true)
-        
+
         call_count = 0
         expect(Dir).to receive(:entries).with(choco_lib_path).twice do
           call_count += 1
@@ -149,7 +149,7 @@ describe "Chocolatey File Lock Retry", :windows_only do
         expect(Chef::Log).to receive(:debug).with(/Chocolatey file lock detected.*retrying/)
 
         result = provider.send(:get_local_pkg_dirs, choco_lib_path)
-        expect(result).to eq(["chocolatey", "testpackage"])
+        expect(result).to eq(%w{chocolatey testpackage})
       end
     end
   end
@@ -158,7 +158,7 @@ describe "Chocolatey File Lock Retry", :windows_only do
     [
       "The process cannot access the file 'C:\\ProgramData\\chocolatey\\lib\\package\\.chocolateyPending' because it is being used by another process",
       "Cannot access file because it is being used by another process",
-      "Access to chocolateyPending file denied"
+      "Access to chocolateyPending file denied",
     ].each do |error_message|
       it "correctly identifies '#{error_message}' as a file lock error" do
         error = StandardError.new(error_message)
@@ -174,7 +174,7 @@ describe "Chocolatey File Lock Retry", :windows_only do
     [
       "Package not found",
       "Network timeout",
-      "Invalid package format"
+      "Invalid package format",
     ].each do |error_message|
       it "correctly identifies '#{error_message}' as NOT a file lock error" do
         error = StandardError.new(error_message)
@@ -186,11 +186,11 @@ describe "Chocolatey File Lock Retry", :windows_only do
   describe "exponential backoff timing" do
     it "uses correct delay intervals" do
       call_count = 0
-      
+
       expect(provider).to receive(:sleep).with(0.5)  # First retry: base_delay * 2^0
-      expect(provider).to receive(:sleep).with(1.0)  # Second retry: base_delay * 2^1  
+      expect(provider).to receive(:sleep).with(1.0)  # Second retry: base_delay * 2^1
       expect(provider).to receive(:sleep).with(2.0)  # Third retry: base_delay * 2^2
-      
+
       expect {
         provider.send(:with_file_lock_retry, "test operation", max_retries: 3, base_delay: 0.5) do
           call_count += 1

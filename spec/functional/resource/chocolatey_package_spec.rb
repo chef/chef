@@ -194,10 +194,10 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
 
       # Install the package - this should succeed even if temporary file locks occur
       expect { subject.run_action(:install) }.not_to raise_error
-      
+
       # Verify the package was actually installed
       expect(package_list.call).not_to match(/0 packages installed/)
-      
+
       # Clean up
       remove_package
     end
@@ -210,9 +210,9 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
       # This should work without file lock errors
       expect { provider.load_current_resource }.not_to raise_error
 
-      # Verify we can get package data even with potential file locks  
+      # Verify we can get package data even with potential file locks
       current_resource = provider.current_resource
-      expect(current_resource.package_name).to eq([package_name])  # package_name returns an array
+      expect(current_resource.package_name).to eq([package_name]) # package_name returns an array
       expect(current_resource.version).not_to be_empty
 
       # Clean up
