@@ -16,8 +16,8 @@ group(:omnibus_package, :pry) do
   gem "pry-stack_explorer"
 end
 
-group(:chefstyle) do
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "main"
+group(:cookstyle) do
+  gem "cookstyle", git: "https://github.com/chef/cookstyle.git", branch: "main"
 end
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
