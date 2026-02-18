@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.6 -->
-## [v18.10.6](https://github.com/chef/chef/tree/v18.10.6) (2026-02-18)
+<!-- latest_release 18.10.7 -->
+## [v18.10.7](https://github.com/chef/chef/tree/v18.10.7) (2026-02-18)
 
 #### Merged Pull Requests
-- remove old net-imap [#15633](https://github.com/chef/chef/pull/15633) ([tpowell-progress](https://github.com/tpowell-progress))
+- Linting and Updates for rakefile, and cookstyle [#15644](https://github.com/chef/chef/pull/15644) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.9.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Linting and Updates for rakefile, and cookstyle [#15644](https://github.com/chef/chef/pull/15644) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.7 -->
 - remove old net-imap [#15633](https://github.com/chef/chef/pull/15633) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.6 -->
 - Updating inspec-core and dependencies [#15636](https://github.com/chef/chef/pull/15636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.5 -->
 - Updating URI because of a cve [CVE-2025-61594] [#15645](https://github.com/chef/chef/pull/15645) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.4 -->
