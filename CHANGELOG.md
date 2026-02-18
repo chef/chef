@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.4 -->
-## [v18.10.4](https://github.com/chef/chef/tree/v18.10.4) (2026-02-18)
+<!-- latest_release 18.10.5 -->
+## [v18.10.5](https://github.com/chef/chef/tree/v18.10.5) (2026-02-18)
 
 #### Merged Pull Requests
-- Updating URI because of a cve [CVE-2025-61594] [#15645](https://github.com/chef/chef/pull/15645) ([johnmccrae](https://github.com/johnmccrae))
+- Updating inspec-core and dependencies [#15636](https://github.com/chef/chef/pull/15636) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.9.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating inspec-core and dependencies [#15636](https://github.com/chef/chef/pull/15636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.5 -->
 - Updating URI because of a cve [CVE-2025-61594] [#15645](https://github.com/chef/chef/pull/15645) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.4 -->
 - Updating Omnibus dependencies, they are super stale [#15641](https://github.com/chef/chef/pull/15641) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.3 -->
 - Just downgrade docker? [#15639](https://github.com/chef/chef/pull/15639) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.2 -->
