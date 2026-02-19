@@ -1,3 +1,4 @@
 [submodule "omnibus"]
 	path = omnibus
 	url = git@github.com:chef/chef-omnibus-private.git
+	branch = chef-18
