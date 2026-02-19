@@ -691,26 +691,26 @@ describe Chef::Provider::Package::Chocolatey, :windows_only do
     end
 
     describe "integration with install_package" do
-      it "calls wait_for_chocolatey_lock_release after package installation" do
+      it "does not automatically call wait_for_chocolatey_lock_release after package installation" do
         new_resource.package_name(["git"])
         new_resource.version([nil])
         allow_remote_list(["git"])
 
         expect(provider).to receive(:choco_command).with("install", "-y", [], "git")
-        expect(provider).to receive(:wait_for_chocolatey_lock_release).with(["git"])
+        expect(provider).not_to receive(:wait_for_chocolatey_lock_release)
 
         provider.install_package(["git"], [nil])
       end
     end
 
     describe "integration with upgrade_package" do
-      it "calls wait_for_chocolatey_lock_release after package upgrade" do
+      it "does not automatically call wait_for_chocolatey_lock_release after package upgrade" do
         new_resource.package_name(["git"])
         new_resource.version([nil])
         allow_remote_list(["git"])
 
         expect(provider).to receive(:choco_command).with("upgrade", "-y", [], "git")
-        expect(provider).to receive(:wait_for_chocolatey_lock_release).with(["git"])
+        expect(provider).not_to receive(:wait_for_chocolatey_lock_release)
 
         provider.upgrade_package(["git"], [nil])
       end
