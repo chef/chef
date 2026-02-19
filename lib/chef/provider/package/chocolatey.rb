@@ -109,9 +109,6 @@ class Chef
             cmd_names = name_nil_versions.keys
             choco_command("install", "-y", cmd_args, *cmd_names)
           end
-
-          # Wait for chocolatey to finish cleanup and release file locks
-          wait_for_chocolatey_lock_release(names)
         end
 
         # Upgrade multiple packages via choco.exe
@@ -134,9 +131,6 @@ class Chef
             cmd_names = name_nil_versions.keys
             choco_command("upgrade", "-y", cmd_args, *cmd_names)
           end
-
-          # Wait for chocolatey to finish cleanup and release file locks
-          wait_for_chocolatey_lock_release(names)
         end
 
         # Remove multiple packages via choco.exe
@@ -263,7 +257,8 @@ class Chef
           @choco_install_path ||= begin
             result = powershell_exec!(PATHFINDING_POWERSHELL_COMMAND).result
             result = "" if result.empty?
-            result
+            # Ensure consistent Windows path separators
+            result.empty? ? result : result.tr("/", "\\")
           end
         end
 

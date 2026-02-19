@@ -335,6 +335,7 @@
     "DWORDLONG",
     "DYNALINK",
     "DYNLINK",
+    "EAGAIN",
     "EASTEUROPE",
     "eastus",
     "ebusy",
