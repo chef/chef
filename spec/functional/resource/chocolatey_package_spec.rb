@@ -41,6 +41,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     new_resource = Chef::Resource::ChocolateyPackage.new("test choco package", run_context)
     new_resource.package_name package_name
     new_resource.source package_source
+    new_resource.use_choco_list true
     new_resource
   end
 
@@ -173,6 +174,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
 
       subject2 = Chef::Resource::ChocolateyPackage.new("test-A", run_context)
       subject2.source package_source
+      subject2.use_choco_list true
       subject2.run_action(:upgrade)
       expect(package_list.call).to match(/^#{package_name}|2.0.0$/)
     end
@@ -223,6 +225,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   def remove_package
     pkg_to_remove = Chef::Resource::ChocolateyPackage.new(package_name, run_context)
     pkg_to_remove.source = package_source
+    pkg_to_remove.use_choco_list true
     pkg_to_remove.run_action(:remove)
   end
 end
