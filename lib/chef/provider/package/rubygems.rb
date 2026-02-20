@@ -420,7 +420,7 @@ class Chef
                 version = Gem::Version.new(version_token)
                 versions << version if gem_dependency.requirement.satisfied_by?(version)
               rescue ArgumentError
-                # Skip tokens with unparseable version strings.
+                # Skip tokens with invalid version strings.
               end
             end
 
