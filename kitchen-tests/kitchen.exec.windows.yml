@@ -16,7 +16,6 @@ lifecycle:
     - remote: ohai -v
     - remote: rake --version
     - remote: bundle -v
-    - remote: $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
     # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
     # This leads to failures during testing. Moving that file to its correct position here.
     # Another example of 'bad' that needs to be corrected
