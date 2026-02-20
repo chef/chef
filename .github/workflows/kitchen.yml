@@ -66,6 +66,24 @@ jobs:
             Start-Sleep -Seconds (5 * $attempt)
           }
         }
+    - name: Add Chef Workstation paths
+      run: |
+        $workstationBin = "C:\opscode\chef-workstation\bin"
+        $embeddedBin = "C:\opscode\chef-workstation\embedded\bin"
+        $embeddedRuby = Join-Path $embeddedBin "ruby.exe"
+        if (-not (Test-Path $embeddedRuby)) {
+          throw "Expected embedded Ruby not found: $embeddedRuby"
+        }
+        $rubyVersion = (& $embeddedRuby -e "print RbConfig::CONFIG['ruby_version']")
+        $userGemBin = Join-Path $env:USERPROFILE "AppData\Local\chef\gem\ruby\$rubyVersion\bin"
+
+        Add-Content $env:GITHUB_PATH "$workstationBin"
+        Add-Content $env:GITHUB_PATH "$embeddedBin"
+        Add-Content $env:GITHUB_PATH "$userGemBin"
+
+        Write-Host "Added to GITHUB_PATH: $workstationBin"
+        Write-Host "Added to GITHUB_PATH: $embeddedBin"
+        Write-Host "Added to GITHUB_PATH: $userGemBin"
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
