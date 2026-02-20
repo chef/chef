@@ -39,9 +39,11 @@ lifecycle:
     - remote: gem env
     - remote: Write-Output "Bundle config..."
     - remote: bundle config
+    - remote: Write-Output "Pre-installing problematic gems individually..."
+    - remote: gem install metaclass --no-doc --verbose
     - remote: Write-Output "Starting bundle install with verbose logging..."
     - remote: Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    - remote: $env:BUNDLE_RETRY = "5"; $env:BUNDLE_TIMEOUT = "300"; bundle install --jobs=3 --retry=3 --verbose
+    - remote: $env:BUNDLE_RETRY = "3"; $env:BUNDLE_TIMEOUT = "180"; $env:BUNDLE_JOBS = "1"; bundle install --retry=3 --verbose
     - remote: Write-Output "Bundle install completed!"
     - remote: Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
