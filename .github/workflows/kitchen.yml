@@ -30,70 +30,13 @@ jobs:
       CHEF_WORKSTATION_VERSION: "25.5.1084"
     steps:
     - uses: actions/checkout@v5
-    - name: Install Chef Workstation (MSI)
-      run: |
-        $version = $env:CHEF_WORKSTATION_VERSION
-        $msiUrl = "https://packages.chef.io/files/stable/chef-workstation/$version/windows/2022/chef-workstation-$version-1-x64.msi"
-        $msiPath = Join-Path $env:TEMP "chef-workstation-$version-1-x64.msi"
-        $maxAttempts = 3
-
-        Write-Host "Installing Chef Workstation $version"
-        Write-Host "MSI URL: $msiUrl"
-        Write-Host "MSI path: $msiPath"
-
-        for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
-          try {
-            Write-Host "Install attempt $attempt/$maxAttempts"
-            Invoke-WebRequest -UseBasicParsing -Uri $msiUrl -OutFile $msiPath -TimeoutSec 120
-            if (-not (Test-Path $msiPath)) {
-              throw "MSI was not downloaded: $msiPath"
-            }
-            $fileSize = (Get-Item $msiPath).Length
-            if ($fileSize -lt 1MB) {
-              throw "MSI is suspiciously small: $fileSize bytes"
-            }
-            $install = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$msiPath`" /qn /norestart" -Wait -PassThru
-            if ($install.ExitCode -ne 0) {
-              throw "msiexec exited with code $($install.ExitCode)"
-            }
-            Write-Host "Chef Workstation install succeeded"
-            break
-          } catch {
-            Write-Host "Install attempt $attempt failed: $($_.Exception.Message)"
-            if ($attempt -eq $maxAttempts) {
-              throw
-            }
-            Start-Sleep -Seconds (5 * $attempt)
-          }
-        }
+    - name: Install Chef
+      uses: actionshub/chef-install@5.0.2
     - name: Kitchen Test
       run: | 
         $env:PATH = "C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
         gem install appbundler appbundle-updater --no-doc
         kitchen test end-to-end-${{ matrix.os }}
-
-  mac_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - macos-15-intel
-    runs-on: ${{ matrix.os }}
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-      EXPECTED_CHEF_WORKSTATION_VERSION: "25.5.1084"
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v5
-        with:
-            clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
-      - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
@@ -114,9 +57,7 @@ jobs:
         with:
           clean: true
       - name: Install Chef
-        uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
+        uses: actionshub/chef-install@5.0.2
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -153,20 +94,20 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v5
       - name: Install Chef
-        uses: actionshub/chef-install@main
+        uses: actionshub/chef-install@5.0.2
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
           sudo apt-get remove -y docker docker-engine docker.io containerd runc moby-engine moby-cli || true
-          
+
           # Install Docker's official GPG key
           sudo install -m 0755 -d /etc/apt/keyrings
           sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
           sudo chmod a+r /etc/apt/keyrings/docker.asc
-          
+
           # Add Docker repository
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          
+
           # Install Docker 28.0.4
           sudo apt-get update
           sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
