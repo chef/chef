@@ -46,6 +46,7 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      EXPECTED_CHEF_WORKSTATION_VERSION: "25.5.1084"
     steps:
       - name: Check out code
         uses: actions/checkout@v5
@@ -55,6 +56,17 @@ jobs:
         uses: actionshub/chef-install@main
         with:
           version: "25.5.1084"
+      - name: Verify Chef Workstation version
+        run: |
+          expected_version="$EXPECTED_CHEF_WORKSTATION_VERSION"
+          chef_version_output="$(chef --version)"
+          echo "$chef_version_output"
+          if ! echo "$chef_version_output" | grep -Eq "Chef Workstation version:[[:space:]]+$expected_version"; then
+            echo "ERROR: Chef Workstation in use mismatch. Expected $expected_version"
+            exit 1
+          fi
+          echo "chef path: $(command -v chef)"
+          echo "kitchen path: $(command -v kitchen)"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -70,6 +82,7 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      EXPECTED_CHEF_WORKSTATION_VERSION: "25.5.1084"
     steps:
       - name: Check out code
         uses: actions/checkout@v5
@@ -79,6 +92,17 @@ jobs:
         uses: actionshub/chef-install@main
         with:
           version: "25.5.1084"
+      - name: Verify Chef Workstation version
+        run: |
+          expected_version="$EXPECTED_CHEF_WORKSTATION_VERSION"
+          chef_version_output="$(chef --version)"
+          echo "$chef_version_output"
+          if ! echo "$chef_version_output" | grep -Eq "Chef Workstation version:[[:space:]]+$expected_version"; then
+            echo "ERROR: Chef Workstation in use mismatch. Expected $expected_version"
+            exit 1
+          fi
+          echo "chef path: $(command -v chef)"
+          echo "kitchen path: $(command -v kitchen)"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -110,11 +134,25 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+      EXPECTED_CHEF_WORKSTATION_VERSION: "25.12.1102"
     steps:
       - name: Check out code
         uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@main
+        with:
+          version: "25.12.1102"
+      - name: Verify Chef Workstation version
+        run: |
+          expected_version="$EXPECTED_CHEF_WORKSTATION_VERSION"
+          chef_version_output="$(chef --version)"
+          echo "$chef_version_output"
+          if ! echo "$chef_version_output" | grep -Eq "Chef Workstation version:[[:space:]]+$expected_version"; then
+            echo "ERROR: Chef Workstation in use mismatch. Expected $expected_version"
+            exit 1
+          fi
+          echo "chef path: $(command -v chef)"
+          echo "kitchen path: $(command -v kitchen)"
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
