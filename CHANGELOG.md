@@ -17,10 +17,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Linting and Updates for rakefile, and cookstyle [#15644](https://github.com/chef/chef/pull/15644) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.7 -->
 - remove old net-imap [#15633](https://github.com/chef/chef/pull/15633) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.6 -->
 - Updating inspec-core and dependencies [#15636](https://github.com/chef/chef/pull/15636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.5 -->
-- Updating URI because of a cve [CVE-2025-61594] [#15645](https://github.com/chef/chef/pull/15645) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.4 -->
 - Updating Omnibus dependencies, they are super stale [#15641](https://github.com/chef/chef/pull/15641) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.3 -->
-- Just downgrade docker? [#15639](https://github.com/chef/chef/pull/15639) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.2 -->
-- Bump train-core to 3.16.0 [#15572](https://github.com/chef/chef/pull/15572) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.10.1 -->
 - [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.9.5 -->
 - [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.0 -->
 <!-- release_rollup -->
