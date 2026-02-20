@@ -185,7 +185,7 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-      EXPECTED_CHEF_WORKSTATION_VERSION: "25.12.1102"
+      EXPECTED_CHEF_WORKSTATION_VERSION: "25.5.1084"
     steps:
       - name: Check out code
         uses: actions/checkout@v5
