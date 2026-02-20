@@ -22,7 +22,7 @@ lifecycle:
     - remote: C:\opscode\chef-workstation\embedded\bin\gem.bat install appbundle-updater -v "~> 1.0.36" --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
     # Build and install Chef from source
-    - remote: C:\opscode\chef-workstation\embedded\bin\appbundle-updater.bat chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+    - remote: C:\opscode\chef-workstation\embedded\bin\ruby.exe C:\opscode\chef-workstation\embedded\bin\appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - remote: Write-Output "Installed Chef / Ohai release:"
     - remote: chef-client -v
