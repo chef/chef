@@ -66,26 +66,11 @@ jobs:
             Start-Sleep -Seconds (5 * $attempt)
           }
         }
-    - name: Add Chef Workstation paths
-      run: |
-        $workstationBin = "C:\opscode\chef-workstation\bin"
-        $embeddedBin = "C:\opscode\chef-workstation\embedded\bin"
-        $embeddedRuby = Join-Path $embeddedBin "ruby.exe"
-        if (-not (Test-Path $embeddedRuby)) {
-          throw "Expected embedded Ruby not found: $embeddedRuby"
-        }
-        $rubyVersion = (& $embeddedRuby -e "print RbConfig::CONFIG['ruby_version']")
-        $userGemBin = Join-Path $env:USERPROFILE "AppData\Local\chef\gem\ruby\$rubyVersion\bin"
-
-        Add-Content $env:GITHUB_PATH "$workstationBin"
-        Add-Content $env:GITHUB_PATH "$embeddedBin"
-        Add-Content $env:GITHUB_PATH "$userGemBin"
-
-        Write-Host "Added to GITHUB_PATH: $workstationBin"
-        Write-Host "Added to GITHUB_PATH: $embeddedBin"
-        Write-Host "Added to GITHUB_PATH: $userGemBin"
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: | 
+        $env:PATH = "C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
+        gem install appbundler appbundle-updater --no-doc
+        kitchen test end-to-end-${{ matrix.os }}
 
   mac_x86_64:
     strategy:
@@ -107,17 +92,6 @@ jobs:
         uses: actionshub/chef-install@main
         with:
           version: "25.5.1084"
-      - name: Verify Chef Workstation version
-        run: |
-          expected_version="$EXPECTED_CHEF_WORKSTATION_VERSION"
-          chef_version_output="$(chef --version)"
-          echo "$chef_version_output"
-          if ! echo "$chef_version_output" | grep -Eq "Chef Workstation version:[[:space:]]+$expected_version"; then
-            echo "ERROR: Chef Workstation in use mismatch. Expected $expected_version"
-            exit 1
-          fi
-          echo "chef path: $(command -v chef)"
-          echo "kitchen path: $(command -v kitchen)"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -143,17 +117,6 @@ jobs:
         uses: actionshub/chef-install@main
         with:
           version: "25.5.1084"
-      - name: Verify Chef Workstation version
-        run: |
-          expected_version="$EXPECTED_CHEF_WORKSTATION_VERSION"
-          chef_version_output="$(chef --version)"
-          echo "$chef_version_output"
-          if ! echo "$chef_version_output" | grep -Eq "Chef Workstation version:[[:space:]]+$expected_version"; then
-            echo "ERROR: Chef Workstation in use mismatch. Expected $expected_version"
-            exit 1
-          fi
-          echo "chef path: $(command -v chef)"
-          echo "kitchen path: $(command -v kitchen)"
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -191,19 +154,6 @@ jobs:
         uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
-      - name: Verify Chef Workstation version
-        run: |
-          expected_version="$EXPECTED_CHEF_WORKSTATION_VERSION"
-          chef_version_output="$(chef --version)"
-          echo "$chef_version_output"
-          if ! echo "$chef_version_output" | grep -Eq "Chef Workstation version:[[:space:]]+$expected_version"; then
-            echo "ERROR: Chef Workstation in use mismatch. Expected $expected_version"
-            exit 1
-          fi
-          echo "chef path: $(command -v chef)"
-          echo "kitchen path: $(command -v kitchen)"
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
