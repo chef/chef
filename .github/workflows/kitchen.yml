@@ -34,28 +34,6 @@ jobs:
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
-  mac_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - macos-15-intel
-    runs-on: ${{ matrix.os }}
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v5
-        with:
-            clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@5.0.1
-        with:
-          version: "25.12.1102"
-      - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
-
   mac_arm64:
     strategy:
       fail-fast: false
