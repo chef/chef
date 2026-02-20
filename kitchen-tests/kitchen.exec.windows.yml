@@ -21,6 +21,8 @@ lifecycle:
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
     - remote: C:\opscode\chef-workstation\embedded\bin\gem.bat install appbundle-updater -v "~> 1.0.36" --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    # Create symlink for appbundle-updater compatibility
+    - remote: if (!(Test-Path C:\opscode\chef)) { New-Item -ItemType Junction -Path C:\opscode\chef -Target C:\opscode\chef-workstation }
     # Build and install Chef from source
     - remote: C:\opscode\chef-workstation\embedded\bin\ruby.exe -S appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
