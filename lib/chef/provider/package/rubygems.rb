@@ -386,12 +386,12 @@ class Chef
             Gem.platforms = original_gem_platforms
           end
 
-          target_platforms = nil
-
           def candidate_version_from_remote(gem_dependency, *sources)
             source_args = sources.compact.map { |s| "--source=#{s}" }.join(" ")
             cmd = "#{@gem_binary_location} list #{gem_dependency.name} --remote --all #{source_args}"
             result = shell_out!(cmd)
+
+            target_platforms = nil
 
             versions = []
             result.stdout.each_line do |line|
