@@ -386,6 +386,8 @@ class Chef
             Gem.platforms = original_gem_platforms
           end
 
+          target_platforms = nil
+
           def candidate_version_from_remote(gem_dependency, *sources)
             source_args = sources.compact.map { |s| "--source=#{s}" }.join(" ")
             cmd = "#{@gem_binary_location} list #{gem_dependency.name} --remote --all #{source_args}"
@@ -399,10 +401,26 @@ class Chef
               next unless version_string
 
               version_string.split(/,\s*/).each do |v|
-                version = Gem::Version.new(v.strip)
+                # `gem list --remote --all` emits entries like "1.6.0 x86_64-linux".
+                # Accept platform-specific tokens only when the platform is compatible
+                # with the target gem environment; pure-Ruby tokens have no suffix and
+                # are always accepted.
+                version_token, platform_suffix = v.strip.split(/\s+/, 2)
+
+                if platform_suffix
+                  target_platforms ||= gem_platforms
+                  compatible = target_platforms.any? do |p|
+                    Gem::Platform.new(p) === Gem::Platform.new(platform_suffix)
+                  rescue ArgumentError
+                    false
+                  end
+                  next unless compatible
+                end
+
+                version = Gem::Version.new(version_token)
                 versions << version if gem_dependency.requirement.satisfied_by?(version)
               rescue ArgumentError
-                # Skip invalid versions
+                # Skip tokens with unparseable version strings.
               end
             end
 
