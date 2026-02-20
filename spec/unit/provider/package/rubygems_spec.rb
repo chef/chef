@@ -394,6 +394,70 @@ describe Chef::Provider::Package::Rubygems::AlternateGemEnvironment do
     expect(version).to eq(Gem::Version.new("3.2.0"))
   end
 
+  context "when gem list output contains platform-specific version tokens" do
+    it "returns the highest version even when newer versions carry a platform suffix" do
+      stdout = "test_gem (1.6.0 x86_64-linux, 1.5.9 x86_64-linux, 1.5.9, 1.3.5)\n"
+      shell_out_result = OpenStruct.new(stdout: stdout)
+      expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list test_gem --remote --all ").and_return(shell_out_result)
+      allow(@gem_env).to receive(:gem_platforms).and_return(["ruby", Gem::Platform.new("x86_64-linux")])
+
+      gem_dependency = Gem::Dependency.new("test_gem", ">= 0")
+      version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+      expect(version).to eq(Gem::Version.new("1.6.0"))
+    end
+
+    it "returns the highest satisfying version when version constraints are present and some versions are platform-specific" do
+      # ~> 1.5.0 excludes 1.6.0 by constraint; best match is 1.5.9
+      stdout = "test_gem (1.6.0 x86_64-linux, 1.5.9 x86_64-linux aarch64-linux, 1.5.9, 1.3.5)\n"
+      shell_out_result = OpenStruct.new(stdout: stdout)
+      expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list test_gem --remote --all ").and_return(shell_out_result)
+      allow(@gem_env).to receive(:gem_platforms).and_return(["ruby", Gem::Platform.new("x86_64-linux")])
+
+      gem_dependency = Gem::Dependency.new("test_gem", "~> 1.5.0")
+      version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+      expect(version).to eq(Gem::Version.new("1.5.9"))
+    end
+
+    it "skips platform-specific versions that are incompatible with the target gem environment" do
+      # x86_64-darwin vs x86_64-linux differ in OS, so unambiguously incompatible everywhere
+      stdout = "test_gem (1.6.0 x86_64-darwin, 1.5.9)\n"
+      shell_out_result = OpenStruct.new(stdout: stdout)
+      expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list test_gem --remote --all ").and_return(shell_out_result)
+      allow(@gem_env).to receive(:gem_platforms).and_return([Gem::Platform.new("x86_64-linux")])
+
+      gem_dependency = Gem::Dependency.new("test_gem", ">= 0")
+      version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+      expect(version).to eq(Gem::Version.new("1.5.9"))
+    end
+
+    it "handles output that contains only platform-specific versions for the matching platform" do
+      stdout = "test_gem (1.6.0 x86_64-linux aarch64-linux, 1.5.9 x86_64-linux)\n"
+      shell_out_result = OpenStruct.new(stdout: stdout)
+      expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list test_gem --remote --all ").and_return(shell_out_result)
+      allow(@gem_env).to receive(:gem_platforms).and_return(["ruby", Gem::Platform.new("x86_64-linux")])
+
+      gem_dependency = Gem::Dependency.new("test_gem", ">= 0")
+      version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+      expect(version).to eq(Gem::Version.new("1.6.0"))
+    end
+
+    it "returns nil when no version satisfies the requirement" do
+      stdout = "test_gem (1.3.5 x86_64-linux, 1.3.5)\n"
+      shell_out_result = OpenStruct.new(stdout: stdout)
+      expect(@gem_env).to receive(:shell_out!).with("/usr/weird/bin/gem list test_gem --remote --all ").and_return(shell_out_result)
+      allow(@gem_env).to receive(:gem_platforms).and_return(["ruby", Gem::Platform.new("x86_64-linux")])
+
+      gem_dependency = Gem::Dependency.new("test_gem", ">= 2.0")
+      version = @gem_env.candidate_version_from_remote(gem_dependency)
+
+      expect(version).to be_nil
+    end
+  end
+
 end
 
 describe Chef::Provider::Package::Rubygems do
