@@ -31,7 +31,13 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: Install Chef
+<<<<<<< HEAD
       uses: actionshub/chef-install@5.0.2
+=======
+      uses: actionshub/chef-install@main
+      with:
+        version: "25.12.1102"
+>>>>>>> 1337dbfb1b (Updating the kitchen pipeline)
     - name: Kitchen Test
       run: | 
         $env:PATH = "C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
