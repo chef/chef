@@ -32,7 +32,7 @@ jobs:
     - name: Install Chef
       uses: actionshub/chef-install@main
       with:
-        version: "25.5.1084"
+        version: "25.12.1102"
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
