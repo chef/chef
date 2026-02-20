@@ -115,6 +115,8 @@ jobs:
         uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@main
+        with:
+          version: "25.5.1084"
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
