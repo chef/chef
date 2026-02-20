@@ -20,9 +20,9 @@ lifecycle:
     - remote: gem install appbundler --no-doc
     - remote: gem install appbundle-updater -v "~> 1.0.36" --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    # Force rebuild of libyajl2 with native extensions (required for ffi-yajl)
-    - remote: gem uninstall -I libyajl2
-    - remote: gem install libyajl2 --force --no-doc
+    # Force rebuild of libyajl2 in omnibus Chef environment (required for ffi-yajl)
+    - remote: C:\opscode\chef\embedded\bin\gem.bat uninstall -I libyajl2
+    - remote: C:\opscode\chef\embedded\bin\gem.bat install libyajl2 --force --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
     # Build and install Chef from source
     - remote: ruby -S appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
