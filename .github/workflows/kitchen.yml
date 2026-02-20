@@ -30,9 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: Install Chef
-      uses: actionshub/chef-install@main
-      with:
-        version: "25.12.1102"
+      uses: actionshub/chef-install@5.0.1
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -52,7 +50,7 @@ jobs:
         with:
             clean: true
       - name: Install Chef
-        uses: actionshub/chef-install@main
+        uses: actionshub/chef-install@5.0.1
         with:
           version: "25.12.1102"
       - name: Kitchen Test
@@ -76,9 +74,7 @@ jobs:
         with:
           clean: true
       - name: Install Chef
-        uses: actionshub/chef-install@main
-        with:
-          version: "25.12.1102"
+        uses: actionshub/chef-install@5.0.1
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -115,8 +111,6 @@ jobs:
         uses: actions/checkout@v5
       - name: Install Chef
         uses: actionshub/chef-install@main
-        with:
-          version: "25.12.1102"
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
