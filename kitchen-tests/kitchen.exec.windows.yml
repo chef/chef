@@ -10,42 +10,116 @@ transport:
 
 lifecycle:
   pre_converge:
-    - remote: . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
-    - remote: $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-    - remote: chef-client -v
-    - remote: ohai -v
-    - remote: rake --version
-    - remote: bundle -v
-    # Fix gem environment and rebuild libyajl2 in chef environment
-    - remote: gem uninstall -I libyajl2
-    - remote: gem install libyajl2 --force --no-doc
-    - remote: gem install appbundler --no-doc
-    - remote: gem install appbundle-updater -v "~> 1.0.36" --no-doc
-    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    - remote: $env:PATH = "C:\opscode\chef\embedded\bin;" + $env:PATH; appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
-    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    - remote: Write-Output "Installed Chef / Ohai release:"
-    - remote: chef-client -v
-    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    - remote: ohai -v
-    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
-    # htmldiff and ldiff on windows cause a conflict with gems being loaded below. we remove them here.
-    - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
-    # Install test dependencies with debugging and timeout handling
-    - remote: Write-Output "=== Bundle Install Debug Info ==="
-    - remote: Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    - remote: Write-Output "Network connectivity test..."
-    - remote: Test-NetConnection rubygems.org -Port 443 -InformationLevel Detailed
-    - remote: Write-Output "Gem environment..."
-    - remote: gem env
-    - remote: Write-Output "Bundle config..."
-    - remote: bundle config
-    - remote: Write-Output "Starting bundle install with timeout handling..."
-    - remote: Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    - remote: $env:BUNDLE_RETRY = "3"; $env:BUNDLE_TIMEOUT = "180"; $env:BUNDLE_JOBS = "1"; bundle install --retry=3 --verbose
-    - remote: Write-Output "Bundle install completed!"
-    - remote: Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
+    - remote: |
+        Write-Host "Installing Chef and Ohai on the test instance"
+        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+        $env:PATH = "c:/users/runneradmin/appdata/local/chef/gem/ruby/3.1.0/bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        chef-client -v
+        ohai -v
+        rake --version
+        bundle -v
+        Write-Host "Installed Chef and Ohai on the test instance"
+
+    - remote: |
+        Write-Host "=== Cleaning up gems and installing appbundle-updater and libyajl2 ==="
+        $env:PATH = "c:/users/runneradmin/appdata/local/chef/gem/ruby/3.1.0/bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $vendoredLibDir = 'C:\opscode\chef\embedded\lib\ruby\gems\3.1.0\gems\libyajl2-2.1.0\lib\libyajl2\vendored-libyajl2\lib'
+        if (-not (Test-Path $vendoredLibDir)) {
+            Write-Host "ERROR: libyajl2 vendored library directory not found: $vendoredLibDir"
+            Exit 1
+        }
+        $targetImportLib = Join-Path $vendoredLibDir 'libyajldll.a'
+        if (-not (Test-Path $targetImportLib)) {
+            $sourceStaticLib = Join-Path $vendoredLibDir 'libyajl.a'
+            $sourceSharedLib = Join-Path $vendoredLibDir 'libyajl.so'
+            if (Test-Path $sourceStaticLib) {
+                Copy-Item -Path $sourceStaticLib -Destination $targetImportLib -Force
+                Write-Host "Created libyajldll.a from libyajl.a"
+            } elseif (Test-Path $sourceSharedLib) {
+                Copy-Item -Path $sourceSharedLib -Destination $targetImportLib -Force
+                Write-Host "Created libyajldll.a from libyajl.so"
+            } else {
+                Write-Host "ERROR: Missing both libyajl.a and libyajl.so under $vendoredLibDir"
+                Exit 1
+            }
+        }
+        Write-Host "libyajl2 vendored libs present:"
+        Get-ChildItem $vendoredLibDir | Select-Object Name, Length
+        gem install appbundler --no-doc
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        gem install appbundle-updater -v "~> 1.0.36" --no-doc
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        Write-Host "=== appbundle-updater gems installed successfully ==="
+
+    - remote: |
+        Write-Host "=== Creating appbundle-updater.bat wrapper ==="
+        $env:PATH = "c:/users/runneradmin/appdata/local/chef/gem/ruby/3.1.0/bin;C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+        $gemBinDir = "C:\Users\runneradmin\AppData\Local\chef\gem\ruby\3.1.0\bin"
+        $batFile = Join-Path $gemBinDir "appbundle-updater.bat"
+        
+        # Ensure gem bin directory exists
+        if (-not (Test-Path $gemBinDir)) {
+            New-Item -ItemType Directory -Path $gemBinDir -Force | Out-Null
+        }
+        
+        # Create the batch file wrapper
+        $batLines = @(
+            '@echo off',
+            'setlocal',
+            'ruby -S appbundle-updater %*'
+        )
+        Set-Content -Path $batFile -Value $batLines -Encoding ASCII
+        Write-Host "Created appbundle-updater.bat at: $batFile"
+        Get-Item $batFile | Select-Object FullName, Length
+        Write-Host "=== Finished creating appbundle-updater.bat wrapper ==="
+
+    - remote: |
+        Write-Host "=== Running appbundle-updater to install the latest chef-client and ohai releases ==="
+        $gemBinDir = "C:\Users\runneradmin\AppData\Local\chef\gem\ruby\3.1.0\bin"
+        $env:PATH = "$gemBinDir;C:\Program Files\Git\cmd;C:\Program Files\Git\bin;$env:PATH"
+        
+        $appbundleUpdater = Join-Path $gemBinDir "appbundle-updater.bat"
+        if (-not (Test-Path $appbundleUpdater)) {
+            Write-Host "ERROR: appbundle-updater.bat not found at $appbundleUpdater"
+            Exit 1
+        }
+        
+        Write-Host "Using appbundle-updater at: $appbundleUpdater"
+        $appbundleRef = "<%= ENV['GITHUB_HEAD_REF'] || ENV['GITHUB_SHA'] || %x(git rev-parse HEAD).chomp %>"
+        Write-Host "Using appbundle-updater git ref: $appbundleRef"
+        & $appbundleUpdater chef chef $appbundleRef --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        
+        Write-Host "Installed Chef / Ohai release:"
+        chef-client -v
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        ohai -v
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
+        Write-Host "=== Finished running appbundle-updater ==="
+
+    - remote: |
+        Write-Host "=== Cleaning up conflicting gems and navigating to kitchen-tests ==="
+        if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { 
+            Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff
+            Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff 
+        }
+        
+        $workspace = if ($env:GITHUB_WORKSPACE) { $env:GITHUB_WORKSPACE } else { (Get-Location).Path }
+        Set-Location -Path (Join-Path $workspace 'kitchen-tests')
+        Write-Host "Working directory: $(Get-Location)"
+        Write-Host "Running bundle check before install"
+        bundle check
+        if ($lastexitcode -ne 0) {
+            Write-Host "bundle check failed; running bundle install with conservative Windows settings"
+            bundle install --jobs=1 --retry=3 --verbose --no-color
+            if ($lastexitcode -ne 0) {
+                Write-Host "ERROR: bundle install failed with exit code $lastexitcode"
+                Exit $lastexitcode
+            }
+        } else {
+            Write-Host "bundle check passed; skipping bundle install"
+        }
+        Write-Host "=== Finished cleaning up conflicting gems and navigating to kitchen-tests ==="
 
 platforms:
   - name: windows-2025

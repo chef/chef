@@ -1,12 +1,12 @@
 source "https://rubygems.org"
 
-gem "rake", ">= 12.3.3" # required to build some native extensions
-gem "chef", path: ".."
-gem "knife", path: "../knife"
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable" # avoids failures when we bump chef major
-gem "chef-cli"
+# Kitchen tests only need the test drivers and inspec, not the full chef build
+# The actual chef being tested is provided by appbundle-updater, which is already installed
+# Avoid local path dependencies (gem "chef", path: "..") to prevent re-resolving the
+# entire root Gemfile with its complex git dependencies (ohai, rest-client, etc.)
+
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
-gem "kitchen-inspec"
+gem "kitchen-inspec"  
 gem "inspec", ">= 5.0", "< 6"
 gem "test-kitchen"
