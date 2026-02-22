@@ -7,6 +7,6 @@ source "https://rubygems.org"
 
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
-gem "kitchen-inspec"  
+gem "kitchen-inspec"
 gem "inspec", ">= 5.0", "< 6"
 gem "test-kitchen"
