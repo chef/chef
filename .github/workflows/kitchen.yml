@@ -32,7 +32,10 @@ jobs:
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: | 
+        $env:PATH = "C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
+        gem install appbundler appbundle-updater --no-doc
+        kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
