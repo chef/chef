@@ -1,0 +1,3 @@
+[submodule "omnibus"]
+	path = omnibus
+	url = git@github.com:chef/chef-18-omnibus-config.git
