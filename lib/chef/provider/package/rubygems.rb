@@ -405,14 +405,19 @@ class Chef
                 # Accept platform-specific tokens only when the platform is compatible
                 # with the target gem environment; pure-Ruby tokens have no suffix and
                 # are always accepted.
-                version_token, platform_suffix = v.strip.split(/\s+/, 2)
+                version_token, *platform_tokens = v.strip.split(/\s+/)
 
-                if platform_suffix
+                if platform_tokens.any?
                   target_platforms ||= gem_platforms
-                  compatible = target_platforms.any? do |p|
-                    Gem::Platform.new(p) === Gem::Platform.new(platform_suffix)
-                  rescue ArgumentError
-                    false
+                  # Each comma-separated entry from `gem list --remote --all` can list
+                  # multiple platforms for one version: "1.5.9 ruby x86_64-linux aarch64-linux ...".
+                  # Accept if any listed platform is "ruby" (pure-Ruby) or matches the target env.
+                  compatible = platform_tokens.any? do |pt|
+                    pt == "ruby" || target_platforms.any? do |p|
+                      Gem::Platform.new(p) === Gem::Platform.new(pt)
+                    rescue ArgumentError
+                      false
+                    end
                   end
                   next unless compatible
                 end
