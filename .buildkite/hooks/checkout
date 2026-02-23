@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+
+# Configure GitHub HTTPS auth early so private submodules can be cloned during checkout
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+  git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+fi
