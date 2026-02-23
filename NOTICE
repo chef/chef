@@ -1,4 +1,4 @@
-﻿Progress Chef Infra Client 18.9
+﻿Progress Chef Infra Client 18.10
 
 Portions of the Products include certain open source and commercial third-party
 components listed below ("Third-Party Components"). The authors of the
@@ -20,40 +20,37 @@ Vendor Name | Product Name | Version
 
 Apache License 2.0:
   Adam Edwards                     | wmi-lite                | 1.0.7
-  Adam Jacob                       | Chef                    | 18.7.3
   Adam Jacob                       | Chef                    | 18.7.6
-  Adam Jacob                       | Chef                    | 18.8.54
-  Adam Jacob                       | Chef                    | 18.8.9
-  Adam Jacob                       | knife                   | 18.8.68
-  Adam Jacob                       | opscode-ohai            | 18.1.18
-  Amazon Web Services              | AWS SDK for Ruby        | 1.1048.0
-  Amazon Web Services              | AWS SDK for Ruby        | 1.11.0
-  Amazon Web Services              | AWS SDK for Ruby        | 1.112.0
-  Amazon Web Services              | AWS SDK for Ruby        | 1.180.0
-  Amazon Web Services              | AWS SDK for Ruby        | 1.3.0
-  Amazon Web Services              | AWS SDK for Ruby        | 1.98.0
-  Amazon Web Services              | aws-sdk-core-ruby       | 3.218.1
+  Adam Jacob                       | Chef                    | 18.9.4
+  Adam Jacob                       | knife                   | 18.8.65
+  Amazon Web Services              | AWS SDK for Ruby        | 1.12.1
+  Amazon Web Services              | AWS SDK for Ruby        | 1.1215.0
+  Amazon Web Services              | AWS SDK for Ruby        | 1.122.0
+  Amazon Web Services              | AWS SDK for Ruby        | 1.128.0
+  Amazon Web Services              | AWS SDK for Ruby        | 1.213.0
+  Amazon Web Services              | AWS SDK for Ruby        | 1.4.0
+  Amazon Web Services              | aws-sdk-core-ruby       | 3.242.0
   Bob Aman                         | Addressable URI parser  | 2.8.7
   Bob Aman                         | sporkmonger's uuidtools | 2.2.0
-  Chef InSpec Core Engineering     | inspec-ruby             | 5.23.6
-  Chef InSpec Team                 | inspec/inspec           | 5.23.6
-  Chef InSpec Team                 | train-winrm             | 0.2.17
-  Chef Software, Inc               | Chef                    | 18.6.2
+  Chef InSpec Core Engineering     | inspec/inspec           | 5.24.5
+  Chef InSpec Team                 | inspec-ruby             | 5.24.5
+  Chef InSpec Team                 | train-core              | 3.16.1
+  Chef InSpec Team                 | train-winrm             | 0.2.19
+  Chef Software Inc.               | mixlib-shellout         | 3.4.10
+  Chef Software, Inc               | mixlib-archive          | 1.3.3
   Chef Software, Inc               | mixlib-log              | 3.1.2.1
-  Chef Software, Inc               | mixlib-shellout         | 3.3.9
   Chef Software, Inc.              | chef-zero               | 15.1.0
-  Chef Software, Inc.              | chefstyle               | 2.2.3
-  Dan Wanek, Paul Morton, Matt…    | chef-winrm              | 2.3.11
+  Dan Wanek, Paul Morton, Matt…    | chef-winrm              | 2.3.12
   > Wrock, Shawn Neal              |                         |
   Daniel J. Berger                 | ffi-win32-extensions    | 1.0.4
   Daniel J. Berger, Park Heesob    | win32-ipc               | 0.7.0
   Jamie Winsor                     | semverse                | 3.0.2
-  John Bellone, Jamie Winsor,…     | ffi-libarchive          | 1.1.3
+  John Bellone, Jamie Winsor,…     | ffi-libarchive          | 1.1.14
   > Frank Fischer                  |                         |
   Shawn Neal                       | chef-winrm-elevated     | 1.2.5
   Shawn Neal, Matt Wrock           | chef-winrm-fs           | 1.3.7
-  Thom May                         | chef-vault              | 4.1.11
-  Thom May, Tim Smith              | cookstyle               | 7.32.8
+  Thom May                         | chef-vault              | 4.2.5
+  Thom May, Tim Smith              | cookstyle               | 8.6.4
   Trevor Rowe                      | jmespath rubygems       | 1.6.2
   lamont-granquist                 | libyajl2                | 2.1.0
   tyler-ball                       | license-acceptance      | 2.1.13
@@ -72,28 +69,30 @@ Artistic License 2.0:
 BSD 2-Clause "Simplified" License:
   Akinori MUSHA                    | public_suffix_service | 0.6.20240107
   Akira Yamada                     | uri                   | 1.0.4
-  Daniel Luz                       | JSON for Ruby         | 2.15.1
-  David Rodriguez, Kent Sibilev,…  | byebug                | 11.1.3
+  Daniel Luz                       | JSON for Ruby         | 2.18.1
+  David Rodriguez, Kent Sibilev,…  | byebug                | 12.0.0
   > Mark Moseley                   |                       |
-  Kenta Murata, Zachary Scott,…    | bigdecimal            | 3.1.9
+  Hiroshi Nakamura                 | nahi's httpclient     | 2.9.0
+  Keiju ISHITSUKA                  | mutex_m               | 0.3.0
+  Kenta Murata, Zachary Scott,…    | bigdecimal            | 4.0.1
   > Shigeo Kobayashi               |                       |
   Kouhei Sutou                     | ruby/rexml            | 3.4.4
   Martin Bosslet, SHIBATA Hiroshi… | ruby/openssl          | 3.3.0
   > , Zachary Scott, Kazuki…       |                       |
   > Yamaguchi                      |                       |
   Minero Aoki, Aaron Patterson     | racc                  | 1.8.1
-  NARUSE, Yui                      | net-http              | 0.6.0
+  NARUSE, Yui                      | net-http              | 0.9.1
   Naotoshi Seo, SHIBATA Hiroshi    | ruby/logger           | 1.5.3
   Robert Haines, John Lees-Miller… | RubyZip               | 2.4.1
   > , Alexander Simonov            |                       |
-  Shugo Maeda                      | net-ftp               | 0.3.8
-  TAKAHASHI Masayoshi, GOTOU…      | webrick               | 1.9.1
+  Shugo Maeda                      | net-ftp               | 0.3.9
+  TAKAHASHI Masayoshi, GOTOU…      | webrick               | 1.9.2
   > YUUZOU, Eric Wong              |                       |
-  Tadayoshi Funaba                 | date                  | 3.4.1
-  Tanaka Akira                     | timingfuction         | 0.4.1
+  Tadayoshi Funaba                 | date                  | 3.5.1
+  Tanaka Akira                     | timingfuction         | 0.4.2
   Yukihiro Matsumoto               | net-protocol          | 0.2.2
-  Yukihiro Matsumoto               | timeout               | 0.4.3
-  Yusuke Endoh                     | base64                | 0.2.0
+  Yukihiro Matsumoto               | timeout               | 0.6.0
+  Yusuke Endoh                     | base64                | 0.3.0
 
 BSD 3-Clause "New" or "Revised" License:
   Park Heesob, Daniel Berger,…     | rb-readline   | 0.5.5
@@ -115,39 +114,35 @@ Internal Progress Product License: (*)
   Progress Software Corporation | appbundler            | 0.13.4
   Progress Software Corporation | chef-telemetry        | 1.1.1
   Progress Software Corporation | cheffish              | 17.1.8
-  Progress Software Corporation | mixlib-archive        | 1.1.7
   Progress Software Corporation | mixlib-authentication | 3.0.10
   Progress Software Corporation | mixlib-cli            | 2.1.8
   Progress Software Corporation | mixlib-config         | 3.0.27
-  Progress Software Corporation | train-core            | 3.13.4
   Progress Software Corporation | train-rest            | 0.5.0
   Progress Software Corporation | win32-certstore       | 0.6.16
 
 MIT License:
-  @technoweenie, @iMacTia, …       | technoweenie's faraday      | 2.14.0
-  > @olleolleolle                  |                             |
-  Akinori MUSHA, Aaron Patterson,… | http-cookie                 | 1.0.8
+  Akinori MUSHA, Aaron Patterson,… | http-cookie                 | 1.1.0
   > Eric Hodel, Mike Dalessio      |                             |
   Ammar Ali, Janosch Müller        | regexp_parser               | 2.11.3
   Anthony Williams                 | antw's iniparse             | 1.5.0
   Arnau Siches                     | arnau/iso8601               | 0.13.0
   Austin Ziegler                   | halostatue/diff-lcs         | 1.5.1
-  Austin Ziegler                   | mime-types-data             | 3.2025.0204
-  Austin Ziegler                   | ruby-mime-types             | 3.6.0
-  Bartosz Blimke                   | webmock                     | 3.25.0
+  Austin Ziegler                   | mime-types-data             | 3.2026.0203
+  Austin Ziegler                   | ruby-mime-types             | 3.7.0
+  Bartosz Blimke                   | webmock                     | 3.26.1
   Ben Bleything, Patrick May       | bleything's plist           | 3.7.2
-  Bozhidar Batsov, Jonas…          | rubocop                     | 1.25.1
+  Bozhidar Batsov, Jonas…          | rubocop                     | 1.84.2
   > Arvidsson, Yuji Nakayama       |                             |
-  Bozhidar Batsov, Jonas…          | rubocop-ast                 | 1.47.1
+  Bozhidar Batsov, Jonas…          | rubocop-ast                 | 1.49.0
   > Arvidsson, Yuji Nakayama       |                             |
   Dan Wanek                        | gssapi                      | 1.3.1
-  Daniel Harrington                | chef-gyoku                  | 1.4.1
+  Daniel Harrington                | chef-gyoku                  | 1.4.5
   Daniel Harrington, John…         | savonrb/nori                | 2.7.0
   > Nunemaker, Wynn Netherland     |                             |
-  David Chelimsky, Myron Marson,…  | rspec-support               | 3.13.6
+  David Chelimsky, Myron Marson,…  | rspec-support               | 3.13.7
   > Jon Rowe, Sam Phippen,…        |                             |
   > Xaviery Shay, Bradley Schaefer |                             |
-  David Rodríguez, Gopal Patel     | pry-byebug                  | 3.10.1
+  David Rodríguez, Gopal Patel     | pry-byebug                  | 3.11.0
   Eric Hodel; Chris Powell;…       | syslog-logger               | 1.6.8
   > Matthew Boeh; Ian Lesperance;… |                             |
   > Dana Danger; Brian Smith;…     |                             |
@@ -155,8 +150,9 @@ MIT License:
   Francois Bernier                 | tomlrb                      | 1.3.0
   Frederick Cheung, Chef Software… | corefoundation              | 0.3.13
   > , Inc.                         |                             |
+  Fumiaki MATSUSHIMA               | language_server-protocol    | 3.17.0.5
   Gregor Schmidt                   | structured_warnings         | 0.4.0
-  Hiroshi SHIBATA, Eric Hodel,…    | Rake                        | 13.2.1
+  Hiroshi SHIBATA, Eric Hodel,…    | Rake                        | 13.3.1
   > Jim Weirich                    |                             |
   Jamis Buck, Delano Mandelbaum,…  | net-scp                     | 4.1.0
   > Miklós Fazekas                 |                             |
@@ -165,9 +161,9 @@ MIT License:
   Jamis Buck, Delano Mandelbaum,…  | ruby-net-ssh                | 7.3.0
   > Miklós Fazekas                 |                             |
   Jan Lelis                        | unicode-display_width       | 2.6.0
-  Jan van der Pas                  | faraday-net_http            | 3.4.0
+  Jan van der Pas                  | faraday-net_http            | 3.4.2
   Jeremy Evans, kuwata-lab.com     | erubi                       | 1.13.1
-  Jerry D'Antonio, Petr Chalupa,…  | concurrent-ruby             | 1.3.5
+  Jerry D'Antonio, Petr Chalupa,…  | concurrent-ruby             | 1.3.6
   > The Ruby Concurrency Team      |                             |
   Jim Weirich, Aaron Patterson     | jimweirich's builder        | 3.3.0
   John Mair (banisterfiend)        | binding_of_caller           | 1.0.1
@@ -178,16 +174,17 @@ MIT License:
   > Conrad Irwin, Ryan Fitzgerald… |                             |
   > , Kyrylo Silin                 |                             |
   John Nunemaker                   | jnunemaker's crack          | 0.4.5
+  Justin Searls                    | lint_roller                 | 1.1.0
   Kaspar Schiess                   | Parslet                     | 2.0.0
   Kohei Kajimoto, Paul Morton      | rubyntlm                    | 0.6.5
   Kornelius Kalnbach               | rubychan's coderay          | 1.1.3
   Kris Leech                       | wisper                      | 2.0.1
-  Lamont Granquist                 | ffi-yajl                    | 2.6.0
-  Leah Neukirchen                  | Rack                        | 3.2.4
-  Liu Fengyun                      | hashdiff                    | 1.1.1
+  Lamont Granquist                 | ffi-yajl                    | 2.7.7
+  Leah Neukirchen                  | Rack                        | 3.2.5
+  Liu Fengyun                      | hashdiff                    | 1.2.1
   Marcin Kulik, Olle Jonsson       | sickill's rainbow           | 3.1.1
-  Michael Bleigh, Jerry Cheung     | hashie                      | 5.0.0
-  Michael Bleigh, Josh Kalderimis… | multi_json                  | 1.17.0
+  Michael Bleigh, Jerry Cheung     | hashie                      | 5.1.0
+  Michael Bleigh, Josh Kalderimis… | multi_json                  | 1.19.1
   > , Erik Berlin, Pavel Pravosud  |                             |
   Michael Grosser                  | grosser's parallel          | 1.27.0
   Nick Sieger, Samuel Williams,…   | nicksieger's multipart-post | 2.4.1
@@ -224,32 +221,32 @@ MIT License:
   Piotr Murach                     | tty-screen                  | 0.8.2
   Piotr Murach                     | tty-table                   | 0.12.0
   REST Client Team                 | adamwiggins's rest-client   | 2.1.0
+  RubyGems                         | technoweenie's faraday      | 2.14.1
   Samuel Kadolph                   | proxifier2                  | 1.1.0
   Samuel Williams                  | http-accept                 | 2.1.1
-  Samuel Williams, James Tucker,…  | rackup                      | 2.2.1
+  Samuel Williams, James Tucker,…  | rackup                      | 2.3.1
   > Leah Neukirchen, Jeremy Evans… |                             |
   > , Joshua Peek, Megan Batty,…   |                             |
-  > Rafael Fran√ßa, Anurag Priyam… |                             |
-  > , Max Cantor, Michael…         |                             |
-  > Fellinger, Sophie Deziel,…     |                             |
-  > Yoshiyuki Hirano, Aaron…       |                             |
-  > Patterson, Jean Boussier,…     |                             |
-  > Katsuhiko Yoshida, Konstantin… |                             |
-  > Haase, Krzysztof Rybka,…       |                             |
-  > Martin Hrdlicka, Nick LaMuro,… |                             |
-  > Aaron Pfeifer, Akira Matsuda,… |                             |
-  > Andrew Bortz, Andrew Hoglund,… |                             |
-  > Bas Vodde, Blake Mizerany,…    |                             |
-  > Carl Lerche, David Celis,…     |                             |
-  > Dillon Welch, Genki Takiuchi,… |                             |
-  > Geremia Taglialatela, Hal…     |                             |
-  > Brodigan, Hrvoje ≈†imiƒá,…     |                             |
-  > Igor Bochkariov, Jeremy…       |                             |
+  > Rafael França, Anurag Priyam,… |                             |
+  > Max Cantor, Michael Fellinger… |                             |
+  > , Sophie Deziel, Yoshiyuki…    |                             |
+  > Hirano, Aaron Patterson, Jean… |                             |
+  > Boussier, Katsuhiko Yoshida,…  |                             |
+  > Konstantin Haase, Krzysztof…   |                             |
+  > Rybka, Martin Hrdlicka, Nick…  |                             |
+  > LaMuro, Aaron Pfeifer, Akira…  |                             |
+  > Matsuda, Andrew Bortz, Andrew… |                             |
+  > Hoglund, Bas Vodde, Blake…     |                             |
+  > Mizerany, Carl Lerche, David…  |                             |
+  > Celis, Dillon Welch, Genki…    |                             |
+  > Takiuchi, Geremia Taglialatel… |                             |
+  > a, Hal Brodigan, Hrvoje Šimić… |                             |
+  > , Igor Bochkariov, Jeremy…     |                             |
   > Kemper, Joe Fiorini, John…     |                             |
   > Barnette, John Sumsion, Julik… |                             |
   > Tarkhanov, Kang Sheng, Kazuya… |                             |
   > Hotta, Lenny Marks, Loren…     |                             |
-  > Segal, Marc-Andr√© Cournoyer,… |                             |
+  > Segal, Marc-André Cournoyer,…  |                             |
   > Misaki Shioi, Olle Jonsson,…   |                             |
   > Peter Wilmott, Petrik de Heus… |                             |
   > , Richard Schneeman,…          |                             |
@@ -260,43 +257,45 @@ MIT License:
   > Tsutomu Kuroda, Uchio Kondo,…  |                             |
   > Wyatt Pan, Yehuda Katz,…       |                             |
   > Zachary Scott                  |                             |
-  Sebastian Cohnen                 | faraday-follow_redirects    | 0.3.0
+  Sebastian Cohnen                 | faraday-follow_redirects    | 0.5.0
   Seth Vargo, Tim Smith            | chefspec/fauxhai            | 9.3.0
-  Shopify                          | mwunsch's prism             | 1.5.1
-  Simone Carletti                  | Ruby Public Suffix          | 6.0.1
-  Steven Baker, David Chelimsky,…  | RSpec                       | 3.13.0
+  Shopify                          | mwunsch's prism             | 1.9.0
+  Simone Carletti                  | Ruby Public Suffix          | 6.0.2
+  Steven Baker, David Chelimsky,…  | RSpec                       | 3.13.6
+  > Chad Humphries, Myron Marston  |                             |
+  Steven Baker, David Chelimsky,…  | RSpec                       | 3.13.2
   > Myron Marston                  |                             |
   Steven Baker, David Chelimsky,…  | RSpec                       | 3.13.5
+  > Myron Marston                  |                             |
+  Steven Baker, David Chelimsky,…  | RSpec                       | 3.13.7
   > Myron Marston                  |                             |
   Takeru Ohta, Akinori MUSHA       | unf_ext                     | 0.0.8.2
   The RSpec Development Team       | rspec-its                   | 2.0.0
   Tim Pease                        | TwP's logging               | 2.4.0
   Tim Pease                        | little-plugger              | 1.1.4
-  Tony Arcieri                     | ed25519                     | 1.3.0
+  Tony Arcieri                     | ed25519                     | 1.4.0
+  Yehuda Katz, José Valim          | Thor                        | 1.4.0
+  Zach Aysan                       | yajl                        | 0.3.4
   bluemonk, mikemackintosh         | ipaddress-gem/ipaddress     | 0.8.3
   makoto kuwata                    | erubis                      | 2.7.0
   thekompanee, jfelchner           | jfelchner/ruby-progressbar  | 1.13.0
-  thor (1.3.2)                     | Thor                        | 1.3.2
   whitequark                       | ast                         | 2.4.3
-  whitequark                       | parser                      | 3.3.9.0
+  whitequark                       | parser                      | 3.3.10.2
 
 Mozilla Public License 2.0:
   Dominik Richter | sslshake | 1.3.1
   Seth Vargo      | vault    | 0.18.2
 
-Ruby License:
-  Hiroshi Nakamura | nahi's httpclient | 2.8.3
-
 ================================================================================
 
-The Product contains nahi's httpclient 2.8.3, sslshake 1.3.1, vault 0.18.2,
-win32-api 1.10.1-universal-mingw32, win32-event 0.6.3, win32-eventlog 0.6.3,
-win32-mmap 0.4.2, win32-mutex 0.4.3, win32-process 0.10.0, win32-service 2.3.2,
-and win32-taskscheduler 2.0.4. These third-party technologies are licensed to
-PSC and User is subject to the terms of a third-party license, a copy of which
-is included herein. PSC will, at Licensee's request, provide a copy of the
-source code for this third-party technology, including modifications, if any,
-made by PSC. PSC may charge reasonable shipping and handling charges for such
+The Product contains sslshake 1.3.1, vault 0.18.2, win32-api
+1.10.1-universal-mingw32, win32-event 0.6.3, win32-eventlog 0.6.3, win32-mmap
+0.4.2, win32-mutex 0.4.3, win32-process 0.10.0, win32-service 2.3.2, and
+win32-taskscheduler 2.0.4. These third-party technologies are licensed to PSC
+and User is subject to the terms of a third-party license, a copy of which is
+included herein. PSC will, at Licensee's request, provide a copy of the source
+code for this third-party technology, including modifications, if any, made by
+PSC. PSC may charge reasonable shipping and handling charges for such
 distribution. Licensee may also obtain the source code for these third-party
 technologies through http://iue.progress.com/3dpartysoftwares/Pages/default.aspx
 by following the instructions set forth therein.
@@ -307,17 +306,16 @@ conditions:
 
 (1) Apache License 2.0:
 
-Progress Chef Infra Client 18.9 incorporates AWS SDK for Ruby 1.1048.0, AWS SDK
-for Ruby 1.11.0, AWS SDK for Ruby 1.112.0, AWS SDK for Ruby 1.180.0, AWS SDK
-for Ruby 1.3.0, AWS SDK for Ruby 1.98.0, Addressable URI parser 2.8.7, Chef
-18.6.2, Chef 18.7.3, Chef 18.7.6, Chef 18.8.54, Chef 18.8.9, aws-sdk-core-ruby
-3.218.1, chef-vault 4.1.11, chef-winrm 2.3.11, chef-winrm-elevated 1.2.5,
-chef-winrm-fs 1.3.7, chef-zero 15.1.0, chefstyle 2.2.3, cookstyle 7.32.8,
-ffi-libarchive 1.1.3, ffi-win32-extensions 1.0.4, inspec-ruby 5.23.6,
-inspec/inspec 5.23.6, jmespath rubygems 1.6.2, knife 18.8.68, libyajl2 2.1.0,
-license-acceptance 2.1.13, mixlib-log 3.1.2.1, mixlib-shellout 3.3.9,
-opscode-ohai 18.1.18, semverse 3.0.2, sporkmonger's uuidtools 2.2.0,
-train-winrm 0.2.17, win32-ipc 0.7.0, and wmi-lite 1.0.7.
+Progress Chef Infra Client 18.10 incorporates AWS SDK for Ruby 1.12.1, AWS SDK
+for Ruby 1.1215.0, AWS SDK for Ruby 1.122.0, AWS SDK for Ruby 1.128.0, AWS SDK
+for Ruby 1.213.0, AWS SDK for Ruby 1.4.0, Addressable URI parser 2.8.7, Chef
+18.7.6, Chef 18.9.4, aws-sdk-core-ruby 3.242.0, chef-vault 4.2.5, chef-winrm
+2.3.12, chef-winrm-elevated 1.2.5, chef-winrm-fs 1.3.7, chef-zero 15.1.0,
+cookstyle 8.6.4, ffi-libarchive 1.1.14, ffi-win32-extensions 1.0.4, inspec-ruby
+5.24.5, inspec/inspec 5.24.5, jmespath rubygems 1.6.2, knife 18.8.65, libyajl2
+2.1.0, license-acceptance 2.1.13, mixlib-archive 1.3.3, mixlib-log 3.1.2.1,
+mixlib-shellout 3.4.10, semverse 3.0.2, sporkmonger's uuidtools 2.2.0,
+train-core 3.16.1, train-winrm 0.2.19, win32-ipc 0.7.0, and wmi-lite 1.0.7.
 
   Apache License Version 2.0, January 2004
   =========================
@@ -508,16 +506,55 @@ train-winrm 0.2.17, win32-ipc 0.7.0, and wmi-lite 1.0.7.
     governing permissions and limitations under the License.
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Contents of NOTICE text file for AWS SDK for Ruby 1.1048.0, AWS SDK for Ruby
-1.11.0, AWS SDK for Ruby 1.112.0, AWS SDK for Ruby 1.180.0, AWS SDK for Ruby
-1.3.0, AWS SDK for Ruby 1.98.0, and aws-sdk-core-ruby 3.218.1:
+Contents of NOTICE text file for AWS SDK for Ruby 1.12.1, AWS SDK for Ruby
+1.1215.0, AWS SDK for Ruby 1.122.0, AWS SDK for Ruby 1.213.0, AWS SDK for Ruby
+1.4.0, and aws-sdk-core-ruby 3.242.0:
 
   AWS SDK for Ruby Copyright Amazon.com, Inc. or its affiliates. All Rights
   Reserved.
 
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Contents of NOTICE text file for AWS SDK for Ruby 1.128.0:
+
+  AWS SDK for Ruby Copyright 2015 Amazon.com, Inc. or its affiliates. All
+  Rights Reserved.
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Contents of NOTICE text file for mixlib-log 3.1.2.1:
+
+  ============
+  Mixin::Log Notices
+  ============
+
+  Developed at Chef (http://www.chef.io).
+
+
+   * Copyright 2009-2016, Chef Software, Inc. <legal@chef.io>
+
+  Mixin::Log incorporates code from Chef.  The Chef notice file follows:
+
+  ============
+  Chef Notices
+  ============
+
+  Developed at Chef (http://www.chef.io).
+
+  Contributors and Copyright holders:
+
+   * Copyright 2008, Adam Jacob <adam@chef.io> * Copyright 2008, Arjuna
+   Christensen <aj@hjksolutions.com> * Copyright 2008, Bryan McLellan
+   <btm@loftninjas.org> * Copyright 2008, Ezra Zygmuntowicz
+   <ezra@engineyard.com> * Copyright 2009, Sean Cribbs <seancribbs@gmail.com> *
+   Copyright 2009, Christopher Brown <cb@chef.io> * Copyright 2009, Thom May
+   <thom@clearairturbulence.org>
+
+  Chef incorporates code modified from Open4
+  (http://www.codeforpeople.com/lib/ruby/open4/), which was written by Ara T.
+  Howard.
+
 (2) Artistic License 2.0:
 
-Progress Chef Infra Client 18.9 incorporates win32-api
+Progress Chef Infra Client 18.10 incorporates win32-api
 1.10.1-universal-mingw32, win32-event 0.6.3, win32-eventlog 0.6.3, win32-mmap
 0.4.2, win32-mutex 0.4.3, win32-process 0.10.0, win32-service 2.3.2, and
 win32-taskscheduler 2.0.4.
@@ -707,11 +744,12 @@ win32-taskscheduler 2.0.4.
 
 (3) BSD 2-Clause "Simplified" License:
 
-Progress Chef Infra Client 18.9 incorporates JSON for Ruby 2.15.1, RubyZip
-2.4.1, base64 0.2.0, bigdecimal 3.1.9, byebug 11.1.3, date 3.4.1, net-ftp
-0.3.8, net-http 0.6.0, net-protocol 0.2.2, public_suffix_service 0.6.20240107,
-racc 1.8.1, ruby/logger 1.5.3, ruby/openssl 3.3.0, ruby/rexml 3.4.4, timeout
-0.4.3, timingfuction 0.4.1, uri 1.0.4, and webrick 1.9.1.
+Progress Chef Infra Client 18.10 incorporates JSON for Ruby 2.18.1, RubyZip
+2.4.1, base64 0.3.0, bigdecimal 4.0.1, byebug 12.0.0, date 3.5.1, mutex_m
+0.3.0, nahi's httpclient 2.9.0, net-ftp 0.3.9, net-http 0.9.1, net-protocol
+0.2.2, public_suffix_service 0.6.20240107, racc 1.8.1, ruby/logger 1.5.3,
+ruby/openssl 3.3.0, ruby/rexml 3.4.4, timeout 0.6.0, timingfuction 0.4.2, uri
+1.0.4, and webrick 1.9.2.
 
   BSD Two Clause License
   ======================
@@ -720,12 +758,11 @@ racc 1.8.1, ruby/logger 1.5.3, ruby/openssl 3.3.0, ruby/rexml 3.4.4, timeout
   modification, are permitted provided that the following conditions are met:
 
     1. Redistributions of source code must retain the above copyright notice,
-    this
-      list of conditions and the following disclaimer.
+    this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
+    2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
 
   THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
   WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -740,7 +777,7 @@ racc 1.8.1, ruby/logger 1.5.3, ruby/openssl 3.3.0, ruby/rexml 3.4.4, timeout
 
 (4) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 18.9 incorporates rb-readline 0.5.5.
+Progress Chef Infra Client 18.10 incorporates rb-readline 0.5.5.
 
   Copyright (c) , Park Heesob, Daniel Berger, Luis Lavena, Connor Atherton All
   rights reserved.
@@ -775,7 +812,7 @@ Progress Chef Infra Client 18.9 incorporates rb-readline 0.5.5.
 
 (5) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 18.9 incorporates unicode_utils 1.4.0.
+Progress Chef Infra Client 18.10 incorporates unicode_utils 1.4.0.
 
   Copyright (c) , Stefan Lang All rights reserved.
 
@@ -809,7 +846,7 @@ Progress Chef Infra Client 18.9 incorporates unicode_utils 1.4.0.
 
 (6) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 18.9 incorporates ffi 1.16.3.
+Progress Chef Infra Client 18.10 incorporates ffi 1.16.3.
 
   Copyright (c) , Wayne Meissner All rights reserved.
 
@@ -843,7 +880,7 @@ Progress Chef Infra Client 18.9 incorporates ffi 1.16.3.
 
 (7) Creative Commons Public Domain Dedication and Certification:
 
-Progress Chef Infra Client 18.9 incorporates ruby-shadow 2.5.0.
+Progress Chef Infra Client 18.10 incorporates ruby-shadow 2.5.0.
 
   Creative Commons Public Domain Dedication
   =========================================
@@ -884,7 +921,7 @@ Progress Chef Infra Client 18.9 incorporates ruby-shadow 2.5.0.
 
 (8) Expat License:
 
-Progress Chef Infra Client 18.9 incorporates netrc 0.11.0.
+Progress Chef Infra Client 18.10 incorporates netrc 0.11.0.
 
   Expat License
   =============
@@ -913,7 +950,7 @@ Progress Chef Infra Client 18.9 incorporates netrc 0.11.0.
 
 (9) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates Rake 13.2.1.
+Progress Chef Infra Client 18.10 incorporates Rake 13.3.1.
 
   The MIT License
   ===============
@@ -939,7 +976,7 @@ Progress Chef Infra Client 18.9 incorporates Rake 13.2.1.
 
 (10) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates rspec-support 3.13.6.
+Progress Chef Infra Client 18.10 incorporates rspec-support 3.13.7.
 
   The MIT License
   ===============
@@ -966,7 +1003,7 @@ Progress Chef Infra Client 18.9 incorporates rspec-support 3.13.6.
 
 (11) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates savonrb/nori 2.7.0.
+Progress Chef Infra Client 18.10 incorporates savonrb/nori 2.7.0.
 
   The MIT License
   ===============
@@ -992,7 +1029,7 @@ Progress Chef Infra Client 18.9 incorporates savonrb/nori 2.7.0.
 
 (12) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates regexp_parser 2.11.3.
+Progress Chef Infra Client 18.10 incorporates regexp_parser 2.11.3.
 
   The MIT License
   ===============
@@ -1018,7 +1055,33 @@ Progress Chef Infra Client 18.9 incorporates regexp_parser 2.11.3.
 
 (13) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates pastel 0.8.0, strings 0.2.1,
+Progress Chef Infra Client 18.10 incorporates yajl 0.3.4.
+
+  The MIT License
+  ===============
+  Copyright (c) Zach Aysan
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(14) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates pastel 0.8.0, strings 0.2.1,
 strings-ansi 0.2.0, tty 0.23.1, tty 0.6.0, tty-command 0.7.0, tty-command
 0.9.0, tty-cursor 0.7.1, tty-screen 0.8.2, and tty-table 0.12.0.
 
@@ -1044,10 +1107,10 @@ strings-ansi 0.2.0, tty 0.23.1, tty 0.6.0, tty-command 0.7.0, tty-command
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(14) MIT License:
+(15) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates halostatue/diff-lcs 1.5.1,
-mime-types-data 3.2025.0204, and ruby-mime-types 3.6.0.
+Progress Chef Infra Client 18.10 incorporates halostatue/diff-lcs 1.5.1,
+mime-types-data 3.2026.0203, and ruby-mime-types 3.7.0.
 
   The MIT License
   ===============
@@ -1071,9 +1134,9 @@ mime-types-data 3.2025.0204, and ruby-mime-types 3.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(15) MIT License:
+(16) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates bleything's plist 3.7.2.
+Progress Chef Infra Client 18.10 incorporates bleything's plist 3.7.2.
 
   The MIT License
   ===============
@@ -1097,9 +1160,9 @@ Progress Chef Infra Client 18.9 incorporates bleything's plist 3.7.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(16) MIT License:
+(17) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates hashdiff 1.1.1.
+Progress Chef Infra Client 18.10 incorporates hashdiff 1.2.1.
 
   The MIT License
   ===============
@@ -1123,9 +1186,9 @@ Progress Chef Infra Client 18.9 incorporates hashdiff 1.1.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(17) MIT License:
+(18) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates Ruby Public Suffix 6.0.1.
+Progress Chef Infra Client 18.10 incorporates Ruby Public Suffix 6.0.2.
 
   The MIT License
   ===============
@@ -1149,9 +1212,9 @@ Progress Chef Infra Client 18.9 incorporates Ruby Public Suffix 6.0.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(18) MIT License:
+(19) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates ast 2.4.3 and parser 3.3.9.0.
+Progress Chef Infra Client 18.10 incorporates ast 2.4.3 and parser 3.3.10.2.
 
   The MIT License
   ===============
@@ -1175,9 +1238,9 @@ Progress Chef Infra Client 18.9 incorporates ast 2.4.3 and parser 3.3.9.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(19) MIT License:
+(20) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates erubi 1.13.1.
+Progress Chef Infra Client 18.10 incorporates erubi 1.13.1.
 
   The MIT License
   ===============
@@ -1201,9 +1264,9 @@ Progress Chef Infra Client 18.9 incorporates erubi 1.13.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(20) MIT License:
+(21) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates jfelchner/ruby-progressbar 1.13.0.
+Progress Chef Infra Client 18.10 incorporates jfelchner/ruby-progressbar 1.13.0.
 
   The MIT License
   ===============
@@ -1227,9 +1290,9 @@ Progress Chef Infra Client 18.9 incorporates jfelchner/ruby-progressbar 1.13.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(21) MIT License:
+(22) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates ipaddress-gem/ipaddress 0.8.3.
+Progress Chef Infra Client 18.10 incorporates ipaddress-gem/ipaddress 0.8.3.
 
   The MIT License
   ===============
@@ -1253,9 +1316,9 @@ Progress Chef Infra Client 18.9 incorporates ipaddress-gem/ipaddress 0.8.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(22) MIT License:
+(23) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates unicode-display_width 2.6.0.
+Progress Chef Infra Client 18.10 incorporates unicode-display_width 2.6.0.
 
   The MIT License
   ===============
@@ -1279,9 +1342,9 @@ Progress Chef Infra Client 18.9 incorporates unicode-display_width 2.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(23) MIT License:
+(24) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates rubychan's coderay 1.1.3.
+Progress Chef Infra Client 18.10 incorporates rubychan's coderay 1.1.3.
 
   The MIT License
   ===============
@@ -1305,9 +1368,35 @@ Progress Chef Infra Client 18.9 incorporates rubychan's coderay 1.1.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(24) MIT License:
+(25) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates erubis 2.7.0.
+Progress Chef Infra Client 18.10 incorporates lint_roller 1.1.0.
+
+  The MIT License
+  ===============
+  Copyright (c) Justin Searls
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(26) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates erubis 2.7.0.
 
   The MIT License
   ===============
@@ -1331,9 +1420,9 @@ Progress Chef Infra Client 18.9 incorporates erubis 2.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(25) MIT License:
+(27) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates pry-byebug 3.10.1.
+Progress Chef Infra Client 18.10 incorporates pry-byebug 3.11.0.
 
   The MIT License
   ===============
@@ -1357,9 +1446,9 @@ Progress Chef Infra Client 18.9 incorporates pry-byebug 3.10.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(26) MIT License:
+(28) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates sickill's rainbow 3.1.1.
+Progress Chef Infra Client 18.10 incorporates sickill's rainbow 3.1.1.
 
   The MIT License
   ===============
@@ -1383,9 +1472,9 @@ Progress Chef Infra Client 18.9 incorporates sickill's rainbow 3.1.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(27) MIT License:
+(29) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates binding_of_caller 1.0.1,
+Progress Chef Infra Client 18.10 incorporates binding_of_caller 1.0.1,
 debug_inspector 1.2.0, method_source 1.1.0, and pry-stack_explorer 0.6.1.
 
   The MIT License
@@ -1410,35 +1499,9 @@ debug_inspector 1.2.0, method_source 1.1.0, and pry-stack_explorer 0.6.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(28) MIT License:
+(30) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates technoweenie's faraday 2.14.0.
-
-  The MIT License
-  ===============
-  Copyright (c) @technoweenie, @iMacTia, @olleolleolle
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-(29) MIT License:
-
-Progress Chef Infra Client 18.9 incorporates corefoundation 0.3.13.
+Progress Chef Infra Client 18.10 incorporates corefoundation 0.3.13.
 
   The MIT License
   ===============
@@ -1462,9 +1525,9 @@ Progress Chef Infra Client 18.9 incorporates corefoundation 0.3.13.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(30) MIT License:
+(31) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates TwP's logging 2.4.0 and
+Progress Chef Infra Client 18.10 incorporates TwP's logging 2.4.0 and
 little-plugger 1.1.4.
 
   The MIT License
@@ -1489,9 +1552,9 @@ little-plugger 1.1.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(31) MIT License:
+(32) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates arnau/iso8601 0.13.0.
+Progress Chef Infra Client 18.10 incorporates arnau/iso8601 0.13.0.
 
   The MIT License
   ===============
@@ -1515,47 +1578,9 @@ Progress Chef Infra Client 18.9 incorporates arnau/iso8601 0.13.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(32) MIT License:
-
-Progress Chef Infra Client 18.9 incorporates rackup 2.2.1.
-
-  The MIT License
-  ===============
-  Copyright (c) Samuel Williams, James Tucker, Leah Neukirchen, Jeremy Evans,
-  Joshua Peek, Megan Batty, Rafael Fran√ßa, Anurag Priyam, Max Cantor, Michael
-  Fellinger, Sophie Deziel, Yoshiyuki Hirano, Aaron Patterson, Jean Boussier,
-  Katsuhiko Yoshida, Konstantin Haase, Krzysztof Rybka, Martin Hrdlicka, Nick
-  LaMuro, Aaron Pfeifer, Akira Matsuda, Andrew Bortz, Andrew Hoglund, Bas
-  Vodde, Blake Mizerany, Carl Lerche, David Celis, Dillon Welch, Genki
-  Takiuchi, Geremia Taglialatela, Hal Brodigan, Hrvoje ≈†imiƒá, Igor
-  Bochkariov, Jeremy Kemper, Joe Fiorini, John Barnette, John Sumsion, Julik
-  Tarkhanov, Kang Sheng, Kazuya Hotta, Lenny Marks, Loren Segal, Marc-Andr√©
-  Cournoyer, Misaki Shioi, Olle Jonsson, Peter Wilmott, Petrik de Heus, Richard
-  Schneeman, Ryunosuke Sato, Sean McGivern, Stephen Paul Weber, Tadashi Saito,
-  Tim Moore, Timur Batyrshin, Trevor Wennblom, Tsutomu Kuroda, Uchio Kondo,
-  Wyatt Pan, Yehuda Katz, Zachary Scott
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
 (33) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates concurrent-ruby 1.3.5.
+Progress Chef Infra Client 18.10 incorporates concurrent-ruby 1.3.6.
 
   The MIT License
   ===============
@@ -1581,7 +1606,7 @@ Progress Chef Infra Client 18.9 incorporates concurrent-ruby 1.3.5.
 
 (34) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates adamwiggins's rest-client 2.1.0.
+Progress Chef Infra Client 18.10 incorporates adamwiggins's rest-client 2.1.0.
 
   The MIT License
   ===============
@@ -1607,7 +1632,7 @@ Progress Chef Infra Client 18.9 incorporates adamwiggins's rest-client 2.1.0.
 
 (35) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates tomlrb 1.3.0.
+Progress Chef Infra Client 18.10 incorporates tomlrb 1.3.0.
 
   The MIT License
   ===============
@@ -1633,7 +1658,7 @@ Progress Chef Infra Client 18.9 incorporates tomlrb 1.3.0.
 
 (36) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates structured_warnings 0.4.0.
+Progress Chef Infra Client 18.10 incorporates structured_warnings 0.4.0.
 
   The MIT License
   ===============
@@ -1659,7 +1684,7 @@ Progress Chef Infra Client 18.9 incorporates structured_warnings 0.4.0.
 
 (37) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates jnunemaker's crack 0.4.5.
+Progress Chef Infra Client 18.10 incorporates jnunemaker's crack 0.4.5.
 
   The MIT License
   ===============
@@ -1685,7 +1710,7 @@ Progress Chef Infra Client 18.9 incorporates jnunemaker's crack 0.4.5.
 
 (38) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates http-accept 2.1.1.
+Progress Chef Infra Client 18.10 incorporates http-accept 2.1.1.
 
   The MIT License
   ===============
@@ -1711,7 +1736,7 @@ Progress Chef Infra Client 18.9 incorporates http-accept 2.1.1.
 
 (39) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates unf_ext 0.0.8.2.
+Progress Chef Infra Client 18.10 incorporates unf_ext 0.0.8.2.
 
   The MIT License
   ===============
@@ -1737,7 +1762,33 @@ Progress Chef Infra Client 18.9 incorporates unf_ext 0.0.8.2.
 
 (40) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates syslog-logger 1.6.8.
+Progress Chef Infra Client 18.10 incorporates language_server-protocol 3.17.0.5.
+
+  The MIT License
+  ===============
+  Copyright (c) Fumiaki MATSUSHIMA
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(41) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates syslog-logger 1.6.8.
 
   The MIT License
   ===============
@@ -1763,9 +1814,9 @@ Progress Chef Infra Client 18.9 incorporates syslog-logger 1.6.8.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(41) MIT License:
+(42) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates Rack 3.2.4.
+Progress Chef Infra Client 18.10 incorporates Rack 3.2.5.
 
   The MIT License
   ===============
@@ -1789,9 +1840,9 @@ Progress Chef Infra Client 18.9 incorporates Rack 3.2.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(42) MIT License:
+(43) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates Parslet 2.0.0.
+Progress Chef Infra Client 18.10 incorporates Parslet 2.0.0.
 
   The MIT License
   ===============
@@ -1815,9 +1866,9 @@ Progress Chef Infra Client 18.9 incorporates Parslet 2.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(43) MIT License:
+(44) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates ed25519 1.3.0.
+Progress Chef Infra Client 18.10 incorporates ed25519 1.4.0.
 
   The MIT License
   ===============
@@ -1841,9 +1892,9 @@ Progress Chef Infra Client 18.9 incorporates ed25519 1.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(44) MIT License:
+(45) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates gssapi 1.3.1.
+Progress Chef Infra Client 18.10 incorporates gssapi 1.3.1.
 
   The MIT License
   ===============
@@ -1867,35 +1918,9 @@ Progress Chef Infra Client 18.9 incorporates gssapi 1.3.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(45) MIT License:
-
-Progress Chef Infra Client 18.9 incorporates Thor 1.3.2.
-
-  The MIT License
-  ===============
-  Copyright (c) thor (1.3.2)
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
 (46) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates faraday-net_http 3.4.0.
+Progress Chef Infra Client 18.10 incorporates faraday-net_http 3.4.2.
 
   The MIT License
   ===============
@@ -1921,7 +1946,7 @@ Progress Chef Infra Client 18.9 incorporates faraday-net_http 3.4.0.
 
 (47) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates rubyntlm 0.6.5.
+Progress Chef Infra Client 18.10 incorporates rubyntlm 0.6.5.
 
   The MIT License
   ===============
@@ -1947,7 +1972,7 @@ Progress Chef Infra Client 18.9 incorporates rubyntlm 0.6.5.
 
 (48) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates grosser's parallel 1.27.0.
+Progress Chef Infra Client 18.10 incorporates grosser's parallel 1.27.0.
 
   The MIT License
   ===============
@@ -1973,7 +1998,7 @@ Progress Chef Infra Client 18.9 incorporates grosser's parallel 1.27.0.
 
 (49) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates hashie 5.0.0.
+Progress Chef Infra Client 18.10 incorporates hashie 5.1.0.
 
   The MIT License
   ===============
@@ -1999,7 +2024,7 @@ Progress Chef Infra Client 18.9 incorporates hashie 5.0.0.
 
 (50) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates mwunsch's prism 1.5.1.
+Progress Chef Infra Client 18.10 incorporates mwunsch's prism 1.9.0.
 
   The MIT License
   ===============
@@ -2025,7 +2050,7 @@ Progress Chef Infra Client 18.9 incorporates mwunsch's prism 1.5.1.
 
 (51) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates nicksieger's multipart-post 2.4.1.
+Progress Chef Infra Client 18.10 incorporates nicksieger's multipart-post 2.4.1.
 
   The MIT License
   ===============
@@ -2058,7 +2083,7 @@ Progress Chef Infra Client 18.9 incorporates nicksieger's multipart-post 2.4.1.
 
 (52) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates webmock 3.25.0.
+Progress Chef Infra Client 18.10 incorporates webmock 3.26.1.
 
   The MIT License
   ===============
@@ -2084,7 +2109,8 @@ Progress Chef Infra Client 18.9 incorporates webmock 3.25.0.
 
 (53) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates RSpec 3.13.0 and RSpec 3.13.5.
+Progress Chef Infra Client 18.10 incorporates RSpec 3.13.2, RSpec 3.13.5, and
+RSpec 3.13.7.
 
   The MIT License
   ===============
@@ -2110,7 +2136,7 @@ Progress Chef Infra Client 18.9 incorporates RSpec 3.13.0 and RSpec 3.13.5.
 
 (54) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates Pry REPL 0.13.0.
+Progress Chef Infra Client 18.10 incorporates Pry REPL 0.13.0.
 
   The MIT License
   ===============
@@ -2137,7 +2163,7 @@ Progress Chef Infra Client 18.9 incorporates Pry REPL 0.13.0.
 
 (55) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates antw's iniparse 1.5.0.
+Progress Chef Infra Client 18.10 incorporates antw's iniparse 1.5.0.
 
   The MIT License
   ===============
@@ -2163,8 +2189,8 @@ Progress Chef Infra Client 18.9 incorporates antw's iniparse 1.5.0.
 
 (56) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates net-scp 4.1.0, net-sftp 4.0.0, and
-ruby-net-ssh 7.3.0.
+Progress Chef Infra Client 18.10 incorporates net-scp 4.1.0, net-sftp 4.0.0,
+and ruby-net-ssh 7.3.0.
 
   The MIT License
   ===============
@@ -2190,7 +2216,7 @@ ruby-net-ssh 7.3.0.
 
 (57) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates proxifier2 1.1.0.
+Progress Chef Infra Client 18.10 incorporates proxifier2 1.1.0.
 
   The MIT License
   ===============
@@ -2216,7 +2242,7 @@ Progress Chef Infra Client 18.9 incorporates proxifier2 1.1.0.
 
 (58) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates chefspec/fauxhai 9.3.0.
+Progress Chef Infra Client 18.10 incorporates chefspec/fauxhai 9.3.0.
 
   The MIT License
   ===============
@@ -2242,7 +2268,7 @@ Progress Chef Infra Client 18.9 incorporates chefspec/fauxhai 9.3.0.
 
 (59) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates jimweirich's builder 3.3.0.
+Progress Chef Infra Client 18.10 incorporates jimweirich's builder 3.3.0.
 
   The MIT License
   ===============
@@ -2268,7 +2294,7 @@ Progress Chef Infra Client 18.9 incorporates jimweirich's builder 3.3.0.
 
 (60) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates chef-gyoku 1.4.1.
+Progress Chef Infra Client 18.10 incorporates chef-gyoku 1.4.5.
 
   The MIT License
   ===============
@@ -2294,7 +2320,7 @@ Progress Chef Infra Client 18.9 incorporates chef-gyoku 1.4.1.
 
 (61) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates wisper 2.0.1.
+Progress Chef Infra Client 18.10 incorporates wisper 2.0.1.
 
   The MIT License
   ===============
@@ -2320,7 +2346,7 @@ Progress Chef Infra Client 18.9 incorporates wisper 2.0.1.
 
 (62) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates rspec-its 2.0.0.
+Progress Chef Infra Client 18.10 incorporates rspec-its 2.0.0.
 
   The MIT License
   ===============
@@ -2346,7 +2372,7 @@ Progress Chef Infra Client 18.9 incorporates rspec-its 2.0.0.
 
 (63) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates faraday-follow_redirects 0.3.0.
+Progress Chef Infra Client 18.10 incorporates faraday-follow_redirects 0.5.0.
 
   The MIT License
   ===============
@@ -2372,7 +2398,7 @@ Progress Chef Infra Client 18.9 incorporates faraday-follow_redirects 0.3.0.
 
 (64) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates http-cookie 1.0.8.
+Progress Chef Infra Client 18.10 incorporates http-cookie 1.1.0.
 
   The MIT License
   ===============
@@ -2398,7 +2424,45 @@ Progress Chef Infra Client 18.9 incorporates http-cookie 1.0.8.
 
 (65) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates multi_json 1.17.0.
+Progress Chef Infra Client 18.10 incorporates rackup 2.3.1.
+
+  The MIT License
+  ===============
+  Copyright (c) Samuel Williams, James Tucker, Leah Neukirchen, Jeremy Evans,
+  Joshua Peek, Megan Batty, Rafael França, Anurag Priyam, Max Cantor, Michael
+  Fellinger, Sophie Deziel, Yoshiyuki Hirano, Aaron Patterson, Jean Boussier,
+  Katsuhiko Yoshida, Konstantin Haase, Krzysztof Rybka, Martin Hrdlicka, Nick
+  LaMuro, Aaron Pfeifer, Akira Matsuda, Andrew Bortz, Andrew Hoglund, Bas
+  Vodde, Blake Mizerany, Carl Lerche, David Celis, Dillon Welch, Genki
+  Takiuchi, Geremia Taglialatela, Hal Brodigan, Hrvoje Šimić, Igor Bochkariov,
+  Jeremy Kemper, Joe Fiorini, John Barnette, John Sumsion, Julik Tarkhanov,
+  Kang Sheng, Kazuya Hotta, Lenny Marks, Loren Segal, Marc-André Cournoyer,
+  Misaki Shioi, Olle Jonsson, Peter Wilmott, Petrik de Heus, Richard Schneeman,
+  Ryunosuke Sato, Sean McGivern, Stephen Paul Weber, Tadashi Saito, Tim Moore,
+  Timur Batyrshin, Trevor Wennblom, Tsutomu Kuroda, Uchio Kondo, Wyatt Pan,
+  Yehuda Katz, Zachary Scott
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(66) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates multi_json 1.19.1.
 
   The MIT License
   ===============
@@ -2422,9 +2486,61 @@ Progress Chef Infra Client 18.9 incorporates multi_json 1.17.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(66) MIT License:
+(67) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates ffi-yajl 2.6.0.
+Progress Chef Infra Client 18.10 incorporates RSpec 3.13.6.
+
+  The MIT License
+  ===============
+  Copyright (c) Steven Baker, David Chelimsky, Chad Humphries, Myron Marston
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(68) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates technoweenie's faraday 2.14.1.
+
+  The MIT License
+  ===============
+  Copyright (c) RubyGems
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(69) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates ffi-yajl 2.7.7.
 
   The MIT License
   ===============
@@ -2448,9 +2564,35 @@ Progress Chef Infra Client 18.9 incorporates ffi-yajl 2.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(67) MIT License:
+(70) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates fuzzyurl 0.9.0.
+Progress Chef Infra Client 18.10 incorporates Thor 1.4.0.
+
+  The MIT License
+  ===============
+  Copyright (c) Yehuda Katz, José Valim
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(71) MIT License:
+
+Progress Chef Infra Client 18.10 incorporates fuzzyurl 0.9.0.
 
   The MIT License
   ===============
@@ -2474,10 +2616,10 @@ Progress Chef Infra Client 18.9 incorporates fuzzyurl 0.9.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(68) MIT License:
+(72) MIT License:
 
-Progress Chef Infra Client 18.9 incorporates rubocop 1.25.1 and rubocop-ast
-1.47.1.
+Progress Chef Infra Client 18.10 incorporates rubocop 1.84.2 and rubocop-ast
+1.49.0.
 
   The MIT License
   ===============
@@ -2501,9 +2643,9 @@ Progress Chef Infra Client 18.9 incorporates rubocop 1.25.1 and rubocop-ast
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(69) Mozilla Public License 2.0:
+(73) Mozilla Public License 2.0:
 
-Progress Chef Infra Client 18.9 incorporates sslshake 1.3.1 and vault 0.18.2.
+Progress Chef Infra Client 18.10 incorporates sslshake 1.3.1 and vault 0.18.2.
 
   Mozilla Public License Version 2.0
   ======================
@@ -2919,82 +3061,14 @@ Progress Chef Infra Client 18.9 incorporates sslshake 1.3.1 and vault 0.18.2.
     This Source Code Form is "Incompatible With Secondary Licenses", as defined
     by the Mozilla Public License, v. 2.0.
 
-(70) Ruby License:
-
-Progress Chef Infra Client 18.9 incorporates nahi's httpclient 2.8.3.
-
-  Ruby is copyrighted free software by Yukihiro Matsumoto . You can
-  redistribute it and/or modify it under either the terms of the 2-clause BSDL
-  (see the file BSDL), or the conditions below:
-
-  [Black Duck Note: Through release 1.9.2-p320 the first paragraph appeared as
-  seen below]
-
-  Ruby is copyrighted free software by Yukihiro Matsumoto . You can
-  redistribute it and/or modify it under either the terms of the GPL (see
-  COPYING.txt file), or the conditions below:
-
-  [end Black Duck Note]
-
-    1. You may make and give away verbatim copies of the source form of the
-    software without restriction, provided that you duplicate all of the
-    original copyright notices and associated disclaimers.
-
-    2. You may modify your copy of the software in any way, provided that you
-    do at least ONE of the following:
-
-      a) place your modifications in the Public Domain or otherwise make them
-      Freely Available, such as by posting said modifications to Usenet or an
-      equivalent medium, or by allowing the author to include your
-      modifications in the software.
-
-      b) use the modified software only within your corporation or organization.
-
-      c) rename any non-standard executables so the names do not conflict with
-      standard executables, which must also be provided.
-
-      d) make other distribution arrangements with the author.
-
-    3. You may distribute the software in object code or executable form,
-    provided that you do at least ONE of the following:
-
-      a) distribute the executables and library files of the software, together
-      with instructions (in the manual page or equivalent) on where to get the
-      original distribution.
-
-      b) accompany the distribution with the machine-readable source of the
-      software.
-
-      c) give non-standard executables non-standard names, with instructions on
-      where to get the original software distribution.
-
-      d) make other distribution arrangements with the author.
-
-    4. You may modify and include the part of the software into any other
-    software (possibly commercial). But some files in the distribution are not
-    written by the author, so that they are not under this terms.
-
-    They are gc.c(partly), utils.c(partly), regex.[ch], st.[ch] and some files
-    under the ./missing directory. See each file for the copying condition.
-
-    5. The scripts and library files supplied as input to or produced as output
-    from the software do not automatically fall under the copyright of the
-    software, but belong to whomever generated them, and may be sold
-    commercially, and may be aggregated with this software.
-
-    6. THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
-    WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
-    MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-
 2. Special Notices Regarding Progress Product Components incorporated into the
 Product:
 
 (1) Internal Progress Product License:
 
-Progress Chef Infra Client 18.9 incorporates Chef 18.6.6, appbundler 0.13.4,
-chef-telemetry 1.1.1, cheffish 17.1.8, mixlib-archive 1.1.7,
-mixlib-authentication 3.0.10, mixlib-cli 2.1.8, mixlib-config 3.0.27,
-train-core 3.13.4, train-rest 0.5.0, and win32-certstore 0.6.16.
+Progress Chef Infra Client 18.10 incorporates Chef 18.6.6, appbundler 0.13.4,
+chef-telemetry 1.1.1, cheffish 17.1.8, mixlib-authentication 3.0.10, mixlib-cli
+2.1.8, mixlib-config 3.0.27, train-rest 0.5.0, and win32-certstore 0.6.16.
 
   See Progress License
 
@@ -3002,4 +3076,4 @@ NOTICE FROM PROGRESS SOFTWARE CORPORATION: Additional notices may be included
 in the release notes or other documentation that accompanies updates received
 in connection with support of the Product.
 
-Updated December 22, 2025
+Updated February 21, 2026
