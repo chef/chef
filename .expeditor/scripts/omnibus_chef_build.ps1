@@ -299,23 +299,97 @@ function Install-ChefFoundation {
 function Install-OmnibusDependencies {
     [CmdletBinding()]
     param()
-    
+
     try {
+        # Remove libyajl2 for reinstall
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
-        
-        Write-Output "--- Running bundle install for Omnibus"
-        Set-Location "$($ScriptDir)/../../omnibus"
+
+        # Validate GITHUB_TOKEN
+        if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+            Write-Error "GITHUB_TOKEN is not set. Cannot access private GitHub dependencies."
+            exit 1
+        }
+
+        $token = $env:GITHUB_TOKEN.Trim()
+        Write-Output "--- GITHUB_TOKEN is configured"
+
+        # Test GitHub connectivity
+        Write-Output "--- Testing GitHub connectivity"
+        try {
+            $response = Invoke-WebRequest -Uri "https://api.github.com" -UseBasicParsing -TimeoutSec 10
+            Write-Output "GitHub API accessible: $($response.StatusCode)"
+        } catch {
+            Write-Warning "GitHub connectivity issue: $_"
+            throw "Cannot reach GitHub API"
+        }
+
+        # Configure Git for authentication
+        Write-Output "--- Configuring Git authentication for private repositories"
+
+        # Use credential helper for authentication
+        git config --global credential.helper store
+
+        # Create .netrc file for additional auth support
+        $netrcPath = "$env:USERPROFILE\_netrc"
+        $netrcContent = "machine github.com login $token password x-oauth-basic"
+        $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
+        icacls $netrcPath /inheritance:r /grant:r "$($env:USERNAME):(R)"
+
+        # Clear GITHUB_TOKEN from the environment immediately after use
+        Remove-Item Env:\GITHUB_TOKEN -ErrorAction SilentlyContinue
+
+        # Configure Git for Windows Docker environment
+        git config --global core.longpaths true
+        git config --global http.sslbackend schannel
+        git config --global http.timeout 600
+        git config --global http.postBuffer 524288000
+        git config --global user.email "buildkite@chef.io"
+        git config --global user.name "Buildkite CI"
+
+        # Set Bundler configuration for better reliability
+        Write-Output "--- Configuring Bundler for private repositories"
         bundle config set --local without development
+        bundle config set --local timeout 600
+        bundle config set --local retry 3
+        bundle config set --local jobs 1
+
+        # Navigate to omnibus directory
+        Set-Location "$($ScriptDir)/../../omnibus"
+
+        # Verify we're in the right location
+        if (-not (Test-Path "Gemfile")) {
+            throw "Gemfile not found in $(Get-Location). Check omnibus directory path."
+        }
+
+        Write-Output "--- Current directory: $(Get-Location)"
+        Write-Output "--- Running bundle install for Omnibus"
         bundle install
-        if ( -not $? ) { throw "Running bundle install failed" }
+
+        # Check if the command succeeded
+        if ($LASTEXITCODE -ne 0) {
+            throw "bundle install failed with exit code $LASTEXITCODE"
+        }
+
+        Write-Output "--- Omnibus dependencies installed successfully"
     }
     catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
+
+        # Debug information (directory contents only)
+        Write-Output "--- Debug: Current directory contents"
+        Get-ChildItem -Force | Select-Object Name, Length
+
         exit 1
     }
+    finally {
+        # Clean up credentials for security
+        $netrcPath = "$env:USERPROFILE\_netrc"
+        if (Test-Path $netrcPath) {
+            Remove-Item $netrcPath -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
-
 function Build-ChefPackage {
     [CmdletBinding()]
     param()
