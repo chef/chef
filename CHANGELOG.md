@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.14 -->
-## [v18.10.14](https://github.com/chef/chef/tree/v18.10.14) (2026-02-24)
+<!-- latest_release 18.10.15 -->
+## [v18.10.15](https://github.com/chef/chef/tree/v18.10.15) (2026-02-25)
 
 #### Merged Pull Requests
-- Updating the version number for the sbom [#15665](https://github.com/chef/chef/pull/15665) ([johnmccrae](https://github.com/johnmccrae))
+- Updating train-winrm. It was really stale [#15667](https://github.com/chef/chef/pull/15667) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.9.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating train-winrm. It was really stale [#15667](https://github.com/chef/chef/pull/15667) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.15 -->
 - Updating the version number for the sbom [#15665](https://github.com/chef/chef/pull/15665) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.14 -->
 - Notice file update for 18.10 [#15664](https://github.com/chef/chef/pull/15664) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.13 -->
 - [backport of #15661][chef-18] enumerate platforms before parsing remote output for candidate version [#15662](https://github.com/chef/chef/pull/15662) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.12 -->
