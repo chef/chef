@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.16 -->
-## [v18.10.16](https://github.com/chef/chef/tree/v18.10.16) (2026-02-25)
+<!-- latest_release 18.10.17 -->
+## [v18.10.17](https://github.com/chef/chef/tree/v18.10.17) (2026-02-25)
 
 #### Merged Pull Requests
-- Updating blackduck / Notice file [#15668](https://github.com/chef/chef/pull/15668) ([johnmccrae](https://github.com/johnmccrae))
+- Updating the notice file [#15669](https://github.com/chef/chef/pull/15669) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.9.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating the notice file [#15669](https://github.com/chef/chef/pull/15669) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.17 -->
 - Updating blackduck / Notice file [#15668](https://github.com/chef/chef/pull/15668) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.16 -->
 - Updating train-winrm. It was really stale [#15667](https://github.com/chef/chef/pull/15667) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.15 -->
 - Updating the version number for the sbom [#15665](https://github.com/chef/chef/pull/15665) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.14 -->
