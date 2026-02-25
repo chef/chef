@@ -35,12 +35,12 @@ Apache License 2.0:
   Chef InSpec Core Engineering     | inspec/inspec           | 5.24.5
   Chef InSpec Team                 | inspec-ruby             | 5.24.5
   Chef InSpec Team                 | train-core              | 3.16.1
-  Chef InSpec Team                 | train-winrm             | 0.2.19
+  Chef InSpec Team                 | train-winrm             | 0.4.3
   Chef Software Inc.               | mixlib-shellout         | 3.4.10
   Chef Software, Inc               | mixlib-archive          | 1.3.3
   Chef Software, Inc               | mixlib-log              | 3.1.2.1
   Chef Software, Inc.              | chef-zero               | 15.1.0
-  Dan Wanek, Paul Morton, Matt…    | chef-winrm              | 2.3.12
+  Dan Wanek, Paul Morton, Matt…    | chef-winrm              | 2.5.0
   > Wrock, Shawn Neal              |                         |
   Daniel J. Berger                 | ffi-win32-extensions    | 1.0.4
   Daniel J. Berger, Park Heesob    | win32-ipc               | 0.7.0
@@ -48,7 +48,7 @@ Apache License 2.0:
   John Bellone, Jamie Winsor,…     | ffi-libarchive          | 1.1.14
   > Frank Fischer                  |                         |
   Shawn Neal                       | chef-winrm-elevated     | 1.2.5
-  Shawn Neal, Matt Wrock           | chef-winrm-fs           | 1.3.7
+  Shawn Neal, Matt Wrock           | chef-winrm-fs           | 1.4.2
   Thom May                         | chef-vault              | 4.2.5
   Thom May, Tim Smith              | cookstyle               | 8.6.4
   Trevor Rowe                      | jmespath rubygems       | 1.6.2
@@ -73,6 +73,8 @@ BSD 2-Clause "Simplified" License:
   David Rodriguez, Kent Sibilev,…  | byebug                | 12.0.0
   > Mark Moseley                   |                       |
   Hiroshi Nakamura                 | nahi's httpclient     | 2.9.0
+  James Edward Gray II, Kouhei…    | ruby csv              | 3.3.5
+  > Sutou                          |                       |
   Keiju ISHITSUKA                  | mutex_m               | 0.3.0
   Kenta Murata, Zachary Scott,…    | bigdecimal            | 4.0.1
   > Shigeo Kobayashi               |                       |
@@ -86,11 +88,16 @@ BSD 2-Clause "Simplified" License:
   Robert Haines, John Lees-Miller… | RubyZip               | 2.4.1
   > , Alexander Simonov            |                       |
   Shugo Maeda                      | net-ftp               | 0.3.9
+  Stephan Maka, Andrey Kouznetsov… | Ruby-SOCKSify         | 1.8.1
+  > , Christopher Thorpe, Musy…    |                       |
+  > Bite, Yuichi Tateno, David…    |                       |
+  > Dollar                         |                       |
   TAKAHASHI Masayoshi, GOTOU…      | webrick               | 1.9.2
   > YUUZOU, Eric Wong              |                       |
   Tadayoshi Funaba                 | date                  | 3.5.1
   Tanaka Akira                     | timingfuction         | 0.4.2
   Yukihiro Matsumoto               | net-protocol          | 0.2.2
+  Yukihiro Matsumoto               | ruby/benchmark        | 0.5.0
   Yukihiro Matsumoto               | timeout               | 0.6.0
   Yusuke Endoh                     | base64                | 0.3.0
 
@@ -136,7 +143,7 @@ MIT License:
   Bozhidar Batsov, Jonas…          | rubocop-ast                 | 1.49.0
   > Arvidsson, Yuji Nakayama       |                             |
   Dan Wanek                        | gssapi                      | 1.3.1
-  Daniel Harrington                | chef-gyoku                  | 1.4.5
+  Daniel Harrington                | chef-gyoku                  | 1.5.0
   Daniel Harrington, John…         | savonrb/nori                | 2.7.0
   > Nunemaker, Wynn Netherland     |                             |
   David Chelimsky, Myron Marson,…  | rspec-support               | 3.13.7
@@ -310,12 +317,12 @@ Progress Chef Infra Client 18.10 incorporates AWS SDK for Ruby 1.12.1, AWS SDK
 for Ruby 1.1215.0, AWS SDK for Ruby 1.122.0, AWS SDK for Ruby 1.128.0, AWS SDK
 for Ruby 1.213.0, AWS SDK for Ruby 1.4.0, Addressable URI parser 2.8.7, Chef
 18.7.6, Chef 18.9.4, aws-sdk-core-ruby 3.242.0, chef-vault 4.2.5, chef-winrm
-2.3.12, chef-winrm-elevated 1.2.5, chef-winrm-fs 1.3.7, chef-zero 15.1.0,
+2.5.0, chef-winrm-elevated 1.2.5, chef-winrm-fs 1.4.2, chef-zero 15.1.0,
 cookstyle 8.6.4, ffi-libarchive 1.1.14, ffi-win32-extensions 1.0.4, inspec-ruby
 5.24.5, inspec/inspec 5.24.5, jmespath rubygems 1.6.2, knife 18.8.65, libyajl2
 2.1.0, license-acceptance 2.1.13, mixlib-archive 1.3.3, mixlib-log 3.1.2.1,
 mixlib-shellout 3.4.10, semverse 3.0.2, sporkmonger's uuidtools 2.2.0,
-train-core 3.16.1, train-winrm 0.2.19, win32-ipc 0.7.0, and wmi-lite 1.0.7.
+train-core 3.16.1, train-winrm 0.4.3, win32-ipc 0.7.0, and wmi-lite 1.0.7.
 
   Apache License Version 2.0, January 2004
   =========================
@@ -744,12 +751,13 @@ win32-taskscheduler 2.0.4.
 
 (3) BSD 2-Clause "Simplified" License:
 
-Progress Chef Infra Client 18.10 incorporates JSON for Ruby 2.18.1, RubyZip
-2.4.1, base64 0.3.0, bigdecimal 4.0.1, byebug 12.0.0, date 3.5.1, mutex_m
-0.3.0, nahi's httpclient 2.9.0, net-ftp 0.3.9, net-http 0.9.1, net-protocol
-0.2.2, public_suffix_service 0.6.20240107, racc 1.8.1, ruby/logger 1.5.3,
-ruby/openssl 3.3.0, ruby/rexml 3.4.4, timeout 0.6.0, timingfuction 0.4.2, uri
-1.0.4, and webrick 1.9.2.
+Progress Chef Infra Client 18.10 incorporates JSON for Ruby 2.18.1,
+Ruby-SOCKSify 1.8.1, RubyZip 2.4.1, base64 0.3.0, bigdecimal 4.0.1, byebug
+12.0.0, date 3.5.1, mutex_m 0.3.0, nahi's httpclient 2.9.0, net-ftp 0.3.9,
+net-http 0.9.1, net-protocol 0.2.2, public_suffix_service 0.6.20240107, racc
+1.8.1, ruby csv 3.3.5, ruby/benchmark 0.5.0, ruby/logger 1.5.3, ruby/openssl
+3.3.0, ruby/rexml 3.4.4, timeout 0.6.0, timingfuction 0.4.2, uri 1.0.4, and
+webrick 1.9.2.
 
   BSD Two Clause License
   ======================
@@ -2294,7 +2302,7 @@ Progress Chef Infra Client 18.10 incorporates jimweirich's builder 3.3.0.
 
 (60) MIT License:
 
-Progress Chef Infra Client 18.10 incorporates chef-gyoku 1.4.5.
+Progress Chef Infra Client 18.10 incorporates chef-gyoku 1.5.0.
 
   The MIT License
   ===============
@@ -3076,4 +3084,4 @@ NOTICE FROM PROGRESS SOFTWARE CORPORATION: Additional notices may be included
 in the release notes or other documentation that accompanies updates received
 in connection with support of the Product.
 
-Updated February 21, 2026
+Updated February 25, 2026
