@@ -111,6 +111,13 @@ class Chef
         introduced: "18.5"
 
       action :add, description: "Add a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
+        selinux_fcontext "/hab/pkgs/chef/chef-infra-client/.*/bin(/.*)?" do
+          secontext "bin_t"
+          action :manage
+          only_if "which getenforce"
+          only_if { new_resource.chef_binary_path.include?("/hab/") }
+        end
+
         systemd_unit "#{new_resource.job_name}.service" do
           content service_content
           action :create
