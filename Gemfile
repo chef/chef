@@ -32,13 +32,6 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-group(:omnibus_package) do
-  gem "appbundler"
-  gem "rb-readline"
-  gem "inspec-core-bin", "= 7.0.107" # need to provide the binaries for inspec
-  gem "chef-vault"
-end
-
 gem "repl_type_completor", "~> 0.1.12" # deprecation warnings in chef-shell
 
 group(:omnibus_package, :pry) do
