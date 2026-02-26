@@ -138,7 +138,7 @@ platforms:
       image: dokken/rockylinux-10
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
-        - RUN dnf clean all || true
+        - RUN dnf makecache --refresh || true
         - RUN dnf -y install e2fsprogs || true
         - RUN mkdir -p /etc/sysconfig/network-scripts
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
