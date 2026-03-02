@@ -17,8 +17,13 @@ $pkg_deps=@(
   "core/zlib"
   "core/xz"
   "core/libarchive"
-  "core/ruby3_4-plus-devkit/3.4.8"
+  # "core/ruby3_4-plus-devkit/3.4.8"
+  "core/ruby3_4-plus-devkit/3.4.8/20260225055807"
   "core/visual-cpp-redist-2022"
+)
+
+$pkg_build_deps=@(
+  "core/git"
 )
 
 function Invoke-Begin {
@@ -121,6 +126,10 @@ function Invoke-Prepare {
     write-output " ** Start Invoke-Prepare Function"
     $env:GEM_HOME = "$pkg_prefix/vendor"
 
+    # Configure gemrc to never install documentation (saves significant space)
+    $gemrc_content = "gem: --no-document"
+    Set-Content -Path "$env:USERPROFILE\.gemrc" -Value $gemrc_content -Force
+
     # Ensure Ruby 3.4 can find its gems
     $ruby_version = "3.4.0"
     $ruby_gem_path = "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
@@ -141,6 +150,10 @@ function Invoke-Prepare {
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
+
+        # Disable documentation generation to save space
+        bundle config --local no-document true
+
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
         Write-BuildLine "OpenSSL Dir $openssl_dir"
         bundle config build.openssl --with-openssl-dir=$openssl_dir
@@ -163,7 +176,7 @@ function Invoke-Build {
         $env:_BUNDLER_WINDOWS_DLLS_COPIED = "1"
 
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"
-        gem install openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
+        gem install --no-document openssl:3.3.0 -- --with-openssl-dir=$openssl_dir --with-openssl-include="$openssl_dir/include" --with-openssl-lib="$openssl_dir/lib"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install --jobs=3 --retry=3
@@ -183,7 +196,7 @@ function Invoke-Build {
                     $gemspec_path = $git_gem.ToString() + "\rest-client.gemspec"
                     gem build $gemspec_path
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
-                    gem install $gem_path
+                    gem install --no-document $gem_path
                 }
                 else {
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
@@ -209,7 +222,7 @@ function Invoke-Build {
                 $built_gem = Get-ChildItem "pkg/$path_gem-*.gem" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
                 if ($built_gem) {
                     Write-BuildLine "Installing $path_gem gem from $($built_gem.Name)"
-                    gem install --local $built_gem.FullName
+                    gem install --no-document --local $built_gem.FullName
                     if (-not $?) { throw "unable to install built $path_gem gem from $($built_gem.FullName)" }
                 } else {
                     throw "unable to locate built $path_gem gem"
@@ -256,7 +269,7 @@ function Invoke-Install {
             $null = Invoke-WebRequest -Uri $ArtifactoryUrl -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
             Write-BuildLine "******* Artifactory is accessible, installing chef-official-distribution gem*****"
             gem sources --add $ArtifactoryUrl
-            gem install chef-official-distribution
+            gem install --no-document chef-official-distribution
             gem sources --remove $ArtifactoryUrl
 
             # Verify chef-official-distribution installation
@@ -307,29 +320,102 @@ function Invoke-After {
     write-output "*** invoke after"
     # Trim the fat before packaging
 
+    Write-BuildLine "** Phase 1: Removing gem caches and bundler artifacts"
     # We don't need the cache of downloaded .gem files ...
-    Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
+    Remove-Item $pkg_prefix/vendor/cache -Recurse -Force -ErrorAction SilentlyContinue
     # ... or bundler's cache of git-ref'd gems
-    Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
+    Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force -ErrorAction SilentlyContinue
 
+    Write-BuildLine "** Phase 2: Removing documentation and test directories"
     # We don't need the gem docs.
-    Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
+    Remove-Item $pkg_prefix/vendor/doc -Recurse -Force -ErrorAction SilentlyContinue
+
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
     Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
         | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
-        | Remove-Item -Recurse -Force
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Remove additional test directories
+    Get-ChildItem $pkg_prefix/vendor/gems -Include @("test", "tests") -Directory -Recurse -Depth 1 `
+        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Remove example directories
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter "examples" -Directory -Recurse -Depth 1 `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Remove benchmark directories
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter "benchmark" -Directory -Recurse -Depth 1 `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Remove sample directories
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter "sample*" -Directory -Recurse -Depth 1 `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Phase 3: Removing build artifacts and native extension source"
     # Remove the byproducts of compiling gems with extensions
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
-        | Remove-Item -Force
+        | Remove-Item -Force -ErrorAction SilentlyContinue
 
+    # Remove native extension source files after compilation
+    Get-ChildItem $pkg_prefix/vendor/gems -Directory -Recurse -Depth 1 -Filter "ext" `
+        | Get-ChildItem -Include @("*.c", "*.cpp", "*.h", "*.cc", "*.cxx", "*.hpp") -File -Recurse `
+        | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Phase 4: Removing documentation files"
+    # Remove various documentation files (keep LICENSE files)
+    Get-ChildItem $pkg_prefix/vendor/gems -Include @("*.md", "*.rdoc", "*.txt") -File -Recurse -Depth 2 `
+        | Where-Object { $_.Name -notmatch "^LICENSE|^COPYING|^MIT" } `
+        | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    # Remove doc directories within gems
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter "doc" -Directory -Recurse -Depth 1 `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Remove man pages
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter "man" -Directory -Recurse -Depth 1 `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Phase 5: Removing CI/CD and development files"
+    # Remove CI/CD configuration files
+    Get-ChildItem $pkg_prefix/vendor/gems -Include @(".github", ".travis.yml", ".appveyor.yml", ".circleci", ".gitlab-ci.yml", "azure-pipelines.yml") -Recurse -Depth 2 `
+        | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Remove development configuration files (keep gemspecs in specifications/)
+    Get-ChildItem $pkg_prefix/vendor/gems -Include @("Rakefile", "Gemfile", "Gemfile.lock", ".rspec", ".rubocop.yml", ".editorconfig", ".gitignore", ".gitattributes") -File -Recurse -Depth 2 `
+        | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    # Remove gemspec files from gem directories (already in specifications/)
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter "*.gemspec" -File -Recurse -Depth 2 `
+        | Where-Object { $_.DirectoryName -notmatch "specifications" } `
+        | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Phase 6: Removing images and media files from gems"
+    # Remove image files that are typically for documentation
+    Get-ChildItem $pkg_prefix/vendor/gems -Include @("*.png", "*.jpg", "*.jpeg", "*.gif", "*.svg", "*.ico") -File -Recurse `
+        | Where-Object { $_.DirectoryName -match "doc|example|sample|test|spec" } `
+        | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Phase 7: Removing empty directories"
+    # Remove empty directories left behind
+    Get-ChildItem $pkg_prefix/vendor/gems -Directory -Recurse `
+        | Sort-Object -Property FullName -Descending `
+        | Where-Object { $_.GetFileSystemInfos().Count -eq 0 } `
+        | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Cleanup complete - package size optimized"
+
+    Write-BuildLine "** Phase 8: Copying built gems to source path"
     # we need the built gems outside of the studio
     write-output "Copying gems to ${SRC_PATH}"
-    New-Item -ItemType Directory -Force "${SRC_PATH}\pkg","${SRC_PATH}\chef-bin\pkg","${SRC_PATH}\chef-config\pkg","${SRC_PATH}\chef-utils\pkg"
-    Copy-Item "${CACHE_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem" "${SRC_PATH}\pkg"
-    Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg"
-    Copy-Item "${CACHE_PATH}\chef-config\pkg\chef-config-${pkg_version}.gem" "${SRC_PATH}\chef-config\pkg"
-    Copy-Item "${CACHE_PATH}\chef-utils\pkg\chef-utils-${pkg_version}.gem" "${SRC_PATH}\chef-utils\pkg"
+    New-Item -ItemType Directory -Force "${SRC_PATH}\pkg","${SRC_PATH}\chef-bin\pkg","${SRC_PATH}\chef-config\pkg","${SRC_PATH}\chef-utils\pkg" | Out-Null
+    Copy-Item "${CACHE_PATH}\pkg\chef-${pkg_version}-universal-mingw-ucrt.gem" "${SRC_PATH}\pkg" -ErrorAction SilentlyContinue
+    Copy-Item "${CACHE_PATH}\chef-bin\pkg\chef-bin-${pkg_version}.gem" "${SRC_PATH}\chef-bin\pkg" -ErrorAction SilentlyContinue
+    Copy-Item "${CACHE_PATH}\chef-config\pkg\chef-config-${pkg_version}.gem" "${SRC_PATH}\chef-config\pkg" -ErrorAction SilentlyContinue
+    Copy-Item "${CACHE_PATH}\chef-utils\pkg\chef-utils-${pkg_version}.gem" "${SRC_PATH}\chef-utils\pkg" -ErrorAction SilentlyContinue
+
+    Write-BuildLine "** Habitat package optimization complete"
 }
 
 function Remove-StudioPathFrom {
