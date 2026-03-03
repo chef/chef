@@ -10,7 +10,7 @@ name: kitchen
       - main
 
 concurrency:
-  group: kitchen-${{ github.ref }}
+  group: kitchen-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 permissions: {}

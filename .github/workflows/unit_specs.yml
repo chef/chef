@@ -8,7 +8,7 @@ name: unit_specs
       - main
 
 concurrency:
-  group: unit-specs-${{ github.ref }}
+  group: unit-specs-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
