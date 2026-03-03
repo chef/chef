@@ -31,11 +31,8 @@ jobs:
     runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      # HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
-      # HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
-      HAB_BLDR_CHANNEL: fips-testing
-      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: fips-testing
-      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
+      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
     steps:
