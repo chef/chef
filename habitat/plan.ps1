@@ -17,7 +17,7 @@ $pkg_deps=@(
   "core/zlib"
   "core/xz"
   "core/libarchive"
-  "core/ruby3_4-plus-devkit/3.4.8"
+  "core/ruby3_4-plus-devkit/3.4.8/20260225055807"
   "core/visual-cpp-redist-2022"
 )
 
