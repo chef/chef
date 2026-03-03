@@ -22,7 +22,7 @@ $pkg_deps=@(
 )
 
 $pkg_build_deps=@(
-    "core/git"
+  "core/git"
 )
 
 function Invoke-Begin {
