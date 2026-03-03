@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.1.176 -->
-## [v19.1.176](https://github.com/chef/chef/tree/v19.1.176) (2026-03-02)
+<!-- latest_release 19.2.0 -->
+## [v19.2.0](https://github.com/chef/chef/tree/v19.2.0) (2026-03-03)
 
 #### Merged Pull Requests
-- Bump rack to 3.2.5 [#15670](https://github.com/chef/chef/pull/15670) ([tpowell-progress](https://github.com/tpowell-progress))
+- FIPS mode testing using habitat package of openssl and infra client [#15402](https://github.com/chef/chef/pull/15402) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.1.164 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- FIPS mode testing using habitat package of openssl and infra client [#15402](https://github.com/chef/chef/pull/15402) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.0 -->
 - Bump rack to 3.2.5 [#15670](https://github.com/chef/chef/pull/15670) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.176 -->
 - Updating Inspec dependencies [#15672](https://github.com/chef/chef/pull/15672) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.175 -->
 - enumerate platforms before parsing remote output for candidate version [#15661](https://github.com/chef/chef/pull/15661) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.174 -->
