@@ -1306,7 +1306,9 @@ module ChefConfig
     # sure Chef runs do not crash.
     # @api private
     def self.enable_fips_mode
+      # Enable FIPS mode in OpenSSL.
       OpenSSL.fips_mode = true
+
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
       require "digest/md5" unless defined?(Digest::MD5)
@@ -1314,8 +1316,6 @@ module ChefConfig
       # amount of log spam and warnings.
       Digest.send(:remove_const, "SHA1") if Digest.const_defined?(:SHA1)
       Digest.const_set(:SHA1, OpenSSL::Digest::SHA1)
-      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?(:MD5)
-      OpenSSL::Digest.const_set(:MD5, Digest::MD5)
       ChefConfig.logger.debug "FIPS mode is enabled."
     end
   end
