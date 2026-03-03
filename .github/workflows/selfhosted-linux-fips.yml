@@ -12,7 +12,7 @@ name: linux-fips
 permissions: {}
 
 concurrency:
-  group: selfhosted-fips-${{ github.ref }}
+  group: selfhosted-fips-${{ github.ref }} # Since this workflow runs on a self-hosted runner, we want to ensure that only one run executes at a time to avoid conflicts on the runner
   cancel-in-progress: true
 
 jobs:
