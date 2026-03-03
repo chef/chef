@@ -319,6 +319,12 @@ function Invoke-After {
     Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
         | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
         | Remove-Item -Recurse -Force
+    # Remove .github directories from vendored gems so that GitHub Actions workflow
+    # files are not shipped and do not trigger grype vulnerability reports.
+    # NOTE: this is temporary and can be removed once upstream dependencies
+    # fix their file exclusions.
+    Get-ChildItem $pkg_prefix/vendor/gems -Filter ".github" -Directory -Recurse `
+        | Remove-Item -Recurse -Force
     # Remove the byproducts of compiling gems with extensions
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
