@@ -78,9 +78,9 @@ jobs:
         run: |
           # Import the previously exported key
           cat "$HAB_ORIGIN-key.tar.gz" | sudo hab origin key import
-          sudo hab pkg install ./chef-infra-client-latest.hart --auth "${{ secrets.HAB_AUTH_TOKEN }}"
+          sudo -E hab pkg install ./chef-infra-client-latest.hart --auth "${{ secrets.HAB_AUTH_TOKEN }}"
           # Verify installation
-          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
+          sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -v
 
       - name: 'Verify FIPS is enabled on the system'
         run: |
@@ -101,7 +101,7 @@ jobs:
           echo "========================================"
           echo ""
 
-          sudo hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z --chef-license accept
+          sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z --chef-license accept
 
           # ============================================
           # Test 1: MD5 (should FAIL in FIPS mode)
@@ -114,7 +114,7 @@ jobs:
           end
           EOF
 
-          sudo bash -c "
+          sudo -E bash -c "
             set -o pipefail
             hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z \
               --config-option cookbook_path=/tmp \
@@ -136,7 +136,7 @@ jobs:
           end
           EOF
 
-          sudo bash -c "
+          sudo -E bash -c "
             set -o pipefail
             hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z \
               --config-option cookbook_path=/tmp \
