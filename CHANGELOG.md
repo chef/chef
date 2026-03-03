@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.4 -->
-## [v19.2.4](https://github.com/chef/chef/tree/v19.2.4) (2026-03-03)
+<!-- latest_release 19.2.5 -->
+## [v19.2.5](https://github.com/chef/chef/tree/v19.2.5) (2026-03-03)
 
 #### Merged Pull Requests
-- update aws-sdk-s3 to 1.213.0 [#15678](https://github.com/chef/chef/pull/15678) ([rishichawda](https://github.com/rishichawda))
+- Fix IPv6 crash in proxy no_proxy matching [#15655](https://github.com/chef/chef/pull/15655) ([kaolin](https://github.com/kaolin))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.1.164 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix IPv6 crash in proxy no_proxy matching [#15655](https://github.com/chef/chef/pull/15655) ([kaolin](https://github.com/kaolin)) <!-- 19.2.5 -->
 - update aws-sdk-s3 to 1.213.0 [#15678](https://github.com/chef/chef/pull/15678) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.4 -->
 - update faraday to 2.4.1 [#15677](https://github.com/chef/chef/pull/15677) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.3 -->
 - Update GHA concurrency group [#15680](https://github.com/chef/chef/pull/15680) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.2 -->
