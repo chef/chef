@@ -10,3 +10,7 @@ documentation:
   - changed-files:
       - all-globs-to-all-files:
           - "{.expeditor,.buildkite,.github,kitchen-tests,test-kitchen}/**"
+          - NOTICE
+          - LICENSE
+          - dangerfile.js
+          - dobi.yaml
