@@ -57,7 +57,7 @@ lifecycle:
     - remote: echo "****Installing Habitat package for Chef Infra Client****"
     - remote: sh -c "HAB_LICENSE=accept-no-persist hab pkg install /chef-infra-client-latest.hart --auth \"$(cat /hab_token)\""
     - remote: echo "****Installed chef-infra-client version:****"
-    - remote: HAB_LICENSE=accept-no-persist hab pkg exec gha/chef-infra-client chef-client -v
+    - remote: sh -c "HAB_LICENSE=accept-no-persist hab pkg exec gha/chef-infra-client chef-client -v"
 
     # Create a symlink from chef/chef-infra-client package to custom built gha/chef-infra-client
     - remote: echo "****Creating symlink to use our custom package in test kitchen runs****"
