@@ -13,13 +13,16 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-    "core/git"
   "core/openssl"
   "core/zlib"
   "core/xz"
   "core/libarchive"
   "core/ruby3_4-plus-devkit/3.4.8"
   "core/visual-cpp-redist-2022"
+)
+
+$pkg_build_deps=@(
+    "core/git"
 )
 
 function Invoke-Begin {
@@ -37,8 +40,6 @@ function Invoke-Begin {
 function Invoke-SetupEnvironment {
     write-output "*** Start Invoke-SetupEnvironment Function"
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
-    Push-RuntimeEnv -IsPath PATH "$(Get-HabPackagePath core/git)/cmd"
-    Push-RuntimeEnv -IsPath PATH "$(Get-HabPackagePath core/git)/bin"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     # Set-RuntimeEnv FORCE_FFI_YAJL "ffi" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
@@ -137,7 +138,7 @@ function Invoke-Prepare {
 @"%~dp0ruby.exe" "%~dpn0" %*
 "@
         $gem_file | Set-Content "$PWD\\gem.bat"
-        $env:Path += ";$(Get-HabPackagePath core/git)/cmd;$(Get-HabPackagePath core/git)/bin;c:\\Program Files\\Git\\bin;"
+        $env:Path += ";c:\\Program Files\\Git\\bin;"
 
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci
