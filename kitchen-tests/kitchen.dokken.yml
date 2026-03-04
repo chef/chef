@@ -49,22 +49,22 @@ lifecycle:
         - centos-7
         - oraclelinux-7
     - remote: echo "****Importing Habitat Origin Key****"
-    - remote: sh -c "cat /gha-key.tar.gz | hab origin key import"
+    - remote: sh -c "cat /gha-key.tar.gz | HAB_LICENSE=accept-no-persist hab origin key import"
 
     - remote: echo "****Checking for Habitat package****"
     - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
 
     - remote: echo "****Installing Habitat package for Chef Infra Client****"
-    - remote: sh -c "hab pkg install /chef-infra-client-latest.hart --auth \"$(cat /hab_token)\""
+    - remote: sh -c "HAB_LICENSE=accept-no-persist hab pkg install /chef-infra-client-latest.hart --auth \"$(cat /hab_token)\""
     - remote: echo "****Installed chef-infra-client version:****"
-    - remote: hab pkg exec gha/chef-infra-client chef-client -v
+    - remote: HAB_LICENSE=accept-no-persist hab pkg exec gha/chef-infra-client chef-client -v
 
     # Create a symlink from chef/chef-infra-client package to custom built gha/chef-infra-client
     - remote: echo "****Creating symlink to use our custom package in test kitchen runs****"
     - remote: |
         sh -c "
-        CUSTOM_PKG=$(hab pkg path gha/chef-infra-client)
-        DEFAULT_PKG=$(hab pkg path chef/chef-infra-client)
+        CUSTOM_PKG=$(HAB_LICENSE=accept-no-persist hab pkg path gha/chef-infra-client)
+        DEFAULT_PKG=$(HAB_LICENSE=accept-no-persist hab pkg path chef/chef-infra-client)
         echo 'Custom pkg: '$CUSTOM_PKG
         echo 'Default pkg: '$DEFAULT_PKG
 
