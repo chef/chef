@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 # Configure GitHub HTTPS auth early so private submodules can be cloned during checkout
 if [ -n "${GITHUB_TOKEN:-}" ]; then
