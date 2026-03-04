@@ -25,7 +25,7 @@ provisioner:
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
-  chef_license: "accept-no-persist"
+  chef_license: accept-no-persist
   chef_license_key: free-79df705d-b685-419a-8b68-88401f74ff72-3999
   #chef_license_server:
     #- http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000

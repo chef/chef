@@ -45,7 +45,7 @@ jobs:
       HAB_BLDR_CHANNEL: base-2025
       HAB_REFRESH_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-      HAB_LICENSE: "accept-no-persist"
+      HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v6
@@ -288,7 +288,7 @@ jobs:
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-      HAB_LICENSE: "accept-no-persist"
+      HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v6
