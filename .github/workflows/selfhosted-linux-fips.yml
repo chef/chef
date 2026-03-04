@@ -37,6 +37,7 @@ jobs:
       HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: fips-testing
       HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: "accept-no-persist"
       CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
     steps:
       - name: 'Clean up any previous installs'
