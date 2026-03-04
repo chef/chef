@@ -17,6 +17,6 @@
 class Chef
   class Knife
     KNIFE_ROOT = File.expand_path("../..", __dir__)
-    VERSION = "19.2.5".freeze
+    VERSION = "19.2.6".freeze
   end
 end
