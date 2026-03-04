@@ -298,9 +298,8 @@ jobs:
           clean: true
       - name: Install Habitat CLI
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab --version
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo -E bash -s -- -c stable
+          sudo -E hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
           sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable

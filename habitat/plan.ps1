@@ -21,6 +21,10 @@ $pkg_deps=@(
   "core/visual-cpp-redist-2022"
 )
 
+$pkg_build_deps=@(
+    "core/git"
+)
+
 function Invoke-Begin {
     write-output "*** Start Invoke-Begin Function"
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]

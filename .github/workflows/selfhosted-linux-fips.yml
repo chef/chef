@@ -58,9 +58,8 @@ jobs:
 
       - name: Install Habitat CLI
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab --version
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo -E bash -s -- -c stable
+          sudo -E hab --version
 
       - name: Generate fake Habitat Origin Key
         run: |
