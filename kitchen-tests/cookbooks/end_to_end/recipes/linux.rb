@@ -222,6 +222,7 @@ include_recipe "::_cron" unless amazon? && node["platform_version"] >= "2023" # 
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 include_recipe "::_tests" # comment out if it generates UTF-8 error
+include_recipe "::_template_partial_paths"
 include_recipe "::_mount"
 include_recipe "::_ifconfig"
 # TODO: re-enable when habitat recipes are fixed
