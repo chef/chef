@@ -107,3 +107,20 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG"
     
     echo "AWS S3 credentials set for omnibus cache operations"
 fi
+
+# Only for build steps that need omnibus-private access (or for all verify steps)
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+  # Pick the correct region you already set above
+  OMNIBUS_SUBMODULE_CONFIG_PRIVATE=$(
+    aws ssm get-parameter \
+      --name "omnibus-submodule-config-private-github-token" \
+      --with-decryption \
+      --query Parameter.Value \
+      --output text \
+      --region "${AWS_REGION}"
+  )
+  export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
+
+  # Safe debug (no token value)
+  echo "OMNIBUS_SUBMODULE_CONFIG_PRIVATE set (len=${#OMNIBUS_SUBMODULE_CONFIG_PRIVATE})"
+fi
