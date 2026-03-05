@@ -39,7 +39,6 @@ if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
   cd "${SCRIPT_DIR}/../.."
   cp -f Gemfile.aix.lock Gemfile.lock
 fi
-
 echo "--- Running bundle install for Omnibus"
 cd "${SCRIPT_DIR}/../../omnibus"
 bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"

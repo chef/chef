@@ -120,7 +120,4 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
       --region "${AWS_REGION}"
   )
   export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
-
-  # Safe debug (no token value)
-  echo "OMNIBUS_SUBMODULE_CONFIG_PRIVATE set (len=${#OMNIBUS_SUBMODULE_CONFIG_PRIVATE})"
 fi
