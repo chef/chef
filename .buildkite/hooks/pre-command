@@ -111,9 +111,9 @@ fi
 # Only for build steps that need omnibus-private access (or for all verify steps)
 if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
   # Pick the correct region you already set above
-  OMNIBUS_SUBMODULE_CONFIG_PRIVATE=$(
+  GITHUB_TOKEN=$(
     aws ssm get-parameter \
-      --name "omnibus-submodule-config-private-github-token" \
+      --name "buildkite-github-clone-only-token" \
       --with-decryption \
       --query Parameter.Value \
       --output text \
