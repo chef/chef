@@ -25,6 +25,12 @@ echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 #   echo "No OMNIBUS_SUBMODULE_CONFIG_PRIVATE secret set. Skipping private repo config."
 # fi
 
+echo "--- Setting up GitHub authentication"
+# Configure git to use token for GitHub access
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+   bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
+fi
+
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
