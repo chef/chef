@@ -40,10 +40,39 @@ if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
   cp -f Gemfile.aix.lock Gemfile.lock
 fi
 
+# -------------------------------------------------------------------
+# GitHub auth for private repos needed during bundle install (omnibus-private)
+# Token env var: OMNIBUS_SUBMODULE_CONFIG_PRIVATE
+#
+# IMPORTANT:
+# - Do NOT echo token
+# - Do NOT print git config or .bundle/config (would leak token)
+# - Ensure this env var is passed into the docker container by the pipeline
+# -------------------------------------------------------------------
+echo "--- Configuring GitHub auth for private repos"
+export GIT_TERMINAL_PROMPT=0
+export GIT_ASKPASS=/bin/false
+
+if [[ -n "${OMNIBUS_SUBMODULE_CONFIG_PRIVATE:-}" ]]; then
+  echo "OMNIBUS_SUBMODULE_CONFIG_PRIVATE is set (len=${#OMNIBUS_SUBMODULE_CONFIG_PRIVATE})"
+
+  # Ensure git operations that bundler performs can authenticate to GitHub over HTTPS
+  # Repo-scoped config (safe for the mounted workspace). This writes to .git/config.
+  git config --local url."https://x-access-token:${OMNIBUS_SUBMODULE_CONFIG_PRIVATE}@github.com/".insteadOf "https://github.com/" || true
+
+  # Also apply inside the omnibus submodule repo, since bundler runs from there
+  if [[ -d "${SCRIPT_DIR}/../../omnibus" ]]; then
+    ( cd "${SCRIPT_DIR}/../../omnibus" && git config --local url."https://x-access-token:${OMNIBUS_SUBMODULE_CONFIG_PRIVATE}@github.com/".insteadOf "https://github.com/" ) || true
+  fi
+else
+  echo "OMNIBUS_SUBMODULE_CONFIG_PRIVATE is NOT set; private repo fetch (e.g. omnibus-private) may fail/hang."
+fi
+
 echo "--- Running bundle install for Omnibus"
 cd "${SCRIPT_DIR}/../../omnibus"
 bundle config set --local without development
 bundle install
+
 # Set up build options similar to omnibus-buildkite-plugin
 BUILD_OPTIONS="-l internal --populate-s3-cache"
 
