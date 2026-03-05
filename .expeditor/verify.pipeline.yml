@@ -6,10 +6,6 @@ expeditor:
         automatic:
           limit: 1
       timeout_in_minutes: 60
-  # secrets:
-  #   GITHUB_TOKEN:
-  #     account: github/chef
-  #     field: token
 
 steps:
   - command: .buildkite/verify.pipeline.sh | buildkite-agent pipeline upload
