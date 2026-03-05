@@ -1,5 +1,4 @@
 require "chef/mixin/which"
-require_relative "../../util/selinux"
 
 class Chef
   module ResourceHelpers
