@@ -25,10 +25,12 @@ echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 #   echo "No OMNIBUS_SUBMODULE_CONFIG_PRIVATE secret set. Skipping private repo config."
 # fi
 
-echo "--- Setting up GitHub authentication"
-# Configure git to use token for GitHub access
-if [ -n "${GITHUB_TOKEN:-}" ]; then
-   bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  # Prevent hangs if git tries to prompt
+  export GIT_TERMINAL_PROMPT=0
+  git config --local url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+else
+  echo "GITHUB_TOKEN not set. Skipping GitHub auth setup."
 fi
 
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
