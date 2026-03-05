@@ -16,9 +16,13 @@ OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolc
 export OMNIBUS_TOOLCHAIN_VERSION
 echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
-# Configure GitHub HTTPS auth (if token is present) so git fetch/rebase can use it
-if [ -n "${GITHUB_TOKEN:-}" ]; then
-  git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+# Configure Bundler to authenticate to GitHub for private gem sources / git-based deps
+# (preferred over rewriting git https URLs globally)
+if [[ -n "${OMNIBUS_SUBMODULE_CONFIG_PRIVATE:-}" ]]; then
+  # Keep it local to the repo to avoid leaking into other jobs
+  bundle config set --local github.com "x-access-token:${OMNIBUS_SUBMODULE_CONFIG_PRIVATE}"
+else
+  echo "No OMNIBUS_SUBMODULE_CONFIG_PRIVATE secret set. Skipping private repo config."
 fi
 
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
