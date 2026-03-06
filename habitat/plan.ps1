@@ -22,7 +22,7 @@ $pkg_deps=@(
 )
 
 $pkg_build_deps=@(
-    "core/git"
+  "core/git"
 )
 
 function Invoke-Begin {
@@ -150,6 +150,51 @@ function Invoke-Prepare {
         bundle config build.openssl --with-openssl-dir=$openssl_dir
     } finally {
         Pop-Location
+    }
+}
+
+function Invoke-DevkitSmokeTests {
+    #
+    # Starting with Chef-19, we noted that habitat package sizes on disk were enormous. We now undertake active cleaning to reduce disk space usage.
+    # We did that specifically for the Ruby-Devkit package. At the same time, we need to have confidence that we are not being too aggressive in tunning the Devkit.
+    # Here we flex the Devkit by having it install and test things to ensure headers, make and gcc are still available and working.
+    #
+    write-output "*** Start Invoke-DevkitSmokeTests Function"
+
+    $devkit_smoke_test_gem_home = [System.IO.Path]::GetFullPath((Join-Path $HAB_CACHE_SRC_PATH "devkit-smoke-test-gems"))
+    $original_gem_home = $env:GEM_HOME
+    $original_gem_path = $env:GEM_PATH
+
+    if (Test-Path $devkit_smoke_test_gem_home) {
+        Remove-Item $devkit_smoke_test_gem_home -Recurse -Force
+    }
+
+    New-Item -ItemType Directory -Force $devkit_smoke_test_gem_home | Out-Null
+
+    try {
+        Write-BuildLine " ** DevKit smoke test: loading native runtime dependencies from Ruby"
+        $ruby_native_dependency_check = "require 'openssl'; require 'zlib'; puts 'ruby native dependency load successful'"
+        ruby -e $ruby_native_dependency_check
+        if (-not $?) { throw "DevKit smoke test failed: unable to load openssl/zlib from Ruby" }
+
+        Write-BuildLine " ** DevKit smoke test: installing sqlite3 gem in isolated GEM_HOME"
+        gem install sqlite3 --no-document --install-dir "$devkit_smoke_test_gem_home"
+        if (-not $?) { throw "DevKit smoke test failed: unable to install sqlite3 gem" }
+
+        $env:GEM_HOME = $devkit_smoke_test_gem_home
+        $env:GEM_PATH = "$devkit_smoke_test_gem_home;$original_gem_path"
+
+        Write-BuildLine " ** DevKit smoke test: requiring sqlite3 after installation"
+        $ruby_sqlite3_check = "require 'sqlite3'; puts SQLite3::VERSION"
+        ruby -e $ruby_sqlite3_check
+        if (-not $?) { throw "DevKit smoke test failed: sqlite3 gem did not load successfully" }
+    } finally {
+        $env:GEM_HOME = $original_gem_home
+        $env:GEM_PATH = $original_gem_path
+
+        if (Test-Path $devkit_smoke_test_gem_home) {
+            Remove-Item $devkit_smoke_test_gem_home -Recurse -Force
+        }
     }
 }
 
@@ -309,6 +354,9 @@ function Invoke-Install {
 
 function Invoke-After {
     write-output "*** invoke after"
+
+    Invoke-DevkitSmokeTests
+
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
