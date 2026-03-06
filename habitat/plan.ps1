@@ -110,7 +110,8 @@ function Invoke-Clean () {
     Write-BuildLine " **  Start Invoke-Clean Function"
     $src = "$HAB_CACHE_SRC_PATH\$pkg_dirname"
     if (Test-Path "$src") {
-        Remove-Item "$src" -Recurse -Force
+        # Remove-Item "$src" -Recurse -Force
+        Get-ChildItem src -Recurse | Remove-Item -Force
     }
 }
 
@@ -312,12 +313,16 @@ function Invoke-After {
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
-    Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
+    # Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
+    Get-ChildItem $pkg_prefix/vendor/cache -Recurse | Remove-Item -Force
+
     # ... or bundler's cache of git-ref'd gems
-    Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
+    # Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
+    Get-ChildItem $pkg_prefix/vendor/bundler -Recurse | Remove-Item -Force
 
     # We don't need the gem docs.
-    Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
+    # Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
+    Get-ChildItem $pkg_prefix/vendor/doc -Recurse | Remove-Item -Force
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
     Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
