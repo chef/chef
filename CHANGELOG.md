@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.9 -->
-## [v19.2.9](https://github.com/chef/chef/tree/v19.2.9) (2026-03-04)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Build fixes. Windows should pass immediately, linux will fail until m… [#15685](https://github.com/chef/chef/pull/15685) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating the sbom version [#15691](https://github.com/chef/chef/pull/15691) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.1.164 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating the sbom version [#15691](https://github.com/chef/chef/pull/15691) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.9 -->
 - Build fixes. Windows should pass immediately, linux will fail until m… [#15685](https://github.com/chef/chef/pull/15685) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.9 -->
 - Remove quotes from YML [#15684](https://github.com/chef/chef/pull/15684) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.8 -->
 - Add accept-no-persist for HAB_LICENSE [#15683](https://github.com/chef/chef/pull/15683) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.7 -->
