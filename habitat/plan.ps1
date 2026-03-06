@@ -154,6 +154,11 @@ function Invoke-Prepare {
 }
 
 function Invoke-DevkitSmokeTests {
+    #
+    # Starting with Chef-19, we noted that habitat package sizes on disk were enormouse. We now undertake active cleaning to reduce disk space usage.
+    # We did that specifically for the Ruby-Devkit package. At the same time, we need to have confidence that we are not being too aggressive in tunning the Devkit.
+    # Here we flex the Devkit by having it install and test things to ensure headers, make and gcc are still available and working.
+    #
     write-output "*** Start Invoke-DevkitSmokeTests Function"
 
     $devkit_smoke_test_gem_home = [System.IO.Path]::GetFullPath((Join-Path $HAB_CACHE_SRC_PATH "devkit-smoke-test-gems"))
