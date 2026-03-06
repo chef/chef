@@ -6,6 +6,7 @@ class Chef
     module PathHelpers
       extend self
       include Chef::Mixin::Which
+      include Chef::Util::Selinux
 
       # This method returns the absolute path to the chef-client binary that is currently executing.
       # In a Habitat environment, you might have multiple versions of chef-client installed,
@@ -26,8 +27,14 @@ class Chef
         bat_path = "C:\\hab\\bin\\#{ChefUtils::Dist::Infra::CLIENT}.bat"
         return bat_path if File.exist?(bat_path) && ChefUtils.windows?
 
-        # return path for any bin/chef-* names
-        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ /^chef-[a-z-]+$/
+        if bin =~ /^chef-[a-z-]+$/
+          # selinux needs an approved path. this is the simplest route to get there
+          usr_bin_stub = "/usr/bin/#{ChefUtils::Dist::Infra::CLIENT}"
+          return usr_bin_stub if File.exist?(usr_bin_stub) && selinux_enabled?
+
+          # return path for any bin/chef-* names
+          return path.sub(bin, ChefUtils::Dist::Infra::CLIENT)
+        end
 
         # Return empty string if no valid path is found
         ""
