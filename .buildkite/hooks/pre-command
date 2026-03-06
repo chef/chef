@@ -119,5 +119,6 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
       --output text \
       --region "${AWS_REGION}"
   )
+  export GITHUB_TOKEN
   export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
 fi
