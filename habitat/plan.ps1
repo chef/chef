@@ -362,15 +362,15 @@ function Invoke-After {
 
     # We don't need the cache of downloaded .gem files ...
     # Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
-    Get-ChildItem $pkg_prefix/vendor/cache -Recurse | Remove-Item -Force
+    Get-ChildItem $pkg_prefix/vendor/cache -Recurse | Remove-Item -Recurse -Force
 
     # ... or bundler's cache of git-ref'd gems
     # Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
-    Get-ChildItem $pkg_prefix/vendor/bundler -Recurse | Remove-Item -Force
+    Get-ChildItem $pkg_prefix/vendor/bundler -Recurse | Remove-Item -Recurse -Force
 
     # We don't need the gem docs.
     # Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
-    Get-ChildItem $pkg_prefix/vendor/doc -Recurse | Remove-Item -Force
+    Get-ChildItem $pkg_prefix/vendor/doc -Recurse | Remove-Item -Recurse -Force
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
     Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
@@ -382,9 +382,6 @@ function Invoke-After {
     # fix their file exclusions.
     Get-ChildItem $pkg_prefix/vendor/gems -Filter ".github" -Directory -Recurse `
         | Remove-Item -Recurse -Force
-    # Remove the byproducts of compiling gems with extensions
-    Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
-        | Remove-Item -Force
 
     # we need the built gems outside of the studio
     write-output "Copying gems to ${SRC_PATH}"
