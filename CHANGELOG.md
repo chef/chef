@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.2.10 -->
+## [v19.2.10](https://github.com/chef/chef/tree/v19.2.10) (2026-03-09)
 
 #### Merged Pull Requests
+- Ensure DevKit changes don&#39;t break the build [#15681](https://github.com/chef/chef/pull/15681) ([johnmccrae](https://github.com/johnmccrae))
 - Updating the sbom version [#15691](https://github.com/chef/chef/pull/15691) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ensure DevKit changes don&#39;t break the build [#15681](https://github.com/chef/chef/pull/15681) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.10 -->
 - Updating the sbom version [#15691](https://github.com/chef/chef/pull/15691) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.9 -->
 - Build fixes. Windows should pass immediately, linux will fail until m… [#15685](https://github.com/chef/chef/pull/15685) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.9 -->
 - Remove quotes from YML [#15684](https://github.com/chef/chef/pull/15684) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.8 -->
