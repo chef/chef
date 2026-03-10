@@ -341,7 +341,7 @@ function Install-OmnibusDependencies {
 
         # Provide GitHub credentials to Bundler via env var (in-memory only)
         # Bundler key 'github.com' => env var 'BUNDLE_GITHUB__COM'
-        $env:BUNDLE_GITHUB__COM = "x-access-token:$($env:GITHUB_TOKEN)"
+        bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
 
         # Defensive cleanup: remove any previous persisted bundler config in this workspace
         $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
