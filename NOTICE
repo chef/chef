@@ -1,4 +1,4 @@
-Progress Chef Infra Client 19.1
+Progress Chef Infra Client 19.2
 
 Portions of the Products include certain open source and commercial third-party
 components listed below ("Third-Party Components"). The authors of the
@@ -27,12 +27,14 @@ Apache License 2.0:
   Amazon Web Services              | AWS SDK for Ruby        | 1.1188.0
   Amazon Web Services              | AWS SDK for Ruby        | 1.12.1
   Amazon Web Services              | AWS SDK for Ruby        | 1.124.0
-  Amazon Web Services              | AWS SDK for Ruby        | 1.205.0
+  Amazon Web Services              | AWS SDK for Ruby        | 1.213.0
   Amazon Web Services              | AWS SDK for Ruby        | 1.4.0
-  Amazon Web Services              | aws-sdk-core-ruby       | 3.239.2
+  Amazon Web Services              | aws-sdk-core-ruby       | 3.242.0
   Bob Aman                         | Addressable URI parser  | 2.8.8
   Bob Aman                         | sporkmonger's uuidtools | 2.2.0
-  Chef InSpec Team                 | train-core              | 3.14.1
+  Chef InSpec Core Engineering     | inspec/inspec           | 7.0.107
+  Chef InSpec Team                 | train-core              | 3.16.1
+  Chef Software, Inc               | Chef                    | 19.1.164
   Chef Software, Inc               | mixlib-archive          | 1.3.3
   Chef Software, Inc               | mixlib-shellout         | 3.3.9
   Chef Software, Inc.              | chef-zero               | 15.1.0
@@ -99,6 +101,7 @@ BSD 2-Clause "Simplified" License:
   Tadayoshi Funaba                 | date                         | 3.5.0
   Tanaka Akira                     | timingfuction                | 0.4.1
   The Habitat Maintainers          | Habitat core_lz4             | 1.10.0
+  The Habitat Maintainers          | Habitat core_ruby3_4         | 3.4.8
   The Habitat Maintainers          | Habitat core_ruby3_4-dev-kit | 3.4.8
   Yukihiro Matsumoto               | net-protocol                 | 0.2.2
   Yukihiro Matsumoto               | pstore                       | 0.1.4
@@ -107,18 +110,15 @@ BSD 2-Clause "Simplified" License:
   Yusuke Endoh                     | base64                       | 0.3.0
 
 BSD 3-Clause "New" or "Revised" License:
-  Park Heesob, Daniel Berger,…     | rb-readline          | 0.5.5
-  > Luis Lavena, Connor Atherton   |                      |
-  Stefan Lang                      | unicode_utils        | 1.4.0
-  The Habitat Maintainers          | Habitat core_ruby3_4 | 3.4.8
-  Wayne Meissner                   | ffi                  | 1.17.3
-
-BSD 3-Clause No Modification:
-  The Habitat Maintainers | Habitat core_libarchive | 3.8.1
-  The Habitat Maintainers | Habitat core_libcap     | 2.73
-  The Habitat Maintainers | Habitat core_libpcre2   | 10.42
-  The Habitat Maintainers | Habitat core_pcre2      | 10.42
-  The Habitat Maintainers | Habitat core_zstd       | 1.5.7
+  Park Heesob, Daniel Berger,…     | rb-readline             | 0.5.5
+  > Luis Lavena, Connor Atherton   |                         |
+  Stefan Lang                      | unicode_utils           | 1.4.0
+  The Habitat Maintainers          | Habitat core_libarchive | 3.8.1
+  The Habitat Maintainers          | Habitat core_libcap     | 2.73
+  The Habitat Maintainers          | Habitat core_libpcre2   | 10.42
+  The Habitat Maintainers          | Habitat core_pcre2      | 10.42
+  The Habitat Maintainers          | Habitat core_zstd       | 1.5.7
+  Wayne Meissner                   | ffi                     | 1.17.3
 
 Bzip2 License:
   The Habitat Maintainers | Habitat core_bzip2 | 1.0.8
@@ -141,7 +141,7 @@ GNU General Public License v3.0 only:
   The Habitat Maintainers | Habitat core_grep      | 3.11
   The Habitat Maintainers | Habitat core_less      | 668
   The Habitat Maintainers | Habitat core_libiconv  | 1.18
-  The Habitat Maintainers | Habitat core_readline  | 8.2
+  The Habitat Maintainers | Habitat core_readline  | 8.2.13
 
 GNU General Public License v3.0 w/GCC Runtime Library exception:
   The Habitat Maintainers | Habitat core_gcc-libs | 14.3.0
@@ -159,11 +159,10 @@ ICU License:
   The Habitat Maintainers | Habitat core_icu | 72.1
 
 Internal Progress Product License: (*)
+  Chef InSpec Team              | inspec-ruby                  | 7.0.107
   Progress Software Corporation | Chef                         | 18.6.6
   Progress Software Corporation | appbundler                   | 0.13.4
   Progress Software Corporation | chef-telemetry               | 1.1.1
-  Progress Software Corporation | cheffish                     | 17.1.8
-  Progress Software Corporation | inspec/inspec                | 7.0.95
   Progress Software Corporation | mixlib-authentication        | 3.0.10
   Progress Software Corporation | mixlib-cli                   | 2.1.8
   Progress Software Corporation | mixlib-config                | 3.0.27
@@ -178,8 +177,6 @@ Trial Edition:
   The Habitat Maintainers | Habitat core_visual-cpp-redist-2022 | 14.44.35208.0
 
 MIT License:
-  @technoweenie, @iMacTia, …       | technoweenie's faraday      | 2.14.0
-  > @olleolleolle                  |                             |
   Akinori MUSHA, Aaron Patterson,… | http-cookie                 | 1.1.0
   > Eric Hodel, Mike Dalessio      |                             |
   Ammar Ali, Janosch Müller        | regexp_parser               | 2.11.3
@@ -239,7 +236,7 @@ MIT License:
   Kornelius Kalnbach               | rubychan's coderay          | 1.1.3
   Kris Leech                       | wisper                      | 2.0.1
   Lamont Granquist                 | ffi-yajl                    | 2.7.7
-  Leah Neukirchen                  | Rack                        | 3.2.4
+  Leah Neukirchen                  | Rack                        | 3.2.5
   Liu Fengyun                      | hashdiff                    | 1.2.1
   Marcin Kulik, Olle Jonsson       | sickill's rainbow           | 3.1.1
   Mark Wunsch                      | mwunsch's prism             | 1.6.0
@@ -283,6 +280,7 @@ MIT License:
   Piotr Murach                     | tty-spinner                 | 0.9.3
   Piotr Murach                     | tty-table                   | 0.12.0
   REST Client Team                 | adamwiggins's rest-client   | 2.1.0
+  RubyGems                         | technoweenie's faraday      | 2.14.1
   Samuel Kadolph                   | proxifier2                  | 1.1.0
   Samuel Williams                  | http-accept                 | 2.1.1
   Samuel Williams, James Tucker,…  | rackup                      | 2.2.1
@@ -355,7 +353,7 @@ Mozilla Public License 2.0:
   The Habitat Maintainers | Habitat core_cacerts | 2025-05-20
 
 OpenSSL Combined License:
-  The Habitat Maintainers | Habitat core_openssl | 3.5.4
+  The Habitat Maintainers | Habitat core_openssl | 3.5.5
 
 The Unlicense:
   Adam Palmblad, Eric Hankins,…    | ruby-shadow | 3.0.0
@@ -368,12 +366,10 @@ zlib License:
 
 ================================================================================
 
-The Product contains Habitat core_gmp v6.3.0, Habitat core_acl  v2.3.2,Habitat
-core_attr v2.5.2, Habitat core_glibc v2.41, Habitat core_nss-myhostname v0.3,
-Habitat core_bash 5.2.37, Habitat core_cacerts 2025-05-20,
+The Product contains Habitat core_bash 5.2.37, Habitat core_cacerts 2025-05-20,
 Habitat core_coreutils 9.7, Habitat core_gcc-libs 14.3.0, Habitat core_grep
 3.11, Habitat core_less 668, Habitat core_libiconv 1.18, Habitat
-core_linux-headers 5.19.8, Habitat core_readline 8.2, Habitat core_xz 5.8.1,
+core_linux-headers 5.19.8, Habitat core_readline 8.2.13, Habitat core_xz 5.8.1,
 sslshake 1.3.1, vault 0.18.2, win32-api 1.10.1-universal-mingw32, win32-event
 0.6.3, win32-eventlog 0.6.3, win32-mmap 0.4.2, win32-mutex 0.4.3, win32-process
 0.10.0, win32-service 2.3.2, and win32-taskscheduler 2.0.4. These third-party
@@ -386,32 +382,23 @@ also obtain the source code for these third-party technologies through
 http://iue.progress.com/3dpartysoftwares/Pages/default.aspx by following the
 instructions set forth therein.
 
-The Product contains Habitat core_gmp v6.3.0, Habitat core_acl v2.3.2,
-Habitat core_attr v2.5.2, Habitat core_glibc v2.41, and Habitat
-core_nss-myhostname v0.3. This technology is subject to the terms of the GNU
-Library General Public License Version 2 (“LGPL v2”), GNU Lesser General Public
-License Version 2.1 (“LGPL v2.1”) or GNU Lesser General Public License Version 3
-(“LGPL v3”).  In compliance with such Licenses, PSC provides You with reverse
-engineering permission solely to the extent necessary in order to debug
-modifications made to libraries licensed under the LGPL v2, LGPL v2.1, or LGPL v3
-(as identified above).
-
 1. Special Notices Regarding Open-Source Third-Party Components incorporated
 into the Product. Such technology is subject to the following terms and
 conditions:
 
 (1) Apache License 2.0:
 
-Progress Chef Infra Client 19.1 incorporates AWS SDK for Ruby 1.118.0, AWS SDK
+Progress Chef Infra Client 19.2 incorporates AWS SDK for Ruby 1.118.0, AWS SDK
 for Ruby 1.1188.0, AWS SDK for Ruby 1.12.1, AWS SDK for Ruby 1.124.0, AWS SDK
-for Ruby 1.205.0, AWS SDK for Ruby 1.4.0, Addressable URI parser 2.8.8, Chef
-18.7.6, aws-sdk-core-ruby 3.239.2, chef-licensing 1.3.4, chef-vault 4.2.5,
-chef-winrm 2.4.4, chef-winrm-elevated 1.2.5, chef-winrm-fs 1.4.2, chef-zero
-15.1.0, cookstyle 8.5.2, faraday-http-cache 2.5.1, ffi-libarchive 1.1.14,
-ffi-win32-extensions 1.0.4, jmespath rubygems 1.6.2, knife 18.5.0, libyajl2
-2.1.0, license-acceptance 2.1.13, mixlib-archive 1.3.3, mixlib-shellout 3.3.9,
-opscode-ohai 19.1.16, semverse 3.0.2, sporkmonger's uuidtools 2.2.0, train-core
-3.14.1, win32-ipc 0.7.0, and wmi-lite 1.0.7.
+for Ruby 1.213.0, AWS SDK for Ruby 1.4.0, Addressable URI parser 2.8.8, Chef
+18.7.6, Chef 19.1.164, aws-sdk-core-ruby 3.242.0, chef-licensing 1.3.4,
+chef-vault 4.2.5, chef-winrm 2.4.4, chef-winrm-elevated 1.2.5, chef-winrm-fs
+1.4.2, chef-zero 15.1.0, cookstyle 8.5.2, faraday-http-cache 2.5.1,
+ffi-libarchive 1.1.14, ffi-win32-extensions 1.0.4, inspec/inspec 7.0.107,
+jmespath rubygems 1.6.2, knife 18.5.0, libyajl2 2.1.0, license-acceptance
+2.1.13, mixlib-archive 1.3.3, mixlib-shellout 3.3.9, opscode-ohai 19.1.16,
+semverse 3.0.2, sporkmonger's uuidtools 2.2.0, train-core 3.16.1, win32-ipc
+0.7.0, and wmi-lite 1.0.7.
 
   Apache License Version 2.0, January 2004
   =========================
@@ -604,14 +591,14 @@ opscode-ohai 19.1.16, semverse 3.0.2, sporkmonger's uuidtools 2.2.0, train-core
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Contents of NOTICE text file for AWS SDK for Ruby 1.118.0, AWS SDK for Ruby
 1.1188.0, AWS SDK for Ruby 1.12.1, AWS SDK for Ruby 1.124.0, AWS SDK for Ruby
-1.205.0, AWS SDK for Ruby 1.4.0, and aws-sdk-core-ruby 3.239.2:
+1.213.0, AWS SDK for Ruby 1.4.0, and aws-sdk-core-ruby 3.242.0:
 
   AWS SDK for Ruby Copyright Amazon.com, Inc. or its affiliates. All Rights
   Reserved.
 
 (2) Artistic License 2.0:
 
-Progress Chef Infra Client 19.1 incorporates win32-api
+Progress Chef Infra Client 19.2 incorporates win32-api
 1.10.1-universal-mingw32, win32-event 0.6.3, win32-eventlog 0.6.3, win32-mmap
 0.4.2, win32-mutex 0.4.3, win32-process 0.10.0, win32-service 2.3.2, and
 win32-taskscheduler 2.0.4.
@@ -801,14 +788,14 @@ win32-taskscheduler 2.0.4.
 
 (3) BSD 2-Clause "Simplified" License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_lz4 1.10.0, Habitat
-core_ruby3_4-dev-kit 3.4.8, JSON for Ruby 2.18.0, Ruby-SOCKSify 1.8.1, RubyZip
-2.4.1, base64 0.3.0, bigdecimal 3.3.1, byebug 12.0.0, date 3.5.0, mutex_m
-0.3.0, nahi's httpclient 2.9.0, net-ftp 0.3.9, net-http 0.8.0, net-protocol
-0.2.2, ostruct 0.6.3, pstore 0.1.4, public_suffix_service 0.6.20240107, racc
-1.8.1, rbs 3.10.2, ruby csv 3.3.5, ruby/benchmark 0.5.0, ruby/logger 1.7.0,
-ruby/openssl 3.3.1, ruby/rexml 3.4.4, syslog 0.3.0, timeout 0.4.4,
-timingfuction 0.4.1, uri 1.0.4, and webrick 1.9.2.
+Progress Chef Infra Client 19.2 incorporates Habitat core_lz4 1.10.0, Habitat
+core_ruby3_4 3.4.8, Habitat core_ruby3_4-dev-kit 3.4.8, JSON for Ruby 2.18.0,
+Ruby-SOCKSify 1.8.1, RubyZip 2.4.1, base64 0.3.0, bigdecimal 3.3.1, byebug
+12.0.0, date 3.5.0, mutex_m 0.3.0, nahi's httpclient 2.9.0, net-ftp 0.3.9,
+net-http 0.8.0, net-protocol 0.2.2, ostruct 0.6.3, pstore 0.1.4,
+public_suffix_service 0.6.20240107, racc 1.8.1, rbs 3.10.2, ruby csv 3.3.5,
+ruby/benchmark 0.5.0, ruby/logger 1.7.0, ruby/openssl 3.3.1, ruby/rexml 3.4.4,
+syslog 0.3.0, timeout 0.4.4, timingfuction 0.4.1, uri 1.0.4, and webrick 1.9.2.
 
   BSD Two Clause License
   ======================
@@ -836,7 +823,7 @@ timingfuction 0.4.1, uri 1.0.4, and webrick 1.9.2.
 
 (4) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 19.1 incorporates rb-readline 0.5.5.
+Progress Chef Infra Client 19.2 incorporates rb-readline 0.5.5.
 
   Copyright (c) , Park Heesob, Daniel Berger, Luis Lavena, Connor Atherton All
   rights reserved.
@@ -871,7 +858,7 @@ Progress Chef Infra Client 19.1 incorporates rb-readline 0.5.5.
 
 (5) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 19.1 incorporates unicode_utils 1.4.0.
+Progress Chef Infra Client 19.2 incorporates unicode_utils 1.4.0.
 
   Copyright (c) , Stefan Lang All rights reserved.
 
@@ -905,7 +892,9 @@ Progress Chef Infra Client 19.1 incorporates unicode_utils 1.4.0.
 
 (6) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_ruby3_4 3.4.8.
+Progress Chef Infra Client 19.2 incorporates Habitat core_libarchive 3.8.1,
+Habitat core_libcap 2.73, Habitat core_libpcre2 10.42, Habitat core_pcre2
+10.42, and Habitat core_zstd 1.5.7.
 
   Copyright (c) , The Habitat Maintainers <humans@habitat.sh> All rights
   reserved.
@@ -940,7 +929,7 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_ruby3_4 3.4.8.
 
 (7) BSD 3-Clause "New" or "Revised" License:
 
-Progress Chef Infra Client 19.1 incorporates ffi 1.17.3.
+Progress Chef Infra Client 19.2 incorporates ffi 1.17.3.
 
   Copyright (c) , Wayne Meissner All rights reserved.
 
@@ -972,46 +961,9 @@ Progress Chef Infra Client 19.1 incorporates ffi 1.17.3.
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 
-(8) BSD 3-Clause No Modification:
+(8) Bzip2 License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_libarchive 3.8.1,
-Habitat core_libcap 2.73, Habitat core_libpcre2 10.42, Habitat core_pcre2
-10.42, and Habitat core_zstd 1.5.7.
-
-  Copyright (c) , The Habitat Maintainers <humans@habitat.sh> All rights
-  reserved.
-
-  Redistribution and use in source and binary forms, without modification, are
-  permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice,
-    this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    * Neither the name of the * nor the names of its contributors may
-      be used to endorse or promote products derived from this software without
-      specific prior written permission.
-
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  POSSIBILITY OF SUCH DAMAGE.
-
-(9) Bzip2 License:
-
-Progress Chef Infra Client 19.1 incorporates Habitat core_bzip2 1.0.8.
+Progress Chef Infra Client 19.2 incorporates Habitat core_bzip2 1.0.8.
 
   bzip2 License
   =============
@@ -1050,9 +1002,9 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_bzip2 1.0.8.
   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(10) Creative Commons Zero v1.0 Universal:
+(9) Creative Commons Zero v1.0 Universal:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_libb2 0.98.1.
+Progress Chef Infra Client 19.2 incorporates Habitat core_libb2 0.98.1.
 
   Creative Commons CC0 1.0 Universal
   ==================================
@@ -1213,9 +1165,9 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_libb2 0.98.1.
       to this document and has no duty or obligation with respect to this CC0
       or use of the Work.
 
-(11) Expat License:
+(10) Expat License:
 
-Progress Chef Infra Client 19.1 incorporates netrc 0.11.0.
+Progress Chef Infra Client 19.2 incorporates netrc 0.11.0.
 
   Expat License
   =============
@@ -1242,9 +1194,9 @@ Progress Chef Infra Client 19.1 incorporates netrc 0.11.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(12) GNU General Public License v2.0 or later:
+(11) GNU General Public License v2.0 or later:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_xz 5.8.1.
+Progress Chef Infra Client 19.2 incorporates Habitat core_xz 5.8.1.
 
   The GNU General Public License (GPL)
   ====================================
@@ -1588,9 +1540,9 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_xz 5.8.1.
   library. If this is what you want to do, use the GNU Library General Public
   License instead of this License.
 
-(13) GNU General Public License v2.0 with Linux Syscall Note:
+(12) GNU General Public License v2.0 with Linux Syscall Note:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_linux-headers 5.19.8.
+Progress Chef Infra Client 19.2 incorporates Habitat core_linux-headers 5.19.8.
 
   The GNU General Public License v2.0 w/Linux-syscall-note
   ========================================================
@@ -1876,11 +1828,11 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_linux-headers 5.19.8.
 
   END OF TERMS AND CONDITIONS
 
-(14) GNU General Public License v3.0 only:
+(13) GNU General Public License v3.0 only:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_bash 5.2.37, Habitat
+Progress Chef Infra Client 19.2 incorporates Habitat core_bash 5.2.37, Habitat
 core_coreutils 9.7, Habitat core_grep 3.11, Habitat core_less 668, Habitat
-core_libiconv 1.18, and Habitat core_readline 8.2.
+core_libiconv 1.18, and Habitat core_readline 8.2.13.
 
   "This program is free software: you can redistribute it and/or modify it
   under the terms of version 3 of the GNU General Public License as published
@@ -2541,9 +2493,9 @@ core_libiconv 1.18, and Habitat core_readline 8.2.
   License instead of this License. But first, please read
   <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
-(15) GNU General Public License v3.0 w/GCC Runtime Library exception:
+(14) GNU General Public License v3.0 w/GCC Runtime Library exception:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 14.3.0.
+Progress Chef Infra Client 19.2 incorporates Habitat core_gcc-libs 14.3.0.
 
   GCC RUNTIME LIBRARY EXCEPTION
   =============================
@@ -3220,9 +3172,9 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_gcc-libs 14.3.0.
   License instead of this License. But first, please read
   <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
-(16) GNU Lesser General Public License v2.1 only:
+(15) GNU Lesser General Public License v2.1 only:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_acl 2.3.2, Habitat
+Progress Chef Infra Client 19.2 incorporates Habitat core_acl 2.3.2, Habitat
 core_attr 2.5.2, Habitat core_glibc 2.41, and Habitat core_nss-myhostname 0.3.
 
   GNU Lesser General Public License Version 2.1 Only
@@ -3740,9 +3692,9 @@ core_attr 2.5.2, Habitat core_glibc 2.41, and Habitat core_nss-myhostname 0.3.
 
   That's all there is to it!
 
-(17) GNU Lesser General Public License v3.0 only:
+(16) GNU Lesser General Public License v3.0 only:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_gmp 6.3.0.
+Progress Chef Infra Client 19.2 incorporates Habitat core_gmp 6.3.0.
 
   GNU Lesser General Public License Version 3.0 Only
   --------------------------------------------------
@@ -4575,17 +4527,17 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_gmp 6.3.0.
   License instead of this License. But first, please read
   <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 
-(18) ICU License:
+(17) ICU License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_icu 72.1.
+Progress Chef Infra Client 19.2 incorporates Habitat core_icu 72.1.
 
   ICU License - ICU 1.8.1 and later
   =================================
 
   COPYRIGHT AND PERMISSION NOTICE
 
-  Copyright (c) 1995-2014 International Business Machines Corporation and
-  others All rights reserved.
+  Copyright (c)  International Business Machines Corporation and others All
+  rights reserved.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -4614,9 +4566,9 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_icu 72.1.
   All trademarks and registered trademarks mentioned herein are the property of
   their respective owners.
 
-(19) MIT License:
+(18) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Rake 13.3.1.
+Progress Chef Infra Client 19.2 incorporates Rake 13.3.1.
 
   The MIT License
   ===============
@@ -4640,9 +4592,9 @@ Progress Chef Infra Client 19.1 incorporates Rake 13.3.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(20) MIT License:
+(19) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates rspec-support 3.13.6.
+Progress Chef Infra Client 19.2 incorporates rspec-support 3.13.6.
 
   The MIT License
   ===============
@@ -4667,9 +4619,9 @@ Progress Chef Infra Client 19.1 incorporates rspec-support 3.13.6.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(21) MIT License:
+(20) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates savonrb/nori 2.7.0.
+Progress Chef Infra Client 19.2 incorporates savonrb/nori 2.7.0.
 
   The MIT License
   ===============
@@ -4693,9 +4645,9 @@ Progress Chef Infra Client 19.1 incorporates savonrb/nori 2.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(22) MIT License:
+(21) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates regexp_parser 2.11.3.
+Progress Chef Infra Client 19.2 incorporates regexp_parser 2.11.3.
 
   The MIT License
   ===============
@@ -4719,9 +4671,9 @@ Progress Chef Infra Client 19.1 incorporates regexp_parser 2.11.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(23) MIT License:
+(22) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates yajl 0.3.4.
+Progress Chef Infra Client 19.2 incorporates yajl 0.3.4.
 
   The MIT License
   ===============
@@ -4745,9 +4697,9 @@ Progress Chef Infra Client 19.1 incorporates yajl 0.3.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(24) MIT License:
+(23) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates pastel 0.8.0, strings 0.2.1,
+Progress Chef Infra Client 19.2 incorporates pastel 0.8.0, strings 0.2.1,
 strings-ansi 0.2.0, tty 0.23.1, tty 0.6.0, tty-command 0.7.0, tty-command
 0.9.0, tty-cursor 0.7.1, tty-screen 0.8.2, tty-spinner 0.9.3, and tty-table
 0.12.0.
@@ -4774,9 +4726,9 @@ strings-ansi 0.2.0, tty 0.23.1, tty 0.6.0, tty-command 0.7.0, tty-command
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(25) MIT License:
+(24) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates halostatue/diff-lcs 1.6.2,
+Progress Chef Infra Client 19.2 incorporates halostatue/diff-lcs 1.6.2,
 mime-types-data 3.2025.0924, and ruby-mime-types 3.7.0.
 
   The MIT License
@@ -4801,9 +4753,9 @@ mime-types-data 3.2025.0924, and ruby-mime-types 3.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(26) MIT License:
+(25) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates repl_type_completor 0.1.12.
+Progress Chef Infra Client 19.2 incorporates repl_type_completor 0.1.12.
 
   The MIT License
   ===============
@@ -4827,9 +4779,9 @@ Progress Chef Infra Client 19.1 incorporates repl_type_completor 0.1.12.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(27) MIT License:
+(26) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates bleything's plist 3.7.2.
+Progress Chef Infra Client 19.2 incorporates bleything's plist 3.7.2.
 
   The MIT License
   ===============
@@ -4853,9 +4805,9 @@ Progress Chef Infra Client 19.1 incorporates bleything's plist 3.7.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(28) MIT License:
+(27) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates hashdiff 1.2.1.
+Progress Chef Infra Client 19.2 incorporates hashdiff 1.2.1.
 
   The MIT License
   ===============
@@ -4879,9 +4831,9 @@ Progress Chef Infra Client 19.1 incorporates hashdiff 1.2.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(29) MIT License:
+(28) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Ruby Public Suffix 7.0.0.
+Progress Chef Infra Client 19.2 incorporates Ruby Public Suffix 7.0.0.
 
   The MIT License
   ===============
@@ -4905,9 +4857,9 @@ Progress Chef Infra Client 19.1 incorporates Ruby Public Suffix 7.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(30) MIT License:
+(29) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates ast 2.4.3 and parser 3.3.10.0.
+Progress Chef Infra Client 19.2 incorporates ast 2.4.3 and parser 3.3.10.0.
 
   The MIT License
   ===============
@@ -4931,9 +4883,9 @@ Progress Chef Infra Client 19.1 incorporates ast 2.4.3 and parser 3.3.10.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(31) MIT License:
+(30) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates erubi 1.13.1.
+Progress Chef Infra Client 19.2 incorporates erubi 1.13.1.
 
   The MIT License
   ===============
@@ -4957,9 +4909,9 @@ Progress Chef Infra Client 19.1 incorporates erubi 1.13.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(32) MIT License:
+(31) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates jfelchner/ruby-progressbar 1.13.0.
+Progress Chef Infra Client 19.2 incorporates jfelchner/ruby-progressbar 1.13.0.
 
   The MIT License
   ===============
@@ -4983,9 +4935,9 @@ Progress Chef Infra Client 19.1 incorporates jfelchner/ruby-progressbar 1.13.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(33) MIT License:
+(32) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates ipaddress-gem/ipaddress 0.8.3.
+Progress Chef Infra Client 19.2 incorporates ipaddress-gem/ipaddress 0.8.3.
 
   The MIT License
   ===============
@@ -5009,9 +4961,9 @@ Progress Chef Infra Client 19.1 incorporates ipaddress-gem/ipaddress 0.8.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(34) MIT License:
+(33) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates unicode-display_width 2.6.0.
+Progress Chef Infra Client 19.2 incorporates unicode-display_width 2.6.0.
 
   The MIT License
   ===============
@@ -5035,9 +4987,9 @@ Progress Chef Infra Client 19.1 incorporates unicode-display_width 2.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(35) MIT License:
+(34) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates rubychan's coderay 1.1.3.
+Progress Chef Infra Client 19.2 incorporates rubychan's coderay 1.1.3.
 
   The MIT License
   ===============
@@ -5061,9 +5013,9 @@ Progress Chef Infra Client 19.1 incorporates rubychan's coderay 1.1.3.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(36) MIT License:
+(35) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates lint_roller 1.1.0.
+Progress Chef Infra Client 19.2 incorporates lint_roller 1.1.0.
 
   The MIT License
   ===============
@@ -5087,9 +5039,9 @@ Progress Chef Infra Client 19.1 incorporates lint_roller 1.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(37) MIT License:
+(36) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates erubis 2.7.0.
+Progress Chef Infra Client 19.2 incorporates erubis 2.7.0.
 
   The MIT License
   ===============
@@ -5113,9 +5065,9 @@ Progress Chef Infra Client 19.1 incorporates erubis 2.7.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(38) MIT License:
+(37) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_libffi 3.4.7, Habitat
+Progress Chef Infra Client 19.2 incorporates Habitat core_libffi 3.4.7, Habitat
 core_libxml2 2.14.3, Habitat core_libxslt 1.1.43, Habitat core_libyaml 0.2.5,
 and Habitat core_ncurses 6.5.
 
@@ -5141,9 +5093,9 @@ and Habitat core_ncurses 6.5.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(39) MIT License:
+(38) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates pry-byebug 3.11.0.
+Progress Chef Infra Client 19.2 incorporates pry-byebug 3.11.0.
 
   The MIT License
   ===============
@@ -5167,9 +5119,9 @@ Progress Chef Infra Client 19.1 incorporates pry-byebug 3.11.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(40) MIT License:
+(39) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates sickill's rainbow 3.1.1.
+Progress Chef Infra Client 19.2 incorporates sickill's rainbow 3.1.1.
 
   The MIT License
   ===============
@@ -5193,9 +5145,9 @@ Progress Chef Infra Client 19.1 incorporates sickill's rainbow 3.1.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(41) MIT License:
+(40) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates binding_of_caller 1.0.1,
+Progress Chef Infra Client 19.2 incorporates binding_of_caller 1.0.1,
 debug_inspector 1.2.0, method_source 1.1.0, and pry-stack_explorer 0.6.1.
 
   The MIT License
@@ -5220,35 +5172,9 @@ debug_inspector 1.2.0, method_source 1.1.0, and pry-stack_explorer 0.6.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(42) MIT License:
+(41) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates technoweenie's faraday 2.14.0.
-
-  The MIT License
-  ===============
-  Copyright (c) @technoweenie, @iMacTia, @olleolleolle
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-
-(43) MIT License:
-
-Progress Chef Infra Client 19.1 incorporates bcrypt_pbkdf-ruby 1.1.2.
+Progress Chef Infra Client 19.2 incorporates bcrypt_pbkdf-ruby 1.1.2.
 
   The MIT License
   ===============
@@ -5272,9 +5198,9 @@ Progress Chef Infra Client 19.1 incorporates bcrypt_pbkdf-ruby 1.1.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(44) MIT License:
+(42) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates corefoundation 0.3.13.
+Progress Chef Infra Client 19.2 incorporates corefoundation 0.3.13.
 
   The MIT License
   ===============
@@ -5298,9 +5224,9 @@ Progress Chef Infra Client 19.1 incorporates corefoundation 0.3.13.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(45) MIT License:
+(43) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates TwP's logging 2.4.0 and
+Progress Chef Infra Client 19.2 incorporates TwP's logging 2.4.0 and
 little-plugger 1.1.4.
 
   The MIT License
@@ -5325,9 +5251,9 @@ little-plugger 1.1.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(46) MIT License:
+(44) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates arnau/iso8601 0.13.0.
+Progress Chef Infra Client 19.2 incorporates arnau/iso8601 0.13.0.
 
   The MIT License
   ===============
@@ -5351,9 +5277,9 @@ Progress Chef Infra Client 19.1 incorporates arnau/iso8601 0.13.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(47) MIT License:
+(45) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates rackup 2.2.1.
+Progress Chef Infra Client 19.2 incorporates rackup 2.2.1.
 
   The MIT License
   ===============
@@ -5389,9 +5315,9 @@ Progress Chef Infra Client 19.1 incorporates rackup 2.2.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(48) MIT License:
+(46) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates concurrent-ruby 1.3.6.
+Progress Chef Infra Client 19.2 incorporates concurrent-ruby 1.3.6.
 
   The MIT License
   ===============
@@ -5415,9 +5341,9 @@ Progress Chef Infra Client 19.1 incorporates concurrent-ruby 1.3.6.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(49) MIT License:
+(47) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates adamwiggins's rest-client 2.1.0.
+Progress Chef Infra Client 19.2 incorporates adamwiggins's rest-client 2.1.0.
 
   The MIT License
   ===============
@@ -5441,9 +5367,9 @@ Progress Chef Infra Client 19.1 incorporates adamwiggins's rest-client 2.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(50) MIT License:
+(48) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates tomlrb 1.3.0.
+Progress Chef Infra Client 19.2 incorporates tomlrb 1.3.0.
 
   The MIT License
   ===============
@@ -5467,9 +5393,9 @@ Progress Chef Infra Client 19.1 incorporates tomlrb 1.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(51) MIT License:
+(49) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates structured_warnings 0.5.0.
+Progress Chef Infra Client 19.2 incorporates structured_warnings 0.5.0.
 
   The MIT License
   ===============
@@ -5493,9 +5419,9 @@ Progress Chef Infra Client 19.1 incorporates structured_warnings 0.5.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(52) MIT License:
+(50) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates mwunsch's prism 1.6.0.
+Progress Chef Infra Client 19.2 incorporates mwunsch's prism 1.6.0.
 
   The MIT License
   ===============
@@ -5519,9 +5445,9 @@ Progress Chef Infra Client 19.1 incorporates mwunsch's prism 1.6.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(53) MIT License:
+(51) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates jnunemaker's crack 1.0.1.
+Progress Chef Infra Client 19.2 incorporates jnunemaker's crack 1.0.1.
 
   The MIT License
   ===============
@@ -5545,9 +5471,9 @@ Progress Chef Infra Client 19.1 incorporates jnunemaker's crack 1.0.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(54) MIT License:
+(52) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates http-accept 2.1.1.
+Progress Chef Infra Client 19.2 incorporates http-accept 2.1.1.
 
   The MIT License
   ===============
@@ -5571,9 +5497,9 @@ Progress Chef Infra Client 19.1 incorporates http-accept 2.1.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(55) MIT License:
+(53) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates unf_ext 0.0.9.1.
+Progress Chef Infra Client 19.2 incorporates unf_ext 0.0.9.1.
 
   The MIT License
   ===============
@@ -5597,9 +5523,9 @@ Progress Chef Infra Client 19.1 incorporates unf_ext 0.0.9.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(56) MIT License:
+(54) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates language_server-protocol 3.17.0.5.
+Progress Chef Infra Client 19.2 incorporates language_server-protocol 3.17.0.5.
 
   The MIT License
   ===============
@@ -5623,9 +5549,9 @@ Progress Chef Infra Client 19.1 incorporates language_server-protocol 3.17.0.5.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(57) MIT License:
+(55) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates syslog-logger 1.6.8.
+Progress Chef Infra Client 19.2 incorporates syslog-logger 1.6.8.
 
   The MIT License
   ===============
@@ -5651,9 +5577,9 @@ Progress Chef Infra Client 19.1 incorporates syslog-logger 1.6.8.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(58) MIT License:
+(56) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Rack 3.2.4.
+Progress Chef Infra Client 19.2 incorporates Rack 3.2.5.
 
   The MIT License
   ===============
@@ -5677,9 +5603,9 @@ Progress Chef Infra Client 19.1 incorporates Rack 3.2.4.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(59) MIT License:
+(57) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Parslet 2.0.0.
+Progress Chef Infra Client 19.2 incorporates Parslet 2.0.0.
 
   The MIT License
   ===============
@@ -5703,9 +5629,9 @@ Progress Chef Infra Client 19.1 incorporates Parslet 2.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(60) MIT License:
+(58) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates ed25519 1.4.0.
+Progress Chef Infra Client 19.2 incorporates ed25519 1.4.0.
 
   The MIT License
   ===============
@@ -5729,9 +5655,9 @@ Progress Chef Infra Client 19.1 incorporates ed25519 1.4.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(61) MIT License:
+(59) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates gssapi 1.3.1.
+Progress Chef Infra Client 19.2 incorporates gssapi 1.3.1.
 
   The MIT License
   ===============
@@ -5755,9 +5681,9 @@ Progress Chef Infra Client 19.1 incorporates gssapi 1.3.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(62) MIT License:
+(60) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates faraday-net_http 3.4.2.
+Progress Chef Infra Client 19.2 incorporates faraday-net_http 3.4.2.
 
   The MIT License
   ===============
@@ -5781,9 +5707,9 @@ Progress Chef Infra Client 19.1 incorporates faraday-net_http 3.4.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(63) MIT License:
+(61) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates rubyntlm 0.6.5.
+Progress Chef Infra Client 19.2 incorporates rubyntlm 0.6.5.
 
   The MIT License
   ===============
@@ -5807,9 +5733,9 @@ Progress Chef Infra Client 19.1 incorporates rubyntlm 0.6.5.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(64) MIT License:
+(62) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates grosser's parallel 1.27.0.
+Progress Chef Infra Client 19.2 incorporates grosser's parallel 1.27.0.
 
   The MIT License
   ===============
@@ -5833,9 +5759,9 @@ Progress Chef Infra Client 19.1 incorporates grosser's parallel 1.27.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(65) MIT License:
+(63) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates hashie 5.0.0.
+Progress Chef Infra Client 19.2 incorporates hashie 5.0.0.
 
   The MIT License
   ===============
@@ -5859,9 +5785,9 @@ Progress Chef Infra Client 19.1 incorporates hashie 5.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(66) MIT License:
+(64) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates nicksieger's multipart-post 2.4.1.
+Progress Chef Infra Client 19.2 incorporates nicksieger's multipart-post 2.4.1.
 
   The MIT License
   ===============
@@ -5892,9 +5818,9 @@ Progress Chef Infra Client 19.1 incorporates nicksieger's multipart-post 2.4.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(67) MIT License:
+(65) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates webmock 3.26.1.
+Progress Chef Infra Client 19.2 incorporates webmock 3.26.1.
 
   The MIT License
   ===============
@@ -5918,9 +5844,9 @@ Progress Chef Infra Client 19.1 incorporates webmock 3.26.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(68) MIT License:
+(66) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates RSpec 3.13.2, RSpec 3.13.5, and
+Progress Chef Infra Client 19.2 incorporates RSpec 3.13.2, RSpec 3.13.5, and
 RSpec 3.13.7.
 
   The MIT License
@@ -5945,9 +5871,9 @@ RSpec 3.13.7.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(69) MIT License:
+(67) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Pry REPL 0.15.2.
+Progress Chef Infra Client 19.2 incorporates Pry REPL 0.15.2.
 
   The MIT License
   ===============
@@ -5972,9 +5898,9 @@ Progress Chef Infra Client 19.1 incorporates Pry REPL 0.15.2.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(70) MIT License:
+(68) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates antw's iniparse 1.5.0.
+Progress Chef Infra Client 19.2 incorporates antw's iniparse 1.5.0.
 
   The MIT License
   ===============
@@ -5998,9 +5924,9 @@ Progress Chef Infra Client 19.1 incorporates antw's iniparse 1.5.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(71) MIT License:
+(69) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates net-scp 4.1.0, net-sftp 4.0.0, and
+Progress Chef Infra Client 19.2 incorporates net-scp 4.1.0, net-sftp 4.0.0, and
 ruby-net-ssh 7.3.0.
 
   The MIT License
@@ -6025,9 +5951,9 @@ ruby-net-ssh 7.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(72) MIT License:
+(70) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates proxifier2 1.1.0.
+Progress Chef Infra Client 19.2 incorporates proxifier2 1.1.0.
 
   The MIT License
   ===============
@@ -6051,9 +5977,9 @@ Progress Chef Infra Client 19.1 incorporates proxifier2 1.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(73) MIT License:
+(71) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates chefspec/fauxhai 9.3.0.
+Progress Chef Infra Client 19.2 incorporates chefspec/fauxhai 9.3.0.
 
   The MIT License
   ===============
@@ -6077,9 +6003,9 @@ Progress Chef Infra Client 19.1 incorporates chefspec/fauxhai 9.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(74) MIT License:
+(72) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates jimweirich's builder 3.3.0.
+Progress Chef Infra Client 19.2 incorporates jimweirich's builder 3.3.0.
 
   The MIT License
   ===============
@@ -6103,9 +6029,9 @@ Progress Chef Infra Client 19.1 incorporates jimweirich's builder 3.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(75) MIT License:
+(73) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates chef-gyoku 1.5.0.
+Progress Chef Infra Client 19.2 incorporates chef-gyoku 1.5.0.
 
   The MIT License
   ===============
@@ -6129,9 +6055,9 @@ Progress Chef Infra Client 19.1 incorporates chef-gyoku 1.5.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(76) MIT License:
+(74) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates wisper 2.0.1.
+Progress Chef Infra Client 19.2 incorporates wisper 2.0.1.
 
   The MIT License
   ===============
@@ -6155,9 +6081,9 @@ Progress Chef Infra Client 19.1 incorporates wisper 2.0.1.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(77) MIT License:
+(75) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates rspec-its 2.0.0.
+Progress Chef Infra Client 19.2 incorporates rspec-its 2.0.0.
 
   The MIT License
   ===============
@@ -6181,9 +6107,9 @@ Progress Chef Infra Client 19.1 incorporates rspec-its 2.0.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(78) MIT License:
+(76) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates faraday-follow_redirects 0.3.0.
+Progress Chef Infra Client 19.2 incorporates faraday-follow_redirects 0.3.0.
 
   The MIT License
   ===============
@@ -6207,9 +6133,9 @@ Progress Chef Infra Client 19.1 incorporates faraday-follow_redirects 0.3.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(79) MIT License:
+(77) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates http-cookie 1.1.0.
+Progress Chef Infra Client 19.2 incorporates http-cookie 1.1.0.
 
   The MIT License
   ===============
@@ -6233,9 +6159,9 @@ Progress Chef Infra Client 19.1 incorporates http-cookie 1.1.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(80) MIT License:
+(78) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates multi_json 1.17.0.
+Progress Chef Infra Client 19.2 incorporates multi_json 1.17.0.
 
   The MIT License
   ===============
@@ -6259,9 +6185,9 @@ Progress Chef Infra Client 19.1 incorporates multi_json 1.17.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(81) MIT License:
+(79) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates RSpec 3.13.6.
+Progress Chef Infra Client 19.2 incorporates RSpec 3.13.6.
 
   The MIT License
   ===============
@@ -6285,9 +6211,35 @@ Progress Chef Infra Client 19.1 incorporates RSpec 3.13.6.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(82) MIT License:
+(80) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates ffi-yajl 2.7.7.
+Progress Chef Infra Client 19.2 incorporates technoweenie's faraday 2.14.1.
+
+  The MIT License
+  ===============
+  Copyright (c) RubyGems
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+(81) MIT License:
+
+Progress Chef Infra Client 19.2 incorporates ffi-yajl 2.7.7.
 
   The MIT License
   ===============
@@ -6311,9 +6263,9 @@ Progress Chef Infra Client 19.1 incorporates ffi-yajl 2.7.7.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(83) MIT License:
+(82) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates Thor 1.4.0.
+Progress Chef Infra Client 19.2 incorporates Thor 1.4.0.
 
   The MIT License
   ===============
@@ -6337,9 +6289,9 @@ Progress Chef Infra Client 19.1 incorporates Thor 1.4.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(84) MIT License:
+(83) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates fuzzyurl 0.9.0.
+Progress Chef Infra Client 19.2 incorporates fuzzyurl 0.9.0.
 
   The MIT License
   ===============
@@ -6363,9 +6315,9 @@ Progress Chef Infra Client 19.1 incorporates fuzzyurl 0.9.0.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(85) MIT License:
+(84) MIT License:
 
-Progress Chef Infra Client 19.1 incorporates rubocop 1.81.6 and rubocop-ast
+Progress Chef Infra Client 19.2 incorporates rubocop 1.81.6 and rubocop-ast
 1.48.0.
 
   The MIT License
@@ -6390,10 +6342,10 @@ Progress Chef Infra Client 19.1 incorporates rubocop 1.81.6 and rubocop-ast
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-(86) Microsoft Visual Studio Enterprise 2022, Visual Studio Professional 2022,
+(85) Microsoft Visual Studio Enterprise 2022, Visual Studio Professional 2022,
 and Trial Edition:
 
-Progress Chef Infra Client 19.1 incorporates Habitat
+Progress Chef Infra Client 19.2 incorporates Habitat
 core_visual-cpp-redist-2022 14.44.35208.0.
 
   MICROSOFT SOFTWARE LICENSE TERMS
@@ -6903,9 +6855,9 @@ core_visual-cpp-redist-2022 14.44.35208.0.
 
   EULAID: VS_EntPro_2022_ENU.1033
 
-(87) Mozilla Public License 2.0:
+(86) Mozilla Public License 2.0:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_cacerts 2025-05-20,
+Progress Chef Infra Client 19.2 incorporates Habitat core_cacerts 2025-05-20,
 sslshake 1.3.1, and vault 0.18.2.
 
   Mozilla Public License Version 2.0
@@ -7322,9 +7274,9 @@ sslshake 1.3.1, and vault 0.18.2.
     This Source Code Form is "Incompatible With Secondary Licenses", as defined
     by the Mozilla Public License, v. 2.0.
 
-(88) OpenSSL Combined License:
+(87) OpenSSL Combined License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_openssl 3.5.4.
+Progress Chef Infra Client 19.2 incorporates Habitat core_openssl 3.5.5.
 
   LICENSE ISSUES
   ==============
@@ -7465,9 +7417,9 @@ Progress Chef Infra Client 19.1 incorporates Habitat core_openssl 3.5.4.
   copied and put under another distribution licence [including the GNU Public
   Licence.]
 
-(89) The Unlicense:
+(88) The Unlicense:
 
-Progress Chef Infra Client 19.1 incorporates ruby-shadow 3.0.0.
+Progress Chef Infra Client 19.2 incorporates ruby-shadow 3.0.0.
 
   The Unlicense
   =============
@@ -7494,9 +7446,9 @@ Progress Chef Infra Client 19.1 incorporates ruby-shadow 3.0.0.
 
   For more information, please refer to http://unlicense.org/
 
-(90) zlib License:
+(89) zlib License:
 
-Progress Chef Infra Client 19.1 incorporates Habitat core_zlib 1.3.1.
+Progress Chef Infra Client 19.2 incorporates Habitat core_zlib 1.3.1.
 
   The zlib/libpng License
   =======================
@@ -7526,9 +7478,9 @@ Product:
 
 (1) Internal Progress Product License:
 
-Progress Chef Infra Client 19.1 incorporates Chef 18.6.6, Habitat
-chef_powershell_shim 19.1.0, appbundler 0.13.4, chef-telemetry 1.1.1, cheffish
-17.1.8, inspec/inspec 7.0.95, mixlib-authentication 3.0.10, mixlib-cli 2.1.8,
+Progress Chef Infra Client 19.2 incorporates Chef 18.6.6, Habitat
+chef_powershell_shim 19.1.0, appbundler 0.13.4, chef-telemetry 1.1.1,
+inspec-ruby 7.0.107, mixlib-authentication 3.0.10, mixlib-cli 2.1.8,
 mixlib-config 3.0.27, mixlib-log 3.2.3, train-rest 0.5.0, train-winrm 0.4.0,
 and win32-certstore 0.6.16.
 
@@ -7538,4 +7490,4 @@ NOTICE FROM PROGRESS SOFTWARE CORPORATION: Additional notices may be included
 in the release notes or other documentation that accompanies updates received
 in connection with support of the Product.
 
-Updated January 29, 2026
+Updated March 6, 2026
