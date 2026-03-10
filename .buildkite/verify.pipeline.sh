@@ -1,6 +1,9 @@
 #!/bin/bash
 # exit immediately on failure, or if an undefined variable is used
 set -eu
+
+. ./.expeditor/scripts/hab-version.sh
+
 echo "---"
 echo "env:"
 echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
@@ -174,7 +177,7 @@ for plan in ${habitat_plans[@]}; do
   then
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
-    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan' '1.6.1245'"
+    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan' '$HAB_VERSION'"
     echo "    - sudo -E ./.expeditor/scripts/verify-plan.sh"
   fi
 done

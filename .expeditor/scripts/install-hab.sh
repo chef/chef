@@ -5,8 +5,11 @@ set -euo pipefail
 export HAB_LICENSE="accept"
 export HAB_NONINTERACTIVE="true"
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/hab-version.sh"
+
 hab_target="$1"
-hab_version="${2:-1.6.1245}"
+hab_version="${2:-$HAB_VERSION}"
 
 # print error message followed by usage and exit
 error () {
