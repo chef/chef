@@ -174,7 +174,7 @@ for plan in ${habitat_plans[@]}; do
   then
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
-    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
+    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan' '1.6.1245'"
     echo "    - sudo -E ./.expeditor/scripts/verify-plan.sh"
   fi
 done

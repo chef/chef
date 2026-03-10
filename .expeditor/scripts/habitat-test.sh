@@ -16,8 +16,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Use SCRIPT_DIR to refer to files relative to the script’s location
 export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
 
-echo "--- Installing habitat using ${SCRIPT_DIR}/install-hab.sh"
-"${SCRIPT_DIR}/install-hab.sh" "x86_64-linux"
+echo "--- Installing habitat 1.6.1245 using ${SCRIPT_DIR}/install-hab.sh"
+"${SCRIPT_DIR}/install-hab.sh" "x86_64-linux" "1.6.1245"
 
 echo "--- Installing ${LINUX_ARTIFACT}"
 hab pkg install "${LINUX_ARTIFACT}" --auth "${HAB_AUTH_TOKEN}"

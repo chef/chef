@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-./.expeditor/scripts/install-hab.sh x86_64-linux
+./.expeditor/scripts/install-hab.sh x86_64-linux 1.6.1245
 
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'

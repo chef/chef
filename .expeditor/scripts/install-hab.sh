@@ -6,6 +6,7 @@ export HAB_LICENSE="accept"
 export HAB_NONINTERACTIVE="true"
 
 hab_target="$1"
+hab_version="${2:-1.6.1245}"
 
 # print error message followed by usage and exit
 error () {
@@ -17,8 +18,9 @@ error () {
 }
 
 [[ -n "$hab_target" ]] || error 'no hab target provided'
+[[ -n "$hab_version" ]] || error 'no hab version provided'
 
-echo "--- :habicat: Installing latest version of Habitat"
+echo "--- :habicat: Installing Habitat ${hab_version} for ${hab_target}"
 rm -rf /hab
-curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -t "$hab_target"
+curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -t "$hab_target" -v "$hab_version"
 hab license accept
