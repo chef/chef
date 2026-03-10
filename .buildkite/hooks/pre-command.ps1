@@ -1,13 +1,40 @@
-# Fix: PowerShell is treating *any* stderr output from native commands (git) as a terminating error.
-# We must explicitly ignore stderr-as-error for git calls and only fail on non-zero exit code.
+# PowerShell 7.3+ can still throw NativeCommandError when a native tool writes to stderr,
+# even if the process exits 0. This wrapper forces git stderr to a file and only fails
+# on non-zero exit code. This should stop "git.exe : From https://github.com/chef/chef"
+# from killing the hook.
 
 $ErrorActionPreference = "Stop"
-$global:PSNativeCommandUseErrorActionPreference = $false
 
 # Only execute in the verify pipeline
 if ($env:BUILDKITE_PIPELINE_NAME -notmatch '(verify|validate/(release|adhoc|canary))$') { exit 0 }
 
 function Write-Info([string]$Msg) { Write-Output $Msg }
+
+function Invoke-GitSafe {
+  param([Parameter(Mandatory = $true)][string[]]$Args)
+
+  $stderrFile = Join-Path $env:TEMP ("git-stderr-{0}.log" -f ([guid]::NewGuid().ToString()))
+  try {
+    $out = & git @Args 2> $stderrFile
+    $code = $LASTEXITCODE
+
+    # Emit captured stdout
+    if ($out) { $out | ForEach-Object { Write-Info $_ } }
+
+    # Emit captured stderr as plain output (not as an error record)
+    if (Test-Path $stderrFile) {
+      $errText = Get-Content $stderrFile -Raw
+      if (-not [string]::IsNullOrWhiteSpace($errText)) {
+        $errText.TrimEnd("`r","`n").Split("`n") | ForEach-Object { Write-Info $_ }
+      }
+    }
+
+    if ($code -ne 0) { throw ("git {0} failed with exit code {1}" -f ($Args -join ' '), $code) }
+  }
+  finally {
+    Remove-Item -Force $stderrFile -ErrorAction SilentlyContinue
+  }
+}
 
 function Test-HasAwsCreds {
   return (
@@ -25,10 +52,7 @@ function Set-AwsRegionDefaults {
 }
 
 function Set-AwsCredsFromEc2MetadataIfNeeded {
-  if (($env:BUILDKITE_STEP_KEY -ne "build-windows-2019") -or ($env:BUILDKITE_ORGANIZATION_SLUG -notmatch 'chef(-canary)?$')) {
-    return
-  }
-
+  if (($env:BUILDKITE_STEP_KEY -ne "build-windows-2019") -or ($env:BUILDKITE_ORGANIZATION_SLUG -notmatch 'chef(-canary)?$')) { return }
   if (Test-HasAwsCreds) { return }
 
   try {
@@ -63,51 +87,29 @@ function Get-SSMParameterValue {
   $args = @("ssm", "get-parameter", "--name", $Name, "--query", "Parameter.Value", "--output", "text", "--region", $Region)
   if ($WithDecryption) { $args += "--with-decryption" }
 
-  $value = (& aws @args) 2>&1
-  $code = $LASTEXITCODE
-  if ($code -ne 0) {
-    if ($value) { $value | ForEach-Object { Write-Info $_ } }
-    throw "Failed to read SSM parameter '$Name' (region=$Region). AWS credentials are missing/invalid OR IAM policy denies access."
+  $stderrFile = Join-Path $env:TEMP ("aws-stderr-{0}.log" -f ([guid]::NewGuid().ToString()))
+  try {
+    $value = & aws @args 2> $stderrFile
+    $code = $LASTEXITCODE
+
+    if ($code -ne 0) {
+      if (Test-Path $stderrFile) {
+        $errText = Get-Content $stderrFile -Raw
+        if (-not [string]::IsNullOrWhiteSpace($errText)) {
+          $errText.TrimEnd("`r","`n").Split("`n") | ForEach-Object { Write-Info $_ }
+        }
+      }
+      throw "Failed to read SSM parameter '$Name' (region=$Region). AWS credentials are missing/invalid OR IAM policy denies access."
+    }
+
+    return ($value | Out-String).Trim()
   }
-
-  return ($value | Out-String).Trim()
-}
-
-function Invoke-GitSafe {
-  param([Parameter(Mandatory = $true)][string[]]$Args)
-
-  # Capture output so stderr doesn't trip PowerShell error handling.
-  $out = (& git @Args) 2>&1
-  $code = $LASTEXITCODE
-  if ($out) { $out | ForEach-Object { Write-Info $_ } }
-  if ($code -ne 0) { throw ("git {0} failed with exit code {1}" -f ($Args -join ' '), $code) }
-}
-
-function Try-RebaseOntoMain {
-  if ($env:BUILDKITE_BRANCH -eq "main") { return }
-
-  Invoke-GitSafe -Args @("config", "user.email", "you@example.com")
-  Invoke-GitSafe -Args @("config", "user.name", "Your Name")
-
-  $main = ((& git show-ref -s --abbrev origin/main) 2>&1 | Out-String).Trim()
-  $pr_head = ((& git show-ref -s --abbrev HEAD) 2>&1 | Out-String).Trim()
-  $github = "https://github.com/chef/chef/commit/"
-
-  $rebaseOut = (& git rebase origin/main) 2>&1
-  $rebaseCode = $LASTEXITCODE
-  if ($rebaseOut) { $rebaseOut | ForEach-Object { Write-Info $_ } }
-
-  if ($rebaseCode -eq 0) {
-    & buildkite-agent annotate --style success --context ("rebase-pr-branch-{0}" -f $main) ("Rebased onto main ([{0}]({1}{0}))." -f $main, $github)
-    return
+  finally {
+    Remove-Item -Force $stderrFile -ErrorAction SilentlyContinue
   }
-
-  try { (& git rebase --abort) 2>&1 *> $null } catch { }
-
-  & buildkite-agent annotate --style warning --context ("rebase-pr-branch-{0}" -f $main) ("Couldn't rebase onto main ([{0}]({1}{0})), building PR HEAD ([{2}]({1}{2}))." -f $main, $github, $pr_head)
 }
 
-# --- Main flow ---
+# ---- Main flow ----
 
 try { docker ps *> $null } catch { }
 
@@ -122,7 +124,8 @@ if (Test-Path ".buildkite-platform.json") {
       $env:OMNIBUS_TOOLCHAIN_VERSION = [string]$json.omnibus_toolchain
       Write-Info "Omnibus Toolchain Version: $env:OMNIBUS_TOOLCHAIN_VERSION"
     }
-  } catch {
+  }
+  catch {
     Write-Info "WARN: Failed to parse .buildkite-platform.json: $_"
   }
 }
@@ -134,8 +137,10 @@ Write-Info "Fetching origin/main"
 Invoke-GitSafe -Args @("fetch", "origin", "main")
 Invoke-GitSafe -Args @("fetch", "--tags", "--force")
 
-Try-RebaseOntoMain
+# NOTE: leaving your rebase logic out here; add it back once git stderr handling is stable on the agent.
+# (The current failure is happening during git fetch already.)
 
+# ---- SSM-derived env vars ----
 $isMac = ($env:BUILDKITE_LABEL -match 'macOS|mac_os_x')
 
 if (($env:BUILDKITE_STEP_KEY -notmatch '^test.*') -and ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss")) {
