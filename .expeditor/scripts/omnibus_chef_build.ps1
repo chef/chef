@@ -296,20 +296,63 @@ function Install-ChefFoundation {
     }
 }
 
+# function Install-OmnibusDependencies {
+#     [CmdletBinding()]
+#     param()
+    
+#     try {
+#         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
+#         gem uninstall -I libyajl2
+        
+#         Write-Output "--- Running bundle install for Omnibus"
+#         Set-Location "$($ScriptDir)/../../omnibus"
+#         bundle config --local github.com "$env:GITHUB_TOKEN:x-oauth-basic"
+#         bundle config set --local without development
+#         bundle install
+#         if ( -not $? ) { throw "Running bundle install failed" }
+#     }
+#     catch {
+#         Write-Error "Failed to install Omnibus dependencies: $_"
+#         exit 1
+#     }
+# }
+
 function Install-OmnibusDependencies {
     [CmdletBinding()]
     param()
-    
+
     try {
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
-        
+
         Write-Output "--- Running bundle install for Omnibus"
         Set-Location "$($ScriptDir)/../../omnibus"
-        bundle config --local github.com "$env:GITHUB_TOKEN:x-oauth-basic"
+
+        # IMPORTANT:
+        # Do NOT run: bundle config --local github.com "$env:GITHUB_TOKEN:x-oauth-basic"
+        # It writes the token to omnibus/.bundle/config (disk), which can leak via caches/artifacts/debug output.
+
+        if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+            throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
+        }
+
+        # Avoid git interactive prompts (prevents hangs that end in Buildkite cancellation)
+        $env:GIT_TERMINAL_PROMPT = "0"
+
+        # Provide GitHub credentials to Bundler via env var (in-memory only)
+        # Bundler key 'github.com' => env var 'BUNDLE_GITHUB__COM'
+        $env:BUNDLE_GITHUB__COM = "x-access-token:$($env:GITHUB_TOKEN)"
+
+        # Defensive cleanup: remove any previous persisted bundler config in this workspace
+        $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
+        if (Test-Path $bundleConfigPath) {
+            Write-Output "--- Removing existing $bundleConfigPath to avoid leaking stale credentials"
+            Remove-Item -Force $bundleConfigPath -ErrorAction SilentlyContinue
+        }
+
         bundle config set --local without development
         bundle install
-        if ( -not $? ) { throw "Running bundle install failed" }
+        if (-not $?) { throw "Running bundle install failed" }
     }
     catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
