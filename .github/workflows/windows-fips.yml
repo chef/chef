@@ -49,9 +49,9 @@ jobs:
 
       - name: 'Install Habitat CLI'
         run: |
-          # Download and install Habitat CLI
-          Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
-          .\install-habitat.ps1
+          # Ensure pinned Habitat version on Windows CI
+          $env:HAB_VERSION = "1.6.1245"
+          & "${{ github.workspace }}\.expeditor\scripts\ensure-minimum-viable-hab.ps1"
           # Add hab to PATH
           $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
           # Use GitHub's special environment file to persist the PATH across steps
