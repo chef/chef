@@ -22,6 +22,48 @@ Write-Host "--- Downloading package artifact"
 $env:PKG_ARTIFACT = $(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_WINDOWS")
 buildkite-agent artifact download "$env:PKG_ARTIFACT" .
 
+$requiredHabVersionString = "1.6.1245"
+$requiredHabVersion = [Version]$requiredHabVersionString
+$currentHabVersion = $null
+
+try {
+	$habVersionOutput = hab --version
+	if ($habVersionOutput) {
+		$currentHabVersion = [Version]($habVersionOutput.Split(" ")[1].Split("/")[0])
+	}
+} catch {
+	Write-Host "--- :habicat: Unable to determine Habitat version, forcing install of $requiredHabVersionString"
+}
+
+if ($currentHabVersion -ne $requiredHabVersion) {
+	Write-Host "--- :habicat: Habitat version '$currentHabVersion' detected, forcing install of $requiredHabVersionString"
+	Set-ExecutionPolicy Bypass -Scope Process -Force
+
+	$habCommand = Get-Command hab -ErrorAction SilentlyContinue
+	if ($habCommand) {
+		$habPath = $habCommand.Source | Split-Path -Parent
+		if ($habPath) {
+			Remove-Item -Path $habPath -Recurse -Force -ErrorAction Continue
+			Write-Host "--- :habicat: Deleted Habitat from $habPath"
+		}
+	}
+
+	$installScriptUrl = 'https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'
+	$installScriptPath = Join-Path $env:TEMP "hab-install-$requiredHabVersionString.ps1"
+
+	Invoke-WebRequest -Uri $installScriptUrl -OutFile $installScriptPath
+	try {
+		& $installScriptPath -Version $requiredHabVersionString
+		if (-not $?) { throw "Failed to install Habitat $requiredHabVersionString" }
+	}
+	finally {
+		Remove-Item $installScriptPath -Force -ErrorAction SilentlyContinue
+	}
+
+	$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+	$env:Path += ";C:\buildkite-agent\bin"
+}
+
 Write-Host ":key: Downloading origin key"
 hab origin key download $env:HAB_ORIGIN
 if (-not $?) { throw "Unable to download origin key" }

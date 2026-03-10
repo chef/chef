@@ -4,15 +4,11 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-# Install Habitat for Windows - equivalent to install-hab.sh x86_64-linux
-Write-Host "--- :habicat: Installing Habitat for Windows"
-try {
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-} catch {
-    Write-Host "$($_ | Format-List * -Force | Out-String)"
-    throw "Unable to install Habitat"
-}
+# Ensure Habitat 1.6.1245 is installed on Windows
+$ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
+& "$ScriptRoute"
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $env:Path += ";C:\buildkite-agent\bin"
 
 Write-Host "Verifying we have access to buildkite-agent"
