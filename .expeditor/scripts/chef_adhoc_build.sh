@@ -2,7 +2,10 @@
 
 set -euo pipefail
 
-./.expeditor/scripts/install-hab.sh x86_64-linux
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/hab-version.sh"
+
+"${SCRIPT_DIR}/install-hab.sh" x86_64-linux "$HAB_VERSION"
 
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
