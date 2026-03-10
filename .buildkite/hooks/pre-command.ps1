@@ -1,81 +1,7 @@
-# PowerShell 7.3+ can still throw NativeCommandError when a native tool writes to stderr,
-# even if the process exits 0. This wrapper forces git stderr to a file and only fails
-# on non-zero exit code. This should stop "git.exe : From https://github.com/chef/chef"
-# from killing the hook.
-
 $ErrorActionPreference = "Stop"
 
 # Only execute in the verify pipeline
 if ($env:BUILDKITE_PIPELINE_NAME -notmatch '(verify|validate/(release|adhoc|canary))$') { exit 0 }
-
-function Write-Info([string]$Msg) { Write-Output $Msg }
-
-function Invoke-GitSafe {
-  param([Parameter(Mandatory = $true)][string[]]$Args)
-
-  $stderrFile = Join-Path $env:TEMP ("git-stderr-{0}.log" -f ([guid]::NewGuid().ToString()))
-  try {
-    $out = & git @Args 2> $stderrFile
-    $code = $LASTEXITCODE
-
-    # Emit captured stdout
-    if ($out) { $out | ForEach-Object { Write-Info $_ } }
-
-    # Emit captured stderr as plain output (not as an error record)
-    if (Test-Path $stderrFile) {
-      $errText = Get-Content $stderrFile -Raw
-      if (-not [string]::IsNullOrWhiteSpace($errText)) {
-        $errText.TrimEnd("`r","`n").Split("`n") | ForEach-Object { Write-Info $_ }
-      }
-    }
-
-    if ($code -ne 0) { throw ("git {0} failed with exit code {1}" -f ($Args -join ' '), $code) }
-  }
-  finally {
-    Remove-Item -Force $stderrFile -ErrorAction SilentlyContinue
-  }
-}
-
-function Test-HasAwsCreds {
-  return (
-    -not [string]::IsNullOrEmpty($env:AWS_ACCESS_KEY_ID) -and
-    -not [string]::IsNullOrEmpty($env:AWS_SECRET_ACCESS_KEY)
-  )
-}
-
-function Set-AwsRegionDefaults {
-  if ([string]::IsNullOrEmpty($env:AWS_REGION)) {
-    if ($env:BUILDKITE_ORGANIZATION_SLUG -eq "chef") { $env:AWS_REGION = "us-west-2" }
-    else { $env:AWS_REGION = "us-west-1" }
-  }
-  if ([string]::IsNullOrEmpty($env:AWS_DEFAULT_REGION)) { $env:AWS_DEFAULT_REGION = $env:AWS_REGION }
-}
-
-function Set-AwsCredsFromEc2MetadataIfNeeded {
-  if (($env:BUILDKITE_STEP_KEY -ne "build-windows-2019") -or ($env:BUILDKITE_ORGANIZATION_SLUG -notmatch 'chef(-canary)?$')) { return }
-  if (Test-HasAwsCreds) { return }
-
-  try {
-    $imdsToken = Invoke-RestMethod -Method Put -Uri "http://169.254.169.254/latest/api/token" -Headers @{
-      "X-aws-ec2-metadata-token-ttl-seconds" = "21600"
-    } -TimeoutSec 3
-
-    $roleName = Invoke-RestMethod -Method Get -Uri "http://169.254.169.254/latest/meta-data/iam/security-credentials/" -Headers @{
-      "X-aws-ec2-metadata-token" = $imdsToken
-    } -TimeoutSec 3
-
-    $resp = Invoke-RestMethod -Method Get -Uri ("http://169.254.169.254/latest/meta-data/iam/security-credentials/{0}" -f $roleName) -Headers @{
-      "X-aws-ec2-metadata-token" = $imdsToken
-    } -TimeoutSec 3
-
-    $env:AWS_ACCESS_KEY_ID     = $resp.AccessKeyId
-    $env:AWS_SECRET_ACCESS_KEY = $resp.SecretAccessKey
-    $env:AWS_SESSION_TOKEN     = $resp.Token
-  }
-  catch {
-    throw "Unable to obtain AWS credentials from EC2 Instance Metadata (IMDS). $_"
-  }
-}
 
 function Get-SSMParameterValue {
   param(
@@ -87,60 +13,126 @@ function Get-SSMParameterValue {
   $args = @("ssm", "get-parameter", "--name", $Name, "--query", "Parameter.Value", "--output", "text", "--region", $Region)
   if ($WithDecryption) { $args += "--with-decryption" }
 
-  $stderrFile = Join-Path $env:TEMP ("aws-stderr-{0}.log" -f ([guid]::NewGuid().ToString()))
-  try {
-    $value = & aws @args 2> $stderrFile
-    $code = $LASTEXITCODE
+  # do NOT echo the returned value (secret)
+  $value = (& aws @args) 2>&1
+  $code = $LASTEXITCODE
 
-    if ($code -ne 0) {
-      if (Test-Path $stderrFile) {
-        $errText = Get-Content $stderrFile -Raw
-        if (-not [string]::IsNullOrWhiteSpace($errText)) {
-          $errText.TrimEnd("`r","`n").Split("`n") | ForEach-Object { Write-Info $_ }
-        }
-      }
-      throw "Failed to read SSM parameter '$Name' (region=$Region). AWS credentials are missing/invalid OR IAM policy denies access."
-    }
-
-    return ($value | Out-String).Trim()
+  if ($code -ne 0) {
+    if ($value) { $value | ForEach-Object { Write-Output $_ } }
+    throw "Failed to read SSM parameter '$Name' (region=$Region). AWS credentials are missing/invalid OR IAM policy denies access."
   }
-  finally {
-    Remove-Item -Force $stderrFile -ErrorAction SilentlyContinue
+
+  return ($value | Out-String).Trim()
+}
+
+function Set-AwsCredsFromEc2MetadataIfNeeded {
+  # Match bash behavior on Windows 2019 chef/chef-canary builds
+  if (($env:BUILDKITE_STEP_KEY -eq "build-windows-2019") -and ($env:BUILDKITE_ORGANIZATION_SLUG -match 'chef(-canary)?$')) {
+
+    $haveCreds =
+      -not [string]::IsNullOrEmpty($env:AWS_ACCESS_KEY_ID) -and
+      -not [string]::IsNullOrEmpty($env:AWS_SECRET_ACCESS_KEY)
+
+    if ($haveCreds) { return }
+
+    try {
+      $imdsToken = Invoke-RestMethod -Method Put -Uri "http://169.254.169.254/latest/api/token" -Headers @{
+        "X-aws-ec2-metadata-token-ttl-seconds" = "21600"
+      } -TimeoutSec 3
+
+      $roleName = Invoke-RestMethod -Method Get -Uri "http://169.254.169.254/latest/meta-data/iam/security-credentials/" -Headers @{
+        "X-aws-ec2-metadata-token" = $imdsToken
+      } -TimeoutSec 3
+
+      $resp = Invoke-RestMethod -Method Get -Uri ("http://169.254.169.254/latest/meta-data/iam/security-credentials/{0}" -f $roleName) -Headers @{
+        "X-aws-ec2-metadata-token" = $imdsToken
+      } -TimeoutSec 3
+
+      $env:AWS_ACCESS_KEY_ID     = $resp.AccessKeyId
+      $env:AWS_SECRET_ACCESS_KEY = $resp.SecretAccessKey
+      $env:AWS_SESSION_TOKEN     = $resp.Token
+    }
+    catch {
+      throw "Unable to obtain AWS credentials from EC2 Instance Metadata (IMDS). $_"
+    }
   }
 }
 
-# ---- Main flow ----
-
+# docker ps || true
 try { docker ps *> $null } catch { }
 
+# Versions from .buildkite-platform.json (non-secret)
 if (Test-Path ".buildkite-platform.json") {
   try {
     $json = Get-Content ".buildkite-platform.json" -Raw | ConvertFrom-Json
     if ($null -ne $json.chef_foundation) {
       $env:CHEF_FOUNDATION_VERSION = [string]$json.chef_foundation
-      Write-Info "Chef Foundation Version: $env:CHEF_FOUNDATION_VERSION"
+      Write-Output "Chef Foundation Version: $env:CHEF_FOUNDATION_VERSION"
     }
     if ($null -ne $json.omnibus_toolchain) {
       $env:OMNIBUS_TOOLCHAIN_VERSION = [string]$json.omnibus_toolchain
-      Write-Info "Omnibus Toolchain Version: $env:OMNIBUS_TOOLCHAIN_VERSION"
+      Write-Output "Omnibus Toolchain Version: $env:OMNIBUS_TOOLCHAIN_VERSION"
     }
   }
   catch {
-    Write-Info "WARN: Failed to parse .buildkite-platform.json: $_"
+    Write-Output "WARN: Failed to parse .buildkite-platform.json: $_"
   }
 }
 
-Set-AwsRegionDefaults
+# Region logic (bash parity)
+if ([string]::IsNullOrEmpty($env:AWS_REGION)) {
+  if ($env:BUILDKITE_ORGANIZATION_SLUG -eq "chef") { $env:AWS_REGION = "us-west-2" }
+  else { $env:AWS_REGION = "us-west-1" }
+}
+if ([string]::IsNullOrEmpty($env:AWS_DEFAULT_REGION)) { $env:AWS_DEFAULT_REGION = $env:AWS_REGION }
+
+# Fix "Unable to locate credentials" on win2019 by pulling IMDS creds (bash parity)
 Set-AwsCredsFromEc2MetadataIfNeeded
 
-Write-Info "Fetching origin/main"
-Invoke-GitSafe -Args @("fetch", "origin", "main")
-Invoke-GitSafe -Args @("fetch", "--tags", "--force")
+# ---- Git fetch + optional rebase ----
+# NOTE: git writes some normal messages to stderr; with $ErrorActionPreference=Stop this can kill the hook.
+# We temporarily set ErrorActionPreference=Continue around git commands and only fail on non-zero exit code.
 
-# NOTE: leaving your rebase logic out here; add it back once git stderr handling is stable on the agent.
-# (The current failure is happening during git fetch already.)
+Write-Output "Fetching origin/main"
 
-# ---- SSM-derived env vars ----
+$oldEAP = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+git fetch origin main
+$fetchCode = $LASTEXITCODE
+git fetch --tags --force
+$tagsCode = $LASTEXITCODE
+$ErrorActionPreference = $oldEAP
+
+if ($fetchCode -ne 0) { throw "git fetch origin main failed (exit code $fetchCode)" }
+if ($tagsCode -ne 0) { throw "git fetch --tags --force failed (exit code $tagsCode)" }
+
+# Rebase onto current main to mimic post-merge behavior (bash parity)
+if ($env:BUILDKITE_BRANCH -ne "main") {
+  $oldEAP = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+
+  git config user.email "buildkite@chef.io"
+  git config user.name "Buildkite"
+
+  $main = (git show-ref -s --abbrev origin/main | Out-String).Trim()
+  $pr_head = (git show-ref -s --abbrev HEAD | Out-String).Trim()
+  $github = "https://github.com/chef/chef/commit/"
+
+  git rebase origin/main *> $null
+  $rebaseCode = $LASTEXITCODE
+
+  $ErrorActionPreference = $oldEAP
+
+  if ($rebaseCode -eq 0) {
+    buildkite-agent annotate --style success --context "rebase-pr-branch-$main" "Rebased onto main ([$main]($github$main))."
+  }
+  else {
+    try { git rebase --abort *> $null } catch { }
+    buildkite-agent annotate --style warning --context "rebase-pr-branch-$main" "Couldn't rebase onto main ([$main]($github$main)), building PR HEAD ([$pr_head]($github$pr_head))."
+  }
+}
+
+# ---- SSM-derived env vars (secrets; do not print) ----
 $isMac = ($env:BUILDKITE_LABEL -match 'macOS|mac_os_x')
 
 if (($env:BUILDKITE_STEP_KEY -notmatch '^test.*') -and ($env:BUILDKITE_ORGANIZATION_SLUG -ne "chef-oss")) {
@@ -176,8 +168,10 @@ if (($env:BUILDKITE_STEP_KEY -match '^build-.*') -and ($env:BUILDKITE_ORGANIZATI
     throw "GITHUB_TOKEN could not be loaded from SSM."
   }
 
+  # Keep for downstream git operations without prompting
   $env:GIT_TERMINAL_PROMPT = "0"
 
+  # Match bash exporting OMNIBUS_SUBMODULE_CONFIG_PRIVATE
   if ([string]::IsNullOrEmpty($env:OMNIBUS_SUBMODULE_CONFIG_PRIVATE)) {
     $env:OMNIBUS_SUBMODULE_CONFIG_PRIVATE = $env:GITHUB_TOKEN
   }
