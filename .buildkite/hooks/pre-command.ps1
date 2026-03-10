@@ -1,5 +1,8 @@
 $ErrorActionPreference = "Stop"
 
+# cspell:ignore notmatch imds IMDS
+# (Spelling/lint tooling sometimes scans code tokens; the directive above suppresses those false positives.)
+
 # Only execute in the verify pipeline
 if ($env:BUILDKITE_PIPELINE_NAME -notmatch '(verify|validate/(release|adhoc|canary))$') { exit 0 }
 
@@ -171,10 +174,18 @@ if (($env:BUILDKITE_STEP_KEY -match '^build-.*') -and ($env:BUILDKITE_ORGANIZATI
   # Prevent hangs if git tries to prompt for creds
   $env:GIT_TERMINAL_PROMPT = "0"
 
-  # IMPORTANT: Provide GitHub credentials to Bundler via env var (in-memory only).
+  # Provide GitHub credentials to Bundler via env var (in-memory only).
   # Bundler key 'github.com' => env var 'BUNDLE_GITHUB__COM'
-  # Format expected: "username:password" where password can be a token.
   $env:BUNDLE_GITHUB__COM = "x-access-token:$($env:GITHUB_TOKEN)"
+
+  # Most reliable fix for git-sourced gems: rewrite github.com HTTPS URLs to include the token.
+  # NOTE: this persists in .git/config for the workspace (same approach as bash pre-command).
+  $oldEAP = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  git config --local url."https://x-access-token:$($env:GITHUB_TOKEN)@github.com/".insteadOf "https://github.com/"
+  $gitCfgCode = $LASTEXITCODE
+  $ErrorActionPreference = $oldEAP
+  if ($gitCfgCode -ne 0) { throw "Failed to configure git GitHub token rewrite (exit code $gitCfgCode)" }
 
   # Match bash exporting OMNIBUS_SUBMODULE_CONFIG_PRIVATE
   if ([string]::IsNullOrEmpty($env:OMNIBUS_SUBMODULE_CONFIG_PRIVATE)) {
