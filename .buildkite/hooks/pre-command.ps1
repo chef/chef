@@ -168,8 +168,13 @@ if (($env:BUILDKITE_STEP_KEY -match '^build-.*') -and ($env:BUILDKITE_ORGANIZATI
     throw "GITHUB_TOKEN could not be loaded from SSM."
   }
 
-  # Keep for downstream git operations without prompting
+  # Prevent hangs if git tries to prompt for creds
   $env:GIT_TERMINAL_PROMPT = "0"
+
+  # IMPORTANT: Provide GitHub credentials to Bundler via env var (in-memory only).
+  # Bundler key 'github.com' => env var 'BUNDLE_GITHUB__COM'
+  # Format expected: "username:password" where password can be a token.
+  $env:BUNDLE_GITHUB__COM = "x-access-token:$($env:GITHUB_TOKEN)"
 
   # Match bash exporting OMNIBUS_SUBMODULE_CONFIG_PRIVATE
   if ([string]::IsNullOrEmpty($env:OMNIBUS_SUBMODULE_CONFIG_PRIVATE)) {
