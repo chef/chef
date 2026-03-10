@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae))
 - Hab 2.0 is busted? Downgrading all the things [#15695](https://github.com/chef/chef/pull/15695) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
 - Hab 2.0 is busted? Downgrading all the things [#15695](https://github.com/chef/chef/pull/15695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
 - Point back hab channel to base-2025 in GHA fips testing pipelines [#15675](https://github.com/chef/chef/pull/15675) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.11 -->
 - Ensure DevKit changes don&#39;t break the build [#15681](https://github.com/chef/chef/pull/15681) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.10 -->
