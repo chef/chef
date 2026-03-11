@@ -334,6 +334,8 @@ function Install-OmnibusDependencies {
         }
         else {
             Write-Output "--- GITHUB_TOKEN is set"
+            $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
+            Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
         }
 
         # Avoid git interactive prompts (prevents hangs that end in Buildkite cancellation)
