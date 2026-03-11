@@ -296,39 +296,13 @@ function Install-ChefFoundation {
     }
 }
 
-# function Install-OmnibusDependencies {
-#     [CmdletBinding()]
-#     param()
-    
-#     try {
-#         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
-#         gem uninstall -I libyajl2
-        
-#         Write-Output "--- Running bundle install for Omnibus"
-#         Set-Location "$($ScriptDir)/../../omnibus"
-#         bundle config --local github.com "$env:GITHUB_TOKEN:x-oauth-basic"
-#         bundle config set --local without development
-#         bundle install
-#         if ( -not $? ) { throw "Running bundle install failed" }
-#     }
-#     catch {
-#         Write-Error "Failed to install Omnibus dependencies: $_"
-#         exit 1
-#     }
-# }
-
 function Install-OmnibusDependencies {
     [CmdletBinding()]
     param()
-
     try {
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
-
-        Write-Output "--- Running bundle install for Omnibus"
-        Set-Location "$($ScriptDir)/../../omnibus"
-        # Debug (safe): only say whether token is present; never print it
-         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+        if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
             Write-Output "--- env-GITHUB_TOKEN is NOT set"
             throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
         }
@@ -337,30 +311,12 @@ function Install-OmnibusDependencies {
             $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
             Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
         }
-        if ($null -eq $GITHUB_TOKEN) {
-            Write-Output "--- `GITHUB_TOKEN -  PowerShell variable is NOT set"
-        }
-        else {
-            Write-Output ("--- `{GITHUB_TOKEN length: {0}" -f $GITHUB_TOKEN.Length)
-        }
-
-        # Avoid git interactive prompts (prevents hangs that end in Buildkite cancellation)
-        $env:GIT_TERMINAL_PROMPT = "0"
-
-        # Provide GitHub credentials to Bundler
-        bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
-        # bundle config --local github.com "${GITHUB_TOKEN):x-oauth-basic"
-
-        # # Defensive cleanup: remove any previous persisted bundler config in this workspace
-        # $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
-        # if (Test-Path $bundleConfigPath) {
-        #     Write-Output "--- Removing existing $bundleConfigPath to avoid leaking stale credentials"
-        #     Remove-Item -Force $bundleConfigPath -ErrorAction SilentlyContinue
-        # }
-        echo "--- Running bundle install for Omnibus"
+        Write-Output "--- Running bundle install for Omnibus"
+        Set-Location "$($ScriptDir)/../../omnibus"
+        bundle config --local github.com $env:GITHUB_TOKEN:x-oauth-basic
         bundle config set --local without development
         bundle install
-        if (-not $?) { throw "Running bundle install failed" }
+        if ( -not $? ) { throw "Running bundle install failed" }
     }
     catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
