@@ -343,12 +343,12 @@ function Install-OmnibusDependencies {
         # bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
         bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
 
-        # Defensive cleanup: remove any previous persisted bundler config in this workspace
-        $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
-        if (Test-Path $bundleConfigPath) {
-            Write-Output "--- Removing existing $bundleConfigPath to avoid leaking stale credentials"
-            Remove-Item -Force $bundleConfigPath -ErrorAction SilentlyContinue
-        }
+        # # Defensive cleanup: remove any previous persisted bundler config in this workspace
+        # $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
+        # if (Test-Path $bundleConfigPath) {
+        #     Write-Output "--- Removing existing $bundleConfigPath to avoid leaking stale credentials"
+        #     Remove-Item -Force $bundleConfigPath -ErrorAction SilentlyContinue
+        # }
         echo "--- Running bundle install for Omnibus"
         bundle config set --local without development
         bundle install
