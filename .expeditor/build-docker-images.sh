@@ -20,6 +20,28 @@ if [[ "${channel}" != "stable" ]] && [[ -z "${HAB_AUTH_TOKEN:-}" ]]; then
   exit 1
 fi
 
+# ------------------------------------------------------------------
+# Ensure docker-buildx is available (required by Docker 29.x+)
+# Docker 29+ enables BuildKit by default and requires the buildx plugin.
+# This self-heals on hosts where buildx is not yet baked into the AMI.
+# ------------------------------------------------------------------
+if ! docker buildx version &>/dev/null; then
+  echo "--- Installing docker-buildx plugin (not found on host) ---"
+  BUILDX_VERSION="${DOCKER_BUILDX_VERSION:-v0.21.1}"
+  case "$(uname -m)" in
+    x86_64)  BUILDX_ARCH="linux-amd64" ;;
+    aarch64) BUILDX_ARCH="linux-arm64" ;;
+    *)       echo "ERROR: Unsupported architecture: $(uname -m)"; exit 1 ;;
+  esac
+
+  PLUGIN_DIR="${HOME}/.docker/cli-plugins"
+  mkdir -p "${PLUGIN_DIR}"
+  curl -fsSL "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}" \
+    -o "${PLUGIN_DIR}/docker-buildx"
+  chmod +x "${PLUGIN_DIR}/docker-buildx"
+  echo "Installed docker-buildx $(docker buildx version)"
+fi
+
 echo "--- Building chef/chef-hab:${version} docker image for ${arch}"
 
 # Enable BuildKit for secret support
