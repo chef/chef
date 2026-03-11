@@ -1,19 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.12 -->
-## [v19.2.12](https://github.com/chef/chef/tree/v19.2.12) (2026-03-11)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- downgrade linux hab and clean up downgrade script [#15700](https://github.com/chef/chef/pull/15700) ([rishichawda](https://github.com/rishichawda))
-- Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae))
-- Hab 2.0 is busted? Downgrading all the things [#15695](https://github.com/chef/chef/pull/15695) ([johnmccrae](https://github.com/johnmccrae))
+- Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.1.164 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.12 -->
 - downgrade linux hab and clean up downgrade script [#15700](https://github.com/chef/chef/pull/15700) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.12 -->
 - Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
 - Hab 2.0 is busted? Downgrading all the things [#15695](https://github.com/chef/chef/pull/15695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
