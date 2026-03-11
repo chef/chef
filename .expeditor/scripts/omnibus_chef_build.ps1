@@ -327,16 +327,16 @@ function Install-OmnibusDependencies {
 
         Write-Output "--- Running bundle install for Omnibus"
         Set-Location "$($ScriptDir)/../../omnibus"
-        # Debug (safe): only say whether token is present; never print it
-        #  if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
-        #     Write-Output "--- GITHUB_TOKEN is NOT set"
-        #     throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
-        # }
-        # else {
-        #     Write-Output "--- GITHUB_TOKEN is set"
-        #     $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
-        #     Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
-        # }
+        Debug (safe): only say whether token is present; never print it
+         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+            Write-Output "--- env-GITHUB_TOKEN is NOT set"
+            throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
+        }
+        else {
+            Write-Output "--- env-GITHUB_TOKEN is set"
+            $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
+            Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
+        }
         if ($null -eq $GITHUB_TOKEN) {
             Write-Output "--- `GITHUB_TOKEN -  PowerShell variable is NOT set"
         }
