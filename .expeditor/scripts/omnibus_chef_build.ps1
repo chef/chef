@@ -340,7 +340,8 @@ function Install-OmnibusDependencies {
         $env:GIT_TERMINAL_PROMPT = "0"
 
         # Provide GitHub credentials to Bundler
-        bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
+        # bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
+        bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
 
         # Defensive cleanup: remove any previous persisted bundler config in this workspace
         $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
@@ -348,7 +349,7 @@ function Install-OmnibusDependencies {
             Write-Output "--- Removing existing $bundleConfigPath to avoid leaking stale credentials"
             Remove-Item -Force $bundleConfigPath -ErrorAction SilentlyContinue
         }
-
+        echo "--- Running bundle install for Omnibus"
         bundle config set --local without development
         bundle install
         if (-not $?) { throw "Running bundle install failed" }
