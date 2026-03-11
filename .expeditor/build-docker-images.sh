@@ -25,7 +25,11 @@ fi
 # Docker 29+ enables BuildKit by default and requires the buildx plugin.
 # This self-heals on hosts where buildx is not yet baked into the AMI.
 # ------------------------------------------------------------------
-if ! docker buildx version &>/dev/null; then
+ensure_buildx() {
+  if docker buildx version &>/dev/null; then
+    return 0
+  fi
+
   echo "--- Installing docker-buildx plugin (not found on host) ---"
   BUILDX_VERSION="${DOCKER_BUILDX_VERSION:-v0.21.1}"
   case "$(uname -m)" in
@@ -34,13 +38,38 @@ if ! docker buildx version &>/dev/null; then
     *)       echo "ERROR: Unsupported architecture: $(uname -m)"; exit 1 ;;
   esac
 
-  PLUGIN_DIR="${HOME}/.docker/cli-plugins"
-  mkdir -p "${PLUGIN_DIR}"
-  curl -fsSL "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}" \
-    -o "${PLUGIN_DIR}/docker-buildx"
-  chmod +x "${PLUGIN_DIR}/docker-buildx"
+  install_buildx() {
+    local plugin_dir="$1"
+    mkdir -p "${plugin_dir}"
+    curl -fsSL "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}" \
+      -o "${plugin_dir}/docker-buildx"
+    chmod +x "${plugin_dir}/docker-buildx"
+  }
+
+  # Try user plugin dir first
+  install_buildx "${HOME}/.docker/cli-plugins"
+
+  # Retry and fall back to a system plugin dir if needed
+  if ! docker buildx version &>/dev/null; then
+    if [[ -w "/usr/local/lib/docker/cli-plugins" ]]; then
+      install_buildx "/usr/local/lib/docker/cli-plugins"
+    elif command -v sudo &>/dev/null; then
+      sudo mkdir -p "/usr/local/lib/docker/cli-plugins"
+      sudo curl -fsSL "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}" \
+        -o "/usr/local/lib/docker/cli-plugins/docker-buildx"
+      sudo chmod +x "/usr/local/lib/docker/cli-plugins/docker-buildx"
+    fi
+  fi
+
+  if ! docker buildx version &>/dev/null; then
+    echo "ERROR: docker-buildx install failed; docker buildx still unavailable"
+    exit 1
+  fi
+
   echo "Installed docker-buildx $(docker buildx version)"
-fi
+}
+
+ensure_buildx
 
 echo "--- Building chef/chef-hab:${version} docker image for ${arch}"
 
