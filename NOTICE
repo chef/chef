@@ -372,15 +372,28 @@ Habitat core_coreutils 9.7, Habitat core_gcc-libs 14.3.0, Habitat core_grep
 core_linux-headers 5.19.8, Habitat core_readline 8.2.13, Habitat core_xz 5.8.1,
 sslshake 1.3.1, vault 0.18.2, win32-api 1.10.1-universal-mingw32, win32-event
 0.6.3, win32-eventlog 0.6.3, win32-mmap 0.4.2, win32-mutex 0.4.3, win32-process
-0.10.0, win32-service 2.3.2, and win32-taskscheduler 2.0.4. These third-party
-technologies are licensed to PSC and User is subject to the terms of a
-third-party license, a copy of which is included herein. PSC will, at
-Licensee's request, provide a copy of the source code for this third-party
-technology, including modifications, if any, made by PSC. PSC may charge
-reasonable shipping and handling charges for such distribution. Licensee may
-also obtain the source code for these third-party technologies through
+0.10.0, win32-service 2.3.2, win32-taskscheduler 2.0.4, Habitat core_acl 2.3.2,
+Habitat core_attr 2.5.2, Habitat core_glibc 2.41, Habitat core_nss-myhostname
+0.3, and Habitat core_gmp 6.3.0. These third-party technologies are licensed
+to PSC and User is subject to the terms of a third-party license, a copy of
+which is included herein. PSC will, at Licensee's request, provide a copy of
+the source code for this third-party technology, including modifications, if
+any, made by PSC. PSC may charge reasonable shipping and handling charges for
+such distribution. Licensee may also obtain the source code for these third-
+party technologies through
 http://iue.progress.com/3dpartysoftwares/Pages/default.aspx by following the
 instructions set forth therein.
+
+The Product contains Habitat core_acl 2.3.2, Habitat core_attr 2.5.2,
+Habitat core_glibc 2.41, Habitat core_nss-myhostname 0.3, and Habitat
+core_gmp 6.3.0.  This technology is subject to the terms of the GNU
+Library General Public License Version 2 (“LGPL v2”), GNU Lesser General Public
+License Version 2.1 (“LGPL v2.1”) or GNU Lesser General Public License Version 3
+(“LGPL v3”).  In compliance with such Licenses, PSC provides You with reverse
+engineering permission solely to the extent necessary in order to debug
+modifications made to libraries licensed under the LGPL v2, LGPL v2.1, or LGPL v3
+(as identified above).
+ 
 
 1. Special Notices Regarding Open-Source Third-Party Components incorporated
 into the Product. Such technology is subject to the following terms and
@@ -7490,4 +7503,4 @@ NOTICE FROM PROGRESS SOFTWARE CORPORATION: Additional notices may be included
 in the release notes or other documentation that accompanies updates received
 in connection with support of the Product.
 
-Updated March 6, 2026
+Updated March 11, 2026
