@@ -327,21 +327,20 @@ function Install-OmnibusDependencies {
 
         Write-Output "--- Running bundle install for Omnibus"
         Set-Location "$($ScriptDir)/../../omnibus"
-
-        # IMPORTANT:
-        # Do NOT run: bundle config --local github.com "$env:GITHUB_TOKEN:x-oauth-basic"
-        # It writes the token to omnibus/.bundle/config (disk), which can leak via caches/artifacts/debug output.
-
-        if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+        # Debug (safe): only say whether token is present; never print it
+         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+            Write-Output "--- GITHUB_TOKEN is NOT set"
             throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
+        }
+        else {
+            Write-Output "--- GITHUB_TOKEN is set"
         }
 
         # Avoid git interactive prompts (prevents hangs that end in Buildkite cancellation)
         $env:GIT_TERMINAL_PROMPT = "0"
 
-        # Provide GitHub credentials to Bundler via env var (in-memory only)
-        # Bundler key 'github.com' => env var 'BUNDLE_GITHUB__COM'
-        bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
+        # Provide GitHub credentials to Bundler
+        bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
 
         # Defensive cleanup: remove any previous persisted bundler config in this workspace
         $bundleConfigPath = Join-Path (Get-Location) ".bundle\config"
