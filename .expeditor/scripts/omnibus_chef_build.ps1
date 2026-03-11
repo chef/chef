@@ -313,7 +313,7 @@ function Install-OmnibusDependencies {
         }
         Write-Output "--- Running bundle install for Omnibus"
         Set-Location "$($ScriptDir)/../../omnibus"
-        bundle config --local github.com $env:GITHUB_TOKEN:x-oauth-basic
+        bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
         bundle config set --local without development
         bundle install
         if ( -not $? ) { throw "Running bundle install failed" }
