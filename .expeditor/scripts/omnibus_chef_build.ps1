@@ -327,7 +327,7 @@ function Install-OmnibusDependencies {
 
         Write-Output "--- Running bundle install for Omnibus"
         Set-Location "$($ScriptDir)/../../omnibus"
-        Debug (safe): only say whether token is present; never print it
+        # Debug (safe): only say whether token is present; never print it
          if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
             Write-Output "--- env-GITHUB_TOKEN is NOT set"
             throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
