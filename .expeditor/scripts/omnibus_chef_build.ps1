@@ -314,90 +314,88 @@ function Install-OmnibusDependencies {
         $token = $env:GITHUB_TOKEN.Trim()
         Write-Output "--- GITHUB_TOKEN configured (length: $($token.Length))"
         
-        # Test GitHub connectivity
+        # Test GitHub connectivity first
         Write-Output "--- Testing GitHub connectivity"
         try {
             $response = Invoke-WebRequest -Uri "https://api.github.com" -UseBasicParsing -TimeoutSec 10
             Write-Output "GitHub API accessible: $($response.StatusCode)"
         } catch {
             Write-Warning "GitHub connectivity issue: $_"
+            throw "Cannot reach GitHub API"
         }
         
+        # Configure Git for authentication - Multiple approaches for reliability
+        Write-Output "--- Configuring Git authentication for private repositories"
+        
+        # Method 1: URL rewriting (most reliable for bundle)
+        git config --global url."https://$token@github.com/".insteadOf "https://github.com/"
+        git config --global url."https://$token@github.com/".insteadOf "git@github.com:"
+        
+        # Method 2: Set up credential helper as backup
+        git config --global credential.helper store
+        
+        # Method 3: Create .netrc file for additional auth support
+        $netrcContent = "machine github.com login $token password x-oauth-basic"
+        $netrcPath = "$env:USERPROFILE\_netrc"
+        $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
+        
         # Configure Git for Windows Docker environment
-        Write-Output "--- Configuring Git for Windows Docker"
         git config --global core.longpaths true
         git config --global http.sslbackend schannel
-        git config --global http.timeout 300
+        git config --global http.timeout 600
         git config --global http.postBuffer 524288000
         git config --global user.email "buildkite@chef.io"
         git config --global user.name "Buildkite CI"
-
-        # Clone repositories
-        $repos = @{
-            "omnibus-private" = "chef/omnibus-private"
-            "omnibus-software-private" = "chef/omnibus-software-private"
-        }
-
-        $baseDir = "C:/workdir"
-
-        foreach ($folder in $repos.Keys) {
-            $repoUrl = $repos[$folder]
-            $localPath = Join-Path $baseDir $folder
-
-            if (Test-Path $localPath) {
-                Write-Output "--- Updating existing repo: $folder"
-                git -C $localPath fetch --all --prune
-                git -C $localPath reset --hard origin/main
-            } else {
-                Write-Output "--- Cloning repo: $repoUrl"
-                
-                # Use simple token authentication
-                $cloneUrl = "https://$token@github.com/$repoUrl.git"
-                
-                # Clone with timeout using Start-Process
-                $process = Start-Process -FilePath "git" -ArgumentList @(
-                    "clone", 
-                    "--depth=1", 
-                    "--single-branch", 
-                    "--branch=main", 
-                    $cloneUrl, 
-                    $localPath
-                ) -PassThru -NoNewWindow
-                
-                if (-not $process.WaitForExit(300000)) { # 5 minutes timeout
-                    Write-Error "Git clone timed out after 5 minutes"
-                    $process.Kill()
-                    throw "Clone operation timed out for $repoUrl"
-                }
-                
-                if ($process.ExitCode -ne 0) {
-                    throw "Failed to clone $repoUrl (exit code: $($process.ExitCode))"
-                }
-            }
-        }
-
-        # Configure Bundler
-        Write-Output "--- Setting Bundler path overrides for local clones"
-        $env:BUNDLE_GEM__OMNIBUS__PATH = Join-Path $baseDir "omnibus-private"
-        $env:BUNDLE_GEM__OMNIBUS_SOFTWARE__PATH = Join-Path $baseDir "omnibus-software-private"
-
+        
+        # Set bundle configuration for better reliability
+        Write-Output "--- Configuring Bundler for private repositories"
         bundle config set --local without development
-        $env:BUNDLE_VERBOSE = "true"
-        $env:BUNDLE_RETRY = "3"
-        $env:BUNDLE_JOBS = "1"
-
-        Write-Output "--- Running bundle install for Omnibus"
-        bundle install --verbose
-
-        if ($LASTEXITCODE -ne 0) { 
-            throw "bundle install failed"
+        bundle config set --local timeout 600
+        bundle config set --local retry 3
+        bundle config set --local jobs 1
+        
+        # Navigate to omnibus directory
+        Set-Location "$($ScriptDir)/../../omnibus"
+        
+        # Verify we're in the right location
+        if (-not (Test-Path "Gemfile")) {
+            throw "Gemfile not found in $(Get-Location). Check omnibus directory path."
         }
-
+        
+        Write-Output "--- Current directory: $(Get-Location)"
+        Write-Output "--- Running bundle install for Omnibus"
+        
+        # Set environment variables for verbose output
+        $env:BUNDLE_VERBOSE = "true"
+        $env:GIT_CURL_VERBOSE = "1"
+        
+        # Run bundle install with timeout
+        $bundleProcess = Start-Process -FilePath "bundle" -ArgumentList @("install", "--verbose") -PassThru -NoNewWindow -Wait
+        
+        if ($bundleProcess.ExitCode -ne 0) {
+            throw "bundle install failed with exit code $($bundleProcess.ExitCode)"
+        }
+        
         Write-Output "--- Omnibus dependencies installed successfully"
+        
     }
     catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
+        
+        # Debug information
+        Write-Output "--- Debug: Git configuration"
+        git config --list | Where-Object { $_ -match "url\." -or $_ -match "credential" }
+        
+        Write-Output "--- Debug: Current directory contents"
+        Get-ChildItem -Force | Select-Object Name, Length
+        
         exit 1
+    }
+    finally {
+        # Clean up credentials for security
+        if (Test-Path "$env:USERPROFILE\_netrc") {
+            Remove-Item "$env:USERPROFILE\_netrc" -Force -ErrorAction SilentlyContinue
+        }
     }
 }
 
