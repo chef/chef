@@ -303,7 +303,6 @@ function Install-OmnibusDependencies {
     try {
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
-
         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
             Write-Output "--- env-GITHUB_TOKEN is NOT set"
             throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
@@ -313,18 +312,33 @@ function Install-OmnibusDependencies {
             $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
             Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
         }
+        $OmnibusDir = Join-Path $ScriptDir "../../omnibus"
+        $OmnibusPrivateDir = Join-Path $ScriptDir "../../omnibus-private"
+        $OmnibusSoftwarePrivateDir = Join-Path $ScriptDir "../../omnibus-software-private"
 
-        Write-Output "--- Running bundle install for Omnibus"
-        Set-Location "$($ScriptDir)/../../omnibus"
-
-        # Rewrite all GitHub HTTPS URLs to include token
-        git config --global url."https://$($env:GITHUB_TOKEN):x-oauth-basic@github.com/".insteadOf "https://github.com/"
-        $env:GIT_TERMINAL_PROMPT = "0"
-        $env:GIT_ASKPASS = "echo"
-        git config --global --get-regexp url
+        $repos = @(
+            @{ url = "https://github.com/chef/omnibus-private.git"; path = $OmnibusPrivateDir },
+            @{ url = "https://github.com/chef/omnibus-software-private.git"; path = $OmnibusSoftwarePrivateDir }
+        )
+        foreach ($repo in $repos) {
+            if (Test-Path $repo.path) {
+                Write-Output "--- Repo exists, pulling latest: $($repo.path)"
+                Set-Location $repo.path
+                git reset --hard
+                git clean -fdx
+                git pull
+            }
+            else {
+                Write-Output "--- Cloning repo: $($repo.url)"
+                git clone "https://$($env:GITHUB_TOKEN):x-oauth-basic@${($repo.url -replace '^https://','')}" $repo.path
+            }
+        }
+        Set-Location $OmnibusDir
+        # Use local paths for private gems to avoid Git HTTPS fetch
+        bundle config set --local path "$OmnibusDir/vendor/bundle"
         bundle config set --local without development
 
-        # Run bundle install
+        Write-Output "--- Running bundle install for Omnibus"
         bundle install
 
         if (-not $?) { throw "Running bundle install failed" }
