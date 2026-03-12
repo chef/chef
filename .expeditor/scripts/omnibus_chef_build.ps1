@@ -314,7 +314,7 @@ function Install-OmnibusDependencies {
         $token = $env:GITHUB_TOKEN.Trim()
         Write-Output "--- GITHUB_TOKEN configured (length: $($token.Length))"
         
-        # Test GitHub connectivity first
+        # Test GitHub connectivity
         Write-Output "--- Testing GitHub connectivity"
         try {
             $response = Invoke-WebRequest -Uri "https://api.github.com" -UseBasicParsing -TimeoutSec 10
@@ -324,30 +324,12 @@ function Install-OmnibusDependencies {
             throw "Cannot reach GitHub API"
         }
         
-        # Configure Git for authentication - Multiple approaches for reliability
+        # Configure Git authentication - This is what worked!
         Write-Output "--- Configuring Git authentication for private repositories"
-        
-        # Method 1: URL rewriting (most reliable for bundle)
         git config --global url."https://$token@github.com/".insteadOf "https://github.com/"
         git config --global url."https://$token@github.com/".insteadOf "git@github.com:"
         
-        # Method 2: Set up credential helper as backup
-        git config --global credential.helper store
-        
-        # Method 3: Create .netrc file for additional auth support
-        $netrcContent = "machine github.com login $token password x-oauth-basic"
-        $netrcPath = "$env:USERPROFILE\_netrc"
-        $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
-        
-        # Configure Git for Windows Docker environment
-        git config --global core.longpaths true
-        git config --global http.sslbackend schannel
-        git config --global http.timeout 600
-        git config --global http.postBuffer 524288000
-        git config --global user.email "buildkite@chef.io"
-        git config --global user.name "Buildkite CI"
-        
-        # Set bundle configuration for better reliability
+        # Configure Bundler  
         Write-Output "--- Configuring Bundler for private repositories"
         bundle config set --local without development
         bundle config set --local timeout 600
@@ -357,45 +339,18 @@ function Install-OmnibusDependencies {
         # Navigate to omnibus directory
         Set-Location "$($ScriptDir)/../../omnibus"
         
-        # Verify we're in the right location
-        if (-not (Test-Path "Gemfile")) {
-            throw "Gemfile not found in $(Get-Location). Check omnibus directory path."
-        }
-        
-        Write-Output "--- Current directory: $(Get-Location)"
         Write-Output "--- Running bundle install for Omnibus"
+        bundle install --verbose
         
-        # Set environment variables for verbose output
-        $env:BUNDLE_VERBOSE = "true"
-        $env:GIT_CURL_VERBOSE = "1"
-        
-        # Run bundle install with timeout
-        $bundleProcess = Start-Process -FilePath "bundle" -ArgumentList @("install", "--verbose") -PassThru -NoNewWindow -Wait
-        
-        if ($bundleProcess.ExitCode -ne 0) {
-            throw "bundle install failed with exit code $($bundleProcess.ExitCode)"
+        if ($LASTEXITCODE -ne 0) {
+            throw "bundle install failed with exit code $LASTEXITCODE"
         }
         
         Write-Output "--- Omnibus dependencies installed successfully"
         
-    }
-    catch {
+    } catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
-        
-        # Debug information
-        Write-Output "--- Debug: Git configuration"
-        git config --list | Where-Object { $_ -match "url\." -or $_ -match "credential" }
-        
-        Write-Output "--- Debug: Current directory contents"
-        Get-ChildItem -Force | Select-Object Name, Length
-        
         exit 1
-    }
-    finally {
-        # Clean up credentials for security
-        if (Test-Path "$env:USERPROFILE\_netrc") {
-            Remove-Item "$env:USERPROFILE\_netrc" -Force -ErrorAction SilentlyContinue
-        }
     }
 }
 
