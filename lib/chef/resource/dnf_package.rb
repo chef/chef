@@ -32,7 +32,7 @@ class Chef
       provides :package, platform_family: "rhel", platform_version: ">= 8"
 
       # fedora >= 22 uses DNF
-      provides :package, platform: "fedora", platform_version: ">= 22"
+      provides :package, platform_family: "fedora_derived", platform_version: ">= 22"
 
       # amazon will eventually use DNF
       provides :package, platform: "amazon" do
