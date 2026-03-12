@@ -315,17 +315,21 @@ function Install-OmnibusDependencies {
         }
 
         Write-Output "--- Running bundle install for Omnibus"
-
         Set-Location "$($ScriptDir)/../../omnibus"
 
-        # FIX: configure git authentication
+        # Rewrite all GitHub HTTPS URLs to include token
         git config --global url."https://$($env:GITHUB_TOKEN):x-oauth-basic@github.com/".insteadOf "https://github.com/"
-
+        $env:GIT_TERMINAL_PROMPT = "0"
+        $env:GIT_ASKPASS = "echo"
+        git config --global --get-regexp url
         bundle config set --local without development
 
+        # Run bundle install
         bundle install
 
         if (-not $?) { throw "Running bundle install failed" }
+
+        Write-Output "--- Omnibus dependencies installed successfully"
     }
     catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
