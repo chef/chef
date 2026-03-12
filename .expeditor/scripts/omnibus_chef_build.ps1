@@ -301,27 +301,38 @@ function Install-OmnibusDependencies {
     param()
 
     try {
-        # ----------------------------------------
-        # Step 0: Remove libyajl2 to fix native build
-        # ----------------------------------------
+        # Remove libyajl2 for reinstall
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
 
-        # ----------------------------------------
-        # Step 1: Validate GITHUB_TOKEN
-        # ----------------------------------------
+        # Validate GITHUB_TOKEN
         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
             Write-Error "GITHUB_TOKEN is not set. Cannot access private GitHub dependencies."
             exit 1
         }
-        Write-Output "--- env-GITHUB_TOKEN is set"
-        $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
-        Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
+        
         $token = $env:GITHUB_TOKEN.Trim()
+        Write-Output "--- GITHUB_TOKEN configured (length: $($token.Length))"
+        
+        # Test GitHub connectivity
+        Write-Output "--- Testing GitHub connectivity"
+        try {
+            $response = Invoke-WebRequest -Uri "https://api.github.com" -UseBasicParsing -TimeoutSec 10
+            Write-Output "GitHub API accessible: $($response.StatusCode)"
+        } catch {
+            Write-Warning "GitHub connectivity issue: $_"
+        }
+        
+        # Configure Git for Windows Docker environment
+        Write-Output "--- Configuring Git for Windows Docker"
+        git config --global core.longpaths true
+        git config --global http.sslbackend schannel
+        git config --global http.timeout 300
+        git config --global http.postBuffer 524288000
+        git config --global user.email "buildkite@chef.io"
+        git config --global user.name "Buildkite CI"
 
-        # ----------------------------------------
-        # Step 2: Pre-clone private repos
-        # ----------------------------------------
+        # Clone repositories
         $repos = @{
             "omnibus-private" = "chef/omnibus-private"
             "omnibus-software-private" = "chef/omnibus-software-private"
@@ -334,43 +345,51 @@ function Install-OmnibusDependencies {
             $localPath = Join-Path $baseDir $folder
 
             if (Test-Path $localPath) {
-                Write-Output "--- Repo $folder exists, fetching latest changes"
+                Write-Output "--- Updating existing repo: $folder"
                 git -C $localPath fetch --all --prune
                 git -C $localPath reset --hard origin/main
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Failed to update $repoUrl"
+            } else {
+                Write-Output "--- Cloning repo: $repoUrl"
+                
+                # Use simple token authentication
+                $cloneUrl = "https://$token@github.com/$repoUrl.git"
+                
+                # Clone with timeout using Start-Process
+                $process = Start-Process -FilePath "git" -ArgumentList @(
+                    "clone", 
+                    "--depth=1", 
+                    "--single-branch", 
+                    "--branch=main", 
+                    $cloneUrl, 
+                    $localPath
+                ) -PassThru -NoNewWindow
+                
+                if (-not $process.WaitForExit(300000)) { # 5 minutes timeout
+                    Write-Error "Git clone timed out after 5 minutes"
+                    $process.Kill()
+                    throw "Clone operation timed out for $repoUrl"
                 }
-            }
-            else {
-                Write-Output "--- Cloning repo: https://github.com/$repoUrl.git"
-                git clone "https://$token:x-oauth-basic@github.com/$repoUrl.git" $localPath
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Failed to clone $repoUrl"
+                
+                if ($process.ExitCode -ne 0) {
+                    throw "Failed to clone $repoUrl (exit code: $($process.ExitCode))"
                 }
             }
         }
 
-        # ----------------------------------------
-        # Step 3: Configure Bundler to use local paths
-        # ----------------------------------------
+        # Configure Bundler
         Write-Output "--- Setting Bundler path overrides for local clones"
         $env:BUNDLE_GEM__OMNIBUS__PATH = Join-Path $baseDir "omnibus-private"
         $env:BUNDLE_GEM__OMNIBUS_SOFTWARE__PATH = Join-Path $baseDir "omnibus-software-private"
 
-        # ----------------------------------------
-        # Step 4: Configure Bundler options
-        # ----------------------------------------
         bundle config set --local without development
-
-        # Enable verbose output for debugging private GitHub gems
         $env:BUNDLE_VERBOSE = "true"
         $env:BUNDLE_RETRY = "3"
-        $env:BUNDLE_JOBS = "1"  # Single-threaded for Windows Docker stability
+        $env:BUNDLE_JOBS = "1"
 
-        Write-Output "--- Running bundle install for Omnibus (verbose, jobs=1, retry=3)"
+        Write-Output "--- Running bundle install for Omnibus"
         bundle install --verbose
 
-        if (-not $?) { 
+        if ($LASTEXITCODE -ne 0) { 
             throw "bundle install failed"
         }
 
