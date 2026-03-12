@@ -299,9 +299,11 @@ function Install-ChefFoundation {
 function Install-OmnibusDependencies {
     [CmdletBinding()]
     param()
+
     try {
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
+
         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
             Write-Output "--- env-GITHUB_TOKEN is NOT set"
             throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
@@ -311,12 +313,19 @@ function Install-OmnibusDependencies {
             $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
             Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
         }
+
         Write-Output "--- Running bundle install for Omnibus"
+
         Set-Location "$($ScriptDir)/../../omnibus"
-        bundle config --local github.com "$($env:GITHUB_TOKEN):x-oauth-basic"
+
+        # FIX: configure git authentication
+        git config --global url."https://$($env:GITHUB_TOKEN):x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
         bundle config set --local without development
+
         bundle install
-        if ( -not $? ) { throw "Running bundle install failed" }
+
+        if (-not $?) { throw "Running bundle install failed" }
     }
     catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
