@@ -301,47 +301,49 @@ function Install-OmnibusDependencies {
     param()
 
     try {
+        # ----------------------------------------
+        # Step 0: Remove libyajl2 to fix build
+        # ----------------------------------------
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
+
+        # ----------------------------------------
+        # Step 1: Validate GITHUB_TOKEN
+        # ----------------------------------------
         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
-            Write-Output "--- env-GITHUB_TOKEN is NOT set"
-            throw "GITHUB_TOKEN is not set; cannot access private GitHub dependencies."
+            Write-Error "--- env-GITHUB_TOKEN is NOT set. Cannot access private GitHub dependencies."
+            exit 1
         }
-        else {
-            Write-Output "--- env-GITHUB_TOKEN is set"
-            $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
-            Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
-        }
-        $OmnibusDir = Join-Path $ScriptDir "../../omnibus"
-        $OmnibusPrivateDir = Join-Path $ScriptDir "../../omnibus-private"
-        $OmnibusSoftwarePrivateDir = Join-Path $ScriptDir "../../omnibus-software-private"
 
-        $repos = @(
-            @{ url = "https://github.com/chef/omnibus-private.git"; path = $OmnibusPrivateDir },
-            @{ url = "https://github.com/chef/omnibus-software-private.git"; path = $OmnibusSoftwarePrivateDir }
-        )
-        foreach ($repo in $repos) {
-            if (Test-Path $repo.path) {
-                Write-Output "--- Repo exists, pulling latest: $($repo.path)"
-                Set-Location $repo.path
-                git reset --hard
-                git clean -fdx
-                git pull
-            }
-            else {
-                Write-Output "--- Cloning repo: $($repo.url)"
-                # Build a proper HTTPS URL with token
-                $cloneUrl = $repo.url -replace "https://", "https://$($env:GITHUB_TOKEN):x-oauth-basic@"
-                git clone $cloneUrl $repo.path
-            }
-        }
-        Set-Location $OmnibusDir
-        bundle config set --local path "$OmnibusDir/vendor/bundle"
+        Write-Output "--- env-GITHUB_TOKEN is set"
+        $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
+        Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
+
+        # ----------------------------------------
+        # Step 2: Configure Bundler & Git for private GitHub gems
+        # ----------------------------------------
+        # Bundler uses this environment variable to fetch GitHub gems over HTTPS
+        $env:BUNDLE_GITHUB__COM = $env:GITHUB_TOKEN
+
+        # Disable interactive Git prompts (prevents hanging in Docker)
+        $env:GIT_TERMINAL_PROMPT = "0"
+        $env:GIT_ASKPASS = "echo"
+
+        # ----------------------------------------
+        # Step 3: Set Bundler configuration
+        # ----------------------------------------
+        # Skip development gems for faster CI installs
         bundle config set --local without development
-        Write-Output "--- Running bundle install for Omnibus"
-        bundle install
 
-        if (-not $?) { throw "Running bundle install failed" }
+        # ----------------------------------------
+        # Step 4: Run bundle install (single-threaded)
+        # ----------------------------------------
+        Write-Output "--- Running bundle install for Omnibus (jobs=1)"
+        bundle install --jobs 1 --retry 3
+
+        if (-not $?) { 
+            throw "bundle install failed"
+        }
 
         Write-Output "--- Omnibus dependencies installed successfully"
     }
