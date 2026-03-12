@@ -302,7 +302,7 @@ function Install-OmnibusDependencies {
 
     try {
         # ----------------------------------------
-        # Step 0: Remove libyajl2 to fix build
+        # Step 0: Remove libyajl2 to fix native build
         # ----------------------------------------
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
@@ -311,35 +311,64 @@ function Install-OmnibusDependencies {
         # Step 1: Validate GITHUB_TOKEN
         # ----------------------------------------
         if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
-            Write-Error "--- env-GITHUB_TOKEN is NOT set. Cannot access private GitHub dependencies."
+            Write-Error "GITHUB_TOKEN is not set. Cannot access private GitHub dependencies."
             exit 1
         }
-
         Write-Output "--- env-GITHUB_TOKEN is set"
         $tokenLen = ($env:GITHUB_TOKEN.Trim()).Length
         Write-Output ("--- GITHUB_TOKEN trimmed length: {0}" -f $tokenLen)
+        $token = $env:GITHUB_TOKEN.Trim()
 
         # ----------------------------------------
-        # Step 2: Configure Bundler & Git for private GitHub gems
+        # Step 2: Pre-clone private repos
         # ----------------------------------------
-        # Bundler uses this environment variable to fetch GitHub gems over HTTPS
-        $env:BUNDLE_GITHUB__COM = $env:GITHUB_TOKEN
+        $repos = @{
+            "omnibus-private" = "chef/omnibus-private"
+            "omnibus-software-private" = "chef/omnibus-software-private"
+        }
 
-        # Disable interactive Git prompts (prevents hanging in Docker)
-        $env:GIT_TERMINAL_PROMPT = "0"
-        $env:GIT_ASKPASS = "echo"
+        $baseDir = "C:/workdir"
+
+        foreach ($folder in $repos.Keys) {
+            $repoUrl = $repos[$folder]
+            $localPath = Join-Path $baseDir $folder
+
+            if (Test-Path $localPath) {
+                Write-Output "--- Repo $folder exists, fetching latest changes"
+                git -C $localPath fetch --all --prune
+                git -C $localPath reset --hard origin/main
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Failed to update $repoUrl"
+                }
+            }
+            else {
+                Write-Output "--- Cloning repo: https://github.com/$repoUrl.git"
+                git clone "https://$token:x-oauth-basic@github.com/$repoUrl.git" $localPath
+                if ($LASTEXITCODE -ne 0) {
+                    throw "Failed to clone $repoUrl"
+                }
+            }
+        }
 
         # ----------------------------------------
-        # Step 3: Set Bundler configuration
+        # Step 3: Configure Bundler to use local paths
         # ----------------------------------------
-        # Skip development gems for faster CI installs
+        Write-Output "--- Setting Bundler path overrides for local clones"
+        $env:BUNDLE_GEM__OMNIBUS__PATH = Join-Path $baseDir "omnibus-private"
+        $env:BUNDLE_GEM__OMNIBUS_SOFTWARE__PATH = Join-Path $baseDir "omnibus-software-private"
+
+        # ----------------------------------------
+        # Step 4: Configure Bundler options
+        # ----------------------------------------
         bundle config set --local without development
 
-        # ----------------------------------------
-        # Step 4: Run bundle install (single-threaded)
-        # ----------------------------------------
-        Write-Output "--- Running bundle install for Omnibus (jobs=1)"
-        bundle install --jobs 1 --retry 3
+        # Enable verbose output for debugging private GitHub gems
+        $env:BUNDLE_VERBOSE = "true"
+        $env:BUNDLE_RETRY = "3"
+        $env:BUNDLE_JOBS = "1"  # Single-threaded for Windows Docker stability
+
+        Write-Output "--- Running bundle install for Omnibus (verbose, jobs=1, retry=3)"
+        bundle install --verbose
 
         if (-not $?) { 
             throw "bundle install failed"
