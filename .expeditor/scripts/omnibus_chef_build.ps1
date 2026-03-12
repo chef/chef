@@ -330,14 +330,14 @@ function Install-OmnibusDependencies {
             }
             else {
                 Write-Output "--- Cloning repo: $($repo.url)"
-                git clone "https://$($env:GITHUB_TOKEN):x-oauth-basic@${($repo.url -replace '^https://','')}" $repo.path
+                # Build a proper HTTPS URL with token
+                $cloneUrl = $repo.url -replace "https://", "https://$($env:GITHUB_TOKEN):x-oauth-basic@"
+                git clone $cloneUrl $repo.path
             }
         }
         Set-Location $OmnibusDir
-        # Use local paths for private gems to avoid Git HTTPS fetch
         bundle config set --local path "$OmnibusDir/vendor/bundle"
         bundle config set --local without development
-
         Write-Output "--- Running bundle install for Omnibus"
         bundle install
 
