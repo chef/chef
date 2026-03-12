@@ -324,10 +324,11 @@ function Install-OmnibusDependencies {
             throw "Cannot reach GitHub API"
         }
         
-        # Configure Git authentication - This is what worked!
+        # SINGLE METHOD: URL rewriting + credential helper (this combination worked)
         Write-Output "--- Configuring Git authentication for private repositories"
         git config --global url."https://$token@github.com/".insteadOf "https://github.com/"
         git config --global url."https://$token@github.com/".insteadOf "git@github.com:"
+        git config --global credential.helper store
         
         # Configure Bundler  
         Write-Output "--- Configuring Bundler for private repositories"
