@@ -7,21 +7,25 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
-test_platforms=("rocky-8" "rocky-9" "rhel-9" "debian-11" "ubuntu-2204")
+test_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64" "rhel-9" "rhel-9-aarch64" "debian-11" "debian-11-aarch64" "ubuntu-2204" "ubuntu-2204-aarch64")
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
-  echo "    queue: default-privileged"
+  if [[ $platform == *"-aarch64" ]]; then
+    echo "    queue: default-privileged-aarch64"
+  else
+    echo "    queue: default-privileged"
+  fi
   echo "  matrix:"
   echo "    - \"Unit\""
   echo "    - \"Integration\""
   echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      image: chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      privileged: true"
   echo "      environment:"
   echo "        - HAB_AUTH_TOKEN"
@@ -132,7 +136,7 @@ for gem in ${external_gems[@]}; do
       ;;
   esac
 done
-habitat_plans=("linux" "windows")
+habitat_plans=("linux" "linux-aarch64" "windows")
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""
   echo "  retry:"
@@ -153,10 +157,18 @@ for plan in ${habitat_plans[@]}; do
     echo "        - BUILDKITE_ORGANIZATION_SLUG"
     echo "      propagate-environment: true"
   else
-    echo "    queue: default-privileged"
+    if [[ $plan == *"-aarch64" ]]; then
+      echo "    queue: default-privileged-aarch64"
+    else
+      echo "    queue: default-privileged"
+    fi
     echo "  plugins:"
     echo "  - docker#v3.5.0:"
-    echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
+    if [[ $plan == *"-aarch64" ]]; then
+      echo "      image: chefes/omnibus-toolchain-ubuntu-1804-aarch64:$OMNIBUS_TOOLCHAIN_VERSION"
+    else
+      echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
+    fi
     echo "      privileged: true"
     echo "      environment:"
     echo "        - HAB_AUTH_TOKEN"
