@@ -128,7 +128,9 @@ class Chef::Application::Client < Chef::Application::Base
         Chef::Config.target_mode = train_config
       end
       Chef::Config.target_mode.enabled = true
-      Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
+
+      Chef::Config.node_name = Chef::Config.target_mode.host
+      Chef::Config.delete(:client_key) if Chef::Config.key?(:client_key)
     end
 
     if config[:credentials]
