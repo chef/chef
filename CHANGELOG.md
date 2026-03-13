@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- fix script path in kitchen yaml [#15709](https://github.com/chef/chef/pull/15709) ([rishichawda](https://github.com/rishichawda))
 - Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix script path in kitchen yaml [#15709](https://github.com/chef/chef/pull/15709) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.12 -->
 - Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.12 -->
 - downgrade linux hab and clean up downgrade script [#15700](https://github.com/chef/chef/pull/15700) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.12 -->
 - Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
