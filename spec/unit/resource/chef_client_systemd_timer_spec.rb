@@ -112,4 +112,30 @@ describe Chef::Resource::ChefClientSystemdTimer do
       expect(provider.service_content["Service"]["CPUQuota"]).to eq("50%")
     end
   end
+
+  describe "selinux_fcontext for Habitat binary path" do
+    before do
+      allow(provider).to receive(:declare_resource)
+    end
+
+    context "when chef_binary_path is a Habitat path" do
+      it "includes a selinux_fcontext resource in the :add action" do
+        allow(resource).to receive(:chef_binary_path).and_return("/hab/pkgs/chef/chef-infra-client/19.2.7/20250122151044/bin/chef-client")
+        expect(provider).to receive(:declare_resource).with(:selinux_fcontext, '/hab/pkgs/chef/chef-infra-client/.*/bin(/.*)?', anything)
+        expect(provider).to receive(:declare_resource).with(:systemd_unit, "chef-client.service", anything)
+        expect(provider).to receive(:declare_resource).with(:systemd_unit, "chef-client.timer", anything)
+        provider.action_add
+      end
+    end
+
+    context "when chef_binary_path is not a Habitat path" do
+      it "does not include a selinux_fcontext resource in the :add action" do
+        allow(resource).to receive(:chef_binary_path).and_return("/usr/local/bin/chef-client")
+        expect(provider).not_to receive(:declare_resource).with(:selinux_fcontext, anything, anything)
+        expect(provider).to receive(:declare_resource).with(:systemd_unit, "chef-client.service", anything)
+        expect(provider).to receive(:declare_resource).with(:systemd_unit, "chef-client.timer", anything)
+        provider.action_add
+      end
+    end
+  end
 end
