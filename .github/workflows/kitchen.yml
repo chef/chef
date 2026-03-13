@@ -298,7 +298,7 @@ jobs:
           clean: true
       - name: Install Habitat CLI
         run: |
-          sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux
+          sudo -E ../.expeditor/scripts/install-hab.sh x86_64-linux
           sudo -E hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
