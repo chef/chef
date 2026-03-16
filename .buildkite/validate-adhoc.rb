@@ -169,7 +169,7 @@ targets.each do |target|
       "timeout_in_minutes" => 120
     }
   else
-    commands = ["sudo ./.expeditor/scripts/install-hab.sh x86_64-linux"]
+    commands = ["sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux"]
     agents = {
       "queue" => "default-privileged"
     }
@@ -177,7 +177,7 @@ targets.each do |target|
 
     if platform.include?("aarch64")
       base_platform = platform.sub("-aarch64", "")
-      commands = ["sudo ./.expeditor/scripts/install-hab.sh aarch64-linux"]
+      commands = ["sudo -E ./.expeditor/scripts/install-hab.sh aarch64-linux"]
       agents["queue"] = "default-privileged-aarch64"
       docker_image = "chefes/omnibus-toolchain-#{base_platform}:aarch64"
     end
