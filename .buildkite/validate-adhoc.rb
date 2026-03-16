@@ -18,13 +18,17 @@ targets = [
 ]
 
 arm_targets = [
-  "centos-7-arm:centos-7-arm",
-  "amazon-2-arm:amazon-2-arm",
-  "rhel-9-arm:rhel-9-arm",
-  "ubuntu-1804-arm:ubuntu-1804-arm",
-  "ubuntu-2004-arm:ubuntu-2004-arm",
-  "ubuntu-2204-arm:ubuntu-2204-arm",
-  "amazon-2023-arm:amazon-2023-arm"
+  "amazon-2-aarch64:centos-7",
+  "centos-7-aarch64:centos-7",
+  "rhel-9-aarch64:rhel-9",
+  "debian-9-aarch64:debian-9",
+  "debian-10-aarch64:debian-9",
+  "debian-11-aarch64:debian-9",
+  "ubuntu-2004-aarch64:ubuntu-2004",
+  "ubuntu-2204-aarch64:ubuntu-2204",
+  "rocky-8-aarch64:rocky-8",
+  "rocky-9-aarch64:rocky-9",
+  "amazon-2023-aarch64:amazon-2023"
 ]
 
 # because windows queues are very different, the target queue is very explicit.
@@ -53,7 +57,7 @@ if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release
   pipeline["steps"] << {
     "label" => ":habicat::linux: Building Habitat package",
     "commands" => [
-      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh",
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh x86_64-linux",
     ],
     "agents" => {
       "queue" => "default-privileged"
@@ -61,6 +65,26 @@ if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release
     "plugins" => {
       "docker#v3.5.0" => {
         "image" => "chefes/omnibus-toolchain-centos-7:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+        "privileged" => true,
+        "propagate-environment" => true,
+        "environment" => [
+          'HAB_AUTH_TOKEN'
+        ]
+      }
+    },
+    "timeout_in_minutes" => 120
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::linux: Building ARM Habitat package",
+    "commands" => [
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
+    ],
+    "agents" => {
+      "queue" => "default-privileged-aarch64"
+    },
+    "plugins" => {
+      "docker#v3.5.0" => {
+        "image" => "chefes/omnibus-toolchain-ubuntu-2204:aarch64",
         "privileged" => true,
         "propagate-environment" => true,
         "environment" => [
@@ -152,10 +176,13 @@ targets.each do |target|
     agents = {
       "queue" => "default-privileged"
     }
+    docker_image = "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}"
 
-    if platform.include?("arm")
-      commands = ["sudo ./.expeditor/scripts/install-hab.sh <arm>"]
-      agents["queue"] = "docker-linux-arm64"
+    if platform.include?("aarch64")
+      base_platform = platform.sub("-aarch64", "")
+      commands = ["sudo ./.expeditor/scripts/install-hab.sh aarch64-linux"]
+      agents["queue"] = "default-privileged-aarch64"
+      docker_image = "chefes/omnibus-toolchain-#{base_platform}:aarch64"
     end
     commands << "./.expeditor/scripts/validate_adhoc_build.sh"
 
@@ -170,7 +197,7 @@ targets.each do |target|
       "agents" => agents,
       "plugins" => {
         "docker#v3.5.0" => {
-          "image" => "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "image" => docker_image,
           "privileged" => true,
           "propagate-environment" => true,
           "environment" => [
