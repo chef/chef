@@ -122,3 +122,7 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
   export GITHUB_TOKEN
   export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
 fi
+if [ "$OS" = "Darwin" ] && [ -n "$GITHUB_TOKEN" ]; then
+  echo "--- Configuring Bundler GitHub authentication for macOS"
+  bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
+fi
