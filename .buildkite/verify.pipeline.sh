@@ -10,30 +10,28 @@ echo ""
 test_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64" "rhel-9" "rhel-9-aarch64" "debian-11" "debian-11-aarch64" "ubuntu-2204" "ubuntu-2204-aarch64")
 
 for platform in ${test_platforms[@]}; do
-  base_platform=$platform
-  tag=$OMNIBUS_TOOLCHAIN_VERSION
 
   if [[ $platform == *"-aarch64" ]]; then
-    base_platform=${platform%-aarch64}
-    tag="aarch64"
+    image="chefes/omnibus-toolchain-${platform%-aarch64}:aarch64"
+    queue="default-privileged-aarch64"
+  else
+    image="chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
+    queue="default-privileged"
   fi
+
   echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
-  if [[ $platform == *"-aarch64" ]]; then
-    echo "    queue: default-privileged-aarch64"
-  else
-    echo "    queue: default-privileged"
-  fi
+  echo "    queue: $queue"
   echo "  matrix:"
   echo "    - \"Unit\""
   echo "    - \"Integration\""
   echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${base_platform}:${tag}"
+  echo "      image: $image"
   echo "      privileged: true"
   echo "      environment:"
   echo "        - HAB_AUTH_TOKEN"
