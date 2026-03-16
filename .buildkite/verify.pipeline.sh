@@ -8,7 +8,15 @@ echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-
 echo "steps:"
 echo ""
 test_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64" "rhel-9" "rhel-9-aarch64" "debian-11" "debian-11-aarch64" "ubuntu-2204" "ubuntu-2204-aarch64")
+
 for platform in ${test_platforms[@]}; do
+  base_platform=$platform
+  tag=$OMNIBUS_TOOLCHAIN_VERSION
+
+  if [[ $platform == *"-aarch64" ]]; then
+    base_platform=${platform%-aarch64}
+    tag="aarch64"
+  fi
   echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
   echo "    automatic:"
@@ -25,7 +33,7 @@ for platform in ${test_platforms[@]}; do
   echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      image: chefes/omnibus-toolchain-${base_platform}:${tag}"
   echo "      privileged: true"
   echo "      environment:"
   echo "        - HAB_AUTH_TOKEN"
