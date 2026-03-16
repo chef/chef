@@ -57,22 +57,13 @@ git fetch origin main
 git fetch --tags --force
 
 # Rebase onto current main to ensure this PR is closer to what happens when it's merged.
+# Skip on macOS (Darwin) to avoid CI rebase conflicts breaking the build.
 # Only do this if it's actually a branch (i.e. a PR or a manually created build), not a
 # post-merge CI run of main.
-if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
+if [[ "$(uname -s)" != "Darwin" ]] && [[ "${BUILDKITE_BRANCH:-}" != "main" ]]; then
   git config user.email "you@example.com" # these are needed for the rebase attempt
   git config user.name "Your Name"
-  main=$(git show-ref -s --abbrev origin/main)
-  pr_head=$(git show-ref -s --abbrev HEAD)
-  github="https://github.com/chef/chef/commit/"
-  if git rebase origin/main >/dev/null; then
-    buildkite-agent annotate --style success --context "rebase-pr-branch-${main}" \
-      "Rebased onto main ([${main}](${github}${main}))."
-  else
-    git rebase --abort
-    buildkite-agent annotate --style warning --context "rebase-pr-branch-${main}" \
-      "Couldn't rebase onto main ([${main}](${github}${main})), building PR HEAD ([${pr_head}](${github}${pr_head}))."
-  fi
+  git rebase origin/main || (git rebase --abort || true)
 fi
 
 # Only if on chef-canary or chef org
@@ -101,10 +92,10 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG"
     # Set AWS S3 credentials for omnibus cache operations
     AWS_S3_ACCESS_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
     export AWS_S3_ACCESS_KEY
-    
+
     AWS_S3_SECRET_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-secret-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
     export AWS_S3_SECRET_KEY
-    
+
     echo "AWS S3 credentials set for omnibus cache operations"
 fi
 
@@ -122,7 +113,8 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG !
   export GITHUB_TOKEN
   export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
 fi
-if [ "$OS" = "Darwin" ] && [ -n "$GITHUB_TOKEN" ]; then
+
+if [[ "$(uname -s)" == "Darwin" ]] && [[ -n "${GITHUB_TOKEN:-}" ]]; then
   echo "--- Configuring Bundler GitHub authentication for macOS"
-  bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
+  bundle config set --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
 fi
