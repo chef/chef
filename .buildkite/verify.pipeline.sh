@@ -173,9 +173,9 @@ for plan in ${habitat_plans[@]}; do
     echo "  plugins:"
     echo "  - docker#v3.5.0:"
     if [[ $plan == *"-aarch64" ]]; then
-      echo "      image: chefes/omnibus-toolchain-ubuntu-1804-aarch64:$OMNIBUS_TOOLCHAIN_VERSION"
+      echo "      image: chefes/omnibus-toolchain-ubuntu-2204:aarch64"
     else
-      echo "      image: chefes/omnibus-toolchain-ubuntu-1804:$OMNIBUS_TOOLCHAIN_VERSION"
+      echo "      image: chefes/omnibus-toolchain-ubuntu-2204:$OMNIBUS_TOOLCHAIN_VERSION"
     fi
     echo "      privileged: true"
     echo "      environment:"
