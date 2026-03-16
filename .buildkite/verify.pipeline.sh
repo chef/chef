@@ -144,7 +144,7 @@ for gem in ${external_gems[@]}; do
       ;;
   esac
 done
-habitat_plans=("linux" "linux-aarch64" "windows")
+habitat_plans=("x86_64-linux" "aarch64-linux" "windows")
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""
   echo "  retry:"
@@ -165,14 +165,14 @@ for plan in ${habitat_plans[@]}; do
     echo "        - BUILDKITE_ORGANIZATION_SLUG"
     echo "      propagate-environment: true"
   else
-    if [[ $plan == *"-aarch64" ]]; then
+    if [[ $plan == "aarch64-"* ]]; then
       echo "    queue: default-privileged-aarch64"
     else
       echo "    queue: default-privileged"
     fi
     echo "  plugins:"
     echo "  - docker#v3.5.0:"
-    if [[ $plan == *"-aarch64" ]]; then
+    if [[ $plan == "aarch64-"* ]]; then
       echo "      image: chefes/omnibus-toolchain-ubuntu-2204:aarch64"
     else
       echo "      image: chefes/omnibus-toolchain-ubuntu-2204:$OMNIBUS_TOOLCHAIN_VERSION"
@@ -194,7 +194,7 @@ for plan in ${habitat_plans[@]}; do
   then
     echo "    - ./.expeditor/scripts/verify-plan.ps1"
   else
-    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh 'x86_64-$plan'"
+    echo "    - sudo -E ./.expeditor/scripts/install-hab.sh $plan"
     echo "    - sudo -E ./.expeditor/scripts/verify-plan.sh"
   fi
 done
