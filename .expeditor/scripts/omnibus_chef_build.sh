@@ -39,9 +39,16 @@ if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
   cd "${SCRIPT_DIR}/../.."
   cp -f Gemfile.aix.lock Gemfile.lock
 fi
+
+# Configure GitHub token auth only for macOS
+OS="$(uname)"
+if [ "$OS" = "Darwin" ] && [ -n "$GITHUB_TOKEN" ]; then
+  echo "--- Configuring Bundler GitHub authentication for macOS"
+  bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
+fi
+
 echo "--- Running bundle install for Omnibus"
 cd "${SCRIPT_DIR}/../../omnibus"
-bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
 bundle config set --local without development
 bundle install
 
