@@ -60,52 +60,52 @@ git fetch origin main || echo "Failed to fetch origin/main"
 #   export AWS_SESSION_TOKEN
 # fi
 
-if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
-  # Check if the instance metadata service is available
-  if curl -s --connect-timeout 2 http://169.254.169.254/latest/meta-data/ >/dev/null; then
-    echo "--- Instance Metadata Service detected. Fetching AWS credentials."
+# if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
+#   # Check if the instance metadata service is available
+#   if curl -s --connect-timeout 2 http://169.254.169.254/latest/meta-data/ >/dev/null; then
+#     echo "--- Instance Metadata Service detected. Fetching AWS credentials."
 
-    # Fetch the IMDSv2 token
-    TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-    if [[ -z "$TOKEN" ]]; then
-      echo "Error: Failed to retrieve IMDSv2 token."
-      exit 1
-    fi
+#     # Fetch the IMDSv2 token
+#     TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+#     if [[ -z "$TOKEN" ]]; then
+#       echo "Error: Failed to retrieve IMDSv2 token."
+#       exit 1
+#     fi
 
-    # Fetch the IAM role name
-    ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/)
-    if [[ -z "$ROLE" ]]; then
-      echo "Error: Failed to retrieve IAM role name."
-      exit 1
-    fi
+#     # Fetch the IAM role name
+#     ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+#     if [[ -z "$ROLE" ]]; then
+#       echo "Error: Failed to retrieve IAM role name."
+#       exit 1
+#     fi
 
-    # Fetch the AWS credentials
-    RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
-    if [[ -z "$RESPONSE" ]]; then
-      echo "Error: Failed to retrieve AWS credentials."
-      exit 1
-    fi
+#     # Fetch the AWS credentials
+#     RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
+#     if [[ -z "$RESPONSE" ]]; then
+#       echo "Error: Failed to retrieve AWS credentials."
+#       exit 1
+#     fi
 
-    # Extract and export the credentials
-    AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
-    AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
-    AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
+#     # Extract and export the credentials
+#     AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
+#     AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
+#     AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
 
-    if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" || -z "$AWS_SESSION_TOKEN" ]]; then
-      echo "Error: Incomplete AWS credentials retrieved."
-      exit 1
-    fi
+#     if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" || -z "$AWS_SESSION_TOKEN" ]]; then
+#       echo "Error: Incomplete AWS credentials retrieved."
+#       exit 1
+#     fi
 
-    export AWS_ACCESS_KEY_ID
-    export AWS_SECRET_ACCESS_KEY
-    export AWS_SESSION_TOKEN
+#     export AWS_ACCESS_KEY_ID
+#     export AWS_SECRET_ACCESS_KEY
+#     export AWS_SESSION_TOKEN
 
-    echo "--- AWS credentials successfully set."
-  else
-    echo "Error: Instance Metadata Service not available. Ensure this script is running on an AWS instance."
-    exit 1
-  fi
-fi
+#     echo "--- AWS credentials successfully set."
+#   else
+#     echo "Error: Instance Metadata Service not available. Ensure this script is running on an AWS instance."
+#     exit 1
+#   fi
+# fi
 
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
@@ -135,29 +135,29 @@ else
   export AWS_REGION="us-west-1"
 fi
 
-if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+# if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
 
-  if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
-    lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
-    export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
-  fi
-  export ARTIFACTORY_PASSWORD=$(aws ssm get-parameter --name "buildkite-artifactory-docker-full-access-token" --query Parameter.Value --with-decryption --output text --region ${AWS_REGION})
+#   if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
+#     lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
+#     export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
+#   fi
+#   export ARTIFACTORY_PASSWORD=$(aws ssm get-parameter --name "buildkite-artifactory-docker-full-access-token" --query Parameter.Value --with-decryption --output text --region ${AWS_REGION})
 
-  # Only if on RPM-based Linux distros
-  if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]]; then
-    export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
-  fi
-fi
-if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
-    # Set AWS S3 credentials for omnibus cache operations
-    AWS_S3_ACCESS_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
-    export AWS_S3_ACCESS_KEY
+#   # Only if on RPM-based Linux distros
+#   if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]]; then
+#     export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
+#   fi
+# fi
+# if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
+#     # Set AWS S3 credentials for omnibus cache operations
+#     AWS_S3_ACCESS_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
+#     export AWS_S3_ACCESS_KEY
 
-    AWS_S3_SECRET_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-secret-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
-    export AWS_S3_SECRET_KEY
+#     AWS_S3_SECRET_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-secret-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
+#     export AWS_S3_SECRET_KEY
 
-    echo "AWS S3 credentials set for omnibus cache operations"
-fi
+#     echo "AWS S3 credentials set for omnibus cache operations"
+# fi
 
 
 # Only for build steps that need omnibus-private access (or for all verify steps)
