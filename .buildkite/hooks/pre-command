@@ -33,17 +33,64 @@ else
   echo "GITHUB_TOKEN not set. Skipping GitHub auth setup."
 fi
 
-if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
-then
-  TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-  ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
-  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
-  AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
-  export AWS_ACCESS_KEY_ID
-  AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
-  export AWS_SECRET_ACCESS_KEY
-  AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
-  export AWS_SESSION_TOKEN
+# if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
+# then
+#   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+#   ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+#   RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
+#   AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
+#   export AWS_ACCESS_KEY_ID
+#   AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
+#   export AWS_SECRET_ACCESS_KEY
+#   AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
+#   export AWS_SESSION_TOKEN
+# fi
+
+if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
+  # Check if the instance metadata service is available
+  if curl -s --connect-timeout 2 http://169.254.169.254/latest/meta-data/ >/dev/null; then
+    echo "--- Instance Metadata Service detected. Fetching AWS credentials."
+
+    # Fetch the IMDSv2 token
+    TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+    if [[ -z "$TOKEN" ]]; then
+      echo "Error: Failed to retrieve IMDSv2 token."
+      exit 1
+    fi
+
+    # Fetch the IAM role name
+    ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+    if [[ -z "$ROLE" ]]; then
+      echo "Error: Failed to retrieve IAM role name."
+      exit 1
+    fi
+
+    # Fetch the AWS credentials
+    RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
+    if [[ -z "$RESPONSE" ]]; then
+      echo "Error: Failed to retrieve AWS credentials."
+      exit 1
+    fi
+
+    # Extract and export the credentials
+    AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
+    AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
+    AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
+
+    if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" || -z "$AWS_SESSION_TOKEN" ]]; then
+      echo "Error: Incomplete AWS credentials retrieved."
+      exit 1
+    fi
+
+    export AWS_ACCESS_KEY_ID
+    export AWS_SECRET_ACCESS_KEY
+    export AWS_SESSION_TOKEN
+
+    echo "--- AWS credentials successfully set."
+  else
+    echo "Error: Instance Metadata Service not available. Ensure this script is running on an AWS instance."
+    exit 1
+  fi
 fi
 
 # We've now seen cases where origin/main on the build hosts can get
