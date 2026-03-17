@@ -824,7 +824,7 @@ shared_examples_for "a file provider with content field" do
     end
     it "should be true when creating a file with content" do
       provider.action = :create
-      allow(resource).to receive(:content).and_return("flurbleblobbleblooble")
+      resource.content("flurbleblobbleblooble")
       allow(resource).to receive(:checksum).and_return(nil)
       expect(provider.send(:managing_content?)).to be_truthy
     end
@@ -839,6 +839,16 @@ shared_examples_for "a file provider with content field" do
       allow(resource).to receive(:content).and_return("flurbleblobbleblooble")
       allow(resource).to receive(:checksum).and_return(nil)
       expect(provider.send(:managing_content?)).to be_falsey
+    end
+    it "does not evaluate a lazy content block when checking managing_content?" do
+      provider.action = :create
+      call_count = 0
+      resource.content Chef::DelayedEvaluator.new { call_count += 1; "hello" }
+      allow(resource).to receive(:checksum).and_return(nil)
+
+      provider.send(:managing_content?)
+
+      expect(call_count).to eq(0)
     end
   end
 end
