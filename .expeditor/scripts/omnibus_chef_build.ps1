@@ -345,7 +345,7 @@ function Install-OmnibusDependencies {
         # bundle config set --local jobs 1
 
         # # Navigate to omnibus directory
-        # Set-Location "$($ScriptDir)/../../omnibus"
+        Set-Location "$($ScriptDir)/../../omnibus"
 
         # # Verify we're in the right location
         # if (-not (Test-Path "Gemfile")) {
