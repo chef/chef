@@ -312,25 +312,23 @@ function Install-OmnibusDependencies {
         }
 
         $token = $env:GITHUB_TOKEN.Trim()
-        # Use credential helper for authentication
-        # git config --global credential.helper store
 
         # Create .netrc file for additional auth support
         $netrcPath = "$env:USERPROFILE\_netrc"
         $netrcContent = "machine github.com login $token password x-oauth-basic"
-        $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
-        icacls $netrcPath /inheritance:r /grant:r "$($env:USERNAME):(R)"
+        # $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
+        # icacls $netrcPath /inheritance:r /grant:r "$($env:USERNAME):(R)"
 
         # Clear GITHUB_TOKEN from the environment immediately after use
         Remove-Item Env:\GITHUB_TOKEN -ErrorAction SilentlyContinue
 
         # Configure Git for Windows Docker environment
-        git config --global core.longpaths true
-        git config --global http.sslbackend schannel
-        git config --global http.timeout 600
-        git config --global http.postBuffer 524288000
-        git config --global user.email "buildkite@chef.io"
-        git config --global user.name "Buildkite CI"
+        # git config --global core.longpaths true
+        # git config --global http.sslbackend schannel
+        # git config --global http.timeout 600
+        # git config --global http.postBuffer 524288000
+        # git config --global user.email "buildkite@chef.io"
+        # git config --global user.name "Buildkite CI"
 
         # Set Bundler configuration for better reliability
         Write-Output "--- Configuring Bundler for private repositories"
