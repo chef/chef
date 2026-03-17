@@ -25,14 +25,28 @@ echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 #   echo "No OMNIBUS_SUBMODULE_CONFIG_PRIVATE secret set. Skipping private repo config."
 # fi
 
+# Configure GitHub authentication for Git
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-  # Prevent hangs if git tries to prompt
-  export GIT_TERMINAL_PROMPT=0
+  echo "--- Configuring GitHub authentication"
+  git config --global credential.helper store
   git config --local url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
 else
   echo "GITHUB_TOKEN not set. Skipping GitHub auth setup."
+  exit 1
 fi
 
+# Check if the instance metadata service is available
+if curl -s --connect-timeout 2 http://169.254.169.254/latest/meta-data/ >/dev/null; then
+  echo "--- Instance Metadata Service detected. Fetching AWS credentials."
+  # Fetch AWS credentials (existing logic)
+else
+  echo "Error: Instance Metadata Service not available. Ensure this script is running on an AWS instance."
+  exit 1
+fi
+
+# Fetch origin/main to ensure up-to-date references
+echo "Fetching origin/main"
+git fetch origin main || echo "Failed to fetch origin/main"
 # if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 # then
 #   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
