@@ -9,43 +9,46 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
-<!-- release_rollup since=19.1.164 -->
+<!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
-
-#### Merged Pull Requests
-- fix script path in kitchen yaml [#15709](https://github.com/chef/chef/pull/15709) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.12 -->
-- Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.12 -->
-- downgrade linux hab and clean up downgrade script [#15700](https://github.com/chef/chef/pull/15700) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.12 -->
-- Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
-- Hab 2.0 is busted? Downgrading all the things [#15695](https://github.com/chef/chef/pull/15695) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.11 -->
-- Point back hab channel to base-2025 in GHA fips testing pipelines [#15675](https://github.com/chef/chef/pull/15675) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.11 -->
-- Ensure DevKit changes don&#39;t break the build [#15681](https://github.com/chef/chef/pull/15681) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.10 -->
-- Updating the sbom version [#15691](https://github.com/chef/chef/pull/15691) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.9 -->
-- Build fixes. Windows should pass immediately, linux will fail until m… [#15685](https://github.com/chef/chef/pull/15685) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.9 -->
-- Remove quotes from YML [#15684](https://github.com/chef/chef/pull/15684) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.8 -->
-- Add accept-no-persist for HAB_LICENSE [#15683](https://github.com/chef/chef/pull/15683) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.7 -->
-- update plan file to remove github workflow files in vendored gems [#15679](https://github.com/chef/chef/pull/15679) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.6 -->
-- Fix IPv6 crash in proxy no_proxy matching [#15655](https://github.com/chef/chef/pull/15655) ([kaolin](https://github.com/kaolin)) <!-- 19.2.5 -->
-- update aws-sdk-s3 to 1.213.0 [#15678](https://github.com/chef/chef/pull/15678) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.4 -->
-- update faraday to 2.4.1 [#15677](https://github.com/chef/chef/pull/15677) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.3 -->
-- Update GHA concurrency group [#15680](https://github.com/chef/chef/pull/15680) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.2 -->
-- Preserve environment secrets which are being reset due to sudo on linux fips pipeline [#15676](https://github.com/chef/chef/pull/15676) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.1 -->
-- FIPS mode testing using habitat package of openssl and infra client [#15402](https://github.com/chef/chef/pull/15402) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.0 -->
-- Bump rack to 3.2.5 [#15670](https://github.com/chef/chef/pull/15670) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.176 -->
-- Updating Inspec dependencies [#15672](https://github.com/chef/chef/pull/15672) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.175 -->
-- enumerate platforms before parsing remote output for candidate version [#15661](https://github.com/chef/chef/pull/15661) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.174 -->
-- match platforms for gem versions in rubygems provider [#15649](https://github.com/chef/chef/pull/15649) ([rishichawda](https://github.com/rishichawda)) <!-- 19.1.173 -->
-- Updating file lock handling for choco resources [#15646](https://github.com/chef/chef/pull/15646) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.172 -->
-- Tp/dokken kd bump [#15637](https://github.com/chef/chef/pull/15637) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.171 -->
-- Bump ctke to pick up latest kitchen-dokken [#15635](https://github.com/chef/chef/pull/15635) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.170 -->
-- Removing the PowerShell package [#15611](https://github.com/chef/chef/pull/15611) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.1.169 -->
-- Remove fauxhai from tests that don&#39;t need it [#15624](https://github.com/chef/chef/pull/15624) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.168 -->
-- Allow for the hab binary path for all chef-* to be found [#15625](https://github.com/chef/chef/pull/15625) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.1.167 -->
-- Some CI fixups [#15621](https://github.com/chef/chef/pull/15621) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.166 -->
-- Move, securely, to pull_request_target for kitchen [#15602](https://github.com/chef/chef/pull/15602) ([jaymzh](https://github.com/jaymzh)) <!-- 19.1.165 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v19.2.12](https://github.com/chef/chef/tree/v19.2.12) (2026-03-17)
+
+#### Merged Pull Requests
+- Move, securely, to pull_request_target for kitchen [#15602](https://github.com/chef/chef/pull/15602) ([jaymzh](https://github.com/jaymzh))
+- Some CI fixups [#15621](https://github.com/chef/chef/pull/15621) ([jaymzh](https://github.com/jaymzh))
+- Allow for the hab binary path for all chef-* to be found [#15625](https://github.com/chef/chef/pull/15625) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove fauxhai from tests that don&#39;t need it [#15624](https://github.com/chef/chef/pull/15624) ([jaymzh](https://github.com/jaymzh))
+- Removing the PowerShell package [#15611](https://github.com/chef/chef/pull/15611) ([johnmccrae](https://github.com/johnmccrae))
+- Bump ctke to pick up latest kitchen-dokken [#15635](https://github.com/chef/chef/pull/15635) ([tpowell-progress](https://github.com/tpowell-progress))
+- Tp/dokken kd bump [#15637](https://github.com/chef/chef/pull/15637) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating file lock handling for choco resources [#15646](https://github.com/chef/chef/pull/15646) ([johnmccrae](https://github.com/johnmccrae))
+- match platforms for gem versions in rubygems provider [#15649](https://github.com/chef/chef/pull/15649) ([rishichawda](https://github.com/rishichawda))
+- enumerate platforms before parsing remote output for candidate version [#15661](https://github.com/chef/chef/pull/15661) ([rishichawda](https://github.com/rishichawda))
+- Updating Inspec dependencies [#15672](https://github.com/chef/chef/pull/15672) ([johnmccrae](https://github.com/johnmccrae))
+- Bump rack to 3.2.5 [#15670](https://github.com/chef/chef/pull/15670) ([tpowell-progress](https://github.com/tpowell-progress))
+- FIPS mode testing using habitat package of openssl and infra client [#15402](https://github.com/chef/chef/pull/15402) ([neha-p6](https://github.com/neha-p6))
+- Preserve environment secrets which are being reset due to sudo on linux fips pipeline [#15676](https://github.com/chef/chef/pull/15676) ([neha-p6](https://github.com/neha-p6))
+- Update GHA concurrency group [#15680](https://github.com/chef/chef/pull/15680) ([neha-p6](https://github.com/neha-p6))
+- update faraday to 2.4.1 [#15677](https://github.com/chef/chef/pull/15677) ([rishichawda](https://github.com/rishichawda))
+- update aws-sdk-s3 to 1.213.0 [#15678](https://github.com/chef/chef/pull/15678) ([rishichawda](https://github.com/rishichawda))
+- Fix IPv6 crash in proxy no_proxy matching [#15655](https://github.com/chef/chef/pull/15655) ([kaolin](https://github.com/kaolin))
+- update plan file to remove github workflow files in vendored gems [#15679](https://github.com/chef/chef/pull/15679) ([rishichawda](https://github.com/rishichawda))
+- Add accept-no-persist for HAB_LICENSE [#15683](https://github.com/chef/chef/pull/15683) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove quotes from YML [#15684](https://github.com/chef/chef/pull/15684) ([tpowell-progress](https://github.com/tpowell-progress))
+- Build fixes. Windows should pass immediately, linux will fail until m… [#15685](https://github.com/chef/chef/pull/15685) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating the sbom version [#15691](https://github.com/chef/chef/pull/15691) ([johnmccrae](https://github.com/johnmccrae))
+- Ensure DevKit changes don&#39;t break the build [#15681](https://github.com/chef/chef/pull/15681) ([johnmccrae](https://github.com/johnmccrae))
+- Point back hab channel to base-2025 in GHA fips testing pipelines [#15675](https://github.com/chef/chef/pull/15675) ([neha-p6](https://github.com/neha-p6))
+- Hab 2.0 is busted? Downgrading all the things [#15695](https://github.com/chef/chef/pull/15695) ([johnmccrae](https://github.com/johnmccrae))
+- Updating the Notice file [#15696](https://github.com/chef/chef/pull/15696) ([johnmccrae](https://github.com/johnmccrae))
+- downgrade linux hab and clean up downgrade script [#15700](https://github.com/chef/chef/pull/15700) ([rishichawda](https://github.com/rishichawda))
+- Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae))
+- fix script path in kitchen yaml [#15709](https://github.com/chef/chef/pull/15709) ([rishichawda](https://github.com/rishichawda))
+<!-- latest_stable_release -->
+
 ## [v19.1.164](https://github.com/chef/chef/tree/v19.1.164) (2026-02-05)
 
 #### Merged Pull Requests
@@ -312,7 +315,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Updating version numbers [#15609](https://github.com/chef/chef/pull/15609) ([johnmccrae](https://github.com/johnmccrae))
 - Prefer powershell wrapper if it exists [#15613](https://github.com/chef/chef/pull/15613) ([tpowell-progress](https://github.com/tpowell-progress))
 - Use hab binlink if there [#15614](https://github.com/chef/chef/pull/15614) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v18.5.0](https://github.com/chef/chef/tree/v18.5.0) (2024-07-09)
 
