@@ -316,8 +316,8 @@ function Install-OmnibusDependencies {
         # Create .netrc file for additional auth support
         $netrcPath = "$env:USERPROFILE\_netrc"
         $netrcContent = "machine github.com login $token password x-oauth-basic"
-        # $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
-        # icacls $netrcPath /inheritance:r /grant:r "$($env:USERNAME):(R)"
+        $netrcContent | Out-File -FilePath $netrcPath -Encoding ascii -Force
+        icacls $netrcPath /inheritance:r /grant:r "$($env:USERNAME):(R)"
 
         # Clear GITHUB_TOKEN from the environment immediately after use
         Remove-Item Env:\GITHUB_TOKEN -ErrorAction SilentlyContinue
