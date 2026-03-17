@@ -312,10 +312,10 @@ function Install-OmnibusDependencies {
         }
 
         $token = $env:GITHUB_TOKEN.Trim()
-        Write-Output "--- GITHUB_TOKEN is configured"
+        # Write-Output "--- GITHUB_TOKEN is configured"
 
-        # Configure Git for authentication
-        Write-Output "--- Configuring Git authentication for private repositories"
+        # # Configure Git for authentication
+        # Write-Output "--- Configuring Git authentication for private repositories"
 
         # Use credential helper for authentication
         git config --global credential.helper store
@@ -340,19 +340,19 @@ function Install-OmnibusDependencies {
         # Set Bundler configuration for better reliability
         Write-Output "--- Configuring Bundler for private repositories"
         bundle config set --local without development
-        bundle config set --local timeout 600
-        bundle config set --local retry 3
-        bundle config set --local jobs 1
+        # bundle config set --local timeout 600
+        # bundle config set --local retry 3
+        # bundle config set --local jobs 1
 
-        # Navigate to omnibus directory
-        Set-Location "$($ScriptDir)/../../omnibus"
+        # # Navigate to omnibus directory
+        # Set-Location "$($ScriptDir)/../../omnibus"
 
-        # Verify we're in the right location
-        if (-not (Test-Path "Gemfile")) {
-            throw "Gemfile not found in $(Get-Location). Check omnibus directory path."
-        }
+        # # Verify we're in the right location
+        # if (-not (Test-Path "Gemfile")) {
+        #     throw "Gemfile not found in $(Get-Location). Check omnibus directory path."
+        # }
 
-        Write-Output "--- Current directory: $(Get-Location)"
+        # Write-Output "--- Current directory: $(Get-Location)"
         Write-Output "--- Running bundle install for Omnibus"
         bundle install
 
