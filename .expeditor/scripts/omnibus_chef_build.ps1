@@ -314,16 +314,6 @@ function Install-OmnibusDependencies {
         $token = $env:GITHUB_TOKEN.Trim()
         Write-Output "--- GITHUB_TOKEN is configured"
 
-        # Test GitHub connectivity
-        Write-Output "--- Testing GitHub connectivity"
-        try {
-            $response = Invoke-WebRequest -Uri "https://api.github.com" -UseBasicParsing -TimeoutSec 10
-            Write-Output "GitHub API accessible: $($response.StatusCode)"
-        } catch {
-            Write-Warning "GitHub connectivity issue: $_"
-            throw "Cannot reach GitHub API"
-        }
-
         # Configure Git for authentication
         Write-Output "--- Configuring Git authentication for private repositories"
 
