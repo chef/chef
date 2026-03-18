@@ -1,0 +1,28 @@
+---
+# Expeditor's built-in habitat/build does not support aarch64 targets.
+# This pipeline builds the aarch64-linux habitat package and uploads it
+# to the habitat builder (unstable channel).
+
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 120
+      retry:
+        automatic:
+          limit: 1
+
+steps:
+
+  - label: ":habicat: Build aarch64-linux habitat package"
+    commands:
+      - sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux
+      - ./.expeditor/scripts/upload_hab_aarch64.sh
+    agents:
+      queue: default-privileged-aarch64
+    plugins:
+    - docker#v3.5.0:
+        image: chefes/omnibus-toolchain-ubuntu-2204:aarch64
+        privileged: true
+        propagate-environment: true
+        environment:
+          - HAB_AUTH_TOKEN
