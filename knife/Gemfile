@@ -12,7 +12,7 @@ group(:development, :test) do # testing only , but why didn't this need to expli
   gem "chef-bin", path: "../chef-bin"
 end
 
-group(:omnibus_package, :pry) do
+group(:hab_package, :pry) do
   gem "pry"
   gem "pry-byebug"
   gem "pry-stack_explorer"
