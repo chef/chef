@@ -14,6 +14,8 @@
 
 ## Getting Started
 
+This is me adding nonsense to test out why teh fips tester is not working....
+
 Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure.
 
 ### Want to try Chef Infra?
