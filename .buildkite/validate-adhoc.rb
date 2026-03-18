@@ -21,13 +21,12 @@ arm_targets = [
   "amazon-2-aarch64:centos-7",
   "centos-7-aarch64:centos-7",
   "rhel-9-aarch64:rhel-9",
-  # "debian-9-aarch64:debian-9",
   "debian-10-aarch64:debian-9",
   "debian-11-aarch64:debian-9",
   "ubuntu-2004-aarch64:ubuntu-2004",
   "ubuntu-2204-aarch64:ubuntu-2204",
-  # "rocky-8-aarch64:rocky-8",
-  # "rocky-9-aarch64:rocky-9",
+  "rocky-8-aarch64:rocky-8",
+  "rocky-9-aarch64:rocky-9",
   "amazon-2023-aarch64:amazon-2023"
 ]
 
