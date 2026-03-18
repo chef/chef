@@ -18,7 +18,6 @@ error () {
 
 [[ -n "$hab_target" ]] || error 'no hab target provided'
 
-echo "--- :habicat: Installing Habitat 1.6.1245"
-rm -rf /hab
-curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -v 1.6.1245 -t "$hab_target"
+echo "--- :habicat: Installing latest version of Habitat"
+curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -t "$hab_target"
 hab license accept
