@@ -64,7 +64,7 @@ class Chef
         cr["items"].each do |cookbook|
           cookbook_collection[cookbook["cookbook_name"]] = cookbook["cookbook"]
         end
-        new_start = start + items
+        new_start = start + cr["items"].length
         if new_start < cr["total"]
           get_cookbook_list(items, new_start, cookbook_collection)
         else
