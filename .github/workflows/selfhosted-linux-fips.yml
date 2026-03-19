@@ -17,8 +17,7 @@ concurrency:
 
 jobs:
   workflow_guard:
-    if: false # Temporarily disabled - ubuntu-2404-pro-fips-tester runner unavailable
-    # if: github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request_target'
     uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
     permissions:
       contents: read
