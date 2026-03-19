@@ -23,7 +23,6 @@ jobs:
       contents: read
 
   linux:
-    if: false # Temporarily disabled - ubuntu-2404-pro-fips-tester runner unavailable
     needs: workflow_guard
     permissions:
       contents: read
