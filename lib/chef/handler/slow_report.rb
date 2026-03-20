@@ -30,13 +30,13 @@ class Chef
 
       def report
         if count == 0
-          puts "\nNo resources to profile\n\n"
+          Chef::Log.info("No resources to profile")
           return
         end
 
         top = all_records.sort_by(&:elapsed_time).last(amount).reverse
         data = top.map { |r| [ r.new_resource.to_s, r.elapsed_time, r.action, r.new_resource.cookbook_name, r.new_resource.recipe_name, stripped_source_line(r.new_resource) ] }
-        puts "\nTop #{count} slowest #{count == 1 ? "resource" : "resources"}:\n\n"
+        Chef::Log.info("Top #{count} slowest #{count == 1 ? "resource" : "resources"}:")
         table = TTY::Table.new(%w{resource elapsed_time action cookbook recipe source}, data)
         rendered = table.render do |renderer|
           renderer.border do
@@ -44,8 +44,7 @@ class Chef
             mid_mid      " "
           end
         end
-        puts rendered
-        puts "\n"
+        Chef::Log.info(rendered)
       end
 
       def all_records
