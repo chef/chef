@@ -26,11 +26,9 @@ if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
   else
    echo "GITHUB_TOKEN not set. Skipping GitHub auth setup."
   fi
-fi
 
-if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
-then
-  if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
+  if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
+  then
     echo " ********DEBUG  - access-key   pre-command  **********"
     TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
     ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
