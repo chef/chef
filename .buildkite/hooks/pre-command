@@ -2,6 +2,7 @@
 
 set -eu
 
+echo "**********DEBUG -  BUILDKITE_LABEL : $BUILDKITE_LABEL ***********"
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
@@ -16,18 +17,30 @@ OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolc
 export OMNIBUS_TOOLCHAIN_VERSION
 echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
+if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    # Prevent hangs if git tries to prompt
+    echo " ********DEBUG  - SETTING TOKEN FOR GITHUB AUTH  pre-command  **********"
+    export GIT_TERMINAL_PROMPT=0
+    git config --local url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+  else
+   echo "GITHUB_TOKEN not set. Skipping GitHub auth setup."
+  fi
+fi
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
-  TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-  ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
-  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
-  AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
-  export AWS_ACCESS_KEY_ID
-  AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
-  export AWS_SECRET_ACCESS_KEY
-  AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
-  export AWS_SESSION_TOKEN
+    echo " ********DEBUG  - access-key   pre-command  **********"
+    TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+    ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+    RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
+    AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
+    export AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
+    export AWS_SECRET_ACCESS_KEY
+    AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
+    export AWS_SESSION_TOKEN
 fi
+
 
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
@@ -89,4 +102,21 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG"
     export AWS_S3_SECRET_KEY
     
     echo "AWS S3 credentials set for omnibus cache operations"
+fi
+
+# Only for build steps that need omnibus-private access (or for all verify steps)
+if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
+  if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+    # Pick the correct region you already set above
+    GITHUB_TOKEN=$(
+      aws ssm get-parameter \
+        --name "buildkite-github-clone-only-token" \
+        --with-decryption \
+        --query Parameter.Value \
+        --output text \
+        --region "${AWS_REGION}"
+    )
+    export GITHUB_TOKEN
+    export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
+  fi
 fi
