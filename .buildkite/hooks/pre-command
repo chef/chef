@@ -26,9 +26,9 @@ if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
   else
    echo "GITHUB_TOKEN not set. Skipping GitHub auth setup."
   fi
-
-  if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
-  then
+fi
+if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
+then
     echo " ********DEBUG  - access-key   pre-command  **********"
     TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
     ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
@@ -39,8 +39,8 @@ if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
     export AWS_SECRET_ACCESS_KEY
     AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
     export AWS_SESSION_TOKEN
-  fi
 fi
+
 
 # We've now seen cases where origin/main on the build hosts can get
 # out of date. This causes us to build components unnecessarily.
@@ -105,16 +105,18 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG"
 fi
 
 # Only for build steps that need omnibus-private access (or for all verify steps)
-if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
-  # Pick the correct region you already set above
-  GITHUB_TOKEN=$(
-    aws ssm get-parameter \
-      --name "buildkite-github-clone-only-token" \
-      --with-decryption \
-      --query Parameter.Value \
-      --output text \
-      --region "${AWS_REGION}"
-  )
-  export GITHUB_TOKEN
-  export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
+if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
+  if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+    # Pick the correct region you already set above
+    GITHUB_TOKEN=$(
+      aws ssm get-parameter \
+        --name "buildkite-github-clone-only-token" \
+        --with-decryption \
+        --query Parameter.Value \
+        --output text \
+        --region "${AWS_REGION}"
+    )
+    export GITHUB_TOKEN
+    export OMNIBUS_SUBMODULE_CONFIG_PRIVATE
+  fi
 fi
