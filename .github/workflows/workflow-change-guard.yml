@@ -36,7 +36,7 @@ jobs:
           CHANGED=$(git diff --name-only \
             ${{ github.event.pull_request.base.sha }} \
             ${{ github.event.pull_request.head.sha }} \
-            | grep -E '^(\.github/|habitat/|\.expeditor/|\.buildkite/|Gemfile$|Rakefile$|Dockerfile$|.*\.gemspec$)' || true)
+            | grep -E '^(\.github/|habitat/|\.expeditor/|\.buildkite/|[Gg]emfile$|[Rr]akefile$|Dockerfile$|.*\.gemspec$)' || true)
 
           if [ -n "$CHANGED" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
