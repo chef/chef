@@ -42,9 +42,8 @@ class Chef
           def dnf_command
             # platform-python is used for system tools on RHEL 8 and is installed under /usr/libexec
             @dnf_command ||= begin
-                               cmd = which("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
-                                 shell_out("#{f} -c 'import dnf'").exitstatus == 0
-                               end
+                               executables = where("platform-python", "python", "python3", "python2", "python2.7", extra_path: "/usr/libexec")
+                               cmd = executables.find { |f| shell_out("#{f} -c 'import dnf'").exitstatus == 0 }
                                raise Chef::Exceptions::Package, "cannot find dnf libraries, you may need to use yum_package" unless cmd
 
                                "#{cmd} #{DNF_HELPER}"
