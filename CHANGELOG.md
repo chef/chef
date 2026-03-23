@@ -1,16 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.2.13 -->
+## [v19.2.13](https://github.com/chef/chef/tree/v19.2.13) (2026-03-23)
 
 #### Merged Pull Requests
+- Removing Trivy testing for now [#15726](https://github.com/chef/chef/pull/15726) ([johnmccrae](https://github.com/johnmccrae))
 - fix script path in kitchen yaml [#15709](https://github.com/chef/chef/pull/15709) ([rishichawda](https://github.com/rishichawda))
 - Final notice text [#15702](https://github.com/chef/chef/pull/15702) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Removing Trivy testing for now [#15726](https://github.com/chef/chef/pull/15726) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.13 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
