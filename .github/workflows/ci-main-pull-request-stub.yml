@@ -57,7 +57,7 @@ jobs:
       perform-trufflehog-scan: true
 
       # ADDED TRIVY SCAN
-      perform-trivy-scan: true
+      # perform-trivy-scan: true # Commented out 23 March 2026 because of a nasty security vulnerability in trivy that is being fixed, but no ETA on fix.
 
       # BlackDuck SAST (Polaris) and SCA scans (requires a build or download to do SAST)
       # requires these secrets: POLARIS_SERVER_URL, POLARIS_ACCESS_TOKEN
