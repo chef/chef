@@ -4,7 +4,7 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-# Ensure Habitat 1.6.1245 is installed on Windows
+# Ensure Habitat 2.0.450 is installed on Windows
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
 
