@@ -2,7 +2,6 @@
 
 set -eu
 
-echo "**********DEBUG -  BUILDKITE_LABEL : $BUILDKITE_LABEL ***********"
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
@@ -20,7 +19,6 @@ echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
   if [[ -n "${GITHUB_TOKEN:-}" ]]; then
     # Prevent hangs if git tries to prompt
-    echo " ********DEBUG  - SETTING TOKEN FOR GITHUB AUTH  pre-command  **********"
     export GIT_TERMINAL_PROMPT=0
     git config --local url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
   else
@@ -29,7 +27,6 @@ if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
 fi
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
-    echo " ********DEBUG  - access-key   pre-command  **********"
     TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
     ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
     RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
