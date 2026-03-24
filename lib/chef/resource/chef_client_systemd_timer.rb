@@ -112,7 +112,7 @@ class Chef
 
       action :add, description: "Add a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         if new_resource.chef_binary_path.include?("/hab/")
-          selinux_fcontext '/hab/pkgs/chef/chef-infra-client/.*/bin(/.*)?' do
+          selinux_fcontext "/hab/pkgs/chef/chef-infra-client/.*/bin(/.*)?" do
             secontext "bin_t"
             action :manage
             only_if "which getenforce"
