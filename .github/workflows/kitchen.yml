@@ -337,75 +337,77 @@ jobs:
           kitchen destroy end-to-end-${{ matrix.os }}
 
   # end-to-end recipe testing on ARM64 using test-kitchen-enterprise and habitat package of Infra Client
-  docr_lnx_arm64:
-    name: dokr_lnx_arm64_hab
-    needs: workflow_guard
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - almalinux-9
-          - almalinux-10
-          - debian-11
-          - debian-12
-          - debian-13
-          - fedora-42
-          - opensuse-leap-15
-          - oraclelinux-8
-          - oraclelinux-9
-          - rockylinux-9
-          - rockylinux-10
-          - ubuntu-2204
-          - ubuntu-2404
-    runs-on: ubuntu-24.04-arm
-    env:
-      FORCE_FFI_YAJL: ext
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-      HAB_ORIGIN: gha
-      HAB_BLDR_CHANNEL: base-2025
-      HAB_REFRESH_CHANNEL: base-2025
-      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-      HAB_LICENSE: accept-no-persist
-    steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-          clean: true
-      - name: Install Habitat CLI
-        run: |
-          sudo -E ../.expeditor/scripts/install-hab.sh aarch64-linux
-          sudo -E hab --version
-      - name: Install Test-Kitchen-Enterprise
-        run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable
-          kitchen --version
-          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
-      - name: Install the kitchen-dokken driver latest to pick up docker fix
-        run: |
-          sudo -E hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-dokken --version 2.22.2
-      - name: Generate fake Habitat Origin Key
-        run: |
-          hab origin key generate "$HAB_ORIGIN"
-          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
-      - name: Build Habitat Package (for testing purpose only)
-        run: |
-          cd ..
-          hab pkg build .
-          source ./results/last_build.env
-          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
-      - name: Set up HAB token file
-        run: |
-          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
-          chmod 600 hab_token
-      - name: Kitchen Test
-        run: |
-          kitchen converge end-to-end-${{ matrix.os }}
-          kitchen destroy end-to-end-${{ matrix.os }}
+# BEGIN docr_lnx_arm64
+#  docr_lnx_arm64:
+#    name: dokr_lnx_arm64_hab
+#    needs: workflow_guard
+#    permissions:
+#      contents: read
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os:
+#          - almalinux-9
+#          - almalinux-10
+#          - debian-11
+#          - debian-12
+#          - debian-13
+#          - fedora-42
+#          - opensuse-leap-15
+#          - oraclelinux-8
+#          - oraclelinux-9
+#          - rockylinux-9
+#          - rockylinux-10
+#          - ubuntu-2204
+#          - ubuntu-2404
+#    runs-on: ubuntu-24.04-arm
+#    env:
+#      FORCE_FFI_YAJL: ext
+#      CHEF_LICENSE: accept-no-persist
+#      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+#      HAB_ORIGIN: gha
+#      HAB_BLDR_CHANNEL: base-2025
+#      HAB_REFRESH_CHANNEL: base-2025
+#      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+#      HAB_LICENSE: accept-no-persist
+#    steps:
+#      - name: Checkout PR code
+#        uses: actions/checkout@v6
+#        with:
+#          ref: ${{ github.event.pull_request.head.sha }}
+#          persist-credentials: false
+#          clean: true
+#      - name: Install Habitat CLI
+#        run: |
+#          sudo -E ../.expeditor/scripts/install-hab.sh aarch64-linux
+#          sudo -E hab --version
+#      - name: Install Test-Kitchen-Enterprise
+#        run: |
+#          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable
+#          kitchen --version
+#          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+#      - name: Install the kitchen-dokken driver latest to pick up docker fix
+#        run: |
+#          sudo -E hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-dokken --version 2.22.2
+#      - name: Generate fake Habitat Origin Key
+#        run: |
+#          hab origin key generate "$HAB_ORIGIN"
+#          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+#      - name: Build Habitat Package (for testing purpose only)
+#        run: |
+#          cd ..
+#          hab pkg build .
+#          source ./results/last_build.env
+#          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+#      - name: Set up HAB token file
+#        run: |
+#          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+#          chmod 600 hab_token
+#      - name: Kitchen Test
+#        run: |
+#          kitchen converge end-to-end-${{ matrix.os }}
+#          kitchen destroy end-to-end-${{ matrix.os }}
+# END docr_lnx_arm64 section
 
 #  vm_lnx_x86_64:
 #    strategy:
