@@ -28,11 +28,11 @@ if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
   gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
 else
-  # bundling in omnibus
+  # bundling in packaging
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-group(:hab_package) do
+group(:packaging) do
   gem "appbundler"
   gem "rb-readline"
   gem "inspec-core-bin", "= 7.0.107" # need to provide the binaries for inspec
@@ -41,7 +41,7 @@ end
 
 gem "repl_type_completor", "~> 0.1.12" # deprecation warnings in chef-shell
 
-group(:hab_package, :pry) do
+group(:packaging, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "~> 0.15.2"

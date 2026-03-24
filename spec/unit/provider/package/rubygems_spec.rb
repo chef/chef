@@ -506,7 +506,7 @@ describe Chef::Provider::Package::Rubygems do
   let(:gem_dep) { Gem::Dependency.new(gem_name, target_version) }
 
   before(:each) do
-    # We choose detect omnibus via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
+    # We choose detect chef package via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
     allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(bindir)
     # Rubygems uses these two interally
     allow(RbConfig::CONFIG).to receive(:[]).with("arch").and_call_original

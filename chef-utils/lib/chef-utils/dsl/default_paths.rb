@@ -29,7 +29,7 @@ module ChefUtils
         env_path = env ? env["PATH"] : __env_path
         env_path = "" if env_path.nil?
         path_separator = ChefUtils.windows? ? ";" : ":"
-        # ensure the Ruby and Gem bindirs are included for omnibus chef installs
+        # ensure the Ruby and Gem bindirs are included for packaged chef installs (e.g., habitat)
         new_paths = env_path.split(path_separator)
         [ __ruby_bindir, __gem_bindir ].compact.each do |path|
           new_paths = [ path ] + new_paths unless new_paths.include?(path)

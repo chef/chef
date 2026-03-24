@@ -153,7 +153,7 @@ At least once a year, we will also do a review of the limits in the `Gemfile`.
 
 ## Release Cycles
 
-Our primary shipping vehicle is operating system specific packages that includes all the requirements of Chef. The packages are built with our [Omnibus](https://github.com/chef/omnibus) packing project.
+Our primary shipping vehicle is operating system specific packages that includes all the requirements of Chef. The packages are built with our [Habitat](https://github.com/habitat-sh/habitat) packing project.
 
 We also release our software as gems to [Rubygems](https://rubygems.org/) but we strongly recommend using Chef packages since they are the only combination of native libraries & gems required by Chef that we test thoroughly.
 
