@@ -59,7 +59,7 @@ jobs:
       perform-trufflehog-scan: true
       
       # ADDED TRIVY SCAN
-      perform-trivy-scan: true
+      # perform-trivy-scan: true # No trivy for now as it has a security issue.
       
       # BlackDuck SAST (Polaris) and SCA scans (requires a build or download to do SAST)
       # requires these secrets: POLARIS_SERVER_URL, POLARIS_ACCESS_TOKEN
