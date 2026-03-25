@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.19 -->
-## [v19.2.19](https://github.com/chef/chef/tree/v19.2.19) (2026-03-25)
+<!-- latest_release 19.2.20 -->
+## [v19.2.20](https://github.com/chef/chef/tree/v19.2.20) (2026-03-25)
 
 #### Merged Pull Requests
-- Moving to using the main branch yaml file [#15729](https://github.com/chef/chef/pull/15729) ([johnmccrae](https://github.com/johnmccrae))
+- [dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15718](https://github.com/chef/chef/pull/15718) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15718](https://github.com/chef/chef/pull/15718) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.2.20 -->
 - Moving to using the main branch yaml file [#15729](https://github.com/chef/chef/pull/15729) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.19 -->
 - enable arm builds in verify and adhoc pipelines [#15710](https://github.com/chef/chef/pull/15710) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.18 -->
 - slow report: use Chef::Log, not puts [#15721](https://github.com/chef/chef/pull/15721) ([mattp-](https://github.com/mattp-)) <!-- 19.2.17 -->
