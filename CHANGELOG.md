@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.17 -->
-## [v19.2.17](https://github.com/chef/chef/tree/v19.2.17) (2026-03-24)
+<!-- latest_release 19.2.18 -->
+## [v19.2.18](https://github.com/chef/chef/tree/v19.2.18) (2026-03-25)
 
 #### Merged Pull Requests
-- slow report: use Chef::Log, not puts [#15721](https://github.com/chef/chef/pull/15721) ([mattp-](https://github.com/mattp-))
+- enable arm builds in verify and adhoc pipelines [#15710](https://github.com/chef/chef/pull/15710) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- enable arm builds in verify and adhoc pipelines [#15710](https://github.com/chef/chef/pull/15710) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.18 -->
 - slow report: use Chef::Log, not puts [#15721](https://github.com/chef/chef/pull/15721) ([mattp-](https://github.com/mattp-)) <!-- 19.2.17 -->
 - Disable arm kt until hab 1.6 pinning is fixed [#15730](https://github.com/chef/chef/pull/15730) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.16 -->
 - add arm platforms for kitchen runs [#15727](https://github.com/chef/chef/pull/15727) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.15 -->
