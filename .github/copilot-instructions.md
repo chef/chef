@@ -23,7 +23,6 @@ chef/
 ├── lib/                        # Main Chef library code
 │   ├── chef.rb                 # Main entry point
 │   └── chef/                   # Core Chef modules and classes
-├── omnibus/                    # Omnibus packaging for distribution
 ├── spec/                       # Test specifications
 │   ├── unit/                   # Unit tests
 │   ├── functional/             # Functional tests
@@ -251,7 +250,7 @@ rake spec
 - **Buildkite**: Continuous integration and testing
 - **RuboCop**: Code style and quality checking
 - **Test Kitchen**: Infrastructure testing
-- **Omnibus**: Package building
+- **Habitat**: Package building
 
 ### Related Repositories
 

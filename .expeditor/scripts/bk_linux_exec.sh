@@ -1,3 +1,4 @@
+# This script is no longer used in pipelines.
 #!/bin/bash
 
 # Enable IPv6 in docker

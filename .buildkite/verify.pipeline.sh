@@ -103,10 +103,10 @@ for gem in ${external_gems[@]}; do
     echo "    - apt-get update -y"
     # cspell:disable-next-line
     echo "    - apt-get install -y graphviz"
-    echo "    - bundle config set --local without hab_package"
+    echo "    - bundle config set --local without packaging"
   else
     echo "    - export PATH=\"/root/.rbenv/shims:/opt/chef/bin:${PATH}\""
-    echo "    - bundle config set --local without hab_package"
+    echo "    - bundle config set --local without packaging"
     echo "    - bundle config set --local path 'vendor/bundle'"
   fi
   echo "    - bundle install --jobs=3 --retry=3"
