@@ -162,7 +162,7 @@ shared_context "a client run" do
     # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
     #
     expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], hash_including(version_class: Chef::CookbookManifestVersions)).and_return(http_cookbook_sync)
     expect(http_cookbook_sync).to receive(:post)
       .with("environments/_default/cookbook_versions", { run_list: [] })
       .and_return({})
@@ -519,7 +519,7 @@ describe Chef::Client do
             # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], hash_including(version_class: Chef::CookbookManifestVersions)).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post)
               .with("environments/_default/cookbook_versions", { run_list: ["override_recipe"] })
               .and_return({})
@@ -553,7 +553,7 @@ describe Chef::Client do
           # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], hash_including(version_class: Chef::CookbookManifestVersions)).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post)
             .with("environments/_default/cookbook_versions", { run_list: ["new_run_list_recipe"] })
             .and_return({})
@@ -876,6 +876,122 @@ describe Chef::Client do
     it "should not print a warning, when enforce_path_sanity is not passed" do
       expect(logger).not_to receive(:warn).with("`enforce_path_sanity` is deprecated, please use `enforce_default_paths` instead!")
       client.run
+    end
+  end
+end
+
+describe Chef::Client, "target mode Chef Server authentication" do
+  include_context "client"
+
+  let(:target_host) { "target.example.com" }
+  let(:operator_name) { "operator-node" }
+
+  before do
+    Chef::Config.reset
+    Chef::Config[:chef_server_url] = "https://chef-server.example.com/organizations/myorg"
+    Chef::Config[:client_key] = "/etc/chef/client.pem"
+    Chef::Config[:event_loggers] = []
+    allow(Ohai::System).to receive(:new).and_return(ohai_system)
+  end
+
+  after do
+    Chef::Config.reset
+  end
+
+  describe "#rest" do
+    context "in normal (non-target) mode" do
+      before do
+        Chef::Config[:node_name] = fqdn
+        Chef::Config[:api_client_name] = nil
+      end
+
+      it "authenticates to Chef Server using node_name" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: fqdn,
+                signing_key_filename: Chef::Config[:client_key])
+          .and_return(double("rest"))
+        client.rest
+      end
+    end
+
+    context "in target mode with api_client_name set (Chef Server scenario)" do
+      before do
+        Chef::Config[:node_name] = target_host
+        Chef::Config[:api_client_name] = operator_name
+        Chef::Config[:api_client_key] = "/etc/chef/client.pem"
+      end
+
+      it "authenticates to Chef Server using api_client_name and api_client_key" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: operator_name,
+                signing_key_filename: "/etc/chef/client.pem")
+          .and_return(double("rest"))
+        client.rest
+      end
+
+      it "does not use the target host as the Chef Server client identity" do
+        allow(Chef::ServerAPI).to receive(:new).and_return(double("rest"))
+        client.rest
+        expect(Chef::ServerAPI).not_to have_received(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: target_host,
+                signing_key_filename: anything)
+      end
+    end
+
+    context "in target mode without a prior node_name (developer workstation scenario)" do
+      before do
+        Chef::Config[:node_name] = target_host
+        Chef::Config[:api_client_name] = nil
+        Chef::Config[:api_client_key] = nil
+      end
+
+      it "falls back to node_name (target host) for Chef Server auth" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: target_host,
+                signing_key_filename: Chef::Config[:client_key])
+          .and_return(double("rest"))
+        client.rest
+      end
+    end
+  end
+
+  describe "#rest_clean" do
+    context "in target mode with api_client_name set" do
+      before do
+        Chef::Config[:node_name] = target_host
+        Chef::Config[:api_client_name] = operator_name
+      end
+
+      it "authenticates to Chef Server using api_client_name" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: operator_name,
+                signing_key_filename: Chef::Config[:client_key],
+                validate_utf8: false)
+          .and_return(double("rest_clean"))
+        client.rest_clean
+      end
+    end
+
+    context "in normal (non-target) mode" do
+      before do
+        Chef::Config[:node_name] = fqdn
+        Chef::Config[:api_client_name] = nil
+      end
+
+      it "authenticates to Chef Server using node_name" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: fqdn,
+                signing_key_filename: Chef::Config[:client_key],
+                validate_utf8: false)
+          .and_return(double("rest_clean"))
+        client.rest_clean
+      end
     end
   end
 end

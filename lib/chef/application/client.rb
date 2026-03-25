@@ -127,8 +127,14 @@ class Chef::Application::Client < Chef::Application::Base
         train_config = Train.unpack_target_from_uri(Chef::Config.target_mode.host)
         Chef::Config.target_mode = train_config
       end
+      # Save the operator's identity BEFORE enabling target mode.
+      # client_key must be captured here because its default path changes once
+      # target_mode.enabled = true (it would resolve to /etc/chef/<target>/client.pem
+      # instead of the workstation's /etc/chef/client.pem).
+      Chef::Config[:api_client_name] ||= Chef::Config[:node_name]
+      Chef::Config[:api_client_key]  ||= Chef::Config[:client_key]
       Chef::Config.target_mode.enabled = true
-      Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
+      Chef::Config.node_name = Chef::Config.target_mode.host
     end
 
     if config[:credentials]

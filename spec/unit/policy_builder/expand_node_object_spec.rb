@@ -67,6 +67,39 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:temporary_policy?)
     end
 
+    describe "api_service credentials" do
+      after { Chef::Config.reset }
+
+      it "uses api_client_name and api_client_key for the ServerAPI when set (target mode)" do
+        http = double("Chef::ServerAPI")
+        Chef::Config[:chef_server_url] = "https://chef.example.com/organizations/myorg"
+        Chef::Config[:api_client_name] = "admin-user"
+        Chef::Config[:api_client_key]  = "/etc/chef/admin-user.pem"
+        expect(Chef::ServerAPI).to receive(:new).with(
+          Chef::Config[:chef_server_url],
+          client_name: "admin-user",
+          signing_key_filename: "/etc/chef/admin-user.pem",
+          version_class: Chef::CookbookManifestVersions
+        ).and_return(http)
+        expect(policy_builder.api_service).to eq(http)
+      end
+
+      it "falls back to node_name when api_client_name is not set" do
+        http = double("Chef::ServerAPI")
+        Chef::Config[:chef_server_url] = "https://chef.example.com/organizations/myorg"
+        Chef::Config[:node_name]       = "my-node"
+        Chef::Config[:api_client_name] = nil
+        Chef::Config[:api_client_key]  = nil
+        expect(Chef::ServerAPI).to receive(:new).with(
+          Chef::Config[:chef_server_url],
+          client_name: "my-node",
+          signing_key_filename: Chef::Config[:client_key],
+          version_class: Chef::CookbookManifestVersions
+        ).and_return(http)
+        expect(policy_builder.api_service).to eq(http)
+      end
+    end
+
     describe "finishing loading the node" do
 
       let(:node) { Chef::Node.new.tap { |n| n.name(node_name) } }
