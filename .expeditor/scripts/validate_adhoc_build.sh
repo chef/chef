@@ -1,4 +1,5 @@
-set -e pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
@@ -18,7 +19,13 @@ echo "--- License serverl url is $CHEF_LICENSE_SERVER"
 git config --global --add safe.directory /workdir
 
 echo "--- Downloading package artifact"
-export PKG_ARTIFACT=$(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_LINUX")
+arch=$(uname -m)
+if [[ $arch == "aarch64" ]]; then
+  artifact_key="INFRA_HAB_ARTIFACT_LINUX_AARCH64"
+else
+  artifact_key="INFRA_HAB_ARTIFACT_LINUX"
+fi
+export PKG_ARTIFACT=$(buildkite-agent meta-data get "$artifact_key")
 buildkite-agent artifact download "$PKG_ARTIFACT" .
 
 echo ":key: Downloading origin key"
