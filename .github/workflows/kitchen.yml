@@ -27,6 +27,7 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
+      HAB_LICENSE: accept
     steps:
     - uses: actions/checkout@v5
     - name: Install Chef
