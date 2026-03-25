@@ -29,7 +29,7 @@ jobs:
           echo "CI main pull request stub version $STUB_VERSION"
 
   call-ci-chef-18-pr-check-pipeline:
-    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@chef-19
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
     secrets: inherit
     permissions: 
       id-token: write
@@ -39,9 +39,10 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
-      detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
-      blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
-      bridge-break: false # Prevents build failure on Bridge violations
+      # detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
+      # blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
+      # bridge-break: false # Prevents build failure on Bridge violations
+      # These options were in a chef-infra specific version. Commenting them out as a reference in case we need them at some point.
       
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
       version: '18.10.17' # ${{ github.event.repository.version }}
