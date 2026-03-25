@@ -463,10 +463,13 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
   end
 
   describe "target mode identity" do
+    let(:new_array) { ["--target", "my-target-host"] }
+    let(:workstation_pem_path) { "/home/user/.chef/workstation.pem" }
+
     context "when target is specified and node_name is already set from config" do
       before do
         Chef::Config[:node_name] = "workstation_user"
-        ARGV.replace(["--target", "my-target-host"])
+        ARGV.replace(new_array)
       end
 
       it "overrides node_name with the target hostname" do
@@ -482,8 +485,8 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
 
     context "when target is specified and client_key is already set from config" do
       before do
-        Chef::Config[:client_key] = "/home/user/.chef/workstation.pem"
-        ARGV.replace(["--target", "my-target-host"])
+        Chef::Config[:client_key] = workstation_pem_path
+        ARGV.replace(new_array)
       end
 
       it "resets client_key so per-target default is evaluated" do
@@ -497,7 +500,7 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
     context "when target is specified and node_name is not set" do
       before do
         Chef::Config.delete(:node_name)
-        ARGV.replace(["--target", "my-target-host"])
+        ARGV.replace(new_array)
       end
 
       it "sets node_name to the target hostname" do
@@ -509,7 +512,7 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
     context "when target is not specified" do
       before do
         Chef::Config[:node_name] = "workstation_user"
-        Chef::Config[:client_key] = "/home/user/.chef/workstation.pem"
+        Chef::Config[:client_key] = workstation_pem_path
         ARGV.replace([])
       end
 
@@ -520,7 +523,7 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
 
       it "does not change client_key" do
         app.reconfigure
-        expect(Chef::Config[:client_key]).to eq("/home/user/.chef/workstation.pem")
+        expect(Chef::Config[:client_key]).to eq(workstation_pem_path)
       end
     end
   end
