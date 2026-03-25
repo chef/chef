@@ -1,4 +1,4 @@
-$required_hab_version = [Version]"1.6.125"
+$required_hab_version = [Version]"1.6.1245"
 $hab_install_script_url = 'https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'
 $hab_install_script_path = Join-Path $env:TEMP 'hab-install.ps1'
 
