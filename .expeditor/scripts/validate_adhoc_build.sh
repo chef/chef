@@ -1,4 +1,5 @@
-set -e pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
@@ -19,7 +20,7 @@ git config --global --add safe.directory /workdir
 
 echo "--- Downloading package artifact"
 arch=$(uname -m)
-if [ "$arch" = "aarch64" ]; then
+if [[ $arch == "aarch64" ]]; then
   artifact_key="INFRA_HAB_ARTIFACT_LINUX_AARCH64"
 else
   artifact_key="INFRA_HAB_ARTIFACT_LINUX"
