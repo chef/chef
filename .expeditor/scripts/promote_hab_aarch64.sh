@@ -20,8 +20,18 @@ export HAB_NONINTERACTIVE="true"
 
 # Expeditor provides EXPEDITOR_PKG_VERSION for hab_package_published
 # and EXPEDITOR_PROMOTABLE (which is the version) for project_promoted.
-# For buildkite_hab_build_group_published, we extract it from pkg_idents.
+# For buildkite_hab_build_group_published, the aarch64 build is a separate pipeline
+# (hab_aarch64_validate/release) that runs in parallel with habitat/build. Both build
+# from the same git commit so they produce the same version. The aarch64 target is NOT
+# in .bldr.toml so it's absent from pkg_idents; we extract the version from the
+# x86_64-linux ident instead.
+# Expeditor flattens Hash metadata keys by appending with "_" and stripping non-word
+# chars (\W), then uppercases the key, so:
+#   pkg_idents["chef-infra-client-x86_64-linux"] -> EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
 PKG_VERSION="${EXPEDITOR_PKG_VERSION:-${EXPEDITOR_PROMOTABLE:-}}"
+if [[ -z "$PKG_VERSION" && -n "${EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX:-}" ]]; then
+  PKG_VERSION=$(echo "${EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX}" | cut -d'/' -f3)
+fi
 
 # Determine source and target channels based on Expeditor workload context
 if [[ -n "${EXPEDITOR_TARGET_CHANNEL:-}" ]]; then
