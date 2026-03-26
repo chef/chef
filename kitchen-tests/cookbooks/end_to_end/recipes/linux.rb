@@ -75,7 +75,7 @@ unless (amazon? && node["platform_version"] >= "2023") || (ubuntu? && node["plat
     oracle: { "<= 8" => "ntp" },
     centos: { "<= 8" => "ntp" },
     rhel: { "<= 8" => "ntp" },
-    default: "chrony"
+    default: "::_chrony"
   )
 end
 
