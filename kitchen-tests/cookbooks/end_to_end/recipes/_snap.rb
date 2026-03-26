@@ -6,12 +6,20 @@ service "snapd" do
   action :start
 end
 
+# Wait for snapd to finish its initial seeding (e.g. background core install on Ubuntu 24.04)
+# before attempting any snap operations, to avoid snap-change-conflict errors.
+execute "wait_for_snapd_seeding" do
+  command "snap wait system seed.loaded"
+  timeout 120
+  ignore_failure true
+end
+
 snap_package "core" do
   # this is an attempt to keep Ubuntu 18.04 from failing
   action :install
   channel "stable"
-  retries 2
-  retry_delay 15
+  retries 3
+  retry_delay 30
   notifies :run, "execute[wait_for_snapd]", :immediately
 end
 
