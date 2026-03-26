@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.21 -->
-## [v19.2.21](https://github.com/chef/chef/tree/v19.2.21) (2026-03-26)
+<!-- latest_release 19.2.22 -->
+## [v19.2.22](https://github.com/chef/chef/tree/v19.2.22) (2026-03-26)
 
 #### Merged Pull Requests
-- add a recipe for chrony in kitchen-tests [#15738](https://github.com/chef/chef/pull/15738) ([rishichawda](https://github.com/rishichawda))
+- enable kitchen tests on arm platforms [#15733](https://github.com/chef/chef/pull/15733) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- enable kitchen tests on arm platforms [#15733](https://github.com/chef/chef/pull/15733) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.22 -->
 - add a recipe for chrony in kitchen-tests [#15738](https://github.com/chef/chef/pull/15738) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.21 -->
 - [dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15718](https://github.com/chef/chef/pull/15718) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.2.20 -->
 - Moving to using the main branch yaml file [#15729](https://github.com/chef/chef/pull/15729) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.19 -->
