@@ -6,11 +6,11 @@ service "snapd" do
   action :start
 end
 
-# Wait for snapd to finish its initial seeding (e.g. background core install on Ubuntu 24.04)
+# Wait for snapd to finish any in-progress changes (e.g. background core install on Ubuntu 24.04)
 # before attempting any snap operations, to avoid snap-change-conflict errors.
+# Uses a polling loop rather than 'snap wait system seed.loaded' which hangs on some Ubuntu versions.
 execute "wait_for_snapd_seeding" do
-  command "snap wait system seed.loaded"
-  timeout 120
+  command "timeout 60 bash -c 'while snap changes 2>/dev/null | grep -q Doing; do sleep 2; done' || true"
   ignore_failure true
 end
 
