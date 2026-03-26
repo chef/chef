@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.20 -->
-## [v18.10.20](https://github.com/chef/chef/tree/v18.10.20) (2026-03-26)
+<!-- latest_release 18.10.21 -->
+## [v18.10.21](https://github.com/chef/chef/tree/v18.10.21) (2026-03-26)
 
 #### Merged Pull Requests
-- habitat version pin [#15736](https://github.com/chef/chef/pull/15736) ([johnmccrae](https://github.com/johnmccrae))
+- [backport][chef-18] add a recipe for chrony [#15739](https://github.com/chef/chef/pull/15739) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [backport][chef-18] add a recipe for chrony [#15739](https://github.com/chef/chef/pull/15739) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.21 -->
 - habitat version pin [#15736](https://github.com/chef/chef/pull/15736) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.20 -->
 - Remove release notes actions from Chef 18 [#15546](https://github.com/chef/chef/pull/15546) ([IanMadd](https://github.com/IanMadd)) <!-- 18.10.19 -->
 - Updated train-winrm train-core and chef to latest release for upcoming Knife 18.x release [#15671](https://github.com/chef/chef/pull/15671) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.10.18 -->
