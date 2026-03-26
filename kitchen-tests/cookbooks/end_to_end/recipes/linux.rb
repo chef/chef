@@ -75,7 +75,7 @@ unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony se
     oracle: { "<= 8" => "ntp" },
     centos: { "<= 8" => "ntp" },
     rhel: { "<= 8" => "ntp" },
-    default: "chrony"
+    default: "::_chrony"
   )
 end
 
