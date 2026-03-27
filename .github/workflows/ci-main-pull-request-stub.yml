@@ -102,6 +102,7 @@ jobs:
       perform-blackduck-sca-scan: ${{ github.event_name == 'push' }} # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
       blackduck-project-name: 'chef' # BlackDuck project name, typically the repository name
+      generate-blackduck-sbom: ${{ github.event_name == 'push' }} # obsolete, use perform-blackduck-sca-scan instead
 
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
