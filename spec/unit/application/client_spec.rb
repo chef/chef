@@ -461,6 +461,72 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
   it_behaves_like "an application that loads a dot d" do
     let(:dot_d_config_name) { :client_d_dir }
   end
+
+  describe "target mode identity" do
+    let(:new_array) { ["--target", "my-target-host"] }
+    let(:workstation_pem_path) { "/home/user/.chef/workstation.pem" }
+
+    context "when target is specified and node_name is already set from config" do
+      before do
+        Chef::Config[:node_name] = "workstation_user"
+        ARGV.replace(new_array)
+      end
+
+      it "overrides node_name with the target hostname" do
+        app.reconfigure
+        expect(Chef::Config[:node_name]).to eq("my-target-host")
+      end
+
+      it "enables target mode" do
+        app.reconfigure
+        expect(Chef::Config.target_mode.enabled).to be true
+      end
+    end
+
+    context "when target is specified and client_key is already set from config" do
+      before do
+        Chef::Config[:client_key] = workstation_pem_path
+        ARGV.replace(new_array)
+      end
+
+      it "resets client_key so per-target default is evaluated" do
+        app.reconfigure
+        expect(Chef::Config[:client_key]).to eq(
+          ChefConfig::PathHelper.cleanpath("#{ChefConfig::Config.etc_chef_dir}/my-target-host/client.pem")
+        )
+      end
+    end
+
+    context "when target is specified and node_name is not set" do
+      before do
+        Chef::Config.delete(:node_name)
+        ARGV.replace(new_array)
+      end
+
+      it "sets node_name to the target hostname" do
+        app.reconfigure
+        expect(Chef::Config[:node_name]).to eq("my-target-host")
+      end
+    end
+
+    context "when target is not specified" do
+      before do
+        Chef::Config[:node_name] = "workstation_user"
+        Chef::Config[:client_key] = workstation_pem_path
+        ARGV.replace([])
+      end
+
+      it "does not change node_name" do
+        app.reconfigure
+        expect(Chef::Config[:node_name]).to eq("workstation_user")
+      end
+
+      it "does not change client_key" do
+        app.reconfigure
+        expect(Chef::Config[:client_key]).to eq(workstation_pem_path)
+      end
+    end
+  end
 end
 
 describe Chef::Application::Client, "setup_application" do
