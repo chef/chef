@@ -10,6 +10,7 @@ From there you should see a zoom link that links you to the meeting.
 
 ## Products
 - [Chef](https://github.com/chef/chef) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef) [Chef pull requests](https://github.com/chef/chef/pulls)
+- [Common Github Actions](https://github.com/chef/common-github-actions) ![Open PRs](https://img.shields.io/github/issues-pr/chef/common-github-actions) [Common Github Actions pull requests](https://github.com/chef/common-github-actions/pulls)
 - [Ohai](https://github.com/chef/ohai) ![Open PRs](https://img.shields.io/github/issues-pr/chef/ohai) [Ohai pull requests](https://github.com/chef/ohai/pulls)
 - [Cookstyle](https://github.com/chef/cookstyle) ![Open PRs](https://img.shields.io/github/issues-pr/chef/cookstyle) [Cookstyle pull requests](https://github.com/chef/cookstyle/pulls)
 - [Chef-Plans](https://github.com/chef/chef-plans) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef-plans) [Chef-Plans pull requests](https://github.com/chef/chef-plans/pulls)
