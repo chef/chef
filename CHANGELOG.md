@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.24 -->
-## [v19.2.24](https://github.com/chef/chef/tree/v19.2.24) (2026-03-26)
+<!-- latest_release 19.2.25 -->
+## [v19.2.25](https://github.com/chef/chef/tree/v19.2.25) (2026-03-27)
 
 #### Merged Pull Requests
-- Fix bad platform_family matches [#15728](https://github.com/chef/chef/pull/15728) ([jaymzh](https://github.com/jaymzh))
+- Only run blackducks on push [#15745](https://github.com/chef/chef/pull/15745) ([stringsn88keys](https://github.com/stringsn88keys))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Only run blackducks on push [#15745](https://github.com/chef/chef/pull/15745) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 19.2.25 -->
 - Fix bad platform_family matches [#15728](https://github.com/chef/chef/pull/15728) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.24 -->
 - Fix CI [#15740](https://github.com/chef/chef/pull/15740) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.23 -->
 - enable kitchen tests on arm platforms [#15733](https://github.com/chef/chef/pull/15733) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.22 -->
