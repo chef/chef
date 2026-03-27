@@ -63,7 +63,7 @@ jobs:
 
       # BlackDuck SAST (Polaris) and SCA scans (requires a build or download to do SAST)
       # requires these secrets: POLARIS_SERVER_URL, POLARIS_ACCESS_TOKEN
-      perform-blackduck-polaris: false
+      perform-blackduck-polaris: ${{ github.event_name == 'push' }}
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-19'
       # polaris-blackduck-executable: 'path/to/blackduck/binary'
@@ -99,10 +99,10 @@ jobs:
       # generate and export Software Bill of Materials (SBOM) in various formats
       generate-sbom: true
       export-github-sbom: true      # SPDX JSON artifact on job instance
-      perform-blackduck-sca-scan: false # combined with generate sbom & generate github-sbom, also needs version above
+      perform-blackduck-sca-scan: ${{ github.event_name == 'push' }} # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
       blackduck-project-name: 'chef' # BlackDuck project name, typically the repository name
-      generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
+      generate-blackduck-sbom: ${{ github.event_name == 'push' }} # obsolete, use perform-blackduck-sca-scan instead
 
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
