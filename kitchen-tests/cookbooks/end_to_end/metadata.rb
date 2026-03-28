@@ -10,6 +10,7 @@ depends          "openssh"
 depends          "resolver"
 depends          "users"
 depends          "git"
+depends          "java"
 
 supports         "ubuntu"
 supports         "debian"
