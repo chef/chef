@@ -39,11 +39,12 @@ if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
   cd "${SCRIPT_DIR}/../.."
   cp -f Gemfile.aix.lock Gemfile.lock
 fi
-
 echo "--- Running bundle install for Omnibus"
 cd "${SCRIPT_DIR}/../../omnibus"
+bundle config --local github.com "${GITHUB_TOKEN}:x-oauth-basic"
 bundle config set --local without development
 bundle install
+
 # Set up build options similar to omnibus-buildkite-plugin
 BUILD_OPTIONS="-l internal --populate-s3-cache"
 

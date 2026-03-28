@@ -299,18 +299,57 @@ function Install-ChefFoundation {
 function Install-OmnibusDependencies {
     [CmdletBinding()]
     param()
-    
+
     try {
+        # Remove libyajl2 for reinstall
         Write-Output "--- Removing libyajl2 for reinstall to get libyajldll.a"
         gem uninstall -I libyajl2
+
+        # Validate GITHUB_TOKEN
+        if ([string]::IsNullOrEmpty($env:GITHUB_TOKEN)) {
+            Write-Error "GITHUB_TOKEN is not set. Cannot access private GitHub dependencies."
+            exit 1
+        }
+        
+        $token = $env:GITHUB_TOKEN.Trim()
+        Write-Output "--- GITHUB_TOKEN configured (length: $($token.Length))"
+        
+        # Test GitHub connectivity
+        Write-Output "--- Testing GitHub connectivity"
+        try {
+            $response = Invoke-WebRequest -Uri "https://api.github.com" -UseBasicParsing -TimeoutSec 10
+            Write-Output "GitHub API accessible: $($response.StatusCode)"
+        } catch {
+            Write-Warning "GitHub connectivity issue: $_"
+            throw "Cannot reach GitHub API"
+        }
+        
+        # SINGLE METHOD: URL rewriting + credential helper (this combination worked)
+        Write-Output "--- Configuring Git authentication for private repositories"
+        git config --global url."https://$token@github.com/".insteadOf "https://github.com/"
+        git config --global url."https://$token@github.com/".insteadOf "git@github.com:"
+        git config --global credential.helper store
+        
+        # Configure Bundler  
+        Write-Output "--- Configuring Bundler for private repositories"
+        bundle config set --local without development
+        bundle config set --local timeout 600
+        bundle config set --local retry 3
+        bundle config set --local jobs 1
+        
+        # Navigate to omnibus directory
+        Set-Location "$($ScriptDir)/../../omnibus"
         
         Write-Output "--- Running bundle install for Omnibus"
-        Set-Location "$($ScriptDir)/../../omnibus"
-        bundle config set --local without development
-        bundle install
-        if ( -not $? ) { throw "Running bundle install failed" }
-    }
-    catch {
+        bundle install --verbose
+        
+        if ($LASTEXITCODE -ne 0) {
+            throw "bundle install failed with exit code $LASTEXITCODE"
+        }
+        
+        Write-Output "--- Omnibus dependencies installed successfully"
+        
+    } catch {
         Write-Error "Failed to install Omnibus dependencies: $_"
         exit 1
     }
