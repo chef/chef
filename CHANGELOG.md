@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.26 -->
-## [v19.2.26](https://github.com/chef/chef/tree/v19.2.26) (2026-03-27)
+<!-- latest_release 19.2.27 -->
+## [v19.2.27](https://github.com/chef/chef/tree/v19.2.27) (2026-03-28)
 
 #### Merged Pull Requests
-- Add DCO Actions check [#15746](https://github.com/chef/chef/pull/15746) ([jaymzh](https://github.com/jaymzh))
+- Cleanup dependabot [#15747](https://github.com/chef/chef/pull/15747) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Cleanup dependabot [#15747](https://github.com/chef/chef/pull/15747) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.27 -->
 - Add DCO Actions check [#15746](https://github.com/chef/chef/pull/15746) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.26 -->
 - Only run blackducks on push [#15745](https://github.com/chef/chef/pull/15745) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 19.2.25 -->
 - Fix bad platform_family matches [#15728](https://github.com/chef/chef/pull/15728) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.24 -->
