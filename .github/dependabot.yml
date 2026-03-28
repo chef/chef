@@ -1,25 +1,36 @@
 version: 2
 updates:
-  - &base
+  - package-ecosystem: bundler
+    directory: "/"
+    target-branch: "main"
     schedule:
       interval: daily
     open-pull-requests-limit: 10
     labels:
       - "Type: Chore"
 
-  - &bundler_base
-    <<: *base
-    package-ecosystem: bundler
+  - package-ecosystem: bundler
     directory: "/"
-    target-branch: "main"
-
-  - <<: *bundler_base
     target-branch: "chef-18"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
 
-  - <<: *bundler_base
+  - package-ecosystem: bundler
     directory: "/omnibus"
     target-branch: "chef-18"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
 
-  - <<: *base
-    package-ecosystem: github-actions
+  - package-ecosystem: github-actions
     directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
