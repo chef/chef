@@ -10,7 +10,7 @@ jobs:
       checks: read
       contents: read
     steps:
-      - uses: wechuli/allcheckspassed@v1
+      - uses: wechuli/allcheckspassed@v2
         with:
           # This seems to be working lately even for external
           # contributors, so maybe we don't need to exclude it?
