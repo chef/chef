@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.25 -->
-## [v18.10.25](https://github.com/chef/chef/tree/v18.10.25) (2026-03-28)
+<!-- latest_release 18.10.26 -->
+## [v18.10.26](https://github.com/chef/chef/tree/v18.10.26) (2026-03-29)
 
 #### Merged Pull Requests
-- [backport] Fix bad platform_family matches [#15742](https://github.com/chef/chef/pull/15742) ([jaymzh](https://github.com/jaymzh))
+- Bump test-kitchen from 3.7.0 to 4.0.0 in /omnibus [#15759](https://github.com/chef/chef/pull/15759) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump test-kitchen from 3.7.0 to 4.0.0 in /omnibus [#15759](https://github.com/chef/chef/pull/15759) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.26 -->
 - [backport] Fix bad platform_family matches [#15742](https://github.com/chef/chef/pull/15742) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.25 -->
 - [chef-18] Backport Actions DCO check to 18 [#15750](https://github.com/chef/chef/pull/15750) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.24 -->
 - Fix Chef-18 CI [#15743](https://github.com/chef/chef/pull/15743) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.23 -->
