@@ -385,8 +385,8 @@ class Chef
     #
     # @api private
     def rest
-      @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: Chef::Config[:api_client_name] || node_name,
-                                    signing_key_filename: Chef::Config[:api_client_key] || Chef::Config[:client_key])
+      @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: api_client_name,
+                                    signing_key_filename: api_client_key)
     end
 
     # A rest object with validate_utf8 set to false.  This will not throw exceptions
@@ -397,8 +397,26 @@ class Chef
     # @api private
     def rest_clean
       @rest_clean ||=
-        Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: Chef::Config[:api_client_name] || node_name,
-                            signing_key_filename: Chef::Config[:api_client_key] || Chef::Config[:client_key], validate_utf8: false)
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: api_client_name,
+                            signing_key_filename: api_client_key, validate_utf8: false)
+    end
+
+    # Returns the client name to use for Chef Server API auth. In target mode the
+    # operator's original identity is stored in api_client_name so that API calls
+    # authenticate as the workstation client rather than as the target node.
+    #
+    # @api private
+    def api_client_name
+      Chef::Config[:api_client_name] || node_name
+    end
+
+    # Returns the signing key path to use for Chef Server API auth. In target mode
+    # the operator's original key is stored in api_client_key so that API calls
+    # use the workstation key rather than the target node's key.
+    #
+    # @api private
+    def api_client_key
+      Chef::Config[:api_client_key] || Chef::Config[:client_key]
     end
 
     #

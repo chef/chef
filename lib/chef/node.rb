@@ -651,9 +651,19 @@ class Chef
     # Load a node by name
     def self.load(name)
       from_hash(Chef::ServerAPI.new(Chef::Config[:chef_server_url],
-        client_name: Chef::Config[:api_client_name] || Chef::Config[:node_name],
-        signing_key_filename: Chef::Config[:api_client_key] || Chef::Config[:client_key]).get("nodes/#{name}"))
+        client_name: api_client_name,
+        signing_key_filename: api_client_key).get("nodes/#{name}"))
     end
+
+    def self.api_client_name
+      Chef::Config[:api_client_name] || Chef::Config[:node_name]
+    end
+    private_class_method :api_client_name
+
+    def self.api_client_key
+      Chef::Config[:api_client_key] || Chef::Config[:client_key]
+    end
+    private_class_method :api_client_key
 
     # Remove this node via the REST API
     def destroy
