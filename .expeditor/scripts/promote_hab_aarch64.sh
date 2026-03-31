@@ -73,6 +73,6 @@ fi
 echo "--- Found package: ${PKG_IDENT}"
 echo "--- Promoting ${PKG_IDENT} to ${TARGET_CHANNEL} channel"
 
-hab pkg promote "${PKG_IDENT}" "${TARGET_CHANNEL}" --target "${PKG_TARGET}"
+hab pkg promote "${PKG_IDENT}" "${TARGET_CHANNEL}" "${PKG_TARGET}"
 
 echo "--- Successfully promoted ${PKG_IDENT} (${PKG_TARGET}) to ${TARGET_CHANNEL}"
