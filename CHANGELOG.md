@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.34 -->
-## [v19.2.34](https://github.com/chef/chef/tree/v19.2.34) (2026-03-31)
+<!-- latest_release 19.2.35 -->
+## [v19.2.35](https://github.com/chef/chef/tree/v19.2.35) (2026-03-31)
 
 #### Merged Pull Requests
-- Bump streetsidesoftware/cspell-action from 2.12.0 to 8.3.0 [#15758](https://github.com/chef/chef/pull/15758) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/checkout from 5 to 6 [#15754](https://github.com/chef/chef/pull/15754) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump actions/checkout from 5 to 6 [#15754](https://github.com/chef/chef/pull/15754) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.35 -->
 - Bump streetsidesoftware/cspell-action from 2.12.0 to 8.3.0 [#15758](https://github.com/chef/chef/pull/15758) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.34 -->
 - Fix GH Labeler config [#15763](https://github.com/chef/chef/pull/15763) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.33 -->
 - Bump danger/danger-js from 11.3.1 to 13.0.5 [#15756](https://github.com/chef/chef/pull/15756) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.32 -->
