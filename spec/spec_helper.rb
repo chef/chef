@@ -136,7 +136,7 @@ RSpec.configure do |config|
   config.filter_run_excluding volatile_on_solaris: true if solaris?
   config.filter_run_excluding volatile_from_verify: false
 
-  config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
+  config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"] || ENV["GITHUB_ACTIONS"]
   config.filter_run_excluding skip_hab_test: true if hab_test?
 
   config.filter_run_excluding fips_mode_test: true unless fips_mode_build?

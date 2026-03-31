@@ -43,6 +43,11 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
     provider
   end
 
+  before do
+    result = powershell_exec("Get-Command Get-PackageSource -ErrorAction SilentlyContinue").result
+    skip "PackageManagement module (Get-PackageSource) not available on this platform" if result.nil? || result.empty?
+  end
+
   shared_examples "package_source" do
     context "register a package source" do
       after { remove_package_source }
@@ -83,7 +88,11 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
     let(:provider_name) { "NuGet" }
 
     before(:all) do
-      powershell_exec!("[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;Install-PackageProvider -Name NuGet -Force")
+      # Use powershell_exec (non-raising) so that if Install-PackageProvider is
+      # unavailable in the current PS host (e.g. PS7 on GHA), the suite does not
+      # crash. The per-example before block skips gracefully when Get-PackageSource
+      # is absent.
+      powershell_exec("[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;Install-PackageProvider -Name NuGet -Force")
     end
 
     it_behaves_like "package_source"
@@ -100,6 +109,9 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
   end
 
   def remove_package_source
+    result = powershell_exec("Get-Command Get-PackageSource -ErrorAction SilentlyContinue").result
+    return if result.nil? || result.empty?
+
     pkg_to_remove = Chef::Resource::PowershellPackageSource.new(source_name, run_context)
     pkg_to_remove.run_action(:unregister)
   end

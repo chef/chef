@@ -810,7 +810,7 @@ describe Chef::Client do
 
     context "when any directory of cookbook_path contains no cookbook" do
       it "raises CookbookNotFound error" do
-        invalid_cookbook_path = windows? ? "C:/path/to/invalid/cookbook_path" : "/path/to/invalid/cookbook_path"
+        invalid_cookbook_path = File.expand_path("/path/to/invalid/cookbook_path")
         msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], [\"#{invalid_cookbook_path}\"], contain any cookbooks"
 
         expect do

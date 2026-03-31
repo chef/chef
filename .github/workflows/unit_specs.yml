@@ -3,25 +3,63 @@ name: unit_specs
 
 "on":
   pull_request:
+    branches: [main, "release/**"]
   push:
-    branches:
-      - main
+    branches: [main, "release/**"]
+
+permissions:
+  contents: read
 
 concurrency:
   group: unit-specs-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
+env:
+  CHEF_LICENSE: accept-no-persist
+  FORCE_FFI_YAJL: ext
+
 jobs:
   unit:
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+          - windows-2022
+          - windows-2025
+          - macos-14
+          - macos-15
+        ruby: ["3.4"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v6
-      with:
-        clean: true
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: "3.4.2"
-        bundler-cache: false
-    - run: bundle install
-    - run: bundle exec rake spec:unit
-    - run: bundle exec rake component_specs
+      - name: Configure git line endings (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf false
+        shell: pwsh
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install native deps (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+      - name: Create unit test node fixtures
+        run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
+        shell: bash
+      - run: bundle install
+      - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $gem_lib = gem which chef-powershell 2>$null | Select-Object -First 1
+          if ($gem_lib) {
+            $gem_path = Split-Path $gem_lib | Split-Path
+            echo "RUBY_DLL_PATH=$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE" >> $env:GITHUB_ENV
+          }
+      - run: bundle exec rake spec:unit
+      - run: bundle exec rake component_specs

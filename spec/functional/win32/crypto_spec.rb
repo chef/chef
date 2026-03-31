@@ -17,38 +17,31 @@
 #
 
 require "spec_helper"
+require "chef/mixin/powershell_exec"
 if ChefUtils.windows?
   require "chef/win32/crypto"
 end
 
 describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
+  include Chef::Mixin::PowershellExec
+
   describe "#encrypt" do
-    before(:all) do
-      new_node = Chef::Node.new
-      new_node.consume_external_attrs(OHAI_SYSTEM.data, {})
-
-      events = Chef::EventDispatch::Dispatcher.new
-
-      @run_context = Chef::RunContext.new(new_node, {}, events)
-    end
-
     let(:plaintext) { "p@assword" }
 
+    # Use powershell_exec! (chef-powershell / pwsh) rather than spawning a
+    # Windows PowerShell 5.1 subprocess.  On GHA Windows runners the
+    # Microsoft.PowerShell.Security module cannot be loaded inside a PS5.1
+    # child process launched with -NoProfile from a D:\ working directory.
+    # PS7 (pwsh) does not have this DLL-loading restriction and exercises the
+    # same DPAPI path on Windows, so the test remains functionally equivalent.
     it "can be decrypted by powershell" do
       encrypted = Chef::ReservedNames::Win32::Crypto.encrypt(plaintext)
-      resource = Chef::Resource::WindowsScript::PowershellScript.new("PowerShell resource functional test", @run_context)
-      resource.code <<~EOF
+      result = powershell_exec!(<<~EOF)
         $encrypted = '#{encrypted}' | ConvertTo-SecureString
         $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($encrypted)
-        $plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-        if ($plaintext -ne '#{plaintext}') {
-          Write-Error 'Got: ' $plaintext
-          exit 1
-        }
-        exit 0
+        [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
       EOF
-      resource.returns(0)
-      resource.run_action(:run)
+      expect(result.result).to eq(plaintext)
     end
   end
 end
