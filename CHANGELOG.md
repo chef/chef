@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.31 -->
-## [v19.2.31](https://github.com/chef/chef/tree/v19.2.31) (2026-03-30)
+<!-- latest_release 19.2.33 -->
+## [v19.2.33](https://github.com/chef/chef/tree/v19.2.33) (2026-03-31)
 
 #### Merged Pull Requests
-- Bump actions/labeler from 4.3.0 to 6.0.1 [#15757](https://github.com/chef/chef/pull/15757) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix GH Labeler config [#15763](https://github.com/chef/chef/pull/15763) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix GH Labeler config [#15763](https://github.com/chef/chef/pull/15763) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.33 -->
+- Bump danger/danger-js from 11.3.1 to 13.0.5 [#15756](https://github.com/chef/chef/pull/15756) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.32 -->
 - Bump actions/labeler from 4.3.0 to 6.0.1 [#15757](https://github.com/chef/chef/pull/15757) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.31 -->
 - Expeditor: Stop making &#39;bump&#39; PRs [#15748](https://github.com/chef/chef/pull/15748) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.30 -->
 - Bump wechuli/allcheckspassed from 1 to 2 [#15755](https://github.com/chef/chef/pull/15755) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.29 -->
