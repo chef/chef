@@ -50,9 +50,11 @@ fi
 
 echo "--- Promoting ${PKG_ORIGIN}/${PKG_NAME} (${PKG_TARGET}) from ${SOURCE_CHANNEL} to ${TARGET_CHANNEL}"
 
-# Get auth token from vault (same pattern as base-2025-promote.sh)
-HAB_AUTH_TOKEN=$(vault kv get -field auth_token account/static/habitat/chef-ci)
-export HAB_AUTH_TOKEN
+# Use HAB_AUTH_TOKEN from the pipeline secret if available, otherwise fetch from vault
+if [[ -z "${HAB_AUTH_TOKEN:-}" ]]; then
+  HAB_AUTH_TOKEN=$(vault kv get -field auth_token account/static/habitat/chef-ci)
+  export HAB_AUTH_TOKEN
+fi
 
 # Find the exact aarch64 package ident for this version
 if [[ -n "$PKG_VERSION" ]]; then

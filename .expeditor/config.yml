@@ -58,6 +58,9 @@ pipelines:
   - macos_universal_package:
       description: Builds universal macos package using arch specific packages
       definition: .expeditor/macos_universal_package.pipeline.yml
+  - promote_hab_aarch64:
+      description: Promote aarch64-linux habitat package between channels
+      definition: .expeditor/promote.habitat.aarch64.pipeline.yml
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -139,7 +142,7 @@ subscriptions:
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
     actions:
       - built_in:promote_habitat_packages
-      - bash:.expeditor/scripts/promote_hab_aarch64.sh
+      - trigger_pipeline:promote_hab_aarch64
 
   # this is the only way currently to promote built-in rubygems publish
   - workload: project_promoted:{{agent_id}}:*
@@ -149,14 +152,14 @@ subscriptions:
       # - bash:.expeditor/promote-docker-images.sh
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
-      - bash:.expeditor/scripts/promote_hab_aarch64.sh
+      - trigger_pipeline:promote_hab_aarch64
       - built_in:notify_chefio_slack_channels
 
   # once project_promoted in slack is done from current to stable, we then promote to stable to base-2025
   - workload: hab_package_published:stable:chef-infra-client/19.*
     actions:
       - bash:.expeditor/scripts/base-2025-promote.sh
-      - bash:.expeditor/scripts/promote_hab_aarch64.sh
+      - trigger_pipeline:promote_hab_aarch64
 
 # subscriptions to Ruby gem dependencies' releases, open PR for updates
   # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef

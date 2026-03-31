@@ -1,0 +1,26 @@
+---
+# Pipeline to promote the aarch64-linux chef-infra-client habitat package
+# between channels. Replaces the inline bash action so promotion runs as
+# a tracked Buildkite pipeline with its own logs and retry controls.
+#
+# The promote_hab_aarch64.sh script auto-detects source/target channels
+# from EXPEDITOR_ environment variables set by the triggering workload.
+
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 10
+      retry:
+        automatic:
+          limit: 1
+
+steps:
+
+  - label: ":habicat: Promote aarch64-linux habitat package"
+    command:
+      - ./.expeditor/scripts/promote_hab_aarch64.sh
+    expeditor:
+      secrets:
+        HAB_AUTH_TOKEN:
+          path: account/static/habitat/chef-ci
+          field: auth_token
