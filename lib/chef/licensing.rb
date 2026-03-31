@@ -6,15 +6,16 @@ require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Licensing
+    # License acceptance values that indicate the user has accepted the license
+    CHEF_LICENSE_ACCEPT_VALUES = %w{accept accept-silent accept-no-persist}.freeze
+
     class << self
       def fetch_and_persist
         Chef::Log.info "Fetching and persisting license..."
-        # This is a temporary arrangement to continue end-to-end recipe testing of Chef.
-        # Windows, Mac, Linux VMs on vagrant will be tested using legacy test-kitchen
-        # whereas Linux docker containers will be tested using chef-test-kitchen-enterprise (habitat)
-        # Reason: chef-test-kitchen-enterprise currently supports only kitchen-dokken driver and is available only for Linux x86_64
-        # So for now we skip license validation on Mac, Windows, Linux distributions which run using test kitchen.
-        if ENV["TEST_KITCHEN"] && !ChefUtils.docker?
+        # Skip license validation in CI/testing environments and when CHEF_LICENSE is explicitly set.
+        # This covers GitHub Actions, Buildkite, Test Kitchen, generic CI, and direct license acceptance
+        # via the CHEF_LICENSE environment variable (e.g. CHEF_LICENSE=accept-no-persist).
+        if skip_license_validation?
           Chef::Log.info "****Skipping license validation..."
           return
         end
@@ -32,6 +33,12 @@ class Chef
 
       def check_software_entitlement!
         Chef::Log.info "Checking software entitlement..."
+        # Skip entitlement check in the same environments where fetch_and_persist is skipped,
+        # since no license keys would have been persisted in those environments.
+        if skip_license_validation?
+          Chef::Log.info "****Skipping software entitlement check..."
+          return
+        end
         ChefLicensing.check_software_entitlement!
       rescue ChefLicensing::SoftwareNotEntitled
         Chef::Log.error "License is not entitled to use Chef Infra."
@@ -96,6 +103,26 @@ class Chef
       rescue ChefLicensing::Error => e
         Chef::Log.error e.message
         Chef::Application.exit! "Usage error", 1 # Generic failure
+      end
+
+      private
+
+      # Returns true when license validation should be skipped.
+      # Skips in CI environments (GitHub Actions, Buildkite, Test Kitchen, generic CI)
+      # and when CHEF_LICENSE is explicitly set to an acceptance value.
+      # Does NOT skip when running inside Docker containers managed by Test Kitchen
+      # (those are tested separately via chef-test-kitchen-enterprise).
+      def skip_license_validation?
+        ci_environment? || chef_license_accepted?
+      end
+
+      def ci_environment?
+        (ENV["TEST_KITCHEN"] || ENV["GITHUB_ACTIONS"] || ENV["BUILDKITE"] || ENV["CI"]) &&
+          !ChefUtils.docker?
+      end
+
+      def chef_license_accepted?
+        CHEF_LICENSE_ACCEPT_VALUES.include?(ENV["CHEF_LICENSE"])
       end
     end
 

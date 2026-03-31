@@ -98,7 +98,7 @@ describe Chef::Resource::ChefClientLaunchd do
       allow(provider).to receive(:splay_sleep_time).and_return("123")
     end
 
-    let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
+    let(:root_path) { File.join(ChefConfig::Config.etc_chef_dir, "client.rb") }
 
     it "creates a valid command if using all default properties" do
       expect(provider.client_command).to eql(

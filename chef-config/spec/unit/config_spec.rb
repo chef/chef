@@ -26,6 +26,9 @@ RSpec.describe ChefConfig::Config do
 
   before(:each) do
     ChefConfig::Config.reset
+    ChefConfig::Config.instance_variable_set(:@var_chef_dir, nil)
+    ChefConfig::Config.instance_variable_set(:@etc_chef_dir, nil)
+    ChefConfig::Config.instance_variable_set(:@var_root_dir, nil)
 
     # By default, treat deprecation warnings as errors in tests.
     ChefConfig::Config.treat_deprecation_warnings_as_errors(true)
@@ -245,16 +248,18 @@ RSpec.describe ChefConfig::Config do
     end
 
     context "on windows", :windows_only do
-      it "var_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.var_chef_dir).to eql("C:\\#{dirname}")
+      let(:windows_drive) { ChefConfig::Config.windows_installation_drive || "C:" }
+
+      it "var_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.var_chef_dir).to eql("#{windows_drive}\\#{dirname}")
       end
 
       it "var_root_dir is C:\\" do
         expect(ChefConfig::Config.var_root_dir).to eql("C:\\")
       end
 
-      it "etc_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.etc_chef_dir).to eql("C:\\#{dirname}")
+      it "etc_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.etc_chef_dir).to eql("#{windows_drive}\\#{dirname}")
       end
     end
 
@@ -273,16 +278,18 @@ RSpec.describe ChefConfig::Config do
     end
 
     context "when forced to windows" do
-      it "var_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.var_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      let(:windows_drive) { ChefConfig::Config.windows_installation_drive || "C:" }
+
+      it "var_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.var_chef_dir(windows: true)).to eql("#{windows_drive}\\#{dirname}")
       end
 
       it "var_root_dir is C:\\" do
         expect(ChefConfig::Config.var_root_dir(windows: true)).to eql("C:\\")
       end
 
-      it "etc_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      it "etc_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("#{windows_drive}\\#{dirname}")
       end
     end
 

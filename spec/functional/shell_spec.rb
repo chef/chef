@@ -87,7 +87,10 @@ describe Shell do
 
       config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
       bundler_prefix = hab_test? ? "" : "bundle exec "
-      reader, writer, pid = PTY.spawn("#{bundler_prefix}#{ChefUtils::Dist::Infra::SHELL} --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
+      # Explicitly pass CHEF_LICENSE to ensure the PTY subprocess skips license
+      # validation regardless of how env vars are propagated through the PTY.
+      pty_env = { "CHEF_LICENSE" => ENV.fetch("CHEF_LICENSE", "accept-no-persist") }
+      reader, writer, pid = PTY.spawn(pty_env, "#{bundler_prefix}#{ChefUtils::Dist::Infra::SHELL} --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
       read_until(reader, "chef (#{Chef::VERSION})>")
       yield reader, writer if block_given?
       writer.puts('"done"')
