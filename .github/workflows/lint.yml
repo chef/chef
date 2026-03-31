@@ -17,7 +17,7 @@ jobs:
     env:
       BUNDLE_WITHOUT: ruby_shadow:hab_package
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4
@@ -30,7 +30,7 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
       - uses: streetsidesoftware/cspell-action@v8.3.0
@@ -40,7 +40,7 @@ jobs:
     name: Check if all files end in newline
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Linelint
         uses: fernandrone/linelint@master
         id: linelint
