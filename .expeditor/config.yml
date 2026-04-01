@@ -161,11 +161,6 @@ subscriptions:
       - bash:.expeditor/scripts/base-2025-promote.sh
       - trigger_pipeline:promote_hab_aarch64
 
-# subscriptions to Ruby gem dependencies' releases, open PR for updates
-  # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
-  - workload: chef/ohai:main_completed:pull_request_merged:chef/ohai:main:*
-    actions:
-      - bash:.expeditor/update_bundler_dep.sh
 # now that omnibus is not part of the build, we're working to redefine what the nightly should be
 #  - workload: schedule_triggered:chef/chef:main:nightly_build_main:*
 #    actions:
