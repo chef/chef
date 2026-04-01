@@ -38,7 +38,7 @@ Kitchen instances are led through a series of states. The instance states, and t
 - `converge`: Use a provisioner to configure one or more instances.
   - By default, Test Kitchen is configured to use the `ChefSolo` provisioner which:
     - Prepares local files for transfer,
-    - Installs the latest release of Chef Omnibus,
+    - Installs the latest release of Chef,
     - Downloads Chef Client source code from the prescribed GitHub repository and reference,
     - Builds and installs a `chef` gem from the downloaded source,
     - Runs `chef-client`.

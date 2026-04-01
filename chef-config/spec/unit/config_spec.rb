@@ -728,9 +728,9 @@ RSpec.describe ChefConfig::Config do
 
         end
 
-        # On Windows, we'll detect an omnibus build and set this to the
+        # On Windows, we'll detect embedded install and set this to the
         # cacert.pem included in the package, but it's nil if you're on Windows
-        # w/o omnibus (e.g., doing development on Windows, custom build, etc.)
+        # w/o embedded install (e.g., doing development on Windows, custom build, etc.)
         unless is_windows
           it "ChefConfig::Config[:ssl_ca_file] defaults to nil" do
             expect(ChefConfig::Config[:ssl_ca_file]).to be_nil
@@ -860,7 +860,7 @@ RSpec.describe ChefConfig::Config do
           describe "finding the windows embedded dir" do
             let(:default_config_location) { "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
             let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
-            let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+            let(:non_package_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
 
             let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
 
@@ -874,8 +874,8 @@ RSpec.describe ChefConfig::Config do
               expect(ChefConfig::Config.embedded_dir).to eq("c:/my/alternate/install/place/chef/embedded")
             end
 
-            it "doesn't error when not in an omnibus install" do
-              allow(ChefConfig::Config).to receive(:_this_file).and_return(non_omnibus_location)
+            it "doesn't error when not in an package install" do
+              allow(ChefConfig::Config).to receive(:_this_file).and_return(non_package_location)
               expect(ChefConfig::Config.embedded_dir).to be_nil
             end
 

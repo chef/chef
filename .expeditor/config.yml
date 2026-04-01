@@ -74,7 +74,7 @@ github:
   major_bump_labels:
     - "Expeditor: Bump Version Major"
 
-# Which GitHub branches to build Omnibus releases from, and what versions
+# Which GitHub branches to build releases from, and what versions
 # (as determined by the value in the VERSION file) those branches are responsible
 # for building.
 release_branches:
