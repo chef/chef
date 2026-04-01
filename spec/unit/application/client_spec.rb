@@ -317,6 +317,100 @@ describe Chef::Application::Client, "reconfigure" do
     end
   end
 
+  describe "--target / target mode" do
+    before do
+      allow(app).to receive(:set_specific_recipes)
+    end
+
+    context "when --target is given and no node_name is pre-configured" do
+      before do
+        Chef::Config[:node_name] = nil
+        ARGV.replace(["-t", "target.example.com"])
+        app.reconfigure
+      end
+
+      it "enables target_mode" do
+        expect(Chef::Config.target_mode.enabled).to be true
+      end
+
+      it "sets target_mode.host to the target" do
+        expect(Chef::Config.target_mode.host).to eq("target.example.com")
+      end
+
+      it "sets node_name to the target host" do
+        expect(Chef::Config[:node_name]).to eq("target.example.com")
+      end
+
+      it "leaves api_client_name nil when no prior node_name was set" do
+        expect(Chef::Config[:api_client_name]).to be_nil
+      end
+    end
+
+    context "when --target is given and node_name is already set in the config file" do
+      before do
+        Chef::Config[:node_name] = "chef-server.example.com"
+        Chef::Config[:client_key] = "/etc/chef/client.pem"
+        ARGV.replace(["-t", "target.example.com"])
+        app.reconfigure
+      end
+
+      it "enables target_mode" do
+        expect(Chef::Config.target_mode.enabled).to be true
+      end
+
+      it "overrides node_name with the target host" do
+        expect(Chef::Config[:node_name]).to eq("target.example.com")
+      end
+
+      it "preserves the original node_name as api_client_name for Chef Server auth" do
+        expect(Chef::Config[:api_client_name]).to eq("chef-server.example.com")
+      end
+
+      it "preserves the original client_key as api_client_key before target_mode changes the default" do
+        expect(Chef::Config[:api_client_key]).to eq("/etc/chef/client.pem")
+      end
+    end
+
+    context "when --target is given as a Train URI" do
+      before do
+        Chef::Config[:node_name] = nil
+        allow(Train).to receive(:unpack_target_from_uri).with("ssh://bob@target.example.com").and_return(
+          { host: "target.example.com", user: "bob", protocol: "ssh" }
+        )
+        ARGV.replace(["-t", "ssh://bob@target.example.com"])
+        app.reconfigure
+      end
+
+      it "unpacks the URI and sets node_name to the host" do
+        expect(Chef::Config[:node_name]).to eq("target.example.com")
+      end
+
+      it "enables target_mode" do
+        expect(Chef::Config.target_mode.enabled).to be true
+      end
+    end
+
+    context "when --target is NOT given" do
+      before do
+        Chef::Config[:node_name] = "my-server"
+        ARGV.replace([])
+        app.reconfigure
+      end
+
+      it "does not enable target_mode" do
+        expect(Chef::Config.target_mode.enabled).to be false
+      end
+
+      it "does not change node_name" do
+        expect(Chef::Config[:node_name]).to eq("my-server")
+      end
+
+      it "does not set api_client_name" do
+        expect(Chef::Config[:api_client_name]).to be_nil
+      end
+    end
+  end
+
   describe "when configured to not fork the client process" do
     before do
       Chef::Config[:client_fork] = false

@@ -1439,6 +1439,46 @@ describe Chef::Node do
         expect(serialized_node).to be_a_kind_of(Chef::Node)
         expect(serialized_node.name).to eql(node.name)
       end
+
+      context "in target mode with api_client_name set" do
+        before do
+          Chef::Config[:api_client_name] = "admin-user"
+          Chef::Config[:api_client_key]  = "/etc/chef/admin-user.pem"
+          Chef::Config[:node_name]       = "target-node"
+          allow(@rest).to receive(:get).and_return({})
+        end
+
+        after { Chef::Config.reset }
+
+        it "creates the ServerAPI with the operator identity, not the target node name" do
+          expect(Chef::ServerAPI).to receive(:new).with(
+            Chef::Config[:chef_server_url],
+            client_name: "admin-user",
+            signing_key_filename: "/etc/chef/admin-user.pem"
+          ).and_return(@rest)
+          Chef::Node.load("target-node")
+        end
+      end
+
+      context "without api_client_name (local/solo mode)" do
+        before do
+          Chef::Config[:api_client_name] = nil
+          Chef::Config[:api_client_key]  = nil
+          Chef::Config[:node_name]       = "my-node"
+          allow(@rest).to receive(:get).and_return({})
+        end
+
+        after { Chef::Config.reset }
+
+        it "falls back to node_name for the ServerAPI identity" do
+          expect(Chef::ServerAPI).to receive(:new).with(
+            Chef::Config[:chef_server_url],
+            client_name: "my-node",
+            signing_key_filename: Chef::Config[:client_key]
+          ).and_return(@rest)
+          Chef::Node.load("my-node")
+        end
+      end
     end
 
     describe "destroy" do

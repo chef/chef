@@ -484,6 +484,14 @@ module ChefConfig
     # toggle info level log items that can create a lot of output
     default :verbose_logging, true
     default :node_name, nil
+
+    # When target mode is active, these hold the operator's original Chef Server
+    # identity so that API auth uses the admin credentials rather than the
+    # target node name.  Set in Chef::Application::Client#reconfigure before
+    # target_mode.enabled is flipped to true.
+    default :api_client_name, nil
+    default :api_client_key, nil
+
     default :diff_disabled,           false
     default :diff_filesize_threshold, 10000000
     default :diff_output_threshold,   1000000
