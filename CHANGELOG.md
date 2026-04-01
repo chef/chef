@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.37 -->
-## [v19.2.37](https://github.com/chef/chef/tree/v19.2.37) (2026-03-31)
+<!-- latest_release 19.2.38 -->
+## [v19.2.38](https://github.com/chef/chef/tree/v19.2.38) (2026-04-01)
 
 #### Merged Pull Requests
-- Remove docs team from blockers for MD files [#15766](https://github.com/chef/chef/pull/15766) ([jaymzh](https://github.com/jaymzh))
+- [file] Only evaluate lazy block once for content [#15714](https://github.com/chef/chef/pull/15714) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [file] Only evaluate lazy block once for content [#15714](https://github.com/chef/chef/pull/15714) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.2.38 -->
 - Remove docs team from blockers for MD files [#15766](https://github.com/chef/chef/pull/15766) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.37 -->
 - Definitely need to know about common-github-actions [#15741](https://github.com/chef/chef/pull/15741) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.36 -->
 - Bump actions/checkout from 5 to 6 [#15754](https://github.com/chef/chef/pull/15754) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.35 -->
