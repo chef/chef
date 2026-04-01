@@ -192,7 +192,7 @@ class Chef
       # be overridden in subclasses.
       def managing_content?
         return true if new_resource.checksum
-        return true if !new_resource.content.nil? && @action != :create_if_missing
+        return true if new_resource.property_is_set?(:content) && @action != :create_if_missing
 
         false
       end
