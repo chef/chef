@@ -3,9 +3,9 @@ name: func_spec
 
 "on":
   pull_request:
-    branches: [main, "release/**"]
+    branches: [main, "chef-*"]
   push:
-    branches: [main, "release/**"]
+    branches: [main, "chef-*"]
 
 permissions:
   contents: read
