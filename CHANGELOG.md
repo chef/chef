@@ -1,32 +1,54 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.10 -->
-## [v18.10.10](https://github.com/chef/chef/tree/v18.10.10) (2026-02-23)
+<!-- latest_release 18.10.27 -->
+## [v18.10.27](https://github.com/chef/chef/tree/v18.10.27) (2026-04-01)
 
 #### Merged Pull Requests
-- [chef-18] backport #15649 - match platforms for gem versions in rubygems provider [#15650](https://github.com/chef/chef/pull/15650) ([rishichawda](https://github.com/rishichawda))
+- [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby))
 <!-- latest_release -->
 
-<!-- release_rollup since=18.9.4 -->
+<!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- [chef-18] backport #15649 - match platforms for gem versions in rubygems provider [#15650](https://github.com/chef/chef/pull/15650) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.10 -->
-- Consistent pins [#15654](https://github.com/chef/chef/pull/15654) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.9 -->
-- Pin down the workstation version? [#15653](https://github.com/chef/chef/pull/15653) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.8 -->
-- Linting and Updates for rakefile, and cookstyle [#15644](https://github.com/chef/chef/pull/15644) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.7 -->
-- remove old net-imap [#15633](https://github.com/chef/chef/pull/15633) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.6 -->
-- Updating inspec-core and dependencies [#15636](https://github.com/chef/chef/pull/15636) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.5 -->
-- Updating URI because of a cve [CVE-2025-61594] [#15645](https://github.com/chef/chef/pull/15645) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.4 -->
-- Updating Omnibus dependencies, they are super stale [#15641](https://github.com/chef/chef/pull/15641) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.3 -->
-- Just downgrade docker? [#15639](https://github.com/chef/chef/pull/15639) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.2 -->
-- Bump train-core to 3.16.0 [#15572](https://github.com/chef/chef/pull/15572) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 18.10.1 -->
-- [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.9.5 -->
-- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.0 -->
+- [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.27 -->
+- Bump test-kitchen from 3.7.0 to 4.0.0 in /omnibus [#15759](https://github.com/chef/chef/pull/15759) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.26 -->
+- [backport] Fix bad platform_family matches [#15742](https://github.com/chef/chef/pull/15742) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.25 -->
+- [chef-18] Backport Actions DCO check to 18 [#15750](https://github.com/chef/chef/pull/15750) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.24 -->
+- Fix Chef-18 CI [#15743](https://github.com/chef/chef/pull/15743) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.23 -->
+- Updating the github workflow actions [#15734](https://github.com/chef/chef/pull/15734) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.22 -->
+- [backport][chef-18] add a recipe for chrony [#15739](https://github.com/chef/chef/pull/15739) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.21 -->
+- habitat version pin [#15736](https://github.com/chef/chef/pull/15736) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.20 -->
+- Remove release notes actions from Chef 18 [#15546](https://github.com/chef/chef/pull/15546) ([IanMadd](https://github.com/IanMadd)) <!-- 18.10.19 -->
+- Updated train-winrm train-core and chef to latest release for upcoming Knife 18.x release [#15671](https://github.com/chef/chef/pull/15671) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.10.18 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.10.17](https://github.com/chef/chef/tree/v18.10.17) (2026-02-25)
+
+#### Merged Pull Requests
+- [Chef18] Raise FileTypeMismatch when directory :create encounters a file [#15557](https://github.com/chef/chef/pull/15557) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- [Chef-18] Fix kitchen test homebrew_package failure on post-install hook by [#15558](https://github.com/chef/chef/pull/15558) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump train-core to 3.16.0 [#15572](https://github.com/chef/chef/pull/15572) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Just downgrade docker? [#15639](https://github.com/chef/chef/pull/15639) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating Omnibus dependencies, they are super stale [#15641](https://github.com/chef/chef/pull/15641) ([johnmccrae](https://github.com/johnmccrae))
+- Updating URI because of a cve [CVE-2025-61594] [#15645](https://github.com/chef/chef/pull/15645) ([johnmccrae](https://github.com/johnmccrae))
+- Updating inspec-core and dependencies [#15636](https://github.com/chef/chef/pull/15636) ([johnmccrae](https://github.com/johnmccrae))
+- remove old net-imap [#15633](https://github.com/chef/chef/pull/15633) ([tpowell-progress](https://github.com/tpowell-progress))
+- Linting and Updates for rakefile, and cookstyle [#15644](https://github.com/chef/chef/pull/15644) ([johnmccrae](https://github.com/johnmccrae))
+- Pin down the workstation version? [#15653](https://github.com/chef/chef/pull/15653) ([tpowell-progress](https://github.com/tpowell-progress))
+- Consistent pins [#15654](https://github.com/chef/chef/pull/15654) ([tpowell-progress](https://github.com/tpowell-progress))
+- [chef-18] backport #15649 - match platforms for gem versions in rubygems provider [#15650](https://github.com/chef/chef/pull/15650) ([rishichawda](https://github.com/rishichawda))
+- [Chef-18] Updating file lock handling for choco resources [#15640](https://github.com/chef/chef/pull/15640) ([johnmccrae](https://github.com/johnmccrae))
+- [backport of #15661][chef-18] enumerate platforms before parsing remote output for candidate version [#15662](https://github.com/chef/chef/pull/15662) ([rishichawda](https://github.com/rishichawda))
+- Notice file update for 18.10 [#15664](https://github.com/chef/chef/pull/15664) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating the version number for the sbom [#15665](https://github.com/chef/chef/pull/15665) ([johnmccrae](https://github.com/johnmccrae))
+- Updating train-winrm. It was really stale [#15667](https://github.com/chef/chef/pull/15667) ([johnmccrae](https://github.com/johnmccrae))
+- Updating blackduck / Notice file [#15668](https://github.com/chef/chef/pull/15668) ([johnmccrae](https://github.com/johnmccrae))
+- Updating the notice file [#15669](https://github.com/chef/chef/pull/15669) ([johnmccrae](https://github.com/johnmccrae))
+<!-- latest_stable_release -->
+
 ## [v18.9.4](https://github.com/chef/chef/tree/v18.9.4) (2026-01-14)
 
 #### Merged Pull Requests
@@ -53,7 +75,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Updating to latest Notice text [#15524](https://github.com/chef/chef/pull/15524) ([johnmccrae](https://github.com/johnmccrae))
 - [Chef18][FileAccessControl] Reduce Securable object usage [#15458](https://github.com/chef/chef/pull/15458) ([dafyddcrosby](https://github.com/dafyddcrosby))
 - Sean sype simmons/chef18-OpenSSL-Fix [#15544](https://github.com/chef/chef/pull/15544) ([sean-sype-simmons](https://github.com/sean-sype-simmons))
-<!-- latest_stable_release -->
 
 ## [v18.8.54](https://github.com/chef/chef/tree/v18.8.54) (2025-11-04)
 

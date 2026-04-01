@@ -32,13 +32,13 @@ class Chef
         end
         ```
 
-        ```ruby
-        chocolatey_installer 'latest' do
-          action :install
-          download_url "c:\\foo\foo.nupkg"
-          chocolatey_version '2.12.24'
-        end
-        ```
+          ```ruby
+          chocolatey_installer 'latest' do
+            action :install
+            download_url "c:\\foo\\foo.nupkg"
+            chocolatey_version '2.12.24'
+          end
+          ```
 
         **Upgrade Chocolatey with Parameters**
 

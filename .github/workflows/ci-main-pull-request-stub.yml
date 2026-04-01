@@ -29,7 +29,7 @@ jobs:
           echo "CI main pull request stub version $STUB_VERSION"
 
   call-ci-chef-18-pr-check-pipeline:
-    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@chef-19
+    uses: chef/common-github-actions/.github/workflows/ci-main-pull-request.yml@main
     secrets: inherit
     permissions: 
       id-token: write
@@ -39,12 +39,13 @@ jobs:
       visibility: ${{ github.event.repository.visibility }}   #  private, public, or internal
       # go-private-modules: GOPRIVATE for Go private modules, default is 'github.com/progress-platform-services/*
 
-      detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
-      blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
-      bridge-break: false # Prevents build failure on Bridge violations
+      # detect-policy-check-fail-on-severities: none  # Only block SBOM upload on blocker-level prior step failures
+      # blackduck-break-build: false  # Prevents build failure on Black Duck policy violations (e.g., C# i18n CVE)
+      # bridge-break: false # Prevents build failure on Bridge violations
+      # These options were in a chef-infra specific version. Commenting them out as a reference in case we need them at some point.
       
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '18.9.0' # ${{ github.event.repository.version }}
+      version: '18.10.17' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
@@ -58,11 +59,11 @@ jobs:
       perform-trufflehog-scan: true
       
       # ADDED TRIVY SCAN
-      perform-trivy-scan: true
+      # perform-trivy-scan: true # No trivy for now as it has a security issue.
       
       # BlackDuck SAST (Polaris) and SCA scans (requires a build or download to do SAST)
       # requires these secrets: POLARIS_SERVER_URL, POLARIS_ACCESS_TOKEN
-      perform-blackduck-polaris: false
+      perform-blackduck-polaris: ${{ github.event_name == 'push' }}
       polaris-application-name: "Chef-Agents"  # one of these: Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services, Chef-Other
       polaris-project-name: 'chef-18'
       # polaris-blackduck-executable: 'path/to/blackduck/binary'
@@ -98,10 +99,10 @@ jobs:
       # generate and export Software Bill of Materials (SBOM) in various formats
       generate-sbom: true
       export-github-sbom: true      # SPDX JSON artifact on job instance  
-      perform-blackduck-sca-scan: true # combined with generate sbom & generate github-sbom, also needs version above
+      perform-blackduck-sca-scan: ${{ github.event_name == 'push' }} # combined with generate sbom & generate github-sbom, also needs version above
       blackduck-project-group-name: 'Chef-Agents' # typically one of (Chef), Chef-Agents, Chef-Automate, Chef-Chef360, Chef-Habitat, Chef-Infrastructure-Server, Chef-Shared-Services'
       blackduck-project-name: chef # BlackDuck project name, typically the repository name
-      generate-blackduck-sbom: true # obsolete, use perform-blackduck-sca-scan instead
+      generate-blackduck-sbom: ${{ github.event_name == 'push' }} # obsolete, use perform-blackduck-sca-scan instead
         
       generate-msft-sbom: false
       license_scout: false      # Run license scout for license compliance (uses .license_scout.yml)
