@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.39 -->
-## [v19.2.39](https://github.com/chef/chef/tree/v19.2.39) (2026-04-01)
+<!-- latest_release 19.2.40 -->
+## [v19.2.40](https://github.com/chef/chef/tree/v19.2.40) (2026-04-01)
 
 #### Merged Pull Requests
-- Cleaning up omnibus references from chef19 codebase [#15732](https://github.com/chef/chef/pull/15732) ([neha-p6](https://github.com/neha-p6))
+- Fix target mode node identity when using Chef Server (agentless) [#15735](https://github.com/chef/chef/pull/15735) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix target mode node identity when using Chef Server (agentless) [#15735](https://github.com/chef/chef/pull/15735) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.40 -->
 - Cleaning up omnibus references from chef19 codebase [#15732](https://github.com/chef/chef/pull/15732) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.39 -->
 - [file] Only evaluate lazy block once for content [#15714](https://github.com/chef/chef/pull/15714) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.2.38 -->
 - Remove docs team from blockers for MD files [#15766](https://github.com/chef/chef/pull/15766) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.37 -->
