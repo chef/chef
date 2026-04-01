@@ -17,5 +17,5 @@ jobs:
           # rockylinux-9 - upstream package issues
           checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64|rockylinux-9).*"
           # Retry every minute for 30 minutes...
-          retries: 30
+          retries: 90
           verbose: true
