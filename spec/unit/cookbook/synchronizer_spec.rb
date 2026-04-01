@@ -217,7 +217,7 @@ describe Chef::CookbookSynchronizer do
       path: "/tmp/cookbook_a_template_default_tempfile")
   end
 
-  let(:root) { windows? ? "C:/file-cache/cookbooks/cookbook_a" : "/file-cache/cookbooks/cookbook_a" }
+  let(:root) { File.join(File.expand_path("/file-cache"), "cookbooks", "cookbook_a") }
 
   def setup_common_files_missing_expectations
     # Files are not in the cache:

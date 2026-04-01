@@ -56,7 +56,7 @@ describe Chef::Resource::ChefClientSystemdTimer do
 
   describe "#chef_client_cmd" do
 
-    let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
+    let(:root_path) { File.join(ChefConfig::Config.etc_chef_dir, "client.rb") }
 
     it "creates a valid command if using all default properties" do
       expect(provider.chef_client_cmd).to eql("#{chef_habitat_binary_path} -c #{root_path}")

@@ -162,12 +162,13 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     end
 
     it "generates the config file data" do
+      etc_chef_dir_escaped = ChefConfig::PathHelper.escapepath(ChefConfig::Config.etc_chef_dir(windows: true))
       expected = <<~EXPECTED
         echo.chef_server_url  "http://chef.example.com:4444"
         echo.validation_client_name "chef-validator-testing"
         echo.file_cache_path   "c:/chef/cache"
         echo.file_backup_path  "c:/chef/backup"
-        echo.cache_options     ^({:path =^> "C:\\\\chef\\\\cache\\\\checksums", :skip_expires =^> true}^)
+        echo.cache_options     ^({:path =^> "#{etc_chef_dir_escaped}\\\\cache\\\\checksums", :skip_expires =^> true}^)
         echo.# Using default node name ^(fqdn^)
         echo.log_level :info
         echo.log_location       STDOUT
@@ -187,10 +188,12 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "#start_chef" do
     it "returns the expected string" do
+      c_opscode_dir = ChefConfig::PathHelper.cleanpath(ChefConfig::Config.c_opscode_dir, windows: true)
+      etc_chef_dir = ChefConfig::Config.etc_chef_dir(windows: true)
       expect(bootstrap_context.start_chef).to eq(
         <<~EOH
-          SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin;%PATH%"
-          chef-client -c C:\\chef\\client.rb -j C:\\chef\\first-boot.json
+          SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin;%PATH%"
+          chef-client -c #{etc_chef_dir}\\client.rb -j #{etc_chef_dir}\\first-boot.json
         EOH
       )
     end

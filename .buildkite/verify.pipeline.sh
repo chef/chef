@@ -7,9 +7,16 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
-test_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64" "rhel-9" "rhel-9-aarch64" "debian-11" "debian-11-aarch64" "ubuntu-2204" "ubuntu-2204-aarch64")
+# RHEL-family platforms (Rocky, RHEL): run Unit, Functional, and Integration in Buildkite.
+# Debian: run Unit, Functional, and Integration in Buildkite (not available on GitHub Actions).
+# Ubuntu: run Integration only here; Unit/Functional run in GitHub Actions.
+# Windows: run Integration only here; Unit/Functional run in GitHub Actions.
 
-for platform in ${test_platforms[@]}; do
+rhel_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64" "rhel-9" "rhel-9-aarch64")
+debian_platforms=("debian-11" "debian-11-aarch64")
+ubuntu_platforms=("ubuntu-2204" "ubuntu-2204-aarch64")
+
+for platform in ${rhel_platforms[@]}; do
 
   if [[ $platform == *"-aarch64" ]]; then
     image="chefes/omnibus-toolchain-${platform%-aarch64}:aarch64"
@@ -41,17 +48,76 @@ for platform in ${test_platforms[@]}; do
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
   echo "  timeout_in_minutes: 60"
 done
+
+for platform in ${debian_platforms[@]}; do
+
+  if [[ $platform == *"-aarch64" ]]; then
+    image="chefes/omnibus-toolchain-${platform%-aarch64}:aarch64"
+    queue="default-privileged-aarch64"
+  else
+    image="chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
+    queue="default-privileged"
+  fi
+
+  echo "- label: \"{{matrix}} $platform :ruby:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  agents:"
+  echo "    queue: $queue"
+  echo "  matrix:"
+  echo "    - \"Unit\""
+  echo "    - \"Integration\""
+  echo "    - \"Functional\""
+  echo "  plugins:"
+  echo "  - docker#v3.5.0:"
+  echo "      image: $image"
+  echo "      privileged: true"
+  echo "      environment:"
+  echo "        - HAB_AUTH_TOKEN"
+  echo "      propagate-environment: true"
+  echo "  commands:"
+  echo "    - .expeditor/scripts/bk_container_prep.sh"
+  echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
+  echo "  timeout_in_minutes: 60"
+done
+
+for platform in ${ubuntu_platforms[@]}; do
+
+  if [[ $platform == *"-aarch64" ]]; then
+    image="chefes/omnibus-toolchain-${platform%-aarch64}:aarch64"
+    queue="default-privileged-aarch64"
+  else
+    image="chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
+    queue="default-privileged"
+  fi
+
+  echo "- label: \"Integration $platform :ruby:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  agents:"
+  echo "    queue: $queue"
+  echo "  plugins:"
+  echo "  - docker#v3.5.0:"
+  echo "      image: $image"
+  echo "      privileged: true"
+  echo "      environment:"
+  echo "        - HAB_AUTH_TOKEN"
+  echo "      propagate-environment: true"
+  echo "  commands:"
+  echo "    - .expeditor/scripts/bk_container_prep.sh"
+  echo "    - .expeditor/scripts/prep_and_run_tests.sh Integration"
+  echo "  timeout_in_minutes: 60"
+done
 win_test_platforms=("windows-2019:windows-2019")
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
+  echo "- label: \"Integration ${platform#*:} :windows:\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-${platform%:*}-privileged"
-  echo "  matrix:"
-  echo "    - \"Unit\""
-  echo "    - \"Integration\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
@@ -62,24 +128,10 @@ for platform in ${win_test_platforms[@]}; do
   echo "        - HAB_AUTH_TOKEN"
   echo "      propagate-environment: true"
   echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Integration"
   echo "  timeout_in_minutes: 120"
 done
-for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"Functional ${platform#*:} :windows:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  agents:"
-  echo "    queue: default-windows-2019-privileged"
-  echo "  matrix:"
-  echo "    - \"Functional\""
-  echo "  env:"
-  echo "    - HAB_AUTH_TOKEN"
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
-  echo "  timeout_in_minutes: 120"
-done
+
 external_gems=("chef-zero" "cheffish" "chefspec" "knife-windows" "berkshelf")
 for gem in ${external_gems[@]}; do
   echo "- label: \"$gem gem :ruby:\""
