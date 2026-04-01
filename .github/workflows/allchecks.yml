@@ -12,9 +12,10 @@ jobs:
     steps:
       - uses: wechuli/allcheckspassed@v2
         with:
-          # This seems to be working lately even for external
-          # contributors, so maybe we don't need to exclude it?
-          checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64|triage).*"
+          # SonarCloud - never works for forks
+          # arm64 - still under development
+          # rockylinux-9 - upstream package issues
+          checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64|rockylinux-9).*"
           # Retry every minute for 30 minutes...
           retries: 30
           verbose: true
