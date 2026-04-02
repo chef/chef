@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.2.43 -->
+## [v19.2.43](https://github.com/chef/chef/tree/v19.2.43) (2026-04-02)
 
 #### Merged Pull Requests
+- [expeditor] Nuke the last ruby-dep line [#15772](https://github.com/chef/chef/pull/15772) ([jaymzh](https://github.com/jaymzh))
 - update kitchen version with arm build for kitchen workflows [#15776](https://github.com/chef/chef/pull/15776) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [expeditor] Nuke the last ruby-dep line [#15772](https://github.com/chef/chef/pull/15772) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.43 -->
 - update kitchen version with arm build for kitchen workflows [#15776](https://github.com/chef/chef/pull/15776) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.42 -->
 - Make allchecks try longer [#15774](https://github.com/chef/chef/pull/15774) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.42 -->
 - Add rockylinux-9 to all checks exemption list [#15771](https://github.com/chef/chef/pull/15771) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.41 -->
