@@ -15,7 +15,8 @@ jobs:
           # SonarCloud - never works for forks
           # arm64 - still under development
           # rockylinux-9 - upstream package issues
-          checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64|rockylinux-9).*"
+          # rockylinux-10 - upstream package issues
+          checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64|rockylinux-9|rockylinux-10).*"
           # Retry every minute for 30 minutes...
           retries: 90
           verbose: true
