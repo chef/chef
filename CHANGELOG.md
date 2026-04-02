@@ -1,18 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.43 -->
-## [v19.2.43](https://github.com/chef/chef/tree/v19.2.43) (2026-04-02)
+<!-- latest_release 19.2.44 -->
+## [v19.2.44](https://github.com/chef/chef/tree/v19.2.44) (2026-04-02)
 
 #### Merged Pull Requests
-- [expeditor] Nuke the last ruby-dep line [#15772](https://github.com/chef/chef/pull/15772) ([jaymzh](https://github.com/jaymzh))
-- update kitchen version with arm build for kitchen workflows [#15776](https://github.com/chef/chef/pull/15776) ([rishichawda](https://github.com/rishichawda))
+- Bump actions/checkout from 5 to 6 [#15775](https://github.com/chef/chef/pull/15775) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump actions/checkout from 5 to 6 [#15775](https://github.com/chef/chef/pull/15775) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.44 -->
 - [expeditor] Nuke the last ruby-dep line [#15772](https://github.com/chef/chef/pull/15772) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.43 -->
 - update kitchen version with arm build for kitchen workflows [#15776](https://github.com/chef/chef/pull/15776) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.42 -->
 - Make allchecks try longer [#15774](https://github.com/chef/chef/pull/15774) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.42 -->
