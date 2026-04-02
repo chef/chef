@@ -74,6 +74,27 @@ jobs:
           Install-PackageProvider -Name NuGet -Force -ErrorAction SilentlyContinue
       - run: bundle exec rake spec:functional
 
+  functional-rocky:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-rocky-9:3.0.39
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rocky-9:aarch64
+    runs-on: ${{ matrix.runs-on }}
+    container: ${{ matrix.container }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: false
+      - run: bundle install
+      - run: bundle exec rake spec:functional
+
   choco:
     strategy:
       fail-fast: false
