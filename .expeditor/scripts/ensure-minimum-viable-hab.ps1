@@ -1,4 +1,4 @@
-$HabitatVersion = if ($env:HAB_VERSION) { $env:HAB_VERSION } else { '1.6.1245' }
+$HabitatVersion = if ($env:HAB_VERSION) { $env:HAB_VERSION } else { '2.0.488' }
 
 Set-ExecutionPolicy Bypass -Scope Process -Force
 

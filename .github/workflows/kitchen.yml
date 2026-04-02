@@ -57,7 +57,7 @@ jobs:
       - name: Install Habitat CLI
         shell: pwsh
         run: |
-          $env:HAB_VERSION = "1.6.1245"
+          $env:HAB_VERSION = "2.0.488"
           & "${{ github.workspace }}\.expeditor\scripts\ensure-minimum-viable-hab.ps1"
           $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
           echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
