@@ -88,10 +88,17 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.4"
-          bundler-cache: false
+      - name: Install dependencies and Ruby via rbenv
+        run: |
+          dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
+          curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          rbenv install 3.4
+          rbenv global 3.4
+          gem install bundler
+          echo "$HOME/.rbenv/bin" >> $GITHUB_PATH
+          echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
       - run: bundle install
       - run: bundle exec rake spec:functional
 
