@@ -63,7 +63,14 @@ if (danger.git.modified_files.includes("Gemfile.lock") &&
     }
 }
 
-// Check if PR description has been properly filled out
+function normalizeBody(text) {
+    // Strip whitespace differences and checkbox state so we catch
+    // templates where someone only ticked boxes but wrote nothing.
+    return text.replace(/\r\n/g, '\n').replace(/- \[x\]/gi, '- [ ]').trim()
+}
+
+// Check if PR description has been properly filled out by comparing
+// against the PR template (from this repo, falling back to chef/.github).
 async function checkPRDescription() {
     const body = danger.github.pr.body || ""
 
@@ -71,29 +78,28 @@ async function checkPRDescription() {
         return
     }
 
-    // Extract the Description section (between "Description" and "Related Issue" or "Types of changes" headers)
-    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*(?:Related Issue|Types of changes)|$)/i)
+    const api = danger.github.api
+    const owner = danger.github.thisPR.owner
+    const repo = danger.github.thisPR.repo
 
-    if (!descriptionMatch) {
-        fail("❌ PR description is missing a 'Description' section. Please provide a description of your changes.")
+    let template = null
+    // Check this repo first, then the org-level .github repo
+    for (const [o, r, path] of [[owner, repo, ".github/PULL_REQUEST_TEMPLATE.md"], [owner, ".github", ".github/PULL_REQUEST_TEMPLATE.md"]]) {
+        try {
+            const { data } = await api.repos.getContent({ owner: o, repo: r, path })
+            template = Buffer.from(data.content, 'base64').toString('utf-8')
+            break
+        } catch (e) {
+            // not found, try next
+        }
+    }
+
+    if (!template) {
         return
     }
 
-    const descriptionSection = descriptionMatch[1].trim()
-
-    // Remove HTML comments to get the actual content
-    const contentWithoutComments = descriptionSection.replace(/<!---.*?--->/gs, '').replace(/<!--.*?-->/gs, '').trim()
-
-    // Check if description still contains the template text
-    const templateText = "Describe your changes in detail, what problems does it solve?"
-    if (descriptionSection.includes(templateText)) {
-        fail("❌ PR description contains unedited template text. Please replace '<!--- Describe your changes in detail, what problems does it solve? --->' with an actual description of your changes.")
-        return
-    }
-
-    // Check if description is empty or too short (less than 20 characters of actual content)
-    if (contentWithoutComments.length < 20) {
-        fail("❌ PR description is too short or empty. Please provide a meaningful description of your changes (at least 20 characters).")
+    if (normalizeBody(body) === normalizeBody(template)) {
+        fail("❌ PR description is the unedited template. Please fill in a description of your changes.")
     }
 }
 
