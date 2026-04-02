@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.45 -->
-## [v19.2.45](https://github.com/chef/chef/tree/v19.2.45) (2026-04-02)
+<!-- latest_release 19.2.46 -->
+## [v19.2.46](https://github.com/chef/chef/tree/v19.2.46) (2026-04-02)
 
 #### Merged Pull Requests
-- Try to help Dependabot [#15782](https://github.com/chef/chef/pull/15782) ([jaymzh](https://github.com/jaymzh))
+- Start monitoring fail-after [#15783](https://github.com/chef/chef/pull/15783) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Start monitoring fail-after [#15783](https://github.com/chef/chef/pull/15783) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.46 -->
 - Try to help Dependabot [#15782](https://github.com/chef/chef/pull/15782) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.45 -->
 - Bump actions/checkout from 5 to 6 [#15775](https://github.com/chef/chef/pull/15775) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.44 -->
 - [expeditor] Nuke the last ruby-dep line [#15772](https://github.com/chef/chef/pull/15772) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.43 -->
