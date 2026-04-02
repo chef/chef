@@ -1,0 +1,16 @@
+name: Chronoguard
+on:
+  pull_request:
+    branches: [ main, chef-18 ]
+
+jobs:
+  chronoguard:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: jaymzh/chronoguard@main
+        with:
+          files: .github/workflows/allchecks.yml
