@@ -302,7 +302,7 @@ jobs:
           sudo -E hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
           kitchen --version
           # chef-cli is needed for some kitchen operations
           sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
@@ -384,7 +384,7 @@ jobs:
           sudo -E hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
           kitchen --version
           sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
       - name: Install the kitchen-dokken driver latest to pick up docker fix
