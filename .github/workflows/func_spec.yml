@@ -94,8 +94,8 @@ jobs:
           curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
           export PATH="$HOME/.rbenv/bin:$PATH"
           eval "$(rbenv init -)"
-          rbenv install 3.4
-          rbenv global 3.4
+          rbenv install 3.4.8
+          rbenv global 3.4.8
           gem install bundler
           echo "$HOME/.rbenv/bin" >> $GITHUB_PATH
           echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
