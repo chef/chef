@@ -39,7 +39,7 @@ group(:packaging) do
   gem "chef-vault"
 end
 
-gem "repl_type_completor", "~> 0.1.12" # deprecation warnings in chef-shell
+gem "repl_type_completor", "~> 0.1.15" # deprecation warnings in chef-shell
 
 group(:packaging, :pry) do
   # Locked because pry-byebug is broken with 13+.
