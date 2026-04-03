@@ -5,18 +5,26 @@ updates:
     target-branch: "main"
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     labels:
       - "Type: Chore"
+    ignore:
+      # Due to FIPS builds and having to couple the openssl
+      # build itself, we don't let dependabot bump openssl
+      - dependency-name: "openssl"
 
   - package-ecosystem: bundler
     directory: "/"
     target-branch: "chef-18"
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     labels:
       - "Type: Chore"
+    ignore:
+      # Due to FIPS builds and having to couple the openssl
+      # build itself, we don't let dependabot bump openssl
+      - dependency-name: "openssl"
 
   - package-ecosystem: bundler
     directory: "/omnibus"
