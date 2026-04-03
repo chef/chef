@@ -37,7 +37,6 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
-      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -281,8 +280,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.3)
-    ffi (1.17.3-arm64-darwin)
-    ffi (1.17.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -385,7 +382,7 @@ GEM
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
-    net-ssh (7.3.0)
+    net-ssh (7.3.2)
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
@@ -569,7 +566,7 @@ DEPENDENCIES
   crack (~> 1.0.1)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5, < 1.18.0)
+  ffi (>= 1.15.5)
   inspec-core-bin (= 7.0.107)
   ohai!
   openssl (= 3.3.1)
