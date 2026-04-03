@@ -360,7 +360,7 @@ GEM
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
-    openssl (3.3.0)
+    openssl (4.0.1)
     parallel (1.27.0)
     parser (3.3.10.2)
       ast (~> 2.4.1)
@@ -535,7 +535,7 @@ DEPENDENCIES
   ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (>= 5, < 6)
   ohai!
-  openssl (= 3.3.0)
+  openssl (= 4.0.1)
   pry (= 0.15.2)
   pry-byebug
   pry-stack_explorer
