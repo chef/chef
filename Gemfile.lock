@@ -37,7 +37,6 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
-      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -281,8 +280,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.3)
-    ffi (1.17.3-arm64-darwin)
-    ffi (1.17.3-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -399,7 +396,7 @@ GEM
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.7.2)
-    prism (1.6.0)
+    prism (1.9.0)
     proxifier2 (1.1.0)
     pry (0.15.2)
       coderay (~> 1.1)
@@ -419,12 +416,13 @@ GEM
     rainbow (3.1.1)
     rake (13.3.1)
     rb-readline (0.5.5)
-    rbs (3.10.2)
+    rbs (3.10.4)
       logger
+      tsort
     regexp_parser (2.11.3)
-    repl_type_completor (0.1.12)
+    repl_type_completor (0.1.15)
       prism (~> 1.0)
-      rbs (>= 2.7.0, < 4.0.0)
+      rbs (>= 2.7.0)
     rexml (3.4.4)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
@@ -493,6 +491,7 @@ GEM
       chef-winrm-elevated (~> 1.2.5)
       chef-winrm-fs (~> 1.4.1)
       socksify (~> 1.8)
+    tsort (0.2.0)
     tty-box (0.7.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
@@ -569,7 +568,7 @@ DEPENDENCIES
   crack (~> 1.0.1)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5, < 1.18.0)
+  ffi (>= 1.15.5)
   inspec-core-bin (= 7.0.107)
   ohai!
   openssl (= 3.3.1)
@@ -578,7 +577,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake (>= 12.3.3)
   rb-readline
-  repl_type_completor (~> 0.1.12)
+  repl_type_completor (~> 0.1.15)
   rest-client!
   rspec
   webmock
