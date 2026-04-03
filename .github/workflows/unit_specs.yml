@@ -63,3 +63,36 @@ jobs:
           }
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs
+
+  unit-rocky:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-rocky-9:3.0.39
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rocky-9:aarch64
+    runs-on: ${{ matrix.runs-on }}
+    container: ${{ matrix.container }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install dependencies and Ruby via rbenv
+        run: |
+          dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
+          curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          rbenv install 3.4.8
+          rbenv global 3.4.8
+          gem install bundler
+          echo "$HOME/.rbenv/bin" >> $GITHUB_PATH
+          echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
+      - name: Create unit test node fixtures
+        run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
+      - run: bundle install
+      - run: bundle exec rake spec:unit
+      - run: bundle exec rake component_specs
