@@ -25,10 +25,11 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
+  # help dependabot by specifying a default. If the default is in
+  # the 'else', dependabot misses it and falls back to a very old ruby
+  s.required_ruby_version = ">= 3.1.0"
   if RUBY_PLATFORM =~ /aix/
     s.required_ruby_version = ">= 3.0.3"
-  else
-    s.required_ruby_version = ">= 3.1.0"
   end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"

@@ -70,4 +70,8 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into Gemfile.local
-eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
+#
+# But doing eval_gemfile("./Gemfile.local") breaks dependabot, so a
+# bit of indirection here
+local_gemfile = File.join(__dir__, "Gemfile.local")
+eval(File.read(local_gemfile)) if File.exist?(local_gemfile)
