@@ -15,9 +15,13 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 3.1.0"
 
-  s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
-  s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
+  # Dependabot swallows the require_relative above, so Chef::Knife::VERSION
+  # may not be defined. Fall back to a hardcoded major version so the
+  # gemspec can still be evaluated.
+  major = defined?(Chef::Knife::VERSION) ? Chef::Knife::VERSION.split(".").first : "19"
+  s.add_dependency "chef-config", ">= #{major}"
+  s.add_dependency "chef-utils", ">= #{major}"
+  s.add_dependency "chef", ">= #{major}"
   s.add_dependency "train-core", "~> 3.13", ">= 3.13.4" # Updated to be compatible with InSpec 7
   s.add_dependency "train-winrm", ">= 0.2.17"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"

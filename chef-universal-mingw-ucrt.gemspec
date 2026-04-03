@@ -1,4 +1,6 @@
-gemspec = instance_eval(File.read(File.expand_path("chef.gemspec", __dir__)))
+# rubocop:disable Chef/Ruby/GemspecLicense
+# License is in the included gemspec.
+gemspec = Gem::Specification.load(File.expand_path("chef.gemspec", __dir__))
 
 gemspec.platform = Gem::Platform.new(%w{universal mingw-ucrt})
 
