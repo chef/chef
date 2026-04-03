@@ -24,7 +24,6 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
-      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -372,7 +371,7 @@ GEM
     plist (3.7.2)
     prism (1.9.0)
     proxifier2 (1.1.0)
-    pry (0.13.0)
+    pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     pry-byebug (3.11.0)
@@ -537,7 +536,7 @@ DEPENDENCIES
   inspec-core-bin (>= 5, < 6)
   ohai!
   openssl (= 3.3.0)
-  pry (= 0.13.0)
+  pry (= 0.15.2)
   pry-byebug
   pry-stack_explorer
   rake (>= 12.3.3)
