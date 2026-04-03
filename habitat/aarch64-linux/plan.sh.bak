@@ -1,5 +1,5 @@
 export HAB_BLDR_CHANNEL="base-2025"
-SRC_PATH="$(dirname "$PLAN_CONTEXT")"
+SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
@@ -38,6 +38,7 @@ pkg_deps=(
   core/libarchive
 )
 pkg_svc_user=root
+pkg_svc_group=root
 
 pkg_version() {
   cat "${SRC_PATH}/VERSION"
@@ -182,7 +183,7 @@ do_install() {
     for binstub in ${pkg_prefix}/bin/*; do
       build_line "Before patching $(basename $binstub):"
       head -n 20 "$binstub"
-      sed -i "/require \"rubygems\"/r ${PLAN_CONTEXT}/binstub_patch.rb" "$binstub"
+      sed -i "/require \"rubygems\"/r ${PLAN_CONTEXT}/../binstub_patch.rb" "$binstub"
       build_line "After patching $(basename $binstub):"
       head -n 20 "$binstub"
     done
