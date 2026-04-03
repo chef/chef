@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.48 -->
-## [v19.2.48](https://github.com/chef/chef/tree/v19.2.48) (2026-04-03)
+<!-- latest_release 19.2.49 -->
+## [v19.2.49](https://github.com/chef/chef/tree/v19.2.49) (2026-04-03)
 
 #### Merged Pull Requests
-- More gemspec fixes for dependabot [#15784](https://github.com/chef/chef/pull/15784) ([jaymzh](https://github.com/jaymzh))
+- move bk to gha for rocky [#15780](https://github.com/chef/chef/pull/15780) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- move bk to gha for rocky [#15780](https://github.com/chef/chef/pull/15780) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.49 -->
 - More gemspec fixes for dependabot [#15784](https://github.com/chef/chef/pull/15784) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.48 -->
 - Fix the &quot;did you fill in the PR&quot; check with something smarter [#15785](https://github.com/chef/chef/pull/15785) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.47 -->
 - Start monitoring fail-after [#15783](https://github.com/chef/chef/pull/15783) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.46 -->
