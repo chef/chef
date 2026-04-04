@@ -48,7 +48,7 @@ PATH
       chef-vault
       chef-zero (>= 15.0.21, < 15.2)
       corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      diff-lcs (>= 1.2.4, < 2.1.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5, <= 1.16.3)
       ffi-libarchive (~> 1.0, >= 1.0.3)
@@ -84,7 +84,7 @@ PATH
       chef-vault
       chef-zero (>= 15.0.21, < 15.2)
       corefoundation (~> 0.3.4)
-      diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
+      diff-lcs (>= 1.2.4, < 2.1.0, != 1.4.0)
       erubis (~> 2.7)
       ffi (>= 1.15.5, <= 1.16.3)
       ffi-libarchive (~> 1.0, >= 1.0.3)
@@ -242,7 +242,7 @@ GEM
     csv (3.3.5)
     date (3.5.1)
     debug_inspector (1.2.0)
-    diff-lcs (1.5.1)
+    diff-lcs (1.6.2)
     domain_name (0.6.20240107)
     ed25519 (1.4.0)
     erubi (1.13.1)
