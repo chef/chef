@@ -360,7 +360,7 @@ GEM
       net-ssh (>= 2.6.5, < 8.0.0)
     net-sftp (4.0.0)
       net-ssh (>= 5.0.0, < 8.0.0)
-    net-ssh (7.3.0)
+    net-ssh (7.3.2)
     netrc (0.11.0)
     nori (2.7.0)
       bigdecimal
