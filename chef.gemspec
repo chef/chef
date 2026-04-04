@@ -48,9 +48,9 @@ Gem::Specification.new do |s|
 
   # AIX Gemfile.aix.lock uses this, but currently a manual process
   if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
-    s.add_dependency "inspec-core", ">= 5", "<= 5.22.80"
+    s.add_dependency "inspec-core", ">= 5", "< 8"
   else
-    s.add_dependency "inspec-core", ">= 5", "< 6"
+    s.add_dependency "inspec-core", ">= 5", "< 8"
   end
 
   s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
