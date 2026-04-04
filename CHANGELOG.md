@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.31 -->
-## [v18.10.31](https://github.com/chef/chef/tree/v18.10.31) (2026-04-04)
+<!-- latest_release 18.10.32 -->
+## [v18.10.32](https://github.com/chef/chef/tree/v18.10.32) (2026-04-04)
 
 #### Merged Pull Requests
-- Update highline requirement from &gt;= 1.6.9, &lt; 3 to &gt;= 1.6.9, &lt; 4 [#15831](https://github.com/chef/chef/pull/15831) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15829](https://github.com/chef/chef/pull/15829) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15829](https://github.com/chef/chef/pull/15829) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.32 -->
 - Update highline requirement from &gt;= 1.6.9, &lt; 3 to &gt;= 1.6.9, &lt; 4 [#15831](https://github.com/chef/chef/pull/15831) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.31 -->
 - Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15802](https://github.com/chef/chef/pull/15802) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.30 -->
 - Bump pry from 0.13.0 to 0.15.2 [#15801](https://github.com/chef/chef/pull/15801) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.29 -->
