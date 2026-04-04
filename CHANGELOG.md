@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.56 -->
-## [v19.2.56](https://github.com/chef/chef/tree/v19.2.56) (2026-04-04)
+<!-- latest_release 19.2.57 -->
+## [v19.2.57](https://github.com/chef/chef/tree/v19.2.57) (2026-04-04)
 
 #### Merged Pull Requests
-- Fix invalid TOML in unittest [#15812](https://github.com/chef/chef/pull/15812) ([jaymzh](https://github.com/jaymzh))
+- Bump repl_type_completor from 0.1.12 to 0.1.15 [#15795](https://github.com/chef/chef/pull/15795) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump repl_type_completor from 0.1.12 to 0.1.15 [#15795](https://github.com/chef/chef/pull/15795) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.57 -->
 - Fix invalid TOML in unittest [#15812](https://github.com/chef/chef/pull/15812) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.56 -->
 - [dependabot] Ignore openssl [#15811](https://github.com/chef/chef/pull/15811) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.55 -->
 - Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15794](https://github.com/chef/chef/pull/15794) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.54 -->
