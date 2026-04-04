@@ -698,7 +698,7 @@ class Chef
       # Weeding out class methods avoids unnecessary deprecations such Chef::Resource
       # defining a `name` property when there's an already-existing `name` method
       # for a Module.
-      return false unless declared_in.instance_methods.include?(name)
+      return false unless declared_in.method_defined?(name)
 
       # Only emit deprecations for some well-known classes. This will still
       # allow more advanced users to subclass their own custom resources and
