@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.29 -->
-## [v18.10.29](https://github.com/chef/chef/tree/v18.10.29) (2026-04-03)
+<!-- latest_release 18.10.30 -->
+## [v18.10.30](https://github.com/chef/chef/tree/v18.10.30) (2026-04-04)
 
 #### Merged Pull Requests
-- Bump pry from 0.13.0 to 0.15.2 [#15801](https://github.com/chef/chef/pull/15801) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15802](https://github.com/chef/chef/pull/15802) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15802](https://github.com/chef/chef/pull/15802) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.30 -->
 - Bump pry from 0.13.0 to 0.15.2 [#15801](https://github.com/chef/chef/pull/15801) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.29 -->
 - Backport dependabot fixes to chef-18 [#15789](https://github.com/chef/chef/pull/15789) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.28 -->
 - [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.27 -->
