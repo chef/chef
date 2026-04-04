@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.61 -->
-## [v19.2.61](https://github.com/chef/chef/tree/v19.2.61) (2026-04-04)
+<!-- latest_release 19.2.62 -->
+## [v19.2.62](https://github.com/chef/chef/tree/v19.2.62) (2026-04-04)
 
 #### Merged Pull Requests
-- Fix CI Pipelines by using apt properly [#15838](https://github.com/chef/chef/pull/15838) ([jaymzh](https://github.com/jaymzh))
+- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15820](https://github.com/chef/chef/pull/15820) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15820](https://github.com/chef/chef/pull/15820) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.62 -->
 - Fix CI Pipelines by using apt properly [#15838](https://github.com/chef/chef/pull/15838) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.61 -->
 - Bump train-winrm from 0.4.0 to 0.4.3 [#15827](https://github.com/chef/chef/pull/15827) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.60 -->
 - Bump webmock from 3.26.1 to 3.26.2 [#15798](https://github.com/chef/chef/pull/15798) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.59 -->
