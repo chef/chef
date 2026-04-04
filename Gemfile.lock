@@ -163,7 +163,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.8)
+    addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
@@ -412,7 +412,7 @@ GEM
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
     pstore (0.1.4)
-    public_suffix (7.0.0)
+    public_suffix (6.0.2)
     racc (1.8.1)
     rack (3.2.6)
     rackup (2.3.1)
