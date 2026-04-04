@@ -1,0 +1,7 @@
+release_branches: ['chef-17', 'chef-18']
+on_push:
+  - lint
+lint:
+  - bundle exec cookstyle --chefstyle -c .rubocop.yml -a
+unit:
+  - bundle exec rake spec:unit
