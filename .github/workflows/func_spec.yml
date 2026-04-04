@@ -37,7 +37,9 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install native deps (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
-        run: sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
