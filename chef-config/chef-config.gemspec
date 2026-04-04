@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "mixlib-config", ">= 2.2.12", "< 4.0"
   spec.add_dependency "fuzzyurl"
   spec.add_dependency "addressable"
-  spec.add_dependency "tomlrb", "~> 1.2"
+  spec.add_dependency "tomlrb", ">= 1.2", "< 3.0"
   spec.add_dependency "racc"
 
   spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
