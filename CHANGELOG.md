@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.35 -->
-## [v18.10.35](https://github.com/chef/chef/tree/v18.10.35) (2026-04-04)
+<!-- latest_release 18.10.36 -->
+## [v18.10.36](https://github.com/chef/chef/tree/v18.10.36) (2026-04-04)
 
 #### Merged Pull Requests
-- Bump webmock from 3.26.1 to 3.26.2 [#15809](https://github.com/chef/chef/pull/15809) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update unf_ext requirement from ~&gt; 0.0.8.2 to &gt;= 0.0.8.2, &lt; 0.0.10.0 [#15816](https://github.com/chef/chef/pull/15816) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update unf_ext requirement from ~&gt; 0.0.8.2 to &gt;= 0.0.8.2, &lt; 0.0.10.0 [#15816](https://github.com/chef/chef/pull/15816) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.36 -->
 - Bump webmock from 3.26.1 to 3.26.2 [#15809](https://github.com/chef/chef/pull/15809) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.35 -->
 - Bump aws-sdk-s3 from 1.213.0 to 1.218.0 [#15832](https://github.com/chef/chef/pull/15832) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.34 -->
 - Bump crack from 0.4.5 to 1.0.1 [#15828](https://github.com/chef/chef/pull/15828) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.33 -->
