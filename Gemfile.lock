@@ -114,7 +114,7 @@ PATH
       win32-api (~> 1.10.0)
       win32-certstore (~> 0.6.15)
       win32-event (~> 0.6.1)
-      win32-eventlog (= 0.6.3)
+      win32-eventlog (= 0.6.7)
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.9)
@@ -494,7 +494,7 @@ GEM
       ffi
     win32-event (0.6.3)
       win32-ipc (>= 0.6.0)
-    win32-eventlog (0.6.3)
+    win32-eventlog (0.6.7)
       ffi
     win32-ipc (0.7.0)
       ffi

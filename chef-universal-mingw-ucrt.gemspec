@@ -8,7 +8,7 @@ gemspec.add_dependency "win32-api", "~> 1.10.0"
 gemspec.add_dependency "win32-event", "~> 0.6.1"
 # TODO: Relax this pin and make the necessary updaets. The issue originally
 # leading to this pin has been fixed in 0.6.5.
-gemspec.add_dependency "win32-eventlog", "0.6.3"
+gemspec.add_dependency "win32-eventlog", "0.6.7"
 gemspec.add_dependency "win32-mmap", "~> 0.4.1"
 gemspec.add_dependency "win32-mutex", "~> 0.4.2"
 gemspec.add_dependency "win32-process", "~> 0.9"
