@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.63 -->
-## [v19.2.63](https://github.com/chef/chef/tree/v19.2.63) (2026-04-05)
+<!-- latest_release 19.2.64 -->
+## [v19.2.64](https://github.com/chef/chef/tree/v19.2.64) (2026-04-05)
 
 #### Merged Pull Requests
-- Add a sugarjar config [#15837](https://github.com/chef/chef/pull/15837) ([jaymzh](https://github.com/jaymzh))
+- Bump aws-sdk-s3 from 1.213.0 to 1.218.0 [#15796](https://github.com/chef/chef/pull/15796) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump aws-sdk-s3 from 1.213.0 to 1.218.0 [#15796](https://github.com/chef/chef/pull/15796) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.64 -->
 - Add a sugarjar config [#15837](https://github.com/chef/chef/pull/15837) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.63 -->
 - Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15820](https://github.com/chef/chef/pull/15820) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.62 -->
 - Fix CI Pipelines by using apt properly [#15838](https://github.com/chef/chef/pull/15838) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.61 -->
