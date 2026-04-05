@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.68 -->
-## [v19.2.68](https://github.com/chef/chef/tree/v19.2.68) (2026-04-05)
+<!-- latest_release 19.2.69 -->
+## [v19.2.69](https://github.com/chef/chef/tree/v19.2.69) (2026-04-05)
 
 #### Merged Pull Requests
-- Prep for cookstyle bump [#15836](https://github.com/chef/chef/pull/15836) ([jaymzh](https://github.com/jaymzh))
+- Bump ffi from 1.17.3 to 1.17.4 [#15813](https://github.com/chef/chef/pull/15813) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ffi from 1.17.3 to 1.17.4 [#15813](https://github.com/chef/chef/pull/15813) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.69 -->
 - Prep for cookstyle bump [#15836](https://github.com/chef/chef/pull/15836) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.68 -->
 - Updating Hab back to a 2.x version [#15779](https://github.com/chef/chef/pull/15779) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.67 -->
 - Bump tomlrb from 1.3.0 to 2.0.4 [#15800](https://github.com/chef/chef/pull/15800) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.66 -->
