@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.70 -->
-## [v19.2.70](https://github.com/chef/chef/tree/v19.2.70) (2026-04-05)
+<!-- latest_release 19.2.71 -->
+## [v19.2.71](https://github.com/chef/chef/tree/v19.2.71) (2026-04-05)
 
 #### Merged Pull Requests
-- Expeditor: stop working on chef-17 branch [#15844](https://github.com/chef/chef/pull/15844) ([jaymzh](https://github.com/jaymzh))
+- Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15823](https://github.com/chef/chef/pull/15823) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15823](https://github.com/chef/chef/pull/15823) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.71 -->
 - Expeditor: stop working on chef-17 branch [#15844](https://github.com/chef/chef/pull/15844) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.70 -->
 - Bump ffi from 1.17.3 to 1.17.4 [#15813](https://github.com/chef/chef/pull/15813) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.69 -->
 - Prep for cookstyle bump [#15836](https://github.com/chef/chef/pull/15836) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.68 -->
