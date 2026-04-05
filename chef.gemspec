@@ -66,7 +66,7 @@ Gem::Specification.new do |s|
   s.add_dependency "csv", "~> 3.3.5" # really needs to come from inspec?
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "unf_ext", "~> 0.0.9.1" # older platforms
-  s.add_dependency "uri", "~> 1.0.4" # CVE-2025-61594 fixed in >= 1.0.4
+  s.add_dependency "uri", ">= 1.0.4", "< 1.2.0" # CVE-2025-61594 fixed in >= 1.0.4
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier2", "~> 1.1"
