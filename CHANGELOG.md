@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.45 -->
-## [v18.10.45](https://github.com/chef/chef/tree/v18.10.45) (2026-04-05)
+<!-- latest_release 18.10.46 -->
+## [v18.10.46](https://github.com/chef/chef/tree/v18.10.46) (2026-04-05)
 
 #### Merged Pull Requests
-- [chef-18] Fix invalid TOML in unittest [#15841](https://github.com/chef/chef/pull/15841) ([jaymzh](https://github.com/jaymzh))
+- Update diff-lcs requirement from &gt;= 1.2.4, != 1.4.0, &lt; 1.6.0 to &gt;= 1.2.4, != 1.4.0, &lt; 2.1.0 [#15826](https://github.com/chef/chef/pull/15826) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update diff-lcs requirement from &gt;= 1.2.4, != 1.4.0, &lt; 1.6.0 to &gt;= 1.2.4, != 1.4.0, &lt; 2.1.0 [#15826](https://github.com/chef/chef/pull/15826) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.46 -->
 - [chef-18] Fix invalid TOML in unittest [#15841](https://github.com/chef/chef/pull/15841) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.45 -->
 - Disable Expeditor gem bumps on chef-18 [#15843](https://github.com/chef/chef/pull/15843) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.44 -->
 - Bump pry-stack_explorer from 0.6.1 to 0.6.2 [#15830](https://github.com/chef/chef/pull/15830) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.43 -->
