@@ -82,7 +82,7 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.9.1)
-      uri (~> 1.0.4)
+      uri (>= 1.0.4, < 1.2.0)
       vault (>= 0.18.2, < 0.21.0)
     chef (19.2.69-universal-mingw-ucrt)
       addressable
@@ -123,7 +123,7 @@ PATH
       train-rest (>= 0.4.1)
       train-winrm (>= 0.2.17)
       unf_ext (~> 0.0.9.1)
-      uri (~> 1.0.4)
+      uri (>= 1.0.4, < 1.2.0)
       vault (>= 0.18.2, < 0.21.0)
       win32-api (~> 1.10.0)
       win32-certstore (~> 0.6.15)
@@ -520,7 +520,7 @@ GEM
     unf_ext (0.0.9.1-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
-    uri (1.0.4)
+    uri (1.1.1)
     uuidtools (2.2.0)
     vault (0.20.1)
       aws-sigv4
