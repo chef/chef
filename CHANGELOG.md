@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.38 -->
-## [v18.10.38](https://github.com/chef/chef/tree/v18.10.38) (2026-04-05)
+<!-- latest_release 18.10.39 -->
+## [v18.10.39](https://github.com/chef/chef/tree/v18.10.39) (2026-04-05)
 
 #### Merged Pull Requests
-- Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15804](https://github.com/chef/chef/pull/15804) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update inspec-core requirement from &gt;= 5, &lt; 6 to &gt;= 5, &lt; 8 [#15814](https://github.com/chef/chef/pull/15814) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update inspec-core requirement from &gt;= 5, &lt; 6 to &gt;= 5, &lt; 8 [#15814](https://github.com/chef/chef/pull/15814) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.39 -->
 - Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15804](https://github.com/chef/chef/pull/15804) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.38 -->
 - Bump ohai from `73fcb7e` to `7a4e10c` [#15805](https://github.com/chef/chef/pull/15805) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.37 -->
 - Update unf_ext requirement from ~&gt; 0.0.8.2 to &gt;= 0.0.8.2, &lt; 0.0.10.0 [#15816](https://github.com/chef/chef/pull/15816) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.36 -->
