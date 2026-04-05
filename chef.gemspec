@@ -10,8 +10,17 @@ if File.exist?(vs_path)
   $: << File.join(file_directory, "chef-utils", "lib")
 end
 # if the path doesn't exist then we're just in the wild gem and not in the git repo
-require "chef-utils/version_string"
-require "chef/version"
+begin
+  require "chef-utils/version_string"
+  require "chef/version"
+rescue LoadError
+  # lib/ is not available in all contexts (e.g. Dependabot security scans
+  # fetch only gemspec files, not the full repo). Provide a stub so the
+  # gemspec can still be evaluated to inspect its dependencies.
+  module Chef
+    VERSION = "0.0.0".freeze
+  end
+end
 
 Gem::Specification.new do |s|
   s.name = "chef"
