@@ -1,3 +1,0 @@
-#
-# Smokey lives here
-#

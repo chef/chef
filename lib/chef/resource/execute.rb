@@ -388,21 +388,6 @@ class Chef
         end
         ```
 
-        **Run a Knife command**:
-
-        ```ruby
-        execute 'create_user' do
-          command <<~EOM
-            knife user create \#{user}
-              --admin
-              --password password
-              --disable-editing
-              --file /home/vagrant/.chef/user.pem
-              --config /tmp/knife-admin.rb
-            EOM
-        end
-        ```
-
         **Run install command into virtual environment**:
 
         The following example shows how to install a lightweight JavaScript framework

@@ -10,6 +10,8 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
+gem "knife", git: "https://github.com/chef/knife.git", branch: "main"
+
 if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
   gem "ffi", ">= 1.15.5", "< 1.18.0"
 else
@@ -57,11 +59,6 @@ group(:ruby_shadow) do
   install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
     gem "chef-ruby-shadow", "~> 3.0.0", platforms: :ruby
   end
-end
-
-# deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
-group(:knife_windows_deps) do
-  gem "ed25519", "~> 1.2" # ed25519 ssh key support
 end
 
 group(:development, :test) do
