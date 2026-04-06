@@ -166,7 +166,20 @@ function Invoke-DevkitSmokeTests {
     $original_gem_path = $env:GEM_PATH
 
     if (Test-Path $devkit_smoke_test_gem_home) {
-        Remove-Item $devkit_smoke_test_gem_home -Recurse -Force
+        $maxRetries = 5
+        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            try {
+                Remove-Item $devkit_smoke_test_gem_home -Recurse -Force -ErrorAction Stop
+                break
+            } catch {
+                if ($attempt -lt $maxRetries) {
+                    Write-BuildLine " ** DevKit smoke test pre-cleanup: attempt $attempt failed (file handles may still be open), retrying..."
+                    Start-Sleep -Seconds 2
+                } else {
+                    throw "DevKit smoke test pre-cleanup: failed to remove $devkit_smoke_test_gem_home after $maxRetries attempts: $_"
+                }
+            }
+        }
     }
 
     New-Item -ItemType Directory -Force $devkit_smoke_test_gem_home | Out-Null
@@ -193,7 +206,20 @@ function Invoke-DevkitSmokeTests {
         $env:GEM_PATH = $original_gem_path
 
         if (Test-Path $devkit_smoke_test_gem_home) {
-            Remove-Item $devkit_smoke_test_gem_home -Recurse -Force
+            $maxRetries = 5
+            for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+                try {
+                    Remove-Item $devkit_smoke_test_gem_home -Recurse -Force -ErrorAction Stop
+                    break
+                } catch {
+                    if ($attempt -lt $maxRetries) {
+                        Write-BuildLine " ** DevKit smoke test cleanup: attempt $attempt failed (file handles may still be open), retrying..."
+                        Start-Sleep -Seconds 2
+                    } else {
+                        Write-Warning "DevKit smoke test cleanup: failed to remove $devkit_smoke_test_gem_home after $maxRetries attempts: $_"
+                    }
+                }
+            }
         }
     }
 }
