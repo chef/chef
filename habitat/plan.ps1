@@ -166,20 +166,7 @@ function Invoke-DevkitSmokeTests {
     $original_gem_path = $env:GEM_PATH
 
     if (Test-Path $devkit_smoke_test_gem_home) {
-        $maxRetries = 5
-        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-            try {
-                Remove-Item $devkit_smoke_test_gem_home -Recurse -Force -ErrorAction Stop
-                break
-            } catch {
-                if ($attempt -lt $maxRetries) {
-                    Write-BuildLine " ** DevKit smoke test pre-cleanup: attempt $attempt failed (file handles may still be open), retrying..."
-                    Start-Sleep -Seconds 2
-                } else {
-                    throw "DevKit smoke test pre-cleanup: failed to remove $devkit_smoke_test_gem_home after $maxRetries attempts: $_"
-                }
-            }
-        }
+        Remove-Item $devkit_smoke_test_gem_home -Recurse -Force
     }
 
     New-Item -ItemType Directory -Force $devkit_smoke_test_gem_home | Out-Null
@@ -206,20 +193,7 @@ function Invoke-DevkitSmokeTests {
         $env:GEM_PATH = $original_gem_path
 
         if (Test-Path $devkit_smoke_test_gem_home) {
-            $maxRetries = 5
-            for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-                try {
-                    Remove-Item $devkit_smoke_test_gem_home -Recurse -Force -ErrorAction Stop
-                    break
-                } catch {
-                    if ($attempt -lt $maxRetries) {
-                        Write-BuildLine " ** DevKit smoke test cleanup: attempt $attempt failed (file handles may still be open), retrying..."
-                        Start-Sleep -Seconds 2
-                    } else {
-                        Write-Warning "DevKit smoke test cleanup: failed to remove $devkit_smoke_test_gem_home after $maxRetries attempts: $_"
-                    }
-                }
-            }
+            Remove-Item $devkit_smoke_test_gem_home -Recurse -Force
         }
     }
 }
@@ -394,9 +368,24 @@ function Invoke-After {
     Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
-    Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
-        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
-        | Remove-Item -Recurse -Force
+    $specDirs = Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
+        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }
+    foreach ($specDir in $specDirs) {
+        $maxRetries = 5
+        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            try {
+                Remove-Item $specDir.FullName -Recurse -Force -ErrorAction Stop
+                break
+            } catch {
+                if ($attempt -lt $maxRetries) {
+                    Write-BuildLine " ** Invoke-After: removing $($specDir.FullName): attempt $attempt failed, retrying..."
+                    Start-Sleep -Seconds 2
+                } else {
+                    throw "Invoke-After: failed to remove $($specDir.FullName) after $maxRetries attempts: $_"
+                }
+            }
+        }
+    }
     # Remove .github directories from vendored gems so that GitHub Actions workflow
     # files are not shipped and do not trigger grype vulnerability reports.
     # NOTE: this is temporary and can be removed once upstream dependencies
