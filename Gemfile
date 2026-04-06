@@ -31,7 +31,7 @@ group(:omnibus_package) do
   gem "rb-readline"
   gem "chef-vault"
 
-  gem "inspec-core-bin", ">= 5", "< 6"
+  gem "inspec-core-bin", ">= 5", "< 8"
 end
 
 group(:omnibus_package, :pry) do
