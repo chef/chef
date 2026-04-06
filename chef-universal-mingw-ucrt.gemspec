@@ -2,6 +2,11 @@
 # License is in the included gemspec.
 gemspec = Gem::Specification.load(File.expand_path("chef.gemspec", __dir__))
 
+# In situations like Dependabot, the above returns nil, so create an empty
+# gemspec so that the rest of this file doesn't error out trying to call
+# methods on nil
+gemspec = Gem::Specification.new unless gemspec
+
 gemspec.platform = Gem::Platform.new(%w{universal mingw-ucrt})
 
 gemspec.add_dependency "win32-api", "~> 1.10.0"
