@@ -192,7 +192,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-vault (4.2.5)
+    chef-vault (4.2.9)
       syslog (~> 0.3)
     chef-winrm (2.5.0)
       builder (>= 2.1.2)
