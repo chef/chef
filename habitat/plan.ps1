@@ -362,7 +362,21 @@ function Invoke-After {
     # We don't need the cache of downloaded .gem files ...
     Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
     # ... or bundler's cache of git-ref'd gems
-    Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
+    $bundlerPath = "$pkg_prefix/vendor/bundler"
+    $maxRetries = 5
+    for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+        try {
+            Remove-Item $bundlerPath -Recurse -Force -ErrorAction Stop
+            break
+        } catch {
+            if ($attempt -lt $maxRetries) {
+                Write-BuildLine " ** Removing $bundlerPath: attempt $attempt failed (git subdirectories may be locked), retrying..."
+                Start-Sleep -Seconds 2
+            } else {
+                throw "Failed to remove $bundlerPath after $maxRetries attempts: $_"
+            }
+        }
+    }
 
     # We don't need the gem docs.
     Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
