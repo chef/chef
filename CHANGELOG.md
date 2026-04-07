@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.73 -->
-## [v19.2.73](https://github.com/chef/chef/tree/v19.2.73) (2026-04-07)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Windows plan dies during removal of devkit tests.  [#15849](https://github.com/chef/chef/pull/15849) ([johnmccrae](https://github.com/johnmccrae))
+- fix auth token env reference in adhoc [#15853](https://github.com/chef/chef/pull/15853) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix auth token env reference in adhoc [#15853](https://github.com/chef/chef/pull/15853) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.73 -->
 - Windows plan dies during removal of devkit tests.  [#15849](https://github.com/chef/chef/pull/15849) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.73 -->
 - Fix dependabot security runs [#15845](https://github.com/chef/chef/pull/15845) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.72 -->
 - Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15823](https://github.com/chef/chef/pull/15823) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.71 -->
