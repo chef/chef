@@ -130,7 +130,7 @@ class Chef
         rescue Net::HTTPClientException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
           error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
           error_message << "\n#{e.response.body}" if e.respond_to?(:response)
-          Chef::Knife.ui.error(error_message)
+          Chef::Log.error(error_message)
           raise
         end
       end
