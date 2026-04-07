@@ -10,6 +10,13 @@ updates:
   open-pull-requests-limit: 10
   labels:
   - "Type: Chore"
+  ignore:
+    # chef-18 needs to stay on inspec 5, the pre-license version
+    - dependency-name: "inspec-core-bin"
+      versions: [">= 6"]
+    # chef-18 needs to stay on toml 1 which is less strict
+    - dependency-name: "tomlrb"
+      versions: [">= 2"]
 - package-ecosystem: bundler
   target-branch: "chef-17"
   directory: "/omnibus"
