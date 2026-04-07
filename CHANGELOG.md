@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.48 -->
-## [v18.10.48](https://github.com/chef/chef/tree/v18.10.48) (2026-04-07)
+<!-- latest_release 18.10.49 -->
+## [v18.10.49](https://github.com/chef/chef/tree/v18.10.49) (2026-04-07)
 
 #### Merged Pull Requests
-- [chef-18] update rack to 3.2.6 [#15854](https://github.com/chef/chef/pull/15854) ([rishichawda](https://github.com/rishichawda))
+- Updating for CVE-2025-14762 [#15848](https://github.com/chef/chef/pull/15848) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating for CVE-2025-14762 [#15848](https://github.com/chef/chef/pull/15848) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.49 -->
 - [chef-18] update rack to 3.2.6 [#15854](https://github.com/chef/chef/pull/15854) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.48 -->
 - Bump addressable from 2.8.7 to 2.8.9 [#15819](https://github.com/chef/chef/pull/15819) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.47 -->
 - Update diff-lcs requirement from &gt;= 1.2.4, != 1.4.0, &lt; 1.6.0 to &gt;= 1.2.4, != 1.4.0, &lt; 2.1.0 [#15826](https://github.com/chef/chef/pull/15826) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.46 -->
