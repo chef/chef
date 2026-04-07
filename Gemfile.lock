@@ -137,7 +137,7 @@ PATH
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
-      tomlrb (>= 1.2, < 3.0)
+      tomlrb (~> 1.2)
 
 PATH
   remote: chef-utils
@@ -444,7 +444,7 @@ GEM
     time (0.4.2)
       date
     timeout (0.6.0)
-    tomlrb (2.0.4)
+    tomlrb (1.3.0)
     train-core (3.16.1)
       addressable (~> 2.5)
       ffi (>= 1.16.0, < 1.18)
