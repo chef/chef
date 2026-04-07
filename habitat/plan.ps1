@@ -370,10 +370,10 @@ function Invoke-After {
             break
         } catch {
             if ($attempt -lt $maxRetries) {
-                Write-BuildLine " ** Removing $bundlerPath: attempt $attempt failed (git subdirectories may be locked), retrying..."
+                Write-BuildLine " ** Removing ${bundlerPath}: attempt $attempt failed (git subdirectories may be locked), retrying..."
                 Start-Sleep -Seconds 2
             } else {
-                throw "Failed to remove $bundlerPath after $maxRetries attempts: $_"
+                throw "Failed to remove ${bundlerPath} after $maxRetries attempts: $_"
             }
         }
     }
