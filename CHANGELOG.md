@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- enable docker arm image build and push [#15856](https://github.com/chef/chef/pull/15856) ([rishichawda](https://github.com/rishichawda))
 - fix auth token env reference in adhoc [#15853](https://github.com/chef/chef/pull/15853) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- enable docker arm image build and push [#15856](https://github.com/chef/chef/pull/15856) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.73 -->
 - fix auth token env reference in adhoc [#15853](https://github.com/chef/chef/pull/15853) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.73 -->
 - Windows plan dies during removal of devkit tests.  [#15849](https://github.com/chef/chef/pull/15849) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.73 -->
 - Fix dependabot security runs [#15845](https://github.com/chef/chef/pull/15845) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.72 -->
