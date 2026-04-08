@@ -28,9 +28,9 @@ Similar to the RubyDistros setup, these are defined in GitHub and built-in Docke
 
 COMING SOON!
 
-### Omnibus Pipeline
+### Habitat Pipeline
 
-With the new platform tested in Pull Requests, you'll now want to ensure that we build and test these packages in our Buildkite Omnibus pipeline.
+With the new platform tested in Pull Requests, you'll now want to ensure that we build and test these packages in our Buildkite pipeline.
 
 HOW TO DO THIS COMING SOON!
 

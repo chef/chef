@@ -163,7 +163,7 @@ Our version numbering roughly follows [Semantic Versioning](http://semver.org/) 
 - Y is a minor release, which adds both new features and bug fixes
 - Z is a patch release, which adds just bug fixes
 
-After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor release. All merges to `main` trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shipping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
+After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor release. All merges to `main` trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shipping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package. Starting with Chef 19, Chef Infra Client is distributed as a Habitat package.
 
 Announcements of releases are made to the [chef mailing list](https://discourse.chef.io/c/chef-release) when they are available and are mirrored to the #announcements channel on the [Chef Community Slack](https://community-slack.chef.io/).
 
