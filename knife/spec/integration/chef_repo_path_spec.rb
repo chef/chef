@@ -101,6 +101,7 @@ describe "chef_repo_path tests", :workstation do
           /users/
           /users/user3.json
         EOM
+        raise "test1"
       end
 
       # "Skipping for BK... As Windows 2019 has 8dot3name disabled by default"
@@ -149,6 +150,7 @@ describe "chef_repo_path tests", :workstation do
           /roles/
           /roles/role3.json
         EOM
+        raise "test2"
       end
 
       context "when all _paths are set to alternates" do
