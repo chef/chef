@@ -13,11 +13,8 @@ function create_and_push_manifest() {
 
   echo "--- Creating manifest for ${manifest_tag}"
   docker manifest create "chef/chef-hab:${manifest_tag}" \
-    --amend "chef/chef-hab:${version}-amd64"
-# Commenting this as Habitat doesn't support arm64 builds yet
-# TODO:
-# Add the pipelines for the arm64 builds once Habitat supports it
-#    --amend "chef/chef-hab:${version}-arm64"
+    --amend "chef/chef-hab:${version}-amd64" \
+    --amend "chef/chef-hab:${version}-arm64"
 
   echo "--- Pushing manifest for ${manifest_tag}"
   docker manifest push "chef/chef-hab:${manifest_tag}"
