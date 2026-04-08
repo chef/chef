@@ -90,7 +90,7 @@ class Chef
 
       property :chef_binary_path, String,
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
-        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path }
+        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_package_binary_path }
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",

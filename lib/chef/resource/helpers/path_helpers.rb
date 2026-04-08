@@ -1,4 +1,5 @@
 require "chef/mixin/which"
+require "pathname" unless defined?(Pathname)
 
 class Chef
   module ResourceHelpers
@@ -39,10 +40,27 @@ class Chef
         path = File.realpath($PROGRAM_NAME)
         bin = File.basename(path)
 
-        return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ /^chef-[a-z-]+$/
+        if bin =~ /^chef-[a-z-]+$/
+          return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if ChefUtils.windows?
+
+          return "hab pkg exec #{chef_client_hab_package_ident} #{ChefUtils::Dist::Infra::CLIENT}"
+        end
 
         # Return empty string if no valid path is found
         ""
+      end
+
+      # Returns the Habitat package identifier (origin/name/version/release) for the
+      # currently running Chef Infra Client package.
+      #
+      # @return [String] the hab package ident, e.g. "chef/chef-infra-client/19.10.0/20250822151044",
+      #   or an empty string if not running from a hab package.
+      def chef_client_hab_package_ident
+        path = File.realpath($PROGRAM_NAME)
+        bin = File.basename(path)
+        return "" unless bin =~ /^chef-[a-z-]+$/
+
+        Pathname.new(path).each_filename.to_a[2..5].join("/")
       end
 
       def hab_executable_binary_path

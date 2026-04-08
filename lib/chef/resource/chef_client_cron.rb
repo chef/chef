@@ -128,7 +128,7 @@ class Chef
         description: "Append to the log file instead of overwriting the log file on each run."
 
       property :chef_binary_path, String,
-        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_binary_path },
+        default: lazy { Chef::ResourceHelpers::PathHelpers.chef_client_hab_package_binary_path },
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary."
 
       property :daemon_options, Array,
