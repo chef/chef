@@ -45,6 +45,8 @@ echo "--- :construction: Building $PLAN (solely for verification testing)"
 
 source "${project_root}/results/last_build.env" || error 'unable to determine details about this build'
 
+curl https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh     | sudo -E bash -s -- -c acceptance
+
 echo "--- :hammer_and_wrench: Installing $pkg_ident"
 hab pkg install "${project_root}/results/$pkg_artifact" || error 'unable to install this build'
 
