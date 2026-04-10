@@ -37,6 +37,25 @@ project_root="$(git rev-parse --show-toplevel)"
 echo "--- :key: Generating fake origin key"
 hab origin key generate "$HAB_ORIGIN"
 
+# TODO: Remove this conditional logic once a hab version >= 2.0.495 is released.
+# Check if hab version is >= 2.0.495 for aarch64-linux
+# The install hook requires hab >= 2.0.495 on arm64 architecture
+echo "--- :habicat: Checking Habitat version for arm architecture compatibility"
+hab_version=$(hab --version 2>/dev/null | awk '{print $2}')
+required_version="2.0.495"
+
+if [ -z "$hab_version" ]; then
+  echo "WARNING: Unable to determine Habitat version"
+elif [ "$(printf '%s\n' "$required_version" "$hab_version" | sort -V | head -n 1)" = "$required_version" ]; then
+  echo "Habitat version $hab_version meets requirement ($required_version). Install hook will be used."
+else
+  echo "Habitat version $hab_version is less than $required_version. Removing install hook for aarch64-linux."
+  # Remove the install hook directory to prevent it from being packaged
+  if [[ -d "$project_root/habitat/aarch64-linux/hooks/install" ]]; then
+    rm -f "$project_root/habitat/aarch64-linux/hooks/install"
+  fi
+fi
+
 echo "--- :construction: Building $PLAN (solely for verification testing)"
 (
   cd "$project_root" || error 'cannot change directory to project root'
