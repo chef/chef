@@ -55,7 +55,7 @@ elif [ "$(printf '%s\n' "$required_version" "$hab_version" | sort -V | head -n 1
 else
   build_line "Habitat version $hab_version is less than $required_version. Excluding install hook for aarch64-linux."
   # Remove the install hook directory to prevent it from being packaged
-  if [[ -d "$PLAN_CONTEXT/hooks/install" ]]; then
+  if [[ -f "$PLAN_CONTEXT/hooks/install" ]]; then
     rm -f "$PLAN_CONTEXT/hooks/install"
   fi
 fi
