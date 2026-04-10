@@ -46,10 +46,10 @@ pkg_svc_group=root
 hab_version=$(hab --version 2>/dev/null | awk '{print $2}')
 required_version="2.0.495"
 
-if [ -z "$hab_version" ]; then
+if [[ -z "$hab_version" ]]; then
   build_line "WARNING: Unable to determine Habitat version"
   pkg_svc_user_default=root
-elif [ "$(printf '%s\n' "$required_version" "$hab_version" | sort -V | head -n 1)" = "$required_version" ]; then
+elif [[ "$(printf '%s\n' "$required_version" "$hab_version" | sort -V | head -n 1)" = "$required_version" ]]; then
   build_line "Habitat version $hab_version meets requirement ($required_version). Install hook will be used."
   pkg_svc_user_default=root
 else
