@@ -40,6 +40,26 @@ pkg_deps=(
 pkg_svc_user=root
 pkg_svc_group=root
 
+# TODO: Remove this conditional logic once a hab version >= 2.0.495 is released.
+# Check if hab version is >= 2.0.495 for aarch64-linux
+# The install hook requires hab >= 2.0.495 on arm64 architecture
+hab_version=$(hab --version 2>/dev/null | awk '{print $2}')
+required_version="2.0.495"
+
+if [ -z "$hab_version" ]; then
+  build_line "WARNING: Unable to determine Habitat version"
+  pkg_svc_user_default=root
+elif [ "$(printf '%s\n' "$required_version" "$hab_version" | sort -V | head -n 1)" = "$required_version" ]; then
+  build_line "Habitat version $hab_version meets requirement ($required_version). Install hook will be used."
+  pkg_svc_user_default=root
+else
+  build_line "Habitat version $hab_version is less than $required_version. Excluding install hook for aarch64-linux."
+  # Remove the install hook directory to prevent it from being packaged
+  if [[ -d "$PLAN_CONTEXT/hooks/install" ]]; then
+    rm -f "$PLAN_CONTEXT/hooks/install"
+  fi
+fi
+
 pkg_version() {
   cat "${SRC_PATH}/VERSION"
 }
