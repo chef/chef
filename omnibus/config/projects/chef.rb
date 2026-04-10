@@ -51,6 +51,9 @@ dependency "more-ruby-cleanup"
 # introduced for rexml cleanup
 dependency "remove-old-gems"
 
+# remove unused Ruby DevKit OpenSSL binary from embedded msys on Windows
+dependency "remove-vulnerable-msys-artifacts"
+
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
   compression_level 1
