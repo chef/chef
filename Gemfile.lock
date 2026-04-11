@@ -554,6 +554,7 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.9.1)
+    unf_ext (0.0.9.1-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.1.1)
