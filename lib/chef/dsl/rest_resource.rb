@@ -61,7 +61,7 @@ class Chef
 
           @rest_property_map = rest_property_map
         end
-        @rest_property_map
+        @rest_property_map || (superclass.respond_to?(:rest_property_map) ? superclass.rest_property_map : nil)
       end
 
       # Define the REST API collection URL
@@ -89,7 +89,7 @@ class Chef
           @rest_api_collection = rest_api_collection
         end
 
-        @rest_api_collection
+        @rest_api_collection || (superclass.respond_to?(:rest_api_collection) ? superclass.rest_api_collection : nil)
       end
 
       # Define the REST API document URL with RFC 6570 template support
@@ -137,7 +137,9 @@ class Chef
           @rest_api_document = rest_api_document
           @rest_api_document_first_element_only = first_element_only
         end
-        @rest_api_document
+        @rest_api_document ||
+          (superclass.respond_to?(:rest_api_document) ? superclass.rest_api_document : nil) ||
+          (rest_api_collection && rest_identity_property ? "#{rest_api_collection}/{#{rest_identity_property}}" : nil)
       end
 
       # Define explicit identity mapping for resource identification
@@ -178,7 +180,7 @@ class Chef
       #   })
       def rest_identity_map(rest_identity_map = NOT_PASSED)
         @rest_identity_map = rest_identity_map if rest_identity_map != NOT_PASSED
-        @rest_identity_map
+        @rest_identity_map || (superclass.respond_to?(:rest_identity_map) ? superclass.rest_identity_map : nil)
       end
 
       # Declare properties that should only be sent during resource creation
@@ -222,14 +224,55 @@ class Chef
         if rest_post_only_properties != NOT_PASSED
           @rest_post_only_properties = Array(rest_post_only_properties).map(&:to_sym)
         end
-        @rest_post_only_properties || []
+        @rest_post_only_properties || (superclass.respond_to?(:rest_post_only_properties) ? superclass.rest_post_only_properties : [])
       end
 
       def rest_api_document_first_element_only(rest_api_document_first_element_only = NOT_PASSED)
         if rest_api_document_first_element_only != NOT_PASSED
           @rest_api_document_first_element_only = rest_api_document_first_element_only
         end
-        @rest_api_document_first_element_only
+        @rest_api_document_first_element_only || (superclass.respond_to?(:rest_api_document_first_element_only) ? superclass.rest_api_document_first_element_only : nil)
+      end
+
+      # Define the base URL for the REST API
+      #
+      # Sets the base endpoint URL that is prepended to all collection and document
+      # URLs. This allows resource definitions to be self-contained without requiring
+      # the Train transport endpoint to be pre-configured.
+      #
+      # @param rest_api_endpoint [String, NOT_PASSED] The base URL of the REST API
+      #   - NOT_PASSED: Acts as getter, returns current endpoint URL
+      #
+      # @return [String, nil] The current endpoint URL
+      #
+      # @example
+      #   rest_api_endpoint "https://api.example.com"
+      #   rest_api_collection "/api/v1/users"
+      #   # GET https://api.example.com/api/v1/users
+      def rest_api_endpoint(rest_api_endpoint = NOT_PASSED)
+        @rest_api_endpoint = rest_api_endpoint if rest_api_endpoint != NOT_PASSED
+        @rest_api_endpoint || (superclass.respond_to?(:rest_api_endpoint) ? superclass.rest_api_endpoint : nil)
+      end
+
+      # Declare the property that uniquely identifies a resource in the REST API
+      #
+      # Sets the identity property for the resource and auto-generates the document
+      # URL as "#{rest_api_collection}/{property}" when no explicit rest_api_document
+      # is provided. This is a convenience alternative to setting rest_api_document
+      # manually.
+      #
+      # @param property [Symbol, NOT_PASSED] The property name used as the resource identifier
+      #   - NOT_PASSED: Acts as getter, returns current identity property
+      #
+      # @return [Symbol, nil] The current identity property name
+      #
+      # @example
+      #   rest_api_collection "/api/v1/users"
+      #   rest_identity_property :username
+      #   # Auto-generates rest_api_document as "/api/v1/users/{username}"
+      def rest_identity_property(property = NOT_PASSED)
+        @rest_identity_property = property if property != NOT_PASSED
+        @rest_identity_property || (superclass.respond_to?(:rest_identity_property) ? superclass.rest_identity_property : nil)
       end
 
     end
