@@ -64,6 +64,20 @@ Write-Host "Origin keys downloaded and cached successfully"
 
 Write-Host "--- Building Chef Infra Client package"
 $env:HAB_REFRESH_CHANNEL = "base-2025"
+
+# Ensure Habitat cache directories exist before building.
+# hab-studio on Windows creates junction links to these paths and fails if they are missing.
+$habCacheDirs = @(
+    "$env:SystemDrive\hab\cache\artifacts"
+    # "$env:SystemDrive\hab\cache\keys"
+)
+foreach ($dir in $habCacheDirs) {
+    if (-not (Test-Path $dir)) {
+        Write-Host "Creating missing Habitat cache directory: $dir"
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+    }
+}
+
 hab pkg build .
 if ($LASTEXITCODE -ne 0) { throw "Unable to build package" }
 
