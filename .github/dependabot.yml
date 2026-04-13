@@ -25,6 +25,12 @@ updates:
       # Due to FIPS builds and having to couple the openssl
       # build itself, we don't let dependabot bump openssl
       - dependency-name: "openssl"
+      # chef-18 needs to stay on inspec 5, the pre-license version
+      - dependency-name: "inspec-core-bin"
+        versions: [">= 6"]
+      # chef-18 needs to stay on toml 1 which is less strict
+      - dependency-name: "tomlrb"
+        versions: [">= 2"]
 
   - package-ecosystem: bundler
     directory: "/omnibus"
