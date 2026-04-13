@@ -1665,7 +1665,6 @@
     "omnibus/resources/chef/**/*",
     "kitchen-tests/cookbooks/end_to_end/files/**/*",
     "spec/**",
-    "knife/spec/**",
     "docs_site",
     "cspell.json",
     ".mailmap",
