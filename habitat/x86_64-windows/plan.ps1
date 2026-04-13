@@ -1,7 +1,8 @@
 $env:HAB_BLDR_CHANNEL = "base-2025"
+$SRC_PATH = (Get-Item "$PLAN_CONTEXT\..\..\").FullName
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
-$pkg_version=(Get-Content $PLAN_CONTEXT/../VERSION)
+$pkg_version=(Get-Content "$SRC_PATH\VERSION")
 $pkg_description="Chef Infra Client is an agent that runs locally on every node that is under management by Chef Infra. This package is binary-only to provide Chef Infra Client executables. It does not define a service to run."
 $pkg_maintainer="The Chef Maintainers <maintainers@chef.io>"
 $pkg_upstream_url="https://github.com/chef/chef"
@@ -66,7 +67,7 @@ function Invoke-Download() {
         Write-Output "Invoke-Download Function: Original path: $(Get-Location)"
 
         # just doing a test example here, should show my resolved-path, for those not sure what the resolved path does
-        $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../").Path
+        $resolvedPath = (Resolve-Path "$PLAN_CONTEXT/../../").Path
         Write-Output "Invoke-Download Function: Resolved target path: $resolvedPath"
 
         # Push-Location to move into the new directory and stack the current directory, neat way to use cd
@@ -334,7 +335,7 @@ function Invoke-Install {
             $content = Get-Content $binstub -Raw
 
             # Read the patch content from binstub_patch.bat
-            $envLoaderBat = Get-Content "$PLAN_CONTEXT\binstub_patch.bat" -Raw
+            $envLoaderBat = Get-Content "$PLAN_CONTEXT\..\binstub_patch.bat" -Raw
 
             # Replace @ECHO OFF with @ECHO OFF followed by the environment loader
             $content = $content -replace '(?m)^@ECHO OFF', "@ECHO OFF`r`n$envLoaderBat"

@@ -1,5 +1,5 @@
 export HAB_BLDR_CHANNEL="base-2025"
-SRC_PATH="$(dirname "$PLAN_CONTEXT")"
+SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
@@ -38,6 +38,7 @@ pkg_deps=(
   core/libarchive
 )
 pkg_svc_user=root
+pkg_svc_group=root
 
 pkg_version() {
   cat "${SRC_PATH}/VERSION"
@@ -108,14 +109,14 @@ do_prepare() {
   # Needed for appbundler-updater to work properly
   build_line "Extracting bundler version from Gemfile.lock"
   BUNDLER_VERSION=$(grep -A 1 "BUNDLED WITH" "$CACHE_PATH/Gemfile.lock" | tail -n 1 | tr -d '[:space:]')
-  if [ -z "$BUNDLER_VERSION" ]; then
+  if [[ -z "$BUNDLER_VERSION" ]]; then
     exit_with "Failed to extract bundler version from Gemfile.lock" 1
   fi
   build_line "Installing bundler version $BUNDLER_VERSION"
   gem install bundler --version "$BUNDLER_VERSION" --no-document
 
   build_line "Setting link for /usr/bin/env to 'coreutils'"
-  if [ ! -f /usr/bin/env ]; then
+  if [[ ! -f /usr/bin/env ]]; then
     ln -s "$(pkg_interpreter_for core/coreutils bin/env)" /usr/bin/env
   fi
 }
@@ -163,7 +164,7 @@ do_install() {
       echo "***************** VERIFYING  chef-official-distribution *****************"
       gem list chef-official-distribution
 
-      if [ $? -ne 0 ]; then
+      if [[ $? -ne 0 ]]; then
         exit 1
       fi
     else
@@ -182,7 +183,7 @@ do_install() {
     for binstub in ${pkg_prefix}/bin/*; do
       build_line "Before patching $(basename $binstub):"
       head -n 20 "$binstub"
-      sed -i "/require \"rubygems\"/r ${PLAN_CONTEXT}/binstub_patch.rb" "$binstub"
+      sed -i "/require \"rubygems\"/r ${PLAN_CONTEXT}/../binstub_patch.rb" "$binstub"
       build_line "After patching $(basename $binstub):"
       head -n 20 "$binstub"
     done
@@ -219,7 +220,7 @@ do_after() {
 }
 
 do_end() {
-  if [ "$(readlink /usr/bin/env)" = "$(pkg_interpreter_for core/coreutils bin/env)" ]; then
+  if [[ "$(readlink /usr/bin/env)" = "$(pkg_interpreter_for core/coreutils bin/env)" ]]; then
     build_line "Removing the symlink we created for '/usr/bin/env'"
     rm /usr/bin/env
   fi
