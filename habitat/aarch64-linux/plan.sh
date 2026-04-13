@@ -221,8 +221,8 @@ do_after() {
   rm -r "$pkg_prefix/vendor/doc"
   # We don't need to ship the test suites for every gem dependency,
   # only Chef's for package verification.
-  find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
-      | while read spec_dir; do rm -r "$spec_dir"; done
+  find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" | grep -v "knife-" \
+      | while read spec_dir; do rm -rf "$spec_dir"; done
   # Remove .github directories from vendored gems so that GitHub Actions workflow
   # files are not shipped and do not trigger grype vulnerability reports.
   # NOTE: this is temporary and can be removed once upstream dependencies
