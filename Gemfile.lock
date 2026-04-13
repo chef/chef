@@ -281,8 +281,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.4)
-    ffi (1.17.4-arm64-darwin)
-    ffi (1.17.4-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -576,7 +574,7 @@ DEPENDENCIES
   crack (~> 1.0.1)
   ed25519 (~> 1.2)
   fauxhai-ng
-  ffi (>= 1.15.5, < 1.18.0)
+  ffi (>= 1.15.5)
   inspec-core-bin (= 7.0.107)
   ohai!
   openssl (= 3.3.1)
