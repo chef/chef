@@ -18,6 +18,4 @@ cd $workdir
 echo "--- Generating pipeline configuration.."
 /tmp/ruby-3.4.2-install/bin/ruby .buildkite/validate-adhoc.rb > pipeline-config.yaml
 
-cat pipeline-config.yaml
-
 buildkite-agent pipeline upload pipeline-config.yaml
