@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.75 -->
-## [v19.2.75](https://github.com/chef/chef/tree/v19.2.75) (2026-04-08)
+<!-- latest_release 19.2.76 -->
+## [v19.2.76](https://github.com/chef/chef/tree/v19.2.76) (2026-04-13)
 
 #### Merged Pull Requests
-- Updating community checklist and copilot instructions [#15864](https://github.com/chef/chef/pull/15864) ([johnmccrae](https://github.com/johnmccrae))
+- Add SELinux fcontext install hook for Habitat package [#15787](https://github.com/chef/chef/pull/15787) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add SELinux fcontext install hook for Habitat package [#15787](https://github.com/chef/chef/pull/15787) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.76 -->
 - Updating community checklist and copilot instructions [#15864](https://github.com/chef/chef/pull/15864) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.75 -->
 - More omnibus cleanup [#15855](https://github.com/chef/chef/pull/15855) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.74 -->
 - enable docker arm image build and push [#15856](https://github.com/chef/chef/pull/15856) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.73 -->
