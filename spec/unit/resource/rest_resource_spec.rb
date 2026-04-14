@@ -21,6 +21,7 @@ require "train-rest"
 
 API_HOST = "https://api.example.com".freeze
 API_BASE_URL = "#{API_HOST}/api/v1/".freeze
+CORE_REST_RESOURCE = "core::rest_resource".freeze
 COLLECTION_PATH = "/api/v1/addresses".freeze
 QUERY_DOCUMENT_PATH = "/api/v1/address/?ip={address}".freeze
 PATH_DOCUMENT_PATH = "/api/v1/address/{address}".freeze
@@ -49,7 +50,7 @@ PATH_RESOURCE_PATH = "/api/v1/address/#{ADDRESS}".freeze
 IDENTITY_RESOURCE_PATH = "/api/v1/addresses/#{ADDRESS}".freeze
 
 class RestResourceByQuery < Chef::Resource
-  use "core::rest_resource"
+  use CORE_REST_RESOURCE
 
   provides :rest_resource_by_query, target_mode: true
 
@@ -73,7 +74,7 @@ class RestResourceByPath < RestResourceByQuery
 end
 
 class RestResourceWithEndpoint < Chef::Resource
-  use "core::rest_resource"
+  use CORE_REST_RESOURCE
 
   provides :rest_resource_with_endpoint, target_mode: true
 
@@ -92,7 +93,7 @@ class RestResourceWithEndpoint < Chef::Resource
 end
 
 class RestResourceWithIdentityProperty < Chef::Resource
-  use "core::rest_resource"
+  use CORE_REST_RESOURCE
 
   provides :rest_resource_with_identity_property, target_mode: true
 
@@ -110,7 +111,7 @@ class RestResourceWithIdentityProperty < Chef::Resource
 end
 
 class RestResourceWithEndpointAndIdentityProperty < Chef::Resource
-  use "core::rest_resource"
+  use CORE_REST_RESOURCE
 
   provides :rest_resource_with_endpoint_and_identity_property, target_mode: true
 
