@@ -29,12 +29,6 @@ steps:
       HAB_AUTH_TOKEN:
         path: account/static/habitat/chef-ci
         field: auth_token
-    executor:
-      linux:
-        privileged: true
-        propagate-environment: true
-        environment:
-          - HAB_AUTH_TOKEN
   command: .expeditor/build-docker-images.sh arm64
 
 - wait
