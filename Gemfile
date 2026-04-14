@@ -10,8 +10,6 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "knife", git: "https://github.com/chef/knife.git", branch: "main"
-
 gem "ffi", ">= 1.15.5", force_ruby_platform: true
 
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
