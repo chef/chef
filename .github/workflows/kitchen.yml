@@ -9,6 +9,9 @@ name: kitchen
     branches:
       - main
 
+  # allow manual runs
+  workflow_dispatch:
+
 concurrency:
   group: kitchen-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
@@ -21,7 +24,6 @@ defaults:
 
 jobs:
   workflow_guard:
-    if: github.event_name == 'pull_request_target'
     uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
     permissions:
       contents: read
