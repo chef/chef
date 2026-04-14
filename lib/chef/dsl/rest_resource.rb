@@ -24,6 +24,14 @@ class Chef
     # when a custom resource uses the 'core::rest_resource' partial.
     #
     module RestResource
+      private
+
+      def inherited_accessor(name)
+        superclass.public_send(name) if superclass.respond_to?(name)
+      end
+
+      public
+
       # Define property mapping between resource properties and JSON API fields
       #
       # Maps resource properties to their corresponding locations in the JSON
@@ -56,12 +64,12 @@ class Chef
       # @see #json_to_property Method that uses this mapping to extract values
       # @see #property_to_json Method that uses this mapping to create JSON
       def rest_property_map(rest_property_map = NOT_PASSED)
-        if rest_property_map != NOT_PASSED
+        unless rest_property_map.equal?(NOT_PASSED)
           rest_property_map = rest_property_map.to_h { |k| [k.to_sym, k] } if rest_property_map.is_a? Array
 
           @rest_property_map = rest_property_map
         end
-        @rest_property_map || (superclass.respond_to?(:rest_property_map) ? superclass.rest_property_map : nil)
+        @rest_property_map || inherited_accessor(:rest_property_map)
       end
 
       # Define the REST API collection URL
@@ -83,13 +91,13 @@ class Chef
       #   # GET  /api/v1/users      # List all users
       #   # POST /api/v1/users      # Create new user
       def rest_api_collection(rest_api_collection = NOT_PASSED)
-        if rest_api_collection != NOT_PASSED
+        unless rest_api_collection.equal?(NOT_PASSED)
           raise ArgumentError, "You must pass an absolute path to rest_api_collection" unless rest_api_collection.start_with? "/"
 
           @rest_api_collection = rest_api_collection
         end
 
-        @rest_api_collection || (superclass.respond_to?(:rest_api_collection) ? superclass.rest_api_collection : nil)
+        @rest_api_collection || inherited_accessor(:rest_api_collection)
       end
 
       # Define the REST API document URL with RFC 6570 template support
@@ -131,14 +139,14 @@ class Chef
       #
       # @see https://tools.ietf.org/html/rfc6570 RFC 6570 URI Template specification
       def rest_api_document(rest_api_document = NOT_PASSED, first_element_only: false)
-        if rest_api_document != NOT_PASSED
+        unless rest_api_document.equal?(NOT_PASSED)
           raise ArgumentError, "You must pass an absolute path to rest_api_document" unless rest_api_document.start_with? "/"
 
           @rest_api_document = rest_api_document
           @rest_api_document_first_element_only = first_element_only
         end
         @rest_api_document ||
-          (superclass.respond_to?(:rest_api_document) ? superclass.rest_api_document : nil) ||
+          inherited_accessor(:rest_api_document) ||
           (rest_api_collection && rest_identity_property ? "#{rest_api_collection}/{#{rest_identity_property}}" : nil)
       end
 
@@ -179,8 +187,8 @@ class Chef
       #     'organization.id' => :org_id
       #   })
       def rest_identity_map(rest_identity_map = NOT_PASSED)
-        @rest_identity_map = rest_identity_map if rest_identity_map != NOT_PASSED
-        @rest_identity_map || (superclass.respond_to?(:rest_identity_map) ? superclass.rest_identity_map : nil)
+        @rest_identity_map = rest_identity_map unless rest_identity_map.equal?(NOT_PASSED)
+        @rest_identity_map || inherited_accessor(:rest_identity_map)
       end
 
       # Declare properties that should only be sent during resource creation
@@ -221,17 +229,17 @@ class Chef
       #   # Initialization parameters
       #   rest_post_only_properties [:template_id, :source_snapshot]
       def rest_post_only_properties(rest_post_only_properties = NOT_PASSED)
-        if rest_post_only_properties != NOT_PASSED
+        unless rest_post_only_properties.equal?(NOT_PASSED)
           @rest_post_only_properties = Array(rest_post_only_properties).map(&:to_sym)
         end
-        @rest_post_only_properties || (superclass.respond_to?(:rest_post_only_properties) ? superclass.rest_post_only_properties : [])
+        @rest_post_only_properties || inherited_accessor(:rest_post_only_properties) || []
       end
 
       def rest_api_document_first_element_only(rest_api_document_first_element_only = NOT_PASSED)
-        if rest_api_document_first_element_only != NOT_PASSED
+        unless rest_api_document_first_element_only.equal?(NOT_PASSED)
           @rest_api_document_first_element_only = rest_api_document_first_element_only
         end
-        @rest_api_document_first_element_only || (superclass.respond_to?(:rest_api_document_first_element_only) ? superclass.rest_api_document_first_element_only : nil)
+        @rest_api_document_first_element_only || inherited_accessor(:rest_api_document_first_element_only)
       end
 
       # Define the base URL for the REST API
@@ -250,8 +258,8 @@ class Chef
       #   rest_api_collection "/api/v1/users"
       #   # GET https://api.example.com/api/v1/users
       def rest_api_endpoint(rest_api_endpoint = NOT_PASSED)
-        @rest_api_endpoint = rest_api_endpoint if rest_api_endpoint != NOT_PASSED
-        @rest_api_endpoint || (superclass.respond_to?(:rest_api_endpoint) ? superclass.rest_api_endpoint : nil)
+        @rest_api_endpoint = rest_api_endpoint unless rest_api_endpoint.equal?(NOT_PASSED)
+        @rest_api_endpoint || inherited_accessor(:rest_api_endpoint)
       end
 
       # Declare the property that uniquely identifies a resource in the REST API
@@ -271,8 +279,8 @@ class Chef
       #   rest_identity_property :username
       #   # Auto-generates rest_api_document as "/api/v1/users/{username}"
       def rest_identity_property(property = NOT_PASSED)
-        @rest_identity_property = property if property != NOT_PASSED
-        @rest_identity_property || (superclass.respond_to?(:rest_identity_property) ? superclass.rest_identity_property : nil)
+        @rest_identity_property = property unless property.equal?(NOT_PASSED)
+        @rest_identity_property || inherited_accessor(:rest_identity_property)
       end
 
     end
