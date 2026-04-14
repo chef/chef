@@ -19,6 +19,8 @@ lifecycle:
     - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: echo "Updating Chef using appbundler-updater:"
+    - remote: sudo /opt/chef/embedded/bin/bundle config set --system force_ruby_platform true
+    - remote: CURRENT_PLATFORM=$(ruby -e 'puts Gem::Platform.local'); echo "Adding platform ${CURRENT_PLATFORM}"; bundle lock --add-platform "${CURRENT_PLATFORM}"; bundle install
     - remote: sudo /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['GITHUB_SHA']  || %x(git rev-parse HEAD).chomp %> --tarball --github <%= ENV['GITHUB_REPOSITORY']  || "chef/chef" %>
     - remote: sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
     - remote: echo "Installed Chef / Ohai release:"
