@@ -1,0 +1,12 @@
+<%# Generate Ohai Hints -%>
+<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+mkdir -p /etc/chef/ohai/hints
+<% end -%>
+
+<% @chef_config[:knife][:hints].each do |name, hash| -%>
+(
+cat <<'EOP'
+<%= Chef::JSONCompat.to_json(hash) %>
+EOP
+) > /etc/chef/ohai/hints/<%= name %>.json
+<% end -%>

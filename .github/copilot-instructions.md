@@ -24,6 +24,7 @@ chef/
 ├── ext/                        # External extensions (e.g., win32-eventlog)
 ├── habitat/                    # Habitat packaging configuration
 ├── kitchen-tests/              # Test Kitchen integration tests
+├── knife/                      # Knife CLI tool for Chef management
 ├── lib/                        # Main Chef library code
 │   ├── chef.rb                 # Main entry point
 │   └── chef/                   # Core Chef modules and classes
@@ -260,6 +261,7 @@ rake spec
 
 - `chef-utils`: Utility functions
 - `chef-config`: Configuration management
+- `knife`: CLI tool
 - `chef-bin`: Binary executables
 
 ## Emergency Procedures

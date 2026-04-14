@@ -1,0 +1,4 @@
+# This file should never be executed by the preseeding tests
+# This is here to verify that templates are preferred over cookbook_files when
+# preseeding packages.
+chef-integration-test chef-integration-test/sample-var string "WRONG-cookbook file used instead of template!"

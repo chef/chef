@@ -1,0 +1,9 @@
+{
+  "type": "error",
+  "status-code": 401,
+  "status": "Unauthorized",
+  "result": {
+    "message": "access denied",
+    "kind": "login-required"
+  }
+}

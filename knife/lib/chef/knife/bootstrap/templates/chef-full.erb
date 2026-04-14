@@ -1,0 +1,242 @@
+<%= "https_proxy=\"#{@config[:bootstrap_proxy]}\" export https_proxy" if @config[:bootstrap_proxy] %>
+<%= "no_proxy=\"#{@config[:bootstrap_no_proxy]}\" export no_proxy" if @config[:bootstrap_no_proxy] %>
+
+if test "x$TMPDIR" = "x"; then
+  tmp="/tmp"
+else
+  tmp=$TMPDIR
+fi
+
+# secure-ish temp dir creation without having mktemp available (DDoS-able but not exploitable)
+tmp_dir="$tmp/install.sh.$$"
+(umask 077 && mkdir $tmp_dir) || exit 1
+
+exists() {
+  if command -v $1 >/dev/null 2>&1
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
+http_404_error() {
+  echo "ERROR 404: Could not retrieve a valid install.sh!"
+  exit 1
+}
+
+capture_tmp_stderr() {
+  # spool up /tmp/stderr from all the commands we called
+  if test -f "$tmp_dir/stderr"; then
+    output=`cat $tmp_dir/stderr`
+    stderr_results="${stderr_results}\nSTDERR from $1:\n\n$output\n"
+    rm $tmp_dir/stderr
+  fi
+}
+
+# do_wget URL FILENAME
+do_wget() {
+  echo "trying wget..."
+  wget <%= "--proxy=on " if @config[:bootstrap_proxy] %> <%= @config[:bootstrap_wget_options] %> -O "$2" "$1" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "ERROR 404" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "wget"
+    return 1
+  fi
+
+  return 0
+}
+
+# do_curl URL FILENAME
+do_curl() {
+  echo "trying curl..."
+  curl -sL <%= "--proxy \"#{@config[:bootstrap_proxy]}\" " if @config[:bootstrap_proxy] %> <%= @config[:bootstrap_curl_options] %> -D $tmp_dir/stderr -o "$2" "$1" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "curl"
+    return 1
+  fi
+
+  return 0
+}
+
+# do_fetch URL FILENAME
+do_fetch() {
+  echo "trying fetch..."
+  fetch -o "$2" "$1" 2>$tmp_dir/stderr
+  # check for bad return status
+  test $? -ne 0 && return 1
+  return 0
+}
+
+# do_perl URL FILENAME
+do_perl() {
+  echo "trying perl..."
+  perl -e "use LWP::Simple; getprint(shift @ARGV);" "$1" > "$2" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "perl"
+    return 1
+  fi
+
+  return 0
+}
+
+# do_python URL FILENAME
+do_python() {
+  echo "trying python..."
+  python -c "import sys,urllib2 ; sys.stdout.write(urllib2.urlopen(sys.argv[1]).read())" "$1" > "$2" 2>$tmp_dir/stderr
+  rc=$?
+  # check for 404
+  grep "HTTP Error 404" $tmp_dir/stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    http_404_error
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "python"
+    return 1
+  fi
+  return 0
+}
+
+# do_download URL FILENAME
+do_download() {
+  PATH=/opt/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sfw/bin:/sbin:/bin:/usr/sbin:/usr/bin
+  export PATH
+
+  echo "downloading $1"
+  echo "  to file $2"
+
+  # we try all of these until we get success.
+  # perl, in particular may be present but LWP::Simple may not be installed
+
+  if exists wget; then
+    do_wget $1 $2 && return 0
+  fi
+
+  if exists curl; then
+    do_curl $1 $2 && return 0
+  fi
+
+  if exists fetch; then
+    do_fetch $1 $2 && return 0
+  fi
+
+  if exists perl; then
+    do_perl $1 $2 && return 0
+  fi
+
+  if exists python; then
+    do_python $1 $2 && return 0
+  fi
+
+  echo ">>>>>> wget, curl, fetch, perl, or python not found on this instance."
+
+  if test "x$stderr_results" != "x"; then
+    echo "\nDEBUG OUTPUT FOLLOWS:\n$stderr_results"
+  fi
+
+  return 16
+}
+
+<%# Run any custom commands before installing chef-client -%>
+<%# Ex. wait for cloud-init to complete -%>
+<% if @config[:bootstrap_preinstall_command] %>
+  <%= @config[:bootstrap_preinstall_command] %>
+<% end %>
+
+<% if @config[:bootstrap_install_command] %>
+  <%= @config[:bootstrap_install_command] %>
+<% else %>
+  install_sh="<%= @config[:bootstrap_url] ? @config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
+  if test -f /usr/bin/<%= ChefUtils::Dist::Infra::CLIENT %>; then
+    echo "-----> Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected"
+  else
+    echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
+    do_download ${install_sh} $tmp_dir/install.sh
+    sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
+  fi
+<% end %>
+
+if test "x$tmp_dir" != "x"; then
+  rm -r "$tmp_dir"
+fi
+
+mkdir -p /etc/chef
+
+<% if client_pem -%>
+(umask 077 && (cat > /etc/chef/client.pem <<'EOP'
+<%= ::File.read(::File.expand_path(client_pem)) %>
+EOP
+)) || exit 1
+<% end -%>
+
+<% if validation_key -%>
+(umask 077 && (cat > /etc/chef/validation.pem <<'EOP'
+<%= validation_key %>
+EOP
+)) || exit 1
+<% end -%>
+
+<% if encrypted_data_bag_secret -%>
+(umask 077 && (cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
+<%= encrypted_data_bag_secret %>
+EOP
+)) || exit 1
+<% end -%>
+
+<% unless trusted_certs.empty? -%>
+mkdir -p /etc/chef/trusted_certs
+<%= trusted_certs %>
+<% end -%>
+
+<%# Generate Ohai Hints -%>
+<% unless @config[:hints].nil? || @config[:hints].empty? -%>
+mkdir -p /etc/chef/ohai/hints
+
+<% @config[:hints].each do |name, hash| -%>
+cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
+<%= Chef::JSONCompat.to_json(hash) %>
+EOP
+<% end -%>
+<% end -%>
+
+cat > /etc/chef/client.rb <<'EOP'
+<%= config_content %>
+EOP
+
+cat > /etc/chef/first-boot.json <<'EOP'
+<%= Chef::JSONCompat.to_json(first_boot) %>
+EOP
+
+<% unless client_d.empty? -%>
+mkdir -p /etc/chef/client.d
+<%= client_d %>
+<% end -%>
+
+echo "Starting the first <%= ChefUtils::Dist::Infra::PRODUCT %> Client run..."
+
+<%= start_chef %>

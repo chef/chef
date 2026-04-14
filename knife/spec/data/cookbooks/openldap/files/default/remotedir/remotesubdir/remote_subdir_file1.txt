@@ -1,0 +1,3 @@
+# remote directory
+# file specificity: default
+# relpath: remotedir/remotesubdir/remote_dir_file1.txt

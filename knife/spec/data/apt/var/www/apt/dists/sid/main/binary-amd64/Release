@@ -1,0 +1,5 @@
+Component: main
+Origin: localhost
+Label: apt repository
+Architecture: amd64
+Description: Apt repository

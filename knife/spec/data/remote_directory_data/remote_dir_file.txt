@@ -1,0 +1,1 @@
+I'm a file inside a the root remote_directory source dir.

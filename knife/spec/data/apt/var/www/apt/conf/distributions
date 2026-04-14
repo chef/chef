@@ -1,0 +1,7 @@
+Origin: localhost
+Label: apt repository
+Codename: sid
+Architectures: amd64
+Components: main
+Description: Apt repository
+Pull: sid
