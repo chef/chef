@@ -7,7 +7,7 @@ expeditor:
 steps:
 - label: ":docker: build chef-hab amd64"
   agents:
-    queue: docker-linux
+    queue: default-privileged
   expeditor:
     secrets:
       HAB_AUTH_TOKEN:
@@ -23,7 +23,7 @@ steps:
 
 - label: ":docker: build chef-hab arm64"
   agents:
-    queue: docker-linux-arm64
+    queue: default-privileged-aarch64
   expeditor:
     secrets:
       HAB_AUTH_TOKEN:
@@ -32,7 +32,6 @@ steps:
     executor:
       linux:
         privileged: true
-        single-use: true
         propagate-environment: true
         environment:
           - HAB_AUTH_TOKEN
