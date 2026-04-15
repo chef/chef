@@ -15,6 +15,7 @@ steps:
         field: auth_token
     executor:
       linux:
+        privileged: true
         propagate-environment: true
         environment:
           - HAB_AUTH_TOKEN
