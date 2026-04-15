@@ -253,7 +253,9 @@ jobs:
         with:
           version: "25.5.1084"
       - name: Kitchen Test
-        run: kitchen verify ${{ matrix.os }}
+        run: echo "SHA is $GITHUB_SHA"; kitchen verify ${{ matrix.os }}
+        env:
+          GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
