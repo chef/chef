@@ -22,7 +22,7 @@ class Chef
     class ChefClientConfig < Chef::Resource
 
       provides :chef_client_config, target_mode: true
-      unified_mode true
+      target_mode support: :full
 
       description "Use the **chef_client_config** resource to create a client.rb file in the #{ChefUtils::Dist::Infra::PRODUCT} configuration directory. See the [client.rb docs](https://docs.chef.io/config_rb_client/) for more details on options available in the client.rb configuration file."
       introduced '16.6'
@@ -364,6 +364,7 @@ class Chef
           source ::File.expand_path("support/client.erb", __dir__)
           user new_resource.user unless new_resource.user.nil?
           group new_resource.group unless new_resource.group.nil?
+          local true
           variables(
             chef_license: new_resource.chef_license,
             chef_server_url: new_resource.chef_server_url,
@@ -397,7 +398,6 @@ class Chef
             data_collector_token: new_resource.data_collector_token
           )
           mode new_resource.client_rb_mode
-          sensitive true
           action :create
         end
       end
@@ -417,7 +417,7 @@ class Chef
         # @return [Array] Array of handler data
         #
         def format_handler(handler_property)
-          handler_property.map do |handler|
+          handler_data = handler_property.map do |handler|
             "#{handler['class']}.new(#{handler['arguments'].join(',')})"
           end
         end
