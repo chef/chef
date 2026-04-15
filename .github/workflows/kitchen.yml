@@ -240,6 +240,7 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v6
