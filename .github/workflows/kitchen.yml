@@ -240,7 +240,7 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-      GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v6
@@ -252,6 +252,24 @@ jobs:
         uses: actionshub/chef-install@main
         with:
           version: "25.5.1084"
+      - name: Setup test
+        run: |
+          brew install coreutils
+          curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
+          export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
+          echo "Chef / Ohai release:"
+          /opt/chef/bin/chef-client -v
+          /opt/chef/bin/ohai -v
+          env
+          echo "Installing appbundler and appbundle-updater gems:"
+          sudo /opt/chef/embedded/bin/gem install appbundler --no-doc
+          sudo /opt/chef/embedded/bin/gem install appbundle-updater -v "~> 1.0.36" --no-doc
+          echo "Updating Chef using appbundler-updater:"
+          sudo /opt/chef/embedded/bin/appbundle-updater chef chef ${GITHUB_SHA} --tarball --github ${GITHUB_REPOSITORY}
+          sudo rm -f /opt/chef/embedded/bin/{htmldiff,ldiff}
+          echo "Installed Chef / Ohai release:"
+          /opt/chef/bin/chef-client -v
+          /opt/chef/bin/ohai -v
       - name: Kitchen Test
         run: kitchen verify ${{ matrix.os }}
 
