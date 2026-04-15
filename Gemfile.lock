@@ -594,14 +594,18 @@ GEM
     yajl (0.3.4)
 
 PLATFORMS
+  arm64-darwin-22
   arm64-darwin-23
   arm64-darwin-24
   arm64-darwin-25
+  arm64-darwin-26
   ruby
   x64-mingw-ucrt
+  x86_64-darwin-22
   x86_64-darwin-23
   x86_64-darwin-24
   x86_64-darwin-25
+  x86_64-darwin-26
 
 DEPENDENCIES
   appbundler
