@@ -191,6 +191,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    abbrev (0.1.2)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
@@ -594,11 +595,13 @@ GEM
     yajl (0.3.4)
 
 PLATFORMS
+  arm64-darwin
   arm64-darwin-23
   arm64-darwin-24
   arm64-darwin-25
   ruby
   x64-mingw-ucrt
+  x86_64-darwin
   x86_64-darwin-23
   x86_64-darwin-24
   x86_64-darwin-25
