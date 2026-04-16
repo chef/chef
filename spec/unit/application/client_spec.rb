@@ -225,9 +225,9 @@ describe Chef::Application::Client, "reconfigure" do
 
       context "local mode not set" do
         it "fails with a message stating local mode required" do
-          expect(Chef::Application).to receive(:fatal!).with("recipe-url can be used only in local-mode").and_raise("error occured")
+          expect(Chef::Application).to receive(:fatal!).with("recipe-url can be used only in local-mode").and_raise("error occurred")
           ARGV.replace(["--recipe-url=test_url"])
-          expect { app.reconfigure }.to raise_error "error occured"
+          expect { app.reconfigure }.to raise_error "error occurred"
         end
       end
 
