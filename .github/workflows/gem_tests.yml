@@ -1,0 +1,137 @@
+---
+name: gem_tests
+
+"on":
+  pull_request:
+    branches: [main, "chef-*"]
+  push:
+    branches: [main, "chef-*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gem-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CHEF_LICENSE: accept-no-persist
+  FORCE_FFI_YAJL: ext
+
+jobs:
+  chef-zero:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PEDANT_OPTS: "--skip-oc_id"
+      CHEF_FS: "true"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.8"
+          bundler-cache: false
+      - name: Bundle install Chef
+        run: |
+          bundle config set --local without packaging
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs=3 --retry=3
+      - name: Run chef-zero tests
+        run: bundle exec tasks/bin/run_external_test chef/chef-zero main rake pedant
+
+  cheffish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.8"
+          bundler-cache: false
+      - name: Bundle install Chef
+        run: |
+          bundle config set --local without packaging
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs=3 --retry=3
+      - name: Run cheffish tests
+        run: bundle exec tasks/bin/run_external_test chef/cheffish main rake spec
+
+  chefspec:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.8"
+          bundler-cache: false
+      - name: Bundle install Chef
+        run: |
+          bundle config set --local without packaging
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs=3 --retry=3
+      - name: Run chefspec tests
+        run: bundle exec tasks/bin/run_external_test chef/chefspec main rake
+
+  knife-windows:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.8"
+          bundler-cache: false
+      - name: Bundle install Chef
+        run: |
+          bundle config set --local without packaging
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs=3 --retry=3
+      - name: Run knife-windows tests
+        run: bundle exec tasks/bin/run_external_test chef/knife-windows main rake spec
+
+  berkshelf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev graphviz
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.8"
+          bundler-cache: false
+      - name: Bundle install Chef
+        run: |
+          bundle config set --local without packaging
+          bundle install --jobs=3 --retry=3
+      - name: Run berkshelf tests
+        run: bundle exec tasks/bin/run_external_test chef/berkshelf main rake
