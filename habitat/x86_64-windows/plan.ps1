@@ -328,8 +328,6 @@ function Invoke-Install {
         Get-ChildItem -Path "$pkg_prefix\bin\*.bat" -File | ForEach-Object {
             $binstub = $_.FullName
             $binstubName = $_.Name
-            Write-BuildLine "Before patching ${binstubName}:"
-            Get-Content $binstub -TotalCount 20
 
             # Read the .bat file content
             $content = Get-Content $binstub -Raw
@@ -342,9 +340,6 @@ function Invoke-Install {
 
             # Write back to the file
             Set-Content -Path $binstub -Value $content -NoNewline
-
-            Write-BuildLine "After patching ${binstubName}:"
-            Get-Content $binstub -TotalCount 30
         }
 
         Remove-StudioPathFrom -File $pkg_prefix/vendor/gems/chef-$pkg_version*/Gemfile
