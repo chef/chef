@@ -62,11 +62,14 @@ class Chef
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
         when fedora_derived?
           package %w{ autoconf bison flex gcc gcc-c++ gettext make m4 ncurses-devel patch }
-          # kernel-devel is installed separately because dnf version-pins it to
-          # the running kernel, which may not be available in repos (e.g. Docker
-          # containers where the host kernel differs from the guest userland).
+          # kernel-devel is installed separately with ignore_failure because dnf
+          # version-pins it to the running kernel, which may not be available in
+          # repos (e.g. Docker containers where the host kernel differs from the
+          # guest userland).  We cannot use the --skip-unavailable option here
+          # because dnf5 (Fedora 42+) requires it after the subcommand, but
+          # Chef's dnf_package provider places options before it.
           package "kernel-devel" do
-            options "--skip-unavailable"
+            ignore_failure true
           end
         when freebsd?
           package "devel/gmake"
