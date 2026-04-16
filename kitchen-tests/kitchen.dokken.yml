@@ -51,12 +51,12 @@ lifecycle:
     - remote: |
         sh -c "
         systemctl stop unattended-upgrades apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
-        systemctl mask apt-daily.service apt-daily-upgrade.service apt-daily.timer apt-daily-upgrade.timer 2>/dev/null || true
-        timeout 60 sh -c 'while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 1; done' || true
+        systemctl mask unattended-upgrades.service apt-daily.service apt-daily-upgrade.service apt-daily.timer apt-daily-upgrade.timer 2>/dev/null || true
+        timeout 300 sh -c 'while fuser /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock >/dev/null 2>&1; do sleep 5; done' || true
         "
       includes:
-        - ubuntu-22.04
-        - ubuntu-24.04
+        - ubuntu-2204
+        - ubuntu-2404
 
     - remote: echo "****Importing Habitat Origin Key****"
     - remote: sh -c "cat /gha-key.tar.gz | HAB_LICENSE=accept-no-persist hab origin key import"
