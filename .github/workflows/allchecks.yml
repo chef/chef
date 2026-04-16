@@ -13,9 +13,6 @@ jobs:
       - uses: wechuli/allcheckspassed@v2
         with:
           # SonarCloud - never works for forks
-          # arm64 - still under development - fail-after:2026-04-30
-          # rockylinux-9 - upstream package issues - fail-after:2026-04-15
-          # rockylinux-10 - upstream package issues - fail-after:2026-04-15
           checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64|rockylinux-9|rockylinux-10).*"
           # Retry every minute for 30 minutes...
           retries: 90
