@@ -43,6 +43,62 @@ class RestResourceByPath < RestResourceByQuery
   rest_api_document "/api/v1/address/{address}"
 end
 
+class RestResourceWithEndpoint < Chef::Resource
+  use "core::rest_resource"
+
+  provides :rest_resource_with_endpoint, target_mode: true
+
+  property :address, String, required: true
+  property :prefix, Integer, required: true
+  property :gateway, String
+
+  rest_api_endpoint "https://api.example.com"
+  rest_api_collection "/api/v1/addresses"
+  rest_api_document   "/api/v1/address/{address}"
+  rest_property_map({
+    address: "address",
+    prefix: "prefix",
+    gateway: "gateway",
+  })
+end
+
+class RestResourceWithIdentityProperty < Chef::Resource
+  use "core::rest_resource"
+
+  provides :rest_resource_with_identity_property, target_mode: true
+
+  property :address, String, required: true
+  property :prefix, Integer, required: true
+  property :gateway, String
+
+  rest_api_collection "/api/v1/addresses"
+  rest_identity_property :address
+  rest_property_map({
+    address: "address",
+    prefix: "prefix",
+    gateway: "gateway",
+  })
+end
+
+class RestResourceWithEndpointAndIdentityProperty < Chef::Resource
+  use "core::rest_resource"
+
+  provides :rest_resource_with_endpoint_and_identity_property, target_mode: true
+
+  property :address, String, required: true
+  property :prefix, Integer, required: true
+  property :gateway, String
+
+  rest_api_endpoint "https://api.example.com"
+  rest_api_collection "/api/v1/addresses"
+  rest_identity_property :address
+  rest_property_map({
+    address: "address",
+    prefix: "prefix",
+    gateway: "gateway",
+  })
+end
+
 describe "rest_resource using query-based addressing" do
   let(:train) {
     Train.create(
@@ -378,4 +434,368 @@ describe "rest_resource using path-based addressing" do
     end
   end
 
+end
+
+describe "rest_resource using rest_api_endpoint" do
+  let(:train) {
+    Train.create(
+      "rest", {
+      endpoint:   RestResourceWithEndpoint.rest_api_endpoint,
+      debug_rest: true,
+      logger:     Chef::Log,
+    }
+    ).connection
+  }
+
+  let(:run_context) do
+    cookbook_collection = Chef::CookbookCollection.new([])
+    node = Chef::Node.new
+    node.name "node1"
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:resource) do
+    RestResourceWithEndpoint.new("set_address", run_context).tap do |resource|
+      resource.address = "192.0.2.1"
+      resource.prefix = 24
+      resource.action :configure
+    end
+  end
+
+  let(:provider) do
+    resource.provider_for_action(:configure).tap do |provider|
+      provider.current_resource = resource
+      allow(provider).to receive(:api_connection).and_return(train)
+    end
+  end
+
+  before(:each) do
+    allow(Chef::Provider).to receive(:new).and_return(provider)
+  end
+
+  it "should store rest_api_endpoint on the resource class" do
+    expect(resource.class.rest_api_endpoint).to eq("https://api.example.com")
+  end
+
+  describe "#rest_url_collection" do
+    before do
+      provider.singleton_class.send(:public, :rest_url_collection)
+    end
+
+    it "should prepend the endpoint to the collection URL" do
+      expect(provider.rest_url_collection).to eq("https://api.example.com/api/v1/addresses")
+    end
+  end
+
+  describe "#rest_url_document" do
+    before do
+      provider.singleton_class.send(:public, :rest_url_document)
+    end
+
+    it "should prepend the endpoint to the document URL" do
+      expect(provider.rest_url_document).to eq("https://api.example.com/api/v1/address/192.0.2.1")
+    end
+  end
+
+  describe "when managing a resource" do
+    before { WebMock.disable_net_connect! }
+    let(:addresses_exists) { JSON.generate([{ "address": "192.0.2.1" }]) }
+    let(:address_exists) { JSON.generate({ "address": "192.0.2.1", "prefix": 24, "gateway": "192.0.2.1" }) }
+
+    it "should be idempotent" do
+      stub_request(:get, "https://api.example.com/api/v1/addresses")
+        .to_return(status: 200, body: addresses_exists, headers: { "Content-Type" => "application/json" })
+      stub_request(:get, "https://api.example.com/api/v1/address/192.0.2.1")
+        .to_return(status: 200, body: address_exists, headers: { "Content-Type" => "application/json" })
+      resource.run_action(:configure)
+      expect(resource.updated_by_last_action?).to be false
+    end
+  end
+end
+
+describe "rest_resource using rest_identity_property" do
+  let(:train) {
+    Train.create(
+      "rest", {
+      endpoint:   "https://api.example.com/api/v1/",
+      debug_rest: true,
+      logger:     Chef::Log,
+    }
+    ).connection
+  }
+
+  let(:run_context) do
+    cookbook_collection = Chef::CookbookCollection.new([])
+    node = Chef::Node.new
+    node.name "node1"
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:resource) do
+    RestResourceWithIdentityProperty.new("set_address", run_context).tap do |resource|
+      resource.address = "192.0.2.1"
+      resource.prefix = 24
+      resource.action :configure
+    end
+  end
+
+  let(:provider) do
+    resource.provider_for_action(:configure).tap do |provider|
+      provider.current_resource = resource
+      allow(provider).to receive(:api_connection).and_return(train)
+    end
+  end
+
+  before(:each) do
+    allow(Chef::Provider).to receive(:new).and_return(provider)
+  end
+
+  it "should store rest_identity_property on the resource class" do
+    expect(resource.class.rest_identity_property).to eq(:address)
+  end
+
+  it "should auto-generate rest_api_document from collection and identity property" do
+    expect(resource.class.rest_api_document).to eq("/api/v1/addresses/{address}")
+  end
+
+  describe "#rest_url_document" do
+    before do
+      provider.singleton_class.send(:public, :rest_url_document)
+    end
+
+    it "should expand the auto-generated document URL using the identity property value" do
+      expect(provider.rest_url_document).to eq("/api/v1/addresses/192.0.2.1")
+    end
+  end
+
+  describe "when managing a resource" do
+    before { WebMock.disable_net_connect! }
+    let(:addresses_exists) { JSON.generate([{ "address": "192.0.2.1" }]) }
+    let(:address_exists) { JSON.generate({ "address": "192.0.2.1", "prefix": 24, "gateway": "192.0.2.1" }) }
+
+    it "should be idempotent" do
+      stub_request(:get, "https://api.example.com/api/v1/addresses")
+        .to_return(status: 200, body: addresses_exists, headers: { "Content-Type" => "application/json" })
+      stub_request(:get, "https://api.example.com/api/v1/addresses/192.0.2.1")
+        .to_return(status: 200, body: address_exists, headers: { "Content-Type" => "application/json" })
+      resource.run_action(:configure)
+      expect(resource.updated_by_last_action?).to be false
+    end
+  end
+end
+
+describe "rest_resource using rest_api_endpoint and rest_identity_property" do
+  let(:train) {
+    Train.create(
+      "rest", {
+      endpoint:   RestResourceWithEndpointAndIdentityProperty.rest_api_endpoint,
+      debug_rest: true,
+      logger:     Chef::Log,
+    }
+    ).connection
+  }
+
+  let(:run_context) do
+    cookbook_collection = Chef::CookbookCollection.new([])
+    node = Chef::Node.new
+    node.name "node1"
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:resource) do
+    RestResourceWithEndpointAndIdentityProperty.new("set_address", run_context).tap do |resource|
+      resource.address = "192.0.2.1"
+      resource.prefix = 24
+      resource.action :configure
+    end
+  end
+
+  let(:provider) do
+    resource.provider_for_action(:configure).tap do |provider|
+      provider.current_resource = resource
+      allow(provider).to receive(:api_connection).and_return(train)
+    end
+  end
+
+  before(:each) do
+    allow(Chef::Provider).to receive(:new).and_return(provider)
+  end
+
+  describe "#rest_url_collection" do
+    before do
+      provider.singleton_class.send(:public, :rest_url_collection)
+    end
+
+    it "should prepend the endpoint to the collection URL" do
+      expect(provider.rest_url_collection).to eq("https://api.example.com/api/v1/addresses")
+    end
+  end
+
+  describe "#rest_url_document" do
+    before do
+      provider.singleton_class.send(:public, :rest_url_document)
+    end
+
+    it "should build the full document URL from endpoint, collection, and identity property" do
+      expect(provider.rest_url_document).to eq("https://api.example.com/api/v1/addresses/192.0.2.1")
+    end
+  end
+
+  describe "when managing a resource" do
+    before { WebMock.disable_net_connect! }
+    let(:addresses_exists) { JSON.generate([{ "address": "192.0.2.1" }]) }
+    let(:address_exists) { JSON.generate({ "address": "192.0.2.1", "prefix": 24, "gateway": "192.0.2.1" }) }
+
+    it "should be idempotent" do
+      stub_request(:get, "https://api.example.com/api/v1/addresses")
+        .to_return(status: 200, body: addresses_exists, headers: { "Content-Type" => "application/json" })
+      stub_request(:get, "https://api.example.com/api/v1/addresses/192.0.2.1")
+        .to_return(status: 200, body: address_exists, headers: { "Content-Type" => "application/json" })
+      resource.run_action(:configure)
+      expect(resource.updated_by_last_action?).to be false
+    end
+  end
+end
+
+# These two blocks demonstrate that configuring the endpoint via Train directly
+# (rather than via rest_api_endpoint) still works. The resource uses relative
+# paths only; the base URL is owned entirely by the Train connection's endpoint option.
+
+describe "rest_resource with endpoint configured via Train transport (query-based)" do
+  let(:train) {
+    Train.create(
+      "rest", {
+      endpoint:   "https://api.example.com",
+      debug_rest: true,
+      logger:     Chef::Log,
+    }
+    ).connection
+  }
+
+  let(:run_context) do
+    cookbook_collection = Chef::CookbookCollection.new([])
+    node = Chef::Node.new
+    node.name "node1"
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:resource) do
+    RestResourceByQuery.new("set_address", run_context).tap do |resource|
+      resource.address = "192.0.2.1"
+      resource.prefix  = 24
+      resource.action  :configure
+    end
+  end
+
+  let(:provider) do
+    resource.provider_for_action(:configure).tap do |provider|
+      provider.current_resource = resource
+      allow(provider).to receive(:api_connection).and_return(train)
+    end
+  end
+
+  before(:each) { allow(Chef::Provider).to receive(:new).and_return(provider) }
+
+  it "should have no rest_api_endpoint set on the resource class" do
+    expect(resource.class.rest_api_endpoint).to be_nil
+  end
+
+  describe "#rest_url_collection" do
+    before { provider.singleton_class.send(:public, :rest_url_collection) }
+
+    it "returns a relative collection URL (endpoint lives in Train)" do
+      expect(provider.rest_url_collection).to eq("/api/v1/addresses")
+    end
+  end
+
+  describe "#rest_url_document" do
+    before { provider.singleton_class.send(:public, :rest_url_document) }
+
+    it "returns a relative document URL (endpoint lives in Train)" do
+      expect(provider.rest_url_document).to eq("/api/v1/address/?ip=192.0.2.1")
+    end
+  end
+
+  describe "when managing a resource" do
+    before { WebMock.disable_net_connect! }
+    let(:addresses_exists) { JSON.generate([{ "address": "192.0.2.1" }]) }
+    let(:address_exists)   { JSON.generate({ "address": "192.0.2.1", "prefix": 24, "gateway": "192.0.2.1" }) }
+
+    it "resolves the full URL via the Train transport endpoint and is idempotent" do
+      stub_request(:get, "https://api.example.com/api/v1/addresses")
+        .to_return(status: 200, body: addresses_exists, headers: { "Content-Type" => "application/json" })
+      stub_request(:get, "https://api.example.com/api/v1/address/?ip=192.0.2.1")
+        .to_return(status: 200, body: address_exists, headers: { "Content-Type" => "application/json" })
+      resource.run_action(:configure)
+      expect(resource.updated_by_last_action?).to be false
+    end
+  end
+end
+
+describe "rest_resource with endpoint configured via Train transport (path-based)" do
+  let(:train) {
+    Train.create(
+      "rest", {
+      endpoint:   "https://api.example.com",
+      debug_rest: true,
+      logger:     Chef::Log,
+    }
+    ).connection
+  }
+
+  let(:run_context) do
+    cookbook_collection = Chef::CookbookCollection.new([])
+    node = Chef::Node.new
+    node.name "node1"
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, cookbook_collection, events)
+  end
+
+  let(:resource) do
+    RestResourceByPath.new("set_address", run_context).tap do |resource|
+      resource.address = "192.0.2.1"
+      resource.prefix  = 24
+      resource.action  :configure
+    end
+  end
+
+  let(:provider) do
+    resource.provider_for_action(:configure).tap do |provider|
+      provider.current_resource = resource
+      allow(provider).to receive(:api_connection).and_return(train)
+    end
+  end
+
+  before(:each) { allow(Chef::Provider).to receive(:new).and_return(provider) }
+
+  it "should have no rest_api_endpoint set on the resource class" do
+    expect(resource.class.rest_api_endpoint).to be_nil
+  end
+
+  describe "#rest_url_document" do
+    before { provider.singleton_class.send(:public, :rest_url_document) }
+
+    it "returns a relative document URL (endpoint lives in Train)" do
+      expect(provider.rest_url_document).to eq("/api/v1/address/192.0.2.1")
+    end
+  end
+
+  describe "when managing a resource" do
+    before { WebMock.disable_net_connect! }
+    let(:addresses_exists) { JSON.generate([{ "address": "192.0.2.1" }]) }
+    let(:address_exists)   { JSON.generate({ "address": "192.0.2.1", "prefix": 24, "gateway": "192.0.2.1" }) }
+
+    it "resolves the full URL via the Train transport endpoint and is idempotent" do
+      stub_request(:get, "https://api.example.com/api/v1/addresses")
+        .to_return(status: 200, body: addresses_exists, headers: { "Content-Type" => "application/json" })
+      stub_request(:get, "https://api.example.com/api/v1/address/192.0.2.1")
+        .to_return(status: 200, body: address_exists, headers: { "Content-Type" => "application/json" })
+      resource.run_action(:configure)
+      expect(resource.updated_by_last_action?).to be false
+    end
+  end
 end
