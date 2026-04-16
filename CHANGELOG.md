@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.82 -->
-## [v19.2.82](https://github.com/chef/chef/tree/v19.2.82) (2026-04-16)
+<!-- latest_release 19.2.83 -->
+## [v19.2.83](https://github.com/chef/chef/tree/v19.2.83) (2026-04-16)
 
 #### Merged Pull Requests
-- Disable macos runs with chronoguard comment [#15898](https://github.com/chef/chef/pull/15898) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove rocky and arm exemptions from allchecks [#15903](https://github.com/chef/chef/pull/15903) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove rocky and arm exemptions from allchecks [#15903](https://github.com/chef/chef/pull/15903) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.83 -->
 - Disable macos runs with chronoguard comment [#15898](https://github.com/chef/chef/pull/15898) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.82 -->
 - enable arm runners [#15778](https://github.com/chef/chef/pull/15778) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.81 -->
 - use a different env name for sha [#15900](https://github.com/chef/chef/pull/15900) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.80 -->
