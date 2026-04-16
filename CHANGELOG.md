@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.80 -->
-## [v19.2.80](https://github.com/chef/chef/tree/v19.2.80) (2026-04-16)
+<!-- latest_release 19.2.81 -->
+## [v19.2.81](https://github.com/chef/chef/tree/v19.2.81) (2026-04-16)
 
 #### Merged Pull Requests
-- use a different env name for sha [#15900](https://github.com/chef/chef/pull/15900) ([rishichawda](https://github.com/rishichawda))
+- enable arm runners [#15778](https://github.com/chef/chef/pull/15778) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- enable arm runners [#15778](https://github.com/chef/chef/pull/15778) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.81 -->
 - use a different env name for sha [#15900](https://github.com/chef/chef/pull/15900) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.80 -->
 - set github_sha to the correct ref for macOS kitchen tests [#15893](https://github.com/chef/chef/pull/15893) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.79 -->
 - Enable manual kitchen tests, fix push kitchen tests [#15886](https://github.com/chef/chef/pull/15886) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.78 -->
