@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.89 -->
-## [v19.2.89](https://github.com/chef/chef/tree/v19.2.89) (2026-04-17)
+<!-- latest_release 19.2.90 -->
+## [v19.2.90](https://github.com/chef/chef/tree/v19.2.90) (2026-04-17)
 
 #### Merged Pull Requests
-- Correcting the Rest Resource [#15867](https://github.com/chef/chef/pull/15867) ([johnmccrae](https://github.com/johnmccrae))
+- Bump pry-stack_explorer from 0.6.1 to 0.6.3 [#15876](https://github.com/chef/chef/pull/15876) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump pry-stack_explorer from 0.6.1 to 0.6.3 [#15876](https://github.com/chef/chef/pull/15876) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.90 -->
 - Correcting the Rest Resource [#15867](https://github.com/chef/chef/pull/15867) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.89 -->
 - Dependabot tweaks for chef-18 [#15871](https://github.com/chef/chef/pull/15871) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.88 -->
 - Fix inconsistent Gemfile [#15872](https://github.com/chef/chef/pull/15872) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.87 -->
