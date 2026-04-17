@@ -9,6 +9,9 @@ name: kitchen
     branches:
       - main
 
+  # allow manual runs
+  workflow_dispatch:
+
 concurrency:
   group: kitchen-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
@@ -21,7 +24,6 @@ defaults:
 
 jobs:
   workflow_guard:
-    if: github.event_name == 'pull_request_target'
     uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
     permissions:
       contents: read
@@ -223,34 +225,36 @@ jobs:
 #      - name: Kitchen Test
 #        run: kitchen verify ${{ matrix.os }}
 #
-  mac_arm64:
-    needs: workflow_guard
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - macos-14
-          - macos-15
-          - macos-26
-    runs-on: ${{ matrix.os }}
-    env:
-      CHEF_LICENSE: accept-no-persist
-      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-    steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-          clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
-      - name: Kitchen Test
-        run: kitchen verify ${{ matrix.os }}
+  # disabled due to no hab support for mac yet - fail-after:2026-05-15
+  # mac_arm64:
+  #   needs: workflow_guard
+  #   permissions:
+  #     contents: read
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os:
+  #         - macos-14
+  #         - macos-15
+  #         - macos-26
+  #   runs-on: ${{ matrix.os }}
+  #   env:
+  #     CHEF_LICENSE: accept-no-persist
+  #     KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+  #     GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  #   steps:
+  #     - name: Checkout PR code
+  #       uses: actions/checkout@v6
+  #       with:
+  #         ref: ${{ github.event.pull_request.head.sha }}
+  #         persist-credentials: false
+  #         clean: true
+  #     - name: Install Chef
+  #       uses: actionshub/chef-install@main
+  #       with:
+  #         version: "25.5.1084"
+  #     - name: Kitchen Test
+  #       run: kitchen verify ${{ matrix.os }}
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
@@ -347,20 +351,18 @@ jobs:
       matrix:
         os:
           - almalinux-9
-          # Commenting most of these out until at least one
-          # works. Also excluding from allchecks.
-          #- almalinux-10
-          #- debian-11
-          #- debian-12
-          #- debian-13
-          #- fedora-42
-          #- opensuse-leap-15
-          #- oraclelinux-8
-          #- oraclelinux-9
-          #- rockylinux-9
-          #- rockylinux-10
-          #- ubuntu-2204
-          #- ubuntu-2404
+          - almalinux-10
+          - debian-11
+          - debian-12
+          - debian-13
+          - fedora-42
+          - opensuse-leap-15
+          - oraclelinux-8
+          - oraclelinux-9
+          - rockylinux-9
+          - rockylinux-10
+          - ubuntu-2204
+          - ubuntu-2404
     runs-on: ubuntu-24.04-arm
     env:
       FORCE_FFI_YAJL: ext

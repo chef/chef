@@ -49,7 +49,7 @@ jobs:
 
   approve:
     needs: detect
-    if: needs.detect.outputs.workflow_changed == 'true'
+    if: (github.event_name == 'pull_request_target' && needs.detect.outputs.workflow_changed == 'true')
     runs-on: ubuntu-latest
 
     # Approval happens ONLY here
