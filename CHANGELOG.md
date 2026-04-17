@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.87 -->
-## [v19.2.87](https://github.com/chef/chef/tree/v19.2.87) (2026-04-16)
+<!-- latest_release 19.2.88 -->
+## [v19.2.88](https://github.com/chef/chef/tree/v19.2.88) (2026-04-17)
 
 #### Merged Pull Requests
-- Fix inconsistent Gemfile [#15872](https://github.com/chef/chef/pull/15872) ([jaymzh](https://github.com/jaymzh))
+- Dependabot tweaks for chef-18 [#15871](https://github.com/chef/chef/pull/15871) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Dependabot tweaks for chef-18 [#15871](https://github.com/chef/chef/pull/15871) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.88 -->
 - Fix inconsistent Gemfile [#15872](https://github.com/chef/chef/pull/15872) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.87 -->
 - Fix up platforms list in Gemfile.lock [#15891](https://github.com/chef/chef/pull/15891) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.86 -->
 - Fix fedora-42 and opensuse-leap-15 CI failures [#15902](https://github.com/chef/chef/pull/15902) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.85 -->
