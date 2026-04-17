@@ -66,15 +66,29 @@ jobs:
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs
 
-  unit-rocky:
+  unit-docker:
     strategy:
       fail-fast: false
       matrix:
         include:
           - runs-on: ubuntu-24.04
             container: chefes/omnibus-toolchain-rocky-9:3.0.39
+            pkg_mgr: dnf
           - runs-on: ubuntu-24.04-arm
             container: chefes/omnibus-toolchain-rocky-9:aarch64
+            pkg_mgr: dnf
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-rocky-8:3.0.39
+            pkg_mgr: dnf
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rocky-8:aarch64
+            pkg_mgr: dnf
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-debian-11:3.0.39
+            pkg_mgr: apt
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-debian-11:aarch64
+            pkg_mgr: apt
     runs-on: ${{ matrix.runs-on }}
     container: ${{ matrix.container }}
     timeout-minutes: 60
@@ -82,9 +96,16 @@ jobs:
       - uses: actions/checkout@v6
         with:
           clean: true
-      - name: Install dependencies and Ruby via rbenv
+      - name: Install native deps (dnf)
+        if: matrix.pkg_mgr == 'dnf'
+        run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel curl
+      - name: Install native deps (apt)
+        if: matrix.pkg_mgr == 'apt'
         run: |
-          dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
+          apt-get update
+          apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev curl
+      - name: Install Ruby via rbenv
+        run: |
           curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
           export PATH="$HOME/.rbenv/bin:$PATH"
           eval "$(rbenv init -)"

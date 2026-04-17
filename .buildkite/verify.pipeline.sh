@@ -7,13 +7,15 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
-# RHEL-family platforms (Rocky 8, RHEL): run Unit, Functional, and Integration in Buildkite.
-# Rocky 9: run Integration only here; Unit/Functional run in GitHub Actions (unit-rocky, functional-rocky).
-# Debian: run Unit, Functional, and Integration in Buildkite (not available on GitHub Actions).
+# RHEL-family platforms (RHEL 9): run Unit, Functional, and Integration in Buildkite.
+# Rocky 8: run Integration and Functional only here; Unit runs in GitHub Actions (unit-docker).
+# Rocky 9: run Integration only here; Unit/Functional run in GitHub Actions (unit-docker, functional-rocky).
+# Debian: run Integration and Functional only here; Unit runs in GitHub Actions (unit-docker).
 # Ubuntu: run Integration only here; Unit/Functional run in GitHub Actions.
 # Windows: run Integration only here; Unit/Functional run in GitHub Actions.
 
-rhel_platforms=("rocky-8" "rocky-8-aarch64" "rhel-9" "rhel-9-aarch64")
+rhel_platforms=("rhel-9" "rhel-9-aarch64")
+rocky8_platforms=("rocky-8" "rocky-8-aarch64")
 rocky9_platforms=("rocky-9" "rocky-9-aarch64")
 debian_platforms=("debian-11" "debian-11-aarch64")
 ubuntu_platforms=("ubuntu-2204" "ubuntu-2204-aarch64")
@@ -36,6 +38,38 @@ for platform in ${rhel_platforms[@]}; do
   echo "    queue: $queue"
   echo "  matrix:"
   echo "    - \"Unit\""
+  echo "    - \"Integration\""
+  echo "    - \"Functional\""
+  echo "  plugins:"
+  echo "  - docker#v3.5.0:"
+  echo "      image: $image"
+  echo "      privileged: true"
+  echo "      environment:"
+  echo "        - HAB_AUTH_TOKEN"
+  echo "      propagate-environment: true"
+  echo "  commands:"
+  echo "    - .expeditor/scripts/bk_container_prep.sh"
+  echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
+  echo "  timeout_in_minutes: 60"
+done
+
+for platform in ${rocky8_platforms[@]}; do
+
+  if [[ $platform == *"-aarch64" ]]; then
+    image="chefes/omnibus-toolchain-${platform%-aarch64}:aarch64"
+    queue="default-privileged-aarch64"
+  else
+    image="chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
+    queue="default-privileged"
+  fi
+
+  echo "- label: \"{{matrix}} $platform :ruby:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  agents:"
+  echo "    queue: $queue"
+  echo "  matrix:"
   echo "    - \"Integration\""
   echo "    - \"Functional\""
   echo "  plugins:"
@@ -97,7 +131,6 @@ for platform in ${debian_platforms[@]}; do
   echo "  agents:"
   echo "    queue: $queue"
   echo "  matrix:"
-  echo "    - \"Unit\""
   echo "    - \"Integration\""
   echo "    - \"Functional\""
   echo "  plugins:"
