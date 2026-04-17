@@ -73,14 +73,14 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.2.84)
+    chef (19.2.90)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       bcrypt_pbkdf (~> 1.0)
-      chef-config (= 19.2.84)
+      chef-config (= 19.2.90)
       chef-licensing (~> 1.3)
-      chef-utils (= 19.2.84)
+      chef-utils (= 19.2.90)
       chef-vault
       chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
@@ -112,15 +112,15 @@ PATH
       unf_ext (~> 0.0.9.1)
       uri (>= 1.0.4, < 1.2.0)
       vault (>= 0.18.2, < 0.21.0)
-    chef (19.2.84-universal-mingw-ucrt)
+    chef (19.2.90-universal-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       bcrypt_pbkdf (~> 1.0)
-      chef-config (= 19.2.84)
+      chef-config (= 19.2.90)
       chef-licensing (~> 1.3)
       chef-powershell (~> 18.6.6)
-      chef-utils (= 19.2.84)
+      chef-utils (= 19.2.90)
       chef-vault
       chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
@@ -167,15 +167,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.2.84)
-      chef (= 19.2.84)
+    chef-bin (19.2.90)
+      chef (= 19.2.90)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.2.84)
+    chef-config (19.2.90)
       addressable
-      chef-utils (= 19.2.84)
+      chef-utils (= 19.2.90)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -185,12 +185,13 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.2.84)
+    chef-utils (19.2.90)
       concurrent-ruby
 
 GEM
   remote: https://rubygems.org/
   specs:
+    abbrev (0.1.2)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
@@ -221,9 +222,12 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
+    bcrypt_pbkdf (1.1.2-arm64-darwin)
+    bcrypt_pbkdf (1.1.2-x64-mingw-ucrt)
+    bcrypt_pbkdf (1.1.2-x86_64-darwin)
     benchmark (0.5.0)
     bigdecimal (4.1.1)
-    binding_of_caller (1.0.1)
+    binding_of_caller (2.0.0)
       debug_inspector (>= 1.2.0)
     builder (3.3.0)
     byebug (12.0.0)
@@ -309,9 +313,6 @@ GEM
     fauxhai-ng (9.3.0)
       net-ssh
     ffi (1.17.4)
-    ffi (1.17.4-arm64-darwin)
-    ffi (1.17.4-x64-mingw-ucrt)
-    ffi (1.17.4-x86_64-darwin)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -445,8 +446,8 @@ GEM
     pry-byebug (3.11.0)
       byebug (~> 12.0)
       pry (>= 0.13, < 0.16)
-    pry-stack_explorer (0.6.1)
-      binding_of_caller (~> 1.0)
+    pry-stack_explorer (0.6.3)
+      binding_of_caller (>= 1.0)
       pry (~> 0.13)
     pstore (0.1.4)
     public_suffix (6.0.2)
@@ -597,11 +598,10 @@ PLATFORMS
   arm64-darwin-23
   arm64-darwin-24
   arm64-darwin-25
+  arm64-darwin-26
   ruby
   x64-mingw-ucrt
   x86_64-darwin-23
-  x86_64-darwin-24
-  x86_64-darwin-25
 
 DEPENDENCIES
   appbundler
@@ -614,7 +614,7 @@ DEPENDENCIES
   cheffish!
   crack (~> 1.0.1)
   fauxhai-ng
-  ffi (>= 1.15.5, < 1.18.0)
+  ffi (>= 1.15.5)
   inspec-core-bin (= 7.0.107)
   knife!
   ohai!
