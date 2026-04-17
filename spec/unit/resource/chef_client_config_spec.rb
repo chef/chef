@@ -142,4 +142,176 @@ describe Chef::Resource::ChefClientConfig do
       expect { resource.rubygems_url(["https://rubygems.east.example.com", "https://rubygems.west.example.com"]) }.not_to raise_error
     end
   end
+
+  describe "directory_specs property" do
+    it "has defaults for all managed directory specs" do
+      expect(resource.directory_specs).to eql(
+        config: { mode: "0750", inherits: :auto },
+        client_d: { mode: "0750", inherits: :auto },
+        logs: { mode: "0755", inherits: :auto },
+        cache: { mode: "0750", inherits: :auto },
+        backups: { mode: "0750", inherits: :auto }
+      )
+    end
+
+    it "merges overrides with defaults" do
+      resource.directory_specs(config: { owner: "chefuser", mode: "0700" })
+
+      expect(resource.directory_specs[:config]).to eql(mode: "0700", inherits: :auto, owner: "chefuser")
+      expect(resource.directory_specs[:client_d]).to eql(mode: "0750", inherits: :auto)
+      expect(resource.directory_specs[:logs]).to eql(mode: "0755", inherits: :auto)
+      expect(resource.directory_specs[:cache]).to eql(mode: "0750", inherits: :auto)
+      expect(resource.directory_specs[:backups]).to eql(mode: "0750", inherits: :auto)
+    end
+
+    it "raises if a nested override key is not supported" do
+      expect { resource.directory_specs(config: { inherit: true }) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "raises if a nested override value is not a hash" do
+      expect { resource.directory_specs(config: "0750") }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "accepts supported nested override keys" do
+      expect {
+        resource.directory_specs(
+          config: {
+            owner: "root",
+            group: "root",
+            mode: "0700",
+            rights: { "Administrators" => :full_control },
+            inherits: false
+          }
+        )
+      }.not_to raise_error
+    end
+  end
+
+  describe "create action directory behavior" do
+    before do
+      resource.chef_server_url("https://chef.example.dmz")
+    end
+
+    def stub_template_resource
+      allow(provider).to receive(:template) do |_path, &block|
+        template_resource = double("template").as_null_object
+        block.call(template_resource) if block
+      end
+    end
+
+    def capture_directory_specs
+      captured = {}
+
+      allow(provider).to receive(:directory) do |path, &block|
+        dir_resource = double("directory")
+        allow(dir_resource).to receive(:owner) { |value| captured[path] ||= {}; captured[path][:owner] = value }
+        allow(dir_resource).to receive(:group) { |value| captured[path] ||= {}; captured[path][:group] = value }
+        allow(dir_resource).to receive(:mode) { |value| captured[path] ||= {}; captured[path][:mode] = value }
+        allow(dir_resource).to receive(:inherits) { |value| captured[path] ||= {}; captured[path][:inherits] = value }
+        allow(dir_resource).to receive(:rights) do |permission, principal|
+          captured[path] ||= {}
+          captured[path][:rights] ||= []
+          captured[path][:rights] << [ permission, principal ]
+        end
+
+        block.call(dir_resource) if block
+      end
+
+      captured
+    end
+
+    it "keeps default directory behavior when directory_specs is not provided" do
+      resource.config_directory("/etc/chef")
+      stub_template_resource
+      captured = capture_directory_specs
+
+      provider.run_action(:create)
+
+      expect(captured).to include("/etc/chef")
+      expect(captured).to include("/etc/chef/client.d")
+      expect(captured).not_to include("/var/chef/cache")
+      expect(captured).not_to include("/var/chef/backups")
+      expect(captured["/etc/chef"][:mode]).to eql("0750")
+      expect(captured["/etc/chef/client.d"][:mode]).to eql("0750")
+    end
+
+    it "keeps default directory behavior when directory_specs is explicitly empty" do
+      resource.config_directory("/etc/chef")
+      resource.directory_specs({})
+      stub_template_resource
+      captured = capture_directory_specs
+
+      provider.run_action(:create)
+
+      expect(captured).to include("/etc/chef")
+      expect(captured).to include("/etc/chef/client.d")
+      expect(captured).not_to include("/var/chef/cache")
+      expect(captured).not_to include("/var/chef/backups")
+      expect(captured["/etc/chef"][:mode]).to eql("0750")
+      expect(captured["/etc/chef/client.d"][:mode]).to eql("0750")
+    end
+
+    it "applies directory_specs overrides for mode, owner, and group" do
+      resource.user("chefuser")
+      resource.group("chefgroup")
+      resource.config_directory("/etc/chef")
+      resource.file_cache_path("/var/chef/cache")
+      resource.file_backup_path("/var/chef/backups")
+      resource.log_location("/var/log/chef/client.log")
+      resource.directory_specs(
+        config: { mode: "0700" },
+        cache: { owner: "cache_user", group: "cache_group", mode: "0710" }
+      )
+
+      stub_template_resource
+      captured = capture_directory_specs
+
+      provider.run_action(:create)
+
+      expect(captured["/etc/chef"][:mode]).to eql("0700")
+      expect(captured["/etc/chef"][:owner]).to eql("chefuser")
+      expect(captured["/etc/chef"][:group]).to eql("chefgroup")
+
+      expect(captured["/var/chef/cache"][:mode]).to eql("0710")
+      expect(captured["/var/chef/cache"][:owner]).to eql("cache_user")
+      expect(captured["/var/chef/cache"][:group]).to eql("cache_group")
+
+      expect(captured["/var/chef/backups"][:mode]).to eql("0750")
+      expect(captured["/var/log/chef"][:mode]).to eql("0755")
+    end
+
+    it "applies inherits override on windows" do
+      resource.config_directory("C:/chef")
+      resource.directory_specs(config: { inherits: false })
+      stub_template_resource
+      captured = capture_directory_specs
+      allow(Chef::Platform).to receive(:windows?).and_return(true)
+
+      provider.run_action(:create)
+
+      expect(captured["C:/chef"][:inherits]).to eql(false)
+      expect(captured["C:/chef/client.d"][:inherits]).to eql(true)
+    end
+
+    it "raises when overriding cache without file_cache_path" do
+      resource.directory_specs(cache: { mode: "0700" })
+
+      expect { provider.run_action(:create) }
+        .to raise_error(ArgumentError, "Invalid directory_specs: cache requires :cache")
+    end
+
+    it "raises when overriding backups without file_backup_path" do
+      resource.directory_specs(backups: { mode: "0700" })
+
+      expect { provider.run_action(:create) }
+        .to raise_error(ArgumentError, "Invalid directory_specs: backups requires :backups")
+    end
+
+    it "raises when overriding logs without log_location file path" do
+      resource.directory_specs(logs: { mode: "0700" })
+
+      expect { provider.run_action(:create) }
+        .to raise_error(ArgumentError, "Invalid directory_specs: logs requires :logs (file path)")
+    end
+  end
 end

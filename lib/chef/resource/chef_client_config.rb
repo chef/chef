@@ -21,6 +21,14 @@ class Chef
   class Resource
     class ChefClientConfig < Chef::Resource
 
+      DIRECTORY_SPEC_DEFAULTS = {
+        config: { mode: "0750", inherits: :auto },
+        client_d: { mode: "0750", inherits: :auto },
+        logs: { mode: "0755", inherits: :auto },
+        cache: { mode: "0750", inherits: :auto },
+        backups: { mode: "0750", inherits: :auto },
+      }.freeze
+
       provides :chef_client_config, target_mode: true
       target_mode support: :full
 
@@ -95,6 +103,48 @@ class Chef
         chef_server_url 'https://chef.example.dmz'
         data_collector_server_url 'https://automate.example.dmz'
         data_collector_token 'TEST_TOKEN_TEST'
+      end
+      ```
+
+      **Set Linux directory ownership and modes**:
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        user 'root'
+        group 'root'
+        file_cache_path '/var/chef/cache'
+        file_backup_path '/var/chef/backups'
+        log_location '/var/log/chef/client.log'
+        directory_specs(
+          config: { owner: 'root', group: 'root', mode: '0700' },
+          client_d: { owner: 'root', group: 'root', mode: '0700' },
+          logs: { owner: 'root', group: 'root', mode: '0750' },
+          cache: { owner: 'root', group: 'root', mode: '0750' },
+          backups: { owner: 'root', group: 'root', mode: '0750' }
+        )
+      end
+      ```
+
+      **Set Windows directory inheritance and rights**:
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        config_directory 'C:/chef'
+        file_cache_path 'C:/chef/cache'
+        file_backup_path 'C:/chef/backups'
+        log_location 'C:/chef/log/client.log'
+        directory_specs(
+          config: {
+            owner: 'Administrators',
+            inherits: false,
+            rights: {
+              'Administrators' => :full_control,
+              'SYSTEM' => :full_control,
+            },
+          }
+        )
       end
       ```
       DOC
@@ -258,20 +308,36 @@ class Chef
       property :directory_specs, Hash,
         description: <<~DESC,
           Permission overrides for Chef-managed directories.
-          Keys must be one of:
-            :config
-            :client_d
-            :logs
-            :cache
-            :backups
+          This must be a hash of hashes: top-level keys are directory names, values are per-directory option hashes.
+
+          Use this property like:
+            directory_specs(
+              config: { owner: "root", group: "root", mode: "0700" },
+              client_d: { owner: "root", group: "root", mode: "0700" },
+              logs: { owner: "root", group: "root", mode: "0700" },
+              cache: { owner: "root", group: "root", mode: "0700" },
+              backups: { owner: "root", group: "root", mode: "0700" }
+            )
+
+          Directory keys: :config, :client_d, :logs, :cache, :backups
+          Override keys: :owner, :group, :mode, :rights, :inherits (:rights and :inherits are Windows-only)
         DESC
         callbacks: {
           "keys must be one of :config, :client_d, :logs, :cache, :backups" => lambda { |v|
             valid_keys = %i{config client_d logs cache backups}
             v.keys.all? { |k| valid_keys.include?(k) }
           },
+          "values must be a hash with keys only from :owner, :group, :mode, :rights, :inherits" => lambda { |v|
+            valid_inner_keys = %i{owner group mode rights inherits}
+            v.values.all? { |value| value.is_a?(Hash) && value.keys.all? { |k| valid_inner_keys.include?(k) } }
+          },
         },
-        default: {}
+        default: DIRECTORY_SPEC_DEFAULTS,
+        coerce: proc { |v|
+          DIRECTORY_SPEC_DEFAULTS.merge(v) do |_key, base, override|
+            base.merge(override)
+          end
+        }
 
       property :client_rb_mode, String,
         description: "The mode to set on the client.rb file that is written out by this resource (e.g., 0600).",
@@ -286,7 +352,8 @@ class Chef
 
         invalid_specs = new_resource.directory_specs.each_key.select do |spec_key|
           dependency = path_dependencies[spec_key]
-          dependency && dependency[0].nil?
+          dependency && dependency[0].nil? &&
+            new_resource.directory_specs[spec_key] != DIRECTORY_SPEC_DEFAULTS[spec_key]
         end
 
         unless invalid_specs.empty?
@@ -297,65 +364,26 @@ class Chef
           raise ArgumentError, "Invalid directory_specs: #{details}"
         end
 
-        specs = {
-          config: DirectorySpec.new(
-            path: new_resource.config_directory,
-            owner: new_resource.user,
-            group: new_resource.group,
-            mode: "0750"
-          ),
+        spec_paths = {
+          config: new_resource.config_directory,
+          client_d: ::File.join(new_resource.config_directory, "client.d"),
+          logs: log_directory,
+          cache: new_resource.file_cache_path,
+          backups: new_resource.file_backup_path,
+        }
 
-          client_d: DirectorySpec.new(
-            path: ::File.join(new_resource.config_directory, "client.d"),
-            owner: new_resource.user,
-            group: new_resource.group,
-            mode: "0750"
-          ),
-
-          logs: (
-            if log_directory
-              DirectorySpec.new(
-                path: log_directory,
-                owner: new_resource.user,
-                group: new_resource.group,
-                mode: "0755"
-              )
-            end
-          ),
-
-          cache: (
-            if new_resource.file_cache_path
-              DirectorySpec.new(
-                path: new_resource.file_cache_path,
-                owner: new_resource.user,
-                group: new_resource.group,
-                mode: "0750"
-              )
-            end
-          ),
-
-          backups: (
-            if new_resource.file_backup_path
-              DirectorySpec.new(
-                path: new_resource.file_backup_path,
-                owner: new_resource.user,
-                group: new_resource.group,
-                mode: "0750"
-              )
-            end
-          ),
-        }.compact
-
-        # Apply user overrides safely
+        specs = {}
         new_resource.directory_specs.each do |key, overrides|
-          raise ArgumentError, "Directory spec '#{key}' is not available with current path settings" unless specs[key]
+          path = spec_paths[key]
+          next if path.nil?
 
           specs[key] = DirectorySpec.new(
-            path: specs[key].path,
-            owner: overrides[:owner]  || specs[key].owner,
-            group: overrides[:group]  || specs[key].group,
-            mode:  overrides[:mode]   || specs[key].mode,
-            rights: overrides[:rights] || specs[key].rights
+            path: path,
+            owner: overrides[:owner] || new_resource.user,
+            group: overrides[:group] || new_resource.group,
+            mode: overrides[:mode],
+            rights: overrides[:rights],
+            inherits: overrides[:inherits]
           )
         end
 
@@ -429,14 +457,15 @@ class Chef
         end
 
         class DirectorySpec
-          attr_reader :path, :owner, :group, :mode, :rights
+          attr_reader :path, :owner, :group, :mode, :rights, :inherits
 
-          def initialize(path:, owner: nil, group: nil, mode: nil, rights: nil)
+          def initialize(path:, owner: nil, group: nil, mode: nil, rights: nil, inherits: :auto)
             @path   = path
             @owner  = owner
             @group  = group
             @mode   = mode
             @rights = rights
+            @inherits = inherits
           end
 
           def windows?
@@ -448,14 +477,14 @@ class Chef
 
             if windows?
               if rights && !rights.empty?
-                resource.inherits false
+                resource.inherits(inherits == :auto ? false : inherits)
 
                 rights.each do |principal, permission|
                   resource.rights(permission, principal)
                 end
               else
                 # Ensure defaults can restore inherited ACL behavior after custom rights were applied.
-                resource.inherits true
+                resource.inherits(inherits == :auto ? true : inherits)
                 resource.mode(mode) if mode
               end
 
