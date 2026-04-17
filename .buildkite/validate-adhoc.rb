@@ -64,17 +64,7 @@ if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release
       "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
     ],
     "agents" => {
-      "queue" => "default-privileged-aarch64"
-    },
-    "plugins" => {
-      "docker#v3.5.0" => {
-        "image" => "chefes/omnibus-toolchain-ubuntu-2204:aarch64",
-        "privileged" => true,
-        "propagate-environment" => true,
-        "environment" => [
-          'HAB_AUTH_TOKEN'
-        ]
-      }
+      "queue" => "habitat-aarch64-linux"
     },
     "timeout_in_minutes" => 120
   }
