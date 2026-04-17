@@ -17,10 +17,19 @@ concurrency:
 env:
   CHEF_LICENSE: accept-no-persist
   FORCE_FFI_YAJL: ext
-  OMNIBUS_TOOLCHAIN_X86_TAG: "3.0.39"
-  OMNIBUS_TOOLCHAIN_ARM_TAG: "aarch64"
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      x86_tag: ${{ steps.tags.outputs.x86_tag }}
+      arm_tag: ${{ steps.tags.outputs.arm_tag }}
+    steps:
+      - id: tags
+        run: |
+          echo "x86_tag=3.0.39" >> $GITHUB_OUTPUT
+          echo "arm_tag=aarch64" >> $GITHUB_OUTPUT
+
   functional:
     strategy:
       fail-fast: false
@@ -79,33 +88,34 @@ jobs:
       - run: bundle exec rake spec:functional
 
   functional-docker:
+    needs: config
     strategy:
       fail-fast: false
       matrix:
         include:
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rocky-9:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
+            container: chefes/omnibus-toolchain-rocky-9:${{ needs.config.outputs.x86_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rocky-9:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
+            container: chefes/omnibus-toolchain-rocky-9:${{ needs.config.outputs.arm_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rocky-8:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
+            container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.x86_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rocky-8:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
+            container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.arm_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rhel-9:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
+            container: chefes/omnibus-toolchain-rhel-9:${{ needs.config.outputs.x86_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rhel-9:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
+            container: chefes/omnibus-toolchain-rhel-9:${{ needs.config.outputs.arm_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-debian-11:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
+            container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.x86_tag }}
             pkg_mgr: apt
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-debian-11:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
+            container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.arm_tag }}
             pkg_mgr: apt
     runs-on: ${{ matrix.runs-on }}
     container:
