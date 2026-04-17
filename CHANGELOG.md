@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.96 -->
-## [v19.2.96](https://github.com/chef/chef/tree/v19.2.96) (2026-04-17)
+<!-- latest_release 19.2.97 -->
+## [v19.2.97](https://github.com/chef/chef/tree/v19.2.97) (2026-04-17)
 
 #### Merged Pull Requests
-- Bump cookstyle from 8.5.2 to 8.6.10 [#15822](https://github.com/chef/chef/pull/15822) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Dependabot: Don&#39;t auto rebase [#15914](https://github.com/chef/chef/pull/15914) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Dependabot: Don&#39;t auto rebase [#15914](https://github.com/chef/chef/pull/15914) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.97 -->
 - Bump cookstyle from 8.5.2 to 8.6.10 [#15822](https://github.com/chef/chef/pull/15822) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.96 -->
 - Remove more knife references [#15887](https://github.com/chef/chef/pull/15887) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.95 -->
 - Move debian and rocky-8 over to GHA [#15913](https://github.com/chef/chef/pull/15913) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.94 -->
