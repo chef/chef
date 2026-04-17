@@ -19,6 +19,17 @@ env:
   FORCE_FFI_YAJL: ext
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      x86_tag: ${{ steps.tags.outputs.x86_tag }}
+      arm_tag: ${{ steps.tags.outputs.arm_tag }}
+    steps:
+      - id: tags
+        run: |
+          echo "x86_tag=3.0.39" >> $GITHUB_OUTPUT
+          echo "arm_tag=aarch64" >> $GITHUB_OUTPUT
+
   unit:
     strategy:
       fail-fast: false
@@ -66,15 +77,37 @@ jobs:
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs
 
-  unit-rocky:
+  unit-docker:
+    needs: config
+    name: ${{ matrix.label }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rocky-9:3.0.39
+            container: chefes/omnibus-toolchain-rocky-9:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: dnf
+            label: rocky-9-x86
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rocky-9:aarch64
+            container: chefes/omnibus-toolchain-rocky-9:${{ needs.config.outputs.arm_tag }}
+            pkg_mgr: dnf
+            label: rocky-9-arm
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: dnf
+            label: rocky-8-x86
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.arm_tag }}
+            pkg_mgr: dnf
+            label: rocky-8-arm
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: apt
+            label: debian-11-x86
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.arm_tag }}
+            pkg_mgr: apt
+            label: debian-11-arm
     runs-on: ${{ matrix.runs-on }}
     container: ${{ matrix.container }}
     timeout-minutes: 60
@@ -82,9 +115,16 @@ jobs:
       - uses: actions/checkout@v6
         with:
           clean: true
-      - name: Install dependencies and Ruby via rbenv
+      - name: Install native deps (dnf)
+        if: matrix.pkg_mgr == 'dnf'
+        run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
+      - name: Install native deps (apt)
+        if: matrix.pkg_mgr == 'apt'
         run: |
-          dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
+          apt-get update
+          apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev curl
+      - name: Install Ruby via rbenv
+        run: |
           curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
           export PATH="$HOME/.rbenv/bin:$PATH"
           eval "$(rbenv init -)"
