@@ -77,12 +77,12 @@ class Chef
         chef_server_url 'https://chef.example.dmz'
         report_handlers [
           {
-           'class' => 'ReportHandler1Class',
-           'arguments' => ["'FirstArgument'", "'SecondArgument'"],
+            'class' => 'ReportHandler1Class',
+            'arguments' => ["'FirstArgument'", "'SecondArgument'"],
           },
           {
-           'class' => 'ReportHandler2Class',
-           'arguments' => ["'FirstArgument'", "'SecondArgument'"],
+            'class' => 'ReportHandler2Class',
+            'arguments' => ["'FirstArgument'", "'SecondArgument'"],
           },
         ]
       end
@@ -120,7 +120,7 @@ class Chef
       property :config_directory, String,
         description: "The directory to store the client.rb in.",
         default: ChefConfig::Config.etc_chef_dir,
-        default_description: "`/etc/chef/` on *nix-like systems and `C:\\chef\\` on Windows"
+        default_description: '`/etc/chef/` on *nix-like systems and `C:\\chef\\` on Windows'
 
       property :user, String,
         description: "The user that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."
@@ -212,7 +212,7 @@ class Chef
         default: []
 
       property :rubygems_url, [String, Array],
-        description: "The location to source rubygems. It can be set to a string or array of strings for URIs to set as rubygems sources. This allows individuals to setup an internal mirror of rubygems for “airgapped” environments.",
+        description: 'The location to source rubygems. It can be set to a string or array of strings for URIs to set as rubygems sources. This allows individuals to setup an internal mirror of rubygems for "airgapped" environments.',
         introduced: "17.11"
 
       property :exception_handlers, Array,
@@ -255,21 +255,114 @@ class Chef
         description: "The data collector token to interact with the data collector server URL (Automate). Note: If possible, use Chef Infra Server to do all data collection reporting, as this removes the need to distribute tokens to individual nodes.",
         introduced: "17.8"
 
-      action :create, description: "Create a client.rb config file and folders for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
-        [
-          new_resource.config_directory,
-          (::File.dirname(new_resource.log_location) if new_resource.log_location.is_a?(String) && !%w{STDOUT STDERR}.include?(new_resource.log_location) && !new_resource.log_location.empty?),
-          new_resource.file_backup_path,
-          new_resource.file_cache_path,
-          ::File.join(new_resource.config_directory, "client.d"),
-          (::File.dirname(new_resource.pid_file) unless new_resource.pid_file.nil?),
-        ].compact.each do |dir_path|
+      property :directory_specs, Hash,
+        description: <<~DESC,
+          Permission overrides for Chef-managed directories.
+          Keys must be one of:
+            :config
+            :client_d
+            :logs
+            :cache
+            :backups
+        DESC
+        callbacks: {
+          "keys must be one of :config, :client_d, :logs, :cache, :backups" => lambda { |v|
+            valid_keys = %i{config client_d logs cache backups}
+            v.keys.all? { |k| valid_keys.include?(k) }
+          },
+        },
+        default: {}
 
-          directory dir_path do
-            user new_resource.user unless new_resource.user.nil?
-            group new_resource.group unless new_resource.group.nil?
-            mode dir_path == ::File.dirname(new_resource.log_location.to_s) ? "0755" : "0750"
-            recursive true
+      property :client_rb_mode, String,
+        description: "The mode to set on the client.rb file that is written out by this resource (e.g., 0600).",
+        default: "0640"
+
+      action :create, description: "Create a client.rb config file and folders for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
+        path_dependencies = {
+          cache: [new_resource.file_cache_path, ":cache"],
+          backups: [new_resource.file_backup_path, ":backups"],
+          logs: [log_directory, ":logs (file path)"],
+        }
+
+        invalid_specs = new_resource.directory_specs.each_key.select do |spec_key|
+          dependency = path_dependencies[spec_key]
+          dependency && dependency[0].nil?
+        end
+
+        unless invalid_specs.empty?
+          details = invalid_specs.map do |spec_key|
+            "#{spec_key} requires #{path_dependencies[spec_key][1]}"
+          end.join(", ")
+
+          raise ArgumentError, "Invalid directory_specs: #{details}"
+        end
+
+        specs = {
+          config: DirectorySpec.new(
+            path: new_resource.config_directory,
+            owner: new_resource.user,
+            group: new_resource.group,
+            mode: "0750"
+          ),
+
+          client_d: DirectorySpec.new(
+            path: ::File.join(new_resource.config_directory, "client.d"),
+            owner: new_resource.user,
+            group: new_resource.group,
+            mode: "0750"
+          ),
+
+          logs: (
+            if log_directory
+              DirectorySpec.new(
+                path: log_directory,
+                owner: new_resource.user,
+                group: new_resource.group,
+                mode: "0755"
+              )
+            end
+          ),
+
+          cache: (
+            if new_resource.file_cache_path
+              DirectorySpec.new(
+                path: new_resource.file_cache_path,
+                owner: new_resource.user,
+                group: new_resource.group,
+                mode: "0750"
+              )
+            end
+          ),
+
+          backups: (
+            if new_resource.file_backup_path
+              DirectorySpec.new(
+                path: new_resource.file_backup_path,
+                owner: new_resource.user,
+                group: new_resource.group,
+                mode: "0750"
+              )
+            end
+          ),
+        }.compact
+
+        # Apply user overrides safely
+        new_resource.directory_specs.each do |key, overrides|
+          raise ArgumentError, "Directory spec '#{key}' is not available with current path settings" unless specs[key]
+
+          specs[key] = DirectorySpec.new(
+            path: specs[key].path,
+            owner: overrides[:owner]  || specs[key].owner,
+            group: overrides[:group]  || specs[key].group,
+            mode:  overrides[:mode]   || specs[key].mode,
+            rights: overrides[:rights] || specs[key].rights
+          )
+        end
+
+        # Converge directories
+        specs.each_value do |spec|
+          directory spec.path do
+            spec.apply(self)
           end
         end
 
@@ -310,7 +403,7 @@ class Chef
             data_collector_server_url: new_resource.data_collector_server_url,
             data_collector_token: new_resource.data_collector_token
           )
-          mode "0640"
+          mode new_resource.client_rb_mode
           action :create
         end
       end
@@ -333,6 +426,53 @@ class Chef
           handler_data = handler_property.map do |handler|
             "#{handler["class"]}.new(#{handler["arguments"].join(",")})"
           end
+        end
+
+        class DirectorySpec
+          attr_reader :path, :owner, :group, :mode, :rights
+
+          def initialize(path:, owner: nil, group: nil, mode: nil, rights: nil)
+            @path   = path
+            @owner  = owner
+            @group  = group
+            @mode   = mode
+            @rights = rights
+          end
+
+          def windows?
+            Chef::Platform.windows?
+          end
+
+          def apply(resource)
+            resource.recursive true
+
+            if windows?
+              if rights && !rights.empty?
+                resource.inherits false
+
+                rights.each do |principal, permission|
+                  resource.rights(permission, principal)
+                end
+              else
+                # Ensure defaults can restore inherited ACL behavior after custom rights were applied.
+                resource.inherits true
+                resource.mode(mode) if mode
+              end
+
+              resource.owner(owner) if owner
+            else
+              resource.owner(owner) if owner
+              resource.group(group) if group
+              resource.mode(mode) if mode
+            end
+          end
+        end
+
+        def log_directory
+          return unless new_resource.log_location.is_a?(String)
+          return if %w{STDOUT STDERR}.include?(new_resource.log_location)
+
+          ::File.dirname(new_resource.log_location)
         end
       end
     end
