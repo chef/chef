@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: ac6cdfdfc76b2511ec68976f5b05fddcae77b989
+  revision: db1f20ab5ec597d07508c82149224e826737baa0
   branch: main
   specs:
-    ohai (19.1.27)
+    ohai (19.1.28)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -163,7 +163,6 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    abbrev (0.1.2)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
@@ -416,7 +415,7 @@ GEM
       binding_of_caller (>= 1.0)
       pry (~> 0.13)
     pstore (0.1.4)
-    public_suffix (6.0.2)
+    public_suffix (7.0.5)
     racc (1.8.1)
     rack (3.2.6)
     rackup (2.3.1)
