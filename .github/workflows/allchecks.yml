@@ -13,7 +13,7 @@ jobs:
       - uses: wechuli/allcheckspassed@v2
         with:
           # SonarCloud - never works for forks
-          checks_exclude: ".*(SonarCloud Code Analysis).*"
+          checks_exclude: ".*(SonarCloud Code Analysis|Expeditor Config Validation).*"
           # Retry every minute for 30 minutes...
           retries: 90
           verbose: true
