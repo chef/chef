@@ -98,7 +98,7 @@ jobs:
           clean: true
       - name: Install native deps (dnf)
         if: matrix.pkg_mgr == 'dnf'
-        run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel curl
+        run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
       - name: Install native deps (apt)
         if: matrix.pkg_mgr == 'apt'
         run: |
