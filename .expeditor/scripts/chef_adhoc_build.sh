@@ -4,8 +4,6 @@ set -euo pipefail
 
 hab_target="${1:-x86_64-linux}"
 
-./.expeditor/scripts/install-hab.sh "$hab_target"
-
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
