@@ -17,6 +17,8 @@ concurrency:
 env:
   CHEF_LICENSE: accept-no-persist
   FORCE_FFI_YAJL: ext
+  OMNIBUS_TOOLCHAIN_X86_TAG: "3.0.39"
+  OMNIBUS_TOOLCHAIN_ARM_TAG: "aarch64"
 
 jobs:
   unit:
@@ -72,22 +74,28 @@ jobs:
       matrix:
         include:
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rocky-9:3.0.39
+            container: chefes/omnibus-toolchain-rocky-9:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rocky-9:aarch64
+            container: chefes/omnibus-toolchain-rocky-9:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rocky-8:3.0.39
+            container: chefes/omnibus-toolchain-rocky-8:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rocky-8:aarch64
+            container: chefes/omnibus-toolchain-rocky-8:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-debian-11:3.0.39
+            container: chefes/omnibus-toolchain-rhel-9:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
+            pkg_mgr: dnf
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rhel-9:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
+            pkg_mgr: dnf
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-debian-11:${{ env.OMNIBUS_TOOLCHAIN_X86_TAG }}
             pkg_mgr: apt
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-debian-11:aarch64
+            container: chefes/omnibus-toolchain-debian-11:${{ env.OMNIBUS_TOOLCHAIN_ARM_TAG }}
             pkg_mgr: apt
     runs-on: ${{ matrix.runs-on }}
     container: ${{ matrix.container }}
